@@ -1,3 +1,9 @@
 [submodule "infinit"]
 	path = infinit
 	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/infinit.git
+[submodule "pig"]
+	path = pig
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/pig.git
+[submodule "elle"]
+	path = elle
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/elle.git
