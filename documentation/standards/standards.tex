@@ -1,0 +1,196 @@
+%
+% ---------- header -----------------------------------------------------------
+%
+% project       phd
+%
+% license       GPL
+%
+% file          /home/mycure/infinit/documentation/standards/standards.tex
+%
+% created       julien quintard   [wed oct 17 13:30:55 2007]
+% updated       julien quintard   [thu mar 13 03:16:40 2008]
+%
+
+%
+% ---------- packages ---------------------------------------------------------
+%
+
+\documentclass[10pt,a4wide]{article}
+
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{a4wide}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{fancyheadings}
+\usepackage{multicol}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{verbatim}
+\usepackage{aeguill}
+
+%
+% ---------- page -------------------------------------------------------------
+%
+
+\pagestyle{fancy}
+\pagenumbering{roman}
+
+%
+% ---------- indentation ------------------------------------------------------
+%
+
+\setlength{\footrulewidth}{0.3pt}
+\setlength{\parindent}{0.3cm}
+\setlength{\parskip}{2ex plus 0.5ex minus 0.2ex}
+
+%
+% ---------- verbatim ---------------------------------------------------------
+%
+
+\definecolor{verbatimcolor}{rgb}{0,0.4,0}
+
+\makeatletter
+\renewcommand{\verbatim@font}
+  {\ttfamily\footnotesize\color{verbatimcolor}\selectfont}
+\makeatother
+
+%
+% ---------- commands ---------------------------------------------------------
+%
+
+\newcommand\ie[0]{\textit{i.e}}
+\newcommand\eg[0]{\textit{e.g}}
+\newcommand\etc[0]{\textit{etc.}}
+
+%
+% ---------- headers ----------------------------------------------------------
+%
+
+\lhead{\scriptsize{The Infinit File System}}
+\rhead{}
+
+\lfoot{}
+\rfoot{\scriptsize{Coding Standards}}
+
+%
+% ---------- title ------------------------------------------------------------
+%
+
+\title
+{
+  Coding Standards
+  \vspace{2cm}
+}
+
+\author
+{
+  \small{Julien Quintard} \\
+  \scriptsize{\textit{[firstname]}.\textit{[lastname]}@cl.cam.ac.uk}
+  \vspace{1cm}
+}
+
+\date{\scriptsize{\today}}
+
+%
+% ---------- document ---------------------------------------------------------
+%
+
+\begin{document}
+
+\maketitle
+
+\thispagestyle{empty}
+
+%
+% ---------- problematic ------------------------------------------------------
+%
+
+This short document presents the coding standards of the Infinit file system
+and related.
+
+\section{Problematic}
+
+These coding standards were introduced since the \textit{C++} programming
+language and more generally most of the object-oriented programming languages
+do not provide what the authors expect from them.
+
+The main limitation of such languages concerns the constructors and the fact
+that they do not return any value. It is therefore quite complex to indicate
+that an error occured in the constructor.
+
+The only solution consists in throwing an exception but authors are against
+the idea of using exceptions as they make the source code less readable
+and are often misused for indicating errors.
+
+Tricks have been proposed for alleviating this limitation. One consists in
+setting an attribute to \textit{true} when the constructor succeeds and
+a method or operator to test the success of the object construction.
+
+These tricks have also been rejected by the authors but for a different reason.
+
+Indeed, for performance optimisations, the authors wanted the possibility
+to instantiate uninitialised objects so that they can be passed to another
+function or method. Then, the object is eventually initialised by the called
+function or method.
+
+This is especially very useful when creating local objects \ie{} residing
+in the stack.
+
+Besides, the authors believe that when classes provide too many constructors,
+those start lacking meaning.
+
+These reasons led the authors to avoid using constructors.
+
+%
+% ---------- rules ------------------------------------------------------------
+%
+
+\section{Rules}
+
+This section lists the rules established according to the previously presented
+problematic:
+
+\begin{enumerate}
+  \item
+    Every class must provide a \textbf{single} constructor. This constructor
+    must not perform any action that could lead to unsuccessful results.
+
+    \-
+
+    This constructor should limit itself to initialising attributes with
+    default values;
+  \item
+    The destructor must both release any reserved resources including
+    locks, memory and so forth; and re-initialise the attribute so that
+    the object can be re-used;
+  \item
+    Methods are provided for actually initialising the object. These methods
+    take different name according to their usage so that they are meaningful
+    compared to using multiples constructors.
+
+    \-
+
+    Especially the following names should be used:
+
+    \begin{itemize}
+      \item
+	\textit{Create()} for creating the object from nothing more than
+	the passed arguments;
+      \item
+	\textit{Generate()} when the method's result is different when called
+	multiple times with the same arguments;
+      \item
+	\textit{Clone()} for cloning the object \ie{} creating an exact
+	copy with the same values as for the copy constructors;
+      \item
+	\textit{Wrap()} for creating an object which does not re-allocate
+	the given arguments but simply wraps them in a new object.
+    \end{itemize}
+  \item
+    In very rare cases, an \textit{Initialise()} method could be found,
+    especially in static classes.
+\end{enumerate}
+
+\end{document}
