@@ -7,3 +7,9 @@
 [submodule "elle"]
 	path = elle
 	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/elle.git
+[submodule "hole"]
+	path = hole
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/hole.git
+[submodule "agent"]
+	path = agent
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/agent.git
