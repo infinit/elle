@@ -1,0 +1,3 @@
+[submodule "infinit"]
+	path = infinit
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/infinit.git
