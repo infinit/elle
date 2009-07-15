@@ -1,0 +1,57 @@
+##
+## Made by flementec@rd.skyrecon.com
+## 
+## Started on  Thu Jan 22 14:00:32 2009 flementec
+## Last update Fri Jan 23 09:35:37 2009 flementec
+##
+
+
+# dirs
+
+SRC_DIR		=	..\src
+BIN_DIR		=	..\bin
+
+
+# tools
+
+RM		=	@del 2>NUL:
+CP		=	@copy /Y
+MV		=	@move /Y
+
+
+# compil
+
+CL		=	@cl.exe
+CLFLAGS		=	/nologo /W4 /D_WIN32_WINNT=0x501 /D_WIN32 \
+			/GR- /GS- /EHsc \
+			/D_CRT_SECURE_NO_WARNINGS=1 \
+			/D_DEBUG=1 /MTd \
+			/D_M_IX86=1 /D_POSIX_SYSTEM_API=1
+LD		=	@link.exe
+LDFLAGS		=	/nologo
+
+
+# main.exe
+
+MAIN_EXE	=	$(BIN_DIR)\main.exe
+
+MAIN_SRCS	=	$(SRC_DIR)\main.cc		\
+			$(SRC_DIR)\LocalStore.cc	\
+			$(SRC_DIR)\PosixFs.cc
+
+
+MAIN_OBJS	=	$(MAIN_SRCS:.cc=.obj)
+
+.SUFFIXES	:	.cc .hh .obj .bin .exe
+all		:	$(MAIN_EXE)
+
+$(MAIN_EXE)	:	$(MAIN_OBJS)
+			$(LD) $(LDFLAGS) /OUT:$(MAIN_EXE) $(MAIN_OBJS)
+.cc.obj		:
+			$(CL) $(CLFLAGS) /Fo$@ /c /Tp$<
+force		:
+clean		:	force
+			$(RM) $(MAIN_OBJS)
+fclean		:	clean
+			$(RM) $(MAIN_EXE)
+re		:	fclean all

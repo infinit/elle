@@ -1,0 +1,34 @@
+##
+## Made by fabien le mentec <texane@gmail.com>
+## 
+## Started on  Fri Jan 23 15:13:39 2009 texane
+## Last update Fri Jan 23 15:13:40 2009 texane
+##
+
+
+CC	:=	g++
+LD	:=	g++
+CFLAGS	:=	-Wall -I../src -D_POSIX_SYSTEM_API=1 -D_DEBUG=1 -D__STDC_LIMIT_MACROS=1
+LDFLAGS	:=	
+RM	:=	rm -f
+
+
+BIN	:=	../bin/store
+
+SRCS	:=	../src/main.cc		\
+		../src/LocalStore.cc	\
+		../src/PosixFs.cc
+
+OBJS	:=	$(SRCS:.cc=.o)
+
+
+all	:	$(BIN)
+$(BIN)	:	$(OBJS)
+		$(LD) $(LDFLAGS) -o $(BIN) $(OBJS)
+clean	:
+		$(RM) $(OBJS)
+fclean	:	clean
+		$(RM) $(BIN)
+re	:	fclean all
+%.o	:	%.cc
+		$(CC) $(CFLAGS) -o $@ -c $<
