@@ -1,9 +1,9 @@
 #
 # ---------- header -----------------------------------------------------------
 #
-# project       infinite
+# project       infinit
 #
-# license       GPL
+# license       infinit (c)
 #
 # file          /home/mycure/infinit/elle/Makefile.am
 #

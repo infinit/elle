@@ -3,7 +3,7 @@
 //
 // project       elle
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/elle/test/crypto/Test.cc
 //
