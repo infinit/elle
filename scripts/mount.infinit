@@ -1,11 +1,11 @@
 #
 # ---------- header -----------------------------------------------------------
 #
-# project       infinite
+# project       infinit
 #
-# license       GPL
+# license       infinit (c)
 #
-# file          /home/mycure/repositories/infinite/scripts/mount.infinite
+# file          /home/mycure/repositories/infinit/scripts/mount.infinit
 #
 # created       julien quintard   [mon oct 22 18:20:11 2007]
 # updated       julien quintard   [sat oct 27 12:36:55 2007]
@@ -13,7 +13,7 @@
 #! /bin/bash
 
 PIG="pig"
-INFINITE="infinite"
+INFINITE="infinit"
 
 PROGRAM=$(basename ${0})
 
@@ -32,8 +32,8 @@ usage: ${PROGRAM} [storage-identifier | hostname:port] [mount-point]
 
   examples:
 
-    ${PROGRAM} cambridge-storage-ring /mnt/infinite
-    ${PROGRAM} 172.31.65.166 /mnt/infinite
+    ${PROGRAM} cambridge-storage-ring /mnt/infinit
+    ${PROGRAM} 172.31.65.166 /mnt/infinit
 "
 
   exit 1
@@ -86,5 +86,5 @@ storage
 # launch the POSIX wrapper.
 ${PIG} ${TO}
 
-# launch the infinite service.
+# launch the infinit service.
 ${INFINITE} ${ARGUMENTS}
