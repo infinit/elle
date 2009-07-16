@@ -1,11 +1,11 @@
 #
 # ---------- header -----------------------------------------------------------
 #
-# project       infinite
+# project       infinit
 #
-# license       GPL
+# license       infinit (c)
 #
-# file          /home/mycure/infinite/documentation/standards/Makefile
+# file          /home/mycure/infinit/documentation/standards/Makefile
 #
 # created       julien quintard   [wed dec 19 22:28:43 2007]
 # updated       julien quintard   [wed dec 19 22:28:55 2007]

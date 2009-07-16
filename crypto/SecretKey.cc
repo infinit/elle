@@ -3,7 +3,7 @@
 //
 // project       il
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //

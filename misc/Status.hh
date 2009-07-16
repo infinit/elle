@@ -3,7 +3,7 @@
 //
 // project       elle
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/elle/misc/Status.hh
 //
@@ -15,7 +15,7 @@
 #define ELLE_MISC_STATUS_HH
 
 ///
-/// this namespace encloses the classes provided by the infinite library.
+/// this namespace encloses the classes provided by the infinit library.
 ///
 namespace elle
 {
