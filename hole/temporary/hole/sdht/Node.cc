@@ -5,7 +5,7 @@
 //
 // license       kayou
 //
-// file          infinite/hole/sdht/Node.cc
+// file          infinit/hole/sdht/Node.cc
 //
 // created       nicolas grandemange   [fri march  2 10:03:53 2007]
 // updated       nicolas grandemange   [fri march 17 22:44:49 2007]

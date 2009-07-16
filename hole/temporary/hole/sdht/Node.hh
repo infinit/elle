@@ -1,11 +1,11 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       infinite
+// project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
-// file          infinite/hole/sdht/Node.hh
+// file          infinit/hole/sdht/Node.hh
 //
 // created       nicolas grandemange   [fri april 29 10:03:53 2007]
 // updated       nicolas grandemange   ??????
