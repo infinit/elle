@@ -5,14 +5,14 @@
 //
 // license       GPL
 //
-// file          /home/mycure/infinit/infinit/components/Block.hh
+// file          /home/mycure/infinit/core/components/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [wed mar 11 13:40:29 2009]
+// updated       julien quintard   [thu jul 16 01:12:17 2009]
 //
 
-#ifndef INFINIT_COMPONENTS_BLOCK_HH
-#define INFINIT_COMPONENTS_BLOCK_HH
+#ifndef CORE_COMPONENTS_BLOCK_HH
+#define CORE_COMPONENTS_BLOCK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <infinit/components/Address.hh>
+#include <core/components/Address.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {
@@ -99,7 +99,7 @@ namespace infinit
 namespace std
 {
   std::ostream&		operator<<(std::ostream&,
-				   const infinit::components::Block&);
+				   const core::components::Block&);
 }
 
 #endif

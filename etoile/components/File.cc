@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/File.hh>
+#include <core/components/File.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

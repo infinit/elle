@@ -1,8 +1,8 @@
 #include <elle/Elle.hh>
-#include <infinit/components/Components.hh>
+#include <core/components/Components.hh>
 
-using namespace infinit;
-using namespace infinit::components;
+using namespace core;
+using namespace core::components;
 
 int main()
 {

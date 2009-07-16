@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/PublicKeyBlock.hh>
+#include <core/components/PublicKeyBlock.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

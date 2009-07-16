@@ -5,19 +5,19 @@
 //
 // license       GPL
 //
-// file          /home/mycure/infinit/infinit/components/Address.cc
+// file          /home/mycure/infinit/core/components/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed mar 11 16:10:15 2009]
+// updated       julien quintard   [thu jul 16 01:13:08 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/Address.hh>
+#include <core/components/Address.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {
@@ -255,7 +255,7 @@ namespace std
   /// this function displays an address.
   ///
   std::ostream&		operator<<(std::ostream&		stream,
-				   const infinit::components::Address& element)
+				   const core::components::Address& element)
   {
     if (element.digest != NULL)
       stream << *element.digest;

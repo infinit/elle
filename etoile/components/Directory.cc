@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/Directory.hh>
+#include <core/components/Directory.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

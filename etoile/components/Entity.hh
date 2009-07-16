@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 11 16:55:50 2009]
 //
 
-#ifndef INFINIT_COMPONENTS_ENTITY_HH
-#define INFINIT_COMPONENTS_ENTITY_HH
+#ifndef CORE_COMPONENTS_ENTITY_HH
+#define CORE_COMPONENTS_ENTITY_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,10 +20,10 @@
 
 #include <elle/Elle.hh>
 
-#include <infinit/components/PublicKeyBlock.hh>
-#include <infinit/components/Access.hh>
+#include <core/components/PublicKeyBlock.hh>
+#include <core/components/Access.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

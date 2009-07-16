@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 11 13:33:17 2009]
 //
 
-#ifndef INFINIT_COMPONENTS_PUBLICKEYBLOCK_HH
-#define INFINIT_COMPONENTS_PUBLICKEYBLOCK_HH
+#ifndef CORE_COMPONENTS_PUBLICKEYBLOCK_HH
+#define CORE_COMPONENTS_PUBLICKEYBLOCK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <infinit/components/Block.hh>
+#include <core/components/Block.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

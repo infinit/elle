@@ -5,19 +5,19 @@
 //
 // license       GPL
 //
-// file          /home/mycure/infinit/infinit/components/Block.cc
+// file          /home/mycure/infinit/core/components/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [wed mar 11 16:09:38 2009]
+// updated       julien quintard   [thu jul 16 01:12:08 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/Block.hh>
+#include <core/components/Block.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {
@@ -190,7 +190,7 @@ namespace std
   /// this function displays a block.
   ///
   std::ostream&		operator<<(std::ostream&		stream,
-				   const infinit::components::Block& element)
+				   const core::components::Block& element)
   {
     stream << element.address;
 

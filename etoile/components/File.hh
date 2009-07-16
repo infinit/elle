@@ -11,8 +11,8 @@
 // updated       julien quintard   [sun mar  8 15:30:51 2009]
 //
 
-#ifndef INFINIT_COMPONENTS_FILE_HH
-#define INFINIT_COMPONENTS_FILE_HH
+#ifndef CORE_COMPONENTS_FILE_HH
+#define CORE_COMPONENTS_FILE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <infinit/components/Entity.hh>
+#include <core/components/Entity.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

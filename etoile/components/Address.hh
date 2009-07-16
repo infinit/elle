@@ -5,14 +5,14 @@
 //
 // license       GPL
 //
-// file          /home/mycure/infinit/infinit/components/Address.hh
+// file          /home/mycure/infinit/core/components/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [wed mar 11 13:31:06 2009]
+// updated       julien quintard   [thu jul 16 01:12:33 2009]
 //
 
-#ifndef INFINIT_COMPONENTS_ADDRESS_HH
-#define INFINIT_COMPONENTS_ADDRESS_HH
+#ifndef CORE_COMPONENTS_ADDRESS_HH
+#define CORE_COMPONENTS_ADDRESS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,7 +22,7 @@
 
 #include <ostream>
 
-namespace infinit
+namespace core
 {
   namespace components
   {
@@ -99,7 +99,7 @@ namespace infinit
 namespace std
 {
   std::ostream&		operator<<(std::ostream&,
-				   const infinit::components::Address&);
+				   const core::components::Address&);
 }
 
 #endif

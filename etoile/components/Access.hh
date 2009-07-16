@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 11 16:57:05 2009]
 //
 
-#ifndef INFINIT_COMPONENTS_ACCESS_HH
-#define INFINIT_COMPONENTS_ACCESS_HH
+#ifndef CORE_COMPONENTS_ACCESS_HH
+#define CORE_COMPONENTS_ACCESS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,11 +20,11 @@
 
 #include <elle/Elle.hh>
 
-#include <infinit/components/ContentHashBlock.hh>
+#include <core/components/ContentHashBlock.hh>
 
 #include <vector>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

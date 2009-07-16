@@ -5,19 +5,19 @@
 //
 // license       GPL
 //
-// file          /home/mycure/infinit/infinit/components/ContentHashBlock.cc
+// file          /home/mycure/infinit/core/components/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed mar 11 16:21:00 2009]
+// updated       julien quintard   [thu jul 16 01:13:00 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/ContentHashBlock.hh>
+#include <core/components/ContentHashBlock.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {
@@ -200,7 +200,7 @@ namespace std
   /// this function displays a content hash block.
   ///
   std::ostream&		operator<<(std::ostream&		stream,
-				   const infinit::components::ContentHashBlock& element)
+				   const core::components::ContentHashBlock& element)
   {
     elle::archive::Archive	archive;
     elle::crypto::Digest	digest;

@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/Access.hh>
+#include <core/components/Access.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {

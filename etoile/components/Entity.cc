@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <infinit/components/Entity.hh>
+#include <core/components/Entity.hh>
 
-namespace infinit
+namespace core
 {
   namespace components
   {
