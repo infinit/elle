@@ -1,6 +1,6 @@
-PROJECT(Core CXX)
+PROJECT(Etoile CXX)
 
-ADD_EXECUTABLE(infinit
+ADD_EXECUTABLE(etoile
   main.cc
   components/Directory.cc
   components/Access.cc
@@ -12,4 +12,4 @@ ADD_EXECUTABLE(infinit
   components/ContentHashBlock.cc
   )
 
-TARGET_LINK_LIBRARIES(infinit elle crypto ssl dl)
+TARGET_LINK_LIBRARIES(etoile elle crypto ssl dl)
