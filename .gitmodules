@@ -1,15 +1,15 @@
-[submodule "infinit"]
-	path = infinit
-	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/infinit.git
+[submodule "core"]
+	path = core
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/core.git
 [submodule "pig"]
 	path = pig
-	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/pig.git
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/pig.git
 [submodule "elle"]
 	path = elle
-	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/elle.git
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/elle.git
 [submodule "hole"]
 	path = hole
-	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/hole.git
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/hole.git
 [submodule "agent"]
 	path = agent
-	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/infinit.modules/agent.git
+	url = git@repositories.i.nfin.it:/data/git/mycure/repositories/agent.git
