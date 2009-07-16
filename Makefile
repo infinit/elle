@@ -41,7 +41,7 @@ help:
 	@echo "pull             will pull or clone the repository"
 
 pull:
-	for i in agent core elle hole pig; \
+	for i in agent etoile elle hole pig; \
 do \
   if [[ -d $$i ]] ; then \
     (cd $$i && git pull) \
