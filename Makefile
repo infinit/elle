@@ -2,6 +2,7 @@ all:
 
 BUILDDIR = build
 MAKEOPT = --quiet
+GIT_REPO = git@repositories.i.nfin.it:/data/git/mycure/repositories
 
 -include config.mk
 
@@ -37,3 +38,14 @@ help:
 	@echo "clean		clean the project"
 	@echo "distclean	distclean the project"
 	@echo "doc		generate the doxygen html documentation"
+	@echo "pull             will pull or clone the repository"
+
+pull:
+	for i in agent core elle hole pig; \
+do \
+  if [[ -d $$i ]] ; then \
+    (cd $$i && git pull) \
+  else \
+    git clone $(GIT_REPO)/$$i.git; \
+  fi; \
+done
