@@ -12,7 +12,7 @@ CFLAGS="$CFLAGS -W -Wall -Wstrict-prototypes -pipe"
 CFLAGS="$CFLAGS -Wfloat-equal -Wundef -Wshadow -Wpointer-arith"
 CFLAGS="$CFLAGS -Wmissing-declarations -Wnested-externs"
 CFLAGS="$CFLAGS -Wmissing-prototypes -fPIC"
-CXXFLAGS="$CXXFLAGS -W -Wall -pipe -Wundef -Wshadow -Wpointer-arith -Wabi -std=c++0x -fPIC"
+CXXFLAGS="$CXXFLAGS -W -Wall -pipe -Wundef -Wshadow -Wpointer-arith -Wabi -fPIC"
 LDFLAGS="$LDFLAGS"
 PREFIX="/usr/local"
 QTCREATOR=0
