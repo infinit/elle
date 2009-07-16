@@ -1,9 +1,9 @@
 /*
  * ---------- header ----------------------------------------------------------
  *
- * project       infinite
+ * project       infinit
  *
- * license       GPL
+ * license       infinit (c)
  *
  * file          /home/mycure/pers...s/ucam/phd/development/sources/pig/pig.c
  *
@@ -35,7 +35,7 @@
  *
  * \return 0 for SUCCEED, errno otherwise
  */
-int			infinite_getattr(const char*		path,
+int			infinit_getattr(const char*		path,
 					 struct stat*		stat)
 {
   if (lstat(path, stat) == -1)
@@ -44,7 +44,7 @@ int			infinite_getattr(const char*		path,
   return (0);
 }
 
-int			infinite_readlink(const char*		path,
+int			infinit_readlink(const char*		path,
 					  char*			buffer,
 					  size_t		size)
 {
@@ -58,7 +58,7 @@ int			infinite_readlink(const char*		path,
   return (0);
 }
 
-int			infinite_mknod(const char*		path,
+int			infinit_mknod(const char*		path,
 				       mode_t			mode,
 				       dev_t			dev)
 {
@@ -86,7 +86,7 @@ int			infinite_mknod(const char*		path,
   return (0);
 }
 
-int			infinite_mkdir(const char*		path,
+int			infinit_mkdir(const char*		path,
 				       mode_t			mode)
 {
   if (mkdir(path, mode) == -1)
@@ -95,7 +95,7 @@ int			infinite_mkdir(const char*		path,
   return (0);
 }
 
-int			infinite_unlink(const char*		path)
+int			infinit_unlink(const char*		path)
 {
   if (unlink(path) == -1)
     return (-errno);
@@ -103,7 +103,7 @@ int			infinite_unlink(const char*		path)
   return (0);
 }
 
-int			infinite_rmdir(const char*		path)
+int			infinit_rmdir(const char*		path)
 {
   if (rmdir(path) == -1)
     return (-errno);
@@ -111,7 +111,7 @@ int			infinite_rmdir(const char*		path)
   return (0);
 }
 
-int			infinite_symlink(const char*		from,
+int			infinit_symlink(const char*		from,
 					 const char*		to)
 {
   if (symlink(from, to) == -1)
@@ -120,7 +120,7 @@ int			infinite_symlink(const char*		from,
   return (0);
 }
 
-int			infinite_rename(const char*		from,
+int			infinit_rename(const char*		from,
 					const char*		to)
 {
   if (rename(from, to) == -1)
@@ -129,7 +129,7 @@ int			infinite_rename(const char*		from,
   return (0);
 }
 
-int			infinite_link(const char*		from,
+int			infinit_link(const char*		from,
 				      const char*		to)
 {
   if (link(from, to) == -1)
@@ -138,7 +138,7 @@ int			infinite_link(const char*		from,
   return (0);
 }
 
-int			infinite_chmod(const char*		path,
+int			infinit_chmod(const char*		path,
 				       mode_t			mode)
 {
   if (chmod(path, mode) == -1)
@@ -147,7 +147,7 @@ int			infinite_chmod(const char*		path,
   return (0);
 }
 
-int			infinite_chown(const char*		path,
+int			infinit_chown(const char*		path,
 				       uid_t			uid,
 				       gid_t			gid)
 {
@@ -157,7 +157,7 @@ int			infinite_chown(const char*		path,
   return (0);
 }
 
-int			infinite_truncate(const char*		path,
+int			infinit_truncate(const char*		path,
 					  off_t			size)
 {
   if (truncate(path, size) == -1)
@@ -166,7 +166,7 @@ int			infinite_truncate(const char*		path,
   return (0);
 }
 
-int			infinite_utime(const char*		path,
+int			infinit_utime(const char*		path,
 				       struct utimbuf*		buffer)
 {
   if (utime(path, buffer) == -1)
@@ -175,7 +175,7 @@ int			infinite_utime(const char*		path,
   return (0);
 }
 
-int			infinite_open(const char*		path,
+int			infinit_open(const char*		path,
 				      struct fuse_file_info*	info)
 {
   int			fd;
@@ -188,7 +188,7 @@ int			infinite_open(const char*		path,
   return (0);
 }
 
-int			infinite_read(const char*		path,
+int			infinit_read(const char*		path,
 				      char*			buffer,
 				      size_t			size,
 				      off_t			offset,
@@ -211,7 +211,7 @@ int			infinite_read(const char*		path,
   return (0);
 }
 
-int			infinite_write(const char*		path,
+int			infinit_write(const char*		path,
 				       const char*		buffer,
 				       size_t			size,
 				       off_t			offset,
@@ -234,7 +234,7 @@ int			infinite_write(const char*		path,
   return (0);
 }
 
-int			infinite_statfs(const char*		path,
+int			infinit_statfs(const char*		path,
 					struct statvfs*		stat)
 {
   if (statvfs(path, stat) == -1)
@@ -243,7 +243,7 @@ int			infinite_statfs(const char*		path,
   return (0);
 }
 
-int			infinite_flush(const char*		path,
+int			infinit_flush(const char*		path,
 				       struct fuse_file_info*	info)
 {
   /*
@@ -255,7 +255,7 @@ int			infinite_flush(const char*		path,
   return (0);
 }
 
-int			infinite_release(const char*		path,
+int			infinit_release(const char*		path,
 					 struct fuse_file_info*	info)
 {
   /*
@@ -267,7 +267,7 @@ int			infinite_release(const char*		path,
   return (0);
 }
 
-int			infinite_fsync(const char*		path,
+int			infinit_fsync(const char*		path,
 				       int			synchronised,
 				       struct fuse_file_info*	info)
 {
@@ -280,7 +280,7 @@ int			infinite_fsync(const char*		path,
   return (0);
 }
 
-int			infinite_setxattr(const char*		path,
+int			infinit_setxattr(const char*		path,
 					  const char*		name,
 					  const char*		value,
 					  size_t		size,
@@ -292,7 +292,7 @@ int			infinite_setxattr(const char*		path,
   return (0);
 }
 
-int			infinite_getxattr(const char*		path,
+int			infinit_getxattr(const char*		path,
 					  const char*		name,
 					  char*			value,
 					  size_t		size)
@@ -303,7 +303,7 @@ int			infinite_getxattr(const char*		path,
   return (0);
 }
 
-int			infinite_listxattr(const char*		path,
+int			infinit_listxattr(const char*		path,
 					   char*		list,
 					   size_t		size)
 {
@@ -313,7 +313,7 @@ int			infinite_listxattr(const char*		path,
   return (0);
 }
 
-int			infinite_removexattr(const char*	path,
+int			infinit_removexattr(const char*	path,
 					     const char*	name)
 {
   if (lremovexattr(path, name) == -1)
@@ -322,7 +322,7 @@ int			infinite_removexattr(const char*	path,
   return (0);
 }
 
-int			infinite_opendir(const char*		path,
+int			infinit_opendir(const char*		path,
 					 struct fuse_file_info*	info)
 {
   DIR*			handle;
@@ -335,7 +335,7 @@ int			infinite_opendir(const char*		path,
   return (0);
 }
 
-int			infinite_readdir(const char*		path,
+int			infinit_readdir(const char*		path,
 					 void*			buffer,
 					 fuse_fill_dir_t	filler,
 					 off_t			offset,
@@ -365,7 +365,7 @@ int			infinite_readdir(const char*		path,
   return (0);
 }
 
-int			infinite_releasedir(const char*		path,
+int			infinit_releasedir(const char*		path,
 					    struct fuse_file_info* info)
 {
   /*
@@ -375,7 +375,7 @@ int			infinite_releasedir(const char*		path,
   return (0);
 }
 
-int			infinite_fsyncdir(const char*		path,
+int			infinit_fsyncdir(const char*		path,
 					  int			synchronised,
 					  struct fuse_file_info* info)
 {
@@ -386,7 +386,7 @@ int			infinite_fsyncdir(const char*		path,
   return (0);
 }
 
-void*		infinite_init(struct fuse_conn_info*	info)
+void*		infinit_init(struct fuse_conn_info*	info)
 {
   /*
    * XXX
@@ -395,14 +395,14 @@ void*		infinite_init(struct fuse_conn_info*	info)
   return (NULL);
 }
 
-void		infinite_destroy(void*			data)
+void		infinit_destroy(void*			data)
 {
   /*
    * XXX
    */
 }
 
-int			infinite_access(const char*		path,
+int			infinit_access(const char*		path,
 					int			mask)
 {
   if (access(path, mask) == -1)
@@ -411,7 +411,7 @@ int			infinite_access(const char*		path,
   return (0);
 }
 
-int			infinite_create(const char*		path,
+int			infinit_create(const char*		path,
 					mode_t			mode,
 					struct fuse_file_info*	info)
 {
@@ -422,7 +422,7 @@ int			infinite_create(const char*		path,
   return (0);
 }
 
-int			infinite_ftruncate(const char*		path,
+int			infinit_ftruncate(const char*		path,
 					   off_t		offset,
 					   struct fuse_file_info* info)
 {
@@ -432,7 +432,7 @@ int			infinite_ftruncate(const char*		path,
   return (0);
 }
 
-int			infinite_fgetattr(const char*		path,
+int			infinit_fgetattr(const char*		path,
 					  struct stat*		stat,
 					  struct fuse_file_info* info)
 {
@@ -443,7 +443,7 @@ int			infinite_fgetattr(const char*		path,
   return (0);
 }
 
-int			infinite_lock(const char*		path,
+int			infinit_lock(const char*		path,
 				      struct fuse_file_info*	info,
 				      int			cmd,
 				      struct flock*		lock)
@@ -455,7 +455,7 @@ int			infinite_lock(const char*		path,
   return (0);
 }
 
-int			infinite_utimens(const char*		path,
+int			infinit_utimens(const char*		path,
 					 const struct timespec	ts[2])
 {
   struct timeval	tv[2];
@@ -471,7 +471,7 @@ int			infinite_utimens(const char*		path,
   return (0);
 }
 
-int			infinite_bmap(const char*		path,
+int			infinit_bmap(const char*		path,
 				      size_t			block,
 				      uint64_t*			index)
 {
@@ -487,45 +487,45 @@ int			infinite_bmap(const char*		path,
  */
 
 // [XXX] retoucher ce tableau
-static struct fuse_operations infinite_operations =
+static struct fuse_operations infinit_operations =
   {
-    .getattr = infinite_getattr,
-    .readlink = infinite_readlink,
-    .mknod = infinite_mknod,
-    .mkdir = infinite_mkdir,
-    .unlink = infinite_unlink,
-    .rmdir = infinite_rmdir,
-    .symlink = infinite_symlink,
-    .rename = infinite_rename,
-    .link = infinite_link,
-    .chmod = infinite_chmod,
-    .chown = infinite_chown,
-    .truncate = infinite_truncate,
-    .utime = infinite_utime,
-    .open = infinite_open,
-    .read = infinite_read,
-    .write = infinite_write,
-    .statfs = infinite_statfs,
-    .flush = infinite_flush,
-    .release = infinite_release,
-    .fsync = infinite_fsync,
-    .setxattr = infinite_setxattr,
-    .getxattr = infinite_getxattr,
-    .listxattr = infinite_listxattr,
-    .removexattr = infinite_removexattr,
-    .opendir = infinite_opendir,
-    .readdir = infinite_readdir,
-    .releasedir = infinite_releasedir,
-    .fsyncdir = infinite_fsyncdir,
-    .init = infinite_init,
-    .destroy = infinite_destroy,
-    .access = infinite_access,
-    .create = infinite_create,
-    .ftruncate = infinite_ftruncate,
-    .fgetattr = infinite_fgetattr,
-    .lock = infinite_lock,
-    .utimens = infinite_utimens,
-    .bmap = infinite_bmap
+    .getattr = infinit_getattr,
+    .readlink = infinit_readlink,
+    .mknod = infinit_mknod,
+    .mkdir = infinit_mkdir,
+    .unlink = infinit_unlink,
+    .rmdir = infinit_rmdir,
+    .symlink = infinit_symlink,
+    .rename = infinit_rename,
+    .link = infinit_link,
+    .chmod = infinit_chmod,
+    .chown = infinit_chown,
+    .truncate = infinit_truncate,
+    .utime = infinit_utime,
+    .open = infinit_open,
+    .read = infinit_read,
+    .write = infinit_write,
+    .statfs = infinit_statfs,
+    .flush = infinit_flush,
+    .release = infinit_release,
+    .fsync = infinit_fsync,
+    .setxattr = infinit_setxattr,
+    .getxattr = infinit_getxattr,
+    .listxattr = infinit_listxattr,
+    .removexattr = infinit_removexattr,
+    .opendir = infinit_opendir,
+    .readdir = infinit_readdir,
+    .releasedir = infinit_releasedir,
+    .fsyncdir = infinit_fsyncdir,
+    .init = infinit_init,
+    .destroy = infinit_destroy,
+    .access = infinit_access,
+    .create = infinit_create,
+    .ftruncate = infinit_ftruncate,
+    .fgetattr = infinit_fgetattr,
+    .lock = infinit_lock,
+    .utimens = infinit_utimens,
+    .bmap = infinit_bmap
 };
 
 /*
@@ -539,7 +539,7 @@ int			 main(int				argc,
 
   // [XXX] handle options and build a specific argv
 
-  if (fuse_main(2, argv, &infinite_operations, NULL) != 0)
+  if (fuse_main(2, argv, &infinit_operations, NULL) != 0)
     return (1);
 
   return (0);

@@ -1,11 +1,11 @@
 /*
  * ---------- header ----------------------------------------------------------
  *
- * project       infinite
+ * project       infinit
  *
- * license       GPL
+ * license       infinit (c)
  *
- * file          /home/mycure/infinite/sources/pig/pig.h
+ * file          /home/mycure/infinit/sources/pig/pig.h
  *
  * created       julien quintard   [mon oct 22 12:27:48 2007]
  * updated       julien quintard   [wed nov 14 11:29:19 2007]
