@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/infinit/components/Access.cc
 //
@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <core/components/Access.hh>
+#include <etoile/components/Access.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

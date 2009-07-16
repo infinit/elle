@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/infinit/components/PublicKeyBlock.cc
 //
@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <core/components/PublicKeyBlock.hh>
+#include <etoile/components/PublicKeyBlock.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

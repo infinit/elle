@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/infinit/components/PublicKeyBlock.hh
 //
@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 11 13:33:17 2009]
 //
 
-#ifndef CORE_COMPONENTS_PUBLICKEYBLOCK_HH
-#define CORE_COMPONENTS_PUBLICKEYBLOCK_HH
+#ifndef ETOILE_COMPONENTS_PUBLICKEYBLOCK_HH
+#define ETOILE_COMPONENTS_PUBLICKEYBLOCK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <core/components/Block.hh>
+#include <etoile/components/Block.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

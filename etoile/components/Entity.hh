@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/infinit/components/Entity.hh
 //
@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 11 16:55:50 2009]
 //
 
-#ifndef CORE_COMPONENTS_ENTITY_HH
-#define CORE_COMPONENTS_ENTITY_HH
+#ifndef ETOILE_COMPONENTS_ENTITY_HH
+#define ETOILE_COMPONENTS_ENTITY_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,10 +20,10 @@
 
 #include <elle/Elle.hh>
 
-#include <core/components/PublicKeyBlock.hh>
-#include <core/components/Access.hh>
+#include <etoile/components/PublicKeyBlock.hh>
+#include <etoile/components/Access.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

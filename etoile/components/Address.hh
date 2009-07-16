@@ -3,16 +3,16 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
-// file          /home/mycure/infinit/core/components/Address.hh
+// file          /data/mycure/repositories/infinit/core/components/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [thu jul 16 01:12:33 2009]
+// updated       julien quintard   [thu jul 16 11:38:06 2009]
 //
 
-#ifndef CORE_COMPONENTS_ADDRESS_HH
-#define CORE_COMPONENTS_ADDRESS_HH
+#ifndef ETOILE_COMPONENTS_ADDRESS_HH
+#define ETOILE_COMPONENTS_ADDRESS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,7 +22,7 @@
 
 #include <ostream>
 
-namespace core
+namespace etoile
 {
   namespace components
   {
@@ -99,7 +99,7 @@ namespace core
 namespace std
 {
   std::ostream&		operator<<(std::ostream&,
-				   const core::components::Address&);
+				   const etoile::components::Address&);
 }
 
 #endif

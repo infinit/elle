@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/infinit/components/Access.hh
 //
@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 11 16:57:05 2009]
 //
 
-#ifndef CORE_COMPONENTS_ACCESS_HH
-#define CORE_COMPONENTS_ACCESS_HH
+#ifndef ETOILE_COMPONENTS_ACCESS_HH
+#define ETOILE_COMPONENTS_ACCESS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,11 +20,11 @@
 
 #include <elle/Elle.hh>
 
-#include <core/components/ContentHashBlock.hh>
+#include <etoile/components/ContentHashBlock.hh>
 
 #include <vector>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/infinit/components/Entity.cc
 //
@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <core/components/Entity.hh>
+#include <etoile/components/Entity.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

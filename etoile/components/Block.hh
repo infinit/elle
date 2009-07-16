@@ -3,16 +3,16 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
-// file          /home/mycure/infinit/core/components/Block.hh
+// file          /data/mycure/repositories/infinit/core/components/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [thu jul 16 01:12:17 2009]
+// updated       julien quintard   [thu jul 16 11:37:56 2009]
 //
 
-#ifndef CORE_COMPONENTS_BLOCK_HH
-#define CORE_COMPONENTS_BLOCK_HH
+#ifndef ETOILE_COMPONENTS_BLOCK_HH
+#define ETOILE_COMPONENTS_BLOCK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <core/components/Address.hh>
+#include <etoile/components/Address.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {
@@ -99,7 +99,7 @@ namespace core
 namespace std
 {
   std::ostream&		operator<<(std::ostream&,
-				   const core::components::Block&);
+				   const etoile::components::Block&);
 }
 
 #endif

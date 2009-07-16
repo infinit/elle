@@ -3,21 +3,21 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
-// file          /home/mycure/infinit/core/components/Block.cc
+// file          /data/mycure/repositories/infinit/core/components/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [thu jul 16 01:12:08 2009]
+// updated       julien quintard   [thu jul 16 11:37:47 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <core/components/Block.hh>
+#include <etoile/components/Block.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {
@@ -190,7 +190,7 @@ namespace std
   /// this function displays a block.
   ///
   std::ostream&		operator<<(std::ostream&		stream,
-				   const core::components::Block& element)
+				   const etoile::components::Block& element)
   {
     stream << element.address;
 

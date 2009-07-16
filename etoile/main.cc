@@ -1,8 +1,8 @@
 #include <elle/Elle.hh>
-#include <core/components/Components.hh>
+#include <etoile/components/Components.hh>
 
-using namespace core;
-using namespace core::components;
+using namespace etoile;
+using namespace etoile::components;
 
 int main()
 {

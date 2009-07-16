@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // file          /home/mycure/infinit/infinit/components/Components.hh
 //
@@ -11,8 +11,8 @@
 // updated       julien quintard   [sun mar  8 15:31:40 2009]
 //
 
-#ifndef CORE_COMPONENTS_COMPONENTS_HH
-#define CORE_COMPONENTS_COMPONENTS_HH
+#ifndef ETOILE_COMPONENTS_COMPONENTS_HH
+#define ETOILE_COMPONENTS_COMPONENTS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,12 +21,12 @@
 #include <elle/core/Core.hh>
 
 // XXX
-#include <core/components/Address.hh>
-#include <core/components/Block.hh>
-#include <core/components/ContentHashBlock.hh>
-#include <core/components/Directory.hh>
-#include <core/components/Entity.hh>
-#include <core/components/File.hh>
-#include <core/components/PublicKeyBlock.hh>
+#include <etoile/components/Address.hh>
+#include <etoile/components/Block.hh>
+#include <etoile/components/ContentHashBlock.hh>
+#include <etoile/components/Directory.hh>
+#include <etoile/components/Entity.hh>
+#include <etoile/components/File.hh>
+#include <etoile/components/PublicKeyBlock.hh>
 
 #endif

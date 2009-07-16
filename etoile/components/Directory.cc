@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // directory          /home/mycure/infinit/infinit/components/Directory.cc
 //
@@ -15,9 +15,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <core/components/Directory.hh>
+#include <etoile/components/Directory.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

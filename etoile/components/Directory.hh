@@ -3,7 +3,7 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
 // directory          /home/mycure/infinit/infinit/components/Directory.hh
 //
@@ -11,8 +11,8 @@
 // updated       julien quintard   [sun mar  8 15:30:57 2009]
 //
 
-#ifndef CORE_COMPONENTS_DIRECTORY_HH
-#define CORE_COMPONENTS_DIRECTORY_HH
+#ifndef ETOILE_COMPONENTS_DIRECTORY_HH
+#define ETOILE_COMPONENTS_DIRECTORY_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <core/components/Entity.hh>
+#include <etoile/components/Entity.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {

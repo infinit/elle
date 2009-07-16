@@ -3,21 +3,21 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
-// file          /home/mycure/infinit/core/components/Address.cc
+// file          /data/mycure/repositories/infinit/core/components/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jul 16 01:13:08 2009]
+// updated       julien quintard   [thu jul 16 11:38:13 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <core/components/Address.hh>
+#include <etoile/components/Address.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {
@@ -255,7 +255,7 @@ namespace std
   /// this function displays an address.
   ///
   std::ostream&		operator<<(std::ostream&		stream,
-				   const core::components::Address& element)
+				   const etoile::components::Address& element)
   {
     if (element.digest != NULL)
       stream << *element.digest;

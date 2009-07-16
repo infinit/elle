@@ -3,21 +3,21 @@
 //
 // project       infinit
 //
-// license       GPL
+// license       infinit (c)
 //
-// file          /home/mycure/infinit/core/components/ContentHashBlock.cc
+// file          /data/mycure/repo...init/core/components/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jul 16 01:13:00 2009]
+// updated       julien quintard   [thu jul 16 11:38:23 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <core/components/ContentHashBlock.hh>
+#include <etoile/components/ContentHashBlock.hh>
 
-namespace core
+namespace etoile
 {
   namespace components
   {
@@ -200,7 +200,7 @@ namespace std
   /// this function displays a content hash block.
   ///
   std::ostream&		operator<<(std::ostream&		stream,
-				   const core::components::ContentHashBlock& element)
+				   const etoile::components::ContentHashBlock& element)
   {
     elle::archive::Archive	archive;
     elle::crypto::Digest	digest;
