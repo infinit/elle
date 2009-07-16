@@ -1,0 +1,186 @@
+#! /bin/sh
+
+ROOTDIR="$PWD"
+BUILDDIR=build
+VERBOSE=OFF
+COLOR=ON
+CCACHE=ON
+DEBUG=1
+MAKEOPT="--quiet -j$(($(grep processor /proc/cpuinfo | wc -l) + 1))"
+CPPFLAGS="$CPPFLAGS -DYYENABLE_NLS=1 -DENABLE_NLS=1"
+CFLAGS="$CFLAGS -W -Wall -Wstrict-prototypes -pipe"
+CFLAGS="$CFLAGS -Wfloat-equal -Wundef -Wshadow -Wpointer-arith"
+CFLAGS="$CFLAGS -Wmissing-declarations -Wnested-externs"
+CFLAGS="$CFLAGS -Wmissing-prototypes -fPIC"
+CXXFLAGS="$CXXFLAGS -W -Wall -pipe -Wundef -Wshadow -Wpointer-arith -Wabi -std=c++0x -fPIC"
+LDFLAGS="$LDFLAGS"
+PREFIX="/usr/local"
+QTCREATOR=0
+DOXYGEN=doxygen
+BOOST_LIB_SUFFIX=""
+
+function usage()
+{
+    echo -n "usage: $0
+  --verbose		verbose Makefiles
+  --no-color		no colors
+  --release		disable debug
+  --debug		enables debug
+  --qt-creator          generate build dir for qt-creator
+  --doxygen=<path>      specify which binary use for doxygen
+  --boost-lib-suffix=<suffix>
+
+  --builddir=<dir>      the build directory
+  --prefix=<dir>        the installation prefix path
+  --bindir=<dir>        the installation binary path
+  --libdir=<dir>        the installation library path
+  --plugindir=<dir>     the installation plugin path
+  --local=<dir>         the installation locale path
+"
+    exit
+}
+
+function update_install_path()
+{
+    eval 'if [[ -z "$'"$1"'" ]] ; then
+        '"$1"'="${PREFIX}/$2"
+    fi'
+}
+
+until [[ $# -eq 0 ]] ;
+do
+    case "$1" in
+        --verbose)
+            VERBOSE=ON
+            MAKEOPT="$(echo $MAKEOPT | sed s,--quiet,,g)"
+            ;;
+        --no-color)
+            COLOR=OFF
+            ;;
+	--release)
+	    DEBUG=0
+	    ;;
+	--debug)
+	    DEBUG=1
+	    ;;
+	--ccache)
+	    CCACHE=ON
+	    ;;
+	--no-ccache)
+	    CCACHE=OFF
+	    ;;
+        --qt-creator)
+            QTCREATOR=1
+            ;;
+	--doxygen=*)
+	    DOXYGEN="${1/--doxygen=/}"
+            ;;
+	--boost-lib-suffix=*)
+	    BOOST_LIB_SUFFIX="${1/--boost-lib-suffix=/}"
+            ;;
+	--build-dir=*)
+	    BUILDDIR="${1/--build-dir=/}"
+            ;;
+        --prefix=*)
+            PREFIX="${1/--prefix=/}"
+            ;;
+        --libdir=*)
+            LIBDIR="${1/--libdir=/}"
+            ;;
+        --plugindir=*)
+            PLUGINDIR="${1/--plugindir=/}"
+            ;;
+        --bindir=*)
+            BINDIR="${1/--bindir=/}"
+            ;;
+        --localedir=*)
+            LOCALEDIR="${1/--localedir=/}"
+            ;;
+	-h|--help|help)
+	    usage
+	    ;;
+	*)
+            echo wrong argument "$1"
+	    usage
+	    ;;
+    esac
+    shift
+done
+
+update_install_path LIBDIR lib
+update_install_path PLUGINDIR lib/infinit
+update_install_path BINDIR bin
+update_install_path LOCALEDIR share/locale
+
+if ! which ccache 2>&1 >/dev/null; then
+    CCACHE=OFF
+fi
+
+if [[ $DEBUG -eq 0 ]]; then
+    CFLAGS="$CFLAGS -DNDEBUG -O2 -fomit-frame-pointer -ftree-vectorize"
+    CXXFLAGS="$CXXFLAGS -DNDEBUG -O2 -fomit-frame-pointer -ftree-vectorize"
+else
+    CFLAGS="$CFLAGS -ggdb3"
+    CXXFLAGS="$CXXFLAGS -ggdb3"
+fi
+
+if [[ $CCACHE = "ON" ]] ; then
+    mkdir -p .ccache
+    ln -sf "$(which ccache)" .ccache/g++
+    ln -sf "$(which ccache)" .ccache/gcc
+    export CC="$PWD/.ccache/gcc"
+    export CXX="$PWD/.ccache/g++"
+fi
+
+if [[ $QTCREATOR -eq 1 ]] ; then
+    CMAKE_GENERATOR="-GCodeBlocks - Unix Makefiles"
+else
+    CMAKE_GENERATOR="-GUnix Makefiles"
+fi
+
+CPPFLAGS="${CPPFLAGS} -include ${ROOTDIR}/src/config.hh"
+CFLAGS="${CPPFLAGS} ${CFLAGS}"
+CXXFLAGS="${CPPFLAGS} ${CXXFLAGS}"
+
+cat >config.hh <<EOF
+#ifndef CONFIG_HH
+# define CONFIG_HH
+
+# include <libintl.h>
+
+# define INFINIT_BINDIR          "${BINDIR}"
+# define INFINIT_BINARY          "${BINDIR}/infinit"
+# define INFINIT_LIBDIR          "${LIBDIR}"
+# define INFINIT_LOCALEDIR       "${LOCALEDIR}"
+# define INFINIT_PLUGINDIR       "${PLUGINDIR}"
+# define INFINIT_PREFIX          "${PREFIX}"
+
+# ifdef _
+#  undef _
+# endif
+# define _(Str)                 gettext(Str)
+
+#endif /* !CONFIG_HH */
+EOF
+
+export CPPFLAGS
+export CFLAGS
+export CXXFLAGS
+export LDFLAGS
+rm -rf "$BUILDDIR"
+mkdir "$BUILDDIR" &&
+cd "$BUILDDIR" &&
+cmake "$CMAKE_GENERATOR" "$ROOTDIR"
+cmake \
+    -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE \
+    -DCMAKE_COLOR_MAKEFILE=$COLOR \
+    -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+    -DBOOST_LIB_SUFFIX="$BOOST_LIB_SUFFIX" \
+    .
+
+cd "$ROOTDIR" &&
+cat >config.mk <<EOF
+BUILDDIR=$BUILDDIR
+MAKEOPT=$MAKEOPT
+DOXYGEN=$DOXYGEN
+EOF
