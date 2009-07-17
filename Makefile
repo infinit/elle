@@ -2,7 +2,7 @@ all:
 
 BUILDDIR = build
 MAKEOPT = --quiet
-GIT_REPO = git@repositories.i.nfin.it:/data/git/mycure/repositories
+GIT_REPO = git@repositories.i.nfin.it:
 
 -include config.mk
 
