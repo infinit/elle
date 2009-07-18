@@ -21,3 +21,4 @@ Report doit etre thread-safe: compiler avec -DREENTRANT
 * pthread_setspecific()--Set Thread Local Storage by Key 
 
  http://en.wikipedia.org/wiki/Thread-Local_Storage
+suce
