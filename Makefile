@@ -41,6 +41,7 @@ help:
 	@echo "pull             will pull or clone the repository"
 
 pull:
+	git pull
 	for i in agent etoile elle hole pig; \
 do \
   if [[ -d $$i ]] ; then \
