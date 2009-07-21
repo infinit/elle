@@ -10,6 +10,8 @@ namespace hole
   class Node : public QObject
   {
   public:
+    virtual ~Node();
+
     Key          key;
     QHostAddress address;
     quint16      port;
