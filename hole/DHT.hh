@@ -12,6 +12,9 @@ namespace hole
     Q_OBJECT;
 
   public:
+    DHT(QObject * parent = 0);
+    ~DHT();
+
     void Get(const Key & key);
     void Put(const Key & key, const QByteArray & data);
     void Bootstrap(const QHostAddress & address, quint16 port);
