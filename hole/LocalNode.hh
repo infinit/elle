@@ -1,12 +1,24 @@
 #ifndef HOLE_LOCAL_NODE_HH
 # define HOLE_LOCAL_NODE_HH
 
+# include <QTcpServer>
+
 # include "hole/Node.hh"
 
 namespace hole
 {
   class LocalNode : public Node
   {
+    Q_OBJECT;
+
+  public:
+    LocalNode(DHT & dht);
+
+  protected slots:
+    void IncomingConnection();
+
+  private:
+    QTcpServer server_;
   };
 }
 

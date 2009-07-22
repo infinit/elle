@@ -8,8 +8,15 @@
 
 namespace hole
 {
-  class RemoteNode : public Node, FreeList<RemoteNode>
+  class RemoteNode : public Node,
+                     public FreeList<RemoteNode>
   {
+    Q_OBJECT;
+
+  public:
+    RemoteNode(DHT & dht);
+
+  private:
     QTcpSocket socket;
   };
 }

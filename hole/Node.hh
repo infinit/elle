@@ -7,14 +7,18 @@
 
 namespace hole
 {
+  class DHT;
+
   class Node : public QObject
   {
   public:
+    Node(DHT & dht);
     virtual ~Node();
 
-    Key          key;
-    QHostAddress address;
-    quint16      port;
+    DHT &        dht_;
+    Key          key_;
+    QHostAddress address_;
+    quint16      port_;
   };
 }
 

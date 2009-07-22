@@ -1,14 +1,16 @@
 PROJECT(Hole CXX)
 
 QT4_WRAP_CPP(Hole_MOCS
-  DHT.hh)
+  DHT.hh
+  LocalNode.hh
+  RemoteNode.hh)
 
 ADD_LIBRARY(hole
   DHT.cc DHT.hh
   FreeList.hh FreeList.hxx
   Key.hh
-  Node.hh
-  LocalNode.hh
+  Node.cc Node.hh
+  LocalNode.cc LocalNode.hh
   RemoteNode.hh
 
   ${Hole_MOCS})

@@ -3,21 +3,21 @@
 namespace hole
 {
   template <class T>
-  T * FreeList<T>::freelist = 0;
+  T * FreeList<T>::freelist_ = 0;
 
   template <class T>
   FreeList<T>::FreeList()
-    : freelistNext(0)
+    : freelistNext_(0)
   {
   }
 
   template <class T>
   void * FreeList<T>::operator new(size_t size)
   {
-    if (!freelist)
+    if (!freelist_)
       return ::malloc (size);
-    T * item = freelist;
-    freelist = item->freelistNext;
+    T * item = freelist_;
+    freelist_ = item->freelistNext_;
     return item;
   }
 
@@ -25,10 +25,10 @@ namespace hole
   template <class T>
   void * FreeList<T>::operator new(size_t size, const T *)
   {
-    if (!freelist)
+    if (!freelist_)
       return ::malloc (size);
-    T * item = freelist;
-    freelist = item->freelistNext;
+    T * item = freelist_;
+    freelist_ = item->freelistNext_;
     return item;
   }
 
@@ -36,7 +36,7 @@ namespace hole
   void FreeList<T>::operator delete(void * p)
   {
     T * item = reinterpret_cast<T *> (p);
-    item->freelistNext = freelist;
-    freelist = item;
+    item->freelistNext_ = freelist_;
+    freelist_ = item;
   }
 }

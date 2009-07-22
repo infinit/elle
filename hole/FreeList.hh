@@ -16,8 +16,8 @@ namespace hole
     void operator delete(void * p);
 
   private:
-    static T * freelist;
-    T * freelistNext;
+    static T * freelist_;
+    T * freelistNext_;
   };
 }
 

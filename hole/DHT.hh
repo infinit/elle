@@ -17,23 +17,27 @@ namespace hole
 
     void Get(const Key & key);
     void Put(const Key & key, const QByteArray & data);
-    void Bootstrap(const QHostAddress & address, quint16 port);
+    void Join(const QHostAddress & address, quint16 port);
+    void Create();
 
   public slots:
     void Disconnect();
-    void NodeDisconnected(Node * node);
 
   signals:
-    void BootstrapSucceed();
-    void BootstrapFailed();
+    void JoinSucceed();
+    void JoinFailed();
+
+    void Disconnected();
+    void NodeDisconnected(Node * node);
+
     void GetSucceed(const Key & key, const QByteArray & data);
     void GetFailed(const Key & key);
     void PutSucceed(const Key & key);
     void PutFailed(const Key & key);
 
   private:
-    LocalNode         localNode;
-    QMap<Key, Node *> nodes;
+    LocalNode         localNode_;
+    QMap<Key, Node *> nodes_;
   };
 }
 
