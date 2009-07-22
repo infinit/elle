@@ -12,6 +12,7 @@ namespace hole
     FreeList();
 
     void * operator new(size_t size);
+    void * operator new(size_t size, const T *);
     void operator delete(void * p);
 
   private:

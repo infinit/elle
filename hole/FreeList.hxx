@@ -21,6 +21,17 @@ namespace hole
     return item;
   }
 
+  // Be carefull of this one
+  template <class T>
+  void * FreeList<T>::operator new(size_t size, const T *)
+  {
+    if (!freelist)
+      return ::malloc (size);
+    T * item = freelist;
+    freelist = item->freelistNext;
+    return item;
+  }
+
   template <class T>
   void FreeList<T>::operator delete(void * p)
   {
