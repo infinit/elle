@@ -2,8 +2,8 @@
 
 namespace hole
 {
-  DHT::DHT(QObject * parent)
-    : QObject(parent),
+  DHT::DHT(QObject * p)
+    : QObject(p),
       localNode(),
       nodes()
   {

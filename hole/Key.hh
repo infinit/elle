@@ -1,9 +1,11 @@
 #ifndef HOLE_KEY_HH
 # define HOLE_KEY_HH
 
+# include "hole/FreeList.hh"
+
 namespace hole
 {
-  class Key
+  class Key : public FreeList<Key>
   {
   };
 }
