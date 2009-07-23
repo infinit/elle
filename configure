@@ -35,7 +35,8 @@ function usage()
   --bindir=<dir>        the installation binary path
   --libdir=<dir>        the installation library path
   --plugindir=<dir>     the installation plugin path
-  --local=<dir>         the installation locale path
+  --localedir=<dir>     the installation locale path
+  --includedir=<dir>    the installation include path
 "
     exit
 }
@@ -96,6 +97,9 @@ do
         --localedir=*)
             LOCALEDIR="${1/--localedir=/}"
             ;;
+        --includedir=*)
+            INCLUDEDIR="${1/--includedir=/}"
+            ;;
 	-h|--help|help)
 	    usage
 	    ;;
@@ -111,6 +115,7 @@ update_install_path LIBDIR lib
 update_install_path PLUGINDIR lib/infinit
 update_install_path BINDIR bin
 update_install_path LOCALEDIR share/locale
+update_install_path INCLUDEDIR include
 
 if ! which ccache 2>&1 >/dev/null; then
     CCACHE=OFF
@@ -153,6 +158,7 @@ cat >config.hh <<EOF
 # define INFINIT_LIBDIR          "${LIBDIR}"
 # define INFINIT_LOCALEDIR       "${LOCALEDIR}"
 # define INFINIT_PLUGINDIR       "${PLUGINDIR}"
+# define INFINIT_INCLUDEDIR      "${INCLUDEDIR}"
 # define INFINIT_PREFIX          "${PREFIX}"
 
 # ifdef _
@@ -170,13 +176,18 @@ export LDFLAGS
 rm -rf "$BUILDDIR"
 mkdir "$BUILDDIR" &&
 cd "$BUILDDIR" &&
-cmake "$CMAKE_GENERATOR" "$ROOTDIR"
 cmake \
     -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE \
     -DCMAKE_COLOR_MAKEFILE=$COLOR \
     -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+    -DINFINIT_LIBDIR="$LIBDIR" \
+    -DINFINIT_BINDIR="$BINDIR" \
+    -DINFINIT_LOCALEDIR="$LOCALEDIR" \
+    -DINFINIT_INCLUDEDIR="$INCLUDEDIR" \
+    -DINFINIT_PLUGINDIR="$PLUGINDIR" \
+    -DINFINIT_PREFIXDIR="$PREFIXDIR" \
     -DBOOST_LIB_SUFFIX="$BOOST_LIB_SUFFIX" \
-    .
+    "$CMAKE_GENERATOR" "$ROOTDIR"
 
 cd "$ROOTDIR" &&
 cat >config.mk <<EOF
