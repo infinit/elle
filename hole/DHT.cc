@@ -28,6 +28,18 @@ namespace hole
   }
 
   void
+  DHT::Create()
+  {
+    // TODO
+  }
+
+  void
+  DHT::Join(const QHostAddress & /*address*/, quint16 /*port*/)
+  {
+    // TODO
+  }
+
+  void
   DHT::Disconnect()
   {
     // Close local socket
