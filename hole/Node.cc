@@ -4,9 +4,11 @@ namespace hole
 {
   Node::Node(DHT & dht)
     : dht_(dht),
-      key_(),
-      address_(),
-      port_()
+      key_()
+  {
+  }
+
+  Node::~Node()
   {
   }
 }

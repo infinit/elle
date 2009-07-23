@@ -16,8 +16,12 @@ namespace hole
   public:
     RemoteNode(DHT & dht);
 
+    virtual QHostAddress Address() const;
+    virtual quint16 Port() const;
+    virtual void Disconnect();
+
   private:
-    QTcpSocket socket;
+    QTcpSocket socket_;
   };
 }
 

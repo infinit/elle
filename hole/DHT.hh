@@ -20,6 +20,9 @@ namespace hole
     void Join(const QHostAddress & address, quint16 port);
     void Create();
 
+    void Port(quint16 port);
+    quint16 Port() const;
+
   public slots:
     void Disconnect();
 
