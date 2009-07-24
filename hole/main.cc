@@ -2,6 +2,7 @@
 #include <QCoreApplication>
 
 #include "hole/DHT.hh"
+#include "hole/DHTRequest.hh"
 
 int main(int argc, char **argv)
 {
@@ -19,8 +20,12 @@ int main(int argc, char **argv)
   char * HOLE_PEER_ADDR = getenv("HOLE_PEER_ADDR");
   char * HOLE_PEER_PORT = getenv("HOLE_PEER_PORT");
   if (HOLE_PEER_ADDR && HOLE_PEER_PORT)
-    dht.Join(QHostAddress(HOLE_PEER_ADDR),
-             strtol(HOLE_PEER_PORT, 0, 0));
+  {
+    hole::DHTJoinRequest * jrq = new hole::DHTJoinRequest;
+    jrq->address = QHostAddress(HOLE_PEER_ADDR);
+    jrq->port = strtol(HOLE_PEER_PORT, 0, 0);
+    dht.Join(jrq);
+  }
   else
     dht.Create();
 

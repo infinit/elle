@@ -34,7 +34,7 @@ namespace hole
   }
 
   void
-  DHT::Join(const QHostAddress & /*address*/, quint16 /*port*/)
+  DHT::Join(DHTJoinRequest * /*request*/)
   {
     // TODO
   }
