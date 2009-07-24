@@ -1,5 +1,5 @@
-#ifndef DHTREQUEST_HH
-# define DHTREQUEST_HH
+#ifndef HOLE_DHTREQUEST_HH
+# define HOLE_DHTREQUEST_HH
 
 # include <QByteArray>
 # include <QHostAddress>
@@ -28,4 +28,4 @@ namespace hole
   };
 }
 
-#endif /* !DHTREQUEST_HH */
+#endif /* !HOLE_DHTREQUEST_HH */
