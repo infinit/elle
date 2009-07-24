@@ -7,6 +7,9 @@
 
 namespace hole
 {
+  class DHTDataRequest;
+  class DHTJoinRequest;
+
   class DHT : public QObject
   {
     Q_OBJECT;
@@ -15,13 +18,14 @@ namespace hole
     DHT(QObject * parent = 0);
     ~DHT();
 
-    void Get(const Key & key);
-    void Put(const Key & key, const QByteArray & data);
-    void Join(const QHostAddress & address, quint16 port);
-    void Create();
-
     void Port(quint16 port);
     quint16 Port() const;
+
+    void Join(DHTJoinRequest * request);
+    void Create();
+
+    void Get(DHTDataRequest * request);
+    void Put(DHTDataRequest * request);
 
   public slots:
     void Disconnect();
@@ -32,11 +36,6 @@ namespace hole
 
     void Disconnected();
     void NodeDisconnected(Node * node);
-
-    void GetSucceed(const Key & key, const QByteArray & data);
-    void GetFailed(const Key & key);
-    void PutSucceed(const Key & key);
-    void PutFailed(const Key & key);
 
   private:
     LocalNode         localNode_;
