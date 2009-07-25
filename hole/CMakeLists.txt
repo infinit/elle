@@ -25,3 +25,5 @@ TARGET_LINK_LIBRARIES(hole-test hole
   ${QT_QTCORE_LIBRARIES})
 
 ADD_EXECUTABLE(hole-freelist-test FreeListTest.cc)
+
+ADD_SUBDIRECTORY(shell-node)
