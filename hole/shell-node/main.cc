@@ -1,5 +1,8 @@
+#include "ShellApp.hh"
 
-int main()
+int main(int argc, char **argv)
 {
-  return 0;
+  ShellApp shell(argc, argv);
+
+  return shell.exec();
 }
