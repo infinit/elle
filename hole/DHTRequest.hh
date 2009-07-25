@@ -17,9 +17,9 @@ namespace hole
     virtual ~DHTRequest();
 
     /** called when the request is finished and successful */
-    virtual void done();
+    virtual void Done();
     /** called when the request failed */
-    virtual void failed();
+    virtual void Failed();
   };
 
   class DHTJoinRequest : public DHTRequest

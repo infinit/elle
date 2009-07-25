@@ -4,22 +4,28 @@ namespace hole
 {
   DHTJoinRequestHandler::DHTJoinRequestHandler(DHTJoinRequest & rq, QObject * parent)
     : QObject(parent),
-      request_(rq)
+      request_(rq),
+      socket_(new QTcpSocket)
   {
   }
 
   void
-  DHTJoinRequestHandler::connected()
+  DHTJoinRequestHandler::Join()
   {
   }
 
   void
-  DHTJoinRequestHandler::disconnected()
+  DHTJoinRequestHandler::SocketConnected()
   {
   }
 
   void
-  DHTJoinRequestHandler::error(QAbstractSocket::SocketError /*socketError*/)
+  DHTJoinRequestHandler::SocketDisconnected()
+  {
+  }
+
+  void
+  DHTJoinRequestHandler::SocketError(QAbstractSocket::SocketError /*socketError*/)
   {
   }
 }

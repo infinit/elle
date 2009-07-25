@@ -13,14 +13,14 @@ namespace hole
 
   public:
     DHTJoinRequestHandler(DHTJoinRequest & rq, QObject * parent = 0);
-    void join();
+    void Join();
 
     DHTJoinRequest & request_;
 
   protected slots:
-    void connected();
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
+    void SocketConnected();
+    void SocketDisconnected();
+    void SocketError(QAbstractSocket::SocketError socketError);
 
   protected:
     QTcpSocket * socket_;

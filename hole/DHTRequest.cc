@@ -7,12 +7,12 @@ namespace hole
   }
 
   void
-  DHTRequest::done()
+  DHTRequest::Done()
   {
   }
 
   void
-  DHTRequest::failed()
+  DHTRequest::Failed()
   {
   }
 }
