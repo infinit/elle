@@ -2,7 +2,6 @@
 
 namespace hole
 {
-  /* DHTRequest stuff */
   DHTRequest::~DHTRequest()
   {
   }
@@ -14,23 +13,6 @@ namespace hole
 
   void
   DHTRequest::failed()
-  {
-  }
-
-
-  /* DHTJoinRequest stuff */
-  void
-  DHTJoinRequest::connected()
-  {
-  }
-
-  void
-  DHTJoinRequest::disconnected()
-  {
-  }
-
-  void
-  DHTJoinRequest::error(QAbstractSocket::SocketError /*socketError*/)
   {
   }
 }

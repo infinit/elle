@@ -22,7 +22,7 @@ namespace hole
   }
 
   quint16
-      DHT::Port() const
+  DHT::Port() const
   {
     return localNode_.Port();
   }

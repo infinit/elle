@@ -11,32 +11,22 @@ namespace hole
   class DHT;
   class QTcpSocket;
 
-  class DHTRequest : public QObject
+  class DHTRequest
   {
-    friend class DHT;
-
   public:
     virtual ~DHTRequest();
+
+    /** called when the request is finished and successful */
     virtual void done();
+    /** called when the request failed */
     virtual void failed();
   };
 
   class DHTJoinRequest : public DHTRequest
   {
-    Q_OBJECT;
-
   public:
     QHostAddress address;
     quint16      port;
-
-    /* The following fields are used by the DHT */
-  protected slots:
-    void connected();
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
-
-  protected:
-    QTcpSocket * socket;
   };
 
   class DHTDataRequest : public DHTRequest

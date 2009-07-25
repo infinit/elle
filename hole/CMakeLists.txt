@@ -2,7 +2,7 @@ PROJECT(Hole CXX)
 
 QT4_WRAP_CPP(Hole_MOCS
   DHT.hh
-  DHTRequest.hh
+  DHTJoinRequestHandler.hh
   Node.hh
   LocalNode.hh
   RemoteNode.hh)
@@ -10,6 +10,7 @@ QT4_WRAP_CPP(Hole_MOCS
 ADD_LIBRARY(hole
   DHT.cc DHT.hh
   DHTRequest.cc DHTRequest.hh
+  DHTJoinRequestHandler.cc DHTJoinRequestHandler.hh
   FreeList.hh FreeList.hxx
   Key.hh
   Node.cc Node.hh
