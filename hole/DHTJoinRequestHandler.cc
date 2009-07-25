@@ -2,8 +2,8 @@
 
 namespace hole
 {
-  DHTJoinRequestHandler::DHTJoinRequestHandler(DHTJoinRequest & rq, QObject * parent)
-    : QObject(parent),
+  DHTJoinRequestHandler::DHTJoinRequestHandler(DHTJoinRequest & rq, QObject * p)
+    : QObject(p),
       request_(rq),
       socket_(new QTcpSocket)
   {

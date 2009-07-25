@@ -9,6 +9,7 @@ namespace hole
 {
   class DHTDataRequest;
   class DHTJoinRequest;
+  class DHTJoinRequestHandler;
 
   class DHT : public QObject
   {
@@ -29,6 +30,9 @@ namespace hole
 
   public slots:
     void Disconnect();
+
+  protected slots:
+    void Joined(DHTJoinRequestHandler * handler);
 
   signals:
     void JoinSucceed();

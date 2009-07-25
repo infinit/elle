@@ -17,6 +17,9 @@ namespace hole
 
     DHTJoinRequest & request_;
 
+  signals:
+    void Joined(DHTJoinRequestHandler * handler);
+
   protected slots:
     void SocketConnected();
     void SocketDisconnected();

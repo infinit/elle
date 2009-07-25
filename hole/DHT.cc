@@ -1,4 +1,7 @@
+#include <assert.h>
+
 #include "hole/DHT.hh"
+#include "hole/DHTJoinRequestHandler.hh"
 
 namespace hole
 {
@@ -34,9 +37,18 @@ namespace hole
   }
 
   void
-  DHT::Join(DHTJoinRequest * /*request*/)
+  DHT::Join(DHTJoinRequest * request)
   {
-    // TODO
+    assert(request);
+    DHTJoinRequestHandler * handler = new DHTJoinRequestHandler(*request);
+    handler->Join();
+    connect(handler, SIGNAL(Joined(DHTJoinRequestHandler *)),
+            this, SLOT(Joined(DHTJoinRequestHandler *)));
+  }
+
+  void
+  DHT::Joined(DHTJoinRequestHandler * handler)
+  {
   }
 
   void

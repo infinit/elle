@@ -14,14 +14,14 @@ namespace hole
     Q_OBJECT;
 
   public:
-    RemoteNode(DHT & dht);
+    RemoteNode(DHT & dht, QTcpSocket * socket);
 
     virtual QHostAddress Address() const;
     virtual quint16 Port() const;
     virtual void Disconnect();
 
   private:
-    QTcpSocket socket_;
+    QTcpSocket * socket_;
   };
 }
 
