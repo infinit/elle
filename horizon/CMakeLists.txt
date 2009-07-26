@@ -1,6 +1,6 @@
-PROJECT(pig C)
+PROJECT(pig CXX)
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
-ADD_EXECUTABLE(pig pig.c)
-TARGET_LINK_LIBRARIES(pig pthread rt fuse)
+ADD_EXECUTABLE(pig pig.cc)
+TARGET_LINK_LIBRARIES(pig pthread rt fuse elle etoile)
