@@ -2,7 +2,7 @@ all:
 
 BUILDDIR = build
 MAKEOPT = --quiet
-GIT_REPO = git@repositories.i.nfin.it:
+GIT_REPO = git@repositories.passeism.org:
 
 -include config.mk
 
