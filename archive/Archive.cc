@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [wed mar 11 16:08:43 2009]
+// updated       julien quintard   [sat jul 25 19:27:06 2009]
 //
 
 //
@@ -594,6 +594,8 @@ namespace elle
 
       while (this->offset != this->size)
 	{
+	  printf("[XXX] %u / %u\n", this->offset, this->size);
+
 	  Archive::Type		type;
 
 	  if (this->Fetch(type) == StatusError)
@@ -831,6 +833,7 @@ namespace elle
 
       // reinitialize the object.
       this->~Archive();
+      new (this) Archive;
 
       // prepare the archive for extraction.
       if (this->Prepare(chunk) == StatusError)

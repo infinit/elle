@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [wed mar 11 16:19:03 2009]
+// updated       julien quintard   [sat jul 25 14:16:51 2009]
 //
 
 //
@@ -39,7 +39,7 @@ namespace elle
     ///
     /// the default key pair length.
     ///
-    const Natural32		KeyPair::Default::Length = 2048;
+    const Natural32		KeyPair::Default::Length = 1024;
 
     ///
     /// the default value for the key generation context.

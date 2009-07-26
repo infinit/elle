@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [wed mar 11 15:56:58 2009]
+// updated       julien quintard   [sat jul 25 13:32:49 2009]
 //
 
 //
@@ -383,8 +383,10 @@ namespace elle
       String		shift(2, ' ');
 
       std::cout << alignment << "[PublicKey]" << std::endl;
-      std::cout << alignment << shift << "[n] " << *this->key->pkey.rsa->n << std::endl;
-      std::cout << alignment << shift << "[e] " << *this->key->pkey.rsa->e << std::endl;
+      std::cout << alignment << shift << "[n] "
+		<< *this->key->pkey.rsa->n << std::endl;
+      std::cout << alignment << shift << "[e] "
+		<< *this->key->pkey.rsa->e << std::endl;
 
       leave();
     }
