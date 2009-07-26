@@ -8,7 +8,7 @@
 // directory          /home/mycure/infinit/infinit/components/Directory.hh
 //
 // created       julien quintard   [sun mar  8 15:07:58 2009]
-// updated       julien quintard   [sun mar  8 15:30:57 2009]
+// updated       julien quintard   [thu jul 23 14:05:46 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_DIRECTORY_HH
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/components/Entity.hh>
+#include <etoile/components/Object.hh>
 
 namespace etoile
 {
@@ -32,7 +32,7 @@ namespace etoile
 //
 
     class Directory:
-      public Entity
+      public Object
     {
     public:
       //

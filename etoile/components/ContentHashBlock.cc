@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /data/mycure/repo...init/core/components/ContentHashBlock.cc
+// file          /home/mycure/infinit/etoile/components/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jul 16 11:38:23 2009]
+// updated       julien quintard   [fri jul 24 16:43:24 2009]
 //
 
 //

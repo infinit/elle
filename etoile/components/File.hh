@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/infinit/components/File.hh
+// file          /home/mycure/infinit/etoile/components/File.hh
 //
 // created       julien quintard   [sun mar  8 15:07:58 2009]
-// updated       julien quintard   [sun mar  8 15:30:51 2009]
+// updated       julien quintard   [thu jul 23 14:05:38 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_FILE_HH
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/components/Entity.hh>
+#include <etoile/components/Object.hh>
 
 namespace etoile
 {
@@ -32,7 +32,7 @@ namespace etoile
 //
 
     class File:
-      public Entity
+      public Object
     {
     public:
       //

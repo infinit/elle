@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /data/mycure/repositories/infinit/core/components/Address.cc
+// file          /home/mycure/infinit/etoile/components/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jul 16 11:38:13 2009]
+// updated       julien quintard   [sat jul 25 19:51:41 2009]
 //
 
 //
@@ -117,8 +117,7 @@ namespace etoile
     ///
     Boolean		Address::operator==(const Address&	element)
     {
-      // if one of the two are NULL, return true if both are NULL
-      // or false otherwise.
+      // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
 	return (this->digest == element.digest);
 
@@ -154,7 +153,7 @@ namespace etoile
 	}
       else
 	{
-	  std::cout << alignment << shift << none << std::endl;
+	  std::cout << alignment << shift << "[Digest] " << none << std::endl;
 	}
 
       leave();
@@ -227,6 +226,8 @@ namespace etoile
       if (type == Archive::TypeNull)
 	{
 	  // nothing to do, keep the digest to NULL.
+	  if (ar.Extract(none) == StatusError)
+	    escape("unable to extract null");
 	}
       else
 	{

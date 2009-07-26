@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /data/mycure/repositories/infinit/core/components/Block.cc
+// file          /home/mycure/infinit/etoile/components/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [thu jul 16 11:37:47 2009]
+// updated       julien quintard   [sat jul 25 13:30:16 2009]
 //
 
 //
@@ -121,9 +121,6 @@ namespace etoile
 
       std::cout << alignment << "[Block]" << std::endl;
 
-      if (this->address.Dump(margin + 2) == StatusError)
-	escape("unable to dump the address");
-
       leave();
     }
 
@@ -136,20 +133,6 @@ namespace etoile
     ///
     Status		Block::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the elements.
-      if (ar.Serialize(Block::Class, this->address) == StatusError)
-	escape("unable to serialize the block's elements");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
-
       leave();
     }
 
@@ -158,21 +141,6 @@ namespace etoile
     ///
     Status		Block::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
-
-      // extract the block archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the block archive object");
-
-      // extract the elements.
-      if (ar.Extract(name, this->address) == StatusError)
-	escape("unable to extract the block's elements");
-
-      // check the name.
-      if (Block::Class != name)
-	escape("wrong class name in the extract object");
-
       leave();
     }
 

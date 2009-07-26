@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/ContentHashBlock.hh
+// file          /home/mycure/infinit/etoile/components/Token.hh
 //
-// created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [fri jul 24 16:37:21 2009]
+// created       julien quintard   [fri jul 24 16:28:56 2009]
+// updated       julien quintard   [sat jul 25 00:49:29 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_CONTENTHASHBLOCK_HH
-#define ETOILE_COMPONENTS_CONTENTHASHBLOCK_HH
+#ifndef ETOILE_COMPONENTS_TOKEN_HH
+#define ETOILE_COMPONENTS_TOKEN_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/components/Block.hh>
+#include <ostream>
 
 namespace etoile
 {
@@ -34,8 +34,9 @@ namespace etoile
     ///
     /// XXX
     ///
-    class ContentHashBlock:
-      public Block
+    class Token:
+      public Object,
+      public Dumpable, public Archivable
     {
     public:
       //
@@ -46,32 +47,33 @@ namespace etoile
       //
       // constructors & destructors
       //
-      ContentHashBlock()
+      Token()
       {
-	ContentHashBlock::New(*this);
+	Token::New(*this);
       }
 
-      ~ContentHashBlock()
+      ~Token()
       {
-	ContentHashBlock::Delete(*this);
+	Token::Delete(*this);
       }
 
       //
       // methods
       //
-      Status		Seal();
+      Status		Update(SecretKey&,
+			       PublicKey&);
 
       //
       // interfaces
       //
 
       // object
-      static Status	New(ContentHashBlock&);
-      static Status	Delete(ContentHashBlock&);
+      static Status	New(Token&);
+      static Status	Delete(Token&);
 
-      ContentHashBlock&	operator=(const ContentHashBlock&);
-      Boolean		operator==(const ContentHashBlock&);
-      Boolean		operator!=(const ContentHashBlock&);
+      Token&		operator=(const Token&);
+      Boolean		operator==(const Token&);
+      Boolean		operator!=(const Token&);
 
       // dumpable
       Status		Dump(const Natural32 = 0);
@@ -79,6 +81,12 @@ namespace etoile
       // archivable
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
+
+      //
+      // attributes
+      //
+
+      Code*		code;
     };
 
   }

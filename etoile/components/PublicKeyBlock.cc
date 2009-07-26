@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/infinit/components/PublicKeyBlock.cc
+// file          /home/mycure/infinit/etoile/components/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [wed mar 11 16:22:16 2009]
+// updated       julien quintard   [sat jul 25 13:31:12 2009]
 //
 
 //
@@ -162,13 +162,17 @@ namespace etoile
     Status		PublicKeyBlock::Dump(Natural32	margin)
     {
       String		alignment(margin, ' ');
+      String		shift(2, ' ');
 
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
 
+      // dump the parent class.
       if (Block::Dump(margin + 2) == StatusError)
 	escape("unable to dump the block");
 
-      if (this->K.Dump(margin + 2) == StatusError)
+      // dump the PKB's public key.
+      std::cout << alignment << shift << "[K]" << std::endl;
+      if (this->K.Dump(margin + 4) == StatusError)
 	escape("unable to dump the public key");
 
       leave();

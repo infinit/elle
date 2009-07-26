@@ -8,7 +8,7 @@
 // directory          /home/mycure/infinit/infinit/components/Directory.cc
 //
 // created       julien quintard   [sun mar  8 15:10:35 2009]
-// updated       julien quintard   [sun mar  8 15:31:08 2009]
+// updated       julien quintard   [thu jul 23 14:05:53 2009]
 //
 
 //
@@ -32,8 +32,8 @@ namespace etoile
     Status		Directory::Create(KeyPair&			pair)
     {
       // call the parent class.
-      if (Entity::Create(pair, Entity::TypeDirectory) == StatusError)
-	escape("unable to create the underlying entity");
+      if (Object::Create(pair, Object::TypeDirectory) == StatusError)
+	escape("unable to create the underlying object");
 
       leave();
     }

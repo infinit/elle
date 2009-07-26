@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/infinit/components/Access.hh
+// file          /home/mycure/infinit/etoile/components/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [wed mar 11 16:57:05 2009]
+// updated       julien quintard   [fri jul 24 16:31:59 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ACCESS_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <etoile/components/ContentHashBlock.hh>
+#include <etoile/components/Permissions.hh>
 
 #include <vector>
 
@@ -40,13 +41,6 @@ namespace etoile
       //
       // enumerations
       //
-      enum Rights
-	{
-	  RightNone = 0,
-	  RightRead = 1,
-	  RightWrite = 2,
-	};
-
       enum Type
 	{
 	  TypeUser,
@@ -70,14 +64,14 @@ namespace etoile
 	public Entry
       {
 	PublicKey	K;
-	Rights		rights;
+	Permissions	permissions;
       };
 
       struct		Group:
 	public Entry
       {
 	Address		descriptor;
-	Rights		rights;
+	Permissions	permissions;
 
 	Address		members;
       };

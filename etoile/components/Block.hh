@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /data/mycure/repositories/infinit/core/components/Block.hh
+// file          /home/mycure/infinit/etoile/components/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [thu jul 16 11:37:56 2009]
+// updated       julien quintard   [sat jul 25 13:12:12 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_BLOCK_HH
@@ -65,11 +65,6 @@ namespace etoile
       Status		Validate(Address&);
 
       //
-      // attributes
-      //
-      Address		address;
-
-      //
       // interfaces
       //
 
@@ -87,6 +82,15 @@ namespace etoile
       // archivable
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
+
+      //
+      // attributes
+      //
+
+      ///
+      /// this address is not serialized.
+      ///
+      Address		address;
     };
 
   }

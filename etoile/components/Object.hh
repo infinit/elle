@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/infinit/components/Entity.hh
+// file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [wed mar 11 16:55:50 2009]
+// updated       julien quintard   [sat jul 25 04:27:19 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_ENTITY_HH
-#define ETOILE_COMPONENTS_ENTITY_HH
+#ifndef ETOILE_COMPONENTS_OBJECT_HH
+#define ETOILE_COMPONENTS_OBJECT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,6 +22,10 @@
 
 #include <etoile/components/PublicKeyBlock.hh>
 #include <etoile/components/Access.hh>
+#include <etoile/components/Token.hh>
+#include <etoile/components/Permissions.hh>
+#include <etoile/components/Proof.hh>
+#include <etoile/components/Voucher.hh>
 
 namespace etoile
 {
@@ -35,7 +39,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    class Entity:
+    class Object:
       public PublicKeyBlock
     {
     public:
@@ -64,14 +68,14 @@ namespace etoile
       //
       // constructors & destructors
       //
-      Entity()
+      Object()
       {
-	Entity::New(*this);
+	Object::New(*this);
       }
 
-      ~Entity()
+      ~Object()
       {
-	Entity::Delete(*this);
+	Object::Delete(*this);
       }
 
       //
@@ -85,10 +89,19 @@ namespace etoile
       Status		Update(PrivateKey&,
 			       Address&,
 			       Natural32);
+      /* XXX
+      Status		Update(PrivateKey&,
+			       Address&,
+			       Natural32,
+			       Voucher&);
+      */
 
-      Status		Manage(PrivateKey&,
-			       Access::Rights,
-			       Address&);
+      Status		Write(PrivateKey&,
+			      Address&);
+
+      Status		Administrate(PrivateKey&,
+				     Permissions,
+				     Address&);
 
       Status		Validate(Address&);
 
@@ -97,12 +110,12 @@ namespace etoile
       //
 
       // object
-      static Status	New(Entity&);
-      static Status	Delete(Entity&);
+      static Status	New(Object&);
+      static Status	Delete(Object&);
 
-      Entity&		operator=(const Entity&);
-      Boolean		operator==(const Entity&);
-      Boolean		operator!=(const Entity&);
+      Object&		operator=(const Object&);
+      Boolean		operator==(const Object&);
+      Boolean		operator!=(const Object&);
 
       // dumpable
       Status		Dump(const Natural32 = 0);
@@ -124,25 +137,36 @@ namespace etoile
 
       struct
       {
-	Address		data;
-	Natural32	version;
-
-	Signature	signature;
-      }			contents;
-
-      struct
-      {
 	Mode		mode;
-	Natural32	index;
-      }			writer;
+	Proof*		proof;
+      }			author;
 
       struct
       {
-	Type		type;
-	Access::Rights	rights;
-	Address		access;
-	Natural32	version;
+	Address		references;
+	Digest		fingerprint;
 
+	Natural32	version;
+	Signature	signature;
+      }			data;
+
+      struct
+      {
+	struct
+	{
+	  Permissions	permissions;
+	  Token		token;
+	}		owner;
+
+	struct
+	{
+	  Type		type;
+	  // XXX[other information such as size, time last access/change  etc.]
+	}		status;
+
+	Address		access;
+
+	Natural32	version;
 	Signature	signature;
       }			meta;
     };
