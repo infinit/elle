@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [wed mar 11 13:09:40 2009]
+// updated       julien quintard   [sat jul 25 05:19:59 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -52,15 +52,16 @@ namespace elle
 //
 
     ///
-    /// this class provides methods for serializing basic data types. each given
-    /// data is appended to the archive in its original format. the endianness
-    /// format is recorded at the head of the archive so that a machine willing
-    /// to extract the information knows whether it has to convert it or not.
+    /// this class provides methods for serializing basic data types. each
+    /// given data is appended to the archive in its original format. the
+    /// endianness format is recorded at the head of the archive so that a
+    /// machine willing to extract the information knows whether it has to
+    /// convert it or not.
     ///
     /// the endianness attribute represents the endianness of the archive,
     /// meaning either the endianness of the current machine if the archive
-    /// is being built or the endianness of the machine which built this archive
-    /// if information is being extracted.
+    /// is being built or the endianness of the machine which built this
+    /// archive if information is being extracted.
     ///
     /// the size attribute represents the real size of the archive while the
     /// capacity attribute is the archive's allocated memory size. the offset

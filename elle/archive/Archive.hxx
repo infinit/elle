@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sat mar 28 15:57:12 2009]
+// updated       julien quintard   [sat jul 25 19:42:14 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -276,7 +276,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
 
-      std::cout << alignment << "[" << Resolve<T>::name << "] " << element << std::endl;
+      std::cout << alignment << "[" << Resolve<T>::name << "] "
+		<< element << std::endl;
 
       leave();
     }
