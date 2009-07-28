@@ -27,6 +27,8 @@
 #include <elle/Elle.hh>
 #include <etoile/components/Components.hh>
 
+#include <libgen.h>
+
 using namespace elle;
 using namespace etoile::components;
 
@@ -457,28 +459,143 @@ int			fuse_readdir(const char*		path,
     return (-1);
 
   std::list<Catalog::Entry*>::iterator iterator;
-  Natural32		i;
 
   // return the static entries . and ..
-  filler(buffer, ".", NULL, 1);
+  filler(buffer, ".", NULL, 0);
   filler(buffer, "..", NULL, 0);
 
   // XXX[this implementation does not handle offsets hence could be very
   //     slow for big directories. might be, to study!]
-  /*
-  for (iterator = catalog.entries.begin(), i = 3;
+  for (iterator = catalog.entries.begin();
        iterator != catalog.entries.end();
-       iterator++, i++)
+       iterator++)
     {
       Catalog::Entry*       entry = *iterator;
 
       if (filler(buffer, entry->name.c_str(), NULL, 0) != 0)
-      //break;
+	break;
     }
-  */
 
   return (0);
 }
+
+int			fuse_mkdir(const char*			path,
+				   mode_t			mode)
+{
+  printf("XXX[%s(%s, %u)]\n", __PRETTY_FUNCTION__, path, mode);
+
+  char*			dir = strdup(path);
+  char*			base = strdup(path);
+
+  dir = dirname(dir);
+  base = basename(base);
+
+  char*			o;
+
+  if ((o = hole_identifier(HOLE_IDENTIFIER_OBJECT, dir)) == NULL)
+    return (-errno);
+
+  Object		object;
+
+  if (pig_object(o, object) != 0)
+    return (-1);
+
+  // XXX check perms
+
+  char*			c;
+
+  if ((c = hole_identifier(HOLE_IDENTIFIER_DATA, dir)) == NULL)
+    return (-1);
+
+  void*			contents;
+  unsigned int		size;
+
+  if (hole_get(c, &contents, &size) != 0)
+    error(-1);
+
+  Region		region;
+
+  if (region.Acquire((Byte*)contents, size) == StatusError)
+    return (-1);
+
+  if (region.Detach() == StatusError)
+    return (-1);
+
+  Archive		archive;
+
+  if (archive.Prepare(region) == StatusError)
+    return (-1);
+
+  Catalog		catalog;
+
+  if (archive.Extract(catalog) == StatusError)
+    return (-1);
+
+  // XXX[weird validation since in this implementation, the address (id)
+  //     is not the one used internally]
+  if (catalog.Validate(catalog.address) != StatusTrue)
+    return (-1);
+
+  {
+    char*		id[HOLE_IDENTIFIERS];
+
+    if ((id[HOLE_OBJECT] = hole_identifier(HOLE_IDENTIFIER_OBJECT,
+					   path)) == NULL)
+      return (-errno);
+
+    if ((id[HOLE_DATA] = hole_identifier(HOLE_IDENTIFIER_DATA,
+					 path)) == NULL)
+      return (-errno);
+
+    KeyPair		owner;
+
+    if (owner.Generate() == StatusError)
+      return (-1);
+
+    Archive		ar;
+
+    if (ar.Create() == StatusError)
+      return (-1);
+
+    Directory		directory;
+
+    if (directory.Create(owner) == StatusError)
+      return (-1);
+
+    if (directory.Seal() == StatusError)
+      return (-1);
+
+    if (ar.Serialize(directory) == StatusError)
+      return (-1);
+
+    if (hole_put(id[HOLE_OBJECT], (void*)archive.contents, archive.size) != 0)
+      return (-errno);
+
+    if (hole_put(id[HOLE_DATA], NULL, 0) != 0)
+      return (-errno);
+
+    free(id[HOLE_OBJECT]);
+    free(id[HOLE_DATA]);
+
+    // record
+    String		name(base);
+
+    if (catalog.Add(name, directory.address) == StatusError)
+      return (-1);
+
+    if (catalog.Seal() == StatusError)
+      return (-1);
+
+    if (hole_put(id[HOLE_OBJECT], (void*)archive.contents, archive.size) != 0)
+      return (-errno);
+
+    if (hole_put(c, NULL, 0) != 0)
+      return (-errno);
+  }
+
+  return (0);
+}
+
 
 /*
  * ---------- table -----------------------------------------------------------
@@ -503,6 +620,7 @@ int			main(int				argc,
   fuse_operations.release = fuse_release;
   fuse_operations.utimens = fuse_utimens;
   fuse_operations.readdir = fuse_readdir;
+  fuse_operations.mkdir = fuse_mkdir;
 
   Cryptography::Initialize();
 
