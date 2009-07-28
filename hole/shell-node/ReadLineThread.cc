@@ -12,10 +12,12 @@ ReadLineThread::ReadLineThread(QObject * object)
 void
 ReadLineThread::run()
 {
-  char * line;
+  exec();
+}
 
-  while ((line = readline("shell-node> ")))
-  {
-    emit ReadLine(line);
-  }
+void
+ReadLineThread::ReadLine()
+{
+  char * line = readline("shell-node> ");
+  emit LineRead(line);
 }

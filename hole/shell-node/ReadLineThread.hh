@@ -10,8 +10,11 @@ class ReadLineThread : public QThread
 public:
   ReadLineThread(QObject * parent = 0);
 
+public slots:
+  void ReadLine();
+
 signals:
-  void ReadLine(QString line);
+  void LineRead(QString line);
 
 protected:
   virtual void run();
