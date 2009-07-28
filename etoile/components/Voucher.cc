@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat jul 25 02:03:43 2009]
+// updated       julien quintard   [mon jul 27 08:33:35 2009]
 //
 
 //
@@ -38,7 +38,7 @@ namespace etoile
     // XXX
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

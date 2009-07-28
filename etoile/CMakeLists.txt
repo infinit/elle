@@ -12,6 +12,8 @@ ADD_LIBRARY(etoile
   components/Token.cc
   components/Proof.cc
   components/Voucher.cc
+  components/Catalog.cc
+  components/References.cc
   )
 
 ADD_EXECUTABLE(test

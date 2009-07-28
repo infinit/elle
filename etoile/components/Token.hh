@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Token.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [sat jul 25 00:49:29 2009]
+// updated       julien quintard   [mon jul 27 08:32:49 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_TOKEN_HH
@@ -35,7 +35,7 @@ namespace etoile
     /// XXX
     ///
     class Token:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:

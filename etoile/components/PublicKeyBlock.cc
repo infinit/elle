@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [sat jul 25 13:31:12 2009]
+// updated       julien quintard   [mon jul 27 08:35:12 2009]
 //
 
 //
@@ -69,7 +69,7 @@ namespace etoile
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Address.cc
+// file          /data/mycure/repo...ies/infinit/etoile/components/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat jul 25 19:51:41 2009]
+// updated       julien quintard   [mon jul 27 10:35:19 2009]
 //
 
 //
@@ -62,7 +62,7 @@ namespace etoile
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///
@@ -243,27 +243,4 @@ namespace etoile
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this function displays an address.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const etoile::components::Address& element)
-  {
-    if (element.digest != NULL)
-      stream << *element.digest;
-    else
-      stream << none;
-
-    return (stream);
-  }
-
 }

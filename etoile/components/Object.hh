@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Object.hh
+// file          /data/mycure/repo...ries/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [sat jul 25 04:27:19 2009]
+// updated       julien quintard   [mon jul 27 09:51:12 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -86,15 +86,7 @@ namespace etoile
 
       Status		Update(PrivateKey&,
 			       Address&);
-      Status		Update(PrivateKey&,
-			       Address&,
-			       Natural32);
-      /* XXX
-      Status		Update(PrivateKey&,
-			       Address&,
-			       Natural32,
-			       Voucher&);
-      */
+      // XXX other Update() for delegates and consumers
 
       Status		Write(PrivateKey&,
 			      Address&);
@@ -161,6 +153,8 @@ namespace etoile
 	struct
 	{
 	  Type		type;
+	  Natural64	size;
+
 	  // XXX[other information such as size, time last access/change  etc.]
 	}		status;
 

@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Block.cc
+// file          /data/mycure/repositories/infinit/etoile/components/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [sat jul 25 13:30:16 2009]
+// updated       julien quintard   [mon jul 27 10:34:57 2009]
 //
 
 //
@@ -52,7 +52,7 @@ namespace etoile
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///
@@ -145,24 +145,4 @@ namespace etoile
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this function displays a block.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const etoile::components::Block& element)
-  {
-    stream << element.address;
-
-    return (stream);
-  }
-
 }

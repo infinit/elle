@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Voucher.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [sat jul 25 04:26:23 2009]
+// updated       julien quintard   [mon jul 27 08:32:13 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_VOUCHER_HH
@@ -37,7 +37,7 @@ namespace etoile
     /// at the time it has been carried out.
     ///
     class Voucher:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:

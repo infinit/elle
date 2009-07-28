@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat jul 25 04:42:43 2009]
+// updated       julien quintard   [mon jul 27 08:35:37 2009]
 //
 
 //
@@ -59,7 +59,7 @@ namespace etoile
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

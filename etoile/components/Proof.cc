@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat jul 25 19:51:24 2009]
+// updated       julien quintard   [mon jul 27 08:34:59 2009]
 //
 
 //
@@ -46,7 +46,7 @@ namespace etoile
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

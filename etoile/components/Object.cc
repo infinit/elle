@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Object.cc
+// file          /data/mycure/repo...ries/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sat jul 25 19:51:20 2009]
+// updated       julien quintard   [tue jul 28 18:45:29 2009]
 //
 
 //
@@ -103,11 +103,7 @@ namespace etoile
     Status		Object::Update(PrivateKey&		owner,
 				       Address&			references)
     {
-      // write the data.
-      if (this->Write(owner, references) == StatusError)
-	escape("unable to write the references");
-
-      // then, set the author as being the owner.
+      // set the author as being the owner.
       this->author.mode = Object::ModeOwner;
 
       // release the proof and re-set it to NULL because unecessary
@@ -118,6 +114,10 @@ namespace etoile
 
 	  this->author.proof = NULL;
 	}
+
+      // then, write and sign the data.
+      if (this->Write(owner, references) == StatusError)
+	escape("unable to write the references");
 
       leave();
     }
@@ -135,6 +135,8 @@ namespace etoile
 
       // increase the data version.
       this->data.version += 1;
+
+      // XXX[set fingerprint]
 
       // create an archive containing data elements so that this archive
       // can be signed.
@@ -191,6 +193,7 @@ namespace etoile
 	  if (archive.Serialize((Byte&)this->meta.owner.permissions,
 				this->meta.owner.token,
 				(Byte&)this->meta.status.type,
+				this->meta.status.size,
 				this->meta.access,
 				this->meta.version) == StatusError)
 	    escape("unable to serialize the meta part");
@@ -254,6 +257,7 @@ namespace etoile
 	    if (archive.Serialize((Byte&)this->meta.owner.permissions,
 				  this->meta.owner.token,
 				  (Byte&)this->meta.status.type,
+				  this->meta.status.size,
 				  this->meta.access,
 				  this->meta.version) == StatusError)
 	      flee("unable to serialize the meta part");
@@ -278,6 +282,10 @@ namespace etoile
 	      author = &this->owner.K;
 
 	      break;
+	    }
+	  default:
+	    {
+	      escape("unimplemented feature");
 	    }
 	  }
       }
@@ -321,6 +329,7 @@ namespace etoile
 
       object.meta.owner.permissions = PermissionNone;
       object.meta.status.type = Object::TypeUnknown;
+      object.meta.status.size = 0;
       object.meta.version = 0;
 
       leave();
@@ -374,6 +383,7 @@ namespace etoile
       this->meta.owner.permissions = element.meta.owner.permissions;
       this->meta.owner.token = element.meta.owner.token;
       this->meta.status.type = element.meta.status.type;
+      this->meta.status.size = element.meta.status.size;
       this->meta.access = element.meta.access;
       this->meta.version = element.meta.version;
       this->meta.signature = element.meta.signature;
@@ -399,7 +409,7 @@ namespace etoile
       if (this->author.mode != element.author.mode)
 	false;
 
-      if ((this->author.proof != NULL) || (element.author.proof != NULL))
+      if ((this->author.proof == NULL) || (element.author.proof == NULL))
 	{
 	  if (this->author.proof != element.author.proof)
 	    false();
@@ -421,6 +431,7 @@ namespace etoile
       if ((this->meta.owner.permissions != element.meta.owner.permissions) ||
 	  (this->meta.owner.token != element.meta.owner.token) ||
 	  (this->meta.status.type != element.meta.status.type) ||
+	  (this->meta.status.size != element.meta.status.size) ||
 	  (this->meta.access != element.meta.access) ||
 	  (this->meta.version != element.meta.version) ||
 	  (this->meta.signature != element.meta.signature))
@@ -520,6 +531,8 @@ namespace etoile
 
       std::cout << alignment << shift << shift << shift << "[Type] "
 		<< this->meta.status.type << std::endl;
+      std::cout << alignment << shift << shift << shift << "[Size] "
+		<< this->meta.status.size << std::endl;
 
       std::cout << alignment << shift << shift << "[Access]" << std::endl;
       if (this->meta.access.Dump(margin + 6) == StatusError)
@@ -590,6 +603,7 @@ namespace etoile
       if (ar.Serialize((Byte&)this->meta.owner.permissions,
 		       this->meta.owner.token,
 		       (Byte&)this->meta.status.type,
+		       this->meta.status.size,
 		       this->meta.access,
 		       this->meta.version,
 		       this->meta.signature) == StatusError)
@@ -663,6 +677,7 @@ namespace etoile
       if (ar.Extract((Byte&)this->meta.owner.permissions,
 		     this->meta.owner.token,
 		     (Byte&)this->meta.status.type,
+		     this->meta.status.size,
 		     this->meta.access,
 		     this->meta.version,
 		     this->meta.signature) == StatusError)

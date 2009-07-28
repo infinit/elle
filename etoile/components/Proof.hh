@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [sat jul 25 04:29:29 2009]
+// updated       julien quintard   [mon jul 27 08:32:30 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_PROOF_HH
@@ -35,7 +35,7 @@ namespace etoile
     /// note that no voucher is embedded should the author be a delegate.
     ///
     class Proof:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:

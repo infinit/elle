@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Address.hh
+// file          /data/mycure/repo...ies/infinit/etoile/components/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [sat jul 25 01:47:42 2009]
+// updated       julien quintard   [mon jul 27 10:35:07 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ADDRESS_HH
@@ -35,7 +35,7 @@ namespace etoile
     /// XXX
     ///
     class Address:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
@@ -90,16 +90,6 @@ namespace etoile
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-  std::ostream&		operator<<(std::ostream&,
-				   const etoile::components::Address&);
 }
 
 #endif

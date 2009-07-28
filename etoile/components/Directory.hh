@@ -8,7 +8,7 @@
 // directory          /home/mycure/infinit/infinit/components/Directory.hh
 //
 // created       julien quintard   [sun mar  8 15:07:58 2009]
-// updated       julien quintard   [thu jul 23 14:05:46 2009]
+// updated       julien quintard   [mon jul 27 08:32:43 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_DIRECTORY_HH

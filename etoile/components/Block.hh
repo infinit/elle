@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Block.hh
+// file          /data/mycure/repositories/infinit/etoile/components/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [sat jul 25 13:12:12 2009]
+// updated       julien quintard   [mon jul 27 10:34:52 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_BLOCK_HH
@@ -35,7 +35,7 @@ namespace etoile
     /// XXX
     ///
     class Block:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
@@ -94,16 +94,6 @@ namespace etoile
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-  std::ostream&		operator<<(std::ostream&,
-				   const etoile::components::Block&);
 }
 
 #endif
