@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [wed mar 11 15:52:43 2009]
+// updated       julien quintard   [mon jul 27 08:39:12 2009]
 //
 
 #ifndef ELLE_CRYPTO_SIGNATURE_HH
@@ -39,7 +39,7 @@ namespace elle
     /// this class represents an asymmetrically encrypted text.
     ///
     class Signature:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:

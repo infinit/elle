@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [wed mar 11 16:02:14 2009]
+// updated       julien quintard   [mon jul 27 08:28:51 2009]
 //
 
 #ifndef ELLE_CRYPTO_KEYPAIR_HH
@@ -61,7 +61,7 @@ namespace elle
     /// noted with a lower-case 'k'.
     ///
     class KeyPair:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     private:

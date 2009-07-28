@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
+// file          /data/mycure/repositories/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [wed mar 11 15:56:15 2009]
+// updated       julien quintard   [tue jul 28 18:45:00 2009]
 //
 
 //
@@ -285,9 +285,9 @@ namespace elle
 			  digest.region.size) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      // expand the signature so it can receive the upcoming portion.
-      if (signature.region.Expand(size) == StatusError)
-	escape("unable to expand the signature");
+      // prepare the signature so it can receive the upcoming portion.
+      if (signature.region.Prepare(size) == StatusError)
+	escape("unable to prepare the signature");
 
       // actually sign the portion.
       if (::EVP_PKEY_sign(this->contexts.sign,
@@ -304,7 +304,7 @@ namespace elle
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

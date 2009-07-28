@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [wed mar 11 16:00:15 2009]
+// updated       julien quintard   [mon jul 27 08:29:31 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HH
@@ -56,7 +56,7 @@ namespace elle
     /// this class represents a secret key for symmetric encryption.
     ///
     class SecretKey:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:

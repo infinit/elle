@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Core.hh
 //
 // created       julien quintard   [fri jan 30 16:14:39 2009]
-// updated       julien quintard   [sun feb 22 22:18:27 2009]
+// updated       julien quintard   [mon jul 27 08:25:08 2009]
 //
 
 #ifndef ELLE_CORE_CORE_HH
@@ -24,7 +24,7 @@
 #include <elle/core/Large.hh>
 #include <elle/core/Natural.hh>
 #include <elle/core/Null.hh>
-#include <elle/core/Object.hh>
+#include <elle/core/Entity.hh>
 #include <elle/core/Real.hh>
 #include <elle/core/String.hh>
 

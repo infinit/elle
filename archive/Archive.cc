@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sat jul 25 19:27:06 2009]
+// updated       julien quintard   [mon jul 27 08:38:12 2009]
 //
 
 //
@@ -492,7 +492,7 @@ namespace elle
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

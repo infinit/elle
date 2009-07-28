@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [wed mar 11 16:05:57 2009]
+// updated       julien quintard   [mon jul 27 08:36:55 2009]
 //
 
 //
@@ -36,7 +36,7 @@ namespace elle
     const String		Cipher::Class = "Cipher";
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///
