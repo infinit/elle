@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [wed mar 11 16:03:52 2009]
+// updated       julien quintard   [mon jul 27 08:37:13 2009]
 //
 
 //
@@ -36,7 +36,7 @@ namespace elle
     const String		Digest::Class = "Digest";
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

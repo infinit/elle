@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/crypto/PublicKey.cc
+// file          /data/mycure/repositories/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [sat jul 25 13:32:49 2009]
+// updated       julien quintard   [tue jul 28 18:45:14 2009]
 //
 
 //
@@ -197,9 +197,10 @@ namespace elle
 			       archive.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
-	// allocate memory so the key can receive the upcoming encrypted portion.
-	if (key.region.Expand(size) == StatusError)
-	  escape("unable to expand the key");
+	// allocate memory so the key can receive the upcoming
+	// encrypted portion.
+	if (key.region.Prepare(size) == StatusError)
+	  escape("unable to prepare the key");
 
 	// actually encrypt the secret key's archive, storing the encrypted
 	// portion directly into the key object, without any re-copy.
@@ -294,7 +295,7 @@ namespace elle
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

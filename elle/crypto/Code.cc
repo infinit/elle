@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [wed mar 11 15:52:09 2009]
+// updated       julien quintard   [mon jul 27 08:37:04 2009]
 //
 
 //
@@ -36,7 +36,7 @@ namespace elle
     const String		Code::Class = "Code";
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

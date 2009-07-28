@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/misc/Region.cc
+// file          /data/mycure/repositories/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sat jul 25 13:09:58 2009]
+// updated       julien quintard   [tue jul 28 18:43:15 2009]
 //
 
 //
@@ -78,24 +78,21 @@ namespace elle
     Status		Region::Prepare(const Natural32		capacity)
     {
       // check the type.
-      if (this->type != Region::TypeUnknown)
+      if ((this->type != Region::TypeUnknown) &&
+	  (this->type != Region::TypeBuffer))
 	escape("wrong type");
-
-      // check the current values.
-      if ((this->contents != NULL) ||
-	  (this->size != 0) ||
-	  (this->capacity != 0))
-	escape("wrong values");
 
       // set the type.
       this->type = Region::TypeBuffer;
 
       // allocate memory.
-      if ((this->contents = (Byte*)::malloc(capacity)) == NULL)
+      if ((this->contents = (Byte*)::realloc(this->contents,
+					     capacity)) == NULL)
 	escape(::strerror(errno));
 
       // update the capacity. note that the size should be updated
       // manually when the direct copy is made.
+      this->size = 0;
       this->capacity = capacity;
 
       leave();
@@ -111,12 +108,6 @@ namespace elle
       // check the type.
       if (this->type != Region::TypeUnknown)
 	escape("wrong type");
-
-      // check the current values.
-      if ((this->contents != NULL) ||
-	  (this->size != 0) ||
-	  (this->capacity != 0))
-	escape("wrong values");
 
       // set the type.
       this->type = Region::TypeBuffer;
@@ -233,7 +224,7 @@ namespace elle
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

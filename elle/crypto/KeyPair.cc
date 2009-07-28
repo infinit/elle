@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [sat jul 25 14:16:51 2009]
+// updated       julien quintard   [mon jul 27 08:37:53 2009]
 //
 
 //
@@ -118,7 +118,7 @@ namespace elle
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///

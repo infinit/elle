@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/core/Object.hh
+// file          /data/mycure/repositories/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [wed mar 11 15:55:41 2009]
+// updated       julien quintard   [tue jul 28 18:35:06 2009]
 //
 
-#ifndef ELLE_CORE_OBJECT_HH
-#define ELLE_CORE_OBJECT_HH
+#ifndef ELLE_CORE_ENTITY_HH
+#define ELLE_CORE_ENTITY_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -35,10 +35,10 @@ namespace elle
 //
 
     ///
-    /// this interface must be implemented by every 'object' ... in the
+    /// this interface must be implemented by every 'entity' ... in the
     /// elle library terms.
     ///
-    class Object
+    class Entity
     {
     public:
       //
@@ -46,30 +46,30 @@ namespace elle
       //
 
       ///
-      /// every class inheriting directly or indirectly the Object interface
+      /// every class inheriting directly or indirectly the Entity interface
       /// must define a default constructor and destructor that will call
       /// the New() and Delete() methods, respectively.
       ///
-      Object()
+      Entity()
       {
       }
 
       ///
       /// this constructors is called when:
       ///
-      ///   Object o1;
-      ///   Object o2 = o1;
+      ///   Entity o1;
+      ///   Entity o2 = o1;
       ///
       /// is used though the assignment operator is actually specified.
       ///
       /// therefore, this constructor stops the program. the developer should
       /// instead use the assignment operator:
       ///
-      ///   Object o1;
-      ///   Object o2;
+      ///   Entity o1;
+      ///   Entity o2;
       ///   o2 = o1;
       ///
-      Object(Object&)
+      Entity(Entity&)
       {
 	fail("copy constructors are not allowed to be used");
       }
@@ -87,16 +87,16 @@ namespace elle
       ///
       /// however, note that this method must *not* call the
       /// parent class' New() method nor should it call
-      /// New() on its object-attributes.
+      /// New() on its entity-attributes.
       ///
       /// note that this method is not virtual since static methods
       /// cannot be declared as virtual. however, every class deriving
-      /// Object should provide them.
+      /// Entity should provide them.
       ///
       /// for more information, these methods are declared as static
       /// to avoid polymorphism calls.
       ///
-      static Status	New(Object&)
+      static Status	New(Entity&)
       {
 	fail("this method should never have been called");
       }
@@ -106,9 +106,9 @@ namespace elle
       ///
       /// finally, this method must *not* call the parent Delete()
       /// method, nor should it call the New() method, nor should
-      /// it call Delete() on its object-attributes.
+      /// it call Delete() on its entity-attributes.
       ///
-      static Status	Delete(Object&)
+      static Status	Delete(Entity&)
       {
 	fail("this method should never have been called");
       }
@@ -118,33 +118,33 @@ namespace elle
       //
 
       ///
-      /// this operator copies an object.
+      /// this operator copies an entity.
       ///
-      /// this method (i) starts by checking if the given object
+      /// this method (i) starts by checking if the given entity
       /// is not the current one (ii) then calls the parent
       /// method---if relevant---before (iii) calling Delete() to
       /// release the resources (iv) and New() to reinitialize
       /// the attributes. finally, the method should (v) assign
-      /// the attributes including the object-attributes by
+      /// the attributes including the entity-attributes by
       /// using the assignment operator.
       ///
-      virtual Object&	operator=(Object&)
+      virtual Entity&	operator=(Entity&)
       {
 	fail("this method should never have been called");
       }
 
       ///
-      /// this operator compares two objects.
+      /// this operator compares two entitys.
       ///
-      virtual Boolean	operator==(Object&)
+      virtual Boolean	operator==(Entity&)
       {
 	fail("this method should never have been called");
       }
 
       ///
-      /// this operator compares two objects.
+      /// this operator compares two entitys.
       ///
-      virtual Boolean	operator!=(Object&)
+      virtual Boolean	operator!=(Entity&)
       {
 	fail("this method should never have been called");
       }

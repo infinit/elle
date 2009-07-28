@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [wed mar 11 13:09:21 2009]
+// updated       julien quintard   [mon jul 27 08:29:42 2009]
 //
 
 #ifndef ELLE_MISC_REGION_HH
@@ -47,7 +47,7 @@ namespace elle
     /// note that this class is *not* archivable!
     ///
     class Region:
-      public Object,
+      public Entity,
       public Dumpable
     {
     public:

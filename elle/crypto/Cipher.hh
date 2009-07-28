@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.hh
 //
 // created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [wed mar 11 16:05:25 2009]
+// updated       julien quintard   [mon jul 27 08:29:27 2009]
 //
 
 #ifndef ELLE_CRYPTO_CIPHER_HH
@@ -39,7 +39,7 @@ namespace elle
     /// this class represents a symmetrically ciphered text.
     ///
     class Cipher:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:

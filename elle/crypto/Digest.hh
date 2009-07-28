@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [wed mar 11 16:03:20 2009]
+// updated       julien quintard   [mon jul 27 08:29:01 2009]
 //
 
 #ifndef ELLE_CRYPTO_DIGEST_HH
@@ -39,7 +39,7 @@ namespace elle
     /// this class represents an asymmetrically encrypted text.
     ///
     class Digest:
-      public Object,
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
