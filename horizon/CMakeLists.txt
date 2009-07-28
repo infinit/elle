@@ -3,4 +3,4 @@ PROJECT(pig CXX)
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
 ADD_EXECUTABLE(pig pig.cc)
-TARGET_LINK_LIBRARIES(pig pthread rt fuse elle etoile ${QT_QTCORE_LIBRARIES})
+TARGET_LINK_LIBRARIES(pig pthread rt fuse elle etoile)
