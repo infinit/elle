@@ -95,11 +95,9 @@ void			usage()
   printf("usage: mkfs.infinit [path-to-device]\n");
 }
 
-int			main(int				argc,
+int			mkfs(int				argc,
 			     char*				argv[])
 {
-  char*			id[HOLE_IDENTIFIERS];
-
   if (argc != 2)
     {
       usage();
@@ -108,6 +106,9 @@ int			main(int				argc,
 
   g_device = argv[1];
 
+  /*
+   * create and initialize the device.
+   */
   {
     char		path[4096];
 
@@ -120,45 +121,99 @@ int			main(int				argc,
     mkdir(path, 0700);
   }
 
-  Cryptography::Initialize();
+  /*
+   * initialize the libraries.
+   */
+  {
+    Cryptography::Initialize();
+  }
 
-  if ((id[HOLE_OBJECT] = hole_identifier(HOLE_IDENTIFIER_OBJECT, "/")) == NULL)
-    return (-errno);
-
-  if ((id[HOLE_DATA] = hole_identifier(HOLE_IDENTIFIER_DATA, "/")) == NULL)
-    return (-errno);
-
+  /*
+   * create the directory.
+   */
   KeyPair		owner;
-
-  if (owner.Generate() == StatusError)
-    return (-1);
-
-  Archive		archive;
-
-  if (archive.Create() == StatusError)
-    return (-1);
-
   Directory		directory;
+  Catalog		catalog;
+  {
+    // generate owner keypair
+    if (owner.Generate() == StatusError)
+      return (-1);
 
-  if (directory.Create(owner) == StatusError)
-    return (-1);
+    // create directory object.
+    if (directory.Create(owner) == StatusError)
+      return (-1);
 
-  // XXX[handle permissions and create two entries "." and ".."!]
+    if (directory.Seal() == StatusError)
+      return (-1);
 
-  if (directory.Seal() == StatusError)
-    return (-1);
+    // create directory data: empty for now because the . and .. entries
+    // are not recorded internally.
+    if (catalog.Seal() == StatusError)
+      return (-1);
 
-  if (archive.Serialize(directory) == StatusError)
-    return (-1);
+    // update directory object.
+    if (directory.Update(owner.k, catalog.address) == StatusError)
+      return (-1);
 
-  if (hole_put(id[HOLE_OBJECT], (void*)archive.contents, archive.size) != 0)
-    return (-errno);
+    if (directory.Seal() == StatusError)
+      return (-1);
+  }
 
-  if (hole_put(id[HOLE_DATA], NULL, 0) != 0)
-    return (-errno);
+  /*
+   * store the whole.
+   */
+  {
+    Archive		a_directory;
+    char*		i_directory;
 
-  free(id[HOLE_OBJECT]);
-  free(id[HOLE_DATA]);
+    // serialize the directory object.
+    if (a_directory.Create() == StatusError)
+      return (-1);
+
+    if (a_directory.Serialize(directory) == StatusError)
+      return (-1);
+
+    // retrieve the storage identifier and store the archive.
+    if ((i_directory = hole_identifier(HOLE_IDENTIFIER_OBJECT, "/")) == NULL)
+      return (-errno);
+
+    if (hole_put(i_directory,
+		 (void*)a_directory.contents,
+		 a_directory.size) != 0)
+      return (-errno);
+
+    free(i_directory);
+
+    // serialize the catalog.
+    Archive		a_catalog;
+    char*		i_catalog;
+
+    // serialize the catalog.
+    if (a_catalog.Create() == StatusError)
+      return (-1);
+
+    if (a_catalog.Serialize(catalog) == StatusError)
+      return (-1);
+
+    // retrieve the storage identifier and store the archive.
+    if ((i_catalog = hole_identifier(HOLE_IDENTIFIER_DATA, "/")) == NULL)
+      return (-errno);
+
+    if (hole_put(i_catalog,
+		 (void*)a_catalog.contents,
+		 a_catalog.size) != 0)
+      return (-errno);
+
+    free(i_catalog);
+  }
 
   return (0);
+}
+
+int			main(int				argc,
+			     char*				argv[])
+{
+  mkfs(argc, argv);
+
+  expose();
 }
