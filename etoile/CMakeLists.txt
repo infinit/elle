@@ -1,19 +1,19 @@
 PROJECT(Etoile CXX)
 
 ADD_LIBRARY(etoile
-  components/Directory.cc
-  components/Access.cc
-  components/Address.cc
-  components/File.cc
-  components/Block.cc
-  components/Object.cc
-  components/PublicKeyBlock.cc
-  components/ContentHashBlock.cc
-  components/Token.cc
-  components/Proof.cc
-  components/Voucher.cc
-  components/Catalog.cc
-  components/References.cc
+  core/Directory.cc
+  core/Access.cc
+  core/Address.cc
+  core/File.cc
+  core/Block.cc
+  core/Object.cc
+  core/PublicKeyBlock.cc
+  core/ContentHashBlock.cc
+  core/Token.cc
+  core/Proof.cc
+  core/Voucher.cc
+  core/Catalog.cc
+  core/References.cc
   )
 
 ADD_EXECUTABLE(test

@@ -1,8 +1,8 @@
 #include <elle/Elle.hh>
-#include <etoile/components/Components.hh>
+#include <etoile/core/Core.hh>
 
 using namespace etoile;
-using namespace etoile::components;
+using namespace etoile::core;
 
 //
 // RSA[1024] Key Generation:         67.25ms
