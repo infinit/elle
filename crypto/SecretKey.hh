@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [mon jul 27 08:29:31 2009]
+// updated       julien quintard   [wed jul 29 13:50:07 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HH
@@ -80,15 +80,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      SecretKey()
-      {
-	SecretKey::New(*this);
-      }
-
-      ~SecretKey()
-      {
-	SecretKey::Delete(*this);
-      }
+      SecretKey();
+      ~SecretKey();
 
       //
       // methods
@@ -112,10 +105,7 @@ namespace elle
       // interfaces
       //
 
-      // object
-      static Status	New(SecretKey&);
-      static Status	Delete(SecretKey&);
-
+      // entity
       SecretKey&	operator=(const SecretKey&);
       Boolean		operator==(const SecretKey&);
       Boolean		operator!=(const SecretKey&);
@@ -134,16 +124,6 @@ namespace elle
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-  std::ostream&		operator<<(std::ostream&,
-				   const elle::crypto::SecretKey&);
 }
 
 #endif

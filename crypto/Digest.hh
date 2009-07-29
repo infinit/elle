@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [mon jul 27 08:29:01 2009]
+// updated       julien quintard   [wed jul 29 13:51:46 2009]
 //
 
 #ifndef ELLE_CRYPTO_DIGEST_HH
@@ -51,24 +51,14 @@ namespace elle
       //
       // constructors & destructors
       //
-      Digest()
-      {
-	Digest::New(*this);
-      }
-
-      ~Digest()
-      {
-	Digest::Delete(*this);
-      }
+      Digest();
+      ~Digest();
 
       //
       // interfaces
       //
 
-      // object
-      static Status	New(Digest&);
-      static Status	Delete(Digest&);
-
+      // entity
       Digest&		operator=(const Digest&);
       Boolean		operator==(const Digest&);
       Boolean		operator!=(const Digest&);
@@ -87,16 +77,6 @@ namespace elle
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-  std::ostream&		operator<<(std::ostream&,
-				   const elle::crypto::Digest&);
 }
 
 #endif

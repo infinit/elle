@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon jul 27 08:36:55 2009]
+// updated       julien quintard   [wed jul 29 14:11:50 2009]
 //
 
 //
@@ -36,24 +36,26 @@ namespace elle
     const String		Cipher::Class = "Cipher";
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- constructors & destructors --------------------------------------
 //
 
     ///
     /// this method initializes the attributes.
     ///
-    Status		Cipher::New(Cipher&)
+    Cipher::Cipher()
     {
-      leave();
     }
 
     ///
     /// this method releases the resources.
     ///
-    Status		Cipher::Delete(Cipher&)
+    Cipher::~Cipher()
     {
-      leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
 
     ///
     /// assign the given cipher by duplicating the attributes.
@@ -64,10 +66,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // reinitialize the object.
-      if ((Cipher::Delete(*this) == StatusError) ||
-	  (Cipher::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the cipher.
+      if (this->Recycle<Cipher>() == StatusError)
+	yield("unable to recycle the cipher", *this);
 
       // set the region.
       this->region = element.region;
@@ -170,24 +171,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this operator renders a cipher.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::Cipher&	element)
-  {
-    stream << element.region;
-
-    return (stream);
-  }
-
 }

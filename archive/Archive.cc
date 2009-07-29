@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [mon jul 27 08:38:12 2009]
+// updated       julien quintard   [wed jul 29 15:20:12 2009]
 //
 
 //
@@ -66,6 +66,28 @@ namespace elle
     ArchiveName(Large);
     ArchiveName(Region);
     ArchiveName(Archive);
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// this method initialises the attributes.
+    ///
+    Archive::Archive()
+    {
+      // initialise the attributes.
+      this->mode = Archive::ModeUnknown;
+      this->endianness = System::MachineEndianness;
+      this->offset = 0;
+    }
+
+    ///
+    /// this method releases the resources.
+    ///
+    Archive::~Archive()
+    {
+    }
 
 //
 // ---------- prepare ---------------------------------------------------------
@@ -354,7 +376,8 @@ namespace elle
 	escape("unable to align the offset");
 
       // assign the data.
-      if (element.Assign(this->contents + this->offset, size) == StatusError)
+      if (element.Duplicate(this->contents + this->offset,
+			    size) == StatusError)
 	escape("unable to prepare the buffer");
 
       // update the offset.
@@ -380,7 +403,8 @@ namespace elle
 	escape("unable to align the offset");
 
       // assign the content to the buffer.
-      if (buffer.Assign(this->contents + this->offset, size) == StatusError)
+      if (buffer.Duplicate(this->contents + this->offset,
+			   size) == StatusError)
 	escape("unable to assign the data to the buffer");
 
       // detach the data from the buffer.
@@ -496,27 +520,6 @@ namespace elle
 //
 
     ///
-    /// this method initialises the attributes.
-    ///
-    Status		Archive::New(Archive&			archive)
-    {
-      // initialise the attributes.
-      archive.mode = Archive::ModeUnknown;
-      archive.endianness = System::MachineEndianness;
-      archive.offset = 0;
-
-      leave();
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Status		Archive::Delete(Archive&)
-    {
-      leave();
-    }
-
-    ///
     /// assign the given archive by duplicating the attributes.
     ///
     /// note that the memory is duplicated.
@@ -527,13 +530,12 @@ namespace elle
       if (this == &element)
 	return (*this);
 
+      // recycle the archive.
+      if (this->Recycle<Archive>() == StatusError)
+	yield("unable to recycle the archive", *this);
+
       // call the parent assignment.
       Region::operator=(element);
-
-      // re-new the object.
-      if ((Archive::Delete(*this) == StatusError) ||
-	  (Archive::New(*this) == StatusError))
-	yield("unable to re-initialize the object", *this);
 
       // duplicate the attributes.
       this->mode = element.mode;
@@ -594,8 +596,6 @@ namespace elle
 
       while (this->offset != this->size)
 	{
-	  printf("[XXX] %u / %u\n", this->offset, this->size);
-
 	  Archive::Type		type;
 
 	  if (this->Fetch(type) == StatusError)
@@ -831,9 +831,9 @@ namespace elle
       if (this->Detach() == StatusError)
 	escape("unable to detach the archive's data");
 
-      // reinitialize the object.
-      this->~Archive();
-      new (this) Archive;
+      // recycle the archive.
+      if (this->Recycle<Archive>() == StatusError)
+	escape("unable to recycle the archive");
 
       // prepare the archive for extraction.
       if (this->Prepare(chunk) == StatusError)
@@ -906,25 +906,4 @@ namespace elle
   */
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this operator renders an archive.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::archive::Archive& element)
-  {
-    // render the archive as a region.
-    stream << (elle::misc::Region&)element;
-
-    return (stream);
-  }
-
 }

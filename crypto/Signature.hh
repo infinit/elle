@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [mon jul 27 08:39:12 2009]
+// updated       julien quintard   [wed jul 29 13:43:11 2009]
 //
 
 #ifndef ELLE_CRYPTO_SIGNATURE_HH
@@ -51,24 +51,14 @@ namespace elle
       //
       // constructors & destructors
       //
-      Signature()
-      {
-	Signature::New(*this);
-      }
-
-      ~Signature()
-      {
-	Signature::Delete(*this);
-      }
+      Signature();
+      ~Signature();
 
       //
       // interfaces
       //
 
-      // object
-      static Status	New(Signature&);
-      static Status	Delete(Signature&);
-
+      // entity
       Signature&	operator=(const Signature&);
       Boolean		operator==(const Signature&);
       Boolean		operator!=(const Signature&);
@@ -87,16 +77,6 @@ namespace elle
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-  std::ostream&		operator<<(std::ostream&,
-				   const elle::crypto::Signature&);
 }
 
 #endif

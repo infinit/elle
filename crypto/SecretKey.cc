@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [mon jul 27 08:37:22 2009]
+// updated       julien quintard   [wed jul 29 14:13:36 2009]
 //
 
 //
@@ -58,6 +58,24 @@ namespace elle
     const ::EVP_MD*		SecretKey::Algorithms::Digest = ::EVP_md5();
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// this method initializes the object.
+    ///
+    SecretKey::SecretKey()
+    {
+    }
+
+    ///
+    /// this method releases the resources.
+    ///
+    SecretKey::~SecretKey()
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -67,7 +85,8 @@ namespace elle
     Status		SecretKey::Create(const String&		password)
     {
       // assign the password to the internal key object.
-      if (this->key.Assign((Byte*)password.c_str(), password.length()) == StatusError)
+      if (this->key.Duplicate((Byte*)password.c_str(),
+			      password.length()) == StatusError)
 	escape("unable to assign the given password to the key");
 
       leave();
@@ -329,22 +348,6 @@ namespace elle
 //
 
     ///
-    /// this method initializes the object.
-    ///
-    Status		SecretKey::New(SecretKey&)
-    {
-      leave();
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Status		SecretKey::Delete(SecretKey&)
-    {
-      leave();
-    }
-
-    ///
     /// assign the secret key.
     ///
     SecretKey&		SecretKey::operator=(const SecretKey&	element)
@@ -353,10 +356,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // reinitialize the object.
-      if ((SecretKey::Delete(*this) == StatusError) ||
-	  (SecretKey::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the secret key.
+      if (this->Recycle<SecretKey>() == StatusError)
+	yield("unable to recycle the secret key", *this);
 
       // re-create the key by duplicate the internal region;
       this->key = element.key;
@@ -458,40 +460,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this function overloads the << operator.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::SecretKey& key)
-  {
-    elle::archive::Archive	archive;
-    elle::crypto::Digest	digest;
-
-    // prepare the archive.
-    if (archive.Create() == elle::misc::StatusError)
-      yield("unable to create the archive", stream);
-
-    // serialize the secret key.
-    if (key.Serialize(archive) == elle::misc::StatusError)
-      yield("unable to serialize the private key", stream);
-
-    // digest the archive.
-    if (elle::crypto::OneWay::Hash(archive, digest) == elle::misc::StatusError)
-      yield("unable to hash the private key's archive", stream);
-
-    // put the fingerprint into the stream.
-    stream << digest;
-
-    return (stream);
-  }
-
 }

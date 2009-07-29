@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [mon jul 27 08:37:53 2009]
+// updated       julien quintard   [wed jul 29 14:12:44 2009]
 //
 
 //
@@ -47,6 +47,24 @@ namespace elle
     ::EVP_PKEY_CTX*		KeyPair::Contexts::Generate = NULL;
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// this method initializes the object.
+    ///
+    KeyPair::KeyPair()
+    {
+    }
+
+    ///
+    /// this method releases the resources.
+    ///
+    KeyPair::~KeyPair()
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -54,7 +72,8 @@ namespace elle
     /// this method initializes the key generation context.
     ///
     /// \todo
-    ///   note that this context is never released :(
+    ///   note that this context is never released :( maybe allocate/release
+    ///   it in Cryptography::Clean();
     ///
     Status		KeyPair::Initialize()
     {
@@ -63,7 +82,8 @@ namespace elle
 	leave();
 
       // create the context for the RSA algorithm.
-      if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL)) == NULL)
+      if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
+							       NULL)) == NULL)
 	escape("unable to create the context");
 
       // initialise the context for key generation.
@@ -96,7 +116,8 @@ namespace elle
 	escape("unable to initialize the key generation context");
 
       // set the key length.
-      if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate, length) <= 0)
+      if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
+					     length) <= 0)
 	escape("unable to set the RSA key length");
 
       // generate the EVP key.
@@ -122,34 +143,17 @@ namespace elle
 //
 
     ///
-    /// this method initializes the object.
-    ///
-    Status		KeyPair::New(KeyPair&)
-    {
-      leave();
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Status		KeyPair::Delete(KeyPair&)
-    {
-      leave();
-    }
-
-    ///
     /// assign the keypair by duplicating the attributes.
     ///
-    KeyPair&		KeyPair::operator=(const KeyPair&		element)
+    KeyPair&		KeyPair::operator=(const KeyPair&	element)
     {
       // self-check
       if (this == &element)
 	return (*this);
 
-      // reinitialize the object.
-      if ((KeyPair::Delete(*this) == StatusError) ||
-	  (KeyPair::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the keypair.
+      if (this->Recycle<KeyPair>() == StatusError)
+	yield("unable to recycle the keypair", *this);
 
       // just copy-assign the internal attributes.
       this->K = element.K;
@@ -265,28 +269,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this function overloads the << operator and computes a fingerprint.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::KeyPair&	key)
-  {
-    stream << "{";
-    stream << key.K;
-    stream << ", ";
-    stream << key.k;
-    stream << "}";
-
-    return (stream);
-  }
-
 }
