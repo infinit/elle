@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon jul 27 08:37:13 2009]
+// updated       julien quintard   [wed jul 29 14:12:59 2009]
 //
 
 //
@@ -36,24 +36,26 @@ namespace elle
     const String		Digest::Class = "Digest";
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- constructors & destructors --------------------------------------
 //
 
     ///
     /// this method initializes the attributes.
     ///
-    Status		Digest::New(Digest&)
+    Digest::Digest()
     {
-      leave();
     }
 
     ///
     /// this method releases the resources.
     ///
-    Status		Digest::Delete(Digest&)
+    Digest::~Digest()
     {
-      leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
 
     ///
     /// assign the given digest by duplicating the attributes.
@@ -64,10 +66,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // reinitialize the object.
-      if ((Digest::Delete(*this) == StatusError) ||
-	  (Digest::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the digest.
+      if (this->Recycle<Digest>() == StatusError)
+	yield("unable to recycle the digest", *this);
 
       // set the region.
       this->region = element.region;
@@ -170,24 +171,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this operator renders a digest.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::Digest&	element)
-  {
-    stream << element.region;
-
-    return (stream);
-  }
-
 }

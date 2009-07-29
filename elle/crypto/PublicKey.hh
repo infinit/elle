@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [mon jul 27 08:29:14 2009]
+// updated       julien quintard   [wed jul 29 13:55:06 2009]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HH
@@ -68,15 +68,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      PublicKey()
-      {
-	PublicKey::New(*this);
-      }
-
-      ~PublicKey()
-      {
-	PublicKey::Delete(*this);
-      }
+      PublicKey();
+      ~PublicKey();
 
       //
       // methods
@@ -99,10 +92,7 @@ namespace elle
       // interfaces
       //
 
-      // object
-      static Status	New(PublicKey&);
-      static Status	Delete(PublicKey&);
-
+      // entity
       PublicKey&	operator=(const PublicKey&);
       Boolean		operator==(const PublicKey&);
       Boolean		operator!=(const PublicKey&);

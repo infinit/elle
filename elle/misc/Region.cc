@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /data/mycure/repositories/infinit/elle/misc/Region.cc
+// file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [tue jul 28 18:43:15 2009]
+// updated       julien quintard   [wed jul 29 15:26:57 2009]
 //
 
 //
@@ -26,6 +26,34 @@ namespace elle
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Region::Region()
+    {
+      this->type = Region::TypeUnknown;
+      this->options = Region::OptionNone;
+      this->contents = NULL;
+      this->size = 0;
+      this->capacity = 0;
+    }
+
+    ///
+    /// default destructor.
+    ///
+    Region::~Region()
+    {
+      // release resources.
+      if ((this->contents != NULL) &&
+	  (this->type == Region::TypeBuffer) &&
+	  (this->options & Region::OptionDetach) == 0)
+	::free(this->contents);
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -36,10 +64,6 @@ namespace elle
     Status		Region::Wrap(Byte*			contents,
 				     Natural32			size)
     {
-      // check if the operation is valid.
-      if (this->type != Region::TypeUnknown)
-	escape("wrong type");
-
       // set the type.
       this->type = Region::TypeChunk;
 
@@ -58,7 +82,7 @@ namespace elle
     {
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
-	escape("wrong type");
+	escape("region already in use");
 
       // set the type.
       this->type = Region::TypeBuffer;
@@ -66,21 +90,20 @@ namespace elle
       // set the attributes.
       this->contents = contents;
       this->size = size;
+      this->capacity = size;
 
       leave();
     }
 
     ///
     /// this method can be used for pre-allocating the memory for
-    /// an upcoming direct-copy assignment i.e without going through
-    /// Assign().
+    /// an upcoming direct-copy assignment.
     ///
     Status		Region::Prepare(const Natural32		capacity)
     {
       // check the type.
-      if ((this->type != Region::TypeUnknown) &&
-	  (this->type != Region::TypeBuffer))
-	escape("wrong type");
+      if (this->type == Region::TypeChunk)
+	escape("unable to prepare an already in use chunk region");
 
       // set the type.
       this->type = Region::TypeBuffer;
@@ -99,21 +122,21 @@ namespace elle
     }
 
     ///
-    /// this method assigns a static data region, building a so-called
-    /// static buffer.
+    /// this method assigns a data region, building a so-called buffer.
     ///
-    Status		Region::Assign(Byte*			contents,
-				       Natural32		size)
+    Status		Region::Duplicate(Byte*			contents,
+					  Natural32		size)
     {
       // check the type.
-      if (this->type != Region::TypeUnknown)
-	escape("wrong type");
+      if (this->type == Region::TypeChunk)
+	escape("unable to prepare an already in use chunk region");
 
       // set the type.
       this->type = Region::TypeBuffer;
 
       // allocate the required memory.
-      if ((this->contents = (Byte*)::malloc(size)) == NULL)
+      if ((this->contents = (Byte*)::realloc(this->contents,
+					     size)) == NULL)
 	escape(::strerror(errno));
 
       // copy the data.
@@ -136,33 +159,29 @@ namespace elle
     Status		Region::Expand(const Natural32		size)
     {
       // check the type.
-      if ((this->type != Region::TypeUnknown) &&
-	  (this->type != Region::TypeBuffer))
-	escape("wrong type");
+      if (this->type == Region::TypeChunk)
+	escape("unable to prepare an already in use chunk region");
 
-      // set the type.
-      this->type = Region::TypeBuffer;
-
-      // if the contents is NULL, then allocate it.
-      if (this->contents == NULL)
+      // if the region is a virgin.
+      if (this->type == Region::TypeUnknown)
 	{
-	  this->capacity = size;
+	  if (this->Prepare(size) == StatusError)
+	    escape("unable to prepare the region for the first time");
+	}
+      else
+	{
+	  // if there is enough space, just leave.
+	  if ((this->size + size) <= this->capacity)
+	    leave();
 
-	  if ((this->contents = (Byte*)::malloc(this->capacity)) == NULL)
+	  // otherwise, enlarge the buffer's capacity by pre-allocating its
+	  // current size.
+	  this->capacity += this->size + size;
+
+	  if ((this->contents = (Byte*)::realloc(this->contents,
+						 this->capacity)) == NULL)
 	    escape(::strerror(errno));
 	}
-
-      // if there is enough space, just leave.
-      if ((this->size + size) <= this->capacity)
-	leave();
-
-      // otherwise, enlarge the buffer's capacity by pre-allocating its
-      // current size.
-      this->capacity += this->size + size;
-
-      if ((this->contents = (Byte*)::realloc(this->contents,
-					     this->capacity)) == NULL)
-	escape(::strerror(errno));
 
       leave();
     }
@@ -174,9 +193,8 @@ namespace elle
 				       const Natural32		size)
     {
       // check the type.
-      if ((this->type != Region::TypeUnknown) &&
-	  (this->type != Region::TypeBuffer))
-	escape("wrong type");
+      if (this->type == Region::TypeChunk)
+	escape("unable to prepare an already in use chunk region");
 
       // make sure the buffer is large enough.
       if (this->Expand(size) == StatusError)
@@ -205,7 +223,7 @@ namespace elle
       ::memcpy(this->contents + offset, contents, size);
 
       // update the size.
-      if (offset + size > this->size)
+      if ((offset + size) > this->size)
 	this->size = offset + size;
 
       leave();
@@ -217,6 +235,10 @@ namespace elle
     ///
     Status		Region::Detach()
     {
+      // check the type.
+      if (this->type != Region::TypeBuffer)
+	escape("unable to detach non-buffer regions");
+
       // activate the option.
       this->options = Region::OptionDetach;
 
@@ -226,34 +248,6 @@ namespace elle
 //
 // ---------- entity ----------------------------------------------------------
 //
-
-    ///
-    /// this method initializes the attributes of the given object.
-    ///
-    Status		Region::New(Region&			region)
-    {
-      region.type = Region::TypeUnknown;
-      region.options = Region::OptionNone;
-      region.contents = NULL;
-      region.size = 0;
-      region.capacity = 0;
-
-      leave();
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Status		Region::Delete(Region&			region)
-    {
-      // release resources.
-      if ((region.contents != NULL) &&
-	  (region.type != Region::TypeChunk) &&
-	  ((region.options & Region::OptionDetach) == 0))
-	::free(region.contents);
-
-      leave();
-    }
 
     ///
     /// assign the given region by duplicating the attributes.
@@ -266,10 +260,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // delete the object.
-      if ((Region::Delete(*this) == StatusError) ||
-	  (Region::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the object.
+      if (this->Recycle<Region>() == StatusError)
+	yield("unable to recycle the object", *this);
 
       // according to the type...
       switch (element.type)
@@ -290,7 +283,9 @@ namespace elle
 	  }
 	case TypeBuffer:
 	  {
-	    if (this->Assign(element.contents, element.size) == StatusError)
+	    this->options = Region::OptionNone;
+
+	    if (this->Duplicate(element.contents, element.size) == StatusError)
 	      yield("unable to assign the element's data", *this);
 	  }
 	}
@@ -306,6 +301,8 @@ namespace elle
       // check the size.
       if (this->size != element.size)
 	false();
+
+      // XXX[is that enough to test the contents and not the attributes?]
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) != 0)

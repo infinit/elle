@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [mon jul 27 08:28:51 2009]
+// updated       julien quintard   [wed jul 29 13:37:19 2009]
 //
 
 #ifndef ELLE_CRYPTO_KEYPAIR_HH
@@ -84,15 +84,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      KeyPair()
-      {
-	KeyPair::New(*this);
-      }
-
-      ~KeyPair()
-      {
-	KeyPair::Delete(*this);
-      }
+      KeyPair();
+      ~KeyPair();
 
       //
       // methods
@@ -136,10 +129,7 @@ namespace elle
       // interfaces
       //
 
-      // object
-      static Status	New(KeyPair&);
-      static Status	Delete(KeyPair&);
-
+      // entity
       KeyPair&		operator=(const KeyPair&);
       Boolean		operator==(const KeyPair&);
       Boolean		operator!=(const KeyPair&);
@@ -164,18 +154,6 @@ namespace elle
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  std::ostream&		operator<<(std::ostream&,
-				   const elle::crypto::KeyPair&);
-
 }
 
 #endif

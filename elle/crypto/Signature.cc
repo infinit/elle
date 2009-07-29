@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon jul 27 08:37:41 2009]
+// updated       julien quintard   [wed jul 29 14:12:50 2009]
 //
 
 //
@@ -36,24 +36,26 @@ namespace elle
     const String		Signature::Class = "Signature";
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- constructors & destructors --------------------------------------
 //
 
     ///
     /// this method initializes the attributes.
     ///
-    Status		Signature::New(Signature&)
+    Signature::Signature()
     {
-      leave();
     }
 
     ///
     /// this method releases the resources.
     ///
-    Status		Signature::Delete(Signature&)
+    Signature::~Signature()
     {
-      leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
 
     ///
     /// assign the given signature by duplicating the attributes.
@@ -64,10 +66,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // reinitialize the object.
-      if ((Signature::Delete(*this) == StatusError) ||
-	  (Signature::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the signature.
+      if (this->Recycle<Signature>() == StatusError)
+	yield("unable to recycle the signature", *this);
 
       // set the region.
       this->region = element.region;
@@ -170,24 +171,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this operator renders a signature.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::Signature& element)
-  {
-    stream << element.region;
-
-    return (stream);
-  }
-
 }

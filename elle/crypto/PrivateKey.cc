@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /data/mycure/repositories/infinit/elle/crypto/PrivateKey.cc
+// file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [tue jul 28 18:45:00 2009]
+// updated       julien quintard   [wed jul 29 14:13:11 2009]
 //
 
 //
@@ -35,6 +35,37 @@ namespace elle
     /// the class name.
     ///
     const String		PrivateKey::Class = "PrivateKey";
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// this method initializes the object.
+    ///
+    PrivateKey::PrivateKey()
+    {
+      this->key = NULL;
+
+      this->contexts.decrypt = NULL;
+      this->contexts.sign = NULL;
+    }
+
+    ///
+    /// this method releases the resources.
+    ///
+    PrivateKey::~PrivateKey()
+    {
+      // release the resources.
+      if (this->key != NULL)
+	::EVP_PKEY_free(this->key);
+
+      if (this->contexts.decrypt != NULL)
+	::EVP_PKEY_CTX_free(this->contexts.decrypt);
+
+      if (this->contexts.sign != NULL)
+	::EVP_PKEY_CTX_free(this->contexts.sign);
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -308,37 +339,6 @@ namespace elle
 //
 
     ///
-    /// this method initializes the object.
-    ///
-    Status		PrivateKey::New(PrivateKey&		k)
-    {
-      k.key = NULL;
-
-      k.contexts.decrypt = NULL;
-      k.contexts.sign = NULL;
-
-      leave();
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Status		PrivateKey::Delete(PrivateKey&		k)
-    {
-      // release the resources.
-      if (k.key != NULL)
-	::EVP_PKEY_free(k.key);
-
-      if (k.contexts.decrypt != NULL)
-	::EVP_PKEY_CTX_free(k.contexts.decrypt);
-
-      if (k.contexts.sign != NULL)
-	::EVP_PKEY_CTX_free(k.contexts.sign);
-
-      leave();
-    }
-
-    ///
     /// assign the publickey.
     ///
     PrivateKey&		PrivateKey::operator=(const PrivateKey&	element)
@@ -347,10 +347,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // reinitialize the object.
-      if ((PrivateKey::Delete(*this) == StatusError) ||
-	  (PrivateKey::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the private key.
+      if (this->Recycle<SecretKey>() == StatusError)
+	yield("unable to recycle the private key", *this);
 
       // re-create the private key by duplicating the internal numbers.
       if (this->Create(element.key) == StatusError)
@@ -395,10 +394,14 @@ namespace elle
       String		shift(2, ' ');
 
       std::cout << alignment << "[PrivateKey]" << std::endl;
-      std::cout << alignment << shift << "[n] " << *this->key->pkey.rsa->n << std::endl;
-      std::cout << alignment << shift << "[d] " << *this->key->pkey.rsa->d << std::endl;
-      std::cout << alignment << shift << "[p] " << *this->key->pkey.rsa->p << std::endl;
-      std::cout << alignment << shift << "[q] " << *this->key->pkey.rsa->q << std::endl;
+      std::cout << alignment << shift << "[n] "
+		<< *this->key->pkey.rsa->n << std::endl;
+      std::cout << alignment << shift << "[d] "
+		<< *this->key->pkey.rsa->d << std::endl;
+      std::cout << alignment << shift << "[p] "
+		<< *this->key->pkey.rsa->p << std::endl;
+      std::cout << alignment << shift << "[q] "
+		<< *this->key->pkey.rsa->q << std::endl;
 
       leave();
     }
@@ -500,41 +503,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this function overloads the << operator and computes a fingerprint
-  /// of the key in its serialised form.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::PrivateKey& key)
-  {
-    elle::archive::Archive	archive;
-    elle::crypto::Digest	digest;
-
-    // prepare the archive.
-    if (archive.Create() == elle::misc::StatusError)
-      yield("unable to create the archive", stream);
-
-    // serialize the secret key.
-    if (key.Serialize(archive) == elle::misc::StatusError)
-      yield("unable to serialize the private key", stream);
-
-    // digest the archive.
-    if (elle::crypto::OneWay::Hash(archive, digest) == elle::misc::StatusError)
-      yield("unable to hash the private key's archive", stream);
-
-    // put the fingerprint into the stream.
-    stream << digest;
-
-    return (stream);
-  }
-
 }

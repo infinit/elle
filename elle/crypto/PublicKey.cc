@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /data/mycure/repositories/infinit/elle/crypto/PublicKey.cc
+// file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [tue jul 28 18:45:14 2009]
+// updated       julien quintard   [wed jul 29 14:13:17 2009]
 //
 
 //
@@ -35,6 +35,37 @@ namespace elle
     /// the class name.
     ///
     const String		PublicKey::Class = "PublicKey";
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// this method initializes the object.
+    ///
+    PublicKey::PublicKey()
+    {
+      this->key = NULL;
+
+      this->contexts.encrypt = NULL;
+      this->contexts.verify = NULL;
+    }
+
+    ///
+    /// this method releases the resources.
+    ///
+    PublicKey::~PublicKey()
+    {
+      // release the resources.
+      if (this->key != NULL)
+	::EVP_PKEY_free(this->key);
+
+      if (this->contexts.encrypt != NULL)
+	::EVP_PKEY_CTX_free(this->contexts.encrypt);
+
+      if (this->contexts.verify != NULL)
+	::EVP_PKEY_CTX_free(this->contexts.verify);
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -299,37 +330,6 @@ namespace elle
 //
 
     ///
-    /// this method initializes the object.
-    ///
-    Status		PublicKey::New(PublicKey&		K)
-    {
-      K.key = NULL;
-
-      K.contexts.encrypt = NULL;
-      K.contexts.verify = NULL;
-
-      leave();
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Status		PublicKey::Delete(PublicKey&		K)
-    {
-      // release the resources.
-      if (K.key != NULL)
-	::EVP_PKEY_free(K.key);
-
-      if (K.contexts.encrypt != NULL)
-	::EVP_PKEY_CTX_free(K.contexts.encrypt);
-
-      if (K.contexts.verify != NULL)
-	::EVP_PKEY_CTX_free(K.contexts.verify);
-
-      leave();
-    }
-
-    ///
     /// assign the publickey.
     ///
     PublicKey&		PublicKey::operator=(const PublicKey&	element)
@@ -338,10 +338,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // reinitialize the object.
-      if ((PublicKey::Delete(*this) == StatusError) ||
-	  (PublicKey::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the public key.
+      if (this->Recycle<PublicKey>() == StatusError)
+	yield("unable to recycle the public key", *this);
 
       // re-create the public key by duplicate the internal numbers.
       if (this->Create(element.key) == StatusError)
@@ -469,41 +468,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this function serialises the key and computes a digest of the
-  /// archive.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::PublicKey& key)
-  {
-    elle::archive::Archive	archive;
-    elle::crypto::Digest	digest;
-
-    // prepare the archive.
-    if (archive.Create() == elle::misc::StatusError)
-      yield("unable to create the archive", stream);
-
-    // serialize the secret key.
-    if (key.Serialize(archive) == elle::misc::StatusError)
-      yield("unable to serialize the private key", stream);
-
-    // digest the archive.
-    if (elle::crypto::OneWay::Hash(archive, digest) == elle::misc::StatusError)
-      yield("unable to hash the private key's archive", stream);
-
-    // put the fingerprint into the stream.
-    stream << digest;
-
-    return (stream);
-  }
-
 }

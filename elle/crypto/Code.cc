@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon jul 27 08:37:04 2009]
+// updated       julien quintard   [wed jul 29 14:12:35 2009]
 //
 
 //
@@ -36,24 +36,26 @@ namespace elle
     const String		Code::Class = "Code";
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- constructors & destructors --------------------------------------
 //
 
     ///
     /// this method initializes the attributes.
     ///
-    Status		Code::New(Code&)
+    Code::Code()
     {
-      leave();
     }
 
     ///
     /// this method releases the resources.
     ///
-    Status		Code::Delete(Code&)
+    Code::~Code()
     {
-      leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
 
     ///
     /// assign the given code by duplicating the attributes.
@@ -64,10 +66,9 @@ namespace elle
       if (this == &element)
 	return (*this);
 
-      // delete the object.
-      if ((Code::Delete(*this) == StatusError) ||
-	  (Code::New(*this) == StatusError))
-	yield("unable to reinitialize the object", *this);
+      // recycle the code.
+      if (this->Recycle<Code>() == StatusError)
+	yield("unable to recycle the code", *this);
 
       // set the region.
       this->region = element.region;
@@ -170,24 +171,4 @@ namespace elle
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this operator renders a code.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::crypto::Code&	element)
-  {
-    stream << element.region;
-
-    return (stream);
-  }
-
 }

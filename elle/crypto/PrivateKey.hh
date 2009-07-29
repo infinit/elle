@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [mon jul 27 08:28:56 2009]
+// updated       julien quintard   [wed jul 29 13:47:35 2009]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HH
@@ -71,15 +71,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      PrivateKey()
-      {
-	PrivateKey::New(*this);
-      }
-
-      ~PrivateKey()
-      {
-	PrivateKey::Delete(*this);
-      }
+      PrivateKey();
+      ~PrivateKey();
 
       //
       // methods
@@ -104,10 +97,7 @@ namespace elle
       // interfaces
       //
 
-      // object
-      static Status	New(PrivateKey&);
-      static Status	Delete(PrivateKey&);
-
+      // entity
       PrivateKey&	operator=(const PrivateKey&);
       Boolean		operator==(const PrivateKey&);
       Boolean		operator!=(const PrivateKey&);
@@ -132,17 +122,6 @@ namespace elle
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  std::ostream&		operator<<(std::ostream&,
-				   const elle::crypto::PrivateKey&);
 }
 
 #endif

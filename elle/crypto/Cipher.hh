@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.hh
 //
 // created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [mon jul 27 08:29:27 2009]
+// updated       julien quintard   [wed jul 29 13:57:06 2009]
 //
 
 #ifndef ELLE_CRYPTO_CIPHER_HH
@@ -51,24 +51,14 @@ namespace elle
       //
       // constructors & destructors
       //
-      Cipher()
-      {
-	Cipher::New(*this);
-      }
-
-      ~Cipher()
-      {
-	Cipher::Delete(*this);
-      }
+      Cipher();
+      ~Cipher();
 
       //
       // interfaces
       //
 
-      // object
-      static Status	New(Cipher&);
-      static Status	Delete(Cipher&);
-
+      // entity
       Cipher&		operator=(const Cipher&);
       Boolean		operator==(const Cipher&);
       Boolean		operator!=(const Cipher&);

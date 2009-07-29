@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [mon jul 27 08:28:42 2009]
+// updated       julien quintard   [wed jul 29 13:41:15 2009]
 //
 
 #ifndef ELLE_CRYPTO_CODE_HH
@@ -51,24 +51,14 @@ namespace elle
       //
       // constructors & destructors
       //
-      Code()
-      {
-	Code::New(*this);
-      }
-
-      ~Code()
-      {
-	Code::Delete(*this);
-      }
+      Code();
+      ~Code();
 
       //
       // interfaces
       //
 
-      // object
-      static Status	New(Code&);
-      static Status	Delete(Code&);
-
+      // entity
       Code&		operator=(const Code&);
       Boolean		operator==(const Code&);
       Boolean		operator!=(const Code&);
@@ -87,16 +77,6 @@ namespace elle
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-  std::ostream&		operator<<(std::ostream&,
-				   const elle::crypto::Code&);
 }
 
 #endif

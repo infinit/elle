@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [sat jul 25 05:19:59 2009]
+// updated       julien quintard   [wed jul 29 20:22:58 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -131,15 +131,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      Archive()
-      {
-	Archive::New(*this);
-      }
-
-      ~Archive()
-      {
-	Archive::Delete(*this);
-      }
+      Archive();
+      ~Archive();
 
       //
       // methods
@@ -194,10 +187,7 @@ namespace elle
       // interfaces
       //
 
-      // object
-      static Status	New(Archive&);
-      static Status	Delete(Archive&);
-
+      // entity
       Archive&		operator=(const Archive&);
       Boolean		operator==(const Archive&);
       Boolean		operator!=(const Archive&);
@@ -418,16 +408,6 @@ namespace elle
     extern Void		vacuum;
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-  std::ostream&	operator<<(std::ostream&,
-			   const elle::archive::Archive&);
 }
 
 //
