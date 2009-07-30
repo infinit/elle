@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/OneWay.hh
 //
 // created       julien quintard   [mon oct 29 13:19:49 2007]
-// updated       julien quintard   [sat mar  7 23:14:06 2009]
+// updated       julien quintard   [thu jul 30 17:58:55 2009]
 //
 
 #ifndef ELLE_CRYPTO_ONEWAY_HH
@@ -54,9 +54,65 @@ namespace elle
       //
       // static methods
       //
+      static Status	Hash(const Plain&,
+			     Digest&);
+
+      //
+      // variadic methods
+      //
       static Status	Hash(const Archivable&,
 			     Digest&);
-      static Status	Hash(const Plain&,
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     Digest&);
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Digest&);
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Digest&);
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Digest&);
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Digest&);
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Digest&);
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Digest&);
+      static Status	Hash(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
 			     Digest&);
     };
 

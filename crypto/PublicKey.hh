@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [wed jul 29 13:55:06 2009]
+// updated       julien quintard   [thu jul 30 18:42:57 2009]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HH
@@ -61,11 +61,6 @@ namespace elle
     {
     public:
       //
-      // constants
-      //
-      static const String		Class;
-
-      //
       // constructors & destructors
       //
       PublicKey();
@@ -78,13 +73,8 @@ namespace elle
       Status		Create(Large*,
 			       Large*);
 
-      Status		Encrypt(const Archivable&,
-				Code&) const;
       Status		Encrypt(const Plain&,
 				Code&) const;
-
-      Status		Verify(const Signature&,
-			       const Archivable&) const;
       Status		Verify(const Signature&,
 			       const Plain&) const;
 
@@ -114,21 +104,126 @@ namespace elle
 	::EVP_PKEY_CTX*	encrypt;
 	::EVP_PKEY_CTX*	verify;
       }			contexts;
+
+      //
+      // variadic methods
+      //
+
+      // encrypt
+      Status		Encrypt(const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Code&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Code&) const;
+
+      // verify
+      Status		Verify(const Signature&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&) const;
+      Status		Verify(const Signature&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&,
+			       const Archivable&) const;
+
     };
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  std::ostream&		operator<<(std::ostream&,
-				   const elle::crypto::PublicKey&);
-
 }
 
 #endif

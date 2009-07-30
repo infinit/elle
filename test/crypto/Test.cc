@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/crypto/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [tue mar 10 13:49:33 2009]
+// updated       julien quintard   [thu jul 30 19:05:03 2009]
 //
 
 //
@@ -177,7 +177,7 @@ namespace elle
 		  escape("unable to sign the plain");
 
 		// verify the signature.
-		if (K.Verify(signature, plain) == StatusFalse)
+		if (K.Verify(signature, plain) != StatusTrue)
 		  escape("unable to verify the signature or "
 			 "the signature differs from the plain");
 	      }

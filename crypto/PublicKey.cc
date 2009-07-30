@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [wed jul 29 14:13:17 2009]
+// updated       julien quintard   [thu jul 30 19:03:39 2009]
 //
 
 //
@@ -26,15 +26,6 @@ namespace elle
 
   namespace crypto
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		PublicKey::Class = "PublicKey";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -144,35 +135,6 @@ namespace elle
     }
 
     ///
-    /// this method takes any object that implements the Archivable
-    /// interface and encrypts it.
-    ///
-    /// the process obviously consists in serializing the object first.
-    ///
-    /// note that Encrypt() methods return an archive hidden in the
-    /// code.
-    ///
-    Status		PublicKey::Encrypt(const Archivable&	object,
-					   Code&		code) const
-    {
-      Archive		archive;
-
-      // create an archive.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // serialize the object.
-      if (archive.Serialize(object) == StatusError)
-	escape("unable to serialize the object");
-
-      // encrypt the archive.
-      if (this->Encrypt(archive, code) == StatusError)
-	escape("unable to encrypt the object's archive");
-
-      leave();
-    }
-
-    ///
     /// this method encrypts the given data with the public key.
     ///
     /// since (i) the public key size limits the size of the data that
@@ -271,30 +233,6 @@ namespace elle
       }
 
       leave();
-    }
-
-    ///
-    /// this method verifies an Archivable object by serializing it
-    /// before performing the verification process.
-    ///
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const Archivable&	object) const
-    {
-      Archive		archive;
-
-      // create the archive.
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      // serialize the object.
-      if (archive.Serialize(object) == StatusError)
-	flee("unable to serialize the object");
-
-      // call the Verify() method.
-      if (this->Verify(signature, archive) == StatusError)
-	flee("unable to verify the signature against the object's archive");
-
-      true();
     }
 
     ///
@@ -400,26 +338,12 @@ namespace elle
     ///
     Status		PublicKey::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(PublicKey::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the internal numbers.
-      if (ar.Serialize(*this->key->pkey.rsa->n) == StatusError)
+      if (archive.Serialize(*this->key->pkey.rsa->n) == StatusError)
 	escape("unable to serialize 'n'");
 
-      if (ar.Serialize(*this->key->pkey.rsa->e) == StatusError)
+      if (archive.Serialize(*this->key->pkey.rsa->e) == StatusError)
 	escape("unable to serialize 'e'");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -429,22 +353,8 @@ namespace elle
     ///
     Status		PublicKey::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
       Large*		n;
       Large*		e;
-
-      // extract the public key archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the public key archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (PublicKey::Class != name)
-	escape("wrong class name in the extract object");
 
       // allocate the new big numbers.
       if ((n = ::BN_new()) == NULL)
@@ -454,10 +364,10 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // extract the numbers.
-      if (ar.Extract(*n) == StatusError)
+      if (archive.Extract(*n) == StatusError)
 	escape("unable to extract 'n'");
 
-      if (ar.Extract(*e) == StatusError)
+      if (archive.Extract(*e) == StatusError)
 	escape("unable to extract 'e'");
 
       // create the EVP_PKEY object from the extract numbers.
@@ -465,6 +375,425 @@ namespace elle
 	escape("unable to create the public key from the archive");
 
       leave();
+    }
+
+//
+// ---------- variadic methods ------------------------------------------------
+//
+
+    ///
+    /// these methods make it easier to decrypt/sign multiple items at
+    /// the same time while keeping a way to catch errors.
+    ///
+    /// note that the code is replicated in order to provide optimisation.
+    /// Indeed, otherwise, everytime a single item is hashed, the whole 9-step
+    /// ifs would be executed, testing if there are more than one item
+    /// to hash.
+    ///
+
+    ///
+    /// encrypt
+    ///
+
+    ///
+    /// this method takes any object that implements the Archivable
+    /// interface and encrypts it.
+    ///
+    /// the process obviously consists in serializing the object first.
+    ///
+    /// note that Encrypt() methods return an archive hidden in the
+    /// code.
+    ///
+    Status		PublicKey::Encrypt(const Archivable&	o,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      // create an archive.
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      // serialize the object.
+      if (archive.Serialize(o) == StatusError)
+	escape("unable to serialize the object");
+
+      // encrypt the archive.
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   const Archivable&	o7,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   const Archivable&	o7,
+					   const Archivable&	o8,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		PublicKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   const Archivable&	o7,
+					   const Archivable&	o8,
+					   const Archivable&	o9,
+					   Code&		code) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+	escape("unable to serialize the object");
+
+      if (this->Encrypt(archive, code) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    ///
+    /// verify
+    ///
+
+    ///
+    /// this method verifies an Archivable object by serializing it
+    /// before performing the verification process.
+    ///
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o) const
+    {
+      Archive		archive;
+
+      // create the archive.
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      // serialize the object.
+      if (archive.Serialize(o) == StatusError)
+	flee("unable to serialize the object");
+
+      // call the Verify() method.
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the object's archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2,
+					  const Archivable&	o3) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2,
+					  const Archivable&	o3,
+					  const Archivable&	o4) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2,
+					  const Archivable&	o3,
+					  const Archivable&	o4,
+					  const Archivable&	o5) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2,
+					  const Archivable&	o3,
+					  const Archivable&	o4,
+					  const Archivable&	o5,
+					  const Archivable&	o6) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2,
+					  const Archivable&	o3,
+					  const Archivable&	o4,
+					  const Archivable&	o5,
+					  const Archivable&	o6,
+					  const Archivable&	o7) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2,
+					  const Archivable&	o3,
+					  const Archivable&	o4,
+					  const Archivable&	o5,
+					  const Archivable&	o6,
+					  const Archivable&	o7,
+					  const Archivable&	o8) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
+    }
+
+    Status		PublicKey::Verify(const Signature&	signature,
+					  const Archivable&	o1,
+					  const Archivable&	o2,
+					  const Archivable&	o3,
+					  const Archivable&	o4,
+					  const Archivable&	o5,
+					  const Archivable&	o6,
+					  const Archivable&	o7,
+					  const Archivable&	o8,
+					  const Archivable&	o9) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	flee("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+	flee("unable to serialize the objects");
+
+      if (this->Verify(signature, archive) != StatusTrue)
+	flee("unable to verify the signature against the objects' archive");
+
+      true();
     }
 
   }

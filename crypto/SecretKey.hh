@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [wed jul 29 13:50:07 2009]
+// updated       julien quintard   [thu jul 30 19:15:08 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HH
@@ -63,7 +63,6 @@ namespace elle
       //
       // constants
       //
-      static const String		Class;
       static const Character		Magic[];
 
       struct Default
@@ -91,13 +90,9 @@ namespace elle
       Status		Generate();
       Status		Generate(const Natural32);
 
-      Status		Encrypt(const Archivable&,
-				Cipher&) const;
       Status		Encrypt(const Plain&,
 				Cipher&) const;
 
-      Status		Decrypt(const Cipher&,
-				Archivable&) const;
       Status		Decrypt(const Cipher&,
 				Clear&) const;
 
@@ -121,6 +116,122 @@ namespace elle
       // attributes
       //
       Region		key;
+
+      //
+      // variadic methods
+      //
+
+      // encrypt
+      Status		Encrypt(const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+      Status		Encrypt(const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				const Archivable&,
+				Cipher&) const;
+
+      // decrypt
+      Status		Decrypt(const Cipher&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&) const;
+      Status		Decrypt(const Cipher&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&) const;
     };
 
   }

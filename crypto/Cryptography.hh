@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cryptography.hh
 //
 // created       julien quintard   [tue oct 30 12:15:12 2007]
-// updated       julien quintard   [sun mar  8 10:42:00 2009]
+// updated       julien quintard   [thu jul 30 13:22:18 2009]
 //
 
 #ifndef ELLE_CRYPTO_CRYPTOGRAPHY_HH
@@ -66,96 +66,7 @@ namespace elle
       // static methods
       //
       static Status		Initialize();
-
-      //
-      // static inline template-methods
-      //
-      template <typename T>
-      static inline Status	Encrypt(const PublicKey&	K,
-					const T&		element,
-					Code&			code)
-      {
-	return (K.Encrypt(element, code));
-      }
-
-      template <typename T>
-      static inline Status	Decrypt(const PrivateKey&	k,
-					const Code&		code,
-					T&			element)
-      {
-	return (k.Decrypt(code, element));
-      }
-
-      template <typename T>
-      static inline Status	Sign(const PrivateKey&		k,
-				     const T&			element,
-				     Signature&			signature)
-      {
-	return (k.Sign(element, signature));
-      }
-
-      template <typename T>
-      static inline Status	Verify(const PublicKey&		K,
-				       const Signature&		signature,
-				       const T&			element)
-      {
-	return (K.Verify(signature, element));
-      }
-
-      template <typename T>
-      static inline Status	Encrypt(const KeyPair&		pair,
-					const T&		element,
-					Code&			code)
-      {
-	return (pair.Encrypt(element, code));
-      }
-
-      template <typename T>
-      static inline Status	Decrypt(const KeyPair&		pair,
-					const Code&		code,
-					T&			element)
-      {
-	return (pair.Decrypt(code, element));
-      }
-
-      template <typename T>
-      static inline Status	Sign(const KeyPair&		pair,
-				     const T&			element,
-				     Signature&			signature)
-      {
-	return (pair.Sign(element, signature));
-      }
-
-      template <typename T>
-      static inline Status	Verify(const KeyPair&		pair,
-				       const Signature&		signature,
-				       const T&			element)
-      {
-	return (pair.Verify(signature, element));
-      }
-
-      template <typename T>
-      static inline Status	Hash(const T&			element,
-				     Digest&			digest)
-      {
-	return (OneWay::Hash(element, digest));
-      }
-
-      template <typename T>
-      static inline Status	Encrypt(const SecretKey&	key,
-					const T&		element,
-					Code&			cipher)
-      {
-	return (key.Encrypt(element, cipher));
-      }
-
-      template <typename T>
-      static inline Status	Decrypt(const SecretKey&	key,
-					const Cipher&		cipher,
-					T&			element)
-      {
-	return (key.Decrypt(cipher, element));
-      }
+      static Status		Clean();
     };
 
   }

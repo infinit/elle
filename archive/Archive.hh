@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [wed jul 29 20:22:58 2009]
+// updated       julien quintard   [thu jul 30 17:58:13 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -396,17 +396,6 @@ namespace elle
 				T8&,
 				T9&);
     };
-
-    ///
-    /// this type is used internally and should never
-    /// be instantiated.
-    ///
-    struct Void
-    {
-    };
-
-    extern Void		vacuum;
-
   }
 }
 

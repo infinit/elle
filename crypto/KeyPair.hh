@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [wed jul 29 13:37:19 2009]
+// updated       julien quintard   [thu jul 30 19:05:57 2009]
 //
 
 #ifndef ELLE_CRYPTO_KEYPAIR_HH
@@ -64,18 +64,16 @@ namespace elle
       public Entity,
       public Dumpable, public Archivable
     {
-    private:
+    public:
       //
       // static methods
       //
       static Status	Initialize();
+      static Status	Clean();
 
-    public:
       //
       // constants
       //
-      static const String		Class;
-
       struct Default
       {
 	static const Natural32		Length;
@@ -92,38 +90,6 @@ namespace elle
       //
       Status		Generate();
       Status		Generate(const Natural32);
-
-      //
-      // inline template-methods
-      //
-      template <typename T>
-      inline Status	Encrypt(const T&			element,
-				Code&				code) const
-      {
-	return (this->K.Encrypt(element, code));
-      }
-
-      template <typename T>
-      inline Status	Decrypt(const Code&			code,
-				T&				element) const
-      {
-	return (this->k.Decrypt(code, element));
-      }
-
-      template <typename T>
-      inline Status	Sign(const T&				element,
-			     Signature&				signature)
-	const
-      {
-	return (this->k.Sign(element, signature));
-      }
-
-      template <typename T>
-      inline Status	Verify(const Signature&			signature,
-			       const T&				element) const
-      {
-	return (this->K.Verify(signature, element));
-      }
 
       //
       // interfaces

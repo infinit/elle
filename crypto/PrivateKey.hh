@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [wed jul 29 13:47:35 2009]
+// updated       julien quintard   [thu jul 30 18:14:26 2009]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HH
@@ -64,11 +64,6 @@ namespace elle
     {
     public:
       //
-      // constants
-      //
-      static const String		Class;
-
-      //
       // constructors & destructors
       //
       PrivateKey();
@@ -84,12 +79,7 @@ namespace elle
 			       Large*);
 
       Status		Decrypt(const Code&,
-				Archivable&) const;
-      Status		Decrypt(const Code&,
 				Clear&) const;
-
-      Status		Sign(const Archivable&,
-			     Signature&) const;
       Status		Sign(const Plain&,
 			     Signature&) const;
 
@@ -119,6 +109,122 @@ namespace elle
 	::EVP_PKEY_CTX*	decrypt;
 	::EVP_PKEY_CTX*	sign;
       }			contexts;
+
+      //
+      // variadic methods
+      //
+
+      // decrypt
+      Status		Decrypt(const Code&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&);
+      Status		Decrypt(const Code&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&,
+				Archivable&);
+
+      // sign
+      Status		Sign(const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
+      Status		Sign(const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     const Archivable&,
+			     Signature&) const;
     };
 
   }
