@@ -8,8 +8,12 @@ namespace hole
   DHT::DHT(QObject * p)
     : QObject(p),
       localNode_(*this),
-      nodes_()
+      socket_(new QUdpSocket(this)),
+      nodes_(),
+      port_(64626),
+      requests_()
   {
+    connect(socket_, SIGNAL(readyRead()), this, SLOT(ReadDatagram()));
   }
 
   DHT::~DHT()
@@ -21,19 +25,39 @@ namespace hole
   void
   DHT::Port(quint16 port)
   {
-    localNode_.Listen(port);
+    if (port == port_)
+      return;
+
+    port_ = port;
+    if (socket_->state() == QAbstractSocket::BoundState)
+      socket_->bind(port_);
   }
 
   quint16
   DHT::Port() const
   {
-    return localNode_.Port();
+    return port_;
+  }
+
+  void
+  DHT::ReadDatagram()
+  {
+    QByteArray data;
+    data.resize(socket_->pendingDatagramSize());
+    if (socket_->readDatagram(data.data(), data.size()) <= 0)
+      return;
+
+    // decode data
+    QDataStream stream(data);
+    quint16 cmd_id, tag;
+    stream >> cmd_id >> tag;
   }
 
   void
   DHT::Create()
   {
-    // TODO
+    if (socket_->state() != QAbstractSocket::BoundState)
+      socket_->bind(port_);
   }
 
   void
@@ -54,7 +78,7 @@ namespace hole
   void
   DHT::Disconnect()
   {
-    // Close local socket
     // Disconnect from every peers
+    socket_->close();
   }
 }

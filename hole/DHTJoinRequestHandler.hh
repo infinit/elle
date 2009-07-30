@@ -3,11 +3,13 @@
 
 # include <QTcpSocket>
 
+# include "hole/DHTRequestHandler.hh"
+
 namespace hole
 {
   class DHTJoinRequest;
 
-  class DHTJoinRequestHandler : public QObject
+  class DHTJoinRequestHandler : public DHTRequestHandler
   {
     Q_OBJECT;
 
@@ -19,14 +21,6 @@ namespace hole
 
   signals:
     void Joined(DHTJoinRequestHandler * handler);
-
-  protected slots:
-    void SocketConnected();
-    void SocketDisconnected();
-    void SocketError(QAbstractSocket::SocketError socketError);
-
-  protected:
-    QTcpSocket * socket_;
   };
 }
 

@@ -2,17 +2,12 @@
 
 namespace hole
 {
+  DHTRequest::DHTRequest(QObject * parent)
+    : QObject(parent)
+  {
+  }
+
   DHTRequest::~DHTRequest()
-  {
-  }
-
-  void
-  DHTRequest::Done()
-  {
-  }
-
-  void
-  DHTRequest::Failed()
   {
   }
 }

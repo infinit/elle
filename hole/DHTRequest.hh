@@ -11,15 +11,19 @@ namespace hole
   class DHT;
   class QTcpSocket;
 
-  class DHTRequest
+  class DHTRequest : public QObject
   {
+    Q_OBJECT;
+
   public:
+    DHTRequest(QObject * parent = 0);
     virtual ~DHTRequest();
 
+  signals:
     /** called when the request is finished and successful */
-    virtual void Done();
+    void Done();
     /** called when the request failed */
-    virtual void Failed();
+    void Failed();
   };
 
   class DHTJoinRequest : public DHTRequest
