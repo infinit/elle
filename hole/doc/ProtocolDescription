@@ -12,7 +12,8 @@ The structure is described in hole::PacketHeader.
 A packet header contains:
 * A 16 bits command id field (uint16).
 * A 16 bits command tag field (uint16). This field is used to track replies.
-* A 16 bits command length field (uint16). This is the number of bytes following the length field.
+* A 16 bits command length field (uint16). This is the number of bytes following
+the length field.
 * The variable length data field.
 
 Here is a small representation of a command packet:
