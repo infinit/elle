@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [wed jul 29 14:12:59 2009]
+// updated       julien quintard   [thu jul 30 13:03:36 2009]
 //
 
 //
@@ -25,15 +25,6 @@ namespace elle
 
   namespace crypto
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Digest::Class = "Digest";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -122,23 +113,9 @@ namespace elle
     ///
     Status		Digest::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(Digest::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the region.
-      if (ar.Serialize(this->region) == StatusError)
+      if (archive.Serialize(this->region) == StatusError)
 	escape("unable to serialize the region");
-
-      // record the object's archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -148,23 +125,8 @@ namespace elle
     ///
     Status		Digest::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
-
-      // extract the digest archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the digest archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (Digest::Class != name)
-	escape("wrong class name in the extract object");
-
       // extract the content.
-      if (ar.Extract(this->region) == StatusError)
+      if (archive.Extract(this->region) == StatusError)
 	escape("unable to extract the region");
 
       leave();

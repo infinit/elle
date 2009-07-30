@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [wed jul 29 14:12:44 2009]
+// updated       julien quintard   [thu jul 30 13:09:07 2009]
 //
 
 //
@@ -30,11 +30,6 @@ namespace elle
 //
 // ---------- definitions -----------------------------------------------------
 //
-
-    ///
-    /// the class name.
-    ///
-    const String		KeyPair::Class = "KeyPair";
 
     ///
     /// the default key pair length.
@@ -71,16 +66,8 @@ namespace elle
     ///
     /// this method initializes the key generation context.
     ///
-    /// \todo
-    ///   note that this context is never released :( maybe allocate/release
-    ///   it in Cryptography::Clean();
-    ///
     Status		KeyPair::Initialize()
     {
-      // if already initialized, leave.
-      if (KeyPair::Contexts::Generate != NULL)
-	leave();
-
       // create the context for the RSA algorithm.
       if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
 							       NULL)) == NULL)
@@ -91,6 +78,15 @@ namespace elle
 	escape("unable to initialise the generation context");
 
       leave();
+    }
+
+    ///
+    /// this method cleans the key generation context.
+    ///
+    Status		KeyPair::Clean()
+    {
+      // release the generation context.
+      ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
     }
 
     ///
@@ -110,10 +106,6 @@ namespace elle
     Status		KeyPair::Generate(const Natural32	length)
     {
       ::EVP_PKEY*	key = NULL;
-
-      // initialize the generation context.
-      if (KeyPair::Initialize() == StatusError)
-	escape("unable to initialize the key generation context");
 
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
@@ -213,26 +205,12 @@ namespace elle
     ///
     Status		KeyPair::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(KeyPair::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the internal numbers.
-      if (this->K.Serialize(ar) == StatusError)
+      if (this->K.Serialize(archive) == StatusError)
 	escape("unable to serialize the public key");
 
-      if (this->k.Serialize(ar) == StatusError)
+      if (this->k.Serialize(archive) == StatusError)
 	escape("unable to serialize the private key");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -242,27 +220,12 @@ namespace elle
     ///
     Status		KeyPair::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
-
-      // extract the keypair archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the keypair archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name from the archive");
-
-      // check the name.
-      if (KeyPair::Class != name)
-	escape("unable to properly extract a keypair object from the archive");
-
       // extract the public key.
-      if (this->K.Extract(ar) == StatusError)
+      if (this->K.Extract(archive) == StatusError)
 	escape("unable to extract the public key from the keypair archive");
 
       // extract the private key.
-      if (this->k.Extract(ar) == StatusError)
+      if (this->k.Extract(archive) == StatusError)
 	escape("unable to extract the private key from the keypair archive");
 
       leave();

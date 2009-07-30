@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cryptography.cc
 //
 // created       julien quintard   [tue oct 30 12:16:42 2007]
-// updated       julien quintard   [wed feb 18 17:35:37 2009]
+// updated       julien quintard   [thu jul 30 13:22:05 2009]
 //
 
 //
@@ -58,6 +58,22 @@ namespace elle
 
       // enable the SSL algorithms, especially for RSA.
       ::SSLeay_add_all_algorithms();
+
+      // initialize the key pair generation context.
+      if (KeyPair::Initialize() == StatusError)
+	escape("unable to initialize the key pair generation context");
+
+      leave();
+    }
+
+    ///
+    /// this method cleans static cryptographic resources.
+    ///
+    Status		Cryptography::Clean()
+    {
+      // clean the key pair generation context.
+      if (KeyPair::Clean() == StatusError)
+	escape("unable to initialize the key pair generation context");
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [wed jul 29 13:43:11 2009]
+// updated       julien quintard   [thu jul 30 13:19:56 2009]
 //
 
 #ifndef ELLE_CRYPTO_SIGNATURE_HH
@@ -43,11 +43,6 @@ namespace elle
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constants
-      //
-      static const String		Class;
-
       //
       // constructors & destructors
       //

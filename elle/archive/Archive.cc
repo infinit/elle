@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [wed jul 29 15:20:12 2009]
+// updated       julien quintard   [thu jul 30 13:51:10 2009]
 //
 
 //
@@ -39,11 +39,6 @@ namespace elle
     /// archives are initialised with this default capacity.
     ///
     const Natural32		Archive::Default::Capacity = 64;
-
-    ///
-    /// this definition is for internal use only.
-    ///
-    Void			vacuum;
 
 //
 // ---------- templates -------------------------------------------------------

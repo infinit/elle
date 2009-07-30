@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [wed jul 29 14:13:11 2009]
+// updated       julien quintard   [thu jul 30 19:09:11 2009]
 //
 
 //
@@ -26,15 +26,6 @@ namespace elle
 
   namespace crypto
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		PrivateKey::Class = "PrivateKey";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -148,36 +139,6 @@ namespace elle
     }
 
     ///
-    /// this method decrypts a serialized object and extracts it
-    /// to return a pretty newly created object.
-    ///
-    Status		PrivateKey::Decrypt(const Code&		code,
-					    Archivable&		object) const
-    {
-      Archive		archive;
-      Clear		clear;
-
-      // decrypt the code.
-      if (this->Decrypt(code, clear) == StatusError)
-	escape("unable to decrypt the code");
-
-      // wrap the clear into an archive.
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
-      // detach the data so that not both the clear and archive
-      // release the data.
-      if (archive.Detach() == StatusError)
-	escape("unable to detach the archive's data");
-
-      // extract the object.
-      if (archive.Extract(object) == StatusError)
-	escape("unable to extract the object");
-
-      leave();
-    }
-
-    ///
     /// this method decrypts a plain text which should actually be
     /// an archive containing both a secret key and some data.
     ///
@@ -264,32 +225,6 @@ namespace elle
 	if (secret.Decrypt(data, clear) == StatusError)
 	  escape("unable to decrypt the data with the secret key");
       }
-
-      leave();
-    }
-
-    ///
-    /// this method signs an Archivable object by serializing it
-    /// before applying the signature process.
-    ///
-    Status		PrivateKey::Sign(const Archivable&	object,
-					 Signature&		signature)
-      const
-    {
-      Archive		archive;
-      Digest		digest;
-
-      // create th archive.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // serialize the object.
-      if (archive.Serialize(object) == StatusError)
-	escape("unable to serialize the object");
-
-      // re-launch the Sign() method for a digest.
-      if (this->Sign(archive, signature) == StatusError)
-	escape("unable to sign the object's archive");
 
       leave();
     }
@@ -415,32 +350,18 @@ namespace elle
     ///
     Status		PrivateKey::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(PrivateKey::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the internal numbers.
-      if (ar.Serialize(*this->key->pkey.rsa->n) == StatusError)
+      if (archive.Serialize(*this->key->pkey.rsa->n) == StatusError)
 	escape("unable to serialize 'n'");
 
-      if (ar.Serialize(*this->key->pkey.rsa->d) == StatusError)
+      if (archive.Serialize(*this->key->pkey.rsa->d) == StatusError)
 	escape("unable to serialize 'd'");
 
-      if (ar.Serialize(*this->key->pkey.rsa->p) == StatusError)
+      if (archive.Serialize(*this->key->pkey.rsa->p) == StatusError)
 	escape("unable to serialize 'p'");
 
-      if (ar.Serialize(*this->key->pkey.rsa->q) == StatusError)
+      if (archive.Serialize(*this->key->pkey.rsa->q) == StatusError)
 	escape("unable to serialize 'q'");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -450,24 +371,10 @@ namespace elle
     ///
     Status		PrivateKey::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
       Large*		n;
       Large*		d;
       Large*		p;
       Large*		q;
-
-      // extract the private key archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the private key archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (PrivateKey::Class != name)
-	escape("wrong class name in the extract object");
 
       // allocate the big numbers.
       if ((n = ::BN_new()) == NULL)
@@ -483,21 +390,491 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // extract the numbers.
-      if (ar.Extract(*n) == StatusError)
+      if (archive.Extract(*n) == StatusError)
 	escape("unable to extract 'n'");
 
-      if (ar.Extract(*d) == StatusError)
+      if (archive.Extract(*d) == StatusError)
 	escape("unable to extract 'd'");
 
-      if (ar.Extract(*p) == StatusError)
+      if (archive.Extract(*p) == StatusError)
 	escape("unable to extract 'p'");
 
-      if (ar.Extract(*q) == StatusError)
+      if (archive.Extract(*q) == StatusError)
 	escape("unable to extract 'q'");
 
       // create the EVP_PKEY object from the extract numbers.
       if (this->Create(n, d, p, q) == StatusError)
 	escape("unable to create the private key from the archive");
+
+      leave();
+    }
+
+//
+// ---------- variadic methods ------------------------------------------------
+//
+
+    ///
+    /// these methods make it easier to decrypt/sign multiple items at
+    /// the same time while keeping a way to catch errors.
+    ///
+    /// note that the code is replicated in order to provide optimisation.
+    /// Indeed, otherwise, everytime a single item is hashed, the whole 9-step
+    /// ifs would be executed, testing if there are more than one item
+    /// to hash.
+    ///
+
+    //
+    // decrypt
+    //
+
+    ///
+    /// this method decrypts a code and returns a pretty newly created
+    /// archivable object.
+    ///
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      // decrypt the code.
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      // wrap the clear into an archive.
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      // detach the data so that not both the clear and archive
+      // release the data.
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      // extract the item.
+      if (archive.Extract(o) == StatusError)
+	escape("unable to extract the item");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2,
+					    Archivable&		o3)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2,
+					    Archivable&		o3,
+					    Archivable&		o4)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2,
+					    Archivable&		o3,
+					    Archivable&		o4,
+					    Archivable&		o5)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2,
+					    Archivable&		o3,
+					    Archivable&		o4,
+					    Archivable&		o5,
+					    Archivable&		o6)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2,
+					    Archivable&		o3,
+					    Archivable&		o4,
+					    Archivable&		o5,
+					    Archivable&		o6,
+					    Archivable&		o7)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2,
+					    Archivable&		o3,
+					    Archivable&		o4,
+					    Archivable&		o5,
+					    Archivable&		o6,
+					    Archivable&		o7,
+					    Archivable&		o8)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    Status		PrivateKey::Decrypt(const Code&		code,
+					    Archivable&		o1,
+					    Archivable&		o2,
+					    Archivable&		o3,
+					    Archivable&		o4,
+					    Archivable&		o5,
+					    Archivable&		o6,
+					    Archivable&		o7,
+					    Archivable&		o8,
+					    Archivable&		o9)
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
+    }
+
+    //
+    // sign
+    //
+
+    ///
+    /// this method signs an Archivable object by serializing it
+    /// before applying the signature process.
+    ///
+    Status		PrivateKey::Sign(const Archivable&	o,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      // create th archive.
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      // serialize the object.
+      if (archive.Serialize(o) == StatusError)
+	escape("unable to serialize the object");
+
+      // re-launch the Sign() method for a digest.
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the object's archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 const Archivable&	o3,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 const Archivable&	o3,
+					 const Archivable&	o4,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 const Archivable&	o3,
+					 const Archivable&	o4,
+					 const Archivable&	o5,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 const Archivable&	o3,
+					 const Archivable&	o4,
+					 const Archivable&	o5,
+					 const Archivable&	o6,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 const Archivable&	o3,
+					 const Archivable&	o4,
+					 const Archivable&	o5,
+					 const Archivable&	o6,
+					 const Archivable&	o7,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 const Archivable&	o3,
+					 const Archivable&	o4,
+					 const Archivable&	o5,
+					 const Archivable&	o6,
+					 const Archivable&	o7,
+					 const Archivable&	o8,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
+
+      leave();
+    }
+
+    Status		PrivateKey::Sign(const Archivable&	o1,
+					 const Archivable&	o2,
+					 const Archivable&	o3,
+					 const Archivable&	o4,
+					 const Archivable&	o5,
+					 const Archivable&	o6,
+					 const Archivable&	o7,
+					 const Archivable&	o8,
+					 const Archivable&	o9,
+					 Signature&		signature)
+      const
+    {
+      Archive		archive;
+      Digest		digest;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Sign(archive, signature) == StatusError)
+	escape("unable to sign the objects' archive");
 
       leave();
     }

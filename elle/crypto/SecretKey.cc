@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [wed jul 29 14:13:36 2009]
+// updated       julien quintard   [thu jul 30 19:38:06 2009]
 //
 
 //
@@ -30,11 +30,6 @@ namespace elle
 //
 // ---------- definitions -----------------------------------------------------
 //
-
-    ///
-    /// the class name.
-    ///
-    const String		SecretKey::Class = "SecretKey";
 
     ///
     /// this magic is recorded in encrypted text so that the decryption process
@@ -120,30 +115,6 @@ namespace elle
     }
 
     ///
-    /// this method encrypts the given Archivable object by serializing
-    /// it.
-    ///
-    Status		SecretKey::Encrypt(const Archivable&	object,
-					   Cipher&		cipher) const
-    {
-      Archive		archive;
-
-      // create an archive.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // serialize the object.
-      if (archive.Serialize(object) == StatusError)
-	escape("unable to serialize the object");
-
-      // encrypt the archive.
-      if (this->Encrypt(archive, cipher) == StatusError)
-	escape("unable to encrypt the object's archive");
-
-      leave();
-    }
-
-    ///
     /// this method encrypts the given plain text.
     ///
     Status		SecretKey::Encrypt(const Plain&		plain,
@@ -224,36 +195,6 @@ namespace elle
 
       // clean the context structure.
       ::EVP_CIPHER_CTX_cleanup(&context);
-
-      leave();
-    }
-
-    ///
-    /// this method decrypts the given Cipher before extracting the
-    /// object from the Clear.
-    ///
-    Status		SecretKey::Decrypt(const Cipher&	cipher,
-					   Archivable&		object) const
-    {
-      Archive		archive;
-      Clear		clear;
-
-      // decrypt the cipher.
-      if (this->Decrypt(cipher, clear) == StatusError)
-	escape("unable to decrypt the cipher");
-
-      // wrap the clear into an archive.
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
-      // detach the data so that not both the clear and archive
-      // release the data.
-      if (archive.Detach() == StatusError)
-	escape("unable to detach the archive's data");
-
-      // extract the object.
-      if (archive.Extract(object) == StatusError)
-	escape("unable to extract the object");
 
       leave();
     }
@@ -411,23 +352,9 @@ namespace elle
     ///
     Status		SecretKey::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(SecretKey::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the internal key.
-      if (ar.Serialize(this->key) == StatusError)
+      if (archive.Serialize(this->key) == StatusError)
 	escape("unable to serialize the internal key");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -437,27 +364,465 @@ namespace elle
     ///
     Status		SecretKey::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
-
-      // extract the secret key archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the secret key archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (SecretKey::Class != name)
-	escape("wrong class name in the extract object");
-
       // extract the key.
-      if (ar.Extract(this->key) == StatusError)
+      if (archive.Extract(this->key) == StatusError)
 	escape("unable to extract the internal key");
 
       leave();
     }
+
+//
+// ---------- variadic methods ------------------------------------------------
+//
+
+    ///
+    /// these methods make it easier to decrypt/sign multiple items at
+    /// the same time while keeping a way to catch errors.
+    ///
+    /// note that the code is replicated in order to provide optimisation.
+    /// Indeed, otherwise, everytime a single item is hashed, the whole 9-step
+    /// ifs would be executed, testing if there are more than one item
+    /// to hash.
+    ///
+
+    //
+    // encrypt
+    //
+
+    ///
+    /// this method encrypts the given Archivable object by serializing
+    /// it.
+    ///
+    Status		SecretKey::Encrypt(const Archivable&	o,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      // create an archive.
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      // serialize the object.
+      if (archive.Serialize(o) == StatusError)
+	escape("unable to serialize the object");
+
+      // encrypt the archive.
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the object's archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   const Archivable&	o7,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   const Archivable&	o7,
+					   const Archivable&	o8,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    Status		SecretKey::Encrypt(const Archivable&	o1,
+					   const Archivable&	o2,
+					   const Archivable&	o3,
+					   const Archivable&	o4,
+					   const Archivable&	o5,
+					   const Archivable&	o6,
+					   const Archivable&	o7,
+					   const Archivable&	o8,
+					   const Archivable&	o9,
+					   Cipher&		cipher) const
+    {
+      Archive		archive;
+
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
+
+      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+	escape("unable to serialize the objects");
+
+      if (this->Encrypt(archive, cipher) == StatusError)
+	escape("unable to encrypt the objects' archive");
+
+      leave();
+    }
+
+    //
+    // decrypt
+    //
+
+    ///
+    /// this method decrypts the given Cipher before extracting the
+    /// object from the Clear.
+    ///
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      // decrypt the cipher.
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      // wrap the clear into an archive.
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      // detach the data so that not both the clear and archive
+      // release the data.
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      // extract the object.
+      if (archive.Extract(o) == StatusError)
+	escape("unable to extract the object");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2,
+					   Archivable&		o3) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2,
+					   Archivable&		o3,
+					   Archivable&		o4) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2,
+					   Archivable&		o3,
+					   Archivable&		o4,
+					   Archivable&		o5) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2,
+					   Archivable&		o3,
+					   Archivable&		o4,
+					   Archivable&		o5,
+					   Archivable&		o6) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2,
+					   Archivable&		o3,
+					   Archivable&		o4,
+					   Archivable&		o5,
+					   Archivable&		o6,
+					   Archivable&		o7) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6, o7) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2,
+					   Archivable&		o3,
+					   Archivable&		o4,
+					   Archivable&		o5,
+					   Archivable&		o6,
+					   Archivable&		o7,
+					   Archivable&		o8) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
+    Status		SecretKey::Decrypt(const Cipher&	cipher,
+					   Archivable&		o1,
+					   Archivable&		o2,
+					   Archivable&		o3,
+					   Archivable&		o4,
+					   Archivable&		o5,
+					   Archivable&		o6,
+					   Archivable&		o7,
+					   Archivable&		o8,
+					   Archivable&		o9) const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      if (this->Decrypt(cipher, clear) == StatusError)
+	escape("unable to decrypt the cipher");
+
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      if (archive.Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      if (archive.Extract(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+	escape("unable to extract the objects");
+
+      leave();
+    }
+
 
   }
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sat jul 25 19:42:14 2009]
+// updated       julien quintard   [thu jul 30 16:10:01 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -290,6 +290,11 @@ namespace elle
     /// these methods make it easier to serialize/extract multiple items at
     /// the same time while keeping a way to catch errors.
     ///
+    /// note that the code is replicated in order to provide optimisation.
+    /// Indeed, otherwise, everytime a single item is serialized, the whole
+    /// 9-step ifs would be executed, testing if there are more than one item
+    /// to serialize.
+    ///
 
     //
     // serialize
@@ -300,8 +305,15 @@ namespace elle
     Status		Archive::Serialize(const T1&		t1,
 					   const T2&		t2)
     {
-      return (this->Serialize(t1, t2,
-			      vacuum, vacuum, vacuum, vacuum, vacuum, vacuum, vacuum));
+      // serialize the first item.
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
+
+      // serialize the second item.
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
+
+      leave();
     }
 
     template <typename T1,
@@ -311,8 +323,16 @@ namespace elle
 					   const T2&		t2,
 					   const T3&		t3)
     {
-      return (this->Serialize(t1, t2, t3,
-			      vacuum, vacuum, vacuum, vacuum, vacuum, vacuum));
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
+
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
+
+      if (this->Serialize(t3) == StatusError)
+	escape("unable to serialize the third item");
+
+      leave();
     }
 
     template <typename T1,
@@ -324,8 +344,19 @@ namespace elle
 					   const T3&		t3,
 					   const T4&		t4)
     {
-      return (this->Serialize(t1, t2, t3, t4,
-			      vacuum, vacuum, vacuum, vacuum, vacuum));
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
+
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
+
+      if (this->Serialize(t3) == StatusError)
+	escape("unable to serialize the third item");
+
+      if (this->Serialize(t4) == StatusError)
+	escape("unable to serialize the fourth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -339,8 +370,22 @@ namespace elle
 					   const T4&		t4,
 					   const T5&		t5)
     {
-      return (this->Serialize(t1, t2, t3, t4, t5,
-			      vacuum, vacuum, vacuum, vacuum));
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
+
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
+
+      if (this->Serialize(t3) == StatusError)
+	escape("unable to serialize the third item");
+
+      if (this->Serialize(t4) == StatusError)
+	escape("unable to serialize the fourth item");
+
+      if (this->Serialize(t5) == StatusError)
+	escape("unable to serialize the fifth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -356,8 +401,25 @@ namespace elle
 					   const T5&		t5,
 					   const T6&		t6)
     {
-      return (this->Serialize(t1, t2, t3, t4, t5, t6,
-			      vacuum, vacuum, vacuum));
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
+
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
+
+      if (this->Serialize(t3) == StatusError)
+	escape("unable to serialize the third item");
+
+      if (this->Serialize(t4) == StatusError)
+	escape("unable to serialize the fourth item");
+
+      if (this->Serialize(t5) == StatusError)
+	escape("unable to serialize the fifth item");
+
+      if (this->Serialize(t6) == StatusError)
+	escape("unable to serialize the sixth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -375,8 +437,28 @@ namespace elle
 					   const T6&		t6,
 					   const T7&		t7)
     {
-      return (this->Serialize(t1, t2, t3, t4, t5, t6, t7,
-			      vacuum, vacuum));
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
+
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
+
+      if (this->Serialize(t3) == StatusError)
+	escape("unable to serialize the third item");
+
+      if (this->Serialize(t4) == StatusError)
+	escape("unable to serialize the fourth item");
+
+      if (this->Serialize(t5) == StatusError)
+	escape("unable to serialize the fifth item");
+
+      if (this->Serialize(t6) == StatusError)
+	escape("unable to serialize the sixth item");
+
+      if (this->Serialize(t7) == StatusError)
+	escape("unable to serialize the seventh item");
+
+      leave();
     }
 
     template <typename T1,
@@ -396,8 +478,31 @@ namespace elle
 					   const T7&		t7,
 					   const T8&		t8)
     {
-      return (this->Serialize(t1, t2, t3, t4, t5, t6, t7, t8,
-			      vacuum));
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
+
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
+
+      if (this->Serialize(t3) == StatusError)
+	escape("unable to serialize the third item");
+
+      if (this->Serialize(t4) == StatusError)
+	escape("unable to serialize the fourth item");
+
+      if (this->Serialize(t5) == StatusError)
+	escape("unable to serialize the fifth item");
+
+      if (this->Serialize(t6) == StatusError)
+	escape("unable to serialize the sixth item");
+
+      if (this->Serialize(t7) == StatusError)
+	escape("unable to serialize the seventh item");
+
+      if (this->Serialize(t8) == StatusError)
+	escape("unable to serialize the eighth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -419,41 +524,32 @@ namespace elle
 					   const T8&		t8,
 					   const T9&		t9)
     {
-      if (Resolve<T1>::value != Resolve<Void>::value)
-	if (this->Serialize(t1) == StatusError)
-	  escape("unable to serialize the first element");
+      if (this->Serialize(t1) == StatusError)
+	escape("unable to serialize the first item");
 
-      if (Resolve<T2>::value != Resolve<Void>::value)
-	if (this->Serialize(t2) == StatusError)
-	  escape("unable to serialize the second element");
+      if (this->Serialize(t2) == StatusError)
+	escape("unable to serialize the second item");
 
-      if (Resolve<T3>::value != Resolve<Void>::value)
-	if (this->Serialize(t3) == StatusError)
-	  escape("unable to serialize the third element");
+      if (this->Serialize(t3) == StatusError)
+	escape("unable to serialize the third item");
 
-      if (Resolve<T4>::value != Resolve<Void>::value)
-	if (this->Serialize(t4) == StatusError)
-	  escape("unable to serialize the fourth element");
+      if (this->Serialize(t4) == StatusError)
+	escape("unable to serialize the fourth item");
 
-      if (Resolve<T5>::value != Resolve<Void>::value)
-	if (this->Serialize(t5) == StatusError)
-	  escape("unable to serialize the fifth element");
+      if (this->Serialize(t5) == StatusError)
+	escape("unable to serialize the fifth item");
 
-      if (Resolve<T6>::value != Resolve<Void>::value)
-	if (this->Serialize(t6) == StatusError)
-	  escape("unable to serialize the sixth element");
+      if (this->Serialize(t6) == StatusError)
+	escape("unable to serialize the sixth item");
 
-      if (Resolve<T7>::value != Resolve<Void>::value)
-	if (this->Serialize(t7) == StatusError)
-	  escape("unable to serialize the seventh element");
+      if (this->Serialize(t7) == StatusError)
+	escape("unable to serialize the seventh item");
 
-      if (Resolve<T8>::value != Resolve<Void>::value)
-	if (this->Serialize(t8) == StatusError)
-	  escape("unable to serialize the eighth element");
+      if (this->Serialize(t8) == StatusError)
+	escape("unable to serialize the eighth item");
 
-      if (Resolve<T9>::value != Resolve<Void>::value)
-	if (this->Serialize(t9) == StatusError)
-	  escape("unable to serialize the ninth element");
+      if (this->Serialize(t9) == StatusError)
+	escape("unable to serialize the ninth item");
 
       leave();
     }
@@ -467,8 +563,15 @@ namespace elle
     Status		Archive::Extract(T1&			t1,
 					 T2&			t2)
     {
-      return (this->Extract(t1, t2,
-			    vacuum, vacuum, vacuum, vacuum, vacuum, vacuum, vacuum));
+      // extract the first item.
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
+
+      // extract the second item.
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
+
+      leave();
     }
 
     template <typename T1,
@@ -478,8 +581,16 @@ namespace elle
 					 T2&			t2,
 					 T3&			t3)
     {
-      return (this->Extract(t1, t2, t3,
-			    vacuum, vacuum, vacuum, vacuum, vacuum, vacuum));
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
+
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
+
+      if (this->Extract(t3) == StatusError)
+	escape("unable to extract the third item");
+
+      leave();
     }
 
     template <typename T1,
@@ -491,8 +602,19 @@ namespace elle
 					 T3&			t3,
 					 T4&			t4)
     {
-      return (this->Extract(t1, t2, t3, t4,
-			    vacuum, vacuum, vacuum, vacuum, vacuum));
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
+
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
+
+      if (this->Extract(t3) == StatusError)
+	escape("unable to extract the third item");
+
+      if (this->Extract(t4) == StatusError)
+	escape("unable to extract the fourth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -506,8 +628,22 @@ namespace elle
 					 T4&			t4,
 					 T5&			t5)
     {
-      return (this->Extract(t1, t2, t3, t4, t5,
-			    vacuum, vacuum, vacuum, vacuum));
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
+
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
+
+      if (this->Extract(t3) == StatusError)
+	escape("unable to extract the third item");
+
+      if (this->Extract(t4) == StatusError)
+	escape("unable to extract the fourth item");
+
+      if (this->Extract(t5) == StatusError)
+	escape("unable to extract the fifth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -523,8 +659,25 @@ namespace elle
 					 T5&			t5,
 					 T6&			t6)
     {
-      return (this->Extract(t1, t2, t3, t4, t5, t6,
-			    vacuum, vacuum, vacuum));
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
+
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
+
+      if (this->Extract(t3) == StatusError)
+	escape("unable to extract the third item");
+
+      if (this->Extract(t4) == StatusError)
+	escape("unable to extract the fourth item");
+
+      if (this->Extract(t5) == StatusError)
+	escape("unable to extract the fifth item");
+
+      if (this->Extract(t6) == StatusError)
+	escape("unable to extract the sixth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -542,8 +695,28 @@ namespace elle
 					 T6&			t6,
 					 T7&			t7)
     {
-      return (this->Extract(t1, t2, t3, t4, t5, t6, t7,
-			    vacuum, vacuum));
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
+
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
+
+      if (this->Extract(t3) == StatusError)
+	escape("unable to extract the third item");
+
+      if (this->Extract(t4) == StatusError)
+	escape("unable to extract the fourth item");
+
+      if (this->Extract(t5) == StatusError)
+	escape("unable to extract the fifth item");
+
+      if (this->Extract(t6) == StatusError)
+	escape("unable to extract the sixth item");
+
+      if (this->Extract(t7) == StatusError)
+	escape("unable to extract the seventh item");
+
+      leave();
     }
 
     template <typename T1,
@@ -563,8 +736,31 @@ namespace elle
 					 T7&			t7,
 					 T8&			t8)
     {
-      return (this->Extract(t1, t2, t3, t4, t5, t6, t7, t8,
-			    vacuum));
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
+
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
+
+      if (this->Extract(t3) == StatusError)
+	escape("unable to extract the third item");
+
+      if (this->Extract(t4) == StatusError)
+	escape("unable to extract the fourth item");
+
+      if (this->Extract(t5) == StatusError)
+	escape("unable to extract the fifth item");
+
+      if (this->Extract(t6) == StatusError)
+	escape("unable to extract the sixth item");
+
+      if (this->Extract(t7) == StatusError)
+	escape("unable to extract the seventh item");
+
+      if (this->Extract(t8) == StatusError)
+	escape("unable to extract the eighth item");
+
+      leave();
     }
 
     template <typename T1,
@@ -586,41 +782,32 @@ namespace elle
 					 T8&			t8,
 					 T9&			t9)
     {
-      if (Resolve<T1>::value != Resolve<Void>::value)
-	if (this->Extract(t1) == StatusError)
-	  escape("unable to extract the first element");
+      if (this->Extract(t1) == StatusError)
+	escape("unable to extract the first item");
 
-      if (Resolve<T2>::value != Resolve<Void>::value)
-	if (this->Extract(t2) == StatusError)
-	  escape("unable to extract the second element");
+      if (this->Extract(t2) == StatusError)
+	escape("unable to extract the second item");
 
-      if (Resolve<T3>::value != Resolve<Void>::value)
-	if (this->Extract(t3) == StatusError)
-	  escape("unable to extract the third element");
+      if (this->Extract(t3) == StatusError)
+	escape("unable to extract the third item");
 
-      if (Resolve<T4>::value != Resolve<Void>::value)
-	if (this->Extract(t4) == StatusError)
-	  escape("unable to extract the fourth element");
+      if (this->Extract(t4) == StatusError)
+	escape("unable to extract the fourth item");
 
-      if (Resolve<T5>::value != Resolve<Void>::value)
-	if (this->Extract(t5) == StatusError)
-	  escape("unable to extract the fifth element");
+      if (this->Extract(t5) == StatusError)
+	escape("unable to extract the fifth item");
 
-      if (Resolve<T6>::value != Resolve<Void>::value)
-	if (this->Extract(t6) == StatusError)
-	  escape("unable to extract the sixth element");
+      if (this->Extract(t6) == StatusError)
+	escape("unable to extract the sixth item");
 
-      if (Resolve<T7>::value != Resolve<Void>::value)
-	if (this->Extract(t7) == StatusError)
-	  escape("unable to extract the seventh element");
+      if (this->Extract(t7) == StatusError)
+	escape("unable to extract the seventh item");
 
-      if (Resolve<T8>::value != Resolve<Void>::value)
-	if (this->Extract(t8) == StatusError)
-	  escape("unable to extract the eighth element");
+      if (this->Extract(t8) == StatusError)
+	escape("unable to extract the eighth item");
 
-      if (Resolve<T9>::value != Resolve<Void>::value)
-	if (this->Extract(t9) == StatusError)
-	  escape("unable to extract the ninth element");
+      if (this->Extract(t9) == StatusError)
+	escape("unable to extract the ninth item");
 
       leave();
     }
