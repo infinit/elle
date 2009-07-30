@@ -64,7 +64,8 @@ h2. Commands description
 h3. ping & pong
 
 ping & pong are used to check if a peer is still alive and mesure the latence.
-First you send ping to query a node, then you should receive pong from this host.
+First you send ping to query a node, then you should receive pong from this
+host.
 
 h3. quit
 
