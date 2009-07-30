@@ -2,8 +2,8 @@
 
 namespace hole
 {
-  DHTRequest::DHTRequest(QObject * parent)
-    : QObject(parent)
+  DHTRequest::DHTRequest(QObject * p)
+    : QObject(p)
   {
   }
 
