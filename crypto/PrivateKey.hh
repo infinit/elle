@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [thu jul 30 18:14:26 2009]
+// updated       julien quintard   [fri jul 31 01:28:08 2009]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HH
@@ -111,123 +111,247 @@ namespace elle
       }			contexts;
 
       //
-      // variadic methods
+      // forward methods
+      //
+
+      ///
+      /// this methods are required because the compiler, given an Archive
+      /// object will call a template-based method instead of the Plain one.
+      ///
+      /// we do not want this especially because the template-based methods
+      /// build archives and we are already receiving an archive.
+      ///
+
+      Status		Decrypt(const Code&		code,
+				Archive&		archive) const
+      {
+	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
+
+	return (this->Decrypt(code, (Plain&)archive));
+      }
+
+      Status		Sign(const Archive&		archive,
+			     Signature&			signature) const
+      {
+	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
+
+	return (this->Sign((Plain&)archive, signature));
+      }
+
+      //
+      // variadic templates
       //
 
       // decrypt
+      template <typename T1>
       Status		Decrypt(const Code&,
-				Archivable&);
+				T1&);
+      template <typename T1,
+		typename T2>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&);
+      template <typename T1,
+		typename T2,
+		typename T3>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&,
+				T3&);
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&,
+				T3&,
+				T4&);
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&);
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&);
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&,
+				T7&);
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&,
+				T7&,
+				T8&);
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8,
+		typename T9>
       Status		Decrypt(const Code&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&);
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&,
+				T7&,
+				T8&,
+				T9&);
 
       // sign
-      Status		Sign(const Archivable&,
+      template <typename T1>
+      Status		Sign(const T1&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2>
+      Status		Sign(const T1&,
+			     const T2&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3>
+      Status		Sign(const T1&,
+			     const T2&,
+			     const T3&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4>
+      Status		Sign(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5>
+      Status		Sign(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6>
+      Status		Sign(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7>
+      Status		Sign(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8>
+      Status		Sign(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     const T8&,
 			     Signature&) const;
-      Status		Sign(const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
-			     const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8,
+		typename T9>
+      Status		Sign(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     const T8&,
+			     const T9&,
 			     Signature&) const;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <elle/crypto/PrivateKey.hxx>
 
 #endif

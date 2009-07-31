@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [thu jul 30 19:15:08 2009]
+// updated       julien quintard   [fri jul 31 01:17:51 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HH
@@ -92,7 +92,6 @@ namespace elle
 
       Status		Encrypt(const Plain&,
 				Cipher&) const;
-
       Status		Decrypt(const Cipher&,
 				Clear&) const;
 
@@ -118,123 +117,247 @@ namespace elle
       Region		key;
 
       //
-      // variadic methods
+      // forward methods
+      //
+
+      ///
+      /// this methods are required because the compiler, given an Archive
+      /// object will call a template-based method instead of the Plain one.
+      ///
+      /// we do not want this especially because the template-based methods
+      /// build archives and we are already receiving an archive.
+      ///
+
+      Status		Encrypt(const Archive&		archive,
+				Cipher&			cipher) const
+      {
+	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
+
+	return (this->Encrypt((Plain&)archive, cipher));
+      }
+
+      Status		Decrypt(const Cipher&		cipher,
+				Archive&		archive) const
+      {
+	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
+
+	return (this->Decrypt(cipher, (Plain&)archive));
+      }
+
+      //
+      // variadic templates
       //
 
       // encrypt
-      Status		Encrypt(const Archivable&,
+      template <typename T1>
+      Status		Encrypt(const T1&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2>
+      Status		Encrypt(const T1&,
+				const T2&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
+				const T7&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
+				const T7&,
+				const T8&,
 				Cipher&) const;
-      Status		Encrypt(const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
-				const Archivable&,
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8,
+		typename T9>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
+				const T7&,
+				const T8&,
+				const T9&,
 				Cipher&) const;
 
       // decrypt
+      template <typename T1>
       Status		Decrypt(const Cipher&,
-				Archivable&) const;
+				T1&) const;
+      template <typename T1,
+		typename T2>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&) const;
+      template <typename T1,
+		typename T2,
+		typename T3>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&,
+				T3&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&,
+				T3&,
+				T4&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&,
+				T7&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&,
+				T7&,
+				T8&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8,
+		typename T9>
       Status		Decrypt(const Cipher&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&,
-				Archivable&) const;
+				T1&,
+				T2&,
+				T3&,
+				T4&,
+				T5&,
+				T6&,
+				T7&,
+				T8&,
+				T9&) const;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <elle/crypto/SecretKey.hxx>
 
 #endif

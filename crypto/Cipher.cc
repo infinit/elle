@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu jul 30 13:01:16 2009]
+// updated       julien quintard   [thu jul 30 19:56:52 2009]
 //
 
 //
