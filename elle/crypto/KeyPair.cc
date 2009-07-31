@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [thu jul 30 13:09:07 2009]
+// updated       julien quintard   [fri jul 31 00:51:41 2009]
 //
 
 //
@@ -107,22 +107,32 @@ namespace elle
     {
       ::EVP_PKEY*	key = NULL;
 
+      printf("[XXX] 0x%x\n", KeyPair::Contexts::Generate);
+
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
 					     length) <= 0)
 	escape("unable to set the RSA key length");
 
+      printf("XXX\n");
+
       // generate the EVP key.
       if (::EVP_PKEY_keygen(KeyPair::Contexts::Generate, &key) <= 0)
 	escape("unable to generate the key");
+
+      printf("XXX\n");
 
       // create the actual public key according to the EVP structure.
       if (this->K.Create(key) == StatusError)
 	escape("unable to create the public key");
 
+      printf("XXX\n");
+
       // create the actual private key according to the EVP structure.
       if (this->k.Create(key) == StatusError)
 	escape("unable to create the private key");
+
+      printf("XXX\n");
 
       // release the memory.
       ::EVP_PKEY_free(key);
@@ -205,12 +215,9 @@ namespace elle
     ///
     Status		KeyPair::Serialize(Archive&		archive) const
     {
-      // serialize the internal numbers.
-      if (this->K.Serialize(archive) == StatusError)
-	escape("unable to serialize the public key");
-
-      if (this->k.Serialize(archive) == StatusError)
-	escape("unable to serialize the private key");
+      // serialize the internal keys.
+      if (archive.Serialize(this->K, this->k) == StatusError)
+	escape("unable to serialize the internal keys");
 
       leave();
     }
@@ -220,13 +227,9 @@ namespace elle
     ///
     Status		KeyPair::Extract(Archive&		archive)
     {
-      // extract the public key.
-      if (this->K.Extract(archive) == StatusError)
-	escape("unable to extract the public key from the keypair archive");
-
-      // extract the private key.
-      if (this->k.Extract(archive) == StatusError)
-	escape("unable to extract the private key from the keypair archive");
+      // extract the internal keys.
+      if (archive.Extract(this->K, this->k) == StatusError)
+	escape("unable to extract the internal keys");
 
       leave();
     }
