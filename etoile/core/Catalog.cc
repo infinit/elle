@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed jul 29 16:48:57 2009]
+// updated       julien quintard   [thu jul 30 20:25:28 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Catalog::Class = "Catalog";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -176,22 +167,13 @@ namespace etoile
     Status		Catalog::Serialize(Archive&		archive) const
     {
       std::list<Catalog::Entry*>::const_iterator i;
-      Archive		ar;
 
       // call the parent class.
       if (Block::Serialize(archive) == StatusError)
 	escape("unable to serialize the block");
 
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(Catalog::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the number of entries.
-      if (ar.Serialize((Natural32)this->entries.size()) == StatusError)
+      if (archive.Serialize((Natural32)this->entries.size()) == StatusError)
 	escape("unable to serialize the catalog size");
 
       // serialize the list of entries.
@@ -200,14 +182,10 @@ namespace etoile
 	  Catalog::Entry*	entry = *i;
 
 	  // serialize an entry.
-	  if (ar.Serialize(entry->name,
-			   entry->address) == StatusError)
+	  if (archive.Serialize(entry->name,
+				entry->address) == StatusError)
 	    escape("unable to serialize the entry");
 	}
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -217,8 +195,6 @@ namespace etoile
     ///
     Status		Catalog::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
       Natural32		size;
       Natural32		i;
 
@@ -226,20 +202,8 @@ namespace etoile
       if (Block::Extract(archive) == StatusError)
 	escape("unable to extract the block");
 
-      // extract the block archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the block archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (Catalog::Class != name)
-	escape("wrong class name in the extract object");
-
       // extract the size.
-      if (ar.Extract(size) == StatusError)
+      if (archive.Extract(size) == StatusError)
 	escape("unable to extract the size");
 
       for (i = 0; i < size; i++)
@@ -249,8 +213,8 @@ namespace etoile
 	  entry = new Catalog::Entry;
 
 	  // extract an entry.
-	  if (ar.Extract(entry->name,
-			 entry->address) == StatusError)
+	  if (archive.Extract(entry->name,
+			      entry->address) == StatusError)
 	    escape("unable to extract the entry");
 
 	  // add it to the entries.

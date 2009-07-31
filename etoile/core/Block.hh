@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [wed jul 29 16:47:00 2009]
+// updated       julien quintard   [thu jul 30 20:19:37 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_BLOCK_HH
@@ -38,11 +38,6 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constants
-      //
-      static const String		Class;
-
       //
       // constructors & destructors
       //

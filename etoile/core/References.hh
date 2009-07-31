@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/References.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [wed jul 29 17:03:04 2009]
+// updated       julien quintard   [thu jul 30 20:48:30 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -53,11 +53,6 @@ namespace etoile
 	SecretKey	key;
 	Natural64	size;
       };
-
-      //
-      // constants
-      //
-      static const String		Class;
 
       //
       // methods

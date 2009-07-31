@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [wed jul 29 17:27:20 2009]
+// updated       julien quintard   [thu jul 30 20:47:19 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_PUBLICKEYBLOCK_HH
@@ -38,11 +38,6 @@ namespace etoile
       public Block
     {
     public:
-      //
-      // constants
-      //
-      static const String		Class;
-
       //
       // constructors & destructors
       //

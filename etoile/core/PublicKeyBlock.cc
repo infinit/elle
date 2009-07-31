@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [wed jul 29 17:28:41 2009]
+// updated       julien quintard   [thu jul 30 20:53:18 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		PublicKeyBlock::Class = "PublicKeyBlock";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -125,23 +116,13 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Serialize(Archive&	archive) const
     {
-      Archive		ar;
-
       // call the parent class.
       if (Block::Serialize(archive) == StatusError)
 	escape("unable to serialize the block");
 
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class elements.
-      if (ar.Serialize(PublicKeyBlock::Class, this->K) == StatusError)
-	escape("unable to serialize the class elements");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
+      // serialize the public key.
+      if (archive.Serialize(this->K) == StatusError)
+	escape("unable to serialize the public key");
 
       leave();
     }
@@ -151,24 +132,13 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Extract(Archive&	archive)
     {
-      Archive		ar;
-      String		name;
-
       // call the parent class.
       if (Block::Extract(archive) == StatusError)
 	escape("unable to extract the block");
 
-      // extract the block archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the block archive object");
-
-      // extract the elements.
-      if (ar.Extract(name, this->K) == StatusError)
-	escape("unable to extract the class elements");
-
-      // check the name.
-      if (PublicKeyBlock::Class != name)
-	escape("wrong class name in the extract object");
+      // extract the public key.
+      if (archive.Extract(this->K) == StatusError)
+	escape("unable to extract the public key");
 
       leave();
     }

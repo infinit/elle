@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [fri jul 24 16:31:59 2009]
+// updated       julien quintard   [thu jul 30 19:52:57 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ACCESS_HH
@@ -46,11 +46,6 @@ namespace etoile
 	  TypeUser,
 	  TypeGroup
 	};
-
-      //
-      // constants
-      //
-      static const String		Class;
 
       //
       // structures

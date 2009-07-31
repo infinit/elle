@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [wed jul 29 16:58:18 2009]
+// updated       julien quintard   [thu jul 30 20:30:38 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -59,11 +59,6 @@ namespace etoile
 	  ModeOwner,
 	  ModeUser
 	};
-
-      //
-      // constants
-      //
-      static const String		Class;
 
       //
       // constructors & destructors

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed jul 29 17:04:56 2009]
+// updated       julien quintard   [thu jul 30 20:51:28 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Token::Class = "Token";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -116,32 +107,18 @@ namespace etoile
     ///
     Status		Token::Serialize(Archive&	archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(Token::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       if (this->code != NULL)
 	{
 	  // serialize the internal code.
-	  if (ar.Serialize(*this->code) == StatusError)
+	  if (archive.Serialize(*this->code) == StatusError)
 	    escape("unable to serialize the digest");
 	}
       else
 	{
 	  // serialize 'none'.
-	  if (ar.Serialize(none) == StatusError)
+	  if (archive.Serialize(none) == StatusError)
 	    escape("unable to serialize 'none'");
 	}
-
-      // record in the archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object's archive");
 
       leave();
     }
@@ -151,29 +128,17 @@ namespace etoile
     ///
     Status		Token::Extract(Archive&	archive)
     {
-      Archive		ar;
-      String		name;
       Archive::Type	type;
 
-      // extract the token archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the token archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (Token::Class != name)
-	escape("wrong class name in the extract object");
-
       // fetch the next element's type.
-      if (ar.Fetch(type) == StatusError)
+      if (archive.Fetch(type) == StatusError)
 	escape("unable to fetch the next element's type");
 
       if (type == Archive::TypeNull)
 	{
-	  // nothing to do, keep the code to NULL.
+	  // nothing to do, keep the digest to NULL.
+	  if (archive.Extract(none) == StatusError)
+	    escape("unable to extract null");
 	}
       else
 	{
@@ -181,7 +146,7 @@ namespace etoile
 	  this->code = new Code;
 
 	  // extract the internal code.
-	  if (ar.Extract(*this->code) == StatusError)
+	  if (archive.Extract(*this->code) == StatusError)
 	    escape("unable to extract the code");
 	}
 

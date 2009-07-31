@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [wed jul 29 16:47:48 2009]
+// updated       julien quintard   [thu jul 30 20:19:46 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Block::Class = "Block";
 
 //
 // ---------- constructors & destructors --------------------------------------

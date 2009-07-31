@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [wed jul 29 17:05:20 2009]
+// updated       julien quintard   [thu jul 30 20:51:42 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_VOUCHER_HH
@@ -40,11 +40,6 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constants
-      //
-      static const String		Class;
-
       //
       // constructors & destructors
       //

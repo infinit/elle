@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [wed jul 29 20:14:03 2009]
+// updated       julien quintard   [thu jul 30 20:38:48 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Object::Class = "Object";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -157,8 +148,6 @@ namespace etoile
     Status		Object::Write(PrivateKey&		author,
 				      Address&			references)
     {
-      Archive		archive;
-
       // set the data address.
       this->data.references = references;
 
@@ -167,19 +156,11 @@ namespace etoile
 
       // XXX[set fingerprint]
 
-      // create an archive containing data elements so that this archive
-      // can be signed.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // record the elements.
-      if (archive.Serialize(this->data.references,
-			    this->data.fingerprint,
-			    this->data.version) == StatusError)
-	escape("unable to serialize the data elements");
-
       // sign the archive with the author key.
-      if (author.Sign(archive, this->data.signature) == StatusError)
+      if (author.Sign(this->data.references,
+		      this->data.fingerprint,
+		      this->data.version,
+		      this->data.signature) == StatusError)
 	escape("unable to sign the data archive");
 
       leave();
@@ -195,7 +176,6 @@ namespace etoile
 					     Permissions	permissions,
 					     Address&		access)
     {
-      Archive		archive;
       Address		null;
 
       // set the owner permissions.
@@ -207,37 +187,29 @@ namespace etoile
       // increase the meta version.
       this->meta.version += 1;
 
-      // create an archive.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
       //
       // note that, if an access block is referenced, the identities and
       // permissions of the delegates must be included in the meta signature.
       //
       if (this->meta.access == null)
 	{
-	  // serialize the elements: owner-specific, status, access,
-	  // version etc.
-	  if (archive.Serialize((Byte&)this->meta.owner.permissions,
-				this->meta.owner.token,
-				(Byte&)this->meta.status.type,
-				this->meta.status.size,
-				this->meta.access,
-				this->meta.version) == StatusError)
-	    escape("unable to serialize the meta part");
+	  // sign the meta data..
+	  if (owner.Sign((Byte&)this->meta.owner.permissions,
+			 this->meta.owner.token,
+			 (Byte&)this->meta.status.type,
+			 this->meta.status.size,
+			 this->meta.access,
+			 this->meta.version,
+			 this->meta.signature) == StatusError)
+	    escape("unable to sign the meta archive");
 	}
       else
 	{
-	  // serialize the meta fields plus the delegates' identity and
+	  // sign the meta fields plus the delegates' identity and
 	  // permissions from the access block.
 
 	  // XXX
 	}
-
-      // sign the meta data.
-      if (owner.Sign(archive, this->meta.signature) == StatusError)
-	escape("unable to sign the meta archive");
 
       leave();
     }
@@ -267,39 +239,28 @@ namespace etoile
       {
 	// verify the owner's key signature with the block's public key.
 	if (this->K.Verify(this->owner.signature,
-			   this->owner.K) == StatusFalse)
+			   this->owner.K) != StatusTrue)
 	  false();
       }
 
       // (iii)
       {
-	Archive		archive;
-
-	// create an archive.
-	if (archive.Create() == StatusError)
-	  flee("unable to create an archive");
-
-	// serialize the meta part depending on the presence of a
-	// access block.
 	if (this->meta.access == null)
 	  {
-	    if (archive.Serialize((Byte&)this->meta.owner.permissions,
-				  this->meta.owner.token,
-				  (Byte&)this->meta.status.type,
-				  this->meta.status.size,
-				  this->meta.access,
-				  this->meta.version) == StatusError)
-	      flee("unable to serialize the meta part");
+	    // verifye the meta part.
+	    if (this->owner.K.Verify(this->meta.signature,
+				     (Byte&)this->meta.owner.permissions,
+				     this->meta.owner.token,
+				     (Byte&)this->meta.status.type,
+				     this->meta.status.size,
+				     this->meta.access,
+				     this->meta.version) == StatusError)
+	      flee("unable to verify the meta's signature");
 	  }
 	else
 	  {
 	    // XXX
 	  }
-
-	// verify the meta signature.
-	if (this->owner.K.Verify(this->meta.signature,
-				 archive) == StatusError)
-	  false();
       }
 
       // (iv)
@@ -314,29 +275,19 @@ namespace etoile
 	    }
 	  default:
 	    {
-	      escape("unimplemented feature");
+	      flee("unimplemented feature");
 	    }
 	  }
       }
 
       // (v)
       {
-	Archive		archive;
-
-	// create an archive.
-	if (archive.Create() == StatusError)
-	  escape("unable to create the archive");
-
-	// record the elements.
-	if (archive.Serialize(this->data.references,
-			      this->data.fingerprint,
-			      this->data.version) == StatusError)
-	  escape("unable to serialize the data elements");
-
 	// verify the signature.
 	if (author->Verify(this->data.signature,
-			   archive) != StatusTrue)
-	  escape("unable to verify the signature");
+			   this->data.references,
+			   this->data.fingerprint,
+			   this->data.version) != StatusTrue)
+	  flee("unable to verify the signature");
       }
 
       true();
@@ -451,61 +402,47 @@ namespace etoile
     ///
     Status		Object::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
       // call the parent class.
       if (PublicKeyBlock::Serialize(archive) == StatusError)
 	escape("unable to serialize the underlying PKB");
 
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(Object::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the owner part.
-      if (ar.Serialize(this->owner.K,
-		       this->owner.signature) == StatusError)
+      if (archive.Serialize(this->owner.K,
+			    this->owner.signature) == StatusError)
 	escape("unable to serialize the owner part");
 
       // serialize the author part.
-      if (ar.Serialize((Byte&)this->author.mode) == StatusError)
+      if (archive.Serialize((Byte&)this->author.mode) == StatusError)
 	escape("unable to serialize the author's mode");
 
       if (this->author.proof != NULL)
 	{
-	  if (ar.Serialize(*this->author.proof) == StatusError)
+	  if (archive.Serialize(*this->author.proof) == StatusError)
 	    escape("unable to serialize the author's proof");
 	}
       else
 	{
 	  // serialize 'none'.
-	  if (ar.Serialize(none) == StatusError)
+	  if (archive.Serialize(none) == StatusError)
 	    escape("unable to serialize 'none'");
 	}
 
       // serialize the data part.
-      if (ar.Serialize(this->data.references,
-		       this->data.fingerprint,
-		       this->data.version,
-		       this->data.signature) == StatusError)
+      if (archive.Serialize(this->data.references,
+			    this->data.fingerprint,
+			    this->data.version,
+			    this->data.signature) == StatusError)
 	escape("unable to serialize the data part");
 
       // serialize the meta part.
-      if (ar.Serialize((Byte&)this->meta.owner.permissions,
-		       this->meta.owner.token,
-		       (Byte&)this->meta.status.type,
-		       this->meta.status.size,
-		       this->meta.access,
-		       this->meta.version,
-		       this->meta.signature) == StatusError)
+      if (archive.Serialize((Byte&)this->meta.owner.permissions,
+			    this->meta.owner.token,
+			    (Byte&)this->meta.status.type,
+			    this->meta.status.size,
+			    this->meta.access,
+			    this->meta.version,
+			    this->meta.signature) == StatusError)
 	escape("unable to serialize the meta part");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -515,39 +452,29 @@ namespace etoile
     ///
     Status		Object::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
       Archive::Type	type;
 
       // call the parent class.
       if (PublicKeyBlock::Extract(archive) == StatusError)
 	escape("unable to extract the underyling PKB");
 
-      // extract the object archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the object archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
       // extract the owner part.
-      if (ar.Extract(this->owner.K,
-		     this->owner.signature) == StatusError)
+      if (archive.Extract(this->owner.K,
+			  this->owner.signature) == StatusError)
 	escape("unable to extract the owner part");
 
       // extract the author part.
-      if (ar.Extract((Byte&)this->author.mode) == StatusError)
+      if (archive.Extract((Byte&)this->author.mode) == StatusError)
 	escape("unable to extract the author's mode");
 
       // fetch the next element's type.
-      if (ar.Fetch(type) == StatusError)
+      if (archive.Fetch(type) == StatusError)
 	escape("unable to fetch the next element's type");
 
       if (type == Archive::TypeNull)
 	{
 	  // nothing to do, keep the author's proof to NULL.
-	  if (ar.Extract(none) == StatusError)
+	  if (archive.Extract(none) == StatusError)
 	    escape("unable to extract null");
 	}
       else
@@ -556,30 +483,26 @@ namespace etoile
 	  this->author.proof = new Proof;
 
 	  // extract the proof.
-	  if (ar.Extract(*this->author.proof) == StatusError)
+	  if (archive.Extract(*this->author.proof) == StatusError)
 	    escape("unable to extract the author's proof");
 	}
 
       // extract the data part.
-      if (ar.Extract(this->data.references,
-		     this->data.fingerprint,
-		     this->data.version,
-		     this->data.signature) == StatusError)
+      if (archive.Extract(this->data.references,
+			  this->data.fingerprint,
+			  this->data.version,
+			  this->data.signature) == StatusError)
 	escape("unable to extract the data part");
 
       // extract the meta part.
-      if (ar.Extract((Byte&)this->meta.owner.permissions,
-		     this->meta.owner.token,
-		     (Byte&)this->meta.status.type,
-		     this->meta.status.size,
-		     this->meta.access,
-		     this->meta.version,
-		     this->meta.signature) == StatusError)
+      if (archive.Extract((Byte&)this->meta.owner.permissions,
+			  this->meta.owner.token,
+			  (Byte&)this->meta.status.type,
+			  this->meta.status.size,
+			  this->meta.access,
+			  this->meta.version,
+			  this->meta.signature) == StatusError)
 	escape("unable to extract the meta part");
-
-      // check the name.
-      if (Object::Class != name)
-	escape("wrong class name in the extract object");
 
       leave();
     }

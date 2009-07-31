@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [wed jul 29 16:44:39 2009]
+// updated       julien quintard   [thu jul 30 19:53:15 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ADDRESS_HH
@@ -39,11 +39,6 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constants
-      //
-      static const String		Class;
-
       //
       // constructors & destructors
       //

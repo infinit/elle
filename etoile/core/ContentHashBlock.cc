@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed jul 29 16:57:19 2009]
+// updated       julien quintard   [thu jul 30 20:26:48 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		ContentHashBlock::Class = "ContentHashBlock";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -93,23 +84,9 @@ namespace etoile
     ///
     Status		ContentHashBlock::Serialize(Archive&	archive) const
     {
-      Archive		ar;
-
       // call the parent class.
       if (Block::Serialize(archive) == StatusError)
 	escape("unable to serialize the block");
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(ContentHashBlock::Class) == StatusError)
-	escape("unable to serialize the class name");
-
-      // record the object archive into the given archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object archive");
 
       leave();
     }
@@ -119,24 +96,9 @@ namespace etoile
     ///
     Status		ContentHashBlock::Extract(Archive&	archive)
     {
-      Archive		ar;
-      String		name;
-
       // call the parent class.
       if (Block::Extract(archive) == StatusError)
 	escape("unable to extract the block");
-
-      // extract the block archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the block archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (ContentHashBlock::Class != name)
-	escape("wrong class name in the extract object");
 
       leave();
     }

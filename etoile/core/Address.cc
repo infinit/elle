@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed jul 29 17:27:41 2009]
+// updated       julien quintard   [thu jul 30 19:56:29 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Address::Class = "Address";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -63,22 +54,12 @@ namespace etoile
     ///
     Status		Address::Create(Archivable&		object)
     {
-      Archive		archive;
-
-      // create a temporary archive.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // serialize the given object.
-      if (archive.Serialize(object) == StatusError)
-	escape("unable to serialize the given object");
-
       // allocate the digest object.
       this->digest = new Digest;
 
       // compute the digest based on the object's archive.
-      if (OneWay::Hash(archive, *this->digest) == StatusError)
-	escape("unable to hash the given object's archive");
+      if (OneWay::Hash(object, *this->digest) == StatusError)
+	escape("unable to hash the given object");
 
       leave();
     }
@@ -167,32 +148,18 @@ namespace etoile
     ///
     Status		Address::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(Address::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
-	  if (ar.Serialize(*this->digest) == StatusError)
+	  if (archive.Serialize(*this->digest) == StatusError)
 	    escape("unable to serialize the digest");
 	}
       else
 	{
 	  // serialize 'none'.
-	  if (ar.Serialize(none) == StatusError)
+	  if (archive.Serialize(none) == StatusError)
 	    escape("unable to serialize 'none'");
 	}
-
-      // record in the archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object's archive");
 
       leave();
     }
@@ -202,30 +169,16 @@ namespace etoile
     ///
     Status		Address::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
       Archive::Type	type;
 
-      // extract the address archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the address archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (Address::Class != name)
-	escape("wrong class name in the extract object");
-
       // fetch the next element's type.
-      if (ar.Fetch(type) == StatusError)
+      if (archive.Fetch(type) == StatusError)
 	escape("unable to fetch the next element's type");
 
       if (type == Archive::TypeNull)
 	{
 	  // nothing to do, keep the digest to NULL.
-	  if (ar.Extract(none) == StatusError)
+	  if (archive.Extract(none) == StatusError)
 	    escape("unable to extract null");
 	}
       else
@@ -234,7 +187,7 @@ namespace etoile
 	  this->digest = new Digest;
 
 	  // extract the internal digest.
-	  if (ar.Extract(*this->digest) == StatusError)
+	  if (archive.Extract(*this->digest) == StatusError)
 	    escape("unable to extract the digest");
 	}
 

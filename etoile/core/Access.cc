@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/infinit/core/Access.cc
+// file          /home/mycure/infinit/etoile/core/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [wed mar 11 16:55:39 2009]
+// updated       julien quintard   [thu jul 30 20:54:26 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Access::Class = "Access";
 
 //
 // ---------- methods ---------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Token.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [wed jul 29 17:04:11 2009]
+// updated       julien quintard   [thu jul 30 20:50:07 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_TOKEN_HH
@@ -38,11 +38,6 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constants
-      //
-      static const String		Class;
-
       //
       // constructors & destructors
       //

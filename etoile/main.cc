@@ -33,6 +33,24 @@ using namespace etoile::core;
 int		main(int			argc,
 		     char**			argv)
 {
+  Cryptography::Initialize();
+
+  Archive	archive;
+  Digest	digest;
+
+  archive.Create();
+
+  OneWay::Hash(archive, digest);
+
+  KeyPair	keypair;
+  Signature	signature;
+
+  keypair.Generate();
+
+  keypair.k.Sign(keypair, digest, keypair, signature);
+
+  std::cout << keypair.K.Verify(signature, keypair, digest, keypair) << std::endl;
+
   expose();
 
   return (0);

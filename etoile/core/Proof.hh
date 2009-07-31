@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [wed jul 29 17:00:37 2009]
+// updated       julien quintard   [thu jul 30 20:39:01 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_PROOF_HH
@@ -38,11 +38,6 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constants
-      //
-      static const String		Class;
-
       //
       // constructors & destructors
       //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed jul 29 17:05:49 2009]
+// updated       julien quintard   [thu jul 30 20:53:24 2009]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the class name.
-    ///
-    const String		Voucher::Class = "Voucher";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -87,26 +78,10 @@ namespace etoile
     ///
     Status		Voucher::Serialize(Archive&		archive) const
     {
-      Archive		ar;
-
-      // prepare the object archive.
-      if (ar.Create() == StatusError)
-	escape("unable to prepare the object archive");
-
-      // serialize the class name.
-      if (ar.Serialize(Voucher::Class) == StatusError)
-	escape("unable to serialize the class name");
-
       // serialize the attributes.
-      if (ar.Serialize(this->consumer) == StatusError)
-	escape("unable to serialize the consumer");
-
-      if (ar.Serialize(this->signature) == StatusError)
-	escape("unable to serialize the signature");
-
-      // record in the archive.
-      if (archive.Serialize(ar) == StatusError)
-	escape("unable to serialize the object's archive");
+      if (archive.Serialize(this->consumer,
+			    this->signature) == StatusError)
+	escape("unable to serialize the internal elements");
 
       leave();
     }
@@ -116,28 +91,10 @@ namespace etoile
     ///
     Status		Voucher::Extract(Archive&		archive)
     {
-      Archive		ar;
-      String		name;
-      Archive::Type	type;
-
-      // extract the voucher archive object.
-      if (archive.Extract(ar) == StatusError)
-	escape("unable to extract the voucher archive object");
-
-      // extract the name.
-      if (ar.Extract(name) == StatusError)
-	escape("unable to extract the class name");
-
-      // check the name.
-      if (Voucher::Class != name)
-	escape("wrong class name in the extract object");
-
       // extract the attributes.
-      if (ar.Extract(this->consumer) == StatusError)
-	escape("unable to extract the consumer");
-
-      if (ar.Extract(this->signature) == StatusError)
-	escape("unable to extract the signature");
+      if (archive.Extract(this->consumer,
+			  this->signature) == StatusError)
+	escape("unable to extract the internal elements");
 
       leave();
     }
