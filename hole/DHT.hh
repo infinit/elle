@@ -19,6 +19,9 @@ namespace hole
   {
     Q_OBJECT;
 
+    friend class DHTRequestHandler;
+    friend class DHTJoinRequestHandler;
+
   public:
     DHT(QObject * parent = 0);
     ~DHT();
@@ -49,11 +52,15 @@ namespace hole
     void NodeDisconnected(Node * node);
 
   private:
+    bool IsTagInUse(protocol::Tag tag) const;
+
+    typedef QMap<protocol::Tag, DHTRequestHandler *> requests_t;
+
     LocalNode         localNode_;
     QUdpSocket *      socket_;
     QMap<Key, Node *> nodes_;
     quint16           port_;
-    QMap<protocol::Tag, DHTRequestHandler *> requests_;
+    requests_t        requests_;
   };
 }
 

@@ -7,12 +7,15 @@
 
 namespace hole
 {
+  class DHT;
+
   class DHTRequestHandler : public QObject
   {
   public:
-    DHTRequestHandler(QObject * parent = 0);
+    DHTRequestHandler(DHT & dht);
 
-    protocol::Tag tag;
+    DHT &         dht_;
+    protocol::Tag tag_;
   };
 }
 

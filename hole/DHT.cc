@@ -1,4 +1,7 @@
 #include <assert.h>
+#include <time.h>
+#include <QByteArray>
+#include <QDataStream>
 
 #include "hole/DHT.hh"
 #include "hole/DHTJoinRequestHandler.hh"
@@ -64,10 +67,12 @@ namespace hole
   DHT::Join(DHTJoinRequest * request)
   {
     assert(request);
-    DHTJoinRequestHandler * handler = new DHTJoinRequestHandler(*request);
-    handler->Join();
+    DHTJoinRequestHandler * handler = new DHTJoinRequestHandler(*this, *request);
+    handler->tag_ = GenerateTag();
+    requests_[handler->tag_] = handler;
     connect(handler, SIGNAL(Joined(DHTJoinRequestHandler *)),
             this, SLOT(Joined(DHTJoinRequestHandler *)));
+    handler->Join();
   }
 
   void
@@ -80,5 +85,29 @@ namespace hole
   {
     // Disconnect from every peers
     socket_->close();
+  }
+
+  protocol::Tag
+  DHT::GenerateTag()
+  {
+    protocol::Tag tag;
+    quint32       timestamp;
+    quint32       r;
+
+    do {
+      timestamp = time(0);
+      r         = qrand();
+      tag       = timestamp;
+      tag       = (tag << 32) | r;
+    } while (IsTagInUse(tag));
+
+    return tag;
+  }
+
+  bool
+  DHT::IsTagInUse(protocol::Tag tag) const
+  {
+    requests_t::const_iterator it = requests_.find(tag);
+    return it == requests_.end();
   }
 }

@@ -14,12 +14,12 @@ ADD_LIBRARY(hole
   DHTRequestHandler.cc DHTRequestHandler.hh
   DHTJoinRequestHandler.cc DHTJoinRequestHandler.hh
   FreeList.hh FreeList.hxx
-  Key.hh
+  Key.cc Key.hh
   Node.cc Node.hh
   LocalNode.cc LocalNode.hh
   RemoteNode.cc RemoteNode.hh
 
-  protocol/Header.hh
+  protocol/Header.cc protocol/Header.hh
 
   ${Hole_MOCS})
 

@@ -14,7 +14,7 @@ namespace hole
     Q_OBJECT;
 
   public:
-    DHTJoinRequestHandler(DHTJoinRequest & rq, QObject * parent = 0);
+    DHTJoinRequestHandler(DHT & dht, DHTJoinRequest & rq);
     void Join();
 
     DHTJoinRequest & request_;
