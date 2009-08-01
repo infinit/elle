@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu jul 30 13:20:40 2009]
+// updated       julien quintard   [sat aug  1 15:44:07 2009]
 //
 
 //
@@ -27,24 +27,6 @@ namespace elle
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the attributes.
-    ///
-    Signature::Signature()
-    {
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Signature::~Signature()
-    {
-    }
-
-//
 // ---------- entity ----------------------------------------------------------
 //
 
@@ -58,11 +40,8 @@ namespace elle
 	return (*this);
 
       // recycle the signature.
-      if (this->Recycle<Signature>() == StatusError)
+      if (this->Recycle<Signature>(&element) == StatusError)
 	yield("unable to recycle the signature", *this);
-
-      // set the region.
-      this->region = element.region;
 
       return (*this);
     }

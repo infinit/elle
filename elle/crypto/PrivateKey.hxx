@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jul 31 01:20:44 2009]
+// updated       julien quintard   [fri jul 31 14:29:55 2009]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HXX
@@ -47,13 +47,10 @@ namespace elle
     ///
     template <typename T1>
     Status		PrivateKey::Decrypt(const Code&		code,
-					    T1&			o1)
+					    T1&			o1) const
     {
       Archive		archive;
       Clear		clear;
-
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-      sleep(3);
 
       // decrypt the code.
       if (this->Decrypt(code, clear) == StatusError)
@@ -79,12 +76,10 @@ namespace elle
 	      typename T2>
     Status		PrivateKey::Decrypt(const Code&		code,
 					    T1&			o1,
-					    T2&			o2)
+					    T2&			o2) const
     {
       Archive		archive;
       Clear		clear;
-
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
 
       if (this->Decrypt(code, clear) == StatusError)
 	escape("unable to decrypt the code");
@@ -107,7 +102,7 @@ namespace elle
     Status		PrivateKey::Decrypt(const Code&		code,
 					    T1&			o1,
 					    T2&			o2,
-					    T3&			o3)
+					    T3&			o3) const
     {
       Archive		archive;
       Clear		clear;
@@ -135,7 +130,7 @@ namespace elle
 					    T1&			o1,
 					    T2&			o2,
 					    T3&			o3,
-					    T4&			o4)
+					    T4&			o4) const
     {
       Archive		archive;
       Clear		clear;
@@ -165,7 +160,7 @@ namespace elle
 					    T2&			o2,
 					    T3&			o3,
 					    T4&			o4,
-					    T5&			o5)
+					    T5&			o5) const
     {
       Archive		archive;
       Clear		clear;
@@ -197,7 +192,7 @@ namespace elle
 					    T3&			o3,
 					    T4&			o4,
 					    T5&			o5,
-					    T6&			o6)
+					    T6&			o6) const
     {
       Archive		archive;
       Clear		clear;
@@ -231,7 +226,7 @@ namespace elle
 					    T4&			o4,
 					    T5&			o5,
 					    T6&			o6,
-					    T7&			o7)
+					    T7&			o7) const
     {
       Archive		archive;
       Clear		clear;
@@ -267,7 +262,7 @@ namespace elle
 					    T5&			o5,
 					    T6&			o6,
 					    T7&			o7,
-					    T8&			o8)
+					    T8&			o8) const
     {
       Archive		archive;
       Clear		clear;
@@ -305,7 +300,7 @@ namespace elle
 					    T6&			o6,
 					    T7&			o7,
 					    T8&			o8,
-					    T9&			o9)
+					    T9&			o9) const
     {
       Archive		archive;
       Clear		clear;
@@ -341,8 +336,6 @@ namespace elle
       Archive		archive;
       Digest		digest;
 
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
       // create th archive.
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -367,8 +360,6 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
-
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [wed jul 29 14:09:55 2009]
+// updated       julien quintard   [sat aug  1 14:25:44 2009]
 //
 
 #ifndef ELLE_MISC_REGION_HH
@@ -81,6 +81,7 @@ namespace elle
       // constructors & destructors
       //
       Region();
+      Region(const Region&);
       ~Region();
 
       //

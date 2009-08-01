@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.hh
 //
 // created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [thu jul 30 13:01:24 2009]
+// updated       julien quintard   [sat aug  1 15:18:22 2009]
 //
 
 #ifndef ELLE_CRYPTO_CIPHER_HH
@@ -43,12 +43,6 @@ namespace elle
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constructors & destructors
-      //
-      Cipher();
-      ~Cipher();
-
       //
       // interfaces
       //

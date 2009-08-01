@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [fri jul 31 01:28:08 2009]
+// updated       julien quintard   [sat aug  1 15:29:16 2009]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HH
@@ -67,6 +67,7 @@ namespace elle
       // constructors & destructors
       //
       PrivateKey();
+      PrivateKey(const PrivateKey&);
       ~PrivateKey();
 
       //
@@ -125,16 +126,12 @@ namespace elle
       Status		Decrypt(const Code&		code,
 				Archive&		archive) const
       {
-	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
 	return (this->Decrypt(code, (Plain&)archive));
       }
 
       Status		Sign(const Archive&		archive,
 			     Signature&			signature) const
       {
-	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
 	return (this->Sign((Plain&)archive, signature));
       }
 
@@ -145,19 +142,19 @@ namespace elle
       // decrypt
       template <typename T1>
       Status		Decrypt(const Code&,
-				T1&);
+				T1&) const;
       template <typename T1,
 		typename T2>
       Status		Decrypt(const Code&,
 				T1&,
-				T2&);
+				T2&) const;
       template <typename T1,
 		typename T2,
 		typename T3>
       Status		Decrypt(const Code&,
 				T1&,
 				T2&,
-				T3&);
+				T3&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -166,7 +163,7 @@ namespace elle
 				T1&,
 				T2&,
 				T3&,
-				T4&);
+				T4&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -177,7 +174,7 @@ namespace elle
 				T2&,
 				T3&,
 				T4&,
-				T5&);
+				T5&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -190,7 +187,7 @@ namespace elle
 				T3&,
 				T4&,
 				T5&,
-				T6&);
+				T6&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -205,7 +202,7 @@ namespace elle
 				T4&,
 				T5&,
 				T6&,
-				T7&);
+				T7&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -222,7 +219,7 @@ namespace elle
 				T5&,
 				T6&,
 				T7&,
-				T8&);
+				T8&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -241,7 +238,7 @@ namespace elle
 				T6&,
 				T7&,
 				T8&,
-				T9&);
+				T9&) const;
 
       // sign
       template <typename T1>

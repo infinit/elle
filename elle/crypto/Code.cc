@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu jul 30 13:02:23 2009]
+// updated       julien quintard   [sat aug  1 15:22:59 2009]
 //
 
 //
@@ -27,24 +27,6 @@ namespace elle
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the attributes.
-    ///
-    Code::Code()
-    {
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Code::~Code()
-    {
-    }
-
-//
 // ---------- entity ----------------------------------------------------------
 //
 
@@ -58,11 +40,8 @@ namespace elle
 	return (*this);
 
       // recycle the code.
-      if (this->Recycle<Code>() == StatusError)
+      if (this->Recycle<Code>(&element) == StatusError)
 	yield("unable to recycle the code", *this);
-
-      // set the region.
-      this->region = element.region;
 
       return (*this);
     }

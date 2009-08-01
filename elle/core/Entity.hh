@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [wed jul 29 14:00:32 2009]
+// updated       julien quintard   [sat aug  1 19:58:44 2009]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -57,32 +57,20 @@ namespace elle
       }
 
       ///
+      /// the copy constructor is responsible for duplicating an entity
+      /// and should therefore be provided for every class also providing
+      /// the = operator.
+      ///
+      Entity(const Entity&)
+      {
+      }
+
+      ///
       /// this destructor should release the allocated resources but must
       /// not re-set attributes to default values.
       ///
       virtual ~Entity()
       {
-
-      }
-
-      ///
-      /// this constructor is called whenever:
-      ///
-      ///   Entity o1;
-      ///   Entity o2 = o1;
-      ///
-      /// is used though the assignment operator is actually specified.
-      ///
-      /// therefore, this constructor stops the program. the developer should
-      /// instead use the assignment operator:
-      ///
-      ///   Entity o1;
-      ///   Entity o2;
-      ///   o2 = o1;
-      ///
-      Entity(Entity&)
-      {
-	fail("copy constructors are not allowed to be used");
       }
 
       //
@@ -94,13 +82,23 @@ namespace elle
       /// re-setting them to their default values.
       ///
       template <typename T>
-      Status		Recycle()
+      Status		Recycle(const T*			entity = NULL)
       {
 	// release the resources.
 	this->~Entity();
 
-	// initialize the object with default values.
-	new (this) T;
+	if (entity == NULL)
+	  {
+	    // initialize the object with default values.
+	    new (this) T;
+	  }
+	else
+	  {
+	    // initialize the object with defined values.
+	    new (this) T(*entity);
+	  }
+
+	leave();
       }
 
       //
@@ -111,12 +109,9 @@ namespace elle
       /// this operator copies an entity.
       ///
       /// this method (i) starts by checking if the given entity
-      /// is not the current one (ii) then calls the parent
-      /// method---if relevant---before (iii) calling Recycle().
-      /// finally, the method should (iv) assign the attributes including
-      /// the entity-attributes by using the assignment operator.
+      /// is not the current one before (ii) calling Recycle().
       ///
-      virtual Entity&	operator=(Entity&)
+      virtual Entity&	operator=(const Entity&)
       {
 	fail("this method should never have been called");
       }
@@ -124,7 +119,7 @@ namespace elle
       ///
       /// this operator compares two entitys.
       ///
-      virtual Boolean	operator==(Entity&)
+      virtual Boolean	operator==(const Entity&)
       {
 	fail("this method should never have been called");
       }
@@ -132,7 +127,7 @@ namespace elle
       ///
       /// this operator compares two entitys.
       ///
-      virtual Boolean	operator!=(Entity&)
+      virtual Boolean	operator!=(const Entity&)
       {
 	fail("this method should never have been called");
       }

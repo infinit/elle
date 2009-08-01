@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [fri jul 31 00:10:45 2009]
+// updated       julien quintard   [sat aug  1 15:42:07 2009]
 //
 
 //
@@ -51,24 +51,6 @@ namespace elle
     /// this is the hash algorithm used by the encryption process.
     ///
     const ::EVP_MD*		SecretKey::Algorithms::Digest = ::EVP_md5();
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the object.
-    ///
-    SecretKey::SecretKey()
-    {
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    SecretKey::~SecretKey()
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -298,11 +280,8 @@ namespace elle
 	return (*this);
 
       // recycle the secret key.
-      if (this->Recycle<SecretKey>() == StatusError)
+      if (this->Recycle<SecretKey>(&element) == StatusError)
 	yield("unable to recycle the secret key", *this);
-
-      // re-create the key by duplicate the internal region;
-      this->key = element.key;
 
       return (*this);
     }

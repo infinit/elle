@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [fri jul 31 00:51:41 2009]
+// updated       julien quintard   [sat aug  1 18:19:04 2009]
 //
 
 //
@@ -40,24 +40,6 @@ namespace elle
     /// the default value for the key generation context.
     ///
     ::EVP_PKEY_CTX*		KeyPair::Contexts::Generate = NULL;
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the object.
-    ///
-    KeyPair::KeyPair()
-    {
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    KeyPair::~KeyPair()
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -107,32 +89,22 @@ namespace elle
     {
       ::EVP_PKEY*	key = NULL;
 
-      printf("[XXX] 0x%x\n", KeyPair::Contexts::Generate);
-
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
 					     length) <= 0)
 	escape("unable to set the RSA key length");
 
-      printf("XXX\n");
-
       // generate the EVP key.
       if (::EVP_PKEY_keygen(KeyPair::Contexts::Generate, &key) <= 0)
 	escape("unable to generate the key");
-
-      printf("XXX\n");
 
       // create the actual public key according to the EVP structure.
       if (this->K.Create(key) == StatusError)
 	escape("unable to create the public key");
 
-      printf("XXX\n");
-
       // create the actual private key according to the EVP structure.
       if (this->k.Create(key) == StatusError)
 	escape("unable to create the private key");
-
-      printf("XXX\n");
 
       // release the memory.
       ::EVP_PKEY_free(key);
@@ -154,12 +126,8 @@ namespace elle
 	return (*this);
 
       // recycle the keypair.
-      if (this->Recycle<KeyPair>() == StatusError)
+      if (this->Recycle<KeyPair>(&element) == StatusError)
 	yield("unable to recycle the keypair", *this);
-
-      // just copy-assign the internal attributes.
-      this->K = element.K;
-      this->k = element.k;
 
       return (*this);
     }

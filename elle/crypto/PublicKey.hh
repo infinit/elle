@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [fri jul 31 01:07:08 2009]
+// updated       julien quintard   [sat aug  1 15:37:48 2009]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HH
@@ -64,6 +64,7 @@ namespace elle
       // constructors & destructors
       //
       PublicKey();
+      PublicKey(const PublicKey&);
       ~PublicKey();
 
       //
@@ -116,16 +117,12 @@ namespace elle
       Status		Encrypt(const Archive&		archive,
 				Code&			code) const
       {
-	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
 	return (this->Encrypt((Plain&)archive, code));
       }
 
       Status		Verify(const Signature&		signature,
 			       const Archive&		archive) const
       {
-	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
 	return (this->Verify(signature, (Plain&)archive));
       }
 

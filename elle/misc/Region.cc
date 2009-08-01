@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [wed jul 29 15:26:57 2009]
+// updated       julien quintard   [sat aug  1 15:24:56 2009]
 //
 
 //
@@ -32,13 +32,49 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Region::Region()
+    Region::Region():
+      type(Region::TypeUnknown),
+      options(Region::OptionNone),
+      contents(NULL),
+      size(0),
+      capacity(0)
     {
-      this->type = Region::TypeUnknown;
-      this->options = Region::OptionNone;
-      this->contents = NULL;
-      this->size = 0;
-      this->capacity = 0;
+    }
+
+    ///
+    /// copy constructor.
+    ///
+    Region::Region(const Region&				region):
+      type(region.type),
+      options(region.options)
+    {
+      // according to the type...
+      switch (region.type)
+	{
+	case TypeUnknown:
+	  {
+	    this->contents = NULL;
+	    this->size = 0;
+	    this->capacity = 0;
+
+	    break;
+	  }
+	case TypeChunk:
+	  {
+	    this->contents = region.contents;
+	    this->size = region.size;
+	    this->capacity = region.capacity;
+
+	    break;
+	  }
+	case TypeBuffer:
+	  {
+	    this->options = Region::OptionNone;
+
+	    if (this->Duplicate(region.contents, region.size) == StatusError)
+	      notify("unable to assign the element's data");
+	  }
+	}
     }
 
     ///
@@ -261,34 +297,8 @@ namespace elle
 	return (*this);
 
       // recycle the object.
-      if (this->Recycle<Region>() == StatusError)
+      if (this->Recycle<Region>(&element) == StatusError)
 	yield("unable to recycle the object", *this);
-
-      // according to the type...
-      switch (element.type)
-	{
-	case TypeUnknown:
-	  {
-	    break;
-	  }
-	case TypeChunk:
-	  {
-	    this->type = element.type;
-	    this->options = element.options;
-	    this->contents = element.contents;
-	    this->size = element.size;
-	    this->capacity = element.capacity;
-
-	    break;
-	  }
-	case TypeBuffer:
-	  {
-	    this->options = Region::OptionNone;
-
-	    if (this->Duplicate(element.contents, element.size) == StatusError)
-	      yield("unable to assign the element's data", *this);
-	  }
-	}
 
       return (*this);
     }
@@ -301,8 +311,6 @@ namespace elle
       // check the size.
       if (this->size != element.size)
 	false();
-
-      // XXX[is that enough to test the contents and not the attributes?]
 
       // check the content.
       if (::memcmp(this->contents, element.contents, element.size) != 0)
@@ -339,16 +347,16 @@ namespace elle
 		<< "size(" << this->size << ") "
 		<< "capacity(" << this->capacity << ")" << std::endl;
 
-      std::cout.setf(std::ios::hex, std::ios::basefield);
-
       for (i = 0; i < this->size; i++)
 	{
 	  String	shift(2, ' ');
 
 	  if (i == 0)
-	    std::cout << alignment << shift << (Natural32)this->contents[i]; // XXX[we should not have to force the case with proper io::<< functions]
+	    std::cout << alignment << shift << std::nouppercase << std::hex
+		      << (Natural32)this->contents[i];
 	  else
-	    std::cout << (Natural32)this->contents[i]; // XXX[we should not have to force the case with proper io::<< functions]
+	    std::cout << std::hex << std::nouppercase
+		      << (Natural32)this->contents[i];
 
 	  if (((i + 1) % 20) == 0)
 	    {
@@ -365,8 +373,6 @@ namespace elle
 		std::cout << std::endl;
 	    }
 	}
-
-      std::cout.setf(std::ios::dec, std::ios::basefield);
 
       leave();
     }
@@ -389,13 +395,9 @@ namespace std
   {
     elle::core::Natural32	i;
 
-    // XXX[find another solution like printing a Byte]
-    stream.setf(std::ios::hex, std::ios::basefield);
-
     for (i = 0; i < element.size; i++)
-      stream << (elle::core::Natural32)element.contents[i]; // XXX[we should not have to force the case with proper io::<< functions]
-
-    stream.setf(std::ios::dec, std::ios::basefield);
+      stream << std::nouppercase << std::hex
+	     << (elle::core::Natural32)element.contents[i];
 
     return (stream);
   }

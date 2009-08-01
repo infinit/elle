@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jul 31 01:07:30 2009]
+// updated       julien quintard   [fri jul 31 14:29:24 2009]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HXX
@@ -56,8 +56,6 @@ namespace elle
     {
       Archive		archive;
 
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
       // create an archive.
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -80,8 +78,6 @@ namespace elle
 					   Code&		code) const
     {
       Archive		archive;
-
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -305,8 +301,6 @@ namespace elle
     {
       Archive		archive;
 
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
       // create the archive.
       if (archive.Create() == StatusError)
 	flee("unable to create the archive");
@@ -329,8 +323,6 @@ namespace elle
 					  const T2&		o2) const
     {
       Archive		archive;
-
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
 
       if (archive.Create() == StatusError)
 	flee("unable to create the archive");
