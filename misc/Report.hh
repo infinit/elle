@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [tue mar 10 13:46:56 2009]
+// updated       julien quintard   [sat aug  1 14:50:20 2009]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -120,6 +120,20 @@ namespace elle
       report(elle::misc::Report::TypeError, _text_);			\
 									\
       return (_return_);						\
+    } while (false)
+
+///
+/// this macro-function reports an error and returns.
+///
+/// note that the return object is specifed, hence this function
+/// perfectly fits when an error occurs in constructors etc.
+///
+#define notify(_text_)							\
+  do									\
+    {									\
+      report(elle::misc::Report::TypeError, _text_);			\
+									\
+      return;								\
     } while (false)
 
 ///

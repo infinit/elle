@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu jul 30 13:03:36 2009]
+// updated       julien quintard   [sat aug  1 15:24:19 2009]
 //
 
 //
@@ -27,24 +27,6 @@ namespace elle
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the attributes.
-    ///
-    Digest::Digest()
-    {
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Digest::~Digest()
-    {
-    }
-
-//
 // ---------- entity ----------------------------------------------------------
 //
 
@@ -58,11 +40,8 @@ namespace elle
 	return (*this);
 
       // recycle the digest.
-      if (this->Recycle<Digest>() == StatusError)
+      if (this->Recycle<Digest>(&element) == StatusError)
 	yield("unable to recycle the digest", *this);
-
-      // set the region.
-      this->region = element.region;
 
       return (*this);
     }

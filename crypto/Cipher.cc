@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu jul 30 19:56:52 2009]
+// updated       julien quintard   [sat aug  1 15:21:36 2009]
 //
 
 //
@@ -27,24 +27,6 @@ namespace elle
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the attributes.
-    ///
-    Cipher::Cipher()
-    {
-    }
-
-    ///
-    /// this method releases the resources.
-    ///
-    Cipher::~Cipher()
-    {
-    }
-
-//
 // ---------- entity ----------------------------------------------------------
 //
 
@@ -58,11 +40,8 @@ namespace elle
 	return (*this);
 
       // recycle the cipher.
-      if (this->Recycle<Cipher>() == StatusError)
+      if (this->Recycle<Cipher>(&element) == StatusError)
 	yield("unable to recycle the cipher", *this);
-
-      // set the region.
-      this->region = element.region;
 
       return (*this);
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [thu jul 30 13:51:10 2009]
+// updated       julien quintard   [sat aug  1 15:02:15 2009]
 //
 
 //
@@ -69,12 +69,23 @@ namespace elle
     ///
     /// this method initialises the attributes.
     ///
-    Archive::Archive()
+    Archive::Archive():
+      mode(Archive::ModeUnknown),
+      endianness(System::MachineEndianness),
+      offset(0)
     {
-      // initialise the attributes.
-      this->mode = Archive::ModeUnknown;
-      this->endianness = System::MachineEndianness;
-      this->offset = 0;
+    }
+
+    ///
+    /// this is the copy constructor.
+    ///
+    Archive::Archive(const Archive&				archive):
+      Region::Region(archive),
+
+      mode(archive.mode),
+      endianness(archive.endianness),
+      offset(archive.offset)
+    {
     }
 
     ///
@@ -526,16 +537,8 @@ namespace elle
 	return (*this);
 
       // recycle the archive.
-      if (this->Recycle<Archive>() == StatusError)
+      if (this->Recycle<Archive>(&element) == StatusError)
 	yield("unable to recycle the archive", *this);
-
-      // call the parent assignment.
-      Region::operator=(element);
-
-      // duplicate the attributes.
-      this->mode = element.mode;
-      this->endianness = element.endianness;
-      this->offset = element.offset;
 
       return (*this);
     }
@@ -547,14 +550,6 @@ namespace elle
     {
       // call the super-method.
       if (Region::operator==(element) == false)
-	false();
-
-      // check the mode.
-      if (this->mode != element.mode)
-	false();
-
-      // check the endianness.
-      if (this->endianness != element.endianness)
 	false();
 
       true();
@@ -836,69 +831,6 @@ namespace elle
 
       leave();
     }
-
-//
-// ---------- XXX -------------------------------------------------------------
-//
-
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    /* XXX
-    ///
-    /// this method unpacks a four-byte integer from the archive.
-    ///
-    Status		Archive::ExtractInteger(uint32_t*	variable)
-    {
-      uint32_t		size = sizeof(uint32_t);
-
-      // unpack the element.
-      if (this->endianness == this->Endianness)
-	{
-	  *variable = *((uint32_t*)(this->contents + this->offset));
-	}
-      else
-	{
-	  *variable = (uint32_t)(this->contents[this->offset + 0] << 24);
-	  *variable |= (uint32_t)(this->contents[this->offset + 1] << 16);
-	  *variable |= (uint32_t)(this->contents[this->offset + 2] << 8);
-	  *variable |= (uint32_t)(this->contents[this->offset + 3]);
-	}
-
-      // update the offset.
-      this->offset = this->offset + size;
-
-      leave();
-    }
-
-    ///
-    /// this method unpacks a eight-byte integer from the archive.
-    ///
-    Status		Archive::ExtractQuad(uint64_t*		variable)
-    {
-      uint32_t		size = sizeof(uint64_t);
-
-      // unpack the element.
-      if (this->endianness == this->Endianness)
-	{
-	  *variable = *((uint64_t*)(this->contents + this->offset));
-	}
-      else
-	{
-	  *variable = ((uint64_t)this->contents[this->offset + 0]) << 56;
-	  *variable |= ((uint64_t)this->contents[this->offset + 1]) << 48;
-	  *variable |= ((uint64_t)this->contents[this->offset + 2]) << 40;
-	  *variable |= ((uint64_t)this->contents[this->offset + 3]) << 32;
-	  *variable |= ((uint64_t)this->contents[this->offset + 4]) << 24;
-	  *variable |= ((uint64_t)this->contents[this->offset + 5]) << 16;
-	  *variable |= ((uint64_t)this->contents[this->offset + 6]) << 8;
-	  *variable |= ((uint64_t)this->contents[this->offset + 7]);
-	}
-
-      // update the offset.
-      this->offset = this->offset + size;
-
-      leave();
-    }
-  */
 
   }
 }

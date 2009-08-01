@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [thu jul 30 23:58:05 2009]
+// updated       julien quintard   [sat aug  1 15:45:16 2009]
 //
 
 //
@@ -34,12 +34,22 @@ namespace elle
     ///
     /// this method initializes the object.
     ///
-    PublicKey::PublicKey()
+    PublicKey::PublicKey():
+      key(NULL)
     {
-      this->key = NULL;
-
+      // initialize the contexts.
       this->contexts.encrypt = NULL;
       this->contexts.verify = NULL;
+    }
+
+    ///
+    /// this is the copy constructor.
+    ///
+    PublicKey::PublicKey(const PublicKey&			K)
+    {
+      // re-create the public key by duplicate the internal numbers.
+      if (this->Create(K.key) == StatusError)
+	notify("unable to duplicate the public key");
     }
 
     ///
@@ -274,12 +284,8 @@ namespace elle
 	return (*this);
 
       // recycle the public key.
-      if (this->Recycle<PublicKey>() == StatusError)
+      if (this->Recycle<PublicKey>(&element) == StatusError)
 	yield("unable to recycle the public key", *this);
-
-      // re-create the public key by duplicate the internal numbers.
-      if (this->Create(element.key) == StatusError)
-	yield("unable to duplicate the public key", *this);
 
       return (*this);
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [thu jul 30 19:05:57 2009]
+// updated       julien quintard   [sat aug  1 15:26:07 2009]
 //
 
 #ifndef ELLE_CRYPTO_KEYPAIR_HH
@@ -78,12 +78,6 @@ namespace elle
       {
 	static const Natural32		Length;
       };
-
-      //
-      // constructors & destructors
-      //
-      KeyPair();
-      ~KeyPair();
 
       //
       // methods

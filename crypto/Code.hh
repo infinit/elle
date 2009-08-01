@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [thu jul 30 13:01:34 2009]
+// updated       julien quintard   [sat aug  1 15:22:43 2009]
 //
 
 #ifndef ELLE_CRYPTO_CODE_HH
@@ -43,12 +43,6 @@ namespace elle
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constructors & destructors
-      //
-      Code();
-      ~Code();
-
       //
       // interfaces
       //

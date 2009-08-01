@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [thu jul 30 17:58:13 2009]
+// updated       julien quintard   [sat aug  1 14:54:39 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -132,6 +132,7 @@ namespace elle
       // constructors & destructors
       //
       Archive();
+      Archive(const Archive&);
       ~Archive();
 
       //

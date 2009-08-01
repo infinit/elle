@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [thu jul 30 23:25:49 2009]
+// updated       julien quintard   [sat aug  1 15:40:22 2009]
 //
 
 //
@@ -34,12 +34,22 @@ namespace elle
     ///
     /// this method initializes the object.
     ///
-    PrivateKey::PrivateKey()
+    PrivateKey::PrivateKey():
+      key(NULL)
     {
-      this->key = NULL;
+      // initialize the contexts.
+      contexts.decrypt = NULL;
+      contexts.sign = NULL;
+    }
 
-      this->contexts.decrypt = NULL;
-      this->contexts.sign = NULL;
+    ///
+    /// this is the copy constructor.
+    ///
+    PrivateKey::PrivateKey(const PrivateKey&			k)
+    {
+      // create the private key by duplicating the internal numbers.
+      if (this->Create(k.key) == StatusError)
+	notify("unable to duplicate the private key");
     }
 
     ///
@@ -280,12 +290,8 @@ namespace elle
 	return (*this);
 
       // recycle the private key.
-      if (this->Recycle<SecretKey>() == StatusError)
+      if (this->Recycle<PrivateKey>(&element) == StatusError)
 	yield("unable to recycle the private key", *this);
-
-      // re-create the private key by duplicating the internal numbers.
-      if (this->Create(element.key) == StatusError)
-	yield("unable to duplicate the private key", *this);
 
       return (*this);
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/crypto/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [fri jul 31 01:13:12 2009]
+// updated       julien quintard   [sat aug  1 19:58:35 2009]
 //
 
 //
@@ -106,9 +106,6 @@ namespace elle
 	  Byte		type = Random::Generate(Test::TypeKeys,
 						Test::TypeCipher);
 
-	  type = 1;
-	  printf("HERE %d\n", type);
-
 	  // according to the type of test: generating new keys,
 	  // encrypting/decrypting, signing/verifying or
 	  // cipher/de-ciphering...
@@ -120,26 +117,18 @@ namespace elle
 		delete kp;
 		delete sk;
 
-		printf("HERE\n");
-
 		// allocate the new keys
 		kp = new KeyPair;
 		sk = new SecretKey;
-
-		printf("HERE\n");
 
 		// generate the new keys.
 		if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
 						  Test::MaximumKeyLength)) == StatusError)
 		  escape("unable to generate a new key pair");
 
-		printf("HERE\n");
-
 		if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
 						  Test::MaximumKeyLength)) == StatusError)
 		  escape("unable to generate a secret key");
-
-		printf("HERE\n");
 	      }
 	    case Test::TypeEncryption:
 	      {

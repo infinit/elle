@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jul 31 01:17:45 2009]
+// updated       julien quintard   [fri jul 31 14:30:45 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HXX
@@ -51,8 +51,6 @@ namespace elle
     {
       Archive		archive;
 
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
       // create an archive.
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -75,8 +73,6 @@ namespace elle
 					   Cipher&		cipher) const
     {
       Archive		archive;
-
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -301,8 +297,6 @@ namespace elle
       Archive		archive;
       Clear		clear;
 
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
       // decrypt the cipher.
       if (this->Decrypt(cipher, clear) == StatusError)
 	escape("unable to decrypt the cipher");
@@ -331,8 +325,6 @@ namespace elle
     {
       Archive		archive;
       Clear		clear;
-
-      printf("[XXX] %s\n", __PRETTY_FUNCTION__);
 
       if (this->Decrypt(cipher, clear) == StatusError)
 	escape("unable to decrypt the cipher");

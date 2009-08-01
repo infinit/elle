@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [fri jul 31 01:17:51 2009]
+// updated       julien quintard   [sat aug  1 15:42:12 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HH
@@ -77,12 +77,6 @@ namespace elle
       };
 
       //
-      // constructors & destructors
-      //
-      SecretKey();
-      ~SecretKey();
-
-      //
       // methods
       //
       Status		Create(const String&);
@@ -131,16 +125,12 @@ namespace elle
       Status		Encrypt(const Archive&		archive,
 				Cipher&			cipher) const
       {
-	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
 	return (this->Encrypt((Plain&)archive, cipher));
       }
 
       Status		Decrypt(const Cipher&		cipher,
 				Archive&		archive) const
       {
-	printf("[XXX] %s\n", __PRETTY_FUNCTION__);
-
 	return (this->Decrypt(cipher, (Plain&)archive));
       }
 
