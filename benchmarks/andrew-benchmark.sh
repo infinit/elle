@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #
-# andrew benchmark
+# andrew benchmark, to use with OpenSSL
 #
 
 Prepare()

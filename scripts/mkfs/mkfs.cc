@@ -16,65 +16,35 @@
  */
 
 #include <elle/Elle.hh>
-#include <etoile/components/Components.hh>
+#include <etoile/core/Core.hh>
 
 using namespace elle;
-using namespace etoile::components;
 
-//
-// ---------- macros ----------------------------------------------------------
-//
-
-#define HOLE_OBJECT		0
-#define HOLE_DATA		1
-#define HOLE_IDENTIFIERS	2
-
-#define HOLE_IDENTIFIER_OBJECT	"objects"
-#define HOLE_IDENTIFIER_DATA	"data"
+using namespace etoile::core;
 
 //
 // ---------- globals ---------------------------------------------------------
 //
 
-char*			g_device = NULL;
+char*			g_device = ".device";
 
 //
 // ---------- hole ------------------------------------------------------------
 //
 
-char*			hole_identifier(const char*		store,
-					const char*		path)
-{
-  char*			id;
-  unsigned int		i;
-
-  printf("XXX[%s(%s, %s)]\n",
-	 __FUNCTION__, store, path);
-
-  if ((id = (char*)malloc(strlen(g_device) + 1 +
-			  strlen(store) + 1 +
-			  strlen(path) + 1)) == NULL)
-    return (NULL);
-
-  sprintf(id, "%s/%s/%s", g_device, store, path);
-
-  for (i = strlen(g_device) + 1 + strlen(store) + 1; id[i] != '\0'; i++)
-    if (id[i] == '/')
-      id[i] = '#';
-
-  return (id);
-}
-
 int			hole_put(const char*			id,
 				 void*				contents,
 				 unsigned int			size)
 {
+  char			path[4096];
   int			fd;
 
   printf("XXX[%s(%s, 0x%x, %u)]\n",
 	 __FUNCTION__, id, contents, size);
 
-  if ((fd = open(id, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1)
+  sprintf(path, "%s/%s", g_device, id);
+
+  if ((fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1)
     return (-errno);
 
   if (write(fd, contents, size) == -1)
@@ -104,21 +74,11 @@ int			mkfs(int				argc,
       exit(EXIT_FAILURE);
     }
 
-  g_device = argv[1];
-
   /*
-   * create and initialize the device.
+   * create the device directory.
    */
   {
-    char		path[4096];
-
     mkdir(g_device, 0700);
-
-    sprintf(path, "%s/objects", g_device);
-    mkdir(path, 0700);
-
-    sprintf(path, "%s/data", g_device);
-    mkdir(path, 0700);
   }
 
   /*
@@ -163,8 +123,9 @@ int			mkfs(int				argc,
    * store the whole.
    */
   {
+    String		identity;
+
     Archive		a_directory;
-    char*		i_directory;
 
     // serialize the directory object.
     if (a_directory.Create() == StatusError)
@@ -173,20 +134,17 @@ int			mkfs(int				argc,
     if (a_directory.Serialize(directory) == StatusError)
       return (-1);
 
-    // retrieve the storage identifier and store the archive.
-    if ((i_directory = hole_identifier(HOLE_IDENTIFIER_OBJECT, "/")) == NULL)
-      return (-errno);
+    // store the directory.
+    if (directory.address.Identify(identity) == StatusError)
+      return (-1);
 
-    if (hole_put(i_directory,
+    if (hole_put(identity.c_str(),
 		 (void*)a_directory.contents,
 		 a_directory.size) != 0)
       return (-errno);
 
-    free(i_directory);
-
     // serialize the catalog.
     Archive		a_catalog;
-    char*		i_catalog;
 
     // serialize the catalog.
     if (a_catalog.Create() == StatusError)
@@ -195,16 +153,38 @@ int			mkfs(int				argc,
     if (a_catalog.Serialize(catalog) == StatusError)
       return (-1);
 
-    // retrieve the storage identifier and store the archive.
-    if ((i_catalog = hole_identifier(HOLE_IDENTIFIER_DATA, "/")) == NULL)
-      return (-errno);
+    // store the catalog.
+    if (catalog.address.Identify(identity) == StatusError)
+      return (-1);
 
-    if (hole_put(i_catalog,
+    if (hole_put(identity.c_str(),
 		 (void*)a_catalog.contents,
 		 a_catalog.size) != 0)
       return (-errno);
+  }
 
-    free(i_catalog);
+  /*
+   * XXX[hack for bootstrapping the system]
+   *
+   * store the directory into .root
+   */
+  {
+    Archive		a_address;
+    String		identity;
+
+    // create the archive.
+    if (a_address.Create() == StatusError)
+      return (-1);
+
+    // serialize the directory address.
+    if (a_address.Serialize(directory.address) == StatusError)
+      return (-1);
+
+    // transform the address into a string and store that in a file.
+    if (hole_put(".root",
+		 (void*)a_address.contents,
+		 a_address.size) != 0)
+      return (-errno);
   }
 
   return (0);
@@ -213,7 +193,11 @@ int			mkfs(int				argc,
 int			main(int				argc,
 			     char*				argv[])
 {
-  mkfs(argc, argv);
+  int			status;
+
+  status = mkfs(argc, argv);
 
   expose();
+
+  return (status);
 }
