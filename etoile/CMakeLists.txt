@@ -14,6 +14,7 @@ ADD_LIBRARY(etoile
   core/Voucher.cc
   core/Catalog.cc
   core/References.cc
+  cache/Cache.cc
   )
 
 ADD_EXECUTABLE(test

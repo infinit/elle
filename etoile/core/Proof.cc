@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jul 30 20:51:25 2009]
+// updated       julien quintard   [sat aug  1 16:05:10 2009]
 //
 
 //
@@ -29,9 +29,10 @@ namespace etoile
     ///
     /// this method initializes the object.
     ///
-    Proof::Proof()
+    Proof::Proof():
+      delegate(0),
+      voucher(NULL)
     {
-      this->voucher = NULL;
     }
 
     ///

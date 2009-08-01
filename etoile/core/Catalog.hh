@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [thu jul 30 20:24:07 2009]
+// updated       julien quintard   [sat aug  1 15:57:36 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -67,7 +67,6 @@ namespace etoile
       //
       // constructors & destructors
       //
-      Catalog();
       ~Catalog();
 
       //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jul 30 20:53:24 2009]
+// updated       julien quintard   [sat aug  1 16:07:23 2009]
 //
 
 //
@@ -21,24 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the object.
-    ///
-    Voucher::Voucher()
-    {
-    }
-
-    ///
-    /// this method reinitializes the object.
-    ///
-    Voucher::~Voucher()
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------

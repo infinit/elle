@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jul 30 20:51:28 2009]
+// updated       julien quintard   [sat aug  1 16:07:00 2009]
 //
 
 //
@@ -29,9 +29,9 @@ namespace etoile
     ///
     /// this method initializes the object.
     ///
-    Token::Token()
+    Token::Token():
+      code(NULL)
     {
-      this->code = NULL;
     }
 
     ///

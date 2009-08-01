@@ -49,7 +49,22 @@ int		main(int			argc,
 
   keypair.k.Sign(keypair, digest, keypair, signature);
 
-  std::cout << keypair.K.Verify(signature, keypair, digest, keypair) << std::endl;
+  File		file;
+
+  PublicKeyBlock	pkb;
+
+  pkb.Create();
+  pkb.Seal();
+
+  file.Create(keypair);
+  file.Seal();
+
+  String	identifier;
+
+  file.address.Identify(identifier);
+
+  std::cout << file.address.digest->region << std::endl;
+  std::cout << identifier << std::endl;
 
   expose();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/References.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [thu jul 30 20:48:30 2009]
+// updated       julien quintard   [sat aug  1 16:06:29 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -63,7 +63,6 @@ namespace etoile
       //
       // constructors & destructors
       //
-      References();
       ~References();
 
       //

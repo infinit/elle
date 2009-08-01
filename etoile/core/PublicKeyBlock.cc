@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [thu jul 30 20:53:18 2009]
+// updated       julien quintard   [sat aug  1 16:06:14 2009]
 //
 
 //
@@ -29,9 +29,9 @@ namespace etoile
     ///
     /// this method initializes the object.
     ///
-    PublicKeyBlock::PublicKeyBlock()
+    PublicKeyBlock::PublicKeyBlock():
+      k(NULL)
     {
-      this->k = NULL;
     }
 
     ///
@@ -64,6 +64,7 @@ namespace etoile
 
       // create and copy the private key.
       this->k = new PrivateKey;
+
       *this->k = pair.k;
 
       leave();

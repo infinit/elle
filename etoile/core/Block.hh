@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [thu jul 30 20:19:37 2009]
+// updated       julien quintard   [sat aug  1 15:57:04 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_BLOCK_HH
@@ -38,12 +38,6 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
-      //
-      // constructors & destructors
-      //
-      Block();
-      ~Block();
-
       //
       // methods
       //

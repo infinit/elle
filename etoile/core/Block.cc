@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [thu jul 30 20:19:46 2009]
+// updated       julien quintard   [sat aug  1 15:57:17 2009]
 //
 
 //
@@ -21,24 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the object.
-    ///
-    Block::Block()
-    {
-    }
-
-    ///
-    /// this method reinitializes the object.
-    ///
-    Block::~Block()
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------

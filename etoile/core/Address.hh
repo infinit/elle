@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [thu jul 30 19:53:15 2009]
+// updated       julien quintard   [sat aug  1 15:46:41 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ADDRESS_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <ostream>
+#include <sstream>
 
 namespace etoile
 {
@@ -43,12 +44,14 @@ namespace etoile
       // constructors & destructors
       //
       Address();
+      Address(const Address&);
       ~Address();
 
       //
       // methods
       //
       Status		Create(Archivable&);
+      Status		Identify(String&);
 
       //
       // attributes

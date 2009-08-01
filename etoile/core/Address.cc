@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jul 30 19:56:29 2009]
+// updated       julien quintard   [sat aug  1 15:52:31 2009]
 //
 
 //
@@ -29,9 +29,27 @@ namespace etoile
     ///
     /// this method initializes the object.
     ///
-    Address::Address()
+    Address::Address():
+      digest(NULL)
     {
-      this->digest = NULL;
+    }
+
+    ///
+    /// this is the copy constructor.
+    ///
+    Address::Address(const Address&				address)
+    {
+      // copy the digest, if present.
+      if (address.digest != NULL)
+	{
+	  this->digest = new Digest;
+
+	  *this->digest = *address.digest;
+	}
+      else
+	{
+	  this->digest = NULL;
+	}
     }
 
     ///
@@ -64,6 +82,29 @@ namespace etoile
       leave();
     }
 
+    ///
+    /// this method transforms the internal address representation into
+    /// a string.
+    ///
+    Status		Address::Identify(String&		string)
+    {
+      Natural32			i;
+      std::ostringstream	stream;
+
+      if (this->digest != NULL)
+	{
+	  // transform the digest data into an hexadecimal string.
+	  for (i = 0; i < this->digest->region.size; i++)
+	    stream << std::nouppercase << std::hex
+		   << (elle::core::Natural32)this->digest->region.contents[i];
+
+	  // inject the string in the given argument.
+	  string = stream.str();
+	}
+
+      leave();      
+    }
+
 //
 // ---------- entity ----------------------------------------------------------
 //
@@ -78,16 +119,8 @@ namespace etoile
 	return (*this);
 
       // recycle the address.
-      if (this->Recycle<Address>() == StatusError)
+      if (this->Recycle<Address>(&element) == StatusError)
 	yield("unable to recycle the address", *this);
-
-      // copy the digest, if present.
-      if (element.digest != NULL)
-	{
-	  this->digest = new Digest;
-
-	  *this->digest = *element.digest;
-	}
 
       return (*this);
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jul 30 20:25:28 2009]
+// updated       julien quintard   [sat aug  1 15:57:47 2009]
 //
 
 //
@@ -25,13 +25,6 @@ namespace etoile
 //
 // ---------- constructors & destructors --------------------------------------
 //
-
-    ///
-    /// this method initializes the object.
-    ///
-    Catalog::Catalog()
-    {
-    }
 
     ///
     /// this method releases and reinitializes.

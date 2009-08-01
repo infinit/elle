@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jul 30 20:26:48 2009]
+// updated       julien quintard   [sat aug  1 15:59:20 2009]
 //
 
 //
@@ -21,24 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// this method initializes the object.
-    ///
-    ContentHashBlock::ContentHashBlock()
-    {
-    }
-
-    ///
-    /// this method releases and reinitializes.
-    ///
-    ContentHashBlock::~ContentHashBlock()
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------
