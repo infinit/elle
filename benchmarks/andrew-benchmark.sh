@@ -8,7 +8,9 @@ Prepare()
 {
   echo "---[ Prepare"
 
-  directories=$(find "${from}" -type d)
+  cd "${from}/"
+
+  directories=$(find ./ -type d)
 
   time								\
     (for directory in ${directories} ; do
@@ -20,7 +22,9 @@ Copy()
 {
   echo "---[ Copy"
 
-  files=$(find "${from}" -type f)
+  cd "${from}/"
+
+  files=$(find ./ -type f)
 
   time								\
     (for file in ${files} ; do
@@ -63,7 +67,7 @@ from=${1}
 to=${2}
 
 Prepare
-Copy
-List
-Search
-Compile
+#Copy
+#List
+#Search
+#Compile

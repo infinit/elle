@@ -26,7 +26,7 @@ using namespace etoile::core;
 // ---------- globals ---------------------------------------------------------
 //
 
-char*			g_device = ".device";
+const char*		g_device = ".device";
 
 //
 // ---------- hole ------------------------------------------------------------
@@ -44,7 +44,7 @@ int			hole_put(const char*			id,
 
   sprintf(path, "%s/%s", g_device, id);
 
-  if ((fd = open(path, O_CREAT | O_EXCL | O_WRONLY, 0600)) == -1)
+  if ((fd = open(path, O_CREAT | O_WRONLY, 0600)) == -1)
     return (-errno);
 
   if (write(fd, contents, size) == -1)
@@ -93,7 +93,6 @@ int			mkfs(int				argc,
    */
   KeyPair		owner;
   Directory		directory;
-  Catalog		catalog;
   {
     // generate owner keypair
     if (owner.Generate() == StatusError)
@@ -101,18 +100,6 @@ int			mkfs(int				argc,
 
     // create directory object.
     if (directory.Create(owner) == StatusError)
-      return (-1);
-
-    if (directory.Seal() == StatusError)
-      return (-1);
-
-    // create directory data: empty for now because the . and .. entries
-    // are not recorded internally.
-    if (catalog.Seal() == StatusError)
-      return (-1);
-
-    // update directory object.
-    if (directory.Update(owner.k, catalog.address) == StatusError)
       return (-1);
 
     if (directory.Seal() == StatusError)
@@ -142,25 +129,6 @@ int			mkfs(int				argc,
 		 (void*)a_directory.contents,
 		 a_directory.size) != 0)
       return (-errno);
-
-    // serialize the catalog.
-    Archive		a_catalog;
-
-    // serialize the catalog.
-    if (a_catalog.Create() == StatusError)
-      return (-1);
-
-    if (a_catalog.Serialize(catalog) == StatusError)
-      return (-1);
-
-    // store the catalog.
-    if (catalog.address.Identify(identity) == StatusError)
-      return (-1);
-
-    if (hole_put(identity.c_str(),
-		 (void*)a_catalog.contents,
-		 a_catalog.size) != 0)
-      return (-errno);
   }
 
   /*
@@ -170,7 +138,6 @@ int			mkfs(int				argc,
    */
   {
     Archive		a_address;
-    String		identity;
 
     // create the archive.
     if (a_address.Create() == StatusError)
@@ -180,10 +147,33 @@ int			mkfs(int				argc,
     if (a_address.Serialize(directory.address) == StatusError)
       return (-1);
 
-    // transform the address into a string and store that in a file.
+    // store it into a file.
     if (hole_put(".root",
 		 (void*)a_address.contents,
 		 a_address.size) != 0)
+      return (-errno);
+  }
+
+  /*
+   * XXX[hack for bootstrapping the user]
+   *
+   * store the user's key pair into .user
+   */
+  {
+    Archive		a_keypair;
+
+    // create the archive.
+    if (a_keypair.Create() == StatusError)
+      return (-1);
+
+    // serialize the owner's keypair.
+    if (a_keypair.Serialize(owner) == StatusError)
+      return (-1);
+
+    // store the archive.
+    if (hole_put(".user",
+		 (void*)a_keypair.contents,
+		 a_keypair.size) != 0)
       return (-errno);
   }
 
