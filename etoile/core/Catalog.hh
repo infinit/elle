@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [sat aug  1 15:57:36 2009]
+// updated       julien quintard   [mon aug  3 20:46:45 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -54,15 +54,22 @@ namespace etoile
       };
 
       //
+      // types
+      //
+      typedef std::list<Entry*>		Container;
+      typedef Container::iterator	Iterator;
+
+      //
       // methods
       //
-      Status		Add(String&,
-			    Address&);
-      Status		Remove(String&);
-      Status		Resolve(String&,
-				Address&);
-      Status		Search(String&,
-			       std::list<Entry*>::iterator* = NULL);
+      Status		Size(Natural32&);
+      Status		Add(const String&,
+			    const Address&);
+      Status		Remove(const String&);
+      Status		Lookup(const String&,
+			       Address&);
+      Status		Search(const String&,
+			       Iterator* = NULL);
 
       //
       // constructors & destructors
@@ -84,7 +91,7 @@ namespace etoile
       // attributes
       //
 
-      std::list<Entry*>	entries;
+      Container		entries;
     };
 
   }

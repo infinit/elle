@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [sat aug  1 15:57:17 2009]
+// updated       julien quintard   [sun aug  2 19:45:44 2009]
 //
 
 //
@@ -34,7 +34,7 @@ namespace etoile
     /// used when requesting the block to make sure the block received
     /// matches the one requested.
     ///
-    Status		Block::Validate(Address&		address)
+    Status		Block::Validate(const Address&		address)
     {
       if (this->address != address)
 	false();

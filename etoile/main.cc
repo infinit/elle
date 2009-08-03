@@ -21,11 +21,11 @@ using namespace etoile::core;
 //
 //                                                              Proc      Net
 //
-// Prepare              0.13s               7.11s              23.10s   24.70s
-// Copy                 7.21s             235.81s             385.71s   
-// List                 0.10s               7.45s               0.91s
-// Search               0.24s              94.50s               2.09s
-// Compile              151.62s          7485.86s             332.03s
+// Prepare              0.13s               7.11s              44.05s   
+// Copy                 7.21s             235.81s             s   
+// List                 0.10s               7.45s               s
+// Search               0.24s              94.50s               s
+// Compile              151.62s          7485.86s             s
 //
 // Optimisations: HMAC, filegroup etc.
 //

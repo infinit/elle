@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat aug  1 15:57:47 2009]
+// updated       julien quintard   [mon aug  3 20:47:15 2009]
 //
 
 //
@@ -31,10 +31,12 @@ namespace etoile
     ///
     Catalog::~Catalog()
     {
-      std::list<Catalog::Entry*>::iterator i;
+      Catalog::Iterator		iterator;
 
-      for (i = this->entries.begin(); i != this->entries.end(); i++)
-	delete *i;
+      for (iterator = this->entries.begin();
+	   iterator != this->entries.end();
+	   iterator++)
+	delete *iterator;
     }
 
 //
@@ -44,10 +46,20 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Catalog::Add(String&			name,
-				     Address&			address)
+    Status		Catalog::Size(Natural32&		size)
     {
-      Catalog::Entry*	entry;
+      size = this->entries.size();
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Catalog::Add(const String&		name,
+				     const Address&		address)
+    {
+      Catalog::Entry*		entry;
 
       if (this->Search(name) == StatusTrue)
 	escape("another entry with the same name seems to already exist");
@@ -65,9 +77,9 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Catalog::Remove(String&			name)
+    Status		Catalog::Remove(const String&		name)
     {
-      std::list<Catalog::Entry*>::iterator iterator;
+      Catalog::Iterator		iterator;
 
       if (this->Search(name, &iterator) == StatusFalse)
 	escape("unable to find the given named entry");
@@ -80,10 +92,10 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Catalog::Resolve(String&		name,
-					 Address&		address)
+    Status		Catalog::Lookup(const String&		name,
+					Address&		address)
     {
-      std::list<Catalog::Entry*>::iterator iterator;
+      Catalog::Iterator		iterator;
 
       if (this->Search(name, &iterator) == StatusFalse)
 	escape("unable to find the given named entry");
@@ -96,13 +108,14 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Catalog::Search(String&			name,
-					std::list<Catalog::Entry*>::iterator*
-  					  iterator)
+    Status		Catalog::Search(const String&		name,
+					Catalog::Iterator*	iterator)
     {
-      std::list<Catalog::Entry*>::iterator i;
+      Catalog::Iterator		i;
 
-      for (i = this->entries.begin(); i != this->entries.end(); i++)
+      for (i = this->entries.begin();
+	   i != this->entries.end();
+	   i++)
 	{
 	  Catalog::Entry*	entry = *i;
 
@@ -129,16 +142,18 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
-      std::list<Catalog::Entry*>::iterator i;
+      Catalog::Iterator	iterator;
 
       std::cout << alignment << "[Catalog]" << std::endl;
 
       if (ContentHashBlock::Dump(margin + 2) == StatusError)
 	escape("unable to dump the underlying block");
 
-      for (i = this->entries.begin(); i != this->entries.end(); i++)
+      for (iterator = this->entries.begin();
+	   iterator != this->entries.end();
+	   iterator++)
 	{
-	  Catalog::Entry*	entry = *i;
+	  Catalog::Entry*	entry = *iterator;
 
 	  std::cout << alignment << shift << "[Name] "
 		    << entry->name << std::endl;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [thu jul 30 20:30:38 2009]
+// updated       julien quintard   [mon aug  3 19:54:34 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -69,21 +69,21 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(KeyPair&,
-			       Type);
+      Status		Create(const KeyPair&,
+			       const Type);
 
-      Status		Update(PrivateKey&,
-			       Address&);
+      Status		Update(const PrivateKey&,
+			       const Address&);
       // XXX other Update() for delegates and consumers
 
-      Status		Write(PrivateKey&,
-			      Address&);
+      Status		Write(const PrivateKey&,
+			      const Address&);
 
-      Status		Administrate(PrivateKey&,
-				     Permissions,
-				     Address&);
+      Status		Administrate(const PrivateKey&,
+				     const Permissions&,
+				     const Address&);
 
-      Status		Validate(Address&);
+      Status		Validate(const Address&);
 
       //
       // interfaces

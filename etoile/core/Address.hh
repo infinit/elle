@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [sat aug  1 15:46:41 2009]
+// updated       julien quintard   [mon aug  3 21:03:47 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ADDRESS_HH
@@ -41,6 +41,11 @@ namespace etoile
     {
     public:
       //
+      // constants
+      //
+      static const Address	Null;
+
+      //
       // constructors & destructors
       //
       Address();
@@ -51,7 +56,7 @@ namespace etoile
       // methods
       //
       Status		Create(Archivable&);
-      Status		Identify(String&);
+      Status		Identify(String&) const;
 
       //
       // attributes
@@ -64,8 +69,8 @@ namespace etoile
 
       // entity
       Address&		operator=(const Address&);
-      Boolean		operator==(const Address&);
-      Boolean		operator!=(const Address&);
+      Boolean		operator==(const Address&) const;
+      Boolean		operator!=(const Address&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0);

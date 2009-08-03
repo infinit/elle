@@ -8,7 +8,7 @@
 // directory          /home/mycure/infinit/infinit/core/Directory.cc
 //
 // created       julien quintard   [sun mar  8 15:10:35 2009]
-// updated       julien quintard   [thu jul 23 14:05:53 2009]
+// updated       julien quintard   [mon aug  3 20:51:12 2009]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this method creates the directory object.
     ///
-    Status		Directory::Create(KeyPair&			pair)
+    Status		Directory::Create(const KeyPair&		pair)
     {
       // call the parent class.
       if (Object::Create(pair, Object::TypeDirectory) == StatusError)

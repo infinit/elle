@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sat aug  1 17:55:55 2009]
+// updated       julien quintard   [mon aug  3 19:55:27 2009]
 //
 
 //
@@ -64,8 +64,8 @@ namespace etoile
     /// block private key (iii) sets the meta data, and finally (iv)
     /// initializes the data part by setting the owner as the author.
     ///
-    Status		Object::Create(KeyPair&			owner,
-				       Object::Type		type)
+    Status		Object::Create(const KeyPair&		owner,
+				       const Object::Type	type)
     {
       // (i)
       {
@@ -120,8 +120,8 @@ namespace etoile
     ///
     /// this method is used by the owner for updating the object's data.
     ///
-    Status		Object::Update(PrivateKey&		owner,
-				       Address&			references)
+    Status		Object::Update(const PrivateKey&	owner,
+				       const Address&		references)
     {
       // set the author as being the owner.
       this->author.mode = Object::ModeOwner;
@@ -145,8 +145,8 @@ namespace etoile
     ///
     /// this method writes the data.
     ///
-    Status		Object::Write(PrivateKey&		author,
-				      Address&			references)
+    Status		Object::Write(const PrivateKey&		author,
+				      const Address&		references)
     {
       // set the data address.
       this->data.references = references;
@@ -172,12 +172,10 @@ namespace etoile
     /// the method first update the attributes before signing a
     /// temporarily created archive.
     ///
-    Status		Object::Administrate(PrivateKey&	owner,
-					     Permissions	permissions,
-					     Address&		access)
+    Status		Object::Administrate(const PrivateKey&	owner,
+					     const Permissions&	permissions,
+					     const Address&	access)
     {
-      Address		null;
-
       // set the owner permissions.
       this->meta.owner.permissions = permissions;
 
@@ -191,7 +189,7 @@ namespace etoile
       // note that, if an access block is referenced, the identities and
       // permissions of the delegates must be included in the meta signature.
       //
-      if (this->meta.access == null)
+      if (this->meta.access == Address::Null)
 	{
 	  // sign the meta data..
 	  if (owner.Sign((Byte&)this->meta.owner.permissions,
@@ -223,9 +221,8 @@ namespace etoile
     /// signature (iv) retrieves the author's public key (v) verifies
     /// the data signature.
     ///
-    Status		Object::Validate(Address&		address)
+    Status		Object::Validate(const Address&		address)
     {
-      Address		null;
       PublicKey*	author;
 
       // (i)
@@ -245,7 +242,7 @@ namespace etoile
 
       // (iii)
       {
-	if (this->meta.access == null)
+	if (this->meta.access == Address::Null)
 	  {
 	    // verifye the meta part.
 	    if (this->owner.K.Verify(this->meta.signature,

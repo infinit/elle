@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/File.hh
 //
 // created       julien quintard   [sun mar  8 15:07:58 2009]
-// updated       julien quintard   [thu jul 23 14:05:38 2009]
+// updated       julien quintard   [mon aug  3 20:50:46 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_FILE_HH
@@ -38,7 +38,7 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(KeyPair&);
+      Status		Create(const KeyPair&);
     };
 
   }

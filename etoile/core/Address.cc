@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat aug  1 15:52:31 2009]
+// updated       julien quintard   [mon aug  3 21:03:59 2009]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this variable can easily be used for comparing with invalid addresses.
+    ///
+    const Address		Address::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -86,7 +95,7 @@ namespace etoile
     /// this method transforms the internal address representation into
     /// a string.
     ///
-    Status		Address::Identify(String&		string)
+    Status		Address::Identify(String&		string) const
     {
       Natural32			i;
       std::ostringstream	stream;
@@ -128,7 +137,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Address::operator==(const Address&	element)
+    Boolean		Address::operator==(const Address&	element) const
     {
       // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
@@ -140,7 +149,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Address::operator!=(const Address&	element)
+    Boolean		Address::operator!=(const Address&	element) const
     {
       return (!(*this == element));
     }

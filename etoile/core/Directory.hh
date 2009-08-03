@@ -8,7 +8,7 @@
 // directory          /home/mycure/infinit/infinit/core/Directory.hh
 //
 // created       julien quintard   [sun mar  8 15:07:58 2009]
-// updated       julien quintard   [mon jul 27 08:32:43 2009]
+// updated       julien quintard   [mon aug  3 20:51:02 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_DIRECTORY_HH
@@ -38,7 +38,7 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(KeyPair&);
+      Status		Create(const KeyPair&);
     };
 
   }
