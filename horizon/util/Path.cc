@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Path.cc
 //
 // created       julien quintard   [sat aug  1 21:27:28 2009]
-// updated       julien quintard   [sat aug  1 23:17:58 2009]
+// updated       julien quintard   [mon aug  3 20:41:38 2009]
 //
 
 //
@@ -39,76 +39,108 @@ namespace pig
     Status		Path::Resolve(const String&		path,
 				      Address&			address)
     {
-      String		delimiter("/");
-      std::vector<String> tokens;
-      Integer32		i;
+      std::list<String>::iterator iterator;
+      std::list<String>		segments;
+      String			delimiter("/");
+      String			route;
+      Address			location;
 
-      // XXX
-      String XXX("/suce/mon/cul");
-
-      // split the path.
-      if (Path::Split(XXX, delimiter, tokens) == StatusError)
+      // split the path into a cached route and a list of unresolved tokens.
+      if (Path::Split(path, delimiter, route, segments) == StatusError)
 	escape("unable to split the path");
 
-      // look for the largest route in the cash.
-      for (i = tokens.size(); i >= 0; i--)
+      // retrieve the largest cached address.
+      if (Cache::Get(route, location) == StatusError)
+	escape("unable to retrieve the address of the cached path");
+
+      if (segments.size() != 0)
 	{
-	  String	route("/");
+	  // resolve all the other segments.
+	  for (iterator = segments.begin();
+	       iterator != segments.end();
+	       iterator++)
+	    {
+	      etoile::core::Directory	directory;
+	      String			segment = *iterator;
 
-	  // create a route by merging tokens from the longest to the smallest.
-	  if (Path::Merge(tokens, i, route) == StatusError)
-	    escape("unable to build a route");
+	      // load the segment directory.
+	      if (Hole::Get(location, directory) == StatusError)
+		escape("unable to load the directory");
 
-	  // look in the cache.
-	  if (Cache::Get(
+	      // lookup for the segment.
+	      if (Directory::Lookup(directory,
+				    segment,
+				    location) == StatusError)
+		escape("unable to lookup for the segment");
 
-	  ::sleep(3);
+	      // XXX[put in cache]
+	    }
 	}
+
+      // set the address of the final object.
+      address = location;
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method takes a path and a delimiter and splits the path
+    /// into two parts. The first part is called 'route' and is the largest
+    /// leftmost part of the path that is contained in cache. The second
+    /// part, called 'segments' is a list of uncached names that need to
+    /// be manually resolved by retrieving the directories, looking up the
+    /// entry etc.
     ///
     Status		Path::Split(const String&		path,
 				    const String&		delimiter,
-				    std::vector<String>&	tokens)
+				    String&			route,
+				    std::list<String>&		segments)
     {
-      Natural32		start = path.find_first_not_of(delimiter);
-      Natural32		end = path.find_first_of(delimiter, start);
+      Integer32		end = path.find_last_not_of(delimiter);
+      Integer32		start = path.find_last_of(delimiter, end);
 
-      while ((start != std::string::npos) || (end != std::string::npos))
+      while (true)
 	{
-	  tokens.push_back(path.substr(start, end - start));
+	  String	segment;
 
-	  start = path.find_first_not_of(delimiter, end);
-	  end = path.find_first_of(delimiter, start);
+	  segment = path.substr(start + 1, end - start);
+	  route = path.substr(0, start);
+
+	  if (segment.length() != 0)
+	    segments.push_front(segment);
+
+	  if (route.length() == 0)
+	    route = delimiter;
+
+	  if (Cache::Search(route) == StatusTrue)
+	    break;
+
+	  end = path.find_last_not_of(delimiter, start);
+	  start = path.find_last_of(delimiter, end);
 	}
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method returns both the leftmost part and the smallest right
+    /// part of the given path.
     ///
-    Status		Path::Merge(const std::vector<String>&	tokens,
-				    const Natural32		length,
-				    String&			path)
+    Status		Path::Break(const String&		path,
+				    const String&		delimiter,
+				    String&			directory,
+				    String&			object)
     {
-      std::vector<String>::const_iterator	iterator;
-      Natural32					i;
+      Integer32		end = path.find_last_not_of(delimiter);
+      Integer32		start = path.find_last_of(delimiter, end);
 
-      // go from 0 to length and append the tokens.
-      for (iterator = tokens.begin(), i = 0;
-	   (iterator != tokens.end()) && (i < length);
-	   iterator++, i++)
-	{
-	  path.append(*iterator);
+      // XXX[handle weird cases such as /suce or /teton/avale/]
 
-	  if (((iterator + 1) != tokens.end()) && ((i + 1) < length))
-	    path.append("/");
-	}
+      directory = path.substr(0, start);
+      object = path.substr(start + 1, end - start);
+
+      if (directory.length() == 0)
+	directory = delimiter;
 
       leave();
     }

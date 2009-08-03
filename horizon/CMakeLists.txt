@@ -11,6 +11,9 @@ ADD_EXECUTABLE(pig
   cache/Cache.cc
 
   util/Path.cc
-  util/File.cc)
+  util/File.cc
+  util/Directory.cc
+
+  hole/Hole.cc)
 
 TARGET_LINK_LIBRARIES(pig pthread rt fuse elle etoile)

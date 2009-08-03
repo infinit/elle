@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/cache/Cache.cc
 //
 // created       julien quintard   [sat aug  1 01:15:37 2009]
-// updated       julien quintard   [sat aug  1 23:37:45 2009]
+// updated       julien quintard   [sun aug  2 17:17:25 2009]
 //
 
 //
@@ -50,7 +50,7 @@ namespace pig
       // set the iterator if required.
       if (address != NULL)
 	{
-	  Cache::Item*	item = *iterator;
+	  Cache::Item*	item = (*iterator).second;
 
 	  *address = item->address;
 	}
@@ -75,7 +75,7 @@ namespace pig
       item->address = address;
 
       // insert the item.
-      Cache::container.insert(std::pair<String, Cache::Item*>(path, item));
+      container[path] = item;
 
       leave();
     }
@@ -91,6 +91,33 @@ namespace pig
       item = container[path];
 
       address = item->address;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Cache::Dump()
+    {
+      Cache::Iterator	iterator;
+
+      std::cout << "[Cache]" << std::endl;
+
+      for (iterator = Cache::container.begin();
+	   iterator != Cache::container.end();
+	   iterator++)
+	{
+	  String	path = (*iterator).first;
+	  Cache::Item*	item = (*iterator).second;
+	  String	identity;
+
+	  if (item->address.Identify(identity) == StatusError)
+	    escape("unable to identify the address");
+
+	  std::cout << "  " << path << " :: " << identity
+		    << " (" << item->type << ")" << std::endl;
+	}
 
       leave();
     }

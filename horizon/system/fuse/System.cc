@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/system/fuse/System.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [sat aug  1 20:59:54 2009]
+// updated       julien quintard   [mon aug  3 20:23:43 2009]
 //
 
 //
@@ -51,8 +51,10 @@ namespace pig
       operations.mknod = Interface::mknod;
       operations.unlink = Interface::unlink;
       operations.utimens = Interface::utimens;
-      operations.readdir = Interface::readdir;
+
       operations.mkdir = Interface::mkdir;
+      operations.readdir = Interface::readdir;
+      operations.rmdir = Interface::rmdir;
 
       // XXX[hack for the /]
       {
@@ -80,6 +82,26 @@ namespace pig
 
 	if (Cache::Put(root, address, Cache::TypePermanent) == StatusError)
 	  escape("unable to record the '/' path in the cache");
+      }
+      // XXX[hack for the user keypair]
+      {
+	int		fd;
+
+	fd = ::open(".device/.user", O_RDONLY);
+
+	Region	region;
+
+	region.Prepare(4096);
+
+	region.size = read(fd, region.contents, region.capacity);
+
+	region.Detach();
+
+	Archive		archive;
+
+	archive.Prepare(region);
+
+	archive.Extract(Interface::User);
       }
 
       leave();

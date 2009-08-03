@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/system/fuse/System.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [sat aug  1 01:23:14 2009]
+// updated       julien quintard   [mon aug  3 13:24:45 2009]
 //
 
 #ifndef PIG_SYSTEM_FUSE_SYSTEM_HH
@@ -25,16 +25,12 @@
 //
 
 #include <elle/Elle.hh>
+#include <etoile/Etoile.hh>
 
 #include <pig/system/fuse/Interface.hh>
-
 #include <pig/cache/Cache.hh>
 
 #include <fuse.h>
-
-// XXX
-#include <etoile/core/Core.hh>
-// XXX
 
 namespace pig
 {

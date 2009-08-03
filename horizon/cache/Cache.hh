@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/cache/Cache.hh
 //
 // created       julien quintard   [sat aug  1 01:10:19 2009]
-// updated       julien quintard   [sat aug  1 23:26:13 2009]
+// updated       julien quintard   [mon aug  3 13:24:09 2009]
 //
 
 #ifndef PIG_CACHE_CACHE_HH
@@ -19,8 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/core/Core.hh>
+#include <etoile/Etoile.hh>
 
 #include <map>
 
@@ -79,6 +78,7 @@ namespace pig
 			    const Type& = TypeTemporary);
       static Status	Get(const String&,
 			    Address&);
+      static Status	Dump();
 
       //
       // static attributes

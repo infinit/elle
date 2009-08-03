@@ -5,29 +5,24 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/pig/util/File.hh
+// file          /home/mycure/infinit/pig/hole/Hole.hh
 //
-// created       julien quintard   [sat aug  1 21:06:13 2009]
-// updated       julien quintard   [mon aug  3 20:40:12 2009]
+// created       julien quintard   [sun aug  2 18:20:19 2009]
+// updated       julien quintard   [mon aug  3 21:13:18 2009]
 //
 
-#ifndef PIG_UTIL_FILE_HH
-#define PIG_UTIL_FILE_HH
+#ifndef PIG_HOLE_HOLE_HH
+#define PIG_HOLE_HOLE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/Elle.hh>
 #include <etoile/Etoile.hh>
-
-#include <pig/hole/Hole.hh>
 
 namespace pig
 {
-  using namespace hole;
-
-  namespace util
+  namespace hole
   {
 
 //
@@ -37,13 +32,17 @@ namespace pig
     ///
     /// XXX
     ///
-    class File
+    class Hole
     {
     public:
       //
       // static methods
       //
-      // XXX
+      static Status	Put(const Address&,
+			    const Block&);
+      static Status	Get(const Address&,
+			    Block&);
+      static Status	Destroy(const Address&);
     };
 
   }

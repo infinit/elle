@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Path.hh
 //
 // created       julien quintard   [sat aug  1 21:24:57 2009]
-// updated       julien quintard   [sat aug  1 22:57:56 2009]
+// updated       julien quintard   [mon aug  3 20:41:05 2009]
 //
 
 #ifndef PIG_UTIL_PATH_HH
@@ -21,10 +21,17 @@
 #include <elle/Elle.hh>
 #include <etoile/Etoile.hh>
 
+#include <pig/cache/Cache.hh>
+#include <pig/hole/Hole.hh>
+#include <pig/util/Directory.hh>
+
 #include <vector>
 
 namespace pig
 {
+  using namespace cache;
+  using namespace hole;
+
   namespace util
   {
 
@@ -32,6 +39,9 @@ namespace pig
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// XXX
+    ///
     class Path
     {
     public:
@@ -42,9 +52,11 @@ namespace pig
 				Address&);
       static Status	Split(const String&,
 			      const String&,
-			      std::vector<String>&);
-      static Status	Merge(const std::vector<String>&,
-			      const Natural32,
+			      String&,
+			      std::list<String>&);
+      static Status	Break(const String&,
+			      const String&,
+			      String&,
 			      String&);
     };
 
