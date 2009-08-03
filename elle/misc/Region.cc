@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sat aug  1 15:24:56 2009]
+// updated       julien quintard   [mon aug  3 20:56:49 2009]
 //
 
 //
@@ -306,7 +306,7 @@ namespace elle
     ///
     /// this method check if two regions match.
     ///
-    Boolean		Region::operator==(const Region&	element)
+    Boolean		Region::operator==(const Region&	element) const
     {
       // check the size.
       if (this->size != element.size)
@@ -322,7 +322,7 @@ namespace elle
     ///
     /// this method checks if two regions dis-match.
     ///
-    Boolean		Region::operator!=(const Region&	element)
+    Boolean		Region::operator!=(const Region&	element) const
     {
       return (!(*this == element));
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [sat aug  1 18:19:04 2009]
+// updated       julien quintard   [mon aug  3 20:58:18 2009]
 //
 
 //
@@ -135,7 +135,7 @@ namespace elle
     ///
     /// this method check if two keypairs match.
     ///
-    Boolean		KeyPair::operator==(const KeyPair&	element)
+    Boolean		KeyPair::operator==(const KeyPair&	element) const
     {
       // compare the internal keys.
       if ((this->K != element.K) || (this->k != element.k))
@@ -147,7 +147,7 @@ namespace elle
     ///
     /// this method checks if two keypairs dis-match.
     ///
-    Boolean		KeyPair::operator!=(const KeyPair&	element)
+    Boolean		KeyPair::operator!=(const KeyPair&	element) const
     {
       return (!(*this == element));
     }

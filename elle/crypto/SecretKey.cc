@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [sat aug  1 15:42:07 2009]
+// updated       julien quintard   [mon aug  3 21:05:01 2009]
 //
 
 //
@@ -289,7 +289,7 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean		SecretKey::operator==(const SecretKey&	element)
+    Boolean		SecretKey::operator==(const SecretKey&	element) const
     {
       // compare the internal region.
       return (this->key == element.key);
@@ -298,7 +298,7 @@ namespace elle
     ///
     /// this method checks if two objects dis-match.
     ///
-    Boolean		SecretKey::operator!=(const SecretKey&	element)
+    Boolean		SecretKey::operator!=(const SecretKey&	element) const
     {
       return (!(*this == element));
     }

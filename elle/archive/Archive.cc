@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sat aug  1 15:02:15 2009]
+// updated       julien quintard   [mon aug  3 20:57:38 2009]
 //
 
 //
@@ -546,7 +546,7 @@ namespace elle
     ///
     /// this method check if two archives match.
     ///
-    Boolean		Archive::operator==(const Archive&	element)
+    Boolean		Archive::operator==(const Archive&	element) const
     {
       // call the super-method.
       if (Region::operator==(element) == false)
@@ -558,7 +558,7 @@ namespace elle
     ///
     /// this method checks if two archive dis-match.
     ///
-    Boolean		Archive::operator!=(const Archive&	element)
+    Boolean		Archive::operator!=(const Archive&	element) const
     {
       return (!(*this == element));
     }

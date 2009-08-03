@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat aug  1 15:22:59 2009]
+// updated       julien quintard   [mon aug  3 20:59:38 2009]
 //
 
 //
@@ -49,7 +49,7 @@ namespace elle
     ///
     /// this method check if two codes match.
     ///
-    Boolean		Code::operator==(const Code&	element)
+    Boolean		Code::operator==(const Code&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
@@ -58,11 +58,10 @@ namespace elle
     ///
     /// this method checks if two codes dis-match.
     ///
-    Boolean		Code::operator!=(const Code&	element)
+    Boolean		Code::operator!=(const Code&	element) const
     {
       return (!(*this == element));
     }
-
 
 //
 // ---------- dumpable --------------------------------------------------------

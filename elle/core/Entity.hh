@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [sat aug  1 19:58:44 2009]
+// updated       julien quintard   [mon aug  3 20:56:15 2009]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -119,7 +119,7 @@ namespace elle
       ///
       /// this operator compares two entitys.
       ///
-      virtual Boolean	operator==(const Entity&)
+      virtual Boolean	operator==(const Entity&) const
       {
 	fail("this method should never have been called");
       }
@@ -127,7 +127,7 @@ namespace elle
       ///
       /// this operator compares two entitys.
       ///
-      virtual Boolean	operator!=(const Entity&)
+      virtual Boolean	operator!=(const Entity&) const
       {
 	fail("this method should never have been called");
       }

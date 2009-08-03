@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [sat aug  1 14:50:20 2009]
+// updated       julien quintard   [sun aug  2 22:59:38 2009]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -169,6 +169,15 @@ namespace elle
 									\
 	  ::exit(EXIT_FAILURE);						\
         }								\
+    } while (false)
+
+///
+/// this macro-function flushes all the recorded messages.
+///
+#define purge()								\
+  do									\
+    {									\
+      elle::misc::report.Flush();					\
     } while (false)
 
 //
