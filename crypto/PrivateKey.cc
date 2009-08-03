@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [sat aug  1 15:40:22 2009]
+// updated       julien quintard   [mon aug  3 20:59:10 2009]
 //
 
 //
@@ -299,7 +299,7 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean		PrivateKey::operator==(const PrivateKey& element)
+    Boolean		PrivateKey::operator==(const PrivateKey& element) const
     {
       // compare the internal numbers.
       if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
@@ -314,7 +314,7 @@ namespace elle
     ///
     /// this method checks if two objects dis-match.
     ///
-    Boolean		PrivateKey::operator!=(const PrivateKey& element)
+    Boolean		PrivateKey::operator!=(const PrivateKey& element) const
     {
       return (!(*this == element));
     }

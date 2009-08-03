@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [sat aug  1 15:22:43 2009]
+// updated       julien quintard   [mon aug  3 20:59:28 2009]
 //
 
 #ifndef ELLE_CRYPTO_CODE_HH
@@ -49,8 +49,8 @@ namespace elle
 
       // entity
       Code&		operator=(const Code&);
-      Boolean		operator==(const Code&);
-      Boolean		operator!=(const Code&);
+      Boolean		operator==(const Code&) const;
+      Boolean		operator!=(const Code&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0);

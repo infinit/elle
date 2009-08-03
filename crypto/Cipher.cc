@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat aug  1 15:21:36 2009]
+// updated       julien quintard   [mon aug  3 21:01:12 2009]
 //
 
 //
@@ -49,7 +49,7 @@ namespace elle
     ///
     /// this method check if two ciphers match.
     ///
-    Boolean		Cipher::operator==(const Cipher&	element)
+    Boolean		Cipher::operator==(const Cipher&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
@@ -58,11 +58,10 @@ namespace elle
     ///
     /// this method checks if two ciphers dis-match.
     ///
-    Boolean		Cipher::operator!=(const Cipher&	element)
+    Boolean		Cipher::operator!=(const Cipher&	element) const
     {
       return (!(*this == element));
     }
-
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat aug  1 15:44:07 2009]
+// updated       julien quintard   [mon aug  3 21:00:38 2009]
 //
 
 //
@@ -49,7 +49,7 @@ namespace elle
     ///
     /// this method check if two signatures match.
     ///
-    Boolean		Signature::operator==(const Signature&	element)
+    Boolean		Signature::operator==(const Signature&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
@@ -58,11 +58,10 @@ namespace elle
     ///
     /// this method checks if two signatures dis-match.
     ///
-    Boolean		Signature::operator!=(const Signature&	element)
+    Boolean		Signature::operator!=(const Signature&	element) const
     {
       return (!(*this == element));
     }
-
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [sat aug  1 15:45:16 2009]
+// updated       julien quintard   [mon aug  3 21:00:56 2009]
 //
 
 //
@@ -293,7 +293,7 @@ namespace elle
     ///
     /// this method checks if two objects match.
     ///
-    Boolean		PublicKey::operator==(const PublicKey&	element)
+    Boolean		PublicKey::operator==(const PublicKey&	element) const
     {
       // compare the internal numbers.
       if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
@@ -306,7 +306,7 @@ namespace elle
     ///
     /// this method checks if two objects dis-match.
     ///
-    Boolean		PublicKey::operator!=(const PublicKey&	element)
+    Boolean		PublicKey::operator!=(const PublicKey&	element) const
     {
       return (!(*this == element));
     }

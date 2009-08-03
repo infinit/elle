@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [sat aug  1 15:42:12 2009]
+// updated       julien quintard   [mon aug  3 20:59:57 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HH
@@ -95,8 +95,8 @@ namespace elle
 
       // entity
       SecretKey&	operator=(const SecretKey&);
-      Boolean		operator==(const SecretKey&);
-      Boolean		operator!=(const SecretKey&);
+      Boolean		operator==(const SecretKey&) const;
+      Boolean		operator!=(const SecretKey&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0);

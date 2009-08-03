@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat aug  1 15:24:19 2009]
+// updated       julien quintard   [mon aug  3 20:58:47 2009]
 //
 
 //
@@ -49,7 +49,7 @@ namespace elle
     ///
     /// this method check if two digests match.
     ///
-    Boolean		Digest::operator==(const Digest&	element)
+    Boolean		Digest::operator==(const Digest&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
@@ -58,11 +58,10 @@ namespace elle
     ///
     /// this method checks if two digests dis-match.
     ///
-    Boolean		Digest::operator!=(const Digest&	element)
+    Boolean		Digest::operator!=(const Digest&	element) const
     {
       return (!(*this == element));
     }
-
 
 //
 // ---------- dumpable --------------------------------------------------------
