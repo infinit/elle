@@ -6,6 +6,7 @@
 
 # include "hole/LocalNode.hh"
 # include "hole/protocol/Header.hh"
+# include "hole/FullTag.hh"
 
 namespace hole
 {
@@ -36,6 +37,8 @@ namespace hole
     void Put(DHTDataRequest * request);
 
     protocol::Tag GenerateTag();
+    FullTag GenerateFullTag(const QHostAddress & addr,
+                            quint16              port);
 
   public slots:
     void Disconnect();
@@ -52,9 +55,12 @@ namespace hole
     void NodeDisconnected(Node * node);
 
   private:
-    bool IsTagInUse(protocol::Tag tag) const;
+    bool IsTagInUse(const FullTag & tag) const;
+    void HandleCommand(const QByteArray & data,
+                       protocol::CmdId    cmdId,
+                       protocol::Tag      tag);
 
-    typedef QMap<protocol::Tag, DHTRequestHandler *> requests_t;
+    typedef QMap<FullTag, DHTRequestHandler *> requests_t;
 
     LocalNode         localNode_;
     QUdpSocket *      socket_;

@@ -10,6 +10,8 @@ namespace hole
 {
   struct Key : public FreeList<Key>
   {
+    Key();
+
     quint8 data[160];
   };
   QDataStream & operator<<(QDataStream & ds, const Key & key);

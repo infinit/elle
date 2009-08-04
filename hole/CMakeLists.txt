@@ -14,6 +14,7 @@ ADD_LIBRARY(hole
   DHTRequestHandler.cc DHTRequestHandler.hh
   DHTJoinRequestHandler.cc DHTJoinRequestHandler.hh
   FreeList.hh FreeList.hxx
+  FullTag.cc FullTag.hh
   Key.cc Key.hh
   Node.cc Node.hh
   LocalNode.cc LocalNode.hh

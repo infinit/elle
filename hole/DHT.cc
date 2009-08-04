@@ -4,6 +4,7 @@
 #include <QDataStream>
 
 #include "hole/DHT.hh"
+#include "hole/DHTRequest.hh"
 #include "hole/DHTJoinRequestHandler.hh"
 
 namespace hole
@@ -52,8 +53,21 @@ namespace hole
 
     // decode data
     QDataStream stream(data);
-    quint16 cmd_id, tag;
+    protocol::CmdId cmd_id;
+    protocol::Tag tag;
     stream >> cmd_id >> tag;
+  }
+
+  void
+  DHT::HandleCommand(const QByteArray & data,
+                     protocol::CmdId    cmdId,
+                     protocol::Tag      tag)
+  {
+    /* this switch handles new requests */
+    switch (cmdId)
+    {
+
+    }
   }
 
   void
@@ -69,7 +83,10 @@ namespace hole
     assert(request);
     DHTJoinRequestHandler * handler = new DHTJoinRequestHandler(*this, *request);
     handler->tag_ = GenerateTag();
-    requests_[handler->tag_] = handler;
+    FullTag full_tag(handler->tag_,
+                      handler->request_.address,
+                      handler->request_.port);
+    requests_[full_tag] = handler;
     connect(handler, SIGNAL(Joined(DHTJoinRequestHandler *)),
             this, SLOT(Joined(DHTJoinRequestHandler *)));
     handler->Join();
@@ -94,18 +111,28 @@ namespace hole
     quint32       timestamp;
     quint32       r;
 
-    do {
-      timestamp = time(0);
-      r         = qrand();
-      tag       = timestamp;
-      tag       = (tag << 32) | r;
-    } while (IsTagInUse(tag));
+    timestamp = time(0);
+    r         = qrand();
+    tag       = timestamp;
+    tag       = (tag << 32) | r;
 
     return tag;
   }
 
+  FullTag
+  DHT::GenerateFullTag(const QHostAddress & addr,
+                       quint16              port)
+  {
+    FullTag full_tag(GenerateTag(), addr, port);
+
+    while (IsTagInUse(full_tag))
+      full_tag.tag = GenerateTag();
+
+    return full_tag;
+  }
+
   bool
-  DHT::IsTagInUse(protocol::Tag tag) const
+  DHT::IsTagInUse(const FullTag & tag) const
   {
     requests_t::const_iterator it = requests_.find(tag);
     return it == requests_.end();
