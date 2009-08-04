@@ -10,4 +10,14 @@ namespace hole
       port(p)
   {
   }
+
+  bool
+  FullTag::operator<(const FullTag & other) const
+  {
+    if (tag < other.tag)
+      return true;
+    if (address.toString() < other.address.toString())
+      return true;
+    return port < other.port;
+  }
 }
