@@ -11,8 +11,7 @@ QT4_WRAP_CPP(Hole_MOCS
 ADD_LIBRARY(hole
   DHT.cc DHT.hh
   DHTRequest.cc DHTRequest.hh
-  DHTRequestHandler.cc DHTRequestHandler.hh
-  DHTJoinRequestHandler.cc DHTJoinRequestHandler.hh
+  DHTJoinRequest.cc DHTJoinRequest.hh
   FreeList.hh FreeList.hxx
   FullTag.cc FullTag.hh
   Key.cc Key.hh

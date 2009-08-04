@@ -14,8 +14,6 @@ namespace hole
   public:
     DHTRequestHandler(DHT & dht);
 
-    DHT &         dht_;
-    protocol::Tag tag_;
   };
 }
 

@@ -16,7 +16,7 @@ namespace hole
     Q_OBJECT;
 
   public:
-    DHTRequest(QObject * parent = 0);
+    DHTRequest(DHT & dht);
     virtual ~DHTRequest();
 
   signals:
@@ -24,13 +24,10 @@ namespace hole
     void Done();
     /** called when the request failed */
     void Failed();
-  };
 
-  class DHTJoinRequest : public DHTRequest
-  {
-  public:
-    QHostAddress address;
-    quint16      port;
+  protected:
+    DHT &         dht_;
+    protocol::Tag tag_;
   };
 
   class DHTDataRequest : public DHTRequest
