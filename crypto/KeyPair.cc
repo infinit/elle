@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [mon aug  3 20:58:18 2009]
+// updated       julien quintard   [tue aug  4 13:53:00 2009]
 //
 
 //
@@ -159,7 +159,7 @@ namespace elle
     ///
     /// this method dumps the keypair internals.
     ///
-    Status		KeyPair::Dump(const Natural32		margin)
+    Status		KeyPair::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 

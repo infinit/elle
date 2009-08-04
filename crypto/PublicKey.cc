@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [mon aug  3 21:00:56 2009]
+// updated       julien quintard   [tue aug  4 13:54:09 2009]
 //
 
 //
@@ -318,7 +318,7 @@ namespace elle
     ///
     /// this method dumps the public key internals.
     ///
-    Status		PublicKey::Dump(const Natural32		margin)
+    Status		PublicKey::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

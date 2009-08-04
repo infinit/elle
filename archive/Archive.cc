@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [mon aug  3 20:57:38 2009]
+// updated       julien quintard   [tue aug  4 16:01:46 2009]
 //
 
 //
@@ -443,7 +443,7 @@ namespace elle
 	leave();
 
       // expand the internal buffer.
-      if (this->Expand(size) == StatusError)
+      if (this->Adjust(this->size + size) == StatusError)
 	escape("unable to expand the archive");
 
       // set the new memory to zero.
@@ -571,31 +571,34 @@ namespace elle
     /// this method dumps an archive i.e displays every recored element
     /// with its type and value.
     ///
-    Status		Archive::Dump(const Natural32		margin)
+    Status		Archive::Dump(const Natural32		margin) const
     {
-      Natural32		offset = this->offset;
       String		alignment(margin, ' ');
+      Archive		archive;
+
+      // first copy the archive because we cannot modify it.
+      archive = *this;
 
       std::cout << alignment
 		<< "[Archive] "
-		<< "mode(" << this->mode << ") "
-		<< "offset(" << this->offset << ") "
-		<< "size(" << this->size << ") "
-		<< "capacity(" << this->capacity << ")"
+		<< "mode(" << archive.mode << ") "
+		<< "offset(" << archive.offset << ") "
+		<< "size(" << archive.size << ") "
+		<< "capacity(" << archive.capacity << ")"
 		<< std::endl;
 
-      while (this->offset != this->size)
+      while (archive.offset != archive.size)
 	{
 	  Archive::Type		type;
 
-	  if (this->Fetch(type) == StatusError)
+	  if (archive.Fetch(type) == StatusError)
 	    escape("unable to fetch the next element's type");
 
 	  switch (type)
 	    {
 	    case Archive::TypeNull:
 	      {
-		if (this->Extract(none) == StatusError)
+		if (archive.Extract(none) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(none, margin + 2) == StatusError)
@@ -607,7 +610,7 @@ namespace elle
 	      {
 		Boolean		value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -619,7 +622,7 @@ namespace elle
 	      {
 		Character	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -631,7 +634,7 @@ namespace elle
 	      {
 		Real		value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -643,7 +646,7 @@ namespace elle
 	      {
 		Integer8	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -655,7 +658,7 @@ namespace elle
 	      {
 		Integer16	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -667,7 +670,7 @@ namespace elle
 	      {
 		Integer32	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -679,7 +682,7 @@ namespace elle
 	      {
 		Integer64	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -691,7 +694,7 @@ namespace elle
 	      {
 		Natural8	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -703,7 +706,7 @@ namespace elle
 	      {
 		Natural16	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -715,7 +718,7 @@ namespace elle
 	      {
 		Natural32	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -727,7 +730,7 @@ namespace elle
 	      {
 		Natural64	value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -739,7 +742,7 @@ namespace elle
 	      {
 		Large		value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -751,7 +754,7 @@ namespace elle
 	      {
 		String		value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -763,7 +766,7 @@ namespace elle
 	      {
 		Region		value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (Show(value, margin + 2) == StatusError)
@@ -775,7 +778,7 @@ namespace elle
 	      {
 		Archive		value;
 
-		if (this->Extract(value) == StatusError)
+		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
 		if (value.Dump(margin + 2) == StatusError)
@@ -792,9 +795,6 @@ namespace elle
 	      }
 	    }
 	}
-
-      // put the offset right back where it was.
-      this->offset = offset;
 
       leave();
     }

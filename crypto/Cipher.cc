@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon aug  3 21:01:12 2009]
+// updated       julien quintard   [tue aug  4 13:54:18 2009]
 //
 
 //
@@ -70,7 +70,7 @@ namespace elle
     ///
     /// this method dumps the cipher.
     ///
-    Status		Cipher::Dump(const Natural32		margin)
+    Status		Cipher::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 

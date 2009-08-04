@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon aug  3 20:59:38 2009]
+// updated       julien quintard   [tue aug  4 13:53:09 2009]
 //
 
 //
@@ -70,7 +70,7 @@ namespace elle
     ///
     /// this method dumps the code.
     ///
-    Status		Code::Dump(const Natural32		margin)
+    Status		Code::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 

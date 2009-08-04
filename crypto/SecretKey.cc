@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [mon aug  3 21:05:01 2009]
+// updated       julien quintard   [tue aug  4 13:53:41 2009]
 //
 
 //
@@ -310,7 +310,7 @@ namespace elle
     ///
     /// this method dumps the secret key internals.
     ///
-    Status		SecretKey::Dump(const Natural32		margin)
+    Status		SecretKey::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 

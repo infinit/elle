@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [mon aug  3 20:56:49 2009]
+// updated       julien quintard   [tue aug  4 17:16:10 2009]
 //
 
 //
@@ -186,13 +186,17 @@ namespace elle
     }
 
     ///
-    /// this method expands the region. note however that, for the
+    /// this method adjusts the region. note however that, for the
     /// very first allocation, the exact size is allocated so that
     /// space is not wasted for static regions i.e regions build
-    /// by just allocating memory, through Expand(), and then writing
+    /// by just allocating memory, through Adjust(), and then writing
     /// information.
     ///
-    Status		Region::Expand(const Natural32		size)
+    /// note that this function is used to both truncate and extend the
+    /// region. besides, note that this method does not set the size but
+    /// only deals with making sure the capacity is sufficient.
+    ///
+    Status		Region::Adjust(const Natural32		size)
     {
       // check the type.
       if (this->type == Region::TypeChunk)
@@ -207,12 +211,11 @@ namespace elle
       else
 	{
 	  // if there is enough space, just leave.
-	  if ((this->size + size) <= this->capacity)
+	  if (size <= this->capacity)
 	    leave();
 
-	  // otherwise, enlarge the buffer's capacity by pre-allocating its
-	  // current size.
-	  this->capacity += this->size + size;
+	  // otherwise, enlarge the buffer's capacity.
+	  this->capacity = size;
 
 	  if ((this->contents = (Byte*)::realloc(this->contents,
 						 this->capacity)) == NULL)
@@ -233,12 +236,30 @@ namespace elle
 	escape("unable to prepare an already in use chunk region");
 
       // make sure the buffer is large enough.
-      if (this->Expand(size) == StatusError)
+      if (this->Adjust(this->size + size) == StatusError)
 	escape("unable to reserve enough space for the new piece");
 
       // copy the region into the buffer.
       if (this->Write(this->size, contents, size) == StatusError)
 	escape("unable to append the data");
+
+      leave();
+    }
+
+    ///
+    /// this method allows the caller to read data anywhere in the
+    /// region.
+    ///
+    Status		Region::Read(const Natural32		offset,
+				     Byte*			contents,
+				     const Natural32		size) const
+    {
+      // check that the copy stays in the bounds.
+      if ((offset + size) > this->size)
+	escape("this operation is out of bounds");
+
+      // copy the data.
+      ::memcpy(contents, this->contents + offset, size);
 
       leave();
     }
@@ -334,7 +355,7 @@ namespace elle
     ///
     /// this method dumps the region's contents in hexadecimal.
     ///
-    Status		Region::Dump(const Natural32		margin)
+    Status		Region::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
       Natural32		i;

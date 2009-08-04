@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [mon aug  3 20:56:37 2009]
+// updated       julien quintard   [tue aug  4 17:15:59 2009]
 //
 
 #ifndef ELLE_MISC_REGION_HH
@@ -96,10 +96,13 @@ namespace elle
       Status		Duplicate(Byte*,
 				  Natural32);
 
-      Status		Expand(const Natural32);
+      Status		Adjust(const Natural32);
       Status		Append(const Byte*,
 			       const Natural32);
 
+      Status		Read(const Natural32,
+			     Byte*,
+			     const Natural32) const;
       Status		Write(const Natural32,
 			      const Byte*,
 			      const Natural32);
@@ -116,7 +119,7 @@ namespace elle
       Boolean		operator!=(const Region&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

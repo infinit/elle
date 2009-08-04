@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.hh
 //
 // created       julien quintard   [mon feb  9 21:22:34 2009]
-// updated       julien quintard   [mon feb 23 00:42:47 2009]
+// updated       julien quintard   [tue aug  4 13:50:22 2009]
 //
 
 #ifndef ELLE_IO_DUMPABLE_HH
@@ -50,7 +50,7 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Dump(const Natural32 = 0) = 0;
+      virtual Status	Dump(const Natural32 = 0) const = 0;
     };
 
   }

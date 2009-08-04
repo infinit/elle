@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.hh
 //
 // created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [mon aug  3 21:01:04 2009]
+// updated       julien quintard   [tue aug  4 13:54:14 2009]
 //
 
 #ifndef ELLE_CRYPTO_CIPHER_HH
@@ -53,7 +53,7 @@ namespace elle
       Boolean		operator!=(const Cipher&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

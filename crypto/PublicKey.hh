@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [mon aug  3 21:00:49 2009]
+// updated       julien quintard   [tue aug  4 13:54:05 2009]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HH
@@ -89,7 +89,7 @@ namespace elle
       Boolean		operator!=(const PublicKey&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;
