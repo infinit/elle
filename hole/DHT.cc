@@ -69,6 +69,7 @@ namespace hole
     switch (cmdId)
     {
     case protocol::Header::Ping:
+      SendPong(fullTag);
       return;
     case protocol::Header::Quit:
       return;
@@ -77,6 +78,38 @@ namespace hole
     }
 
     /* handle commands with request handlers */
+  }
+
+  void
+  DHT::Ping(const Key & key)
+  {
+    nodes_t::iterator it = nodes_.find(key);
+    if (it == nodes_.end() || &localNode_ == it.value())
+      return;
+
+    QByteArray data;
+    QDataStream stream(data);
+    protocol::Header packet;
+
+    packet.id = protocol::Header::Ping;
+    packet.tag = 0;
+    packet.length = 0;
+    stream << packet;
+    socket_->writeDatagram(data, it.value()->Address(), it.value()->Port());
+  }
+
+  void
+  DHT::SendPong(const FullTag & fullTag)
+  {
+    QByteArray data;
+    QDataStream stream(data);
+    protocol::Header packet;
+
+    packet.id = protocol::Header::Pong;
+    packet.tag = fullTag.tag;
+    packet.length = 0;
+    stream << packet;
+    socket_->writeDatagram(data, fullTag.address, fullTag.port);
   }
 
   void
