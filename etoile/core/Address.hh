@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [mon aug  3 21:03:47 2009]
+// updated       julien quintard   [tue aug  4 13:55:23 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ADDRESS_HH
@@ -73,7 +73,7 @@ namespace etoile
       Boolean		operator!=(const Address&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

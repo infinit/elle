@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [thu jul 30 20:39:01 2009]
+// updated       julien quintard   [tue aug  4 13:56:44 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_PROOF_HH
@@ -56,7 +56,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon aug  3 20:47:15 2009]
+// updated       julien quintard   [tue aug  4 14:01:56 2009]
 //
 
 //
@@ -138,11 +138,11 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		Catalog::Dump(Natural32			margin)
+    Status		Catalog::Dump(Natural32			margin) const
     {
-      String		alignment(margin, ' ');
-      String		shift(2, ' ');
-      Catalog::Iterator	iterator;
+      String			alignment(margin, ' ');
+      String			shift(2, ' ');
+      Catalog::ConstIterator	iterator;
 
       std::cout << alignment << "[Catalog]" << std::endl;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat aug  1 15:59:20 2009]
+// updated       julien quintard   [tue aug  4 13:55:37 2009]
 //
 
 //
@@ -45,7 +45,7 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		ContentHashBlock::Dump(Natural32	margin)
+    Status		ContentHashBlock::Dump(Natural32	margin) const
     {
       String		alignment(margin, ' ');
 

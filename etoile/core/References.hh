@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/References.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [sat aug  1 16:06:29 2009]
+// updated       julien quintard   [tue aug  4 13:57:18 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -70,7 +70,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

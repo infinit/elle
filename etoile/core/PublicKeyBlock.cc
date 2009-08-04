@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [sat aug  1 16:06:14 2009]
+// updated       julien quintard   [tue aug  4 13:57:00 2009]
 //
 
 //
@@ -89,7 +89,7 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		PublicKeyBlock::Dump(Natural32	margin)
+    Status		PublicKeyBlock::Dump(Natural32	margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [mon aug  3 19:55:27 2009]
+// updated       julien quintard   [tue aug  4 13:56:16 2009]
 //
 
 //
@@ -297,7 +297,7 @@ namespace etoile
     ///
     /// this function dumps an object object.
     ///
-    Status		Object::Dump(Natural32			margin)
+    Status		Object::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

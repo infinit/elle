@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [mon aug  3 20:46:45 2009]
+// updated       julien quintard   [tue aug  4 14:02:12 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -57,7 +57,9 @@ namespace etoile
       // types
       //
       typedef std::list<Entry*>		Container;
+
       typedef Container::iterator	Iterator;
+      typedef Container::const_iterator	ConstIterator;
 
       //
       // methods
@@ -81,7 +83,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

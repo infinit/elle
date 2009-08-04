@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [thu jul 30 20:47:19 2009]
+// updated       julien quintard   [tue aug  4 13:56:56 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_PUBLICKEYBLOCK_HH
@@ -56,7 +56,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

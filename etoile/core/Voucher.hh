@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [sat aug  1 16:07:17 2009]
+// updated       julien quintard   [tue aug  4 13:55:59 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_VOUCHER_HH
@@ -50,7 +50,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

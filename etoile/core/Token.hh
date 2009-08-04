@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Token.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [thu jul 30 20:50:07 2009]
+// updated       julien quintard   [tue aug  4 13:55:47 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_TOKEN_HH
@@ -55,7 +55,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

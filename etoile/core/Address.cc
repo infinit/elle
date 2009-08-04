@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [mon aug  3 21:03:59 2009]
+// updated       julien quintard   [tue aug  4 13:55:27 2009]
 //
 
 //
@@ -161,7 +161,7 @@ namespace etoile
     ///
     /// this function dumps an address object.
     ///
-    Status		Address::Dump(Natural32			margin)
+    Status		Address::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

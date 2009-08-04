@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/References.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat aug  1 16:06:35 2009]
+// updated       julien quintard   [tue aug  4 14:02:36 2009]
 //
 
 //
@@ -50,11 +50,11 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		References::Dump(Natural32			margin)
+    Status		References::Dump(Natural32		margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
-      std::list<References::Entry*>::iterator i;
+      std::list<References::Entry*>::const_iterator i;
 
       std::cout << alignment << "[References]" << std::endl;
 

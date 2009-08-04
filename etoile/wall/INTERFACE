@@ -1,0 +1,5 @@
+file.getAddress
+file.getDataBlocks
+file.getUpdateTime
+file.getSize
+file.getOwner

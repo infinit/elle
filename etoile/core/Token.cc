@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat aug  1 16:07:00 2009]
+// updated       julien quintard   [tue aug  4 13:55:55 2009]
 //
 
 //
@@ -78,7 +78,7 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		Token::Dump(Natural32		margin)
+    Status		Token::Dump(Natural32		margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

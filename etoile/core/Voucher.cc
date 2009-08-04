@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat aug  1 16:07:23 2009]
+// updated       julien quintard   [tue aug  4 13:56:05 2009]
 //
 
 //
@@ -35,7 +35,7 @@ namespace etoile
     ///
     /// this function dumps an voucher object.
     ///
-    Status		Voucher::Dump(Natural32			margin)
+    Status		Voucher::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

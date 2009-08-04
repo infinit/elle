@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [sun aug  2 19:45:35 2009]
+// updated       julien quintard   [tue aug  4 13:55:11 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_BLOCK_HH
@@ -43,14 +43,14 @@ namespace etoile
       //
       virtual Status	Seal() = 0;
 
-      Status		Validate(const Address&);
+      virtual Status	Validate(const Address&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

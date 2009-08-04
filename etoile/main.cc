@@ -15,13 +15,13 @@ using namespace etoile::core;
 // Block[4K] Encryption AES[256]:     0.009ms
 // Block[4K] Decryption AES[256]:     0.008ms
 //
-// 690 directories, 
+// 131 directories, 2089 files, 23M of data
 //
 //			Local		Centralised		Decentralised
 //
 //                                                              Proc      Net
 //
-// Prepare              0.13s               7.11s              44.05s   
+// Prepare              0.13s               7.11s              14.33s   
 // Copy                 7.21s             235.81s             s   
 // List                 0.10s               7.45s               s
 // Search               0.24s              94.50s               s

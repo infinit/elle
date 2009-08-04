@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [sun aug  2 19:45:44 2009]
+// updated       julien quintard   [tue aug  4 13:55:19 2009]
 //
 
 //
@@ -49,7 +49,7 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		Block::Dump(Natural32			margin)
+    Status		Block::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
 

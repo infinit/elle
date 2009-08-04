@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/core/File.hh
+// link          /home/mycure/infinit/etoile/core/Link.hh
 //
 // created       julien quintard   [sun mar  8 15:07:58 2009]
-// updated       julien quintard   [tue aug  4 21:01:25 2009]
+// updated       julien quintard   [tue aug  4 21:01:32 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_FILE_HH
-#define ETOILE_COMPONENTS_FILE_HH
+#ifndef ETOILE_COMPONENTS_LINK_HH
+#define ETOILE_COMPONENTS_LINK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -31,7 +31,7 @@ namespace etoile
 // ---------- classes ---------------------------------------------------------
 //
 
-    class File:
+    class Link:
       public Object
     {
     public:

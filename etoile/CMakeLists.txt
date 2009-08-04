@@ -14,6 +14,9 @@ ADD_LIBRARY(etoile
   core/Voucher.cc
   core/Catalog.cc
   core/References.cc
+  core/Data.cc
+  core/Link.cc
+
   cache/Cache.cc
   )
 

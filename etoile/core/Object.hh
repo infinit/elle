@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [mon aug  3 19:54:34 2009]
+// updated       julien quintard   [tue aug  4 21:01:58 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -50,7 +50,8 @@ namespace etoile
 	{
 	  TypeUnknown = 0,
 	  TypeFile,
-	  TypeDirectory
+	  TypeDirectory,
+	  TypeLink
 	};
 
       enum Mode
@@ -90,7 +91,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

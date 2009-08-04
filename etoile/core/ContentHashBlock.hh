@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [sat aug  1 15:59:11 2009]
+// updated       julien quintard   [tue aug  4 13:55:32 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTHASHBLOCK_HH
@@ -48,7 +48,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;
