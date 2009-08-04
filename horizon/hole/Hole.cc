@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  2 18:32:19 2009]
-// updated       julien quintard   [mon aug  3 21:29:10 2009]
+// updated       julien quintard   [tue aug  4 21:15:24 2009]
 //
 
 //
@@ -101,7 +101,7 @@ namespace pig
 	escape("unable to open the file");
 
       if (read(fd, region.contents, region.size) == -1)
-	escape("unable to write the region");
+	escape("unable to read the region");
 
       if (close(fd) == -1)
 	escape("unable to close the file");

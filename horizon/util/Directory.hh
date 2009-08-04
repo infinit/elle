@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Directory.hh
 //
 // created       julien quintard   [sat aug  1 21:06:13 2009]
-// updated       julien quintard   [mon aug  3 21:22:03 2009]
+// updated       julien quintard   [tue aug  4 05:36:19 2009]
 //
 
 #ifndef PIG_UTIL_DIRECTORY_HH
@@ -45,6 +45,7 @@ namespace pig
       //
       static Status	Create(etoile::core::Directory&,
 			       const elle::crypto::KeyPair&);
+      static Status	Destroy(etoile::core::Directory&);
       static Status	Store(etoile::core::Directory&);
 
       static Status	Size(const etoile::core::Directory&,

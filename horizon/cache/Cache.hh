@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/cache/Cache.hh
 //
 // created       julien quintard   [sat aug  1 01:10:19 2009]
-// updated       julien quintard   [mon aug  3 13:24:09 2009]
+// updated       julien quintard   [tue aug  4 14:00:12 2009]
 //
 
 #ifndef PIG_CACHE_CACHE_HH

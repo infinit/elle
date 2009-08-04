@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Directory.cc
 //
 // created       julien quintard   [sat aug  1 21:11:57 2009]
-// updated       julien quintard   [mon aug  3 21:38:52 2009]
+// updated       julien quintard   [tue aug  4 14:04:55 2009]
 //
 
 //
@@ -35,6 +35,32 @@ namespace pig
       // create the directory.
       if (directory.Create(user) == StatusError)
 	escape("unable to create the directory object");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Directory::Destroy(etoile::core::Directory& directory)
+    {
+      // XXX[obviously, this is a simplified one-data-block version]
+      // if there is a data block, destroy it as well.
+      if (directory.data.references != Address::Null)
+	{
+	  // XXX[though in the real DHT, CHBs are not destroyed but expire]
+	  // destroy the data block.
+	  if (Hole::Destroy(directory.data.references) == StatusError)
+	    escape("unable to destroy the directory data block");
+	}
+
+      // seal the object to obtain its address.
+      if (directory.Seal() == StatusError)
+	escape("unable to seal the directory");
+
+      // destroy the object block.
+      if (Hole::Destroy(directory.address) == StatusError)
+	escape("unable to destroy the directory object block");
 
       leave();
     }
@@ -100,6 +126,12 @@ namespace pig
 	  // load the catalog.
 	  if (Hole::Get(directory.data.references, catalog) == StatusError)
 	    escape("unable to load the catalog");
+
+	  // XXX[though, in the real DHT, data blocks expire but
+	  //     are never deleted]
+	  // destroy it since no longer used.
+	  if (Hole::Destroy(directory.data.references) == StatusError)
+	    escape("unable to destroy the data block");
 	}
 
       // add the entry in the catalog.
@@ -110,13 +142,17 @@ namespace pig
       if (catalog.Seal() == StatusError)
 	escape("unable to seal the catalog");
 
+      // store the new catalog.
+      if (Hole::Put(catalog.address, catalog) == StatusError)
+	escape("unable to store the catalog");
+
       // set the new catalog.
       if (directory.Update(k, catalog.address) == StatusError)
 	escape("unable to update the directory");
 
-      // store the new catalog.
-      if (Hole::Put(catalog.address, catalog) == StatusError)
-	escape("unable to store the catalog");
+      // XXX[wrong but just to set a size]
+      // set a directory size.
+      directory.meta.status.size += 1;
 
       leave();
     }
@@ -140,6 +176,11 @@ namespace pig
       if (Hole::Get(directory.data.references, catalog) == StatusError)
 	escape("unable to load the catalog");
 
+      // XXX[though, in the real DHT, data blocks expire but are never deleted]
+      // destroy it since no longer used.
+      if (Hole::Destroy(directory.data.references) == StatusError)
+	escape("unable to destroy the data block");
+
       // remove the entry from the catalog.
       if (catalog.Remove(name) == StatusError)
 	escape("unable to remove the entry from the catalog");
@@ -154,6 +195,7 @@ namespace pig
 	  if (catalog.Seal() == StatusError)
 	    escape("unable to seal the catalog");
 
+	  // XXX[though in the real DHT, CHBs are not destroyed but expire]
 	  // store the new catalog.
 	  if (Hole::Put(catalog.address, catalog) == StatusError)
 	    escape("unable to store the catalog");
@@ -163,10 +205,6 @@ namespace pig
 	}
       else
 	{
-	  // destroy the useless catalog block.
-	  if (Hole::Destroy(directory.data.references) == StatusError)
-	    escape("unable to destroy the empty catalog");
-
 	  // no need for a catalog since no entry.
 	  address = Address::Null;
 	}
@@ -174,6 +212,10 @@ namespace pig
       // set the new catalog.
       if (directory.Update(k, catalog.address) == StatusError)
 	escape("unable to update the directory");
+
+      // XXX[wrong but just to set a size]
+      // set a directory size.
+      directory.meta.status.size -= 1;
 
       leave();
     }

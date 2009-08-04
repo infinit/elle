@@ -13,6 +13,7 @@ ADD_EXECUTABLE(pig
   util/Path.cc
   util/File.cc
   util/Directory.cc
+  util/Link.cc
 
   hole/Hole.cc)
 

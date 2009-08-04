@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/system/fuse/System.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [mon aug  3 20:23:43 2009]
+// updated       julien quintard   [tue aug  4 21:37:12 2009]
 //
 
 //
@@ -47,10 +47,24 @@ namespace pig
 
       // set the operations.
       operations.getattr = Interface::getattr;
+      operations.setxattr = Interface::setxattr;
+      operations.chmod = Interface::chmod;
+      operations.chown = Interface::chown;
+
       operations.access = Interface::access;
-      operations.mknod = Interface::mknod;
-      operations.unlink = Interface::unlink;
       operations.utimens = Interface::utimens;
+
+      operations.mknod = Interface::mknod;
+      operations.open = Interface::open;
+      operations.read = Interface::read;
+      operations.write = Interface::write;
+      operations.truncate = Interface::truncate;
+      operations.release = Interface::release;
+      operations.unlink = Interface::unlink;
+      operations.rename = Interface::rename;
+      operations.readlink = Interface::readlink;
+
+      operations.symlink = Interface::symlink;
 
       operations.mkdir = Interface::mkdir;
       operations.readdir = Interface::readdir;
