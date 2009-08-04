@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [mon aug  3 20:59:10 2009]
+// updated       julien quintard   [tue aug  4 13:53:31 2009]
 //
 
 //
@@ -326,7 +326,7 @@ namespace elle
     ///
     /// this method dumps the private key internals.
     ///
-    Status		PrivateKey::Dump(const Natural32	margin)
+    Status		PrivateKey::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

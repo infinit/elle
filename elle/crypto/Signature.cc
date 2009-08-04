@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon aug  3 21:00:38 2009]
+// updated       julien quintard   [tue aug  4 13:53:20 2009]
 //
 
 //
@@ -70,7 +70,7 @@ namespace elle
     ///
     /// this method dumps the signature.
     ///
-    Status		Signature::Dump(const Natural32		margin)
+    Status		Signature::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 

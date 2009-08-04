@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [mon aug  3 21:00:27 2009]
+// updated       julien quintard   [tue aug  4 13:53:15 2009]
 //
 
 #ifndef ELLE_CRYPTO_SIGNATURE_HH
@@ -53,7 +53,7 @@ namespace elle
       Boolean		operator!=(const Signature&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      Status		Dump(const Natural32 = 0) const;
 
       // archivable
       Status		Serialize(Archive&) const;

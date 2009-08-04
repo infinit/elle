@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon aug  3 20:58:47 2009]
+// updated       julien quintard   [tue aug  4 13:53:51 2009]
 //
 
 //
@@ -70,7 +70,7 @@ namespace elle
     ///
     /// this method dumps the digest.
     ///
-    Status		Digest::Dump(const Natural32		margin)
+    Status		Digest::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
