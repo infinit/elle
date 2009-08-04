@@ -29,6 +29,7 @@ Copy()
   time								\
     (for file in ${files} ; do
       cp "${file}" "${to}/${file}"
+      if [ ${?} -ne 0 ] ; then exit 1 ; fi
     done) >andrew-benchmark.log
 }
 
@@ -52,10 +53,10 @@ Compile()
 {
   echo "---[ Compile"
 
-  cd "${to}/$(basename ${from})/"
+  cd "${to}/"
 
-  time								\
-    (./config && sed -ri "s/^AR=(.*)$/AR=echo \1/" Makefile && sed -ri "s/^RANLIB=(.*)$/RANLIB=echo \1/" Makefile && make) >andrew-benchmark.log
+  time								
+    (./config ; sed -ri "s/^AR=(.*)$/AR=echo \1/" Makefile ; sed -ri "s/^RANLIB=(.*)$/RANLIB=echo \1/" Makefile ; make) >andrew-benchmark.log
 }
 
 if [ ${#} -ne 2 ] ; then
@@ -67,7 +68,7 @@ from=${1}
 to=${2}
 
 Prepare
-#Copy
-#List
-#Search
-#Compile
+Copy
+List
+Search
+Compile
