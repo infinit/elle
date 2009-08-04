@@ -13,6 +13,26 @@ namespace hole
       *d = qrand();
   }
 
+  bool
+  Key::operator<(const Key & other) const
+  {
+    if (&other == this)
+      return 0;
+
+    quint32 * d1 = (quint32 *)data;
+    quint32 * d2 = (quint32 *)other.data;
+    quint32 * d1_end = d1 + sizeof (data) / sizeof (*d1);
+
+    for (; d1 < d1_end; d1++, d2++)
+    {
+      if (*d1 < *d2)
+        return true;
+      if (*d1 > *d2)
+        return false;
+    }
+    return 0;
+  }
+
   QDataStream &
   operator<<(QDataStream & ds, const Key & key)
   {
