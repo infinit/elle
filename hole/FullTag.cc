@@ -2,6 +2,13 @@
 
 namespace hole
 {
+  FullTag::FullTag()
+    : tag(0),
+      address(),
+      port(0)
+  {
+  }
+
   FullTag::FullTag(protocol::Tag t,
                    QHostAddress a,
                    quint16 p)

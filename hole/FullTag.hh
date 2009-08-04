@@ -11,6 +11,7 @@ namespace hole
 
   struct FullTag
   {
+    FullTag();
     FullTag(protocol::Tag tag,
             QHostAddress  address,
             quint16       port);

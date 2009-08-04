@@ -46,28 +46,37 @@ namespace hole
   void
   DHT::ReadDatagram()
   {
+    FullTag    fullTag;
     QByteArray data;
+
     data.resize(socket_->pendingDatagramSize());
-    if (socket_->readDatagram(data.data(), data.size()) <= 0)
+    if (socket_->readDatagram(data.data(), data.size(),
+                              &fullTag.address, &fullTag.port) <= 0)
       return;
 
     // decode data
     QDataStream stream(data);
     protocol::CmdId cmd_id;
-    protocol::Tag tag;
-    stream >> cmd_id >> tag;
+    stream >> cmd_id >> fullTag.tag;
   }
 
   void
   DHT::HandleCommand(const QByteArray & data,
                      protocol::CmdId    cmdId,
-                     protocol::Tag      tag)
+                     const FullTag &    fullTag)
   {
     /* this switch handles new requests */
     switch (cmdId)
     {
-
+    case protocol::Header::Ping:
+      return;
+    case protocol::Header::Quit:
+      return;
+    case protocol::Header::FindSuccessor:
+      return;
     }
+
+    /* handle commands with request handlers */
   }
 
   void

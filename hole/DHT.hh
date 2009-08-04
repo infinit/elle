@@ -58,7 +58,7 @@ namespace hole
     bool IsTagInUse(const FullTag & tag) const;
     void HandleCommand(const QByteArray & data,
                        protocol::CmdId    cmdId,
-                       protocol::Tag      tag);
+                       const FullTag &    fullTag);
 
     typedef QMap<FullTag, DHTRequestHandler *> requests_t;
 
