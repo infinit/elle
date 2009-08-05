@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [wed aug  5 16:07:21 2009]
+// updated       julien quintard   [wed aug  5 16:37:37 2009]
 //
 
 //
@@ -79,6 +79,8 @@ namespace elle
 
     ///
     /// this method generates a key by generating a password.
+    ///
+    /// the argument length represents the length of the key, in bits.
     ///
     Status		SecretKey::Generate(const Natural32	length)
     {
