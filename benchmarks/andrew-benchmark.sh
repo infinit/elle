@@ -24,11 +24,11 @@ Copy()
 
   cd "${from}/"
 
-  files=$(find ./ -type f)
+  files=$(find ./ -type f && find ./ -type l)
 
   time								\
     (for file in ${files} ; do
-      cp "${file}" "${to}/${file}"
+      cp -P "${file}" "${to}/${file}"
       if [ ${?} -ne 0 ] ; then exit 1 ; fi
     done) >andrew-benchmark.log
 }
@@ -55,8 +55,8 @@ Compile()
 
   cd "${to}/"
 
-  time								
-    (./config ; sed -ri "s/^AR=(.*)$/AR=echo \1/" Makefile ; sed -ri "s/^RANLIB=(.*)$/RANLIB=echo \1/" Makefile ; make) >andrew-benchmark.log
+  time								\
+    (./config && sed -ri "s/^AR=(.*)$/AR=echo \1/" Makefile && sed -ri "s/^RANLIB=(.*)$/RANLIB=echo \1/" Makefile && make) >andrew-benchmark.log
 }
 
 if [ ${#} -ne 2 ] ; then
@@ -72,8 +72,8 @@ cd "${2}"
 to="${PWD}"
 cd "${OLDPWD}"
 
-#Prepare
-#Copy
-#List
-#Search
+Prepare
+Copy
+List
+Search
 Compile
