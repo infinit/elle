@@ -5,29 +5,29 @@ using namespace etoile;
 using namespace etoile::core;
 
 //
-// RSA[1024] Key Generation:         67.25ms
-// Block[4K] RSA[1024] Encryption:    0.19ms
-// Block[4K] RSA[1024] Decryption:    5.90ms
-// Block[4K] RSA[1024] Signature:     5.81ms
-// Block[4K] RSA[1024] Verification:  0.13ms
-// Block[4K] Hash:                    0.003ms
-// AES[256] Key Generation:           0.008ms
-// Block[4K] Encryption AES[256]:     0.009ms
-// Block[4K] Decryption AES[256]:     0.008ms
+// RSA[1024] Key Generation:         79.36ms
+// Block[4K] RSA[1024] Encryption:    0.29ms
+// Block[4K] RSA[1024] Decryption:    7.26ms
+// Block[4K] RSA[1024] Signature:     7.40ms
+// Block[4K] RSA[1024] Verification:  0.17ms
+// Block[4K] Hash:                    0.04ms
+// AES[256] Key Generation:           0.08ms
+// Block[4K] Encryption AES[256]:     0.10ms
+// Block[4K] Decryption AES[256]:     0.14ms
 //
-// 131 directories, 2089 files, 23M of data
+// 131 directories, 2089 files, 103 symlinks and 23M of data
 //
-//			Local		Centralised		Decentralised
+//			Local		SSHFS		Infinit(w/o)
 //
-//                                                              Proc      Net
+//                                                     Local  Network
 //
-// Prepare              0.13s               7.11s              14.33s   
-// Copy                 7.21s             235.81s             s   
-// List                 0.10s               7.45s               s
-// Search               0.24s              94.50s               s
-// Compile              151.62s          7485.86s             s
+// Prepare              0.13s           7.11s         14.25s   
+// Copy                 7.21s         235.81s        287.81s   
+// List                 0.10s           7.45s          1.63s
+// Search               0.24s          94.50s          4.84s
+// Compile              151.62s       485.86s        520.96s
 //
-// Optimisations: HMAC, filegroup etc.
+// Optimisations: HMAC, filegroup etc. a citer dans le papier (surtout filegroup)
 //
 
 int		main(int			argc,

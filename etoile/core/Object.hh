@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [tue aug  4 21:01:58 2009]
+// updated       julien quintard   [wed aug  5 22:30:58 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
