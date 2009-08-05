@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [tue aug  4 13:53:41 2009]
+// updated       julien quintard   [wed aug  5 16:07:21 2009]
 //
 
 //
@@ -40,7 +40,7 @@ namespace elle
     ///
     /// this is the default length used when generating passwords.
     ///
-    const Natural32		SecretKey::Default::Length = 32;
+    const Natural32		SecretKey::Default::Length = 256;
 
     ///
     /// this is the encryption algorithm used by the SecretKey class.
@@ -82,16 +82,21 @@ namespace elle
     ///
     Status		SecretKey::Generate(const Natural32	length)
     {
+      Natural32		size;
+
+      // convert the length in a byte-specific size.
+      size = length / 8;
+
       // prepare the password.
-      if (this->key.Prepare(length) == StatusError)
+      if (this->key.Prepare(size) == StatusError)
 	escape("unable to prepare the key");
 
       // generate the key.
       ::RAND_pseudo_bytes((unsigned char*)this->key.contents,
-			  length);
+			  size);
 
       // manually update the size.
-      this->key.size = length;
+      this->key.size = size;
 
       leave();
     }
