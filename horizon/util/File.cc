@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/File.cc
 //
 // created       julien quintard   [sat aug  1 21:11:57 2009]
-// updated       julien quintard   [tue aug  4 23:09:27 2009]
+// updated       julien quintard   [thu aug  6 00:05:54 2009]
 //
 
 //
@@ -44,16 +44,6 @@ namespace pig
     ///
     Status		File::Destroy(etoile::core::File&	file)
     {
-      // XXX[obviously, this is a simplified one-data-block version]
-      // if there is a data block, destroy it as well.
-      if (file.data.references != Address::Null)
-	{
-	  // XXX[though in the real DHT, CHBs are not destroyed but expire]
-	  // destroy the data block.
-	  if (Hole::Destroy(file.data.references) == StatusError)
-	    escape("unable to destroy the file data block");
-	}
-
       // seal the object to obtain its address.
       if (file.Seal() == StatusError)
 	escape("unable to seal the file");
@@ -126,12 +116,6 @@ namespace pig
 	  // load the data.
 	  if (Hole::Get(file.data.references, data) == StatusError)
 	    escape("unable to load the data");
-
-	  // XXX[though, in the real DHT, data blocks expire but
-	  //     are never deleted]
-	  // destroy it since no longer used.
-	  if (Hole::Destroy(file.data.references) == StatusError)
-	    escape("unable to destroy the data block");
 	}
 
       // write the buffer.
@@ -173,12 +157,6 @@ namespace pig
 	  // load the data.
 	  if (Hole::Get(file.data.references, data) == StatusError)
 	    escape("unable to load the data");
-
-	  // XXX[though, in the real DHT, data blocks expire but
-	  //     are never deleted]
-	  // destroy it since no longer used.
-	  //if (Hole::Destroy(file.data.references) == StatusError)
-	  //escape("unable to destroy the data block");
 	}
 
       // check the size.

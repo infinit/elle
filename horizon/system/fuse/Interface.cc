@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/system/fuse/Interface.cc
 //
 // created       julien quintard   [fri jul 31 22:47:18 2009]
-// updated       julien quintard   [tue aug  4 22:44:34 2009]
+// updated       julien quintard   [thu aug  6 00:15:09 2009]
 //
 
 //
@@ -334,7 +334,6 @@ namespace pig
 	issue(ECANCELED);
 
       return (0);
-
     }
 
     int			Interface::release(const char*		path,

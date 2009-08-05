@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/File.hh
 //
 // created       julien quintard   [sat aug  1 21:06:13 2009]
-// updated       julien quintard   [tue aug  4 20:46:09 2009]
+// updated       julien quintard   [wed aug  5 22:08:17 2009]
 //
 
 #ifndef PIG_UTIL_FILE_HH
@@ -22,6 +22,10 @@
 #include <etoile/Etoile.hh>
 
 #include <pig/hole/Hole.hh>
+
+// XXX
+#include <pig/util/Path.hh>
+// XXX
 
 namespace pig
 {
@@ -61,6 +65,8 @@ namespace pig
       static Status	Adjust(etoile::core::File&,
 			       const Natural64,
 			       const PrivateKey&);
+
+      static Status	Dump(const char*);
     };
 
   }

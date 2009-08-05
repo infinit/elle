@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Link.cc
 //
 // created       julien quintard   [sat aug  1 21:11:57 2009]
-// updated       julien quintard   [tue aug  4 23:07:07 2009]
+// updated       julien quintard   [wed aug  5 22:50:03 2009]
 //
 
 //
@@ -63,15 +63,6 @@ namespace pig
 				  const PrivateKey&		k)
     {
       Data		data;
-
-      // check if there is a linked data. if not, the default local
-      // data object is used.
-      if (link.data.references != Address::Null)
-	{
-	  // destroy it.
-	  if (Hole::Destroy(link.data.references) == StatusError)
-	    escape("unable to destroy the data");
-	}
 
       // XXX[would be better to archive it properly]
 

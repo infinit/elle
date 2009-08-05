@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  2 18:32:19 2009]
-// updated       julien quintard   [tue aug  4 21:15:24 2009]
+// updated       julien quintard   [thu aug  6 00:06:18 2009]
 //
 
 //
@@ -134,6 +134,7 @@ namespace pig
 
       sprintf(path, "%s/%s", g_device, identity.c_str());
 
+      // XXX
       if (unlink(path) != 0)
 	escape("unable to delete the file");
 

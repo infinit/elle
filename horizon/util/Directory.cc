@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Directory.cc
 //
 // created       julien quintard   [sat aug  1 21:11:57 2009]
-// updated       julien quintard   [tue aug  4 14:04:55 2009]
+// updated       julien quintard   [wed aug  5 22:50:36 2009]
 //
 
 //
@@ -44,16 +44,6 @@ namespace pig
     ///
     Status		Directory::Destroy(etoile::core::Directory& directory)
     {
-      // XXX[obviously, this is a simplified one-data-block version]
-      // if there is a data block, destroy it as well.
-      if (directory.data.references != Address::Null)
-	{
-	  // XXX[though in the real DHT, CHBs are not destroyed but expire]
-	  // destroy the data block.
-	  if (Hole::Destroy(directory.data.references) == StatusError)
-	    escape("unable to destroy the directory data block");
-	}
-
       // seal the object to obtain its address.
       if (directory.Seal() == StatusError)
 	escape("unable to seal the directory");
@@ -126,12 +116,6 @@ namespace pig
 	  // load the catalog.
 	  if (Hole::Get(directory.data.references, catalog) == StatusError)
 	    escape("unable to load the catalog");
-
-	  // XXX[though, in the real DHT, data blocks expire but
-	  //     are never deleted]
-	  // destroy it since no longer used.
-	  if (Hole::Destroy(directory.data.references) == StatusError)
-	    escape("unable to destroy the data block");
 	}
 
       // add the entry in the catalog.
@@ -175,11 +159,6 @@ namespace pig
       // load the catalog.
       if (Hole::Get(directory.data.references, catalog) == StatusError)
 	escape("unable to load the catalog");
-
-      // XXX[though, in the real DHT, data blocks expire but are never deleted]
-      // destroy it since no longer used.
-      if (Hole::Destroy(directory.data.references) == StatusError)
-	escape("unable to destroy the data block");
 
       // remove the entry from the catalog.
       if (catalog.Remove(name) == StatusError)
