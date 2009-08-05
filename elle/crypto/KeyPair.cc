@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [tue aug  4 13:53:00 2009]
+// updated       julien quintard   [wed aug  5 16:37:53 2009]
 //
 
 //
@@ -84,6 +84,8 @@ namespace elle
 
     ///
     /// this method generates a key pair given the parameters.
+    ///
+    /// the argument length represents the length of the key, in bits.
     ///
     Status		KeyPair::Generate(const Natural32	length)
     {
