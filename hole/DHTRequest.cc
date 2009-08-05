@@ -1,9 +1,12 @@
+#include "hole/DHT.hh"
 #include "hole/DHTRequest.hh"
 
 namespace hole
 {
-  DHTRequest::DHTRequest(QObject * p)
-    : QObject(p)
+  DHTRequest::DHTRequest(DHT & dht)
+    : QObject(&dht),
+      dht_(dht),
+      tag_()
   {
   }
 

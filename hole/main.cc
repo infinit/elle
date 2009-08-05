@@ -20,12 +20,7 @@ int main(int argc, char **argv)
   char * HOLE_PEER_ADDR = getenv("HOLE_PEER_ADDR");
   char * HOLE_PEER_PORT = getenv("HOLE_PEER_PORT");
   if (HOLE_PEER_ADDR && HOLE_PEER_PORT)
-  {
-    hole::DHTJoinRequest * jrq = new hole::DHTJoinRequest;
-    jrq->address = QHostAddress(HOLE_PEER_ADDR);
-    jrq->port = strtol(HOLE_PEER_PORT, 0, 0);
-    dht.Join(jrq);
-  }
+    dht.Join(QHostAddress(HOLE_PEER_ADDR), strtol(HOLE_PEER_PORT, 0, 0));
   else
     dht.Create();
 

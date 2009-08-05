@@ -68,10 +68,7 @@ ShellApp::Join(const QStringList & args)
     return;
   }
 
-  hole::DHTJoinRequest * rq = new hole::DHTJoinRequest;
-  rq->address.setAddress(args[1]);
-  rq->port = args[2].toUShort();
-  dht.Join(rq);
+  dht.Join(QHostAddress(args[1]), args[2].toUShort());
 }
 
 void

@@ -11,17 +11,15 @@
 namespace hole
 {
   class DHTRequest;
-  class DHTRequestHandler;
   class DHTDataRequest;
   class DHTJoinRequest;
-  class DHTJoinRequestHandler;
 
   class DHT : public QObject
   {
     Q_OBJECT;
 
-    friend class DHTRequestHandler;
-    friend class DHTJoinRequestHandler;
+    friend class DHTRequest;
+    friend class DHTJoinRequest;
 
   public:
     DHT(QObject * parent = 0);
@@ -30,13 +28,14 @@ namespace hole
     void Port(quint16 port);
     quint16 Port() const;
 
-    void Join(DHTJoinRequest * request);
+    /** Join an existing network */
+    DHTJoinRequest * Join(const QHostAddress & address, quint16 port);
     void Create();
 
     void Get(DHTDataRequest * request);
     void Put(DHTDataRequest * request);
 
-    void Ping(const Key & key);
+    DHTRequest * Ping(const Key & key);
 
     protocol::Tag GenerateTag();
     FullTag GenerateFullTag(const QHostAddress & addr,
@@ -47,7 +46,7 @@ namespace hole
 
   protected slots:
     void ReadDatagram();
-    void Joined(DHTJoinRequestHandler * handler);
+    void Joined(DHTJoinRequest * handler);
 
   signals:
     void JoinSucceed();
@@ -65,7 +64,7 @@ namespace hole
     /** Used to reply to Ping. \sa Ping(const Key &) */
     void SendPong(const FullTag & fullTag);
 
-    typedef QMap<FullTag, DHTRequestHandler *> requests_t;
+    typedef QMap<FullTag, DHTRequest *> requests_t;
     typedef QMap<Key, Node *> nodes_t;
 
     LocalNode    localNode_;

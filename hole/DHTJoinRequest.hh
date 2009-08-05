@@ -11,11 +11,13 @@ namespace hole
   {
     Q_OBJECT;
 
+    friend class DHT;
+
   public:
     DHTJoinRequest(DHT & dht, const QHostAddress & address, quint16 port);
 
   signals:
-    void Joined(DHTJoinRequestHandler * handler);
+    void Joined(DHTJoinRequest * handler);
 
   protected:
     void Join();

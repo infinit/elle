@@ -3,7 +3,7 @@ PROJECT(Hole CXX)
 QT4_WRAP_CPP(Hole_MOCS
   DHT.hh
   DHTRequest.hh
-  DHTJoinRequestHandler.hh
+  DHTJoinRequest.hh
   Node.hh
   LocalNode.hh
   RemoteNode.hh)

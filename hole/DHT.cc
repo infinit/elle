@@ -5,7 +5,7 @@
 
 #include "hole/DHT.hh"
 #include "hole/DHTRequest.hh"
-#include "hole/DHTJoinRequestHandler.hh"
+#include "hole/DHTJoinRequest.hh"
 
 namespace hole
 {
@@ -61,7 +61,7 @@ namespace hole
   }
 
   void
-  DHT::HandleCommand(const QByteArray & data,
+  DHT::HandleCommand(const QByteArray & /*data*/,
                      protocol::CmdId    cmdId,
                      const FullTag &    fullTag)
   {
@@ -80,22 +80,25 @@ namespace hole
     /* handle commands with request handlers */
   }
 
-  void
+  DHTRequest *
   DHT::Ping(const Key & key)
   {
     nodes_t::iterator it = nodes_.find(key);
     if (it == nodes_.end() || &localNode_ == it.value())
-      return;
+      return 0;
 
+    DHTRequest * request = new DHTRequest(*this);
     QByteArray data;
     QDataStream stream(data);
     protocol::Header packet;
 
+    request->tag_ = 0;  // No need for a special tag
     packet.id = protocol::Header::Ping;
-    packet.tag = 0;
+    packet.tag = request->tag_;
     packet.length = 0;
     stream << packet;
     socket_->writeDatagram(data, it.value()->Address(), it.value()->Port());
+    return request;
   }
 
   void
@@ -119,23 +122,22 @@ namespace hole
       socket_->bind(port_);
   }
 
-  void
-  DHT::Join(DHTJoinRequest * request)
+  DHTJoinRequest *
+  DHT::Join(const QHostAddress & address, quint16 port)
   {
-    assert(request);
-    DHTJoinRequestHandler * handler = new DHTJoinRequestHandler(*this, *request);
-    handler->tag_ = GenerateTag();
-    FullTag full_tag(handler->tag_,
-                      handler->request_.address,
-                      handler->request_.port);
-    requests_[full_tag] = handler;
-    connect(handler, SIGNAL(Joined(DHTJoinRequestHandler *)),
-            this, SLOT(Joined(DHTJoinRequestHandler *)));
-    handler->Join();
+    DHTJoinRequest * request = new DHTJoinRequest(*this, address, port);
+
+    FullTag fullTag = GenerateFullTag(address, port);
+    request->tag_ = fullTag.tag;
+    requests_[fullTag] = request;
+    connect(request, SIGNAL(Joined(DHTJoinRequest *)),
+            this, SLOT(Joined(DHTJoinRequest *)));
+    request->Join();
+    return request;
   }
 
   void
-  DHT::Joined(DHTJoinRequestHandler * handler)
+  DHT::Joined(DHTJoinRequest * /*handler*/)
   {
   }
 

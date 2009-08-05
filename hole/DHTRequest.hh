@@ -5,6 +5,7 @@
 # include <QHostAddress>
 
 # include "hole/Key.hh"
+# include "hole/protocol/Header.hh"
 
 namespace hole
 {
@@ -14,6 +15,8 @@ namespace hole
   class DHTRequest : public QObject
   {
     Q_OBJECT;
+
+    friend class DHT;
 
   public:
     DHTRequest(DHT & dht);

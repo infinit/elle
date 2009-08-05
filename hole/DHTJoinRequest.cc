@@ -1,6 +1,6 @@
 #include "hole/DHT.hh"
 #include "hole/DHTRequest.hh"
-#include "hole/DHTJoinRequestHandler.hh"
+#include "hole/DHTJoinRequest.hh"
 #include "hole/protocol/Header.hh"
 
 namespace hole
