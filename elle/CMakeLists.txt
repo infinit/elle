@@ -32,5 +32,12 @@ ADD_EXECUTABLE(test-crypto
   test/crypto/Test.cc
 )
 
+ADD_EXECUTABLE(benchmark-crypto
+  benchmark/crypto/Benchmark.cc
+  benchmark/crypto/Time.cc
+)
+
 TARGET_LINK_LIBRARIES(test-archive elle ssl crypto dl)
 TARGET_LINK_LIBRARIES(test-crypto elle ssl crypto dl)
+
+TARGET_LINK_LIBRARIES(benchmark-crypto elle ssl crypto dl)
