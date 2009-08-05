@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 #
 # andrew benchmark, to use with OpenSSL
@@ -64,11 +64,16 @@ if [ ${#} -ne 2 ] ; then
   exit 0
 fi
 
-from=${1}
-to=${2}
+cd "${1}"
+from="${PWD}"
+cd "${OLDPWD}"
 
-Prepare
-Copy
-List
-Search
+cd "${2}"
+to="${PWD}"
+cd "${OLDPWD}"
+
+#Prepare
+#Copy
+#List
+#Search
 Compile
