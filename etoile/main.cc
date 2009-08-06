@@ -5,29 +5,38 @@ using namespace etoile;
 using namespace etoile::core;
 
 //
-// RSA[1024] Key Generation:         79.36ms
-// Block[4K] RSA[1024] Encryption:    0.29ms
-// Block[4K] RSA[1024] Decryption:    7.26ms
-// Block[4K] RSA[1024] Signature:     7.40ms
-// Block[4K] RSA[1024] Verification:  0.17ms
-// Block[4K] Hash:                    0.04ms
-// AES[256] Key Generation:           0.08ms
-// Block[4K] Encryption AES[256]:     0.10ms
-// Block[4K] Decryption AES[256]:     0.14ms
+// [OPENSSL]
 //
 // 131 directories, 2089 files, 103 symlinks and 23M of data
 //
-//			Local		SSHFS		Infinit(w/o)
+//			Local(ext3)	NFS3		SSHFS		Infinit(w/o)
 //
-//                                                     Local  Network
+//                                                                     Local  Network
 //
-// Prepare              0.13s           7.11s         14.25s   
-// Copy                 7.21s         235.81s        287.81s   
-// List                 0.10s           7.45s          1.63s
-// Search               0.24s          94.50s          4.84s
-// Compile              151.62s       485.86s        520.96s
+// Prepare              0.13s          2.96s            7.11s         14.25s   
+// Copy                 7.21s        201.66s          235.81s        287.81s   
+// List                 0.10s         49.08s            7.45s          1.63s
+// Search               0.24s        122.67s           94.50s          4.84s
+// Compile              151.62s      986.13s          485.86s        520.96s
 //
-// Optimisations: HMAC, filegroup etc. a citer dans le papier (surtout filegroup)
+// [KANETON]
+//
+// 527 directories, 2125 files, 59 symlinks and 18M of data
+//
+//                   Local(ext3)      NFS3            SSHFS             Infinit(w/o)
+//
+//                                                                     Local  Network
+//
+// Prepare              0.56s         12.75s           29.96s         56.52s
+// Copy                 1.99s        210.19s          268.63s        292.60s
+// List                 0.05s         71.61s           30.64s          2.26s
+// Search               0.06s        143.85s          105.06s          5.84s
+// Compile             19.97s        511.96s         1289.12s        170.92s
+//
+
+//
+// Optimisations: filegroup etc. a citer dans le papier (surtout filegroup bien
+//                que dans notre cas, ca ne va pas trop trop optimiser.
 //
 
 int		main(int			argc,
@@ -65,6 +74,13 @@ int		main(int			argc,
 
   std::cout << file.address.digest->region << std::endl;
   std::cout << identifier << std::endl;
+
+  Archive	ar;
+
+  ar.Create();
+  ar.Serialize(file);
+
+  printf("%u -> %u\n", sizeof(file), ar.size);
 
   expose();
 
