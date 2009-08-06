@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu jul 30 16:10:01 2009]
+// updated       julien quintard   [thu aug  6 10:54:50 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -69,7 +69,6 @@ namespace elle
     /// these macro-function calls actually generate the specialized-templates
     /// for every basic type of the elle library.
     ///
-    ArchiveDeclare(Void);
     ArchiveDeclare(Null);
     ArchiveDeclare(Boolean);
     ArchiveDeclare(Character);
