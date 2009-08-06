@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Pack.cc
 //
 // created       julien quintard   [wed jan 28 12:08:47 2009]
-// updated       julien quintard   [mon mar  9 12:32:09 2009]
+// updated       julien quintard   [thu aug  6 11:43:29 2009]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/benchmark/crypto/Time.cc
 //
 // created       julien quintard   [wed aug  5 15:25:54 2009]
-// updated       julien quintard   [wed aug  5 16:22:04 2009]
+// updated       julien quintard   [thu aug  6 12:16:58 2009]
 //
 
 //
@@ -42,19 +42,17 @@ namespace elle
 
     Status		Time::Print()
     {
-      Real		useconds;
+      Natural32		useconds;
 
       useconds =
-	(((Real)this->stop.tv_sec * 1000000.0) + (Real)this->stop.tv_usec) -
-	(((Real)this->start.tv_sec * 1000000.0) + (Real)this->start.tv_usec);
+	((this->stop.tv_sec * 1000000.0) + this->stop.tv_usec) -
+	((this->start.tv_sec * 1000000.0) + this->start.tv_usec);
 
-      Natural32		ms;
-      Natural32		us;
+      Real		mseconds;
 
-      ms = useconds / 1000.0;
-      us = useconds - ((Real)ms * 1000.0);
+      mseconds = (Real)useconds / 1000.0;
 
-      std::cout << ms << "." << us;
+      std::cout << mseconds;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Void.hh
 //
 // created       julien quintard   [thu jul 30 13:26:57 2009]
-// updated       julien quintard   [thu jul 30 13:28:28 2009]
+// updated       julien quintard   [thu aug  6 10:55:14 2009]
 //
 
 #ifndef ELLE_CORE_VOID_HH
@@ -31,7 +31,7 @@ namespace elle
 //
 
     ///
-    /// this type is used internally by some classes for dealing with
+    /// this type is used internally by some classes to deal with
     /// variadic templates.
     ///
     struct Void

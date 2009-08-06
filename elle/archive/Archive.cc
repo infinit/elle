@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [tue aug  4 16:01:46 2009]
+// updated       julien quintard   [thu aug  6 10:54:45 2009]
 //
 
 //
@@ -44,7 +44,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-    ArchiveName(Void);
     ArchiveName(Null);
     ArchiveName(Boolean);
     ArchiveName(Character);
