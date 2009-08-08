@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/benchmark/crypto/Benchmark.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [wed aug  5 16:28:31 2009]
+// updated       julien quintard   [sat aug  8 21:58:00 2009]
 //
 
 //
@@ -306,8 +306,7 @@ namespace elle
 // ---------- main ------------------------------------------------------------
 //
 
-int			main(int				argc,
-			     char*				argv[])
+int			main()
 {
   if (elle::benchmark::Benchmark::Main() == elle::misc::StatusError)
     {

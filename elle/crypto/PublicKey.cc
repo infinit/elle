@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [wed aug  5 16:07:35 2009]
+// updated       julien quintard   [sat aug  8 21:56:37 2009]
 //
 
 //
@@ -45,7 +45,8 @@ namespace elle
     ///
     /// this is the copy constructor.
     ///
-    PublicKey::PublicKey(const PublicKey&			K)
+    PublicKey::PublicKey(const PublicKey&			K):
+      Entity::Entity(K)
     {
       // re-create the public key by duplicate the internal numbers.
       if (this->Create(K.key) == StatusError)
@@ -160,8 +161,6 @@ namespace elle
     {
       SecretKey		secret;
 
-      Archive		archive;
-
       Code		key;
       Cipher		data;
 
@@ -220,6 +219,8 @@ namespace elle
 
       // (iv)
       {
+	Archive		archive;
+
 	// create the main archive.
 	if (archive.Create() == StatusError)
 	  escape("unable to create the archive");
