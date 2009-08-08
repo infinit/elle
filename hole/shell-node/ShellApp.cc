@@ -28,6 +28,7 @@ ShellApp::RunCommand(QString cmd)
     { "help", &ShellApp::Help },
     { "create", &ShellApp::Create },
     { "join", &ShellApp::Join },
+    { "port", &ShellApp::Port },
     { "exit", &ShellApp::Exit },
     { "quit", &ShellApp::Quit },
     { 0, 0 }
@@ -69,6 +70,24 @@ ShellApp::Join(const QStringList & args)
   }
 
   dht.Join(QHostAddress(args[1]), args[2].toUShort());
+}
+
+void
+ShellApp::Port(const QStringList & args)
+{
+  if (args.count() == 1)
+  { // we display the actual listening port
+    printf("Listening port: %d\n", dht.Port());
+    return;
+  }
+
+  if (args.count() == 2)
+  {
+    dht.Port(args[1].toUShort());
+    return;
+  }
+
+  puts("usage: port [port number]        to get or set the port number.");
 }
 
 void
