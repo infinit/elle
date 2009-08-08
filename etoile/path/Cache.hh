@@ -1,0 +1,124 @@
+//
+// ---------- header ----------------------------------------------------------
+//
+// project       etoile
+//
+// license       infinit (c)
+//
+// file          /home/mycure/infinit/etoile/path/Cache.hh
+//
+// created       julien quintard   [fri aug  7 19:39:51 2009]
+// updated       julien quintard   [fri aug  7 22:53:40 2009]
+//
+
+#ifndef ETOILE_PATH_CACHE_HH
+#define ETOILE_PATH_CACHE_HH
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/Elle.hh>
+
+#include <etoile/path/Item.hh>
+
+#include <list>
+#include <pair>
+
+namespace etoile
+{
+  namespace path
+  {
+
+//
+// ---------- classes ---------------------------------------------------------
+//
+
+    ///
+    /// this cache relies on the LRU algorithm by keeping two data structures:
+    /// a map for looking up and a queue for removing the least recently used
+    /// item quickly.
+    ///
+    /// to avoid using too much memory for these data structures, both point
+    /// to the same data.
+    ///
+    /// noteworthy is that, since this cache is used for paths and that paths
+    /// follow a pattern where /music/meshuggah is a subset of /music, the
+    /// data structure for storing the paths is hierachical.
+    ///
+    /// indeed, the Item class keeps a directory name such as 'meshuggah' along
+    /// with a map of all the child entries.
+    ///
+    /// this design has been chosen to speed up the resolution process. indeed,
+    /// this cache is used when a path must be resolved into an object address.
+    /// the objective of the cache is to find the longest part of a given path.
+    ///
+    /// for example, given /music/meshuggah/nothing/, the objective is to
+    /// find the corresponding address of this directory object. instead of
+    /// trying /music/meshuggah/nothing/, then /music/meshuggah/, then
+    /// /music/ etc. the designed cache is capable of returning the longest
+    /// match with a single pass because items are organised following the
+    /// hierarchy.
+    ///
+    /// note that to keep the queue small hence to avoid moving items too much,
+    /// only file items are kept in the queue. then, whenever a file item is
+    /// dismissed from the cache, the directory item containing it is checked.
+    /// if the number of children is down to zero, the directory item is also
+    /// dismissed.
+    ///
+    class Cache
+    {
+    public:
+      //
+      // constants
+      //
+      static const Natural32	Capacity;
+
+      //
+      // structures
+      //
+      struct		Element
+      {
+	String		name;
+	Item*		item;
+      };
+
+      //
+      // types
+      //
+      typedef std::list<Element>	Container;
+      typedef Container::iterator	Iterator;
+
+      //
+      // static methods
+      //
+      static Status	Initialize(Address&);
+      static Status	Clean();
+
+      static Status	Purge();
+
+      static Status	Update(const Path&,
+			       const Route&);
+      static Status	Remove(const Path&);
+
+      static Status	Dismiss(Item*);
+      static Status	Refresh(const Item*);
+
+      static Status	Resolve(Path&,
+				Route&);
+
+      static Status	Dump();
+
+      //
+      // static attributes
+      //
+      static Item	root;
+      static Container	queue;
+
+      static Natural32	size;
+    };
+
+  }
+}
+
+#endif
