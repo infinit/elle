@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [fri aug  7 22:51:12 2009]
+// updated       julien quintard   [sun aug  9 00:23:51 2009]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -18,10 +18,16 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <vector>
+#include <elle/Elle.hh>
+
+#include <etoile/core/Core.hh>
+
+#include <etoile/path/Route.hh>
 
 namespace etoile
 {
+  using namespace core;
+
   namespace path
   {
 
@@ -29,26 +35,33 @@ namespace etoile
 // ---------- classes ---------------------------------------------------------
 //
 
-    ///
-    /// a path is represented by a sequence of names.
-    ///
     class Path
     {
     public:
       //
-      // types
+      // static methods
       //
-      typedef std::vector<String>	Container;
-      typedef Container::iterator	Iterator;
-      typedef Container::const_iterator	Explorer;
+      static Status	Initialize(const Address&);
+      static Status	Clean();
+
+      static Status	Resolve(const Route&,
+				Address&);
 
       //
-      // attributes
+      // static attributes
       //
-      Container		elements;
+      static String	Separator;
+      static Address	Root;
     };
 
   }
 }
+
+// XXX
+#include <etoile/path/Cache.hh>
+#include <etoile/path/Item.hh>
+#include <etoile/path/Route.hh>
+#include <etoile/path/Venue.hh>
+// XXX
 
 #endif

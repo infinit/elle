@@ -17,7 +17,11 @@ ADD_LIBRARY(etoile
   core/Data.cc
   core/Link.cc
 
-  cache/Cache.cc
+  path/Path.cc
+  path/Cache.cc
+  path/Item.cc
+  path/Route.cc
+  path/Venue.cc
   )
 
 ADD_EXECUTABLE(test

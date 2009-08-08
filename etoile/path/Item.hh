@@ -8,14 +8,20 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [fri aug  7 22:33:59 2009]
+// updated       julien quintard   [sat aug  8 21:29:31 2009]
 //
+
+#ifndef ETOILE_PATH_ITEM_HH
+#define ETOILE_PATH_ITEM_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
+
+#include <etoile/path/Route.hh>
+#include <etoile/path/Venue.hh>
 
 #include <map>
 
@@ -46,6 +52,7 @@ namespace etoile
       //
       typedef std::map<String, Item*>		Container;
       typedef Container::iterator		Iterator;
+      typedef Container::const_iterator		Scoutor;
 
       //
       // constructors & destructors
@@ -56,10 +63,8 @@ namespace etoile
       //
       // methods
       //
-      Status		Purge();
 
-      Status		Udpate(const Resolution&,
-			       const Resolution::Explorer&);
+      // XXX
 
       //
       // attributes
@@ -73,3 +78,5 @@ namespace etoile
 
   }
 }
+
+#endif

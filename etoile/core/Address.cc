@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [tue aug  4 13:55:27 2009]
+// updated       julien quintard   [sat aug  8 22:00:11 2009]
 //
 
 //
@@ -46,7 +46,8 @@ namespace etoile
     ///
     /// this is the copy constructor.
     ///
-    Address::Address(const Address&				address)
+    Address::Address(const Address&				address):
+      Entity::Entity(address)
     {
       // copy the digest, if present.
       if (address.digest != NULL)

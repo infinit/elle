@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [sat aug  8 01:49:52 2009]
+// updated       julien quintard   [sun aug  9 00:22:30 2009]
 //
 
 //
@@ -32,35 +32,21 @@ namespace etoile
     /// whenever this threshold is reached, an item is dismissed from
     /// the cache.
     ///
-    Natural32		Cache::Capacity = 4096;
+    const Natural32		Cache::Capacity = 4096;
+
+    ///
+    /// this container is used for keeping track of the least recently
+    /// used items.
+    Cache::Container		Cache::Queue;
+
+    ///
+    /// this variable holds the number of items currently cached.
+    ///
+    Natural32			Cache::Size = 0;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-    ///
-    /// this method initializes the paths cache.
-    ///
-    Status		Cache::Initialize(Address&		address)
-    {
-      // initialize the root directory item.
-      this->type = Item::TypeDirectory;
-      this->root.address = address;
-
-      leave();
-    }
-
-    ///
-    /// this method cleans the cache by purging it.
-    ///
-    Status		Cache::Clean()
-    {
-      // purge the cache.
-      if (this->Purge() == StatusError)
-	escape("unable to purge the cache");
-
-      leave();
-    }
 
     ///
     /// this method purges the cache by releasing all the cached items.
@@ -70,40 +56,56 @@ namespace etoile
     ///
     Status		Cache::Purge()
     {
+      /*
       // purge the hierarchy.
-      if (this->root.Purge() == StatusError)
+      if (Cache::Root.Purge() == StatusError)
 	escape("unable to purge the root directory item");
-
+      */
       leave();
     }
 
     ///
-    /// this method adds a path to the cache by specifying
+    /// this method adds/updates a path.
     ///
-    Status		Cache::Update(const Path&		path,
-				      const Route&		route)
+    Status		Cache::Update(const Route&		route,
+				      const Venue&		venue)
     {
       // update the path.
-      if (this->root.hierarchy != NULL)
-	{
-	  Path::Explorer	i = path.begin();
-	  Route::Explorer	j = route.begin();
-	  Item::Iterator	k;
+      //if (Cache::Root.hierarchy != NULL)
+      //{
+	  /*
+	  Route::Scoutor	r = route.elements.begin();
+	  Venue::Scoutor	v = venue.elements.begin();
+	  Item::Iterator	i;
 	  Item*			item;
 
-	  // look up for the name.
-	  if ((k = this->root.hiearchy.find(*i)) == this->root.hierarchy.end())
+	  // look up for the name in the root item.
+	  if ((i = Cache::Root.hierarchy->find(*r)) ==
+	      Cache::Root.hierarchy->end())
 	    {
 	      // create the entry.
-	      if (this->root.Create(*i, *j) == StatusError)
+	      if (Cache::Root.Create(*r, *v, &item) == StatusError)
 		escape("unable to create an entry");
 	    }
 	  else
 	    {
-	      // update the entry.
-	      if (this->root.Update(i + 1, j + 1) == StatusError)
-		escape("unable to update the entry");
+	      /// \todo XXX note that we test here before we update because
+	      //    in a threaded environment, it would take use to acquire
+	      //    a write lock to update.
+
+	      // retrieve the item.
+	      item = i->second;
+
+	      // otherwise, if the address is different, update it.
+	      if (item->address != *v)
+		item->address = *v;
 	    }
+
+	  // update the sub-item.
+	  //if (item->Update(r + 1, v + 1) == StatusError)
+	  //escape("unable to update the sub-item");
+	  */
+      //}
 
       leave();
     }
@@ -113,10 +115,35 @@ namespace etoile
     /// returns both the address of the largest cached item plus an
     /// updated list of the names remaining to be resolved manually.
     ///
-    Status		Cache::Resolve(const Path&		path,
-				       Resolution&		resolution)
+    Status		Cache::Resolve(const Route&		route,
+				       Venue&			venue)
     {
-      // XXX
+      /*
+      Route::Scoutor	scoutor;
+      Item::Iterator	iterator;
+      Item*		item;
+
+      // initialize the item.
+      item = &Cache::Root;
+
+      // for every element of the route.
+      for (scoutor = route.elements.begin();
+	   scoutor != route.elements.end();
+	   scoutor++)
+	{
+	  // stop if there is no more entries.
+	  if (item->hierarchy == NULL)
+	    break;
+
+	  // look up the element in the current item .. stop if not present.
+	  if ((iterator = item->hierarchy->find(*scoutor)) ==
+	      item->hierarchy->end())
+	    break;
+
+	  // add the address to the venue.
+	  venue.elements.push_back(iterator->second->address);
+	}
+      */
 
       leave();
     }

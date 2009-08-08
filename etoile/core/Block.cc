@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Block.cc
 //
 // created       julien quintard   [mon feb 16 17:08:04 2009]
-// updated       julien quintard   [tue aug  4 13:55:19 2009]
+// updated       julien quintard   [sat aug  8 22:00:38 2009]
 //
 
 //
@@ -65,7 +65,7 @@ namespace etoile
     ///
     /// this method serializes the block object.
     ///
-    Status		Block::Serialize(Archive&		archive) const
+    Status		Block::Serialize(Archive&) const
     {
       leave();
     }
@@ -73,7 +73,7 @@ namespace etoile
     ///
     /// this method extracts the block object.
     ///
-    Status		Block::Extract(Archive&		archive)
+    Status		Block::Extract(Archive&)
     {
       leave();
     }

@@ -1,8 +1,11 @@
 #include <elle/Elle.hh>
+
 #include <etoile/core/Core.hh>
+#include <etoile/path/Path.hh>
 
 using namespace etoile;
 using namespace etoile::core;
+using namespace etoile::path;
 
 //
 // [OPENSSL]
@@ -42,43 +45,20 @@ int		main(int			argc,
 {
   Cryptography::Initialize();
 
-  Archive	archive;
-  Digest	digest;
+  Address	root;
 
-  archive.Create();
+  Path::Initialize(root);
 
-  OneWay::Hash(archive, digest);
+  Route		route;
 
-  KeyPair	keypair;
-  Signature	signature;
+  route.Create("/suce/mon/cul");
+  route.Dump();
 
-  keypair.Generate();
+  Venue		venue;
 
-  keypair.k.Sign(keypair, digest, keypair, signature);
+  Cache::Update(route, venue);
 
-  File		file;
-
-  PublicKeyBlock	pkb;
-
-  pkb.Create();
-  pkb.Seal();
-
-  file.Create(keypair);
-  file.Seal();
-
-  String	identifier;
-
-  file.address.Identify(identifier);
-
-  std::cout << file.address.digest->region << std::endl;
-  std::cout << identifier << std::endl;
-
-  Archive	ar;
-
-  ar.Create();
-  ar.Serialize(file);
-
-  printf("%u -> %u\n", sizeof(file), ar.size);
+  venue.Dump();
 
   expose();
 

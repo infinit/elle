@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [fri aug  7 22:53:40 2009]
+// updated       julien quintard   [sat aug  8 23:57:47 2009]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH
@@ -21,9 +21,10 @@
 #include <elle/Elle.hh>
 
 #include <etoile/path/Item.hh>
+#include <etoile/path/Route.hh>
+#include <etoile/path/Venue.hh>
 
 #include <list>
-#include <pair>
 
 namespace etoile
 {
@@ -77,6 +78,12 @@ namespace etoile
       //
       // structures
       //
+
+      ///
+      /// this structure is used in the queue to point to the item.
+      /// the name is kept as well to move up to the parent directory and
+      /// delete the item entry.
+      ///
       struct		Element
       {
 	String		name;
@@ -88,34 +95,32 @@ namespace etoile
       //
       typedef std::list<Element>	Container;
       typedef Container::iterator	Iterator;
+      typedef Container::const_iterator	Scoutor;
 
       //
       // static methods
       //
-      static Status	Initialize(Address&);
-      static Status	Clean();
-
       static Status	Purge();
 
-      static Status	Update(const Path&,
-			       const Route&);
-      static Status	Remove(const Path&);
+      static Status	Update(const Route&,
+			       const Venue&);
+      static Status	Remove(const Route&);
 
       static Status	Dismiss(Item*);
       static Status	Refresh(const Item*);
 
-      static Status	Resolve(Path&,
-				Route&);
+      static Status	Resolve(const Route&,
+				Venue&);
 
       static Status	Dump();
 
       //
       // static attributes
       //
-      static Item	root;
-      static Container	queue;
+      static Item::Container	Hierarchy;
+      static Container		Queue;
 
-      static Natural32	size;
+      static Natural32		Size;
     };
 
   }
