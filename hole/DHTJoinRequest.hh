@@ -15,6 +15,7 @@ namespace hole
 
   public:
     DHTJoinRequest(DHT & dht, const QHostAddress & address, quint16 port);
+    void Received(const QByteArray & data);
 
   signals:
     void Joined(DHTJoinRequest * handler);

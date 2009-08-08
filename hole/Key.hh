@@ -12,7 +12,7 @@ namespace hole
   {
     Key();
 
-    quint8 data[160];
+    quint8 data[20];
     bool operator<(const Key & other) const;
   };
   QDataStream & operator<<(QDataStream & ds, const Key & key);

@@ -35,7 +35,7 @@ namespace hole
     void Get(DHTDataRequest * request);
     void Put(DHTDataRequest * request);
 
-    DHTRequest * Ping(const Key & key);
+    DHTRequest * Ping(Node * node);
 
     protocol::Tag GenerateTag();
     FullTag GenerateFullTag(const QHostAddress & addr,
@@ -64,14 +64,16 @@ namespace hole
     /** Used to reply to Ping. \sa Ping(const Key &) */
     void SendPong(const FullTag & fullTag);
 
-    typedef QMap<FullTag, DHTRequest *> requests_t;
-    typedef QMap<Key, Node *> nodes_t;
+    typedef QMap<FullTag, DHTRequest *> Requests_t;
+    typedef QMap<protocol::Tag, DHTJoinRequest *> JoinRequests_t;
 
-    LocalNode    localNode_;
-    QUdpSocket * socket_;
-    nodes_t      nodes_;
-    quint16      port_;
-    requests_t   requests_;
+    LocalNode      localNode_;
+    QUdpSocket *   socket_;
+    Node *         successors_[160];
+    Node *         predecessor_;
+    quint16        port_;
+    Requests_t     requests_;
+    JoinRequests_t joinRequests_;
   };
 }
 

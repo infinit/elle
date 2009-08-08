@@ -29,4 +29,9 @@ namespace hole
     stream << cmd;
     dht_.socket_->writeDatagram(data, address_, port_);
   }
+
+  void
+  DHTJoinRequest::Received(const QByteArray & data)
+  {
+  }
 }

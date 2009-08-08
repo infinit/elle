@@ -13,17 +13,20 @@ namespace hole
     : QObject(p),
       localNode_(*this),
       socket_(new QUdpSocket(this)),
-      nodes_(),
+      successors_(),
+      predecessor_(),
       port_(64626),
-      requests_()
+      requests_(),
+      joinRequests_()
   {
     connect(socket_, SIGNAL(readyRead()), this, SLOT(ReadDatagram()));
   }
 
   DHT::~DHT()
   {
-    foreach (Node * node, nodes_)
-      delete node;
+    for (int i = 0; i < 160; i++)
+      delete successors_[i];
+    delete predecessor_;
   }
 
   void
@@ -61,11 +64,10 @@ namespace hole
   }
 
   void
-  DHT::HandleCommand(const QByteArray & /*data*/,
+  DHT::HandleCommand(const QByteArray & data,
                      protocol::CmdId    cmdId,
                      const FullTag &    fullTag)
   {
-    /* this switch handles new requests */
     switch (cmdId)
     {
     case protocol::Header::Ping:
@@ -75,18 +77,17 @@ namespace hole
       return;
     case protocol::Header::FindSuccessor:
       return;
+    case protocol::Header::SuccessorFound:
+      JoinRequests_t::Iterator it = joinRequests_.find(fullTag.tag);
+      if (it != joinRequests_.end())
+        it.value()->Received(data);
+      return;
     }
-
-    /* handle commands with request handlers */
   }
 
   DHTRequest *
-  DHT::Ping(const Key & key)
+  DHT::Ping(Node * node)
   {
-    nodes_t::iterator it = nodes_.find(key);
-    if (it == nodes_.end() || &localNode_ == it.value())
-      return 0;
-
     DHTRequest * request = new DHTRequest(*this);
     QByteArray data;
     QDataStream stream(data);
@@ -97,7 +98,7 @@ namespace hole
     packet.tag = request->tag_;
     packet.length = 0;
     stream << packet;
-    socket_->writeDatagram(data, it.value()->Address(), it.value()->Port());
+    socket_->writeDatagram(data, node->Address(), node->Port());
     return request;
   }
 
@@ -127,9 +128,8 @@ namespace hole
   {
     DHTJoinRequest * request = new DHTJoinRequest(*this, address, port);
 
-    FullTag fullTag = GenerateFullTag(address, port);
-    request->tag_ = fullTag.tag;
-    requests_[fullTag] = request;
+    request->tag_ = GenerateTag();
+    joinRequests_[request->tag_] = request;
     connect(request, SIGNAL(Joined(DHTJoinRequest *)),
             this, SLOT(Joined(DHTJoinRequest *)));
     request->Join();
@@ -178,7 +178,7 @@ namespace hole
   bool
   DHT::IsTagInUse(const FullTag & tag) const
   {
-    requests_t::const_iterator it = requests_.find(tag);
+    Requests_t::const_iterator it = requests_.find(tag);
     return it == requests_.end();
   }
 }
