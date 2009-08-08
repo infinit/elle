@@ -16,6 +16,7 @@ namespace hole
     bool operator<(const Key & other) const;
   };
   QDataStream & operator<<(QDataStream & ds, const Key & key);
+  QDataStream & operator>>(QDataStream & ds, Key & key);
 }
 
 #endif /* !HOLE_KEY_HH */

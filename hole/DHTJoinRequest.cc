@@ -33,5 +33,9 @@ namespace hole
   void
   DHTJoinRequest::Received(const QByteArray & data)
   {
+    protocol::FindSuccessor findSuccessor;
+    QDataStream stream(data);
+
+    stream >> findSuccessor;
   }
 }

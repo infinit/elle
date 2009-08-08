@@ -1,6 +1,8 @@
 #ifndef HEADER_HH
 # define HEADER_HH
 
+# include <QtGlobal>
+
 # include "hole/Key.hh"
 
 class QDataStream;
@@ -9,7 +11,7 @@ namespace hole
 {
   namespace protocol
   {
-    typedef quint16 CmdId;
+    typedef ::quint16 CmdId;
     typedef quint64 Tag;
     typedef quint16 CmdLen;
 
@@ -30,6 +32,7 @@ namespace hole
     };
 
     QDataStream & operator<<(QDataStream &, const Header &);
+    QDataStream & operator>>(QDataStream &, Header &);
 
     struct FindSuccessor
     {
@@ -40,6 +43,7 @@ namespace hole
       inline static size_t Length() { return sizeof (key); }
     };
     QDataStream & operator<<(QDataStream &, const FindSuccessor &);
+    QDataStream & operator>>(QDataStream &, FindSuccessor &);
   }
 }
 
