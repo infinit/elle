@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [wed aug  5 16:37:53 2009]
+// updated       julien quintard   [sat aug  8 21:44:57 2009]
 //
 
 //
@@ -69,6 +69,8 @@ namespace elle
     {
       // release the generation context.
       ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
+
+      leave();
     }
 
     ///

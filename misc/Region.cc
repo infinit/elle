@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [tue aug  4 17:16:10 2009]
+// updated       julien quintard   [sat aug  8 21:57:16 2009]
 //
 
 //
@@ -45,6 +45,8 @@ namespace elle
     /// copy constructor.
     ///
     Region::Region(const Region&				region):
+      Entity::Entity(region),
+
       type(region.type),
       options(region.options)
     {
