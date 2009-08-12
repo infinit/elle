@@ -23,7 +23,8 @@ namespace hole
         Pong = 1,
         Quit = 2,
         FindSuccessor = 3,
-        SuccessorFound = 4,
+        FindSuccessorBounce = 4,
+        FindSuccessorFound = 5,
       };
 
       CmdId  id;
