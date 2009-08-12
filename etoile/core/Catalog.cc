@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue aug  4 14:01:56 2009]
+// updated       julien quintard   [mon aug 10 21:30:27 2009]
 //
 
 //
@@ -177,7 +177,7 @@ namespace etoile
       std::list<Catalog::Entry*>::const_iterator i;
 
       // call the parent class.
-      if (Block::Serialize(archive) == StatusError)
+      if (ContentHashBlock::Serialize(archive) == StatusError)
 	escape("unable to serialize the block");
 
       // serialize the number of entries.
@@ -207,7 +207,7 @@ namespace etoile
       Natural32		i;
 
       // call the parent class.
-      if (Block::Extract(archive) == StatusError)
+      if (ContentHashBlock::Extract(archive) == StatusError)
 	escape("unable to extract the block");
 
       // extract the size.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [wed aug  5 22:30:58 2009]
+// updated       julien quintard   [tue aug 11 00:43:03 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -21,11 +21,13 @@
 #include <elle/Elle.hh>
 
 #include <etoile/core/PublicKeyBlock.hh>
+#include <etoile/core/Component.hh>
 #include <etoile/core/Access.hh>
 #include <etoile/core/Token.hh>
 #include <etoile/core/Permissions.hh>
 #include <etoile/core/Proof.hh>
 #include <etoile/core/Voucher.hh>
+#include <etoile/core/Contents.hh>
 
 namespace etoile
 {
@@ -43,17 +45,6 @@ namespace etoile
       public PublicKeyBlock
     {
     public:
-      //
-      // enumerations
-      //
-      enum Type
-	{
-	  TypeUnknown = 0,
-	  TypeFile,
-	  TypeDirectory,
-	  TypeLink
-	};
-
       enum Mode
 	{
 	  ModeUnknown = 0,
@@ -70,21 +61,21 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const KeyPair&,
-			       const Type);
+      Status		Create(const Component,
+			       const KeyPair&);
 
       Status		Update(const PrivateKey&,
-			       const Address&);
+			       const Contents&);
       // XXX other Update() for delegates and consumers
 
       Status		Write(const PrivateKey&,
-			      const Address&);
+			      const Contents&);
 
       Status		Administrate(const PrivateKey&,
 				     const Permissions&,
 				     const Address&);
 
-      Status		Validate(const Address&);
+      Status		Validate(const Address&) const;
 
       //
       // interfaces
@@ -116,7 +107,8 @@ namespace etoile
 
       struct
       {
-	Address		references;
+	Contents	contents;
+
 	Digest		fingerprint;
 
 	Natural32	version;
@@ -133,10 +125,9 @@ namespace etoile
 
 	struct
 	{
-	  Type		type;
-	  Natural64	size;
+	  Component	component;
 
-	  // XXX[other information such as size, time last access/change  etc.]
+	  // XXX[date last status change]
 	}		status;
 
 	Address		access;

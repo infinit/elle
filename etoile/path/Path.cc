@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sun aug  9 00:37:42 2009]
+// updated       julien quintard   [mon aug 10 16:49:23 2009]
 //
 
 //
@@ -75,6 +75,7 @@ namespace etoile
 				      Address&			address)
     {
       Venue		venue;
+      Route::Scoutor	scoutor;
 
       // first ask the cache to resolve as much as it can.
       if (Cache::Resolve(route, venue) == StatusError)
@@ -83,13 +84,33 @@ namespace etoile
       // if the cache did not resolve anything.
       if (venue.elements.size() == 0)
 	{
+	  // start with the root directory.
 	  address = Path::Root;
 	}
       else
 	{
-	  // otherwise, start the the last resolved element.
-	  //XXX
+	  // set the address with the address of the last resolved element.
 	  address = venue.elements[venue.elements.size() - 1];
+	}
+
+      // if complete, return the address.
+      if (route.elements.size() == venue.elements.size())
+	leave();
+
+      // then, resolve manually by retrieving the directory object.
+      for (scoutor = route.elements.begin() + venue.elements.size();
+	   scoutor != route.elements.end();
+	   scoutor++)
+	{
+	  Object	directory;
+
+	  // load the directory referenced by address.
+	  if (Directory::Load(address, directory) == StatusError)
+	    escape("unable to load one of the route's directories");
+
+	  // look up for the name.
+	  if (Directory::Lookup(directory, *scoutor, address) == StatusError)
+	    escape("unable to find one of the route's entries");
 	}
 
       leave();

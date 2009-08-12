@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [tue aug  4 13:55:32 2009]
+// updated       julien quintard   [mon aug 10 00:43:20 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTHASHBLOCK_HH
@@ -41,7 +41,8 @@ namespace etoile
       //
       // methods
       //
-      Status		Seal();
+      Status		Self(Address&) const;
+      Status		Validate(const Address&) const;
 
       //
       // interfaces

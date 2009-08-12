@@ -1,11 +1,8 @@
 PROJECT(Etoile CXX)
 
 ADD_LIBRARY(etoile
-  core/Directory.cc
   core/Access.cc
   core/Address.cc
-  core/File.cc
-  core/Block.cc
   core/Object.cc
   core/PublicKeyBlock.cc
   core/ContentHashBlock.cc
@@ -15,13 +12,19 @@ ADD_LIBRARY(etoile
   core/Catalog.cc
   core/References.cc
   core/Data.cc
-  core/Link.cc
+  core/Contents.cc
+
+  hole/Hole.cc
 
   path/Path.cc
   path/Cache.cc
   path/Item.cc
   path/Route.cc
   path/Venue.cc
+
+  components/Directory.cc
+
+  configuration/Configuration.cc
   )
 
 ADD_EXECUTABLE(test

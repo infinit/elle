@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [tue aug  4 17:10:56 2009]
+// updated       julien quintard   [mon aug 10 21:17:16 2009]
 //
 
 //
@@ -121,7 +121,7 @@ namespace etoile
     Status		Data::Serialize(Archive&		archive) const
     {
       // call the parent class.
-      if (Block::Serialize(archive) == StatusError)
+      if (ContentHashBlock::Serialize(archive) == StatusError)
 	escape("unable to serialize the block");
 
       // serialize the internal region.
@@ -137,7 +137,7 @@ namespace etoile
     Status		Data::Extract(Archive&			archive)
     {
       // call the parent class.
-      if (Block::Extract(archive) == StatusError)
+      if (ContentHashBlock::Extract(archive) == StatusError)
 	escape("unable to extract the block");
 
       // extract the region.

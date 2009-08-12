@@ -1,5 +1,126 @@
-file.getAddress
-file.getDataBlocks
-file.getUpdateTime
-file.getSize
-file.getOwner
+--
+
+Context => ObjectContext => FileContext, DirectoryContext, LinkContext, etc.
+
+--
+
+Context.Apply(Context)
+Context.List() -> [] of contexts
+
+Context.Information(Context) ->
+
+--
+
+File.Create() -> FileContext
+File.Destroy(path) ->
+File.Load(path) -> FileContext
+
+--
+
+Directory.Create(type) -> DirectoryContext
+Directory.Load(path) -> DirectoryContext
+
+--
+
+Version.Create(ObjectContext) -> VersionContext
+Version.Clone(ObjectContext, version) -> VersionContext
+
+Version.Load(ObjectContext, version) -> VersionContext
+
+Version.List(ObjectContext) -> [] of versions
+
+_note_ Clone() takes a version and clones it in a new version so that
+       it can be modified.
+
+_note_ if a version context has been loaded, it cannot be modified.
+
+--
+
+File.Read(VersionContext, offset, size) -> buffer
+File.Write(VersionContext, offset, buffer, size)
+
+--
+
+Directory.
+
+--
+
+Attribute.
+
+--
+
+Permissions.
+
+--
+
+XXX ca devrait etre simple de ramener une ancienne version.
+XXX ca devrait etre simple de modifier une ancienne version pour quelle
+    devienne la courante bien que cette operation revient a remettre
+    une ancienne au premier plan pour ensuite la modifier. vu que ca reste
+    dans un meme contexte, ca revient completement au meme.
+XXX ca devrait etre possible d'avoir plusieurs sous-contexts dans un
+    context, via un 'name' par exemple
+XXX pouvoir recuperer des infos sur les contexts encore en vie: taux d'upload
+    etc.
+XXX 1 thread par contexte
+XXX contexts look like transactions but are not atomic. they are just
+    construct for performing mutliple operations on the same object(s).
+
+-- scenarios
+
+[new file]
+Context.New() -> ctx
+  File.Create(ctx, path)
+  File.Write(ctx, offset, data, size)
+  File.Store(ctx)
+Context.Commity(ctx)
+
+[change permission]
+Context.New() -> ctx
+  File.Load(ctx, path)
+  File.Access.Add(ctx, user1, permissions1)
+  File.Access.Add(ctx, user2, permissions2)
+  File.Access.Remove(ctx, user2, permissions2)
+  File.Store(ctx)
+Context.Commit(ctx)
+
+[modify a file]
+Context.New() -> ctx
+  File.Load(ctx, path)
+  File.Write(ctx, offset, data, size)
+  File.Store(ctx)
+Context.Commit(ctx)
+
+[new directory]
+Context.New() -> ctx
+  Directory.New(ctx, path)
+  Directory.Add(ctx, name1, address1)
+  Directory.Delete(ctx, name2)
+  Directory.Store(ctx)
+Context.Commit(ctx)
+
+[list directory] -- this context does not modify anything, hence no Store()
+Context.New() -> ctx
+  Directory.Load(ctx, path)
+  Directory.Retrieve(ctx, start = 0, end = Directory.End)
+Context.Destroy(ctx)
+
+[get the access list]
+Context.New() -> ctx
+  File.Load(ctx, path)
+  XXX
+
+[mkfs]
+Context.New() -> ctx
+  System.Create(ctx)
+Context.Commit()
+
+[statfs]
+Context->New() -> ctx
+  System.Information(ctx)
+Context.Destroy()
+
+[request administration operation]
+Context->New() -> ctx
+  Community.Request(..)
+Context->Commit()

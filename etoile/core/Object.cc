@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [tue aug  4 13:56:16 2009]
+// updated       julien quintard   [mon aug 10 23:37:20 2009]
 //
 
 //
@@ -37,8 +37,7 @@ namespace etoile
       this->data.version = 0;
 
       this->meta.owner.permissions = PermissionNone;
-      this->meta.status.type = Object::TypeUnknown;
-      this->meta.status.size = 0;
+      this->meta.status.component = ComponentUnknown;
       this->meta.version = 0;
     }
 
@@ -64,13 +63,19 @@ namespace etoile
     /// block private key (iii) sets the meta data, and finally (iv)
     /// initializes the data part by setting the owner as the author.
     ///
-    Status		Object::Create(const KeyPair&		owner,
-				       const Object::Type	type)
+    Status		Object::Create(const Component		component,
+				       const KeyPair&		owner)
     {
+      KeyPair		pair;
+
       // (i)
       {
+	// generate a key pair for the PKB.
+	if (pair.Generate() == StatusError)
+	  escape("unable to generate a key pair");
+
 	// create the underlying public key block.
-	if (PublicKeyBlock::Create() == StatusError)
+	if (PublicKeyBlock::Create(pair) == StatusError)
 	  escape("unable to create the underlying public key block");
       }
 
@@ -85,7 +90,7 @@ namespace etoile
 	// key will be used on behalf of the block's private key since
 	// a link is now made through this signature between the block
 	// and the owner.
-	if (this->k->Sign(this->owner.K, this->owner.signature) == StatusError)
+	if (pair.k.Sign(this->owner.K, this->owner.signature) == StatusError)
 	  escape("unable to sign the owner public key with the PKB "
 		 "private key");
       }
@@ -93,7 +98,7 @@ namespace etoile
       // (iii)
       {
 	// set the meta type.
-	this->meta.status.type = type;
+	this->meta.status.component = component;
 
 	// initialize the meta data with the maximum rights for the owner and
 	// a nil address for the user access block.
@@ -110,7 +115,7 @@ namespace etoile
 	//
 	// note that the owner is recorded as being the initial
 	// writer.
-	if (this->Update(owner.k, this->data.references) == StatusError)
+	if (this->Update(owner.k, this->data.contents) == StatusError)
 	  escape("unable to update the data part");
       }
 
@@ -121,7 +126,7 @@ namespace etoile
     /// this method is used by the owner for updating the object's data.
     ///
     Status		Object::Update(const PrivateKey&	owner,
-				       const Address&		references)
+				       const Contents&		contents)
     {
       // set the author as being the owner.
       this->author.mode = Object::ModeOwner;
@@ -136,7 +141,7 @@ namespace etoile
 	}
 
       // then, write and sign the data.
-      if (this->Write(owner, references) == StatusError)
+      if (this->Write(owner, contents) == StatusError)
 	escape("unable to write the references");
 
       leave();
@@ -146,10 +151,10 @@ namespace etoile
     /// this method writes the data.
     ///
     Status		Object::Write(const PrivateKey&		author,
-				      const Address&		references)
+				      const Contents&		contents)
     {
       // set the data address.
-      this->data.references = references;
+      this->data.contents = contents;
 
       // increase the data version.
       this->data.version += 1;
@@ -157,7 +162,7 @@ namespace etoile
       // XXX[set fingerprint]
 
       // sign the archive with the author key.
-      if (author.Sign(this->data.references,
+      if (author.Sign(this->data.contents,
 		      this->data.fingerprint,
 		      this->data.version,
 		      this->data.signature) == StatusError)
@@ -194,8 +199,7 @@ namespace etoile
 	  // sign the meta data..
 	  if (owner.Sign((Byte&)this->meta.owner.permissions,
 			 this->meta.owner.token,
-			 (Byte&)this->meta.status.type,
-			 this->meta.status.size,
+			 (Byte&)this->meta.status.component,
 			 this->meta.access,
 			 this->meta.version,
 			 this->meta.signature) == StatusError)
@@ -222,14 +226,15 @@ namespace etoile
     /// the data signature.
     ///
     Status		Object::Validate(const Address&		address)
+      const
     {
-      PublicKey*	author;
+      const PublicKey*	author;
 
       // (i)
       {
 	// call the parent class.
 	if (PublicKeyBlock::Validate(address) == StatusFalse)
-	  false();
+	  flee("unable to verify the underlying PKB");
       }
 
       // (ii)
@@ -237,7 +242,7 @@ namespace etoile
 	// verify the owner's key signature with the block's public key.
 	if (this->K.Verify(this->owner.signature,
 			   this->owner.K) != StatusTrue)
-	  false();
+	  flee("unable to verify the owner's signature");
       }
 
       // (iii)
@@ -248,8 +253,7 @@ namespace etoile
 	    if (this->owner.K.Verify(this->meta.signature,
 				     (Byte&)this->meta.owner.permissions,
 				     this->meta.owner.token,
-				     (Byte&)this->meta.status.type,
-				     this->meta.status.size,
+				     (Byte&)this->meta.status.component,
 				     this->meta.access,
 				     this->meta.version) == StatusError)
 	      flee("unable to verify the meta's signature");
@@ -281,7 +285,7 @@ namespace etoile
       {
 	// verify the signature.
 	if (author->Verify(this->data.signature,
-			   this->data.references,
+			   this->data.contents,
 			   this->data.fingerprint,
 			   this->data.version) != StatusTrue)
 	  flee("unable to verify the signature");
@@ -341,9 +345,9 @@ namespace etoile
       // dump the data part.
       std::cout << alignment << shift << "[Data]" << std::endl;
 
-      std::cout << alignment << shift << shift << "[References]" << std::endl;
-      if (this->data.references.Dump(margin + 6) == StatusError)
-	escape("unable to dump the references' address");
+      std::cout << alignment << shift << shift << "[Contents]" << std::endl;
+      if (this->data.contents.Dump(margin + 6) == StatusError)
+	escape("unable to dump the contents' address");
 
       std::cout << alignment << shift << shift << "[Fingerprint]" << std::endl;
       if (this->data.fingerprint.Dump(margin + 6) == StatusError)
@@ -371,10 +375,8 @@ namespace etoile
 
       std::cout << alignment << shift << shift << "[Status] " << std::endl;
 
-      std::cout << alignment << shift << shift << shift << "[Type] "
-		<< this->meta.status.type << std::endl;
-      std::cout << alignment << shift << shift << shift << "[Size] "
-		<< this->meta.status.size << std::endl;
+      std::cout << alignment << shift << shift << shift << "[Component] "
+		<< this->meta.status.component << std::endl;
 
       std::cout << alignment << shift << shift << "[Access]" << std::endl;
       if (this->meta.access.Dump(margin + 6) == StatusError)
@@ -425,7 +427,7 @@ namespace etoile
 	}
 
       // serialize the data part.
-      if (archive.Serialize(this->data.references,
+      if (archive.Serialize(this->data.contents,
 			    this->data.fingerprint,
 			    this->data.version,
 			    this->data.signature) == StatusError)
@@ -434,8 +436,7 @@ namespace etoile
       // serialize the meta part.
       if (archive.Serialize((Byte&)this->meta.owner.permissions,
 			    this->meta.owner.token,
-			    (Byte&)this->meta.status.type,
-			    this->meta.status.size,
+			    (Byte&)this->meta.status.component,
 			    this->meta.access,
 			    this->meta.version,
 			    this->meta.signature) == StatusError)
@@ -485,7 +486,7 @@ namespace etoile
 	}
 
       // extract the data part.
-      if (archive.Extract(this->data.references,
+      if (archive.Extract(this->data.contents,
 			  this->data.fingerprint,
 			  this->data.version,
 			  this->data.signature) == StatusError)
@@ -494,8 +495,7 @@ namespace etoile
       // extract the meta part.
       if (archive.Extract((Byte&)this->meta.owner.permissions,
 			  this->meta.owner.token,
-			  (Byte&)this->meta.status.type,
-			  this->meta.status.size,
+			  (Byte&)this->meta.status.component,
 			  this->meta.access,
 			  this->meta.version,
 			  this->meta.signature) == StatusError)

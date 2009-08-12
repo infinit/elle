@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [sat aug  8 23:57:47 2009]
+// updated       julien quintard   [mon aug 10 16:51:17 2009]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH
@@ -41,7 +41,7 @@ namespace etoile
     /// item quickly.
     ///
     /// to avoid using too much memory for these data structures, both point
-    /// to the same data.
+    /// to the same data: items.
     ///
     /// noteworthy is that, since this cache is used for paths and that paths
     /// follow a pattern where /music/meshuggah is a subset of /music, the
@@ -58,14 +58,7 @@ namespace etoile
     /// find the corresponding address of this directory object. instead of
     /// trying /music/meshuggah/nothing/, then /music/meshuggah/, then
     /// /music/ etc. the designed cache is capable of returning the longest
-    /// match with a single pass because items are organised following the
-    /// hierarchy.
-    ///
-    /// note that to keep the queue small hence to avoid moving items too much,
-    /// only file items are kept in the queue. then, whenever a file item is
-    /// dismissed from the cache, the directory item containing it is checked.
-    /// if the number of children is down to zero, the directory item is also
-    /// dismissed.
+    /// match within a single pass because items are hierarchically organised.
     ///
     class Cache
     {

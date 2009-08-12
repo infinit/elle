@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [sun aug  9 00:22:30 2009]
+// updated       julien quintard   [mon aug 10 20:52:24 2009]
 //
 
 //
@@ -118,14 +118,10 @@ namespace etoile
     Status		Cache::Resolve(const Route&		route,
 				       Venue&			venue)
     {
-      /*
       Route::Scoutor	scoutor;
       Item::Iterator	iterator;
       Item*		item;
-
-      // initialize the item.
-      item = &Cache::Root;
-
+      /*
       // for every element of the route.
       for (scoutor = route.elements.begin();
 	   scoutor != route.elements.end();
@@ -144,7 +140,6 @@ namespace etoile
 	  venue.elements.push_back(iterator->second->address);
 	}
       */
-
       leave();
     }
 

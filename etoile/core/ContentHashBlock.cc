@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue aug  4 13:55:37 2009]
+// updated       julien quintard   [mon aug 10 21:30:16 2009]
 //
 
 //
@@ -27,15 +27,39 @@ namespace etoile
 //
 
     ///
-    /// this method seals the object.
+    /// this method returns the address of the block.
     ///
-    Status		ContentHashBlock::Seal()
+    Status		ContentHashBlock::Self(Address&		address)
+      const
     {
       // compute the address.
-      if (this->address.Create(*this) == StatusError)
+      if (address.Create(*this) == StatusError)
 	escape("unable to compute the CHB's address");
 
       leave();
+    }
+
+    ///
+    /// this method verifies that the block is valid according to the
+    /// given requested address.
+    ///
+    Status		ContentHashBlock::Validate(const Address& address)
+      const
+    {
+      Address		self;
+
+      // retrieve the address of this object.
+      if (this->Self(self) == StatusError)
+	flee("unable to retrieve the block's address");
+
+      address.Dump();
+      self.Dump();
+
+      // compare the address with the given one.
+      if (self != address)
+	flee("the given address does not correspond to this block");
+
+      true();
     }
 
 //
@@ -51,9 +75,6 @@ namespace etoile
 
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
 
-      if (Block::Dump(margin + 2) == StatusError)
-	escape("unable to dump the underlying block");
-
       leave();
     }
 
@@ -64,24 +85,16 @@ namespace etoile
     ///
     /// this method serializes the block object.
     ///
-    Status		ContentHashBlock::Serialize(Archive&	archive) const
+    Status		ContentHashBlock::Serialize(Archive&) const
     {
-      // call the parent class.
-      if (Block::Serialize(archive) == StatusError)
-	escape("unable to serialize the block");
-
       leave();
     }
 
     ///
     /// this method extracts the block object.
     ///
-    Status		ContentHashBlock::Extract(Archive&	archive)
+    Status		ContentHashBlock::Extract(Archive&)
     {
-      // call the parent class.
-      if (Block::Extract(archive) == StatusError)
-	escape("unable to extract the block");
-
       leave();
     }
 

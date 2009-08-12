@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [sat aug  8 22:23:01 2009]
+// updated       julien quintard   [sun aug  9 22:52:49 2009]
 //
 
 //
@@ -40,7 +40,7 @@ namespace etoile
       start = path.find_first_not_of(Path::Separator);
       end = path.find_first_of(Path::Separator, start);
 
-      while (true)
+      while (start < path.length())
 	{
 	  String	element;
 
@@ -53,10 +53,6 @@ namespace etoile
 	  // compute the next offsets.
 	  start = path.find_first_not_of(Path::Separator, end);
 	  end = path.find_first_of(Path::Separator, start);
-
-	  // quit if the end is reached.
-	  if (start >= path.length())
-	    break;
 	}
 
       leave();

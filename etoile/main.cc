@@ -26,13 +26,13 @@ using namespace etoile::path;
 //
 //                   Local(ext3)      NFS3            SSHFS     Infinit (local w/o)   Infinit (NFS3 w/o)   Infinit(SSHFS w/o)
 //
-// Prepare              0.56s         12.75s           29.96s         56.52s              560.57s
-// Copy                 1.99s        210.19s          268.63s        292.60s             5719.40s
-// List                 0.05s         71.61s           30.64s          2.26s             1581.46s
-// Search               0.06s        143.85s          105.06s          5.84s             3136.82s
-// Compile             19.97s        511.96s         1289.12s        170.92s             
+// Prepare              0.56s         12.75s           29.96s         56.52s              560.57s               615.33s
+// Copy                 1.99s        210.19s          268.63s        292.60s             5719.40s              6110.99s
+// List                 0.05s         71.61s           30.64s          2.26s             1581.46s              1645.30s
+// Search               0.06s        143.85s          105.06s          5.84s             3136.82s              3185.92s
+// Compile             19.97s        511.96s         1289.12s        170.92s          too long... 24h+      too long... 24h+
 //
-// Optimisations: paths cache, blocks 2-level cache (main memory + local) + OKB
+// Optimisations: paths cache, blocks 2-level cache (main memory + local) + OKB + try to turn debugging off
 //
 
 //
@@ -47,18 +47,40 @@ int		main(int			argc,
 
   Address	root;
 
+      // XXX[hack for the /]
+      {
+	int		fd;
+
+	fd = ::open(".device/.root", O_RDONLY);
+
+	Region	region;
+
+	region.Prepare(4096);
+
+	region.size = read(fd, region.contents, region.capacity);
+
+	region.Detach();
+
+	Archive		archive;
+
+	archive.Prepare(region);
+
+	archive.Extract(root);
+
+	expose();
+      }
+
   Path::Initialize(root);
 
   Route		route;
 
-  route.Create("/suce/mon/cul");
-  route.Dump();
+  route.Create("/suce/mon");
 
-  Venue		venue;
+  Address	address;
 
-  Cache::Update(route, venue);
+  Path::Resolve(route, address);
 
-  venue.Dump();
+  address.Dump();
 
   expose();
 

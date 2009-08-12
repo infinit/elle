@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat aug  8 22:00:11 2009]
+// updated       julien quintard   [tue aug 11 00:22:17 2009]
 //
 
 //
@@ -80,7 +80,7 @@ namespace etoile
     /// create the address based on an object by serializing it before
     /// hashing it.
     ///
-    Status		Address::Create(Archivable&		object)
+    Status		Address::Create(const Archivable&	object)
     {
       // allocate the digest object.
       this->digest = new Digest;
@@ -120,7 +120,7 @@ namespace etoile
 //
 
     ///
-    /// assign the publickey.
+    /// assign the address.
     ///
     Address&		Address::operator=(const Address&	element)
     {

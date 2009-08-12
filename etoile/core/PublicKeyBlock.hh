@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [tue aug  4 13:56:56 2009]
+// updated       julien quintard   [mon aug 10 01:04:27 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_PUBLICKEYBLOCK_HH
@@ -39,17 +39,12 @@ namespace etoile
     {
     public:
       //
-      // constructors & destructors
-      //
-      PublicKeyBlock();
-      ~PublicKeyBlock();
-
-      //
       // methods
       //
-      Status		Create();
+      Status		Create(const KeyPair&);
 
-      Status		Seal();
+      Status		Self(Address&) const;
+      Status		Validate(const Address&) const;
 
       //
       // interfaces
@@ -66,12 +61,6 @@ namespace etoile
       // attributes
       //
       PublicKey		K;
-
-      ///
-      /// this private key is kept after the PKB creation
-      /// but is not serialized, hence is optional.
-      ///
-      PrivateKey*	k;
     };
 
   }
