@@ -49,6 +49,14 @@ This structure represent a node:
 | Key | Host |
 </pre>
 
+h3. List<n, T>
+
+This is a generic list. The first field is the number of items in the list.
+Then the array of items. The parameter n refer to the size in bits of the
+length field. The parameter T refer to the type of the list.
+
+| length | T1 | T2 | ... |
+
 h2. Command list
 
 |_.name|_.id|
@@ -56,7 +64,8 @@ h2. Command list
 |pong|1|
 |quit|2|
 |find_successor|3|
-|successor_found|4|
+|find_successor_bounce|4|
+|find_successor_found|5|
 
 
 h2. Commands description
@@ -79,7 +88,19 @@ This command is used to look for the successor of node N.
 | Header | Host origin | Key (N's key) |
 </pre>
 
-h3. successor_found
+h3. find_successor_bounce
+
+This is a reply for *find_successor*. Send it to original host, with a list
+of nodes preceding the requested key.
+
+<pre>
+| Header | List<8, Node> |
+</pre>
+
+When receiving this data, you should forward find_successor to the closest
+node.
+
+h3. find_successor_found
 
 This is a reply for *find_successor*. Send it to original host, with the
 successor node.
