@@ -13,8 +13,8 @@ namespace hole
       *d = qrand();
   }
 
-  bool
-  Key::operator<(const Key & other) const
+  int
+  Key::Cmp(const Key & other) const
   {
     if (&other == this)
       return 0;
@@ -25,10 +25,10 @@ namespace hole
 
     for (; d1 < d1_end; d1++, d2++)
     {
-      if (*d1 < *d2)
-        return true;
       if (*d1 > *d2)
-        return false;
+        return 1;
+      if (*d1 < *d2)
+        return -1;
     }
     return 0;
   }

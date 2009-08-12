@@ -15,7 +15,7 @@ ADD_LIBRARY(hole
   FingerTable.cc FingerTable.hh
   FreeList.hh FreeList.hxx
   FullTag.cc FullTag.hh
-  Key.cc Key.hh
+  Key.cc Key.hh Key.hxx
   Node.cc Node.hh
   LocalNode.cc LocalNode.hh
   RemoteNode.cc RemoteNode.hh
