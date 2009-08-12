@@ -16,9 +16,7 @@ ADD_LIBRARY(hole
   FreeList.hh FreeList.hxx
   FullTag.cc FullTag.hh
   Key.cc Key.hh
-  Node.cc Node.hh
-  LocalNode.cc LocalNode.hh
-  RemoteNode.cc RemoteNode.hh
+  Node.hh
 
   protocol/Header.cc protocol/Header.hh
 
