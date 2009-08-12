@@ -44,7 +44,7 @@ namespace hole
   operator>>(QDataStream & ds, Key & key)
   {
     if (ds.readRawData((char *)key.data, sizeof (key.data))
-      != sizeof (key.data))
+        != sizeof (key.data))
       ds.setStatus(QDataStream::ReadCorruptData);
     return ds;
   }

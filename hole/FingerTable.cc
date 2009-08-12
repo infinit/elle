@@ -8,10 +8,10 @@ namespace hole
       successors_(),
       predecessor_(&localNode)
   {
-    init();
+    Init();
   }
 
-  void FingerTable::init()
+  void FingerTable::Init()
   {
     for (int i = 0; i < 160; i++)
       successors_[i] = &localNode_;

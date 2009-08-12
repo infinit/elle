@@ -87,7 +87,15 @@ namespace hole
   DHT::HandleFindSuccessor(const FullTag & fullTag,
                            const QByteArray & data)
   {
+    protocol::FindSuccessor rq;
+    QDataStream stream(data);
 
+    stream >> rq;
+    if (stream.status() != QDataStream::Ok)
+      return; // corrupted data
+
+    if (localNode_.key_ < rq.key && rq.key <= fingerTable_.Successor().key_)
+      ;
   }
 
   DHTRequest *

@@ -13,13 +13,13 @@ namespace hole
     ~FingerTable();
 
     /** initialize the finger table by filling it with the local node */
-    void init();
+    void Init();
     /** return you predecessor, it be you if you're alone */
-    inline Node & predecessor();
+    inline Node & Predecessor();
     /** return you predecessor, it be you if you're alone */
-    inline Node & successor();
-    /** return at index. -1 returns you predecessor, and 0 is the local node */
-    inline Node & operator[] (int index);
+    inline Node & Successor();
+    /** return the node at index. Starts at 0. */
+    inline Node & operator[](int index);
 
   protected:
     LocalNode & localNode_;
@@ -27,5 +27,7 @@ namespace hole
     Node *      predecessor_;
   };
 }
+
+# include "hole/FingerTable.hxx"
 
 #endif /* !HOLE_FINGERTABLE_HH */
