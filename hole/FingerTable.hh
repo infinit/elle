@@ -9,7 +9,7 @@ namespace hole
   class FingerTable
   {
   public:
-    FingerTable(LocalNode & localNode);
+    FingerTable(Node & localNode);
     ~FingerTable();
 
     /** initialize the finger table by filling it with the local node */
@@ -22,9 +22,9 @@ namespace hole
     inline Node & operator[](int index);
 
   protected:
-    LocalNode & localNode_;
-    Node *      successors_[160];
-    Node *      predecessor_;
+    Node & localNode_;
+    Node * successors_[160];
+    Node * predecessor_;
   };
 }
 

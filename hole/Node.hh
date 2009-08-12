@@ -5,7 +5,7 @@
 
 # include "hole/Key.hh"
 # include "hole/FreeList.hh"
-# include "hole/network/Destination.hh"
+# include "hole/network/Location.hh"
 
 namespace hole
 {

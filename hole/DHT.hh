@@ -4,9 +4,9 @@
 # include <QObject>
 # include <QUdpSocket>
 
+# include "hole/Node.hh"
 # include "hole/FingerTable.hh"
 # include "hole/FullTag.hh"
-# include "hole/LocalNode.hh"
 # include "hole/protocol/Header.hh"
 
 namespace hole
@@ -71,7 +71,7 @@ namespace hole
     typedef QMap<FullTag, DHTRequest *> Requests_t;
     typedef QMap<protocol::Tag, DHTJoinRequest *> JoinRequests_t;
 
-    LocalNode      localNode_;
+    Node           localNode_;
     FingerTable    fingerTable_;
     QUdpSocket *   socket_;
     quint16        port_;

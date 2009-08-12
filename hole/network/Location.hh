@@ -2,6 +2,7 @@
 # define HOLE_NETWORK_LOCATION_HH
 
 # include <stdint.h>
+# include <QHostAddress>
 
 namespace hole
 {
@@ -19,6 +20,8 @@ namespace hole
         IPv6,
       };
 
+      inline void ToQHostAddress(QHostAddress * address);
+
       Addr     addr;
       AddrType type;
     };
@@ -30,5 +33,7 @@ namespace hole
     };
   }
 }
+
+# include "hole/network/Location.hxx"
 
 #endif /* !HOLE_NETWORK_LOCATION_HH */

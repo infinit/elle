@@ -4,9 +4,7 @@ QT4_WRAP_CPP(Hole_MOCS
   DHT.hh
   DHTRequest.hh
   DHTJoinRequest.hh
-  Node.hh
-  LocalNode.hh
-  RemoteNode.hh)
+  )
 
 ADD_LIBRARY(hole
   DHT.cc DHT.hh

@@ -1,9 +1,9 @@
-#include "hole/LocalNode.hh"
+#include "hole/Node.hh"
 #include "hole/FingerTable.hh"
 
 namespace hole
 {
-  FingerTable::FingerTable(LocalNode & localNode)
+  FingerTable::FingerTable(Node & localNode)
     : localNode_(localNode),
       successors_(),
       predecessor_(&localNode)

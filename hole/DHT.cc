@@ -11,7 +11,7 @@ namespace hole
 {
   DHT::DHT(QObject * p)
     : QObject(p),
-      localNode_(*this),
+      localNode_(),
       fingerTable_(localNode_),
       socket_(new QUdpSocket(this)),
       port_(64626),
@@ -94,7 +94,7 @@ namespace hole
     if (stream.status() != QDataStream::Ok)
       return; // corrupted data
 
-    if (localNode_.key_ < rq.key && rq.key <= fingerTable_.Successor().key_)
+    if (localNode_.key < rq.key && rq.key <= fingerTable_.Successor().key)
       ;
   }
 
@@ -111,7 +111,10 @@ namespace hole
     packet.tag = request->tag_;
     packet.length = 0;
     stream << packet;
-    socket_->writeDatagram(data, node->Address(), node->Port());
+
+    QHostAddress address;
+    node->location.address.ToQHostAddress(&address);
+    socket_->writeDatagram(data, address, node->location.port);
     return request;
   }
 

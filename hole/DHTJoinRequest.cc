@@ -24,7 +24,7 @@ namespace hole
     cmd.header.id = protocol::Header::FindSuccessor;
     cmd.header.tag = tag_;
     cmd.header.length = cmd.Length();
-    cmd.key = dht_.localNode_.key_;
+    cmd.key = dht_.localNode_.key;
 
     stream << cmd;
     dht_.socket_->writeDatagram(data, address_, port_);
