@@ -4,9 +4,10 @@
 # include <QObject>
 # include <QUdpSocket>
 
+# include "hole/FingerTable.hh"
+# include "hole/FullTag.hh"
 # include "hole/LocalNode.hh"
 # include "hole/protocol/Header.hh"
-# include "hole/FullTag.hh"
 
 namespace hole
 {
@@ -61,6 +62,9 @@ namespace hole
                        protocol::CmdId    cmdId,
                        const FullTag &    fullTag);
 
+    void HandleFindSuccessor(const FullTag & fullTag,
+                             const QByteArray & data);
+
     /** Used to reply to Ping. \sa Ping(const Key &) */
     void SendPong(const FullTag & fullTag);
 
@@ -68,9 +72,8 @@ namespace hole
     typedef QMap<protocol::Tag, DHTJoinRequest *> JoinRequests_t;
 
     LocalNode      localNode_;
+    FingerTable    fingerTable_;
     QUdpSocket *   socket_;
-    Node *         successors_[160];
-    Node *         predecessor_;
     quint16        port_;
     Requests_t     requests_;
     JoinRequests_t joinRequests_;

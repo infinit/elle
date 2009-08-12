@@ -12,9 +12,8 @@ namespace hole
   DHT::DHT(QObject * p)
     : QObject(p),
       localNode_(*this),
+      fingerTable_(localNode_),
       socket_(new QUdpSocket(this)),
-      successors_(),
-      predecessor_(),
       port_(64626),
       requests_(),
       joinRequests_()
@@ -24,9 +23,6 @@ namespace hole
 
   DHT::~DHT()
   {
-    for (int i = 0; i < 160; i++)
-      delete successors_[i];
-    delete predecessor_;
   }
 
   void
@@ -77,12 +73,21 @@ namespace hole
       return;
     case protocol::Header::FindSuccessor:
       return;
-    case protocol::Header::SuccessorFound:
+    case protocol::Header::FindSuccessorBounce:
+      return;
+    case protocol::Header::FindSuccessorFound:
       JoinRequests_t::Iterator it = joinRequests_.find(fullTag.tag);
       if (it != joinRequests_.end())
         it.value()->Received(data);
       return;
     }
+  }
+
+  void
+  DHT::HandleFindSuccessor(const FullTag & fullTag,
+                           const QByteArray & data)
+  {
+
   }
 
   DHTRequest *

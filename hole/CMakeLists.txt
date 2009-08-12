@@ -12,6 +12,7 @@ ADD_LIBRARY(hole
   DHT.cc DHT.hh
   DHTRequest.cc DHTRequest.hh
   DHTJoinRequest.cc DHTJoinRequest.hh
+  FingerTable.cc FingerTable.hh
   FreeList.hh FreeList.hxx
   FullTag.cc FullTag.hh
   Key.cc Key.hh
