@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/File.cc
 //
 // created       julien quintard   [sat aug  1 21:11:57 2009]
-// updated       julien quintard   [thu aug  6 00:05:54 2009]
+// updated       julien quintard   [tue aug 11 00:57:15 2009]
 //
 
 //
@@ -29,11 +29,11 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		File::Create(etoile::core::File&	file,
+    Status		File::Create(etoile::core::Object&	file,
 				     const elle::crypto::KeyPair& user)
     {
       // create the file.
-      if (file.Create(user) == StatusError)
+      if (file.Create(ComponentFile, user) == StatusError)
 	escape("unable to create the file object");
 
       leave();
@@ -42,14 +42,16 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		File::Destroy(etoile::core::File&	file)
+    Status		File::Destroy(etoile::core::Object&	file)
     {
+      Address		address;
+
       // seal the object to obtain its address.
-      if (file.Seal() == StatusError)
+      if (file.Self(address) == StatusError)
 	escape("unable to seal the file");
 
       // destroy the object block.
-      if (Hole::Destroy(file.address) == StatusError)
+      if (Hole::Destroy(address) == StatusError)
 	escape("unable to destroy the file object block");
 
       leave();
@@ -58,14 +60,16 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		File::Store(etoile::core::File&		file)
+    Status		File::Store(etoile::core::Object&		file)
     {
+      Address		address;
+
       // seal the file.
-      if (file.Seal() == StatusError)
+      if (file.Self(address) == StatusError)
 	escape("unable to seal the file");
 
       // store the block.
-      if (Hole::Put(file.address, file) == StatusError)
+      if (Hole::Put(address, file) == StatusError)
 	escape("unable to store the file block");
 
       leave();
@@ -74,7 +78,7 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		File::Read(const etoile::core::File&	file,
+    Status		File::Read(const etoile::core::Object&	file,
 				   const Natural64		offset,
 				   Byte*			buffer,
 				   Natural64&			size,
@@ -84,10 +88,10 @@ namespace pig
 
       // check if there is a linked data. if not, the default local
       // data object is used.
-      if (file.data.references != Address::Null)
+      if (file.data.contents.type != Contents::TypeNone)
 	{
 	  // load the data.
-	  if (Hole::Get(file.data.references, data) == StatusError)
+	  if (Hole::Get(file.data.contents.address, data) == StatusError)
 	    escape("unable to load the data");
 	}
 
@@ -101,20 +105,21 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		File::Write(etoile::core::File&		file,
+    Status		File::Write(etoile::core::Object&		file,
 				    const Natural64		offset,
 				    const Byte*			buffer,
 				    const Natural64		size,
 				    const PrivateKey&		k)
     {
       Data		data;
+      Address		address;
 
       // check if there is a linked data. if not, the default local
       // data object is used.
-      if (file.data.references != Address::Null)
+      if (file.data.contents.type != Contents::TypeNone)
 	{
 	  // load the data.
-	  if (Hole::Get(file.data.references, data) == StatusError)
+	  if (Hole::Get(file.data.contents.address, data) == StatusError)
 	    escape("unable to load the data");
 	}
 
@@ -123,19 +128,25 @@ namespace pig
 	escape("unable to write the data");
 
       // seal the data.
-      if (data.Seal() == StatusError)
+      if (data.Self(address) == StatusError)
 	escape("unable to seal the data");
 
       // store the new data.
-      if (Hole::Put(data.address, data) == StatusError)
+      if (Hole::Put(address, data) == StatusError)
 	escape("unable to store the data");
 
+      // XXX
+      Contents		contents;
+
+      contents.Create(Contents::TypeRaw);
+      XXX
+
       // set the new data.
-      if (file.Update(k, data.address) == StatusError)
+      if (file.Update(k, address) == StatusError)
 	escape("unable to update the file");
 
       // update the size.
-      file.meta.status.size = data.region.size;
+      // XXX file.meta.status.size = data.region.size;
 
       leave();
     }
@@ -143,7 +154,7 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		File::Adjust(etoile::core::File&	file,
+    Status		File::Adjust(etoile::core::Object&	file,
 				     const Natural64		size,
 				     const PrivateKey&		k)
     {
@@ -152,30 +163,32 @@ namespace pig
 
       // check if there is a linked data. if not, the default local
       // data object is used.
-      if (file.data.references != Address::Null)
+      if (file.data.contents.type != Contents::Address::Null)
 	{
 	  // load the data.
-	  if (Hole::Get(file.data.references, data) == StatusError)
+	  if (Hole::Get(file.data.contents.address, data) == StatusError)
 	    escape("unable to load the data");
 	}
 
       // check the size.
       if (size != 0)
 	{
+	  Address	a;
+
 	  // adjust the data.
 	  if (data.Adjust(size) == StatusError)
 	    escape("unable to adjust the data size");
 
 	  // seal the data.
-	  if (data.Seal() == StatusError)
+	  if (data.Self(a) == StatusError)
 	    escape("unable to seal the data");
 
 	  // store the new data.
-	  if (Hole::Put(data.address, data) == StatusError)
+	  if (Hole::Put(a, data) == StatusError)
 	    escape("unable to store the data");
 
 	  // set the address.
-	  address = data.address;
+	  address = a;
 	}
       else
 	{
@@ -188,7 +201,7 @@ namespace pig
 	escape("unable to update the file");
 
       // update the size.
-      file.meta.status.size = size;
+      // XXX file.meta.status.size = size;
 
       leave();
     }

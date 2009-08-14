@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/system/fuse/Interface.cc
 //
 // created       julien quintard   [fri jul 31 22:47:18 2009]
-// updated       julien quintard   [thu aug  6 00:15:09 2009]
+// updated       julien quintard   [wed aug 12 14:31:38 2009]
 //
 
 //
@@ -56,7 +56,6 @@ namespace pig
     ///
     /// these methods represent the FUSE interface.
     ///
-
     int			Interface::getattr(const char*		path,
 					   struct stat*		stat)
     {
@@ -82,20 +81,20 @@ namespace pig
 
       // XXX[here, for the perms, the others perms should be set according
       //     to the presence of delegates/consumers]
-      switch (object.meta.status.type)
+      switch (object.meta.status.component)
 	{
-	case etoile::core::Object::TypeFile:
+	case ComponentFile:
 	  {
 	    // XXX[here 0600 was changed in 0700 to give all files the X bit]
 	    stat->st_mode = S_IFREG | 0700;
 	    break;
 	  }
-	case etoile::core::Object::TypeDirectory:
+	case ComponentDirectory:
 	  {
 	    stat->st_mode = S_IFDIR | 0700;
 	    break;
 	  }
-	case etoile::core::Object::TypeLink:
+	case ComponentLink:
 	  {
 	    stat->st_mode = S_IFLNK | 0700;
 	    break;
@@ -109,7 +108,7 @@ namespace pig
       stat->st_uid = getuid();
       stat->st_gid = getgid();
 
-      stat->st_size = object.meta.status.size;
+      // XXX stat->st_size = object.meta.status.size;
 
       // XXX[the dates must be properly converted and filled]
       stat->st_atime = time(NULL);
@@ -182,11 +181,12 @@ namespace pig
 					 mode_t			mode,
 					 dev_t			dev)
     {
-      etoile::core::Directory	parent;
-      etoile::core::File	child;
+      etoile::core::Object	parent;
+      etoile::core::Object	child;
       Address			address;
       String			directory;
       String			name;
+      Address			self;
 
       printf("[XXX] %s(%s, 0x%x, %u)\n",
 	     __FUNCTION__,
@@ -214,8 +214,12 @@ namespace pig
       if (File::Store(child) == StatusError)
 	issue(ECANCELED);
 
+      // retrieve the address.
+      if (child.Self(self) == StatusError)
+	issue(ECANCELED);
+
       // add an entry in the parent directory.
-      if (Directory::Add(parent, name, child.address,
+      if (Directory::Add(parent, name, self,
 			 Interface::User.k) == StatusError)
 	issue(ECANCELED);
 
@@ -244,7 +248,7 @@ namespace pig
 					off_t			offset,
 					struct fuse_file_info*	info)
     {
-      etoile::core::File	file;
+      etoile::core::Object	file;
       Address			address;
       Natural64			length = size;
 
@@ -276,7 +280,7 @@ namespace pig
 					 off_t			offset,
 					 struct fuse_file_info*	info)
     {
-      etoile::core::File	file;
+      etoile::core::Object	file;
       Address			address;
 
       printf("[XXX] %s(%s, 0x%x, %u, %u, 0x%x)\n",
@@ -308,7 +312,7 @@ namespace pig
     int			Interface::truncate(const char*		path,
 					    off_t		size)
     {
-      etoile::core::File	file;
+      etoile::core::Object	file;
       Address			address;
 
       printf("[XXX] %s(%s, %u)\n",
@@ -352,8 +356,8 @@ namespace pig
 
     int			Interface::unlink(const char*		path)
     {
-      etoile::core::Directory	parent;
-      etoile::core::File	child;
+      etoile::core::Object	parent;
+      etoile::core::Object	child;
       Address			address;
       String			directory;
       String			name;
@@ -403,8 +407,8 @@ namespace pig
     int			Interface::rename(const char*		source,
 					  const char*		target)
     {
-      etoile::core::Directory	o_source;
-      etoile::core::Directory	o_target;
+      etoile::core::Object	o_source;
+      etoile::core::Object	o_target;
       etoile::core::Object	o_object;
       Address			a_source;
       Address			a_target;
@@ -501,11 +505,12 @@ namespace pig
     int			Interface::symlink(const char*		target,
 					   const char*		source)
     {
-      etoile::core::Link	link;
-      etoile::core::Directory	directory;
+      etoile::core::Object	link;
+      etoile::core::Object	directory;
       String			base;
       String			name;
       Address			address;
+      Address			self;
 
       printf("[XXX] %s(%s, %s)\n",
 	     __FUNCTION__,
@@ -535,8 +540,12 @@ namespace pig
       if (Link::Store(link) == StatusError)
 	issue(ECANCELED);
 
+      // retrieve the address.
+      if (link.Self(self) == StatusError)
+	issue(ECANCELED);
+
       // add an entry in the parent directory.
-      if (Directory::Add(directory, name, link.address,
+      if (Directory::Add(directory, name, self,
 			 Interface::User.k) == StatusError)
 	issue(ECANCELED);
 
@@ -551,7 +560,7 @@ namespace pig
 					    char*		buffer,
 					    size_t		size)
     {
-      etoile::core::Link	link;
+      etoile::core::Object	link;
       Address			address;
       String			directory;
       String			name;
@@ -586,11 +595,12 @@ namespace pig
     int			Interface::mkdir(const char*		path,
 					 mode_t			mode)
     {
-      etoile::core::Directory	parent;
-      etoile::core::Directory	child;
+      etoile::core::Object	parent;
+      etoile::core::Object	child;
       Address			address;
       String			directory;
       String			name;
+      Address			self;
 
       printf("[XXX] %s(%s, 0x%x)\n",
 	     __FUNCTION__,
@@ -618,8 +628,12 @@ namespace pig
       if (Directory::Store(child) == StatusError)
 	issue(ECANCELED);
 
+      // retrieve the address.
+      if (child.Self(self) == StatusError)
+	issue(ECANCELED);
+
       // add an entry in the parent directory.
-      if (Directory::Add(parent, name, child.address,
+      if (Directory::Add(parent, name, self,
 			 Interface::User.k) == StatusError)
 	issue(ECANCELED);
 
@@ -636,7 +650,7 @@ namespace pig
 					   off_t		offset,
 					   struct fuse_file_info* info)
     {
-      etoile::core::Directory		directory;
+      etoile::core::Object		directory;
       etoile::core::Catalog		catalog;
       etoile::core::Catalog::Iterator	iterator;
       Address				address;
@@ -659,11 +673,11 @@ namespace pig
       filler(buffer, "..", NULL, 0);
 
       // if no catalog, just return since there is no entry.
-      if (directory.data.references == Address::Null)
+      if (directory.data.contents.type == Contents::TypeNone)
 	return (0);
 
       // load the catalog.
-      if (Hole::Get(directory.data.references, catalog) == StatusError)
+      if (Hole::Get(directory.data.contents.address, catalog) == StatusError)
 	issue(ENOENT);
 
       // XXX[this implementation does not handle offset but definitely should!]
@@ -684,8 +698,8 @@ namespace pig
 
     int			Interface::rmdir(const char*		path)
     {
-      etoile::core::Directory	parent;
-      etoile::core::Directory	child;
+      etoile::core::Object	parent;
+      etoile::core::Object	child;
       Address			address;
       String			directory;
       String			name;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Link.hh
 //
 // created       julien quintard   [sat aug  1 21:06:13 2009]
-// updated       julien quintard   [tue aug  4 21:40:22 2009]
+// updated       julien quintard   [sun aug  9 14:19:50 2009]
 //
 
 #ifndef PIG_UTIL_LINK_HH
@@ -43,14 +43,14 @@ namespace pig
       //
       // static methods
       //
-      static Status	Create(etoile::core::Link&,
+      static Status	Create(etoile::core::Object&,
 			       const elle::crypto::KeyPair&);
-      static Status	Store(etoile::core::Link&);
+      static Status	Store(etoile::core::Object&);
 
-      static Status	Set(etoile::core::Link&,
+      static Status	Set(etoile::core::Object&,
 			    const String&,
 			    const elle::crypto::PrivateKey&);
-      static Status	Get(const etoile::core::Link&,
+      static Status	Get(const etoile::core::Object&,
 			    String&);
     };
 

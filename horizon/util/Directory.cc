@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Directory.cc
 //
 // created       julien quintard   [sat aug  1 21:11:57 2009]
-// updated       julien quintard   [wed aug  5 22:50:36 2009]
+// updated       julien quintard   [tue aug 11 00:55:10 2009]
 //
 
 //
@@ -29,11 +29,11 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Directory::Create(etoile::core::Directory& directory,
+    Status		Directory::Create(etoile::core::Object& directory,
 					  const elle::crypto::KeyPair& user)
     {
       // create the directory.
-      if (directory.Create(user) == StatusError)
+      if (directory.Create(ComponentDirectory, user) == StatusError)
 	escape("unable to create the directory object");
 
       leave();
@@ -42,14 +42,16 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Directory::Destroy(etoile::core::Directory& directory)
+    Status		Directory::Destroy(etoile::core::Object& directory)
     {
-      // seal the object to obtain its address.
-      if (directory.Seal() == StatusError)
+      Address		address;
+
+      // retrieve the directory address.
+      if (directory.Self(address) == StatusError)
 	escape("unable to seal the directory");
 
       // destroy the object block.
-      if (Hole::Destroy(directory.address) == StatusError)
+      if (Hole::Destroy(address) == StatusError)
 	escape("unable to destroy the directory object block");
 
       leave();
@@ -58,14 +60,16 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Directory::Store(etoile::core::Directory& directory)
+    Status		Directory::Store(etoile::core::Object& directory)
     {
-      // seal the directory.
-      if (directory.Seal() == StatusError)
+      Address		address;
+
+      // retrieve the directory address.
+      if (directory.Self(address) == StatusError)
 	escape("unable to seal the directory");
 
       // store the block.
-      if (Hole::Put(directory.address, directory) == StatusError)
+      if (Hole::Put(address, directory) == StatusError)
 	escape("unable to store the directory block");
 
       leave();
@@ -75,20 +79,21 @@ namespace pig
     /// XXX
     ///
     Status		Directory::Size(const
-					  etoile::core::Directory& directory,
+					  etoile::core::Object& directory,
 					Natural32&		size)
     {
       Catalog			catalog;
 
       // check if there is a linked catalog.
-      if (directory.data.references == Address::Null)
+      if (directory.data.contents.type == Contents::TypeNone)
 	{
 	  size = 0;
 	}
       else
 	{
 	  // load the catalog.
-	  if (Hole::Get(directory.data.references, catalog) == StatusError)
+	  if (Hole::Get(directory.data.contents.address,
+			catalog) == StatusError)
 	    escape("unable to load the catalog");
 
 	  // retrieve the number of entries.
@@ -102,19 +107,21 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Directory::Add(etoile::core::Directory&	directory,
+    Status		Directory::Add(etoile::core::Object&	directory,
 				       const String&		name,
 				       const Address&		address,
 				       const PrivateKey&	k)
     {
       Catalog			catalog;
+      Address			a;
 
       // check if there is a linked catalog. if not, the default local
       // catalog is used.
-      if (directory.data.references != Address::Null)
+      if (directory.data.contents.type != Contents::TypeNone)
 	{
 	  // load the catalog.
-	  if (Hole::Get(directory.data.references, catalog) == StatusError)
+	  if (Hole::Get(directory.data.contents.address,
+			catalog) == StatusError)
 	    escape("unable to load the catalog");
 	}
 
@@ -122,21 +129,29 @@ namespace pig
       if (catalog.Add(name, address) == StatusError)
 	escape("unable to add the entry in the catalog");
 
-      // seal the catalog.
-      if (catalog.Seal() == StatusError)
+      printf("XXX\n");
+
+      catalog.Dump();
+
+      // compute the address.
+      if (catalog.Self(a) == StatusError)
 	escape("unable to seal the catalog");
 
+      printf("XXX\n");
+
       // store the new catalog.
-      if (Hole::Put(catalog.address, catalog) == StatusError)
+      if (Hole::Put(a, catalog) == StatusError)
 	escape("unable to store the catalog");
 
+      printf("XXX\n");
+
       // set the new catalog.
-      if (directory.Update(k, catalog.address) == StatusError)
+      if (directory.Update(k, a) == StatusError)
 	escape("unable to update the directory");
 
       // XXX[wrong but just to set a size]
       // set a directory size.
-      directory.meta.status.size += 1;
+      // XXX directory.meta.status.size += 1;
 
       leave();
     }
@@ -144,7 +159,7 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Directory::Remove(etoile::core::Directory& directory,
+    Status		Directory::Remove(etoile::core::Object& directory,
 					  const String&		name,
 					  const PrivateKey&	k)
     {
@@ -153,11 +168,12 @@ namespace pig
       Address			address;
 
       // check if there is a linked catalog.
-      if (directory.data.references == Address::Null)
+      if (directory.data.contents.type == Contents::TypeNone)
 	escape("no catalog found");
 
       // load the catalog.
-      if (Hole::Get(directory.data.references, catalog) == StatusError)
+      if (Hole::Get(directory.data.contents.address,
+		    catalog) == StatusError)
 	escape("unable to load the catalog");
 
       // remove the entry from the catalog.
@@ -170,17 +186,19 @@ namespace pig
 
       if (size != 0)
 	{
+	  Address		self;
+
 	  // seal the catalog.
-	  if (catalog.Seal() == StatusError)
+	  if (catalog.Self(self) == StatusError)
 	    escape("unable to seal the catalog");
 
 	  // XXX[though in the real DHT, CHBs are not destroyed but expire]
 	  // store the new catalog.
-	  if (Hole::Put(catalog.address, catalog) == StatusError)
+	  if (Hole::Put(self, catalog) == StatusError)
 	    escape("unable to store the catalog");
 
 	  // set the address to the catalog's.
-	  address = catalog.address;
+	  address = self;
 	}
       else
 	{
@@ -189,12 +207,12 @@ namespace pig
 	}
 
       // set the new catalog.
-      if (directory.Update(k, catalog.address) == StatusError)
+      if (directory.Update(k, address) == StatusError)
 	escape("unable to update the directory");
 
       // XXX[wrong but just to set a size]
       // set a directory size.
-      directory.meta.status.size -= 1;
+      // XXX directory.meta.status.size -= 1;
 
       leave();
     }
@@ -203,18 +221,19 @@ namespace pig
     /// XXX
     ///
     Status		Directory::Lookup(const
-					    etoile::core::Directory& directory,
+					    etoile::core::Object& directory,
 					  const String&		name,
 					  Address&		address)
     {
       Catalog			catalog;
 
       // check if there is a linked catalog.
-      if (directory.data.references == Address::Null)
+      if (directory.data.contents.type == Contents::TypeNone)
 	escape("no directory entry found");
 
       // load the catalog.
-      if (Hole::Get(directory.data.references, catalog) == StatusError)
+      if (Hole::Get(directory.data.contents.address,
+		    catalog) == StatusError)
 	escape("unable to load the catalog");
 
       // lookup in the catalog.

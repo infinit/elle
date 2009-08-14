@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Link.cc
 //
 // created       julien quintard   [sat aug  1 21:11:57 2009]
-// updated       julien quintard   [wed aug  5 22:50:03 2009]
+// updated       julien quintard   [tue aug 11 00:55:21 2009]
 //
 
 //
@@ -29,11 +29,11 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Link::Create(etoile::core::Link&	link,
+    Status		Link::Create(etoile::core::Object&	link,
 				     const elle::crypto::KeyPair& user)
     {
       // create the link.
-      if (link.Create(user) == StatusError)
+      if (link.Create(ComponentLink, user) == StatusError)
 	escape("unable to create the link object");
 
       leave();
@@ -42,14 +42,16 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Link::Store(etoile::core::Link&		link)
+    Status		Link::Store(etoile::core::Object&		link)
     {
+      Address		address;
+
       // seal the link.
-      if (link.Seal() == StatusError)
+      if (link.Self(address) == StatusError)
 	escape("unable to seal the link");
 
       // store the block.
-      if (Hole::Put(link.address, link) == StatusError)
+      if (Hole::Put(address, link) == StatusError)
 	escape("unable to store the link block");
 
       leave();
@@ -58,10 +60,11 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Link::Set(etoile::core::Link&		link,
+    Status		Link::Set(etoile::core::Object&		link,
 				  const String&			target,
 				  const PrivateKey&		k)
     {
+      Address		address;
       Data		data;
 
       // XXX[would be better to archive it properly]
@@ -73,19 +76,19 @@ namespace pig
 	escape("unable to write the data");
 
       // seal the data.
-      if (data.Seal() == StatusError)
+      if (data.Self(address) == StatusError)
 	escape("unable to seal the data");
 
       // store the data.
-      if (Hole::Put(data.address, data) == StatusError)
+      if (Hole::Put(address, data) == StatusError)
 	escape("unable to store the data block");
 
       // set the new data.
-      if (link.Update(k, data.address) == StatusError)
+      if (link.Update(k, address) == StatusError)
 	escape("unable to update the link");
 
       // update the size.
-      link.meta.status.size = target.length();
+      // XXX link.meta.status.size = target.length();
 
       leave();
     }
@@ -93,17 +96,17 @@ namespace pig
     ///
     /// XXX
     ///
-    Status		Link::Get(const etoile::core::Link&	link,
+    Status		Link::Get(const etoile::core::Object&	link,
 				  String&			target)
     {
       Data		data;
 
       // check if there is a linked data.
-      if (link.data.references == Address::Null)
+      if (link.data.contents.type == Contents::TypeNone)
 	leave();
 
       // get the block.
-      if (Hole::Get(link.data.references, data) == StatusError)
+      if (Hole::Get(link.data.contents.address, data) == StatusError)
 	escape("unable to load the data");
 
       // store the target in the variable.

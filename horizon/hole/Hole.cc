@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  2 18:32:19 2009]
-// updated       julien quintard   [thu aug  6 00:06:18 2009]
+// updated       julien quintard   [mon aug 10 21:29:43 2009]
 //
 
 //
@@ -115,7 +115,7 @@ namespace pig
       if (archive.Extract(block) == StatusError)
 	escape("unable to extract the given block");
 
-      if (block.Validate(address) == StatusTrue)
+      if (block.Validate(address) != StatusTrue)
 	escape("unable to validate the retrieved block");
 
       leave();

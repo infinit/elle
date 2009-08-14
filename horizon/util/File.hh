@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/File.hh
 //
 // created       julien quintard   [sat aug  1 21:06:13 2009]
-// updated       julien quintard   [wed aug  5 22:08:17 2009]
+// updated       julien quintard   [sun aug  9 14:23:20 2009]
 //
 
 #ifndef PIG_UTIL_FILE_HH
@@ -47,22 +47,22 @@ namespace pig
       //
       // static methods
       //
-      static Status	Create(etoile::core::File&,
+      static Status	Create(etoile::core::Object&,
 			       const elle::crypto::KeyPair&);
-      static Status	Destroy(etoile::core::File&);
-      static Status	Store(etoile::core::File&);
+      static Status	Destroy(etoile::core::Object&);
+      static Status	Store(etoile::core::Object&);
 
-      static Status	Read(const etoile::core::File&,
+      static Status	Read(const etoile::core::Object&,
 			     const Natural64,
 			     Byte*,
 			     Natural64&,
 			     const PrivateKey&);
-      static Status	Write(etoile::core::File&,
+      static Status	Write(etoile::core::Object&,
 			      const Natural64,
 			      const Byte*,
 			      const Natural64,
 			      const PrivateKey&);
-      static Status	Adjust(etoile::core::File&,
+      static Status	Adjust(etoile::core::Object&,
 			       const Natural64,
 			       const PrivateKey&);
 

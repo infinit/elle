@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/util/Path.cc
 //
 // created       julien quintard   [sat aug  1 21:27:28 2009]
-// updated       julien quintard   [mon aug  3 20:41:38 2009]
+// updated       julien quintard   [sun aug  9 14:20:57 2009]
 //
 
 //
@@ -60,7 +60,7 @@ namespace pig
 	       iterator != segments.end();
 	       iterator++)
 	    {
-	      etoile::core::Directory	directory;
+	      etoile::core::Object	directory;
 	      String			segment = *iterator;
 
 	      // load the segment directory.
