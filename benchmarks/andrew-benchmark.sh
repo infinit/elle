@@ -56,7 +56,8 @@ Compile()
   cd "${to}/"
 
   time								\
-    (./config && sed -ri "s/^AR=(.*)$/AR=echo \1/" Makefile && sed -ri "s/^RANLIB=(.*)$/RANLIB=echo \1/" Makefile && make) >andrew-benchmark.log
+    (make initialize && make && make build install) >andrew-benchmark.log
+#    (./config && sed -ri "s/^AR=(.*)$/AR=echo \1/" Makefile && sed -ri "s/^RANLIB=(.*)$/RANLIB=echo \1/" Makefile && make) >andrew-benchmark.log
 }
 
 if [ ${#} -ne 2 ] ; then

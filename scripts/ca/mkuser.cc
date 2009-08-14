@@ -62,26 +62,19 @@ int			hole_put(const char*			id,
 
 void			usage()
 {
-  printf("usage: mkfs.infinit [path-to-device]\n");
+  printf("usage: mkuser [device] [username]\n");
 }
 
-int			mkfs(int				argc,
-			     char*				argv[])
+int			mkuser(int				argc,
+			       char*				argv[])
 {
-  if (argc != 2)
+  if (argc != 3)
     {
       usage();
       exit(EXIT_FAILURE);
     }
 
   g_device = argv[1];
-
-  /*
-   * create the device directory.
-   */
-  {
-    mkdir(g_device, 0700);
-  }
 
   /*
    * initialize the libraries.
@@ -91,92 +84,37 @@ int			mkfs(int				argc,
   }
 
   /*
-   * create the directory.
+   * create the keypair.
    */
   KeyPair		owner;
-  Object		directory;
-  Address		self;
   {
     // generate owner keypair
     if (owner.Generate() == StatusError)
       return (-1);
-
-    // create directory object.
-    if (directory.Create(ComponentDirectory, owner) == StatusError)
-      return (-1);
-
-    if (directory.Self(self) == StatusError)
-      return (-1);
   }
 
   /*
-   * store the whole.
+   * store the keypair.
    */
   {
-    String		identity;
+    Archive		archive;
 
-    Archive		a_directory;
+    char		name[128];
 
     // serialize the directory object.
-    if (a_directory.Create() == StatusError)
+    if (archive.Create() == StatusError)
       return (-1);
 
-    if (a_directory.Serialize(directory) == StatusError)
+    if (archive.Serialize(owner) == StatusError)
       return (-1);
 
-    // store the directory.
-    if (self.Identify(identity) == StatusError)
-      return (-1);
+    // compute the name.
+    sprintf(name, ".%s", argv[2]);
 
-    if (hole_put(identity.c_str(),
-		 (void*)a_directory.contents,
-		 a_directory.size) != 0)
-      return (-errno);
-  }
-
-  /*
-   * XXX[hack for bootstrapping the system]
-   *
-   * store the directory into .root
-   */
-  {
-    Archive		a_address;
-
-    // create the archive.
-    if (a_address.Create() == StatusError)
-      return (-1);
-
-    // serialize the directory address.
-    if (a_address.Serialize(self) == StatusError)
-      return (-1);
-
-    // store it into a file.
-    if (hole_put(".root",
-		 (void*)a_address.contents,
-		 a_address.size) != 0)
-      return (-errno);
-  }
-
-  /*
-   * XXX[hack for bootstrapping the user]
-   *
-   * store the user's key pair into .administrator
-   */
-  {
-    Archive		a_keypair;
-
-    // create the archive.
-    if (a_keypair.Create() == StatusError)
-      return (-1);
-
-    // serialize the owner's keypair.
-    if (a_keypair.Serialize(owner) == StatusError)
-      return (-1);
-
-    // store the archive.
-    if (hole_put(".administrator",
-		 (void*)a_keypair.contents,
-		 a_keypair.size) != 0)
+    // store the keypair.
+    if (hole_put(name,
+		 (void*)archive.contents,
+		 archive.size) != 0)
       return (-errno);
   }
 
@@ -188,7 +126,7 @@ int			main(int				argc,
 {
   int			status;
 
-  status = mkfs(argc, argv);
+  status = mkuser(argc, argv);
 
   expose();
 
