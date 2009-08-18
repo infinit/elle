@@ -16,10 +16,13 @@
  */
 
 #include <elle/Elle.hh>
+
 #include <etoile/core/Core.hh>
+#include <etoile/hole/Hole.hh>
 
 using namespace elle;
 
+using namespace etoile;
 using namespace etoile::core;
 
 //
@@ -95,16 +98,24 @@ int			mkfs(int				argc,
    */
   KeyPair		owner;
   Object		directory;
-  Address		self;
+  hole::Address		self;
   {
     // generate owner keypair
     if (owner.Generate() == StatusError)
       return (-1);
 
     // create directory object.
-    if (directory.Create(ComponentDirectory, owner) == StatusError)
+    if (directory.Create(GenreDirectory, owner.K) == StatusError)
       return (-1);
 
+    // seal the data and meta data.
+    if (directory.Update(owner.k) == StatusError)
+      return (-1);
+
+    if (directory.Administrate(owner.k) == StatusError)
+      return (-1);
+
+    // get the address.
     if (directory.Self(self) == StatusError)
       return (-1);
   }
