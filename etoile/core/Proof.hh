@@ -11,8 +11,8 @@
 // updated       julien quintard   [tue aug  4 13:56:44 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_PROOF_HH
-#define ETOILE_COMPONENTS_PROOF_HH
+#ifndef ETOILE_CORE_PROOF_HH
+#define ETOILE_CORE_PROOF_HH
 
 //
 // ---------- includes --------------------------------------------------------

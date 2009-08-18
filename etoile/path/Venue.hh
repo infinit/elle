@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.hh
 //
 // created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [sat aug  8 17:51:08 2009]
+// updated       julien quintard   [fri aug 14 21:11:55 2009]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH
@@ -21,13 +21,12 @@
 #include <elle/Elle.hh>
 
 #include <etoile/core/Core.hh>
+#include <etoile/hole/Hole.hh>
 
 #include <vector>
 
 namespace etoile
 {
-  using namespace core;
-
   namespace path
   {
 
@@ -48,9 +47,9 @@ namespace etoile
       //
       // types
       //
-      typedef std::vector<Address>	Container;
-      typedef Container::iterator	Iterator;
-      typedef Container::const_iterator	Scoutor;
+      typedef std::vector<hole::Address>	Container;
+      typedef Container::iterator		Iterator;
+      typedef Container::const_iterator		Scoutor;
 
       //
       // methods

@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [mon aug 10 01:04:27 2009]
+// updated       julien quintard   [fri aug 14 21:05:32 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_PUBLICKEYBLOCK_HH
-#define ETOILE_COMPONENTS_PUBLICKEYBLOCK_HH
+#ifndef ETOILE_CORE_PUBLICKEYBLOCK_HH
+#define ETOILE_CORE_PUBLICKEYBLOCK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/Block.hh>
+#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {
@@ -35,7 +35,7 @@ namespace etoile
     /// XXX
     ///
     class PublicKeyBlock:
-      public Block
+      public hole::Block
     {
     public:
       //
@@ -43,8 +43,8 @@ namespace etoile
       //
       Status		Create(const KeyPair&);
 
-      Status		Self(Address&) const;
-      Status		Validate(const Address&) const;
+      Status		Self(hole::Address&) const;
+      Status		Validate(const hole::Address&) const;
 
       //
       // interfaces

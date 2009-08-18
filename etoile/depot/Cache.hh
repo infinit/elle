@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/cache/Cache.hh
+// file          /home/mycure/infinit/etoile/depot/Cache.hh
 //
 // created       julien quintard   [fri jul 31 14:28:15 2009]
-// updated       julien quintard   [tue aug  4 13:59:40 2009]
+// updated       julien quintard   [fri aug 14 21:12:12 2009]
 //
 
 #ifndef ETOILE_CACHE_CACHE_HH
@@ -24,8 +24,6 @@
 
 namespace etoile
 {
-  using namespace core;
-
   namespace cache
   {
 

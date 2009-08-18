@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon aug 10 21:30:16 2009]
+// updated       julien quintard   [fri aug 14 21:02:29 2009]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this method returns the address of the block.
     ///
-    Status		ContentHashBlock::Self(Address&		address)
+    Status		ContentHashBlock::Self(hole::Address&	address)
       const
     {
       // compute the address.
@@ -43,10 +43,11 @@ namespace etoile
     /// this method verifies that the block is valid according to the
     /// given requested address.
     ///
-    Status		ContentHashBlock::Validate(const Address& address)
+    Status		ContentHashBlock::Validate(const
+						     hole::Address& address)
       const
     {
-      Address		self;
+      hole::Address	self;
 
       // retrieve the address of this object.
       if (this->Self(self) == StatusError)

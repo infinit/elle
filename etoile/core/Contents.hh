@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [tue aug 11 00:45:54 2009]
+// updated       julien quintard   [mon aug 17 02:05:44 2009]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HH
@@ -20,8 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/Address.hh>
-#include <etoile/core/Component.hh>
+#include <etoile/hole/Hole.hh>
+
+#include <etoile/core/ContentHashBlock.hh>
 
 namespace etoile
 {
@@ -35,43 +36,18 @@ namespace etoile
     ///
     /// this classes abstracts the data contained in an object.
     ///
-    /// indeed, in some cases, the data is so small that it fits in a single
-    /// blocks. therefore, there is no need for an advanced data structure
-    /// such as a tree. however, in other cases, a simple data structure such
-    /// as a list would be too slow to handle a lot of data.
-    ///
-    /// this class enables objects to use both models according to the
-    /// actual data size. thus, when the data no longer fits in a single block
-    /// a more flexible data structure is created.
-    ///
     class Contents:
-      public Entity,
-      public Dumpable, public Archivable
+      public ContentHashBlock
     {
     public:
       //
-      // enumerations
+      // constructors & destructors
       //
-      enum Type
-	{
-	  TypeNone = 0,
-	  TypeRaw,
-	  TypeSet
-	};
-
-      //
-      // methods
-      //
-      Status		Create(const Type);
+      Contents();
 
       //
       // interfaces
       //
-
-      // entity
-      Contents&		operator=(const Contents&);
-      Boolean		operator==(const Contents&) const;
-      Boolean		operator!=(const Contents&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -83,8 +59,7 @@ namespace etoile
       //
       // attributes
       //
-      Type		type;
-      Address		address;
+      hole::Address	address;
       Natural32		size;
     };
 

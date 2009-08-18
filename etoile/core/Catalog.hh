@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [tue aug  4 14:02:12 2009]
+// updated       julien quintard   [mon aug 17 01:06:40 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_CATALOG_HH
-#define ETOILE_COMPONENTS_CATALOG_HH
+#ifndef ETOILE_CORE_CATALOG_HH
+#define ETOILE_CORE_CATALOG_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/ContentHashBlock.hh>
+#include <etoile/core/Contents.hh>
+
+#include <etoile/hole/Hole.hh>
 
 #include <list>
 
@@ -34,12 +36,25 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class represents the content of a directory.
+    ///
+    /// \todo XXX note that, for now, all the entries are stored in a single
+    /// block until an advanced, multi-block-based, data structure is
+    /// developed.
     ///
     class Catalog:
-      public ContentHashBlock
+      public Contents
     {
     public:
+      //
+      // constants
+      //
+      struct		Index
+      {
+	static const Natural64		First;
+	static const Natural64		Last;
+      };
+
       //
       // structures
       //
@@ -50,7 +65,7 @@ namespace etoile
       struct		Entry
       {
 	String		name;
-	Address		address;
+	hole::Address	address;
       };
 
       //
@@ -59,19 +74,22 @@ namespace etoile
       typedef std::list<Entry*>		Container;
 
       typedef Container::iterator	Iterator;
-      typedef Container::const_iterator	ConstIterator;
+      typedef Container::const_iterator	Scoutor;
 
       //
       // methods
       //
-      Status		Size(Natural32&);
       Status		Add(const String&,
-			    const Address&);
+			    const hole::Address&);
       Status		Remove(const String&);
+      Status		Update(const String&);
+      Status		Rename(const String&,
+			       const String&);
       Status		Lookup(const String&,
-			       Address&);
+			       hole::Address&);
+
       Status		Search(const String&,
-			       Iterator* = NULL);
+			       Catalog::Iterator* = NULL);
 
       //
       // constructors & destructors
@@ -92,7 +110,6 @@ namespace etoile
       //
       // attributes
       //
-
       Container		entries;
     };
 

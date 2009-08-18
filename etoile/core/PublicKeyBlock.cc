@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [mon aug 10 21:27:56 2009]
+// updated       julien quintard   [fri aug 14 21:04:09 2009]
 //
 
 //
@@ -40,7 +40,7 @@ namespace etoile
     ///
     /// this method computes the block's address.
     ///
-    Status		PublicKeyBlock::Self(Address&		address)
+    Status		PublicKeyBlock::Self(hole::Address&	address)
       const
     {
       // compute the address.
@@ -53,10 +53,10 @@ namespace etoile
     ///
     /// this method verifies the block's validity.
     ///
-    Status		PublicKeyBlock::Validate(const Address&	address)
+    Status		PublicKeyBlock::Validate(const hole::Address& address)
       const
     {
-      Address		self;
+      hole::Address	self;
 
       // retrieve the address of this object.
       if (this->Self(self) == StatusError)

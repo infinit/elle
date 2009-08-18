@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.cc
 //
 // created       julien quintard   [mon aug 10 23:48:12 2009]
-// updated       julien quintard   [tue aug 11 00:44:28 2009]
+// updated       julien quintard   [mon aug 17 02:05:49 2009]
 //
 
 //
@@ -23,56 +23,15 @@ namespace etoile
   {
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- constructors & destructors --------------------------------------
 //
 
     ///
-    /// initialises a contents object.
+    /// the constructor.
     ///
-    Status		Contents::Create(const Contents::Type	type)
+    Contents::Contents():
+      size(0)
     {
-      // set the type.
-      this->type = type;
-
-      leave();
-    }
-
-//
-// ---------- entity ----------------------------------------------------------
-//
-
-    ///
-    /// assign the contents.
-    ///
-    Contents&		Contents::operator=(const Contents&	element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the address.
-      if (this->Recycle<Contents>(&element) == StatusError)
-	yield("unable to recycle the contents", *this);
-
-      return (*this);
-    }
-
-    ///
-    /// this operator compares two objects.
-    ///
-    Boolean		Contents::operator==(const Contents&	element) const
-    {
-      return ((this->type == element.type) &&
-	      (this->address == element.address) &&
-	      (this->size == element.size));
-    }
-
-    ///
-    /// this operator compares two objects.
-    ///
-    Boolean		Contents::operator!=(const Contents&	element) const
-    {
-      return (!(*this == element));
     }
 
 //
@@ -88,9 +47,6 @@ namespace etoile
       String		shift(2, ' ');
 
       std::cout << alignment << "[Contents]" << std::endl;
-
-      std::cout << alignment << shift << "[Type] "
-		<< this->type << std::endl;
 
       if (this->address.Dump(margin + 2) == StatusError)
 	escape("unable to dump the address");
@@ -111,9 +67,7 @@ namespace etoile
     Status		Contents::Serialize(Archive&		archive) const
     {
       // serialize the attributes.
-      if (archive.Serialize((Byte&)this->type,
-			    this->address,
-			    this->size) == StatusError)
+      if (archive.Serialize(this->address, this->size) == StatusError)
 	escape("unable to serialize the contents' attributes");
 
       leave();
@@ -125,9 +79,7 @@ namespace etoile
     Status		Contents::Extract(Archive&		archive)
     {
       // extract the attributes.
-      if (archive.Extract((Byte&)this->type,
-			  this->address,
-			  this->size) == StatusError)
+      if (archive.Extract(this->address, this->size) == StatusError)
 	escape("unable to extract the contents' attributes");
 
       leave();

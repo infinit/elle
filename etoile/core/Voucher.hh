@@ -11,8 +11,8 @@
 // updated       julien quintard   [tue aug  4 13:55:59 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_VOUCHER_HH
-#define ETOILE_COMPONENTS_VOUCHER_HH
+#ifndef ETOILE_CORE_VOUCHER_HH
+#define ETOILE_CORE_VOUCHER_HH
 
 //
 // ---------- includes --------------------------------------------------------

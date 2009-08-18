@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon aug 10 21:30:27 2009]
+// updated       julien quintard   [mon aug 17 12:30:30 2009]
 //
 
 //
@@ -21,6 +21,16 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this constants defines the first index.
+    ///
+    const Natural64	Catalog::Index::First = Type<Natural64>::Minimum;
+    const Natural64	Catalog::Index::Last = Type<Natural64>::Maximum;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -46,18 +56,8 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Catalog::Size(Natural32&		size)
-    {
-      size = this->entries.size();
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
     Status		Catalog::Add(const String&		name,
-				     const Address&		address)
+				     const hole::Address&	address)
     {
       Catalog::Entry*		entry;
 
@@ -93,7 +93,7 @@ namespace etoile
     /// XXX
     ///
     Status		Catalog::Lookup(const String&		name,
-					Address&		address)
+					hole::Address&		address)
     {
       Catalog::Iterator		iterator;
 
@@ -109,20 +109,20 @@ namespace etoile
     /// XXX
     ///
     Status		Catalog::Search(const String&		name,
-					Catalog::Iterator*	iterator)
+					Catalog::Iterator*	pointer)
     {
-      Catalog::Iterator		i;
+      Catalog::Iterator		iterator;
 
-      for (i = this->entries.begin();
-	   i != this->entries.end();
-	   i++)
+      for (iterator = this->entries.begin();
+	   iterator != this->entries.end();
+	   iterator++)
 	{
-	  Catalog::Entry*	entry = *i;
+	  Catalog::Entry*	entry = *iterator;
 
 	  if (name == entry->name)
 	    {
-	      if (iterator != NULL)
-		*iterator = i;
+	      if (pointer != NULL)
+		*pointer = iterator;
 
 	      true();
 	    }
@@ -140,20 +140,20 @@ namespace etoile
     ///
     Status		Catalog::Dump(Natural32			margin) const
     {
-      String			alignment(margin, ' ');
-      String			shift(2, ' ');
-      Catalog::ConstIterator	iterator;
+      String		alignment(margin, ' ');
+      String		shift(2, ' ');
+      Catalog::Scoutor	scoutor;
 
       std::cout << alignment << "[Catalog]" << std::endl;
 
       if (ContentHashBlock::Dump(margin + 2) == StatusError)
 	escape("unable to dump the underlying block");
 
-      for (iterator = this->entries.begin();
-	   iterator != this->entries.end();
-	   iterator++)
+      for (scoutor = this->entries.begin();
+	   scoutor != this->entries.end();
+	   scoutor++)
 	{
-	  Catalog::Entry*	entry = *iterator;
+	  Catalog::Entry*	entry = *scoutor;
 
 	  std::cout << alignment << shift << "[Name] "
 		    << entry->name << std::endl;
@@ -174,7 +174,7 @@ namespace etoile
     ///
     Status		Catalog::Serialize(Archive&		archive) const
     {
-      std::list<Catalog::Entry*>::const_iterator i;
+      Catalog::Scoutor	scoutor;
 
       // call the parent class.
       if (ContentHashBlock::Serialize(archive) == StatusError)
@@ -185,9 +185,11 @@ namespace etoile
 	escape("unable to serialize the catalog size");
 
       // serialize the list of entries.
-      for (i = this->entries.begin(); i != this->entries.end(); i++)
+      for (scoutor = this->entries.begin();
+	   scoutor != this->entries.end();
+	   scoutor++)
 	{
-	  Catalog::Entry*	entry = *i;
+	  Catalog::Entry*	entry = *scoutor;
 
 	  // serialize an entry.
 	  if (archive.Serialize(entry->name,

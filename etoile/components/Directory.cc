@@ -7,8 +7,8 @@
 //
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
-// created       julien quintard   [sun aug  9 16:33:09 2009]
-// updated       julien quintard   [mon aug 10 14:31:15 2009]
+// created       julien quintard   [fri aug 14 19:00:57 2009]
+// updated       julien quintard   [tue aug 18 16:11:55 2009]
 //
 
 //
@@ -27,35 +27,99 @@ namespace etoile
 //
 
     ///
-    /// this method takes an address and returns a live directory object.
+    /// XXX
     ///
-    Status		Directory::Load(const Address&		address,
-					Object&			object)
+    Status		Directory::Load(context::Object&	context,
+					const hole::Address&	address)
+					
     {
-      // retrieve the block.
-      if (Hole::Get(address, object) == StatusError)
-	escape("unable to retrieve the block");
+      // load the object.
+      if (Object::Load(context, address) == StatusError)
+	escape("unable to load the object");
 
-      // check the object type.
-      if (object.meta.status.component != ComponentDirectory)
+      // set the component.
+      context.component = core::ComponentDirectory;
+
+      // initialize the contents.
+      context.contents.catalog = NULL;
+
+      // check that the object is a directory.
+      if (context.object.meta.status.genre != core::GenreDirectory)
 	escape("this object is not a directory");
 
       leave();
     }
 
     ///
-    /// this method takes a directory object, extract its catalog and
-    /// look up the given entry name.
+    /// XXX
     ///
-    Status		Directory::Lookup(const Object&		directory,
-					  const String&		name,
-					  Address&		address)
+    Status		Directory::Store(context::Object&	context)
     {
-      // retrieve the catalog block.
-      // XXX
+      // close the catalog.
+      if (Catalog::Close(context) == StatusError)
+	escape("unable to close the catalog");
 
-      // decrypt it.
-      // XXX
+      // if there still is a catalog, that means that the system has to
+      // store it.
+      //
+      // XXX \todo here it would be more complicated for multiple-blocks
+      //  catalogs.
+      /* XXX
+      if (context.contents.catalog != NULL)
+	{
+	  hole::Address	address;
+
+	  // retrieve the block address.
+	  if (context.contents.catalog->Self(address) == StatusError)
+	    escape("unable to retrieve the catalog's address");
+
+	  // update the object.
+	  context.object.data.contents.address = address;
+	  /// XXX update size?
+
+	  // store the catalog.
+	  // XXX if (hole::Hole::Put(
+	  */
+
+      // call the parent store method.
+      if (Object::Store(context) == StatusError)
+	escape("unable to store the object");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Directory::Lookup(context::Object&	context,
+					  const String&		name,
+					  hole::Address&	address)
+    {
+      // open the catalog.
+      if (Catalog::Open(context) == StatusError)
+	escape("unable to load the catalog");
+
+      // look up the entry.
+      if (context.contents.catalog->Lookup(name, address) == StatusError)
+	escape("unable to find the entry in the catalog");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Directory::Add(context::Object&		context,
+				       const String&		name,
+				       const hole::Address&	address)
+    {
+      // open the catalog.
+      if (Catalog::Open(context) == StatusError)
+	escape("unable to open the catalog");
+
+      // add the entry in the catalog.
+      if (context.contents.catalog->Add(name, address) == StatusError)
+	escape("unable to add the entry in the catalog");
 
       leave();
     }

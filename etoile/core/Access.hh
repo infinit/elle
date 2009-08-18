@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/etoile/core/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [thu jul 30 19:52:57 2009]
+// updated       julien quintard   [mon aug 17 01:48:33 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_ACCESS_HH
-#define ETOILE_COMPONENTS_ACCESS_HH
+#ifndef ETOILE_CORE_ACCESS_HH
+#define ETOILE_CORE_ACCESS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,6 +22,8 @@
 
 #include <etoile/core/ContentHashBlock.hh>
 #include <etoile/core/Permissions.hh>
+
+#include <etoile/hole/Hole.hh>
 
 #include <vector>
 
@@ -65,10 +67,10 @@ namespace etoile
       struct		Group:
 	public Entry
       {
-	Address		descriptor;
+	hole::Address	descriptor;
 	Permissions	permissions;
 
-	Address		members;
+	hole::Address	members;
       };
 
       //
@@ -82,7 +84,7 @@ namespace etoile
       //
       Status		Locate(const PublicKey&,
 			       Entry*);
-      Status		Locate(const Address&,
+      Status		Locate(const hole::Address&,
 			       Entry*);
 
       Status		Add();

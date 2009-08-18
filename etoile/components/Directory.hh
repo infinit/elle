@@ -7,12 +7,12 @@
 //
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
-// created       julien quintard   [sun aug  9 16:30:51 2009]
-// updated       julien quintard   [mon aug 10 01:07:01 2009]
+// created       julien quintard   [fri aug 14 18:57:08 2009]
+// updated       julien quintard   [mon aug 17 11:51:51 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_DIRECTORY_HH
-#define ETOILE_COMPONENTS_DIRECTORY_HH
+#ifndef ETOILE_COMPONENTS_ETOILE_HH
+#define ETOILE_COMPONENTS_ETOILE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,12 +21,14 @@
 #include <elle/Elle.hh>
 
 #include <etoile/core/Core.hh>
+#include <etoile/context/Context.hh>
 #include <etoile/hole/Hole.hh>
+
+#include <etoile/components/Object.hh>
+#include <etoile/components/Catalog.hh>
 
 namespace etoile
 {
-  using namespace hole;
-
   namespace components
   {
 
@@ -35,20 +37,39 @@ namespace etoile
 //
 
     ///
-    /// this class provides methods for managing directories.
+    /// XXX
     ///
-    class Directory
+    class Directory:
+      public Object
     {
     public:
       //
       // static methods
       //
-      static Status	Load(const Address&,
-			     Object&);
+      static Status	Load(context::Object&,
+			     const hole::Address&);
+      static Status	Create(context::Object&);
+      static Status	Destroy(context::Object&);
+      static Status	Store(context::Object&);
 
-      static Status	Lookup(const Object&,
+      static Status	Consult(context::Object&,
+				std::list<String>&,
+				const Natural64 = core::Catalog::Index::First,
+				const Natural64 = core::Catalog::Index::Last);
+      static Status	Lookup(context::Object&,
 			       const String&,
-			       Address&);
+			       hole::Address&);
+      static Status	Add(context::Object&,
+			    const String&,
+			    const hole::Address&);
+      static Status	Remove(context::Object&,
+			       const String&);
+      static Status	Update(context::Object&,
+			       const String&,
+			       const hole::Address&);
+      static Status	Rename(context::Object&,
+			       const String&,
+			       const String&);
     };
 
   }

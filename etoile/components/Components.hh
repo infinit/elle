@@ -7,15 +7,17 @@
 //
 // file          /home/mycure/infinit/etoile/components/Components.hh
 //
-// created       julien quintard   [mon aug 10 00:56:35 2009]
-// updated       julien quintard   [mon aug 10 00:57:51 2009]
+// created       julien quintard   [fri aug 14 18:56:29 2009]
+// updated       julien quintard   [mon aug 17 11:50:15 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_COMPONENTS_HH
 #define ETOILE_COMPONENTS_COMPONENTS_HH
 
 // XXX
+#include <etoile/components/Object.hh>
 #include <etoile/components/Directory.hh>
+#include <etoile/components/Catalog.hh>
 // XXX
 
 #endif

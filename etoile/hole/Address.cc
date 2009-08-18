@@ -5,21 +5,21 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/core/Address.cc
+// file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [tue aug 11 00:22:17 2009]
+// updated       julien quintard   [mon aug 17 12:17:07 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/core/Address.hh>
+#include <etoile/hole/Address.hh>
 
 namespace etoile
 {
-  namespace core
+  namespace hole
   {
 
 //

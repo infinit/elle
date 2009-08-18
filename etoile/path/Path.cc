@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [mon aug 10 16:49:23 2009]
+// updated       julien quintard   [sun aug 16 00:59:28 2009]
 //
 
 //
@@ -34,7 +34,7 @@ namespace etoile
     ///
     /// this variable contains the address of the root directory object.
     ///
-    Address		Path::Root;
+    hole::Address	Path::Root;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -43,7 +43,7 @@ namespace etoile
     ///
     /// this method initialises the path component.
     ///
-    Status		Path::Initialize(const Address&		address)
+    Status		Path::Initialize(const hole::Address&	address)
     {
       // initialize the root address.
       Path::Root = address;
@@ -72,7 +72,7 @@ namespace etoile
     /// objects and explore them.
     ///
     Status		Path::Resolve(const Route&		route,
-				      Address&			address)
+				      hole::Address&		address)
     {
       Venue		venue;
       Route::Scoutor	scoutor;
@@ -102,15 +102,21 @@ namespace etoile
 	   scoutor != route.elements.end();
 	   scoutor++)
 	{
-	  Object	directory;
+	  context::Object	context;
 
 	  // load the directory referenced by address.
-	  if (Directory::Load(address, directory) == StatusError)
+	  if (components::Directory::Load(context, address) == StatusError)
 	    escape("unable to load one of the route's directories");
 
 	  // look up for the name.
-	  if (Directory::Lookup(directory, *scoutor, address) == StatusError)
+	  if (components::Directory::Lookup(context,
+					    *scoutor,
+					    address) == StatusError)
 	    escape("unable to find one of the route's entries");
+
+	  // close the context.
+	  if (components::Directory::Store(context) == StatusError)
+	    escape("unable to store the context");
 	}
 
       leave();

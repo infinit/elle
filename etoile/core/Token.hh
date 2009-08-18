@@ -11,8 +11,8 @@
 // updated       julien quintard   [tue aug  4 13:55:47 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_TOKEN_HH
-#define ETOILE_COMPONENTS_TOKEN_HH
+#ifndef ETOILE_CORE_TOKEN_HH
+#define ETOILE_CORE_TOKEN_HH
 
 //
 // ---------- includes --------------------------------------------------------

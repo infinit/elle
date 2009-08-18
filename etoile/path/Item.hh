@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [sat aug  8 21:29:31 2009]
+// updated       julien quintard   [fri aug 14 21:09:30 2009]
 //
 
 #ifndef ETOILE_PATH_ITEM_HH
@@ -22,6 +22,8 @@
 
 #include <etoile/path/Route.hh>
 #include <etoile/path/Venue.hh>
+
+#include <etoile/hole/Hole.hh>
 
 #include <map>
 
@@ -69,7 +71,7 @@ namespace etoile
       //
       // attributes
       //
-      Address		address;
+      hole::Address	address;
 
       Item*		directory;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [tue aug  4 17:04:04 2009]
+// updated       julien quintard   [sun aug 16 23:43:44 2009]
 //
 
 #ifndef ETOILE_CORE_DATA_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/core/ContentHashBlock.hh>
+#include <etoile/core/Contents.hh>
 
 namespace etoile
 {
@@ -33,7 +33,7 @@ namespace etoile
     /// this class represents file data.
     ///
     class Data:
-      public ContentHashBlock
+      public Contents
     {
     public:
       //

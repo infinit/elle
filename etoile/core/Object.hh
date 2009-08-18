@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [fri aug 14 00:05:11 2009]
+// updated       julien quintard   [mon aug 17 00:46:46 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_OBJECT_HH
-#define ETOILE_COMPONENTS_OBJECT_HH
+#ifndef ETOILE_CORE_OBJECT_HH
+#define ETOILE_CORE_OBJECT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,13 +21,19 @@
 #include <elle/Elle.hh>
 
 #include <etoile/core/PublicKeyBlock.hh>
-#include <etoile/core/Component.hh>
+#include <etoile/core/Genre.hh>
 #include <etoile/core/Access.hh>
 #include <etoile/core/Token.hh>
 #include <etoile/core/Permissions.hh>
 #include <etoile/core/Proof.hh>
 #include <etoile/core/Voucher.hh>
+#include <etoile/core/Version.hh>
+#include <etoile/core/Catalog.hh>
+#include <etoile/core/Data.hh>
+#include <etoile/core/Reference.hh>
 #include <etoile/core/Contents.hh>
+
+#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {
@@ -61,21 +67,13 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const Component,
-			       const KeyPair&);
+      Status		Create(const Genre,
+			       const PublicKey&);
 
-      Status		Update(const PrivateKey&,
-			       const Contents&);
-      // XXX other Update() for delegates and consumers
+      Status		Update(const PrivateKey&);
+      Status		Administrate(const PrivateKey&);
 
-      Status		Write(const PrivateKey&,
-			      const Contents&);
-
-      Status		Administrate(const PrivateKey&,
-				     const Permissions&,
-				     const Address&);
-
-      Status		Validate(const Address&) const;
+      Status		Validate(const hole::Address&) const;
 
       //
       // interfaces
@@ -107,16 +105,6 @@ namespace etoile
 
       struct
       {
-	Contents	contents;
-
-	Digest		fingerprint;
-
-	Natural32	version;
-	Signature	signature;
-      }			data;
-
-      struct
-      {
 	struct
 	{
 	  Permissions	permissions;
@@ -125,16 +113,26 @@ namespace etoile
 
 	struct
 	{
-	  Component	component;
+	  Genre		genre;
 
 	  // XXX[date last status change]
 	}		status;
 
-	Address		access;
+	hole::Address	access;
 
-	Natural32	version;
+	Version		version;
 	Signature	signature;
       }			meta;
+
+      struct
+      {
+	Contents	contents;
+
+	Digest		fingerprint;
+
+	Version		version;
+	Signature	signature;
+      }			data;
     };
 
   }

@@ -11,8 +11,8 @@
 // updated       julien quintard   [sat jul 25 04:29:06 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_RIGHTS_HH
-#define ETOILE_COMPONENTS_RIGHTS_HH
+#ifndef ETOILE_CORE_RIGHTS_HH
+#define ETOILE_CORE_RIGHTS_HH
 
 namespace etoile
 {

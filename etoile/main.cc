@@ -2,10 +2,17 @@
 
 #include <etoile/core/Core.hh>
 #include <etoile/path/Path.hh>
+#include <etoile/wall/Wall.hh>
+#include <etoile/agent/Agent.hh>
 
 using namespace etoile;
 using namespace etoile::core;
 using namespace etoile::path;
+using namespace etoile::hole;
+using namespace etoile::components;
+using namespace etoile::agent;
+
+#include <etoile/context/Context.hh>
 
 //
 // [OPENSSL]
@@ -45,6 +52,7 @@ int		main(int			argc,
 {
   Cryptography::Initialize();
 
+  KeyPair	pair;
   Address	root;
 
       // XXX[hack for the /]
@@ -70,17 +78,53 @@ int		main(int			argc,
 	expose();
       }
 
+      // XXX[hack for the administrator]
+      {
+	int		fd;
+
+	fd = ::open(".device/.administrator", O_RDONLY);
+
+	Region	region;
+
+	region.Prepare(4096);
+
+	region.size = read(fd, region.contents, region.capacity);
+
+	region.Detach();
+
+	Archive		archive;
+
+	archive.Prepare(region);
+
+	archive.Extract(pair);
+
+	expose();
+      }
+
+  // init the agent.
+  Agent::Pair = pair;
+  Agent::Subject.Create(Agent::Pair.K);
+
+  // init path.
   Path::Initialize(root);
 
-  Route		route;
+  //Route		route;
 
-  route.Create("/suce/mon");
+  //route.Create("/suce/mon");
 
-  Address	address;
+  //Address	address;
 
-  Path::Resolve(route, address);
+  //Path::Resolve(route, address);
 
-  address.Dump();
+  //address.Dump();
+
+  {
+    context::Object	context;
+
+    components::Directory::Load(context, root);
+    components::Directory::Add(context, "loop", context.address);
+    components::Directory::Store(context);
+  }
 
   expose();
 

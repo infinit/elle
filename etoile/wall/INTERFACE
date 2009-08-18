@@ -20,7 +20,9 @@ Object
 Object.Load(...)
 Object.Create(...)
 Object.Lock(...) -> XXX though with quorums there is always a lock!!! can be
-                        useful locally though.
+                        useful locally though + good for rename for example
+                        since we need to lock two directories to avoid
+                        race conditions.
 Object.Release(...)
 Object.Information(...)
 Object.Rollback(...) # Refresh()?
@@ -56,6 +58,7 @@ Directory: Object
 Directory.Load(path, &id)
 Directory.Create(...)
 Directory.Consult(...)
+Directory.Lookup(...)
 Directory.Add(...)
 Directory.Remove(...)
 Directory.Update(...)
@@ -122,3 +125,4 @@ XXX pouvoir recuperer des infos sur les contexts encore en vie: taux d'upload
 XXX 1 thread par contexte
 XXX contexts look like transactions but are not atomic. they are just
     construct for performing mutliple operations on the same object(s).
+XXX rename() revient a locker les directories et les update.

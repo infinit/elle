@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [mon aug 10 16:49:30 2009]
+// updated       julien quintard   [sat aug 15 00:20:27 2009]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -22,14 +22,12 @@
 
 #include <etoile/core/Core.hh>
 #include <etoile/components/Components.hh>
+#include <etoile/hole/Hole.hh>
 
 #include <etoile/path/Route.hh>
 
 namespace etoile
 {
-  using namespace core;
-  using namespace components;
-
   namespace path
   {
 
@@ -43,17 +41,17 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Initialize(const Address&);
+      static Status	Initialize(const hole::Address&);
       static Status	Clean();
 
       static Status	Resolve(const Route&,
-				Address&);
+				hole::Address&);
 
       //
       // static attributes
       //
-      static String	Separator;
-      static Address	Root;
+      static String		Separator;
+      static hole::Address	Root;
     };
 
   }
