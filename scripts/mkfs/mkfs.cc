@@ -109,10 +109,7 @@ int			mkfs(int				argc,
       return (-1);
 
     // seal the data and meta data.
-    if (directory.Update(owner.k) == StatusError)
-      return (-1);
-
-    if (directory.Administrate(owner.k) == StatusError)
+    if (directory.Seal(owner.k) == StatusError)
       return (-1);
 
     // get the address.
