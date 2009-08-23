@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [mon aug 17 01:06:40 2009]
+// updated       julien quintard   [sun aug 23 10:07:15 2009]
 //
 
 #ifndef ETOILE_CORE_CATALOG_HH
@@ -79,6 +79,9 @@ namespace etoile
       //
       // methods
       //
+      Status		Create();
+      Status		Prepare(const SecretKey&);
+
       Status		Add(const String&,
 			    const hole::Address&);
       Status		Remove(const String&);
@@ -87,6 +90,7 @@ namespace etoile
 			       const String&);
       Status		Lookup(const String&,
 			       hole::Address&);
+      Status		Size(Natural64&);
 
       Status		Search(const String&,
 			       Catalog::Iterator* = NULL);
@@ -111,6 +115,8 @@ namespace etoile
       // attributes
       //
       Container		entries;
+
+      SecretKey		key;
     };
 
   }

@@ -119,11 +119,11 @@ int		main(int			argc,
   //address.Dump();
 
   {
-    context::Object	context;
+    context::Directory	context;
 
     components::Directory::Load(context, root);
     components::Directory::Add(context, "loop", context.address);
-    components::Directory::Store(context);
+    components::Directory::Commit(context);
   }
 
   expose();

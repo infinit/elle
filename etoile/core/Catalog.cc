@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon aug 17 12:30:30 2009]
+// updated       julien quintard   [sun aug 23 10:07:59 2009]
 //
 
 //
@@ -52,6 +52,27 @@ namespace etoile
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// XXX
+    ///
+    Status		Catalog::Create()
+    {
+      // generate a secret key.
+      // XXX
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Catalog::Prepare(const SecretKey&	key)
+    {
+      // XXX
+
+      leave();
+    }
 
     ///
     /// XXX
@@ -129,6 +150,17 @@ namespace etoile
 	}
 
       false();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Catalog::Size(Natural64&		size)
+    {
+      // set the size.
+      size = this->entries.size();
+
+      leave();
     }
 
 //

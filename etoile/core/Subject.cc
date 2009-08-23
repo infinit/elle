@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [mon aug 17 02:37:08 2009]
+// updated       julien quintard   [fri aug 21 22:41:43 2009]
 //
 
 //
@@ -51,6 +51,10 @@ namespace etoile
 	  {
 	    delete this->identifier.group;
 
+	    break;
+	  }
+	default:
+	  {
 	    break;
 	  }
 	}

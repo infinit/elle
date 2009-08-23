@@ -5,17 +5,17 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/context/Object.cc
+// file          /home/mycure/infinit/etoile/context/Directory.cc
 //
-// created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [sat aug 22 14:03:28 2009]
+// created       julien quintard   [sat aug 22 02:14:09 2009]
+// updated       julien quintard   [sat aug 22 02:16:07 2009]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/context/Object.hh>
+#include <etoile/context/Directory.hh>
 
 namespace etoile
 {
@@ -27,21 +27,17 @@ namespace etoile
 //
 
     ///
-    /// the constructor.
+    /// the constructor
     ///
-    /// note that this constructor does *not* initialize the contents.
-    ///
-    Object::Object():
-      rights(core::PermissionNone),
-      object(NULL),
-      access(NULL)
+    Directory::Directory():
+      catalog(NULL)
     {
     }
 
     ///
     /// the copy constructor.
     ///
-    Object::Object(const Object&				context)
+    Directory::Directory(const Directory&			context)
     {
       // XXX \todo XXX
       printf("NOT IMPLEMENTED YET\n");
@@ -50,7 +46,7 @@ namespace etoile
     ///
     /// the destructor
     ///
-    Object::~Object()
+    Directory::~Directory()
     {
       // XXX \todo XXX
     }

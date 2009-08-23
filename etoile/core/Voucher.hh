@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [tue aug  4 13:55:59 2009]
+// updated       julien quintard   [fri aug 21 22:31:18 2009]
 //
 
 #ifndef ETOILE_CORE_VOUCHER_HH
@@ -37,6 +37,7 @@ namespace etoile
     /// at the time it has been carried out.
     ///
     class Voucher:
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
@@ -49,6 +50,11 @@ namespace etoile
       // interfaces
       //
 
+      // entity
+      Voucher&		operator=(const Voucher&);
+      Boolean		operator==(const Voucher&) const;
+      Boolean		operator!=(const Voucher&) const;
+
       // dumpable
       Status		Dump(const Natural32 = 0) const;
 
@@ -59,7 +65,7 @@ namespace etoile
       //
       // attributes
       //
-      PublicKey		consumer;
+      PublicKey		user;
       Signature		signature;
     };
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [mon aug 17 12:54:20 2009]
+// updated       julien quintard   [sun aug 23 10:08:37 2009]
 //
 
 //
@@ -33,22 +33,22 @@ namespace etoile
     /// if this method returns successfully, a catalog will be ready to be
     /// used, either empty or not.
     ///
-    Status		Catalog::Open(context::Object&		context)
+    Status		Catalog::Open(context::Directory&	context)
     {
       // if the catalog is already opened, return.
-      if (context.contents.catalog != NULL)
+      if (context.catalog != NULL)
 	leave();
 
       // allocate a new contents.
-      context.contents.catalog = new core::Catalog;
+      context.catalog = new core::Catalog;
 
       // check if there exists a catalog. if so, load the block, otherwise
-      // leave the catalog new.
-      if (context.object.data.contents.address != hole::Address::Null)
+      // leave the catalog new and empty.
+      if (context.object->data.contents != hole::Address::Null)
 	{
 	  // load the block.
-	  if (hole::Hole::Get(context.object.data.contents.address,
-			      *context.contents.catalog) == StatusError)
+	  if (hole::Hole::Get(context.object->data.contents,
+			      *context.catalog) == StatusError)
 	    escape("unable to load the catalog");
 	}
 
@@ -56,29 +56,51 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method releases the memory used if the catalog is unchanged
+    /// or new but empty. otherwise, the new catalog address is computed
+    /// and the directory object is updated.
     ///
-    Status		Catalog::Close(context::Object&		context)
+    Status		Catalog::Seal(context::Directory&	context)
     {
-      // retrieve the address of the catalog, if there is one.
-      if (context.contents.catalog != NULL)
+      hole::Address	address;
+      Natural64		size;
+      SecretKey		key;
+
+      // if there is no loaded catalog, then there is nothing to do.
+      if (context.catalog == NULL)
+	leave();
+
+      // compute the loaded catalog address.
+      if (context.catalog->Self(address) == StatusError)
+	escape("unable to retrieve the catalog address");
+
+      // retrieve the catalog's size.
+      if (context.catalog->Size(size) == StatusError)
+	escape("unable to retrieve the catalog's size");
+
+      // if the catalog has not changed, or if the catalog is empty, delete it.
+      if ((size == 0) ||
+	  (context.object->data.contents == address))
 	{
-	  hole::Address	address;
+	  // release the catalog's memory.
+	  delete context.catalog;
 
-	  // retrieve the current catalog address.
-	  if (context.contents.catalog->Self(address) == StatusError)
-	    escape("unable to retrieve the catalog's address");
+	  // reset the pointer.
+	  context.catalog = NULL;
 
-	  // compare the new address with the old one.
-	  if (context.object.data.contents.address == address)
-	    {
-	      // the catalog has not changed, needless to keep it since
-	      // no blocks have to be stored.
-	      delete context.contents.catalog;
-
-	      context.contents.catalog = NULL;
-	    }
+	  leave();
 	}
+
+      // if a new catalog exists, generate a secret key.
+      if (key.Generate() == StatusError)
+	escape("unable to generate the secret key");
+
+      // then seal the catalog.
+      //if (context.catalog->Seal(key) == StatusError)
+      //escape("unable to seal the catalog");
+
+      // update the object data section.
+      // XXX context.object->data
 
       leave();
     }

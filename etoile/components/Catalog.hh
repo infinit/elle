@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.hh
 //
 // created       julien quintard   [mon aug 17 11:44:37 2009]
-// updated       julien quintard   [mon aug 17 12:54:40 2009]
+// updated       julien quintard   [sat aug 22 19:35:49 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -40,8 +40,9 @@ namespace etoile
       //
       // methods
       //
-      static Status	Open(context::Object&);
-      static Status	Close(context::Object&);
+      static Status	Open(context::Directory&);
+
+      static Status	Seal(context::Directory&);
     };
 
   }

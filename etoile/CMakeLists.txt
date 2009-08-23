@@ -11,8 +11,9 @@ ADD_LIBRARY(etoile
   core/Catalog.cc
   core/Reference.cc
   core/Data.cc
-  core/Contents.cc
   core/Subject.cc
+  core/Author.cc
+  core/Time.cc
 
   hole/Hole.cc
   hole/Address.cc
@@ -25,8 +26,8 @@ ADD_LIBRARY(etoile
 
   configuration/Configuration.cc
 
-  context/Context.cc
   context/Object.cc
+  context/Directory.cc
 
   components/Object.cc
   components/Directory.cc

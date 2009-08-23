@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [mon aug 17 00:46:16 2009]
+// updated       julien quintard   [sat aug 22 14:32:50 2009]
 //
 
 //
@@ -31,23 +31,14 @@ namespace etoile
     ///
     Object::Object()
     {
-      this->author.mode = Object::ModeUnknown;
-      this->author.proof = NULL;
-
+      this->meta.state = StateClean;
       this->meta.owner.permissions = PermissionNone;
       this->meta.status.genre = GenreUnknown;
       this->meta.version = 0;
 
+      this->data.state = StateClean;
+      this->data.size = 0;
       this->data.version = 0;
-    }
-
-    ///
-    /// this method reinitializes the object.
-    ///
-    Object::~Object()
-    {
-      if (this->author.proof != NULL)
-	delete this->author.proof;
     }
 
 //
@@ -100,66 +91,143 @@ namespace etoile
 	// set the meta genre.
 	this->meta.status.genre = genre;
 
-	// set the owner permissions.
-	this->meta.owner.permissions = PermissionReadWrite;
+	// set the initial owner permissions to all.
+	if (this->Administrate(hole::Address::Null,
+			       PermissionReadWrite) == StatusError)
+	  escape("unable to set the initial meta data");
       }
 
       // (iv)
       {
-	// set the author as being the owner.
-	this->author.mode = Object::ModeOwner;
+	Digest		fingerprint;
+	Author		author;
+
+	// set an author.
+	if (author.Create(Author::ModeOwner) == StatusError)
+	  escape("unable to create an author");
+
+	// set the initial data with no contents, an empty fingerprint and
+	// the owner as the author.
+	if (this->Update(author,
+			 hole::Address::Null,
+			 0,
+			 fingerprint) == StatusError)
+	  escape("unable to set the initial data");
       }
 
       leave();
     }
 
     ///
-    /// this method is used by the author for sealing the data.
+    /// this method updates the data section.
     ///
-    Status		Object::Update(const PrivateKey&	author)
+    Status		Object::Update(const Author&		author,
+				       const hole::Address&	contents,
+				       const Natural64&		size,
+				       const Digest&		fingerprint)
     {
-      // increase the data version.
-      this->data.version += 1;
+      // set the author.
+      this->author = author;
 
-      // sign the archive with the author key.
-      if (author.Sign(this->data.contents,
-		      this->data.fingerprint,
-		      this->data.version,
-		      this->data.signature) == StatusError)
-	escape("unable to sign the data archive");
+      // set the address.
+      this->data.contents = contents;
+
+      // set the size.
+      this->data.size = size;
+
+      // set the fingerprint.
+      this->data.fingerprint = fingerprint;
+
+      // set the last update time.
+      if (this->data.stamp.Current() == StatusError)
+	escape("unable to set the last update time");
+
+      // mark the section as dirty.
+      this->data.state = StateDirty;
 
       leave();
     }
 
     ///
-    /// this method seals the meta data by signing them.
+    /// this method updates the meta section.
     ///
-    Status		Object::Administrate(const PrivateKey&	owner)
+    Status		Object::Administrate(const hole::Address& access,
+					     const Permissions&	permissions)
     {
-      // increase the meta version.
-      this->meta.version += 1;
+      // set the address.
+      this->meta.access = access;
 
-      //
-      // note that, if an access block is referenced, the identities and
-      // permissions of the delegates must be included in the meta signature.
-      //
-      if (this->meta.access == hole::Address::Null)
+      // set the owner permissions.
+      this->meta.owner.permissions = permissions;
+
+      // set the last management time.
+      if (this->meta.status.stamp.Current() == StatusError)
+	escape("unable to set the last management time");
+
+      // mark the section as dirty.
+      this->meta.state = StateDirty;
+
+      leave();
+    }
+
+    ///
+    /// this method seals the data and meta data by signing them.
+    ///
+    Status		Object::Seal(const PrivateKey&		user)
+    {
+      // re-sign the data if required.
+      if (this->data.state == StateDirty)
 	{
-	  // sign the meta data..
-	  if (owner.Sign((Byte&)this->meta.owner.permissions,
-			 this->meta.owner.token,
-			 (Byte&)this->meta.status.genre,
-			 this->meta.access,
-			 this->meta.version,
-			 this->meta.signature) == StatusError)
-	    escape("unable to sign the meta archive");
+	  // increase the data version.
+	  this->data.version += 1;
+
+	  // sign the archive with the author key.
+	  if (user.Sign(this->data.contents,
+			this->data.size,
+			this->data.stamp,
+			this->data.fingerprint,
+			this->data.version,
+			this->data.signature) == StatusError)
+	    escape("unable to sign the data archive");
+
+	  // mark the section as clean.
+	  this->data.state = StateClean;
 	}
-      else
-	{
-	  // sign the meta fields plus the delegates' identity and
-	  // permissions from the access block.
 
-	  // XXX
+      // re-sign the meta data if required.
+      if (this->meta.state == StateDirty)
+	{
+	  // increase the meta version.
+	  this->meta.version += 1;
+
+	  //
+	  // note that, if an access block is referenced, the identities and
+	  // permissions of the delegates must be included in the meta
+	  // signature.
+	  //
+	  if (this->meta.access == hole::Address::Null)
+	    {
+	      // sign the meta data..
+	      if (user.Sign((Byte&)this->meta.owner.permissions,
+			    this->meta.owner.token,
+			    (Byte&)this->meta.status.genre,
+			    this->meta.status.stamp,
+			    this->meta.access,
+			    this->meta.version,
+			    this->meta.signature) == StatusError)
+		escape("unable to sign the meta archive");
+	    }
+	  else
+	    {
+	      // sign the meta fields plus the delegates' identity and
+	      // permissions from the access block.
+
+	      // XXX
+	      printf("NOT IMPLEMENTED YET\n");
+	    }
+
+	  // mark the section as clean.
+	  this->meta.state = StateClean;
 	}
 
       leave();
@@ -203,6 +271,7 @@ namespace etoile
 				     (Byte&)this->meta.owner.permissions,
 				     this->meta.owner.token,
 				     (Byte&)this->meta.status.genre,
+				     this->meta.status.stamp,
 				     this->meta.access,
 				     this->meta.version) == StatusError)
 	      flee("unable to verify the meta's signature");
@@ -210,6 +279,7 @@ namespace etoile
 	else
 	  {
 	    // XXX
+	    printf("UNIMPLEMENTED\n");
 	  }
       }
 
@@ -217,7 +287,7 @@ namespace etoile
       {
 	switch (this->author.mode)
 	  {
-	  case Object::ModeOwner:
+	  case Author::ModeOwner:
 	    {
 	      author = &this->owner.K;
 
@@ -225,7 +295,8 @@ namespace etoile
 	    }
 	  default:
 	    {
-	      flee("unimplemented feature");
+	      // XXX
+	      printf("UNIMPLEMENTED\n");	
 	    }
 	  }
       }
@@ -235,9 +306,11 @@ namespace etoile
 	// verify the signature.
 	if (author->Verify(this->data.signature,
 			   this->data.contents,
+			   this->data.size,
+			   this->data.stamp,
 			   this->data.fingerprint,
 			   this->data.version) != StatusTrue)
-	  flee("unable to verify the signature");
+	  flee("unable to verify the data signature");
       }
 
       true();
@@ -273,23 +346,8 @@ namespace etoile
 	escape("unable to dump the owner's signature");
 
       // dump the author part.
-      std::cout << alignment << shift << "[Author]" << std::endl;
-
-      std::cout << alignment << shift << shift << "[Mode] "
-		<< this->author.mode << std::endl;
-
-      if (this->author.proof != NULL)
-	{
-	  std::cout << alignment << shift << shift << "[Proof]"
-		    << std::endl;
-	  if (this->author.proof->Dump(margin + 6) == StatusError)
-	    escape("unable to dump the proof");
-	}
-      else
-	{
-	  std::cout << alignment << shift << shift << "[Proof] "
-		    << none << std::endl;
-	}
+      if (this->author.Dump(margin + 2) == StatusError)
+	escape("unable to dump the author");
 
       // dump the meta part.
       std::cout << alignment << shift << "[Meta]" << std::endl;
@@ -299,15 +357,18 @@ namespace etoile
       std::cout << alignment << shift << shift << shift << "[Permissions] "
 		<< this->meta.owner.permissions << std::endl;
 
-      std::cout << alignment << shift << shift << shift << "[Token]"
-		<< std::endl;
-      if (this->meta.owner.token.Dump(margin + 8) == StatusError)
+      if (this->meta.owner.token.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta owner's token");
 
       std::cout << alignment << shift << shift << "[Status] " << std::endl;
 
       std::cout << alignment << shift << shift << shift << "[Genre] "
 		<< this->meta.status.genre << std::endl;
+
+      std::cout << alignment << shift << shift << shift << "[Stamp] "
+		<< std::endl;
+      if (this->meta.status.stamp.Dump(margin + 8) == StatusError)
+	escape("unable to dump the meta stamp");
 
       std::cout << alignment << shift << shift << "[Access]" << std::endl;
       if (this->meta.access.Dump(margin + 6) == StatusError)
@@ -320,12 +381,22 @@ namespace etoile
       if (this->meta.signature.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta signature");
 
+      std::cout << alignment << shift << shift << "[State] "
+		<< this->meta.state << std::endl;
+
       // dump the data part.
       std::cout << alignment << shift << "[Data]" << std::endl;
 
       std::cout << alignment << shift << shift << "[Contents]" << std::endl;
       if (this->data.contents.Dump(margin + 6) == StatusError)
 	escape("unable to dump the contents' address");
+
+      std::cout << alignment << shift << shift << "[Size]"
+		<< this->data.size << std::endl;
+
+      std::cout << alignment << shift << shift << "[Stamp]" << std::endl;
+      if (this->data.stamp.Dump(margin + 6) == StatusError)
+	escape("unable to dump the data stamp");
 
       std::cout << alignment << shift << shift << "[Fingerprint]" << std::endl;
       if (this->data.fingerprint.Dump(margin + 6) == StatusError)
@@ -337,6 +408,9 @@ namespace etoile
       std::cout << alignment << shift << shift << "[Signature]" << std::endl;
       if (this->data.signature.Dump(margin + 6) == StatusError)
 	escape("unable to dump the data signature");
+
+      std::cout << alignment << shift << shift << "[State] "
+		<< this->data.state << std::endl;
 
       leave();
     }
@@ -360,25 +434,14 @@ namespace etoile
 	escape("unable to serialize the owner part");
 
       // serialize the author part.
-      if (archive.Serialize((Byte&)this->author.mode) == StatusError)
-	escape("unable to serialize the author's mode");
-
-      if (this->author.proof != NULL)
-	{
-	  if (archive.Serialize(*this->author.proof) == StatusError)
-	    escape("unable to serialize the author's proof");
-	}
-      else
-	{
-	  // serialize 'none'.
-	  if (archive.Serialize(none) == StatusError)
-	    escape("unable to serialize 'none'");
-	}
+      if (archive.Serialize(this->author) == StatusError)
+	escape("unable to serialize the author");
 
       // serialize the meta part.
       if (archive.Serialize((Byte&)this->meta.owner.permissions,
 			    this->meta.owner.token,
 			    (Byte&)this->meta.status.genre,
+			    this->meta.status.stamp,
 			    this->meta.access,
 			    this->meta.version,
 			    this->meta.signature) == StatusError)
@@ -386,6 +449,8 @@ namespace etoile
 
       // serialize the data part.
       if (archive.Serialize(this->data.contents,
+			    this->data.size,
+			    this->data.stamp,
 			    this->data.fingerprint,
 			    this->data.version,
 			    this->data.signature) == StatusError)
@@ -411,33 +476,14 @@ namespace etoile
 	escape("unable to extract the owner part");
 
       // extract the author part.
-      if (archive.Extract((Byte&)this->author.mode) == StatusError)
-	escape("unable to extract the author's mode");
-
-      // fetch the next element's type.
-      if (archive.Fetch(type) == StatusError)
-	escape("unable to fetch the next element's type");
-
-      if (type == Archive::TypeNull)
-	{
-	  // nothing to do, keep the author's proof to NULL.
-	  if (archive.Extract(none) == StatusError)
-	    escape("unable to extract null");
-	}
-      else
-	{
-	  // allocate a proof.
-	  this->author.proof = new Proof;
-
-	  // extract the proof.
-	  if (archive.Extract(*this->author.proof) == StatusError)
-	    escape("unable to extract the author's proof");
-	}
+      if (archive.Extract(this->author) == StatusError)
+	escape("unable to extract the author");
 
       // extract the meta part.
       if (archive.Extract((Byte&)this->meta.owner.permissions,
 			  this->meta.owner.token,
 			  (Byte&)this->meta.status.genre,
+			  this->meta.status.stamp,
 			  this->meta.access,
 			  this->meta.version,
 			  this->meta.signature) == StatusError)
@@ -445,6 +491,8 @@ namespace etoile
 
       // extract the data part.
       if (archive.Extract(this->data.contents,
+			  this->data.size,
+			  this->data.stamp,
 			  this->data.fingerprint,
 			  this->data.version,
 			  this->data.signature) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [tue aug  4 13:56:44 2009]
+// updated       julien quintard   [sat aug 22 00:02:07 2009]
 //
 
 #ifndef ETOILE_CORE_PROOF_HH
@@ -35,6 +35,7 @@ namespace etoile
     /// note that no voucher is embedded should the author be a delegate.
     ///
     class Proof:
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
@@ -55,6 +56,11 @@ namespace etoile
       // interfaces
       //
 
+      // entity
+      Proof&		operator=(const Proof&);
+      Boolean		operator==(const Proof&) const;
+      Boolean		operator!=(const Proof&) const;
+
       // dumpable
       Status		Dump(const Natural32 = 0) const;
 
@@ -65,7 +71,7 @@ namespace etoile
       //
       // attributes
       //
-      Natural32		delegate;
+      Natural32		index;
       Voucher*		voucher;
     };
 

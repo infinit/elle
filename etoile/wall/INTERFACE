@@ -35,7 +35,7 @@ Object.Access.Grant(...)
 Object.Access.Revoke(...)
 Object.Access.Block(...)
 Object.Destroy(...)
-Object.Store(...)
+Object.Done(...)
 
 File: Object
 ----

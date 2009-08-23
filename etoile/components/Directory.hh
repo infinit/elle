@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [mon aug 17 11:51:51 2009]
+// updated       julien quintard   [sat aug 22 18:50:28 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -46,30 +46,32 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Load(context::Object&,
+      static Status	Load(context::Directory&,
 			     const hole::Address&);
-      static Status	Create(context::Object&);
-      static Status	Destroy(context::Object&);
-      static Status	Store(context::Object&);
+      static Status	Create(context::Directory&);
 
-      static Status	Consult(context::Object&,
+      static Status	Consult(context::Directory&,
 				std::list<String>&,
 				const Natural64 = core::Catalog::Index::First,
 				const Natural64 = core::Catalog::Index::Last);
-      static Status	Lookup(context::Object&,
+      static Status	Lookup(context::Directory&,
 			       const String&,
 			       hole::Address&);
-      static Status	Add(context::Object&,
+      static Status	Add(context::Directory&,
 			    const String&,
 			    const hole::Address&);
-      static Status	Remove(context::Object&,
+      static Status	Remove(context::Directory&,
 			       const String&);
-      static Status	Update(context::Object&,
+      static Status	Update(context::Directory&,
 			       const String&,
 			       const hole::Address&);
-      static Status	Rename(context::Object&,
+      static Status	Rename(context::Directory&,
 			       const String&,
 			       const String&);
+
+      static Status	Commit(context::Directory&);
+      static Status	Close(context::Directory&);
+      static Status	Destroy(context::Directory&);
     };
 
   }

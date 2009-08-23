@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [tue aug  4 13:56:48 2009]
+// updated       julien quintard   [fri aug 21 22:31:28 2009]
 //
 
 //
@@ -30,7 +30,7 @@ namespace etoile
     /// this method initializes the object.
     ///
     Proof::Proof():
-      delegate(0),
+      index(0),
       voucher(NULL)
     {
     }
@@ -40,22 +40,51 @@ namespace etoile
     ///
     Proof::~Proof()
     {
+      // release the voucher if present.
       if (this->voucher != NULL)
 	delete this->voucher;
     }
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- entity ----------------------------------------------------------
 //
 
     ///
-    /// this method specifies that the proof 
+    /// assign the address.
     ///
-    Status		Proof::Specify(Natural32		delegate)
+    Proof&		Proof::operator=(const Proof&	element)
     {
-      // XXX
+      // self-check.
+      if (this == &element)
+	return (*this);
 
-      leave();
+      // recycle the address.
+      if (this->Recycle<Proof>(&element) == StatusError)
+	yield("unable to recycle the address", *this);
+
+      return (*this);
+    }
+
+    ///
+    /// this operator compares two objects.
+    ///
+    Boolean		Proof::operator==(const Proof&	element) const
+    {
+      // compare the addresses since one of them is null.
+      if ((this->voucher == NULL) || (element.voucher == NULL))
+	return ((this->index == element.index) &&
+		(this->voucher == element.voucher));
+
+      return ((this->index == element.index) &&
+	      (*this->voucher == *element.voucher));
+    }
+
+    ///
+    /// this operator compares two objects.
+    ///
+    Boolean		Proof::operator!=(const Proof&	element) const
+    {
+      return (!(*this == element));
     }
 
 //
@@ -72,8 +101,8 @@ namespace etoile
 
       std::cout << alignment << "[Proof]" << std::endl;
 
-      std::cout << alignment << shift << "[Delegate] "
-		<< this->delegate << std::endl;
+      std::cout << alignment << shift << "[Index] "
+		<< this->index << std::endl;
 
       if (this->voucher != NULL)
 	{
@@ -98,9 +127,10 @@ namespace etoile
     Status		Proof::Serialize(Archive&		archive) const
     {
       // serialize the attributes.
-      if (archive.Serialize(this->delegate) == StatusError)
-	escape("unable to serialize the delegate");
+      if (archive.Serialize(this->index) == StatusError)
+	escape("unable to serialize the index");
 
+      // serialize the voucher.
       if (this->voucher != NULL)
 	{
 	  if (archive.Serialize(*this->voucher) == StatusError)
@@ -124,8 +154,8 @@ namespace etoile
       Archive::Type	type;
 
       // extract the attributes.
-      if (archive.Extract(this->delegate) == StatusError)
-	escape("unable to extract the delegate");
+      if (archive.Extract(this->index) == StatusError)
+	escape("unable to extract the index");
 
       // fetch the next element's type.
       if (archive.Fetch(type) == StatusError)

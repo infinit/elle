@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [mon aug 17 12:36:45 2009]
+// updated       julien quintard   [sat aug 22 14:06:01 2009]
 //
 
 //
@@ -32,16 +32,14 @@ namespace etoile
     Status		Object::Load(context::Object&		context,
 				     const hole::Address&	address)
     {
-      core::Object*	object;
-
-      // set the component.
-      context.component = core::ComponentObject;
-
       // set the object address.
       context.address = address;
 
+      // allocate the object.
+      context.object = new core::Object;
+
       // get the block from Hole.
-      if (hole::Hole::Get(address, context.object) == StatusError)
+      if (hole::Hole::Get(address, *context.object) == StatusError)
 	escape("unable to retrieve the block from Hole");
 
       // retrieve the subject's rights. that also means that, if the
@@ -49,16 +47,6 @@ namespace etoile
       // a delegate to vouch for her.
       if (Object::Rights(context, context.rights) == StatusError)
 	escape("unable to retrieve the rights");
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    Status		Object::Store(context::Object&		context)
-    {
-      // XXX
 
       leave();
     }
@@ -73,6 +61,7 @@ namespace etoile
 				       core::Permissions&	rights,
 				       const core::Subject&	subject)
     {
+      /* XXX
       // test if the subject is the owner.
       if ((subject.type == core::Subject::TypeUser) &&
 	  (*subject.identifier.user == context.object.owner.K))
@@ -85,7 +74,7 @@ namespace etoile
 	  // XXX delegate or consumer
 	  printf("XXX[NOT IMPLEMENTED YET]\n");
 	}
-
+      */
       leave();
     }
 
