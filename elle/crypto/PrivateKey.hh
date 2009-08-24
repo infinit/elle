@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [tue aug  4 13:53:27 2009]
+// updated       julien quintard   [mon aug 24 01:23:56 2009]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HH
@@ -75,6 +75,10 @@ namespace elle
       //
       Status		Create(const ::EVP_PKEY*);
       Status		Create(Large*,
+			       Large*,
+			       Large*,
+			       Large*,
+			       Large*,
 			       Large*,
 			       Large*,
 			       Large*);

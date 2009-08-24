@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jul 31 14:30:45 2009]
+// updated       julien quintard   [sun aug 23 17:12:24 2009]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HXX
@@ -42,8 +42,7 @@ namespace elle
     //
 
     ///
-    /// this method encrypts the given Archivable object by serializing
-    /// it.
+    /// this method encrypts the given object by serializing it.
     ///
     template <typename T1>
     Status		SecretKey::Encrypt(const T1&		o1,

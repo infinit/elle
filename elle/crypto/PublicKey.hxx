@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jul 31 14:29:24 2009]
+// updated       julien quintard   [sun aug 23 17:13:25 2009]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HXX
@@ -42,8 +42,7 @@ namespace elle
     ///
 
     ///
-    /// this method takes any object that implements the Archivable
-    /// interface and encrypts it.
+    /// this method takes any object and encrypts it.
     ///
     /// the process obviously consists in serializing the object first.
     ///
@@ -292,8 +291,8 @@ namespace elle
     ///
 
     ///
-    /// this method verifies an Archivable object by serializing it
-    /// before performing the verification process.
+    /// this method verifies an object by serializing it before performing
+    /// the verification process.
     ///
     template <typename T1>
     Status		PublicKey::Verify(const Signature&	signature,

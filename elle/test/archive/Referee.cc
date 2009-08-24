@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Referee.cc
 //
 // created       julien quintard   [wed jan 28 12:32:31 2009]
-// updated       julien quintard   [fri feb  6 21:03:49 2009]
+// updated       julien quintard   [sun aug 23 21:19:19 2009]
 //
 
 //
@@ -72,6 +72,8 @@ namespace elle
       size = element->size;
 
       Referee::list.pop_front();
+
+      delete element;
 
       leave();
     }

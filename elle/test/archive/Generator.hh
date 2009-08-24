@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Generator.hh
 //
 // created       julien quintard   [wed jan 28 12:57:36 2009]
-// updated       julien quintard   [fri feb  6 21:04:10 2009]
+// updated       julien quintard   [sun aug 23 21:02:21 2009]
 //
 
 #ifndef ELLE_TEST_ARCHIVE_GENERATOR_HH
@@ -94,21 +94,21 @@ namespace elle
       //
       // methods
       //
-      static Status		Create(Boolean*&);
-      static Status		Create(Character*&);
-      static Status		Create(Real*&);
-      static Status		Create(Integer8*&);
-      static Status		Create(Integer16*&);
-      static Status		Create(Integer32*&);
-      static Status		Create(Integer64*&);
-      static Status		Create(Natural8*&);
-      static Status		Create(Natural16*&);
-      static Status		Create(Natural32*&);
-      static Status		Create(Natural64*&);
-      static Status		Create(Large*&);
-      static Status		Create(String*&);
-      static Status		Create(Region*&);
-      static Status		Create(Archive*&);
+      static Status		Create(Boolean&);
+      static Status		Create(Character&);
+      static Status		Create(Real&);
+      static Status		Create(Integer8&);
+      static Status		Create(Integer16&);
+      static Status		Create(Integer32&);
+      static Status		Create(Integer64&);
+      static Status		Create(Natural8&);
+      static Status		Create(Natural16&);
+      static Status		Create(Natural32&);
+      static Status		Create(Natural64&);
+      static Status		Create(Large&);
+      static Status		Create(String&);
+      static Status		Create(Region&);
+      static Status		Create(Archive&);
     };
 
   }

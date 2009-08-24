@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Generator.cc
 //
 // created       julien quintard   [fri jan 30 03:09:18 2009]
-// updated       julien quintard   [thu feb 19 02:19:48 2009]
+// updated       julien quintard   [sun aug 23 21:14:56 2009]
 //
 
 //
@@ -82,31 +82,25 @@ namespace elle
 // ---------- methods ---------------------------------------------------------
 //
 
-    Status		Generator::Create(Boolean*&		value)
+    Status		Generator::Create(Boolean&		value)
     {
-      value = new Boolean;
-
-      *value = Random::Generate(Generator::MinimumBooleanSize,
-				Generator::MaximumBooleanSize);
+      value = Random::Generate(Generator::MinimumBooleanSize,
+			       Generator::MaximumBooleanSize);
 
       leave();
     }
 
-    Status		Generator::Create(Character*&		value)
+    Status		Generator::Create(Character&		value)
     {
-      value = new Character;
-
-      *value = Random::Generate(Generator::MinimumCharacterSize,
-				Generator::MaximumCharacterSize);
+      value = Random::Generate(Generator::MinimumCharacterSize,
+			       Generator::MaximumCharacterSize);
 
       leave();
     }
 
-    Status		Generator::Create(Real*&		value)
+    Status		Generator::Create(Real&			value)
     {
-      value = new Real;
-
-      *value =
+      value =
 	((Real)Random::Generate(Generator::MinimumRealSize,
 				Generator::MaximumRealSize)) +
 	((Real)(1 / (Real)Random::Generate(Generator::MinimumRealSize,
@@ -115,157 +109,129 @@ namespace elle
       leave();
     }
 
-    Status		Generator::Create(Integer8*&		value)
+    Status		Generator::Create(Integer8&		value)
     {
-      value = new Integer8;
-
-      *value = Random::Generate(Generator::MinimumInteger8Size,
-				Generator::MaximumInteger8Size);
+      value = Random::Generate(Generator::MinimumInteger8Size,
+			       Generator::MaximumInteger8Size);
 
       leave();
     }
 
-    Status		Generator::Create(Integer16*&		value)
+    Status		Generator::Create(Integer16&		value)
     {
-      value = new Integer16;
-
-      *value = Random::Generate(Generator::MinimumInteger16Size,
-				Generator::MaximumInteger16Size);
+      value = Random::Generate(Generator::MinimumInteger16Size,
+			       Generator::MaximumInteger16Size);
 
       leave();
     }
 
-    Status		Generator::Create(Integer32*&		value)
+    Status		Generator::Create(Integer32&		value)
     {
-      value = new Integer32;
-
-      *value = Random::Generate(Generator::MinimumInteger32Size,
-				Generator::MaximumInteger32Size);
+      value = Random::Generate(Generator::MinimumInteger32Size,
+			       Generator::MaximumInteger32Size);
 
       leave();
     }
 
-    Status		Generator::Create(Integer64*&		value)
+    Status		Generator::Create(Integer64&		value)
     {
-      value = new Integer64;
-
-      *value = Random::Generate(Generator::MinimumInteger64Size,
-				Generator::MaximumInteger64Size);
+      value = Random::Generate(Generator::MinimumInteger64Size,
+			       Generator::MaximumInteger64Size);
 
       leave();
     }
 
-    Status		Generator::Create(Natural8*&		value)
+    Status		Generator::Create(Natural8&		value)
     {
-      value = new Natural8;
-
-      *value = Random::Generate(Generator::MinimumNatural8Size,
-				Generator::MaximumNatural8Size);
+      value = Random::Generate(Generator::MinimumNatural8Size,
+			       Generator::MaximumNatural8Size);
 
       leave();
     }
 
-    Status		Generator::Create(Natural16*&		value)
+    Status		Generator::Create(Natural16&		value)
     {
-      value = new Natural16;
-
-      *value = Random::Generate(Generator::MinimumNatural16Size,
-				Generator::MaximumNatural16Size);
+      value = Random::Generate(Generator::MinimumNatural16Size,
+			       Generator::MaximumNatural16Size);
 
       leave();
     }
 
-    Status		Generator::Create(Natural32*&		value)
+    Status		Generator::Create(Natural32&		value)
     {
-      value = new Natural32;
-
-      *value = Random::Generate(Generator::MinimumNatural32Size,
-				Generator::MaximumNatural32Size);
+      value = Random::Generate(Generator::MinimumNatural32Size,
+			       Generator::MaximumNatural32Size);
 
       leave();
     }
 
-    Status		Generator::Create(Natural64*&		value)
+    Status		Generator::Create(Natural64&		value)
     {
-      value = new Natural64;
-
-      *value = Random::Generate(Generator::MinimumNatural64Size,
-				Generator::MaximumNatural64Size);
+      value = Random::Generate(Generator::MinimumNatural64Size,
+			       Generator::MaximumNatural64Size);
 
       leave();
     }
 
-    Status		Generator::Create(Large*&		value)
+    Status		Generator::Create(Large&		value)
     {
-      value = new Large;
-
-      ::BN_init(value);
-      ::BN_rand(value, Random::Generate(Generator::MinimumLargeSize,
-					Generator::MaximumLargeSize), 0, 0);
+      ::BN_init(&value);
+      ::BN_rand(&value, Random::Generate(Generator::MinimumLargeSize,
+					 Generator::MaximumLargeSize), 0, 0);
 
       leave();
     }
 
-    Status		Generator::Create(String*&		value)
+    Status		Generator::Create(String&		value)
     {
       Natural32		length;
       Natural32		i;
-
-      value = new String;
 
       length = Random::Generate(Generator::MinimumStringLength,
 				Generator::MaximumStringLength);
 
       for (i = 0; i < length; i++)
-	value->append(1,
-		      (char)Random::Generate(Generator::MinimumCharacterSize,
-					     Generator::MaximumCharacterSize));
+	value.append(1,
+		     (char)Random::Generate(Generator::MinimumCharacterSize,
+					    Generator::MaximumCharacterSize));
 
       leave();
     }
 
-    Status		Generator::Create(Region*&		value)
+    Status		Generator::Create(Region&		value)
     {
-      Byte*		buffer;
       Natural32		size = Random::Generate(Generator::MinimumRegionSize,
 						Generator::MaximumRegionSize);
       Natural32		i;
-      Region*		chunk = new Region;
 
-      if ((buffer = (Byte*)::malloc(size)) == NULL)
-	escape("unable to allocate memory");
+      if (value.Prepare(size) == NULL)
+	escape("unable to prepare the region");
+
+      value.size = size;
 
       for (i = 0; i < size; i++)
-	*(buffer + i) = Random::Generate(Generator::MinimumCharacterSize,
-					 Generator::MaximumCharacterSize);
-
-      if (chunk->Wrap(buffer, size) == StatusError)
-	escape("unable to wrap the allocate memory into a chunk");
-
-      value = chunk;
+	value.contents[i] = Random::Generate(Generator::MinimumCharacterSize,
+					     Generator::MaximumCharacterSize);
 
       leave();
     }
 
-    Status		Generator::Create(Archive*&		value)
+    Status		Generator::Create(Archive&		value)
     {
       Integer64		choice = Random::Generate(Generator::MinimumArchiveChoice,
 						  Generator::MaximumArchiveChoice);
 
       if (choice == 0)
 	{
-	  value = new Archive;
+	  if (value.Create() == StatusError)
+	    escape("unable to create the archive");
 
-	  value->Create();
-
-	  if (Pack::Create(*value,
+	  if (Pack::Create(value,
 			   Random::Generate(Generator::MinimumArchiveSize,
 					    Generator::MaximumArchiveSize),
 			   false) == StatusError)
 	    escape("unable to create a pack");
 	}
-      else
-	value = NULL;
 
       leave();
     }

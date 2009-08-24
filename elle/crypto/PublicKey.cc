@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [mon aug 17 01:30:23 2009]
+// updated       julien quintard   [sun aug 23 23:40:19 2009]
 //
 
 //
@@ -113,6 +113,9 @@ namespace elle
       // set the rsa structure into the public key.
       if (::EVP_PKEY_set1_RSA(this->key, rsa) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // free the temporary RSA structure.
+      ::RSA_free(rsa);
 
       //
       // contexts
@@ -236,7 +239,7 @@ namespace elle
 	  escape("unable to detach the data from the archive");
 
 	// wrap and return into the code.
-	if (code.region.Wrap(archive.contents, archive.size) == StatusError)
+	if (code.region.Acquire(archive.contents, archive.size) == StatusError)
 	  escape("unable to wrap and return the archive's contents");
       }
 

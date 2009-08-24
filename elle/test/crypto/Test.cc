@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/crypto/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sat aug  1 19:58:35 2009]
+// updated       julien quintard   [mon aug 24 02:39:37 2009]
 //
 
 //
@@ -31,13 +31,13 @@ namespace elle
 //
 
     const Natural32		Test::MinimumTestsNumber = 1;
-    const Natural32		Test::MaximumTestsNumber = 987;
+    const Natural32		Test::MaximumTestsNumber = 3456;
 
     const Natural32		Test::MinimumRegionSize = 1;
     const Natural32		Test::MaximumRegionSize = 12345;
 
     const Natural32		Test::MinimumKeyLength = 1024;
-    const Natural32		Test::MaximumKeyLength = 8092;
+    const Natural32		Test::MaximumKeyLength = 2048;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -129,6 +129,8 @@ namespace elle
 		if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
 						  Test::MaximumKeyLength)) == StatusError)
 		  escape("unable to generate a secret key");
+
+		break;
 	      }
 	    case Test::TypeEncryption:
 	      {
@@ -157,6 +159,8 @@ namespace elle
 		// compare the input and output.
 		if (plain != clear)
 		  escape("the clear differs from the plain");
+
+		break;
 	      }
 	    case Test::TypeSignature:
 	      {
@@ -181,6 +185,8 @@ namespace elle
 		if (K.Verify(signature, plain) != StatusTrue)
 		  escape("unable to verify the signature or "
 			 "the signature differs from the plain");
+
+		break;
 	      }
 	    case Test::TypeCipher:
 	      {
@@ -207,9 +213,19 @@ namespace elle
 		// compare the clear with the initial plain.
 		if (plain != clear)
 		  escape("the clear differs from the plain");
+
+		break;
 	      }
 	    }
 	}
+
+      // delete the current keys.
+      delete kp;
+      delete sk;
+
+      // clean the crypto system.
+      if (Cryptography::Clean() == StatusError)
+	escape("unable to clean the cryptographic engine");
 
       leave();
     }
