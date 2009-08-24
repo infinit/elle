@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [wed aug  5 16:37:37 2009]
+// updated       julien quintard   [sun aug 23 22:53:38 2009]
 //
 
 //
@@ -94,8 +94,7 @@ namespace elle
 	escape("unable to prepare the key");
 
       // generate the key.
-      ::RAND_pseudo_bytes((unsigned char*)this->key.contents,
-			  size);
+      ::RAND_pseudo_bytes((unsigned char*)this->key.contents, size);
 
       // manually update the size.
       this->key.size = size;
@@ -112,7 +111,7 @@ namespace elle
       Byte		key[EVP_MAX_KEY_LENGTH];
       Byte		iv[EVP_MAX_IV_LENGTH];
       Byte		salt[PKCS5_SALT_LEN];
-      Natural32		length;
+      Natural32		capacity;
       int		size;
       ::EVP_CIPHER_CTX	context;
 
@@ -141,12 +140,12 @@ namespace elle
 			       iv) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      // retreive the cipher-specific block length.
-      length = ::EVP_CIPHER_CTX_block_size(&context);
+      // retreive the cipher-specific block size.
+      capacity = ::EVP_CIPHER_CTX_block_size(&context);
 
       // allocate the cipher.
       if (cipher.region.Prepare(sizeof(SecretKey::Magic) - 1 + sizeof(salt) +
-				plain.size + length - 1) == StatusError)
+				plain.size + capacity) == StatusError)
 	escape("unable to reserve memory for the cipher");
 
       // push the magic string directly into the cipher.
@@ -197,7 +196,7 @@ namespace elle
       Byte		key[EVP_MAX_KEY_LENGTH];
       Byte		iv[EVP_MAX_IV_LENGTH];
       Byte		salt[PKCS5_SALT_LEN];
-      Natural32		length;
+      Natural32		capacity;
       int		size;
       ::EVP_CIPHER_CTX	context;
 
@@ -234,13 +233,13 @@ namespace elle
 			       iv) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      // retreive the cipher-specific block length.
-      length = ::EVP_CIPHER_CTX_block_size(&context);
+      // retreive the cipher-specific block size.
+      capacity = ::EVP_CIPHER_CTX_block_size(&context);
 
       // allocate the clear.
       if (clear.Prepare(cipher.region.size -
 			(sizeof(SecretKey::Magic) - 1 + sizeof(salt)) +
-			length) == StatusError)
+			capacity) == StatusError)
 	escape("unable to reserve memory for the clear text");
 
       // cipher the cipher text.

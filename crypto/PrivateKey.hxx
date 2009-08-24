@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jul 31 14:29:55 2009]
+// updated       julien quintard   [sun aug 23 17:13:49 2009]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HXX
@@ -43,7 +43,7 @@ namespace elle
 
     ///
     /// this method decrypts a code and returns a pretty newly created
-    /// archivable object.
+    /// object.
     ///
     template <typename T1>
     Status		PrivateKey::Decrypt(const Code&		code,
@@ -325,8 +325,8 @@ namespace elle
     //
 
     ///
-    /// this method signs an Archivable object by serializing it
-    /// before applying the signature process.
+    /// this method signs an object by serializing it before applying the
+    /// signature process.
     ///
     template <typename T1>
     Status		PrivateKey::Sign(const T1&		o1,

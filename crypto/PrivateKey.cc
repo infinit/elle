@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [mon aug 17 01:30:02 2009]
+// updated       julien quintard   [mon aug 24 01:31:44 2009]
 //
 
 //
@@ -79,9 +79,13 @@ namespace elle
     Status		PrivateKey::Create(const ::EVP_PKEY*	key)
     {
       if (this->Create(::BN_dup(key->pkey.rsa->n),
+		       ::BN_dup(key->pkey.rsa->e),
 		       ::BN_dup(key->pkey.rsa->d),
 		       ::BN_dup(key->pkey.rsa->p),
-		       ::BN_dup(key->pkey.rsa->q)) == StatusError)
+		       ::BN_dup(key->pkey.rsa->q),
+		       ::BN_dup(key->pkey.rsa->dmp1),
+		       ::BN_dup(key->pkey.rsa->dmq1),
+		       ::BN_dup(key->pkey.rsa->iqmp)) == StatusError)
 	escape("unable to create the private key");
 
       leave();
@@ -92,9 +96,13 @@ namespace elle
     /// numbers.
     ///
     Status		PrivateKey::Create(Large*		n,
+					   Large*		e,
 					   Large*		d,
 					   Large*		p,
-					   Large*		q)
+					   Large*		q,
+					   Large*		dmp1,
+					   Large*		dmq1,
+					   Large*		iqmp)
     {
       ::RSA*		rsa;
 
@@ -111,13 +119,20 @@ namespace elle
 
       // duplicate the big numbers relevant to the private key.
       rsa->n = n;
+      rsa->e = e;
       rsa->d = d;
       rsa->p = p;
       rsa->q = q;
+      rsa->dmp1 = dmp1;
+      rsa->dmq1 = dmq1;
+      rsa->iqmp = iqmp;
 
       // set the rsa structure into the private key.
       if (::EVP_PKEY_set1_RSA(this->key, rsa) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // free the temporary RSA context.
+      ::RSA_free(rsa);
 
       //
       // contexts
@@ -271,8 +286,8 @@ namespace elle
 			  digest.region.size) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      // increase the code pointer.
-      signature.region.size += size;
+      // set the code size.
+      signature.region.size = size;
 
       leave();
     }
@@ -370,12 +385,19 @@ namespace elle
     Status		PrivateKey::Extract(Archive&		archive)
     {
       Large*		n;
+      Large*		e;
       Large*		d;
       Large*		p;
       Large*		q;
+      Large*		dmp1;
+      Large*		dmq1;
+      Large*		iqmp;
 
       // allocate the big numbers.
       if ((n = ::BN_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      if ((e = ::BN_new()) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       if ((d = ::BN_new()) == NULL)
@@ -387,12 +409,22 @@ namespace elle
       if ((q = ::BN_new()) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
+      if ((dmp1 = ::BN_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      if ((dmq1 = ::BN_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      if ((iqmp = ::BN_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
       // extract the numbers.
-      if (archive.Extract(*n, *d, *p, *q) == StatusError)
+      if (archive.Extract(*n, *e, *d, *p, *q,
+			  *dmp1, *dmq1, *iqmp) == StatusError)
 	escape("unable to extract the internal numbers");
 
       // create the EVP_PKEY object from the extract numbers.
-      if (this->Create(n, d, p, q) == StatusError)
+      if (this->Create(n, e, d, p, q, dmp1, dmq1, iqmp) == StatusError)
 	escape("unable to create the private key from the archive");
 
       leave();

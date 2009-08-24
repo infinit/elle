@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [thu aug  6 11:42:37 2009]
+// updated       julien quintard   [sun aug 23 21:25:48 2009]
 //
 
 //
@@ -30,7 +30,7 @@ namespace elle
 //
 
     const Natural32		Test::MinimumPackSize = 1;
-    const Natural32		Test::MaximumPackSize = 987654;
+    const Natural32		Test::MaximumPackSize = 98765;
 
 //
 // ---------- methods ---------------------------------------------------------

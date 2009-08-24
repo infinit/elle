@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Pack.cc
 //
 // created       julien quintard   [wed jan 28 12:08:47 2009]
-// updated       julien quintard   [thu aug  6 11:43:29 2009]
+// updated       julien quintard   [sun aug 23 21:20:32 2009]
 //
 
 //
@@ -43,6 +43,9 @@ namespace elle
 	{
 	  Byte		random = Random::Generate(Archive::TypeBoolean, Archive::TypeArchive);
 
+	  // XXX
+	  random = Archive::TypeInteger32;
+
 	  switch ((enum Archive::Type)random)
 	    {
 	    case Archive::TypeUnknown:
@@ -65,17 +68,17 @@ namespace elle
 	      }
 	    case Archive::TypeBoolean:
 	      {
-		Boolean*	value;
+		Boolean		value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a boolean");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeBoolean,
-				    value,
+				    &value,
 				    sizeof(Boolean)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -83,17 +86,17 @@ namespace elle
 	      }
 	    case Archive::TypeCharacter:
 	      {
-		Character*	value;
+		Character	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a character");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeCharacter,
-				    value,
+				    &value,
 				    sizeof(Character)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -101,17 +104,17 @@ namespace elle
 	      }
 	    case Archive::TypeReal:
 	      {
-		Real*		value;
+		Real		value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a real");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeReal,
-				    value,
+				    &value,
 				    sizeof(Real)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -119,17 +122,17 @@ namespace elle
 	      }
 	    case Archive::TypeInteger8:
 	      {
-		Integer8*	value;
+		Integer8	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a integer 8-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger8,
-				    value,
+				    &value,
 				    sizeof(Integer8)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -137,17 +140,17 @@ namespace elle
 	      }
 	    case Archive::TypeInteger16:
 	      {
-		Integer16*	value;
+		Integer16	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a integer 16-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger16,
-				    value,
+				    &value,
 				    sizeof(Integer16)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -155,17 +158,17 @@ namespace elle
 	      }
 	    case Archive::TypeInteger32:
 	      {
-		Integer32*	value;
+		Integer32	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a integer 32-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger32,
-				    value,
+				    &value,
 				    sizeof(Integer32)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -173,17 +176,17 @@ namespace elle
 	      }
 	    case Archive::TypeInteger64:
 	      {
-		Integer64*	value;
+		Integer64	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a integer 64-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger64,
-				    value,
+				    &value,
 				    sizeof(Integer64)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -191,17 +194,17 @@ namespace elle
 	      }
 	    case Archive::TypeNatural8:
 	      {
-		Natural8*	value;
+		Natural8	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a natural 8-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural8,
-				    value,
+				    &value,
 				    sizeof(Natural8)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -209,17 +212,17 @@ namespace elle
 	      }
 	    case Archive::TypeNatural16:
 	      {
-		Natural16*	value;
+		Natural16	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a natural 16-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural16,
-				    value,
+				    &value,
 				    sizeof(Natural16)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -227,17 +230,17 @@ namespace elle
 	      }
 	    case Archive::TypeNatural32:
 	      {
-		Natural32*	value;
+		Natural32	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a natural 32-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural32,
-				    value,
+				    &value,
 				    sizeof(Natural32)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -245,17 +248,17 @@ namespace elle
 	      }
 	    case Archive::TypeNatural64:
 	      {
-		Natural64*	value;
+		Natural64	value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a natural 64-bit");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural64,
-				    value,
+				    &value,
 				    sizeof(Natural64)) == StatusError)
 		    escape("unable to push the element into the referee");
 
@@ -263,21 +266,21 @@ namespace elle
 	      }
 	    case Archive::TypeLarge:
 	      {
-		Large*		value;
+		Large		value;
 		void*		buffer;
 		Natural32	size;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a large");
 
-		size = BN_num_bytes(value);
+		size = BN_num_bytes(&value);
 
 		if ((buffer = ::malloc(size)) == NULL)
 		  escape("unable to allocate memory");
 
-		::BN_bn2bin(value, (unsigned char*)buffer);
+		::BN_bn2bin(&value, (unsigned char*)buffer);
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
@@ -286,60 +289,62 @@ namespace elle
 				    size) == StatusError)
 		    escape("unable to push the element into the referee");
 
+		free(buffer);
+
 		break;
 	      }
 	    case Archive::TypeString:
 	      {
-		String*		value;
+		String		value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a string");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeString,
-				    value->data(),
-				    value->length()) == StatusError)
+				    value.data(),
+				    value.length()) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
 	      }
 	    case Archive::TypeRegion:
 	      {
-		Region*		value;
+		Region		value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a region");
 
-		if (archive.Serialize(*value) == StatusError)
+		if (archive.Serialize(value) == StatusError)
 		  escape("unable to serialize the element");
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeRegion,
-				    value->contents,
-				    value->size) == StatusError)
+				    value.contents,
+				    value.size) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
 	      }
 	    case Archive::TypeArchive:
 	      {
-		Archive*	value;
+		Archive		value;
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a archive");
 
-		if (value != NULL)
+		if (value.size != 0)
 		  {
-		    if (archive.Serialize(*value) == StatusError)
+		    if (archive.Serialize(value) == StatusError)
 		      escape("unable to serialize the element");
 
 		    if (refer)
 		      if (Referee::Push(Archive::TypeArchive,
-					value->contents,
-					value->size) == StatusError)
+					value.contents,
+					value.size) == StatusError)
 			escape("unable to push the element into the referee");
 		  }
 
@@ -587,6 +592,8 @@ namespace elle
 		break;
 	      }
 	    }
+
+	  free(data);
 	}
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/benchmark/crypto/Benchmark.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sat aug  8 21:58:00 2009]
+// updated       julien quintard   [mon aug 24 02:40:07 2009]
 //
 
 //
@@ -93,7 +93,7 @@ namespace elle
 
       // Asymmetric Decryption
       {
-	KeyPair		keypair;
+ 	KeyPair		keypair;
 	Region		region;
 	Code		code;
 	Clear		clear;
@@ -295,6 +295,10 @@ namespace elle
 	time.Print();
 	std::cout << std::endl;
       }
+
+      // clean the cryptographic system.
+      if (Cryptography::Clean() == StatusError)
+	escape("unable to clean the cryptography system");
 
       leave();
     }
