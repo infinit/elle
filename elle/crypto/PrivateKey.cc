@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [mon aug 24 01:31:44 2009]
+// updated       julien quintard   [mon aug 24 14:01:54 2009]
 //
 
 //
@@ -117,7 +117,7 @@ namespace elle
       if ((rsa = ::RSA_new()) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      // duplicate the big numbers relevant to the private key.
+      // assign the big numbers relevant to the private key.
       rsa->n = n;
       rsa->e = e;
       rsa->d = d;
@@ -128,11 +128,8 @@ namespace elle
       rsa->iqmp = iqmp;
 
       // set the rsa structure into the private key.
-      if (::EVP_PKEY_set1_RSA(this->key, rsa) <= 0)
+      if (::EVP_PKEY_assign_RSA(this->key, rsa) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      // free the temporary RSA context.
-      ::RSA_free(rsa);
 
       //
       // contexts
@@ -371,9 +368,13 @@ namespace elle
     {
       // serialize the internal numbers.
       if (archive.Serialize(*this->key->pkey.rsa->n,
+			    *this->key->pkey.rsa->e,
 			    *this->key->pkey.rsa->d,
 			    *this->key->pkey.rsa->p,
-			    *this->key->pkey.rsa->q) == StatusError)
+			    *this->key->pkey.rsa->q,
+			    *this->key->pkey.rsa->dmp1,
+			    *this->key->pkey.rsa->dmq1,
+			    *this->key->pkey.rsa->iqmp) == StatusError)
 	escape("unable to serialize the internal numbers");
 
       leave();
@@ -384,48 +385,39 @@ namespace elle
     ///
     Status		PrivateKey::Extract(Archive&		archive)
     {
-      Large*		n;
-      Large*		e;
-      Large*		d;
-      Large*		p;
-      Large*		q;
-      Large*		dmp1;
-      Large*		dmq1;
-      Large*		iqmp;
-
-      // allocate the big numbers.
-      if ((n = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((e = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((d = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((p = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((q = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((dmp1 = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((dmq1 = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((iqmp = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+      Large		n;
+      Large		e;
+      Large		d;
+      Large		p;
+      Large		q;
+      Large		dmp1;
+      Large		dmq1;
+      Large		iqmp;
 
       // extract the numbers.
-      if (archive.Extract(*n, *e, *d, *p, *q,
-			  *dmp1, *dmq1, *iqmp) == StatusError)
+      if (archive.Extract(n, e, d, p, q, dmp1, dmq1, iqmp) == StatusError)
 	escape("unable to extract the internal numbers");
 
       // create the EVP_PKEY object from the extract numbers.
-      if (this->Create(n, e, d, p, q, dmp1, dmq1, iqmp) == StatusError)
+      if (this->Create(::BN_dup(&n),
+		       ::BN_dup(&e),
+		       ::BN_dup(&d),
+		       ::BN_dup(&p),
+		       ::BN_dup(&q),
+		       ::BN_dup(&dmp1),
+		       ::BN_dup(&dmq1),
+		       ::BN_dup(&iqmp)) == StatusError)
 	escape("unable to create the private key from the archive");
+
+      // release the internal used memory.
+      ::BN_free(&n);
+      ::BN_free(&e);
+      ::BN_free(&d);
+      ::BN_free(&p);
+      ::BN_free(&q);
+      ::BN_free(&dmp1);
+      ::BN_free(&dmq1);
+      ::BN_free(&iqmp);
 
       leave();
     }
