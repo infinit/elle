@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [sun aug 23 23:40:19 2009]
+// updated       julien quintard   [mon aug 24 14:01:27 2009]
 //
 
 //
@@ -106,16 +106,13 @@ namespace elle
       if ((rsa = ::RSA_new()) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      // duplicate the big numbers relevant to the public key.
+      // assign the big numbers relevant to the public key.
       rsa->n = n;
       rsa->e = e;
 
       // set the rsa structure into the public key.
-      if (::EVP_PKEY_set1_RSA(this->key, rsa) <= 0)
+      if (::EVP_PKEY_assign_RSA(this->key, rsa) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      // free the temporary RSA structure.
-      ::RSA_free(rsa);
 
       //
       // contexts
@@ -358,23 +355,21 @@ namespace elle
     ///
     Status		PublicKey::Extract(Archive&		archive)
     {
-      Large*		n;
-      Large*		e;
-
-      // allocate the new big numbers.
-      if ((n = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
-
-      if ((e = ::BN_new()) == NULL)
-	escape(::ERR_error_string(ERR_get_error(), NULL));
+      Large		n;
+      Large		e;
 
       // extract the numbers.
-      if (archive.Extract(*n, *e) == StatusError)
+      if (archive.Extract(n, e) == StatusError)
 	escape("unable to extract the internal numbers");
 
       // create the EVP_PKEY object from the extract numbers.
-      if (this->Create(n, e) == StatusError)
+      if (this->Create(::BN_dup(&n),
+		       ::BN_dup(&e)) == StatusError)
 	escape("unable to create the public key from the archive");
+
+      // release the internal used memory.
+      ::BN_free(&n);
+      ::BN_free(&e);
 
       leave();
     }

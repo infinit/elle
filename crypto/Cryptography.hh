@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cryptography.hh
 //
 // created       julien quintard   [tue oct 30 12:15:12 2007]
-// updated       julien quintard   [thu jul 30 13:22:18 2009]
+// updated       julien quintard   [mon aug 24 14:12:05 2009]
 //
 
 #ifndef ELLE_CRYPTO_CRYPTOGRAPHY_HH
@@ -58,6 +58,20 @@ namespace elle
     ///
     /// this class also provides a general interface for cryptographic
     /// operations.
+    ///
+    /// note that both Initialize() and Clean() should be called in an
+    /// upper sccope to any other cryptographic operations. indeed, otherwise,
+    /// the Clean() would release every resource and would prevents live
+    /// cryptograhic object from being properly deleted since destructors
+    /// usually call _free() functions and those will no longer work after
+    /// Clean() has been called.
+    ///
+    /// the same is true for static objects. since those objects will be
+    /// deleted when the application stops and since Clean() will probably
+    /// have been called, hence before, these static objects will never be
+    /// properly deleted. one should therefore avoid using such static
+    /// objects or use static pointers with initialization and cleaning
+    /// methods.
     ///
     class Cryptography
     {
