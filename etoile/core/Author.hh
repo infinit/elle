@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.hh
 //
 // created       julien quintard   [fri aug 21 22:04:45 2009]
-// updated       julien quintard   [sat aug 22 01:00:57 2009]
+// updated       julien quintard   [sun aug 23 15:41:17 2009]
 //
 
 #ifndef ETOILE_CORE_AUTHOR_HH
@@ -19,6 +19,7 @@
 //
 
 #include <etoile/core/Proof.hh>
+#include <etoile/core/Voucher.hh>
 
 namespace etoile
 {
@@ -54,7 +55,10 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const Mode&);
+      Status		Create();
+      Status		Create(const Natural32&);
+      Status		Create(const Natural32&,
+			       const Voucher&);
 
       //
       // interfaces

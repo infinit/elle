@@ -51,82 +51,76 @@ int		main(int			argc,
 		     char**			argv)
 {
   Cryptography::Initialize();
-
-  KeyPair	pair;
-  Address	root;
-
-      // XXX[hack for the /]
-      {
-	int		fd;
-
-	fd = ::open(".device/.root", O_RDONLY);
-
-	Region	region;
-
-	region.Prepare(4096);
-
-	region.size = read(fd, region.contents, region.capacity);
-
-	region.Detach();
-
-	Archive		archive;
-
-	archive.Prepare(region);
-
-	archive.Extract(root);
-
-	expose();
-      }
-
-      // XXX[hack for the administrator]
-      {
-	int		fd;
-
-	fd = ::open(".device/.administrator", O_RDONLY);
-
-	Region	region;
-
-	region.Prepare(4096);
-
-	region.size = read(fd, region.contents, region.capacity);
-
-	region.Detach();
-
-	Archive		archive;
-
-	archive.Prepare(region);
-
-	archive.Extract(pair);
-
-	expose();
-      }
-
-  // init the agent.
-  Agent::Pair = pair;
-  Agent::Subject.Create(Agent::Pair.K);
-
-  // init path.
-  Path::Initialize(root);
-
-  //Route		route;
-
-  //route.Create("/suce/mon");
-
-  //Address	address;
-
-  //Path::Resolve(route, address);
-
-  //address.Dump();
-
   {
-    context::Directory	context;
+    KeyPair	pair;
 
-    components::Directory::Load(context, root);
-    components::Directory::Add(context, "loop", context.address);
-    components::Directory::Commit(context);
+    Address	root;
+
+    // XXX[hack for the /]
+    {
+      int		fd;
+
+      fd = ::open(".device/.root", O_RDONLY);
+
+      Region	region;
+
+      region.Prepare(4096);
+
+      region.size = read(fd, region.contents, region.capacity);
+
+      region.Detach();
+
+      Archive		archive;
+
+      archive.Prepare(region);
+
+      archive.Extract(root);
+
+      expose();
+    }
+
+    // XXX[hack for the administrator]
+    {
+      int		fd;
+
+      fd = ::open(".device/.administrator", O_RDONLY);
+
+      Region	region;
+
+      region.Prepare(4096);
+
+      region.size = read(fd, region.contents, region.capacity);
+
+      region.Detach();
+
+      Archive		archive;
+
+      archive.Prepare(region);
+
+      archive.Extract(pair);
+
+      expose();
+    }
+
+    // init the agent.
+    Agent::Pair = pair;
+    Agent::Subject.Create(Agent::Pair.K);
+
+    // init path.
+    Path::Initialize(root);
+
+    {
+      context::Directory	context;
+
+      components::Directory::Load(context, root);
+      //components::Directory::Add(context, "loop", context.address);
+      //components::Directory::Commit(context);
+      components::Directory::Close(context);
+    }
+
+    expose();
   }
-
-  expose();
+  Cryptography::Clean();
 
   return (0);
 }

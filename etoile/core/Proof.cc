@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [fri aug 21 22:31:28 2009]
+// updated       julien quintard   [sun aug 23 16:26:40 2009]
 //
 
 //
@@ -46,13 +46,49 @@ namespace etoile
     }
 
 //
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Status		Proof::Specify(const Natural32&		index)
+    {
+      // set the index.
+      this->index = index;
+
+      // make sure there is no voucher.
+      this->voucher = NULL;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Proof::Specify(const Natural32&		index,
+				       const Voucher&		voucher)
+    {
+      // set the index.
+      this->index = index;
+
+      // allocate a new voucher.
+      this->voucher = new Voucher;
+
+      // set the voucher.
+      *this->voucher = voucher;
+
+      leave();
+    }
+
+//
 // ---------- entity ----------------------------------------------------------
 //
 
     ///
     /// assign the address.
     ///
-    Proof&		Proof::operator=(const Proof&	element)
+    Proof&		Proof::operator=(const Proof&		element)
     {
       // self-check.
       if (this == &element)
@@ -68,7 +104,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Proof::operator==(const Proof&	element) const
+    Boolean		Proof::operator==(const Proof&		element) const
     {
       // compare the addresses since one of them is null.
       if ((this->voucher == NULL) || (element.voucher == NULL))
@@ -82,7 +118,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Proof::operator!=(const Proof&	element) const
+    Boolean		Proof::operator!=(const Proof&		element) const
     {
       return (!(*this == element));
     }

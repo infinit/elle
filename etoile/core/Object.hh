@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [sat aug 22 01:26:15 2009]
+// updated       julien quintard   [sun aug 23 11:09:20 2009]
 //
 
 #ifndef ETOILE_CORE_OBJECT_HH
@@ -70,7 +70,7 @@ namespace etoile
 
       Status		Update(const Author&,
 			       const hole::Address&,
-			       const Natural64&,
+			       const Contents::Offset&,
 			       const Digest&);
       Status		Administrate(const hole::Address&,
 				     const Permissions&);
@@ -129,7 +129,7 @@ namespace etoile
       {
 	hole::Address	contents;
 
-	Natural64	size;
+	Contents::Offset size;
 	Time		stamp;
 
 	Digest		fingerprint;

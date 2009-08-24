@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [sun aug 23 10:08:37 2009]
+// updated       julien quintard   [sun aug 23 17:45:49 2009]
 //
 
 //
@@ -60,11 +60,12 @@ namespace etoile
     /// or new but empty. otherwise, the new catalog address is computed
     /// and the directory object is updated.
     ///
-    Status		Catalog::Seal(context::Directory&	context)
+    Status		Catalog::Commit(context::Directory&	context)
     {
-      hole::Address	address;
-      Natural64		size;
-      SecretKey		key;
+      hole::Address		address;
+      core::Contents::Offset	size;
+      SecretKey			key;
+      Digest			fingerprint;
 
       // if there is no loaded catalog, then there is nothing to do.
       if (context.catalog == NULL)
@@ -95,12 +96,33 @@ namespace etoile
       if (key.Generate() == StatusError)
 	escape("unable to generate the secret key");
 
-      // then seal the catalog.
-      //if (context.catalog->Seal(key) == StatusError)
-      //escape("unable to seal the catalog");
+      fingerprint.Dump();
+
+      // compute a fingerprint of the key.
+      if (OneWay::Hash(key, fingerprint) == StatusError)
+	escape("unable to compute a fingerprint of the key");
+
+      fingerprint.Dump();
+
+      // then record the catalog's key.
+      if (context.catalog->Prepare(key) == StatusError)
+	escape("unable to prepare the catalog");
+
+      // since the key has been changed, the address is supposed to have
+      // changed as well ... recompute it.
+      if (context.catalog->Self(address) == StatusError)
+	escape("unable to retrieve the new catalog's address");
+
+      // compute the author.
+      if (Author::Create(context) == StatusError)
+	escape("unable to create an author");
 
       // update the object data section.
-      // XXX context.object->data
+      if (context.object->Update(context.author,
+				 address,
+				 size,
+				 fingerprint) == StatusError)
+	escape("unable to update the object");
 
       leave();
     }

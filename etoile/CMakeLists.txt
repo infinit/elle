@@ -32,6 +32,7 @@ ADD_LIBRARY(etoile
   components/Object.cc
   components/Directory.cc
   components/Catalog.cc
+  components/Author.cc
 
   agent/Agent.cc
   )

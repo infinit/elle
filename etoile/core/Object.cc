@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sat aug 22 14:32:50 2009]
+// updated       julien quintard   [sun aug 23 17:51:16 2009]
 //
 
 //
@@ -102,8 +102,8 @@ namespace etoile
 	Digest		fingerprint;
 	Author		author;
 
-	// set an author.
-	if (author.Create(Author::ModeOwner) == StatusError)
+	// set an owner author.
+	if (author.Create() == StatusError)
 	  escape("unable to create an author");
 
 	// set the initial data with no contents, an empty fingerprint and
@@ -123,7 +123,7 @@ namespace etoile
     ///
     Status		Object::Update(const Author&		author,
 				       const hole::Address&	contents,
-				       const Natural64&		size,
+				       const Contents::Offset&	size,
 				       const Digest&		fingerprint)
     {
       // set the author.
@@ -136,7 +136,9 @@ namespace etoile
       this->data.size = size;
 
       // set the fingerprint.
+      printf("BEFORE\n");
       this->data.fingerprint = fingerprint;
+      printf("AFTER\n");
 
       // set the last update time.
       if (this->data.stamp.Current() == StatusError)

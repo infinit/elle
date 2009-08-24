@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [mon aug 10 21:17:16 2009]
+// updated       julien quintard   [sun aug 23 10:43:45 2009]
 //
 
 //
@@ -82,6 +82,17 @@ namespace etoile
 
       // then, manually set the region size.
       this->region.size = size;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Data::Size(Natural64&			size) const
+    {
+      // set the size.
+      size = this->region.size;
 
       leave();
     }

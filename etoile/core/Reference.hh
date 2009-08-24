@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [sun aug 16 23:43:55 2009]
+// updated       julien quintard   [sun aug 23 10:42:58 2009]
 //
 
 #ifndef ETOILE_CORE_REFERENCE_HH
@@ -47,6 +47,8 @@ namespace etoile
       //
 
       // XXX
+
+      Status		Size(Natural64&) const;
 
       //
       // interfaces

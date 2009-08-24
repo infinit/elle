@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [fri aug 21 22:01:22 2009]
+// updated       julien quintard   [sun aug 23 10:52:05 2009]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HH
@@ -35,6 +35,16 @@ namespace etoile
     class Contents:
       public ContentHashBlock
     {
+    public:
+      //
+      // types
+      //
+      typedef Natural64		Offset;
+
+      //
+      // methods
+      //
+      virtual Status	Size(Natural64&) const = 0;
     };
 
   }

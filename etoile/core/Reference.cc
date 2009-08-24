@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat aug 15 12:38:40 2009]
+// updated       julien quintard   [sun aug 23 10:43:25 2009]
 //
 
 //
@@ -27,6 +27,17 @@ namespace etoile
 //
 
     // XXX
+
+    ///
+    /// XXX
+    ///
+    Status		Reference::Size(Natural64&		size) const
+    {
+      // set the size.
+      size = this->target.length();
+
+      leave();
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------

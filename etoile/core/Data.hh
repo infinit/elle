@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [sun aug 16 23:43:44 2009]
+// updated       julien quintard   [sun aug 23 10:41:59 2009]
 //
 
 #ifndef ETOILE_CORE_DATA_HH
@@ -46,6 +46,8 @@ namespace etoile
 			      const Byte*,
 			      const Natural64);
       Status		Adjust(const Natural64);
+
+      Status		Size(Natural64&) const;
 
       //
       // interfaces

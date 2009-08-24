@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [sat aug 22 00:02:07 2009]
+// updated       julien quintard   [sun aug 23 16:25:41 2009]
 //
 
 #ifndef ETOILE_CORE_PROOF_HH
@@ -48,9 +48,9 @@ namespace etoile
       //
       // methods
       //
-      Status		Specify(Natural32);
-      Status		Specify(Natural32,
-				Voucher&);
+      Status		Specify(const Natural32&);
+      Status		Specify(const Natural32&,
+				const Voucher&);
 
       //
       // interfaces

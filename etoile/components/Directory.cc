@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [sun aug 23 10:09:23 2009]
+// updated       julien quintard   [sun aug 23 10:57:27 2009]
 //
 
 //
@@ -92,8 +92,8 @@ namespace etoile
     Status		Directory::Commit(context::Directory&	context)
     {
       // seal the catalog.
-      if (Catalog::Seal(context) == StatusError)
-	escape("unable to seal the catalog");
+      if (Catalog::Commit(context) == StatusError)
+	escape("unable tox seal the catalog");
 
       // seal the access.
       // XXX

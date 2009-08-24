@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [sat aug 22 01:03:57 2009]
+// updated       julien quintard   [sun aug 23 15:43:57 2009]
 //
 
 //
@@ -52,28 +52,48 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Author::Create(const Author::Mode&	mode)
+    Status		Author::Create()
     {
       // set the mode.
-      this->mode = mode;
+      this->mode = Author::ModeOwner;
+      this->proof = NULL;
 
-      // according to the mode...
-      switch (mode)
-	{
-	case Author::ModeOwner:
-	  {
-	    // nothing to do.
+      leave();
+    }
 
-	    break;
-	  }
-	default:
-	  {
-	    // XXX
-	    printf("UNIMPLEMENTED\n");
+    ///
+    /// XXX
+    ///
+    Status		Author::Create(const Natural32&		index)
+    {
+      // set the mode.
+      this->mode = Author::ModeDelegate;
 
-	    break;
-	  }
-	}
+      // allocate a new proof.
+      this->proof = new Proof;
+
+      // set the proof.
+      if (this->proof->Specify(index) == StatusError)
+	escape("unable to specify the proof");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Author::Create(const Natural32&		index,
+				       const Voucher&		voucher)
+    {
+      // set the mode.
+      this->mode = Author::ModeConsumer;
+
+      // allocate a new proof.
+      this->proof = new Proof;
+
+      // set the proof.
+      if (this->proof->Specify(index, voucher) == StatusError)
+	escape("unable to specify the proof");
 
       leave();
     }

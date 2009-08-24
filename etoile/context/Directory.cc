@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [sat aug 22 02:16:07 2009]
+// updated       julien quintard   [mon aug 24 14:22:16 2009]
 //
 
 //
@@ -48,7 +48,9 @@ namespace etoile
     ///
     Directory::~Directory()
     {
-      // XXX \todo XXX
+      // release the catalog.
+      if (this->catalog != NULL)
+	delete this->catalog;
     }
 
   }

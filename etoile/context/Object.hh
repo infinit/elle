@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [sat aug 22 14:03:16 2009]
+// updated       julien quintard   [sun aug 23 15:32:41 2009]
 //
 
 #ifndef ETOILE_CONTEXT_OBJECT_HH
@@ -54,6 +54,7 @@ namespace etoile
       core::Object*			object;
       core::Access*			access;
 
+      core::Author			author;
       core::Permissions			rights;
     };
 

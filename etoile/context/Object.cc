@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [sat aug 22 14:03:28 2009]
+// updated       julien quintard   [mon aug 24 14:20:45 2009]
 //
 
 //
@@ -52,7 +52,13 @@ namespace etoile
     ///
     Object::~Object()
     {
-      // XXX \todo XXX
+      // release the object.
+      if (this->object != NULL)
+	delete this->object;
+
+      // release the access.
+      if (this->access != NULL)
+	delete this->access;
     }
 
   }

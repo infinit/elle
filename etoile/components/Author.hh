@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Catalog.hh
+// file          /home/mycure/infinit/etoile/components/Author.hh
 //
-// created       julien quintard   [mon aug 17 11:44:37 2009]
-// updated       julien quintard   [sun aug 23 15:29:57 2009]
+// created       julien quintard   [sun aug 23 15:30:06 2009]
+// updated       julien quintard   [sun aug 23 16:29:13 2009]
 //
 
-#ifndef ETOILE_COMPONENTS_CATALOG_HH
-#define ETOILE_COMPONENTS_CATALOG_HH
+#ifndef ETOILE_COMPONENTS_AUTHOR_HH
+#define ETOILE_COMPONENTS_AUTHOR_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,7 +22,7 @@
 
 #include <etoile/context/Context.hh>
 
-#include <etoile/components/Author.hh>
+#include <etoile/agent/Agent.hh>
 
 namespace etoile
 {
@@ -36,15 +36,13 @@ namespace etoile
     ///
     /// XXX
     ///
-    class Catalog
+    class Author
     {
     public:
       //
-      // methods
+      // static methods
       //
-      static Status	Open(context::Directory&);
-
-      static Status	Commit(context::Directory&);
+      static Status	Create(context::Object&);
     };
 
   }
