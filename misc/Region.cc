@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sun aug 23 21:21:09 2009]
+// updated       julien quintard   [mon aug 31 21:35:00 2009]
 //
 
 //
@@ -48,17 +48,16 @@ namespace elle
       Entity::Entity(region),
 
       type(region.type),
-      options(region.options)
+      options(region.options),
+      contents(NULL),
+      size(0),
+      capacity(0)
     {
       // according to the type...
       switch (region.type)
 	{
 	case TypeUnknown:
 	  {
-	    this->contents = NULL;
-	    this->size = 0;
-	    this->capacity = 0;
-
 	    break;
 	  }
 	case TypeChunk:
