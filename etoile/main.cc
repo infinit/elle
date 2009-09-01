@@ -113,9 +113,9 @@ int		main(int			argc,
       context::Directory	context;
 
       components::Directory::Load(context, root);
-      //components::Directory::Add(context, "loop", context.address);
-      //components::Directory::Commit(context);
-      components::Directory::Close(context);
+      components::Directory::Add(context, "loop", context.address);
+      components::Directory::Commit(context);
+      //components::Directory::Close(context);
     }
 
     expose();

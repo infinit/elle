@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [sun aug 23 16:54:11 2009]
+// updated       julien quintard   [mon aug 31 21:37:39 2009]
 //
 
 //
@@ -61,7 +61,6 @@ namespace etoile
       if ((tm = ::localtime(&timer)) == NULL)
 	escape(::strerror(errno));
 
-      /*
       // set the attributes.
       this->seconds = tm->tm_sec;
       this->minutes = tm->tm_min;
@@ -69,7 +68,6 @@ namespace etoile
       this->day = tm->tm_mday;
       this->month = 1 + tm->tm_mon;
       this->year = 1900 + tm->tm_year;
-      */
 
       leave();
     }

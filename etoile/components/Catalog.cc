@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [sun aug 23 17:45:49 2009]
+// updated       julien quintard   [tue sep  1 01:47:42 2009]
 //
 
 //
@@ -47,7 +47,7 @@ namespace etoile
       if (context.object->data.contents != hole::Address::Null)
 	{
 	  // load the block.
-	  if (hole::Hole::Get(context.object->data.contents,
+	  if (depot::Depot::Get(context.object->data.contents,
 			      *context.catalog) == StatusError)
 	    escape("unable to load the catalog");
 	}
@@ -60,9 +60,10 @@ namespace etoile
     /// or new but empty. otherwise, the new catalog address is computed
     /// and the directory object is updated.
     ///
-    Status		Catalog::Commit(context::Directory&	context)
+    Status		Catalog::Close(context::Directory&	context)
     {
       hole::Address		address;
+      hole::Address		self;
       core::Contents::Offset	size;
       SecretKey			key;
       Digest			fingerprint;
@@ -72,7 +73,7 @@ namespace etoile
 	leave();
 
       // compute the loaded catalog address.
-      if (context.catalog->Self(address) == StatusError)
+      if (context.catalog->Self(self) == StatusError)
 	escape("unable to retrieve the catalog address");
 
       // retrieve the catalog's size.
@@ -81,7 +82,8 @@ namespace etoile
 
       // if the catalog has not changed, or if the catalog is empty, delete it.
       if ((size == 0) ||
-	  (context.object->data.contents == address))
+	  (context.object->data.contents == self))
+	// XXX use catalog::dirty to know that instead!
 	{
 	  // release the catalog's memory.
 	  delete context.catalog;
@@ -96,13 +98,9 @@ namespace etoile
       if (key.Generate() == StatusError)
 	escape("unable to generate the secret key");
 
-      fingerprint.Dump();
-
       // compute a fingerprint of the key.
       if (OneWay::Hash(key, fingerprint) == StatusError)
 	escape("unable to compute a fingerprint of the key");
-
-      fingerprint.Dump();
 
       // then record the catalog's key.
       if (context.catalog->Prepare(key) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sun aug 23 11:16:11 2009]
+// updated       julien quintard   [mon aug 31 21:04:28 2009]
 //
 
 //
@@ -234,9 +234,9 @@ namespace etoile
       Cipher		cipher;
 
       // call the parent class.
-      if (ContentHashBlock::Serialize(archive) == StatusError)
+      if (Contents::Serialize(archive) == StatusError)
 	escape("unable to serialize the block");
-
+      /*
       // create a sub-archive for containing the entries that will then
       // be encrypted.
       if (pack.Create() == StatusError)
@@ -271,6 +271,7 @@ namespace etoile
       // finally, serialize the encrypted entries i.e the cipher.
       if (archive.Serialize(cipher) == StatusError)
 	escape("unable to serialize the cipher");
+      */
 
       leave();
     }

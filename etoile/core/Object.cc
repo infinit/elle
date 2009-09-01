@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sun aug 23 17:51:16 2009]
+// updated       julien quintard   [mon aug 31 21:35:06 2009]
 //
 
 //
@@ -136,9 +136,7 @@ namespace etoile
       this->data.size = size;
 
       // set the fingerprint.
-      printf("BEFORE\n");
       this->data.fingerprint = fingerprint;
-      printf("AFTER\n");
 
       // set the last update time.
       if (this->data.stamp.Current() == StatusError)

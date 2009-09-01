@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Author.cc
 //
 // created       julien quintard   [sun aug 23 15:33:40 2009]
-// updated       julien quintard   [sun aug 23 16:40:26 2009]
+// updated       julien quintard   [mon aug 31 20:58:49 2009]
 //
 
 //
@@ -35,7 +35,8 @@ namespace etoile
       if (context.object->owner.K == agent::Agent::Pair.K)
 	{
 	  // create an owner author.
-	  context.author.Create();
+	  if (context.author.Create() == StatusError)
+	    escape("unable to create the author");
 
 	  leave();
 	}

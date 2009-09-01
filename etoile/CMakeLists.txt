@@ -18,6 +18,8 @@ ADD_LIBRARY(etoile
   hole/Hole.cc
   hole/Address.cc
 
+  depot/Depot.cc
+
   path/Path.cc
   path/Cache.cc
   path/Item.cc

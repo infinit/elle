@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.hh
 //
 // created       julien quintard   [mon aug 17 11:44:37 2009]
-// updated       julien quintard   [sun aug 23 15:29:57 2009]
+// updated       julien quintard   [tue sep  1 01:48:15 2009]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -20,6 +20,7 @@
 
 #include <elle/Elle.hh>
 
+#include <etoile/depot/Depot.hh>
 #include <etoile/context/Context.hh>
 
 #include <etoile/components/Author.hh>
@@ -43,8 +44,7 @@ namespace etoile
       // methods
       //
       static Status	Open(context::Directory&);
-
-      static Status	Commit(context::Directory&);
+      static Status	Close(context::Directory&);
     };
 
   }
