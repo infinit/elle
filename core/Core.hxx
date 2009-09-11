@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Core.hxx
 //
 // created       julien quintard   [fri jan 30 16:29:55 2009]
-// updated       julien quintard   [thu feb 19 01:48:01 2009]
+// updated       julien quintard   [fri sep 11 01:44:35 2009]
 //
 
 #ifndef ELLE_CORE_CORE_HXX
@@ -83,7 +83,7 @@ namespace elle
     /// value a variable can hold.
     ///
     template <typename T>
-    T			Variable::Minimum(T&		variable)
+    T			Variable::Minimum(T&)
     {
       return Type<T>::Minimum;
     }
@@ -93,7 +93,7 @@ namespace elle
     /// value a variable can hold.
     ///
     template <typename T>
-    T			Variable::Maximum(T&		variable)
+    T			Variable::Maximum(T&)
     {
       return Type<T>::Maximum;
     }
