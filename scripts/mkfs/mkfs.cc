@@ -98,7 +98,6 @@ int			mkfs(int				argc,
    */
   KeyPair		owner;
   Object		directory;
-  hole::Address		self;
   {
     // generate owner keypair
     if (owner.Generate() == StatusError)
@@ -112,8 +111,8 @@ int			mkfs(int				argc,
     if (directory.Seal(owner.k) == StatusError)
       return (-1);
 
-    // get the address.
-    if (directory.Self(self) == StatusError)
+    // compute the address.
+    if (directory.Bind() == StatusError)
       return (-1);
   }
 
@@ -133,7 +132,7 @@ int			mkfs(int				argc,
       return (-1);
 
     // store the directory.
-    if (self.Identify(identity) == StatusError)
+    if (directory.address.Identify(identity) == StatusError)
       return (-1);
 
     if (hole_put(identity.c_str(),
@@ -155,7 +154,7 @@ int			mkfs(int				argc,
       return (-1);
 
     // serialize the directory address.
-    if (a_address.Serialize(self) == StatusError)
+    if (a_address.Serialize(directory.address) == StatusError)
       return (-1);
 
     // store it into a file.
