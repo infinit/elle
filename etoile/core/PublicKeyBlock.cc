@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [fri aug 14 21:04:09 2009]
+// updated       julien quintard   [fri sep 11 01:40:25 2009]
 //
 
 //
@@ -40,11 +40,10 @@ namespace etoile
     ///
     /// this method computes the block's address.
     ///
-    Status		PublicKeyBlock::Self(hole::Address&	address)
-      const
+    Status		PublicKeyBlock::Bind()
     {
       // compute the address.
-      if (address.Create(this->K) == StatusError)
+      if (this->address.Create(this->K) == StatusError)
 	escape("unable to compute the PKB's address");
 
       leave();
@@ -58,13 +57,23 @@ namespace etoile
     {
       hole::Address	self;
 
-      // retrieve the address of this object.
-      if (this->Self(self) == StatusError)
-	flee("unable to retrieve the block's address");
-
-      // compare the address with the given one.
-      if (self != address)
+      // compare the recorded address with the given one.
+      if (this->address != address)
 	flee("the given address does not correspond to this block");
+
+      // make sure the address has not be tampered and correspond to the
+      // hash of the public key.
+
+      // compute the address.
+      if (self.Create(this->K) == StatusError)
+	escape("unable to compute the PKB's address");
+
+      // verify with the recorded address.
+      if (this->address != self)
+	escape("the address does not correspond to the block's public key");
+
+      // at this point the node knows that the recorded address corresponds
+      // to the recorded public key and identifies the block requested.
 
       true();
     }
@@ -80,6 +89,10 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      // dump the block address.
+      if (this->address.Dump(margin) == StatusError)
+	escape("unable to dump the address");
 
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
 

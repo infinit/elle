@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [mon aug 31 21:35:06 2009]
+// updated       julien quintard   [wed sep  9 16:08:21 2009]
 //
 
 //
@@ -317,6 +317,26 @@ namespace etoile
     }
 
 //
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// assign the object.
+    ///
+    Object&		Object::operator=(const Object&		element)
+    {
+      // self-check.
+      if (this == &element)
+	return (*this);
+
+      // recycle the address.
+      if (this->Recycle<Object>(&element) == StatusError)
+	yield("unable to recycle the object", *this);
+
+      return (*this);
+    }
+
+//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -391,7 +411,7 @@ namespace etoile
       if (this->data.contents.Dump(margin + 6) == StatusError)
 	escape("unable to dump the contents' address");
 
-      std::cout << alignment << shift << shift << "[Size]"
+      std::cout << alignment << shift << shift << "[Size] "
 		<< this->data.size << std::endl;
 
       std::cout << alignment << shift << shift << "[Stamp]" << std::endl;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [fri aug 21 22:10:16 2009]
+// updated       julien quintard   [fri sep 11 12:59:23 2009]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -79,6 +79,16 @@ namespace etoile
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
     };
+
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+// XXX
+
+elle::Boolean		operator<(const etoile::hole::Address&,
+				  const etoile::hole::Address&);
 
   }
 }

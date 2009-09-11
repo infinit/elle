@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/State.hh
 //
 // created       julien quintard   [fri aug 21 22:37:24 2009]
-// updated       julien quintard   [fri aug 21 22:38:03 2009]
+// updated       julien quintard   [thu sep 10 13:38:40 2009]
 //
 
 #ifndef ETOILE_CORE_STATE_HH
@@ -25,7 +25,7 @@ namespace etoile
 
     enum State
       {
-	StateClean,
+	StateClean = 0,
 	StateDirty
       };
 

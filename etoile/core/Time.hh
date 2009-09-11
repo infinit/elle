@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [sat aug 22 00:41:48 2009]
+// updated       julien quintard   [fri sep 11 01:33:31 2009]
 //
 
 #ifndef ETOILE_CORE_TIME_HH
@@ -69,9 +69,9 @@ namespace etoile
       //
       // attributes
       //
-      Natural8		seconds;
-      Natural8		minutes;
-      Natural8		hours;
+      Natural8		second;
+      Natural8		minute;
+      Natural8		hour;
 
       Natural8		day;
       Natural8		month;
@@ -80,5 +80,15 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+etoile::core::Time	operator+(const etoile::core::Time&,
+				  const etoile::core::Time&);
+
+elle::Boolean		operator<(const etoile::core::Time&,
+				  const etoile::core::Time&);
 
 #endif

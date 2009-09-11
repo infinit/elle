@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [fri aug 14 20:53:55 2009]
+// updated       julien quintard   [thu sep 10 13:26:43 2009]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -37,6 +37,7 @@ namespace etoile
     /// note that every block is identified by an address.
     ///
     class Block:
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
@@ -47,13 +48,24 @@ namespace etoile
       ///
       /// this method computes the address of the block.
       ///
-      virtual Status	Self(Address&) const = 0;
+      virtual Status	Bind() const
+      {
+	fail("this method should never have been called");
+      }
 
       ///
       /// this method returns StatusTrue if the block is valid, StatusFalse
       /// otherwise.
       ///
-      virtual Status	Validate(const Address&) const = 0;
+      virtual Status	Validate(const Address&) const
+      {
+	fail("this method should never have been called");
+      }
+
+      //
+      // attributes
+      //
+      Address		address;
     };
 
   }

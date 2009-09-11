@@ -5,13 +5,6 @@
 #include <etoile/wall/Wall.hh>
 #include <etoile/agent/Agent.hh>
 
-using namespace etoile;
-using namespace etoile::core;
-using namespace etoile::path;
-using namespace etoile::hole;
-using namespace etoile::components;
-using namespace etoile::agent;
-
 #include <etoile/context/Context.hh>
 
 //
@@ -54,7 +47,7 @@ int		main(int			argc,
   {
     KeyPair	pair;
 
-    Address	root;
+    etoile::hole::Address	root;
 
     // XXX[hack for the /]
     {
@@ -102,6 +95,36 @@ int		main(int			argc,
       expose();
     }
 
+    // XXX
+    {
+      etoile::core::Object o;
+      etoile::core::Object n;
+
+      o.Create(etoile::core::GenreFile, pair.K);
+      o.Seal(pair.k);
+      o.Bind();
+
+      etoile::depot::Depot::Put(o.address, o);
+      etoile::depot::Cache::Dump();
+
+      etoile::core::Data data;
+      data.Write(0, (Byte*)"suce", 4);
+      data.Bind();
+
+      etoile::depot::Depot::Put(data.address, data);
+      etoile::depot::Cache::Dump();
+
+      //etoile::depot::Cache::Get(root, n);
+
+      expose();
+
+      //o.Dump();
+      //n.Dump();
+
+      return (0);
+    }
+
+    /* XXX
     // init the agent.
     Agent::Pair = pair;
     Agent::Subject.Create(Agent::Pair.K);
@@ -117,6 +140,7 @@ int		main(int			argc,
       components::Directory::Commit(context);
       //components::Directory::Close(context);
     }
+    */
 
     expose();
   }

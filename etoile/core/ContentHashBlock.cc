@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon aug 31 21:11:27 2009]
+// updated       julien quintard   [fri sep 11 01:40:33 2009]
 //
 
 //
@@ -27,13 +27,12 @@ namespace etoile
 //
 
     ///
-    /// this method returns the address of the block.
+    /// this method computes the address of the block.
     ///
-    Status		ContentHashBlock::Self(hole::Address&	address)
-      const
+    Status		ContentHashBlock::Bind()
     {
       // compute the address.
-      if (address.Create(*this) == StatusError)
+      if (this->address.Create(*this) == StatusError)
 	escape("unable to compute the CHB's address");
 
       leave();
@@ -49,16 +48,17 @@ namespace etoile
     {
       hole::Address	self;
 
-      // retrieve the address of this object.
-      if (this->Self(self) == StatusError)
-	flee("unable to retrieve the block's address");
+      // verify the recorded address with the given one.
+      if (this->address != address)
+	flee("the given address does not correspond to the recorded address");
 
-      address.Dump();
-      self.Dump();
+      // compute the address of this object.
+      if (self.Create(*this) == StatusError)
+	escape("unable to compute the CHB's address");
 
       // compare the address with the given one.
-      if (self != address)
-	flee("the given address does not correspond to this block");
+      if (this->address != self)
+	flee("the recorded address does not correspond to this block");
 
       true();
     }
@@ -73,6 +73,10 @@ namespace etoile
     Status		ContentHashBlock::Dump(Natural32	margin) const
     {
       String		alignment(margin, ' ');
+
+      // dump the block address.
+      if (this->address.Dump(margin) == StatusError)
+	escape("unable to dump the address");
 
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
 

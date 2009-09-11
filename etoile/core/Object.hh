@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [sun aug 23 11:09:20 2009]
+// updated       julien quintard   [thu sep 10 13:27:31 2009]
 //
 
 #ifndef ETOILE_CORE_OBJECT_HH
@@ -48,11 +48,6 @@ namespace etoile
     ///
     /// XXX
     ///
-    /// note: update and administrate just modify the object and mark what
-    ///   section will need to be re-signed 'cause it has been modified. then
-    ///   seal regenerate these signatures. that way, the cryptographic
-    ///   operations are done only once and that speeds up the process.
-    ///
     class Object:
       public PublicKeyBlock
     {
@@ -82,6 +77,10 @@ namespace etoile
       //
       // interfaces
       //
+
+      // entity
+      Object&		operator=(const Object&);
+      // XXX
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [tue sep  1 01:47:42 2009]
+// updated       julien quintard   [wed sep  9 15:06:51 2009]
 //
 
 //
@@ -68,6 +68,12 @@ namespace etoile
       SecretKey			key;
       Digest			fingerprint;
 
+      //
+      // XXX ici remplacer les Self en Seal() et utiliser Dirty pour savoir
+      // si le bloc a change.
+      //
+      /* XXX
+
       // if there is no loaded catalog, then there is nothing to do.
       if (context.catalog == NULL)
 	leave();
@@ -121,6 +127,7 @@ namespace etoile
 				 size,
 				 fingerprint) == StatusError)
 	escape("unable to update the object");
+      */
 
       leave();
     }

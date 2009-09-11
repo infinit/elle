@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [mon aug 31 21:06:29 2009]
+// updated       julien quintard   [fri sep 11 02:27:51 2009]
 //
 
 //
@@ -236,6 +236,48 @@ namespace etoile
 
       leave();
     }
+
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+///
+/// this operator compares two objects.
+///
+elle::Boolean		operator<(const etoile::hole::Address&	lhs,
+				  const etoile::hole::Address&	rhs)
+{
+  // if both are equal return false.
+  if (lhs == rhs)
+    false();
+
+  // test for a null digest.
+  if (lhs.digest == NULL)
+    true();
+  else if (rhs.digest == NULL)
+    false();
+  else
+    {
+      Natural32		i;
+
+      // test the sizes.
+      if (lhs.digest->region.size < rhs.digest->region.size)
+	true();
+      else if (lhs.digest->region.size > rhs.digest->region.size)
+	false();
+
+      // finally, go through the data and compare.
+      for (i = 0; i < lhs.digest->region.size; i++)
+	{
+	  if (lhs.digest->region.contents[i] >
+	      rhs.digest->region.contents[i])
+	    false();
+	}
+    }
+
+  true();
+}
 
   }
 }

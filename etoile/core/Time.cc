@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [mon aug 31 21:37:39 2009]
+// updated       julien quintard   [fri sep 11 01:33:20 2009]
 //
 
 //
@@ -30,9 +30,9 @@ namespace etoile
     /// the constructor.
     ///
     Time::Time():
-      seconds(0),
-      minutes(0),
-      hours(0),
+      second(0),
+      minute(0),
+      hour(0),
       day(0),
       month(0),
       year(0)
@@ -62,9 +62,9 @@ namespace etoile
 	escape(::strerror(errno));
 
       // set the attributes.
-      this->seconds = tm->tm_sec;
-      this->minutes = tm->tm_min;
-      this->hours = tm->tm_hour;
+      this->second = tm->tm_sec;
+      this->minute = tm->tm_min;
+      this->hour = tm->tm_hour;
       this->day = tm->tm_mday;
       this->month = 1 + tm->tm_mon;
       this->year = 1900 + tm->tm_year;
@@ -97,9 +97,9 @@ namespace etoile
     ///
     Boolean		Time::operator==(const Time&		element) const
     {
-      return ((this->seconds == element.seconds) &&
-	      (this->minutes == element.minutes) &&
-	      (this->hours == element.hours) &&
+      return ((this->second == element.second) &&
+	      (this->minute == element.minute) &&
+	      (this->hour == element.hour) &&
 	      (this->day == element.day) &&
 	      (this->month == element.month) &&
 	      (this->year == element.year));
@@ -127,15 +127,15 @@ namespace etoile
 
       std::cout << alignment << "[Time]" << std::endl;
 
-      std::cout << alignment << shift << "[Seconds] "
+      std::cout << alignment << shift << "[Second] "
 		<< std::nouppercase << std::dec	
-		<< (Natural32)this->seconds << std::endl;
-      std::cout << alignment << shift << "[Minutes] "
+		<< (Natural32)this->second << std::endl;
+      std::cout << alignment << shift << "[Minute] "
 		<< std::nouppercase << std::dec
-		<< (Natural32)this->minutes << std::endl;
-      std::cout << alignment << shift << "[Hours] "
+		<< (Natural32)this->minute << std::endl;
+      std::cout << alignment << shift << "[Hour] "
 		<< std::nouppercase << std::dec
-		<< (Natural32)this->hours << std::endl;
+		<< (Natural32)this->hour << std::endl;
 
       std::cout << alignment << shift << "[Day] "
 		<< std::nouppercase << std::dec
@@ -160,9 +160,9 @@ namespace etoile
     Status		Time::Serialize(Archive&		archive) const
     {
       // serialize the internal attributes.
-      if (archive.Serialize(this->seconds,
-			    this->minutes,
-			    this->hours,
+      if (archive.Serialize(this->second,
+			    this->minute,
+			    this->hour,
 			    this->day,
 			    this->month,
 			    this->year) == StatusError)
@@ -177,9 +177,9 @@ namespace etoile
     Status		Time::Extract(Archive&			archive)
     {
       // extract the internal attributes.
-      if (archive.Extract(this->seconds,
-			  this->minutes,
-			  this->hours,
+      if (archive.Extract(this->second,
+			  this->minute,
+			  this->hour,
 			  this->day,
 			  this->month,
 			  this->year) == StatusError)
@@ -189,4 +189,76 @@ namespace etoile
     }
 
   }
+}
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+///
+/// this operator adds two times together.
+///
+etoile::core::Time	operator+(const etoile::core::Time&	lhs,
+				  const etoile::core::Time&	rhs)
+{
+  etoile::core::Time	result(lhs);
+
+  result.second += rhs.second;
+
+  if (result.second > 60)
+    {
+      result.minute += result.second / 60;
+      result.second = result.second % 60;
+    }
+
+  result.minute += rhs.minute;
+
+  if (result.minute > 60)
+    {
+      result.hour += 1;
+      result.minute -= 60;
+    }
+
+  result.hour += rhs.hour;
+
+  if (result.hour > 60)
+    {
+      result.day += 1;
+      result.hour -= 60;
+    }
+
+  result.day += rhs.day;
+
+  /// \todo XXX[does not handle special months]
+  if (result.day > 31)
+    {
+      result.month += 1;
+      result.day -= 31;
+    }
+
+  result.month += rhs.month;
+
+  if (result.month > 12)
+    {
+      result.year += 1;
+      result.month -= 12;
+    }
+
+  result.year += rhs.year;
+
+  return (result);
+}
+
+///
+/// this operator compares two times.
+///
+elle::Boolean		operator<(const etoile::core::Time&	lhs,
+				  const etoile::core::Time&	rhs)
+{
+  return ((lhs.year < rhs.year) ||
+	  (lhs.month < rhs.month) ||
+	  (lhs.day < rhs.day) ||
+	  (lhs.hour < rhs.hour) ||
+	  (lhs.minute < rhs.minute) ||
+	  (lhs.second < rhs.second));
 }

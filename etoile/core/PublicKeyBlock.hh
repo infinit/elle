@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [fri aug 14 21:05:32 2009]
+// updated       julien quintard   [thu sep 10 13:27:16 2009]
 //
 
 #ifndef ETOILE_CORE_PUBLICKEYBLOCK_HH
@@ -43,7 +43,7 @@ namespace etoile
       //
       Status		Create(const KeyPair&);
 
-      Status		Self(hole::Address&) const;
+      Status		Bind();
       Status		Validate(const hole::Address&) const;
 
       //
