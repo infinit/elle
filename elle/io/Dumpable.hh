@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.hh
 //
 // created       julien quintard   [mon feb  9 21:22:34 2009]
-// updated       julien quintard   [tue aug  4 13:50:22 2009]
+// updated       julien quintard   [wed sep  9 14:23:48 2009]
 //
 
 #ifndef ELLE_IO_DUMPABLE_HH
@@ -21,6 +21,7 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/misc/Status.hh>
+#include <elle/misc/Report.hh>
 
 namespace elle
 {
@@ -50,7 +51,10 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Dump(const Natural32 = 0) const = 0;
+      virtual Status	Dump(const Natural32 = 0) const
+      {
+	fail("this method should never have been called");
+      }
     };
 
   }
