@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Large.hh
 //
 // created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [wed feb 18 15:59:19 2009]
+// updated       julien quintard   [fri sep 11 21:39:24 2009]
 //
 
 #ifndef ELLE_CORE_LARGE_HH
