@@ -17,6 +17,7 @@ ADD_LIBRARY(etoile
 
   hole/Hole.cc
   hole/Address.cc
+  hole/Block.cc
 
   depot/Depot.cc
   depot/Cache.cc

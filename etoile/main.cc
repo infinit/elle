@@ -97,29 +97,36 @@ int		main(int			argc,
 
     // XXX
     {
+      etoile::depot::Depot::Initialize();
+
       etoile::core::Object o;
-      etoile::core::Object n;
 
       o.Create(etoile::core::GenreFile, pair.K);
       o.Seal(pair.k);
       o.Bind();
 
       etoile::depot::Depot::Put(o.address, o);
-      etoile::depot::Cache::Dump();
 
       etoile::core::Data data;
       data.Write(0, (Byte*)"suce", 4);
       data.Bind();
 
       etoile::depot::Depot::Put(data.address, data);
+
       etoile::depot::Cache::Dump();
 
-      //etoile::depot::Cache::Get(root, n);
+      etoile::core::Object n;
+
+      if (etoile::depot::Cache::Get(o.address, n) != StatusOk)
+	{
+	  printf("... could not get the block\n");
+	  return (0);
+	}
 
       expose();
 
-      //o.Dump();
-      //n.Dump();
+      o.Dump();
+      n.Dump();
 
       return (0);
     }

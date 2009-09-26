@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [fri sep 11 01:33:31 2009]
+// updated       julien quintard   [fri sep 11 21:40:46 2009]
 //
 
 #ifndef ETOILE_CORE_TIME_HH
@@ -78,17 +78,17 @@ namespace etoile
       Natural16		year;
     };
 
-  }
-}
-
 //
 // ---------- operators -------------------------------------------------------
 //
 
-etoile::core::Time	operator+(const etoile::core::Time&,
+    etoile::core::Time	operator+(const etoile::core::Time&,
 				  const etoile::core::Time&);
 
-elle::Boolean		operator<(const etoile::core::Time&,
+    elle::Boolean	operator<(const etoile::core::Time&,
 				  const etoile::core::Time&);
+
+  }
+}
 
 #endif

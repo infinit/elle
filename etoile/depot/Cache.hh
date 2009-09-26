@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cache.hh
 //
 // created       julien quintard   [wed sep  9 14:00:24 2009]
-// updated       julien quintard   [fri sep 11 01:27:04 2009]
+// updated       julien quintard   [sat sep 12 15:22:54 2009]
 //
 
 #ifndef ETOILE_DEPOT_CACHE_HH
@@ -49,19 +49,13 @@ namespace etoile
 	//
 	// types
 	//
-	typedef std::pair<hole::Address, Block>		Value;
-	typedef std::map<hole::Address, Block>		Container;
+	typedef std::pair<hole::Address, hole::Block*>	Value;
+	typedef std::map<hole::Address, hole::Block*>	Container;
 	typedef Container::iterator			Iterator;
 	typedef Container::const_iterator		Scoutor;
-
-	//
-	// attributes
-	//
-	core::Time	expiration;
-	hole::Block*	block;
       };
 
-      struct		Stamp
+      struct		Access
       {
 	//
 	// types
@@ -69,6 +63,22 @@ namespace etoile
 	typedef std::list<hole::Address>		Container;
 	typedef Container::iterator			Iterator;
 	typedef Container::const_iterator		Scoutor;
+      };
+
+      struct		Expiration
+      {
+	//
+	// types
+	//
+	typedef std::list<Expiration>			Container;
+	typedef Container::iterator			Iterator;
+	typedef Container::const_iterator		Scoutor;
+
+	//
+	// attributes
+	//
+	hole::Address	address;
+	core::Time	time;
       };
 
       //
@@ -98,11 +108,13 @@ namespace etoile
       //
       // static attributes
       //
-      static Block::Container	Blocks;
-      static Stamp::Container	Stamps;
+      static Block::Container		Blocks;
 
-      static Natural32		Size;
-      static Natural32		Capacity;
+      static Access::Container		Accesses;
+      static Expiration::Container	Expirations;
+
+      static Natural32			Size;
+      static Natural32			Capacity;
     };
 
   }

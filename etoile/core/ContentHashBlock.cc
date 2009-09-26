@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [fri sep 11 01:40:33 2009]
+// updated       julien quintard   [fri sep 11 22:49:22 2009]
 //
 
 //
@@ -70,15 +70,15 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		ContentHashBlock::Dump(Natural32	margin) const
+    Status		ContentHashBlock::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
 
-      // dump the block address.
-      if (this->address.Dump(margin) == StatusError)
-	escape("unable to dump the address");
-
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
+
+      // dump the parent class.
+      if (hole::Block::Dump(margin + 2) == StatusError)
+	escape("unable to dump the underlying block");
 
       leave();
     }

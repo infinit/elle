@@ -41,6 +41,7 @@ File: Object
 ----
 
 File.Load(path, &id)
+File.Lock(path, &id) // load + lock et on release pour un Close/Commit
 File.Create(...)
 File.Read(...)
 File.Write(...)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [fri sep 11 01:33:20 2009]
+// updated       julien quintard   [fri sep 11 21:43:13 2009]
 //
 
 //
@@ -188,77 +188,72 @@ namespace etoile
       leave();
     }
 
-  }
-}
-
 //
 // ---------- operators -------------------------------------------------------
 //
 
-///
-/// this operator adds two times together.
-///
-etoile::core::Time	operator+(const etoile::core::Time&	lhs,
+    ///
+    /// this operator adds two times together.
+    ///
+    etoile::core::Time	operator+(const etoile::core::Time&	lhs,
 				  const etoile::core::Time&	rhs)
-{
-  etoile::core::Time	result(lhs);
-
-  result.second += rhs.second;
-
-  if (result.second > 60)
     {
-      result.minute += result.second / 60;
-      result.second = result.second % 60;
+      etoile::core::Time	result(lhs);
+
+      result.second += rhs.second;
+      result.hour += rhs.hour;
+      result.minute += rhs.minute;
+      result.day += rhs.day;
+      result.month += rhs.month;
+      result.year += rhs.year;
+
+      if (result.second > 60)
+	{
+	  result.minute += result.second / 60;
+	  result.second = result.second % 60;
+	}
+
+      if (result.minute > 60)
+	{
+	  result.hour += 1;
+	  result.minute -= 60;
+	}
+
+      if (result.hour > 60)
+	{
+	  result.day += 1;
+	  result.hour -= 60;
+	}
+
+      /// \todo XXX[does not handle special months]
+      if (result.day > 31)
+	{
+	  result.month += 1;
+	  result.day -= 31;
+	}
+
+      if (result.month > 12)
+	{
+	  result.year += 1;
+	  result.month -= 12;
+	}
+
+      return (result);
     }
 
-  result.minute += rhs.minute;
-
-  if (result.minute > 60)
-    {
-      result.hour += 1;
-      result.minute -= 60;
-    }
-
-  result.hour += rhs.hour;
-
-  if (result.hour > 60)
-    {
-      result.day += 1;
-      result.hour -= 60;
-    }
-
-  result.day += rhs.day;
-
-  /// \todo XXX[does not handle special months]
-  if (result.day > 31)
-    {
-      result.month += 1;
-      result.day -= 31;
-    }
-
-  result.month += rhs.month;
-
-  if (result.month > 12)
-    {
-      result.year += 1;
-      result.month -= 12;
-    }
-
-  result.year += rhs.year;
-
-  return (result);
-}
-
-///
-/// this operator compares two times.
-///
-elle::Boolean		operator<(const etoile::core::Time&	lhs,
+    ///
+    /// this operator compares two times.
+    ///
+    elle::Boolean	operator<(const etoile::core::Time&	lhs,
 				  const etoile::core::Time&	rhs)
-{
-  return ((lhs.year < rhs.year) ||
-	  (lhs.month < rhs.month) ||
-	  (lhs.day < rhs.day) ||
-	  (lhs.hour < rhs.hour) ||
-	  (lhs.minute < rhs.minute) ||
-	  (lhs.second < rhs.second));
+    {
+      return ((lhs.year < rhs.year) ||
+	      (lhs.month < rhs.month) ||
+	      (lhs.day < rhs.day) ||
+	      (lhs.hour < rhs.hour) ||
+	      (lhs.minute < rhs.minute) ||
+	      (lhs.second < rhs.second));
+    }
+
+  }
 }

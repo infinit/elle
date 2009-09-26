@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [thu sep 10 13:26:43 2009]
+// updated       julien quintard   [fri sep 11 22:50:20 2009]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -61,6 +61,13 @@ namespace etoile
       {
 	fail("this method should never have been called");
       }
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

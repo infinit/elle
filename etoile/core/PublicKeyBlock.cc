@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [fri sep 11 01:40:25 2009]
+// updated       julien quintard   [fri sep 11 22:49:32 2009]
 //
 
 //
@@ -85,16 +85,16 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		PublicKeyBlock::Dump(Natural32	margin) const
+    Status		PublicKeyBlock::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
-      // dump the block address.
-      if (this->address.Dump(margin) == StatusError)
-	escape("unable to dump the address");
-
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
+
+      // dump the parent class.
+      if (hole::Block::Dump(margin + 2) == StatusError)
+	escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
       std::cout << alignment << shift << "[K]" << std::endl;

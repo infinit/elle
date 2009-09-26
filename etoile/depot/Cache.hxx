@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cache.hxx
 //
 // created       julien quintard   [thu sep 10 13:22:57 2009]
-// updated       julien quintard   [fri sep 11 02:14:24 2009]
+// updated       julien quintard   [sat sep 12 00:49:10 2009]
 //
 
 #ifndef ETOILE_DEPOT_CACHE_HXX
@@ -24,7 +24,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method stores a block in the cache, starting by looking for
+    /// an existing record in order to update it.
     ///
     template <typename T>
     Status		Cache::Put(const hole::Address&		address,
@@ -40,13 +41,9 @@ namespace etoile
       if (Cache::Evict() == StatusError)
 	escape("unable to evict a block");
 
-      printf("HERE\n");
-
       // try to update an existing record.
       if (Cache::Update(address, block, expiration) == StatusOk)
 	leave();
-
-      printf("HERE\n");
 
       // create the new element.
       {
@@ -75,7 +72,7 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method tries to update an existing record.
     ///
     template <typename T>
     Status		Cache::Update(const hole::Address&	address,
@@ -87,12 +84,7 @@ namespace etoile
 
       // look for an existing record.
       if ((iterator = Cache::Blocks.find(address)) == Cache::Blocks.end())
-	{
-	  printf("NO UPDATE\n");
 	false();
-	}
-
-      printf("UDATE\n");
 
       // retrieve the element.
       element = iterator->second;
@@ -114,23 +106,39 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method returns a cached block.
     ///
     template <typename T>
     Status		Cache::Get(const hole::Address&		address,
 				   T&				block)
     {
-      /* XXX test if expired.
-
       Cache::Block::Iterator	iterator;
+      core::Time		time;
 
       // look for the address.
       if ((iterator = Cache::Blocks.find(address)) == Cache::Blocks.end())
-	escape("unable to find the given address in cache");
+	false();
+
+      // get the current time.
+      if (time.Current() == StatusError)
+	escape("unable to retrieve the current time");
+
+      iterator->second.expiration.Dump();
+      time.Dump();
+
+      // check if the block has expired.
+      if (iterator->second.expiration < time)
+	{
+	  // discard the block.
+	  if (Cache::Discard(address) == StatusError)
+	    escape("unable to discard the block");
+
+	  false();
+	}
 
       // copy the block.
-      block = (T&)*(iterator->second);
-      */
+      block = *((T*)iterator->second.block);
+
       leave();
     }
 
