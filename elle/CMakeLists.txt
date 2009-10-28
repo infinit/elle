@@ -19,6 +19,8 @@ ADD_LIBRARY(elle
   misc/Region.cc
   misc/Report.cc
   system/System.cc
+  channel/Channel.cc
+  channel/Location.cc
 )
 
 ADD_EXECUTABLE(test-archive
@@ -32,6 +34,10 @@ ADD_EXECUTABLE(test-crypto
   test/crypto/Test.cc
 )
 
+ADD_EXECUTABLE(test-channel
+  test/channel/Test.cc
+)
+
 ADD_EXECUTABLE(benchmark-crypto
   benchmark/crypto/Benchmark.cc
   benchmark/crypto/Time.cc
@@ -39,5 +45,8 @@ ADD_EXECUTABLE(benchmark-crypto
 
 TARGET_LINK_LIBRARIES(test-archive elle ssl crypto dl)
 TARGET_LINK_LIBRARIES(test-crypto elle ssl crypto dl)
+TARGET_LINK_LIBRARIES(test-channel elle
+                                   ${QT_QTNETWORK_LIBRARIES}
+				   ${QT_QTCORE_LIBRARIES})
 
 TARGET_LINK_LIBRARIES(benchmark-crypto elle ssl crypto dl)

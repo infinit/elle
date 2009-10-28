@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/system/System.hh
 //
 // created       julien quintard   [mon jan 26 20:21:10 2009]
-// updated       julien quintard   [fri feb  6 21:01:18 2009]
+// updated       julien quintard   [thu oct 15 20:07:21 2009]
 //
 
 #ifndef ELLE_SYSTEM_SYSTEM_HH
@@ -54,6 +54,8 @@ namespace elle
       ///
       /// autoconf defines the WORDS_BIGENDIAN macro for us so that we know
       /// what is the current endianness.
+      ///
+      /// \todo XXX to fix cause not using autoconf any more
       ///
       static const Endianness		MachineEndianness;
     };

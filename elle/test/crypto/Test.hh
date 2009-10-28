@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/elle/test/crypto/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [thu feb 19 23:48:13 2009]
+// updated       julien quintard   [thu oct 15 20:11:24 2009]
 //
 
-#ifndef ELLE_TEST_ARCHIVE_TEST_HH
-#define ELLE_TEST_ARCHIVE_TEST_HH
+#ifndef ELLE_TEST_CRYPTO_TEST_HH
+#define ELLE_TEST_CRYPTO_TEST_HH
 
 //
 // ---------- includes --------------------------------------------------------

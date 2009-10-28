@@ -1,9 +1,6 @@
-BINARY			:=		archive
+BINARY			:=		channel
 
-SRCS			:=		Test.cc				\
-					Pack.cc				\
-					Referee.cc			\
-					Generator.cc			
+SRCS			:=		Test.cc				
 
 OBJS			:=		$(SRCS:.cc=.o)
 
