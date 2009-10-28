@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/archive/Random.hh
+// file          /home/mycure/infinit/elle/test/crypto/Random.hh
 //
 // created       julien quintard   [thu jan 29 11:52:52 2009]
-// updated       julien quintard   [thu feb 12 17:10:49 2009]
+// updated       julien quintard   [thu oct 15 20:11:38 2009]
 //
 
-#ifndef ELLE_TEST_ARCHIVE_RANDOM_HH
-#define ELLE_TEST_ARCHIVE_RANDOM_HH
+#ifndef ELLE_TEST_CRYPTO_RANDOM_HH
+#define ELLE_TEST_CRYPTO_RANDOM_HH
 
 //
 // ---------- includes --------------------------------------------------------
