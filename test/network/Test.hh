@@ -5,30 +5,30 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/channel/Test.hh
+// file          /home/mycure/infinit/elle/test/network/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [fri oct 16 02:16:04 2009]
+// updated       julien quintard   [sun nov 29 21:19:52 2009]
 //
 
-#ifndef ELLE_TEST_ARCHIVE_TEST_HH
-#define ELLE_TEST_ARCHIVE_TEST_HH
+#ifndef ELLE_TEST_NETWORK_TEST_HH
+#define ELLE_TEST_NETWORK_TEST_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
-#include <elle/channel/Channel.hh>
+
+#include <elle/test/network/Node.hh>
 
 #include <iostream>
+
+#include <QCoreApplication>
 
 namespace elle
 {
   using namespace core;
-  using namespace misc;
-  using namespace channel;
 
   namespace test
   {
@@ -43,7 +43,7 @@ namespace elle
       //
       // methods
       //
-      static Status	Main();
+      static Status	Main(int, char*[]);
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [sun aug  2 22:59:38 2009]
+// updated       julien quintard   [mon nov 30 00:55:12 2009]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -128,7 +128,7 @@ namespace elle
 /// note that the return object is specifed, hence this function
 /// perfectly fits when an error occurs in constructors etc.
 ///
-#define notify(_text_)							\
+#define alert(_text_)							\
   do									\
     {									\
       report(elle::misc::Report::TypeError, _text_);			\
@@ -192,6 +192,8 @@ namespace elle
     /// print the messages when the faulting call returns before performing
     /// any other call the the library. otherwise, the error messages will
     /// be mixed.
+    ///
+    /// \todo add a date to the messages and remove the indentation
     ///
     class Report
     {

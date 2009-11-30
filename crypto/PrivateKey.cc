@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [mon aug 24 14:01:54 2009]
+// updated       julien quintard   [fri nov 27 14:27:37 2009]
 //
 
 //
@@ -50,7 +50,7 @@ namespace elle
     {
       // create the private key by duplicating the internal numbers.
       if (this->Create(k.key) == StatusError)
-	notify("unable to duplicate the private key");
+	alert("unable to duplicate the private key");
     }
 
     ///
