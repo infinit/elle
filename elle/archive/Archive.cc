@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [mon aug 24 13:10:16 2009]
+// updated       julien quintard   [sat nov 28 14:40:17 2009]
 //
 
 //
@@ -521,6 +521,36 @@ namespace elle
     }
 
 //
+// ---------- rewind ----------------------------------------------------------
+//
+
+    ///
+    /// this method rewinds the offset to the beginning of the archive.
+    ///
+    Status		Archive::Rewind()
+    {
+      Region		chunk;
+
+      // wrap the archive's content so that the data is not lost.
+      if (chunk.Wrap(this->contents, this->size) == StatusError)
+	escape("unable to wrap the archive's content");
+
+      // detach the data from the archive so that nothing is freed.
+      if (this->Detach() == StatusError)
+	escape("unable to detach the archive's data");
+
+      // recycle the archive.
+      if (this->Recycle<Archive>() == StatusError)
+	escape("unable to recycle the archive");
+
+      // prepare the archive for extraction.
+      if (this->Prepare(chunk) == StatusError)
+	escape("unable to prepare the archive for extraction");
+
+      leave();
+    }
+
+//
 // ---------- entity ----------------------------------------------------------
 //
 
@@ -577,6 +607,10 @@ namespace elle
 
       // first copy the archive because we cannot modify it.
       archive = *this;
+
+      // rewind the archive.
+      if (archive.Rewind() == StatusError)
+	escape("unable to rewind the archive");
 
       std::cout << alignment
 		<< "[Archive] "

@@ -1,4 +1,4 @@
-BINARY			:=		channel
+BINARY			:=		network
 
 SRCS			:=		Test.cc				
 

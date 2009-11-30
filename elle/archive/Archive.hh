@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [thu aug  6 10:54:40 2009]
+// updated       julien quintard   [sat nov 28 14:32:22 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -163,6 +163,7 @@ namespace elle
       Status		Load(Archive&);
 
       Status		Fetch(enum Type&);
+      Status		Rewind();
 
       Status		Seal();
 

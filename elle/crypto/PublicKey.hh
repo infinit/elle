@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [tue aug  4 13:54:05 2009]
+// updated       julien quintard   [fri nov 27 19:34:53 2009]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HH
@@ -19,11 +19,8 @@
 //
 
 #include <elle/io/IO.hh>
-
 #include <elle/core/Core.hh>
-
 #include <elle/misc/Misc.hh>
-
 #include <elle/archive/Archive.hh>
 
 #include <elle/crypto/Plain.hh>

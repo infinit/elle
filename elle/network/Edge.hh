@@ -5,26 +5,24 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/channel/Edge.hh
+// file          /home/mycure/infinit/elle/network/Edge.hh
 //
 // created       julien quintard   [fri oct 16 01:43:37 2009]
-// updated       julien quintard   [fri oct 16 03:06:42 2009]
+// updated       julien quintard   [fri nov 27 05:11:28 2009]
 //
 
-#ifndef ELLE_CHANNEL_EDGE_HH
-#define ELLE_CHANNEL_EDGE_HH
+#ifndef ELLE_NETWORK_EDGE_HH
+#define ELLE_NETWORK_EDGE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/channel/Channel.hh>
-
-#include <QLocalSocket>
+#include <elle/network/Channel.hh>
 
 namespace elle
 {
-  namespace channel
+  namespace network
   {
 
 //
@@ -32,16 +30,13 @@ namespace elle
 //
 
     ///
-    /// this class abstracts a local communication channel.
+    /// this class connects two slots through a channel known as a bridge.
     ///
     class Edge:
       public Channel
     {
     public:
-      //
-      // attributes
-      //
-      ::QLocalSocket	socket;
+      // XXX
     };
 
   }

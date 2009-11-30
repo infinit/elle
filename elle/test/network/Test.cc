@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/channel/Test.cc
+// file          /home/mycure/infinit/elle/test/network/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [fri oct 16 05:34:00 2009]
+// updated       julien quintard   [sat nov 28 14:40:30 2009]
 //
 
 //
@@ -21,7 +21,7 @@ namespace elle
 {
   using namespace core;
   using namespace misc;
-  using namespace channel;
+  using namespace network;
 
   namespace test
   {
@@ -30,17 +30,20 @@ namespace elle
 // ---------- methods ---------------------------------------------------------
 //
 
-    Status		Test::Main()
+    Status		Test::Main(int				argc,
+				   char*			argv[])
     {
-      Bridge		bridge;
+      QCoreApplication	app(argc, argv);
+      Node		node;
 
-      /*
-      channel.Open(AuthenticationActive, EncryptionActive);
-      channel.Restrict(pubkey or id);
-      channel.Send(destination, message);
-      channel.Receive(source, message);
-      channel.Close();
-      */
+      // start the node
+      if (node.Start(String(argv[1]),
+		     String(argv[2]),
+		     (Natural16)::strtoul(argv[3], NULL, NULL)) == StatusError)
+	escape("unable to start the node");
+
+      // wait for events.
+      app.exec();
 
       leave();
     }
@@ -52,9 +55,10 @@ namespace elle
 // ---------- main ------------------------------------------------------------
 //
 
-int			main()
+int			main(int				argc,
+			     char**				argv)
 {
-  if (elle::test::Test::Main() == elle::misc::StatusError)
+  if (elle::test::Test::Main(argc, argv) == elle::misc::StatusError)
     {
       std::cerr << elle::misc::report << std::endl;
 

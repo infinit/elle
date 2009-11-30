@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [mon aug 24 14:01:27 2009]
+// updated       julien quintard   [fri nov 27 14:27:46 2009]
 //
 
 //
@@ -50,7 +50,7 @@ namespace elle
     {
       // re-create the public key by duplicate the internal numbers.
       if (this->Create(K.key) == StatusError)
-	notify("unable to duplicate the public key");
+	alert("unable to duplicate the public key");
     }
 
     ///

@@ -1,5 +1,9 @@
 PROJECT(Elle CXX)
 
+QT4_WRAP_CPP(elle_MOCS
+  network/Socket.hh
+)
+
 ADD_LIBRARY(elle
   archive/Archive.cc
   core/Large.cc
@@ -19,8 +23,11 @@ ADD_LIBRARY(elle
   misc/Region.cc
   misc/Report.cc
   system/System.cc
-  channel/Channel.cc
-  channel/Location.cc
+  network/Address.cc
+  network/Socket.cc
+  network/Location.cc
+  network/Packet.cc
+  ${elle_MOCS}
 )
 
 ADD_EXECUTABLE(test-archive
@@ -34,8 +41,15 @@ ADD_EXECUTABLE(test-crypto
   test/crypto/Test.cc
 )
 
-ADD_EXECUTABLE(test-channel
-  test/channel/Test.cc
+QT4_WRAP_CPP(test-network_MOCS
+  test/network/Node.hh
+)
+
+ADD_EXECUTABLE(test-network
+  test/network/Test.cc
+  test/network/Probe.cc
+  test/network/Node.cc
+  ${test-network_MOCS}
 )
 
 ADD_EXECUTABLE(benchmark-crypto
@@ -45,7 +59,7 @@ ADD_EXECUTABLE(benchmark-crypto
 
 TARGET_LINK_LIBRARIES(test-archive elle ssl crypto dl)
 TARGET_LINK_LIBRARIES(test-crypto elle ssl crypto dl)
-TARGET_LINK_LIBRARIES(test-channel elle
+TARGET_LINK_LIBRARIES(test-network elle
                                    ${QT_QTNETWORK_LIBRARIES}
 				   ${QT_QTCORE_LIBRARIES})
 

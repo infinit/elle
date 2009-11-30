@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [mon aug 31 21:35:00 2009]
+// updated       julien quintard   [sat nov 28 16:45:40 2009]
 //
 
 //
@@ -73,7 +73,7 @@ namespace elle
 	    this->options = Region::OptionNone;
 
 	    if (this->Duplicate(region.contents, region.size) == StatusError)
-	      notify("unable to assign the element's data");
+	      alert("unable to assign the element's data");
 	  }
 	}
     }
@@ -366,8 +366,9 @@ namespace elle
 		<< "type(" << this->type << ") "
 		<< "options(" << this->options << ") "
 		<< "address(" << (void*)this->contents << ") "
-		<< "size(" << this->size << ") "
-		<< "capacity(" << this->capacity << ")" << std::endl;
+		<< "size(" << std::dec << this->size << ") "
+		<< "capacity(" << std::dec << this->capacity << ")"
+		<< std::endl;
 
       for (i = 0; i < this->size; i++)
 	{

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu sep 10 13:23:37 2009]
+// updated       julien quintard   [sun nov 29 20:49:21 2009]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -32,7 +32,7 @@ namespace elle
     /// debugging.
     ///
     template <const Archive::Type V>
-    struct Map
+    struct ArchiveType
     {
       static const Byte		value = V;
       static const Character*	name;
@@ -42,8 +42,8 @@ namespace elle
     /// this base template allows for specialized-template.
     ///
     template <typename T>
-    class Resolve:
-      public Map<Archive::TypeUnknown>
+    class ArchiveMap:
+      public ArchiveType<Archive::TypeUnknown>
     {
     };
 
@@ -53,8 +53,8 @@ namespace elle
     ///
 #define ArchiveDeclare(_type_)						\
   template <>								\
-  class Resolve<_type_>:						\
-    public Map<Archive::Type ## _type_>					\
+  class ArchiveMap<_type_>:						\
+    public ArchiveType<Archive::Type ## _type_>				\
   {									\
   };
 
@@ -63,7 +63,7 @@ namespace elle
     ///
 #define ArchiveName(_type_)						\
   template <>								\
-  const Character*	Map<Archive::Type ## _type_>::name = #_type_;
+  const Character*	ArchiveType<Archive::Type ## _type_>::name = #_type_;
 
     ///
     /// these macro-function calls actually generate the specialized-templates
@@ -97,7 +97,7 @@ namespace elle
     Status	Archive::Behaviour<T, C>::Serialize(Archive&	archive,
 						    const T&	element)
     {
-      const Byte	type = Resolve<T>::value;
+      const Byte	type = ArchiveMap<T>::value;
 
       // serialization mode only.
       if (archive.mode != Archive::ModeSerialization)
@@ -132,7 +132,7 @@ namespace elle
 	escape("unable to load the type");
 
       // check the type.
-      if (type != Resolve<T>::value)
+      if (type != ArchiveMap<T>::value)
 	escape("wrong type");
 
       // load the element.
@@ -177,7 +177,7 @@ namespace elle
     {
       return
 	(Archive::Behaviour<T,
-	                    Resolve<T>::value
+	                    ArchiveMap<T>::value
                               ==
                             Archive::TypeUnknown>::Serialize(*this, element));
     }
@@ -194,7 +194,7 @@ namespace elle
     {
       return
 	(Archive::Behaviour<T,
-	                    Resolve<T>::value
+	                    ArchiveMap<T>::value
                               ==
                             Archive::TypeUnknown>::Extract(*this, element));
     }
@@ -214,7 +214,7 @@ namespace elle
 	escape("unable to extract while not in extraction mode");
 
       // check if this type is a basic type.
-      if (Resolve<T>::value == Archive::TypeUnknown)
+      if (ArchiveMap<T>::value == Archive::TypeUnknown)
 	escape("unable to extract value of unknown type");
 
       // align the size if it is necessary.
@@ -249,7 +249,7 @@ namespace elle
 	escape("unable to extract while not in extraction mode");
 
       // check if this type is a basic type.
-      if (Resolve<T>::value == Archive::TypeUnknown)
+      if (ArchiveMap<T>::value == Archive::TypeUnknown)
 	escape("unable to extract value of unknown type");
 
       // align the offset if it is necessary.
@@ -275,7 +275,7 @@ namespace elle
     {
       String		alignment(margin, ' ');
 
-      std::cout << alignment << "[" << Resolve<T>::name << "] "
+      std::cout << alignment << "[" << ArchiveMap<T>::name << "] "
 		<< element << std::endl;
 
       leave();
