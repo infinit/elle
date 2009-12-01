@@ -1,5 +1,5 @@
 from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows
-import os, re
+import os, re, shutil, subprocess, tempfile
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -79,21 +79,34 @@ class VisualToolkit(Toolkit):
 
         Toolkit.__init__(self)
 
-        # FIXME: do not hardcode locations.
-        path = os.environ['PATH'].split(';')
-        path.append('C:\\Program Files\\Microsoft Visual Studio 9.0\\Common7\\IDE')
-        path.append('C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\BIN')
-        path.append('C:\\Program Files\\Microsoft Visual Studio 9.0\\Common7\\Tools')
-        path.append('C:\\WINDOWS\\Microsoft.NET\\Frameworks\\v3.5')
-        path.append('C:\\WINDOWS\\Microsoft.NET\\Frameworks\\v2.0.50727')
-        path.append('C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\VCPackages')
-        path.append('C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin')
-        os.environ['PATH'] = ';'.join(path)
+        def output(cmd):
 
-        os.environ['LIB'] = 'C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\LIB;C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\lib;'
-        os.environ['INCLUDE'] = 'C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\INCLUDE;C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\include;'
-#         self.include('C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\Include')
-#         self.include('C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\include')
+            return subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE).stdout.read().strip()
+
+        # Des barres de rire cet OS j'vous dit.
+        cfg = output("echo %VS90COMNTOOLS%")
+        if not cfg:
+            raise Exception("VS90COMNTOOLS is not defined, check your Visual Studio installation.")
+        cfg = Path(cfg)
+        if not cfg.exists():
+            raise Exception("Visual Studio configuration file does not exist: %s" % cfg)
+        cfg = cfg / 'vsvars32.bat'
+        tmp = Path(tempfile.mkdtemp())
+        cp = tmp / 'fuck.bat'
+        shutil.copy(str(cfg), str(cp))
+        f = open(str(cp), 'a')
+        print >> f, '@echo %PATH%' # Des putain de barres.
+        print >> f, '@echo %LIB%'
+        print >> f, '@echo %INCLUDE%'
+        f.close()
+        res = output('"%s"' % cp).split('\r\n')
+        path = res[-3]
+        lib = res[-2]
+        include = res[-1]
+        os.environ['PATH'] = path
+        os.environ['LIB'] = lib
+        os.environ['INCLUDE'] = include
+        shutil.rmtree(str(tmp))
 
     def object_extension(self):
 

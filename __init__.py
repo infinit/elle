@@ -30,7 +30,7 @@ class Path:
             assert path
             if platform.system() == 'Windows':
                 self.path = re.split(r'/|\\', path)
-                self.absolute = self.path[0] == '' or re.compile('^[A-Z]:').match(self.path[0])
+                self.absolute = bool(self.path[0] == '' or re.compile('^[A-Z]:').match(self.path[0]))
             else:
                 self.path = path.split('/')
                 self.absolute = self.path[0] == ''
