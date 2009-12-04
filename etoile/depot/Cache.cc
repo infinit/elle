@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cache.cc
 //
 // created       julien quintard   [wed sep  9 14:05:06 2009]
-// updated       julien quintard   [sat sep 12 15:24:16 2009]
+// updated       julien quintard   [fri dec  4 12:21:20 2009]
 //
 
 //
@@ -29,31 +29,22 @@ namespace etoile
     ///
     /// the blocks container.
     ///
-    Cache::Block::Container		Cache::Blocks;
+    Cache::Repository::Container	Cache::Records;
 
     ///
     /// the list of LRU elements.
     ///
-    Cache::Access::Container		Cache::Accesses;
+    Cache::Access::Container		Cache::Stamps;
 
     ///
-    /// the list expiration dates.
+    /// the current cache size.
     ///
-    Cache::Expiration::Container	Cache::Expirations;
-
-    ///
-    /// the current number of cached elements.
-    ///
-
-    // XXX in bytes
     Natural32				Cache::Size = 0;
 
     ///
-    /// the cache capacity in numbers of elements.
+    /// the cache capacity in number of records.
     ///
-
-    // XXX in bytes
-    Natural32				Cache::Capacity = 64;
+    Natural32				Cache::Capacity = 50;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -72,25 +63,22 @@ namespace etoile
     ///
     Status		Cache::Clean()
     {
-      Cache::Block::Iterator	i;
+      Cache::Repository::Iterator	i;
 
       // clean the accesses container.
-      Cache::Accesses.clear();
+      Cache::Stamps.clear();
 
-      // clean the expirations container.
-      Cache::Expirations.clear();
-
-      // release the blocks.
-      for (i = Cache::Blocks.begin();
-	   i != Cache::Blocks.end();
+      // release the records.
+      for (i = Cache::Records.begin();
+	   i != Cache::Records.end();
 	   i++)
 	{
-	  // delete the block.
-	  delete i->second.block;
+	  // delete the record.
+	  delete i->second;
 	}
 
-      // clean the blocks container.
-      Cache::Blocks.clear();
+      // clean the records container.
+      Cache::Records.clear();
 
       leave();
     }
@@ -100,40 +88,26 @@ namespace etoile
     ///
     Status		Cache::Destroy(const hole::Address&	address)
     {
-      Cache::Block::Iterator		i;
-      Cache::Expiration::Iterator	k;
+      Cache::Repository::Iterator	iterator;
+      Record*				record;
 
-      // remove the element from the blocks
+      // remove the element from the stamps and records
       {
 	// look for the address.
-	if ((i = Cache::Blocks.find(address)) == Cache::Blocks.end())
-	  false();
+	if ((iterator = Cache::Records.find(address)) == Cache::Records.end())
+	  escape("unable to locate this block for deletion");
 
-	// delete the block.
-	delete i->second.block;
+	// retrieve the record.
+	record = iterator->second;
+
+	// remove the associated stamp.
+	Cache::Stamps.remove(record);
+
+	// delete the record.
+	delete record;
 
 	// erase the element.
-	Cache::Blocks.erase(i);
-      }
-
-      // remove the element from the accesses.
-      {
-	Cache::Accesses.remove(address);
-      }
-
-      // remove the element from the expirations.
-      {
-	for (k = Cache::Expirations.begin();
-	     k != Cache::Expirations.end();
-	     k++)
-	  {
-	    if (k->address == address)
-	      {
-		Cache::Expirations.erase(k);
-
-		break;
-	      }
-	  }
+	Cache::Records.erase(iterator);
       }
 
       // update the cache size.
@@ -158,65 +132,43 @@ namespace etoile
     }
 
     ///
-    /// this method takes an expired or the least recently used block and
-    /// removes it from the cache.
+    /// this method takes the least recently used block and removes
+    /// it from the cache.
     ///
-    /// this block, if not expired, it then forward to the house.
+    /// this block it then forwarded to the house.
     ///
     Status		Cache::Evict()
     {
-      hole::Address		address;
-      hole::Block*		block;
-      core::Time		expiration;
-      Cache::Block::Iterator	iterator;
-      core::Time		time;
+      Record*				record;
+      const hole::Block*		block;
+      Cache::Repository::Iterator	iterator;
+      core::Time			time;
 
       // if the cache is disabled or there is available space, return.
       if ((Cache::Capacity == 0) ||
 	  (Cache::Size < Cache::Capacity))
 	leave();
 
-      // get the current time.
-      if (time.Current() == StatusError)
-	escape("unable to get the current time");
+      // retrieve the record at the back i.e the least recently accessed.
+      record = Cache::Stamps.back();
 
-      // try to evict an expired block.
-      {
-	// if the expirations list contains elements.
-	if (Cache::Expirations.size() > 0)
-	  {
-	    // test if the head block has expired
-	    if (Cache::Expirations.begin()->tim < time)
-	      {
-		if (Cache::Destroy(Cache::Expirations.begin()->address) ==
-		    StatusError)
-		  escape("unable to destroy the head expired block");
+      // find the element.
+      if ((iterator = Cache::Records.find(record->block->address)) ==
+	  Cache::Records.end())
+	escape("an unexpected error occured");
 
-		leave();
-	      }
-	  }
-      }
+      // store the block's address and reset it to NULL so that it is not
+      // freed during the Destroy() process.
+      block = record->block;
+      record->block = NULL;
 
-      // evict the least recently used block.
-      {
-	// retrieve the front access.
-	address = Cache::Stamps.front();
+      // destroy the element.
+      if (Cache::Destroy(block->address) == StatusError)
+	escape("unable to destroy the block");
 
-	// find the element.
-	if ((iterator = Cache::Blocks.find(address)) == Cache::Blocks.end())
-	  escape("an unexpected error occured");
-
-	// retrieve the expiration date.
-	//expiration = iterator->second.time;
-	// XXX
-
-	// destroy the element.
-	if (Cache::Destroy(address) == StatusError)
-	  escape("unable to destroy the block");
-
-	// forward it into the house.
-	// XXX House::Put(address, block, expiration)
-      }
+      // forward it into the house.
+      // XXX destroy MUST not delete the block then! OR find another way!
+      // XXX House::Put(address, block, expiration)
 
       leave();
     }
@@ -228,68 +180,158 @@ namespace etoile
     {
       String				alignment(margin, ' ');
       String				shift(2, ' ');
-      Cache::Block::Scoutor		i;
+      Cache::Repository::Scoutor	i;
       Cache::Access::Scoutor		j;
-      Cache::Expiration::Scoutor	k;
 
       std::cout << alignment << "[Cache]" << std::endl;
 
       std::cout << alignment << shift << "[Size] "
-		<< Cache::Size << std::endl;
+		<< std::dec << Cache::Size << std::endl;
       std::cout << alignment << shift << "[Capacity] "
-		<< Cache::Capacity << std::endl;
+		<< std::dec << Cache::Capacity << std::endl;
 
       //
-      // dump the blocks.
+      // dump the records.
       //
-      std::cout << alignment << shift << "[Blocks]" << std::endl;
+      std::cout << alignment << shift << "[Records]" << std::endl;
 
-      for (i = Cache::Blocks.begin();
-	   i != Cache::Blocks.end();
+      for (i = Cache::Records.begin();
+	   i != Cache::Records.end();
 	   i++)
 	{
-	  hole::Address		address = i->first;
-	  hole::Block*		block = i->second;
+	  Record*	record = i->second;
 
-	  if (address.Dump(margin + 4) == StatusError)
+	  // dump the address.
+	  if (i->first.Dump(margin + 4) == StatusError)
 	    escape("unable to dump the address");
 
-	  std::cout << alignment << shift << shift << shift
-		    << "[Block] " << block << std::endl;
+	  // dump the record.
+	  if (record->Dump(margin + 6) == StatusError)
+	    escape("unable to dump the record");
 	}
 
       //
-      // dump the accesses.
+      // dump the stamps.
       //
-      std::cout << alignment << shift << "[Accesses]" << std::endl;
+      std::cout << alignment << shift << "[Stamps]" << std::endl;
 
-      for (j = Cache::Accesses.begin();
-	   j != Cache::Accesses.end();
+      for (j = Cache::Stamps.begin();
+	   j != Cache::Stamps.end();
 	   j++)
 	{
-	  hole::Address		address = *j;
+	  Record*	record = *j;
 
-	  if (address.Dump(margin + 4) == StatusError)
-	    escape("unable to dump the address");
+	  // dump the record's address.
+	  std::cout << alignment << shift << shift << "[Pointer] "
+		    << record << std::endl;
 	}
 
-      //
-      // dump the expirations.
-      //
-      std::cout << alignment << shift << "[Expirations]" << std::endl;
+      leave();
+    }
 
-      for (k = Cache::Expirations.begin();
-	   k != Cache::Expirations.end();
-	   k++)
-	{
-	  Cache::Expiration	expiration = *ss;
+    ///
+    /// this method stores a block in the cache, starting by looking for
+    /// an existing record in order to update it.
+    ///
+    Status		Cache::Put(const hole::Address&		address,
+				   hole::Block*			block,
+				   const core::Time&		expiration)
+    {
+      std::pair<Cache::Repository::Iterator, bool>	result;
+      Cache::Repository::Iterator			iterator;
+      Record*						record;
 
-	  if (expiration.address.Dump(margin + 4) == StatusError)
-	    escape("unable to dump the address");
+      // possibly evict the least recently used element to make sure
+      // the cache can store this block.
+      if (Cache::Evict() == StatusError)
+	escape("unable to evict a block");
 
-	  if (expiration.time.Dump(margin + 4) == StatusError)
-	    escape("unable to dump the time");
-	}
+      // try to update an existing record.
+      if (Cache::Update(address, block, expiration) == StatusOk)
+	leave();
+
+      // create the new record.
+      {
+	// allocate a new record.
+	record = new Record;
+
+	// initialize the record.
+	if (record->Create(block, expiration) == StatusError)
+	  escape("unable to create a new record");
+      }
+
+      // store the element.
+      {
+	// insert the new value.
+	result = Cache::Records.insert(Cache::Repository::Value(address,
+								record));
+
+	// check the result.
+	if (result.second == false)
+	  escape("unable to insert the block in cache");
+      }
+
+      // put the block's address at the front of the freshness list.
+      Cache::Stamps.push_front(record);
+
+      // update the cache size.
+      Cache::Size++;
+
+      leave();
+    }
+
+    ///
+    /// this method tries to update an existing record.
+    ///
+    Status		Cache::Update(const hole::Address&	address,
+				      hole::Block*		block,
+				      const core::Time&		expiration)
+    {
+      Cache::Repository::Iterator	iterator;
+      Record*				record;
+
+      // look for an existing record.
+      if ((iterator = Cache::Records.find(address)) == Cache::Records.end())
+	false();
+
+      // retrieve the record;
+      record = iterator->second;
+
+      // re-initialize the record.
+      if (record->Update(block, expiration) == StatusError)
+	escape("unable to update the cache record");
+
+      // refresh the block by removing the old stamp refrence and putting
+      // a new one at the front.
+      Cache::Stamps.remove(record);
+      Cache::Stamps.push_front(record);
+
+      leave();
+    }
+
+    ///
+    /// this method returns a cached block.
+    ///
+    Status		Cache::Get(const hole::Address&		address,
+				   hole::Block*&		block)
+    {
+      Cache::Repository::Iterator	iterator;
+      core::Time			time;
+      Record*				record;
+
+      // look for the address.
+      if ((iterator = Cache::Records.find(address)) == Cache::Records.end())
+	false();
+
+      // retrieve the record.
+      record = iterator->second;
+
+      // assign the block.
+      block = record->block;
+
+      // update the stamps since the block has been accessed.
+      Cache::Stamps.remove(record);
+      Cache::Stamps.push_front(record);
 
       leave();
     }

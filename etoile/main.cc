@@ -7,6 +7,8 @@
 
 #include <etoile/context/Context.hh>
 
+#include <QCoreApplication>
+
 //
 // [OPENSSL]
 //
@@ -43,6 +45,8 @@
 int		main(int			argc,
 		     char**			argv)
 {
+  ::QCoreApplication	app(argc, argv);
+
   Cryptography::Initialize();
   {
     KeyPair	pair;
@@ -70,6 +74,9 @@ int		main(int			argc,
       archive.Extract(root);
 
       expose();
+
+      std::cout << "[root directory]" << std::endl;
+      root.Dump();
     }
 
     // XXX[hack for the administrator]
@@ -93,31 +100,34 @@ int		main(int			argc,
       archive.Extract(pair);
 
       expose();
+
+      std::cout << "[administrator key pair]" << std::endl;
+      pair.Dump();
     }
 
     // XXX
     {
       etoile::depot::Depot::Initialize();
 
-      etoile::core::Object o;
+      etoile::core::Object* o = new etoile::core::Object;
 
-      o.Create(etoile::core::GenreFile, pair.K);
-      o.Seal(pair.k);
-      o.Bind();
+      o->Create(etoile::core::GenreFile, pair.K);
+      o->Seal(pair.k);
+      o->Bind();
 
-      etoile::depot::Depot::Put(o.address, o);
+      etoile::depot::Depot::Put(o->address, o);
 
-      etoile::core::Data data;
-      data.Write(0, (Byte*)"suce", 4);
-      data.Bind();
+      etoile::core::Data* data = new etoile::core::Data;
+      data->Write(0, (Byte*)"suce", 4);
+      data->Bind();
 
-      etoile::depot::Depot::Put(data.address, data);
+      etoile::depot::Depot::Put(data->address, data);
 
       etoile::depot::Cache::Dump();
 
-      etoile::core::Object n;
+      etoile::core::Object* n;
 
-      if (etoile::depot::Cache::Get(o.address, n) != StatusOk)
+      if (etoile::depot::Depot::Get(o->address, n) != StatusOk)
 	{
 	  printf("... could not get the block\n");
 	  return (0);
@@ -125,10 +135,8 @@ int		main(int			argc,
 
       expose();
 
-      o.Dump();
-      n.Dump();
-
-      return (0);
+      // QT loop
+      app.exec();
     }
 
     /* XXX
@@ -151,6 +159,7 @@ int		main(int			argc,
 
     expose();
   }
+
   Cryptography::Clean();
 
   return (0);

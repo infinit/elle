@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [sat sep 12 00:36:12 2009]
+// updated       julien quintard   [fri dec  4 12:20:57 2009]
 //
 
 //
@@ -27,10 +27,9 @@ namespace etoile
 //
 
     ///
-    /// the expiration delay for blocks to survive in the depot without
-    /// being refreshed from the hole.
+    /// the expiration delays for blocks depending on their family.
     ///
-    core::Time		Depot::Delays::PublicKeyBlock;
+    core::Time		Depot::Delays[hole::Block::Families];
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -43,8 +42,16 @@ namespace etoile
     {
       // initialize the delays.
       {
+	// set the content hash block.
+	Depot::Delays[hole::Block::FamilyContentHashBlock].year =
+	  Variable::Maximum(Depot::Delays[hole::Block::FamilyContentHashBlock].year);
+
 	// set the public key blocks delay.
-	Depot::Delays::PublicKeyBlock.minute = 5;
+	if (Depot::Delays[hole::Block::FamilyPublicKeyBlock].Current() ==
+	    StatusError)
+	  escape("unable to get the current time");
+
+	Depot::Delays[hole::Block::FamilyPublicKeyBlock].minute = 5;
       }
 
       // initialize the cache.
@@ -73,31 +80,41 @@ namespace etoile
     }
 
     ///
-    /// this method computes immutable content hash blocks' expiration time.
+    /// this method stores a block by updating the cache.
     ///
-    Status		Depot::Expiration(const core::ContentHashBlock&,
-					  core::Time&		expiration)
+    Status		Depot::Put(const hole::Address&		address,
+				   hole::Block*			block)
     {
-      // build an infinit expiration date.
-      expiration.year = Variable::Maximum(expiration.year);
+      // update the cache.
+      if (Cache::Put(address,
+		     block,
+		     Depot::Delays[block->family]) == StatusError)
+	escape("unable to put the block in the cache");
 
       leave();
     }
 
     ///
-    /// this method compute public key blocks' expiration time.
+    /// this method retrieves a block from the storage layer.
     ///
-    Status		Depot::Expiration(const core::PublicKeyBlock&,
-					  core::Time&		expiration)
+    Status		Depot::Get(const hole::Address&		address,
+				   hole::Block*&		block)
     {
-      // get the current date.
-      if (expiration.Current() == StatusError)
-	escape("unable to get the current time");
+      // look into the journal.
+      // XXX
 
-      // add the delay during which a block can survive in the depot.
-      expiration = expiration + Depot::Delays::PublicKeyBlock;
+      // look in the cache.
+      if (Cache::Get(address, block) == StatusOk)
+	leave();
 
-      leave();
+      // look in the house.
+      // XXX
+
+      // finally, look in the hole.
+      if (hole::Hole::Get(address, block) == StatusOk)
+	leave();
+
+      escape("unable to find the block");
     }
 
   }

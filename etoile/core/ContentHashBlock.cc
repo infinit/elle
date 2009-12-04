@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [fri sep 11 22:49:22 2009]
+// updated       julien quintard   [tue dec  1 02:55:39 2009]
 //
 
 //
@@ -21,6 +21,19 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// this constructor takes a family and kind and set the underlying
+    /// block properties.
+    ///
+    ContentHashBlock::ContentHashBlock(const hole::Block::Kind	kind):
+      hole::Block(hole::Block::FamilyContentHashBlock, kind)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

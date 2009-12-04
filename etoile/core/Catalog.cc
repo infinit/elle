@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon aug 31 21:04:28 2009]
+// updated       julien quintard   [tue dec  1 03:17:51 2009]
 //
 
 //
@@ -43,6 +43,8 @@ namespace etoile
     /// the constructor
     ///
     Catalog::Catalog():
+      Contents(hole::Block::KindCatalog),
+
       state(StateClean)
     {
     }

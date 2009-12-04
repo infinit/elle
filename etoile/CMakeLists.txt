@@ -1,5 +1,9 @@
 PROJECT(Etoile CXX)
 
+QT4_WRAP_CPP(etoile_MOCS
+  depot/Record.hh
+)
+
 ADD_LIBRARY(etoile
   core/Access.cc
   core/Object.cc
@@ -21,6 +25,8 @@ ADD_LIBRARY(etoile
 
   depot/Depot.cc
   depot/Cache.cc
+  depot/Record.cc
+  depot/House.cc
 
   path/Path.cc
   path/Cache.cc
@@ -39,12 +45,16 @@ ADD_LIBRARY(etoile
   components/Author.cc
 
   agent/Agent.cc
-  )
+
+  ${etoile_MOCS}
+)
 
 ADD_EXECUTABLE(test
   main.cc
-  )
+)
 
 TARGET_LINK_LIBRARIES(etoile elle crypto ssl dl)
 
-TARGET_LINK_LIBRARIES(test elle crypto ssl dl etoile)
+TARGET_LINK_LIBRARIES(test elle crypto ssl dl etoile
+		           ${QT_QTNETWORK_LIBRARIES}
+			   ${QT_QTCORE_LIBRARIES})

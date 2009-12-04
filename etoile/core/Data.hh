@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [sun aug 23 10:41:59 2009]
+// updated       julien quintard   [tue dec  1 03:05:52 2009]
 //
 
 #ifndef ETOILE_CORE_DATA_HH
@@ -36,6 +36,11 @@ namespace etoile
       public Contents
     {
     public:
+      //
+      // constructors & destructors
+      //
+      Data();
+
       //
       // methods
       //

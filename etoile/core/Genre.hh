@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Genre.hh
 //
 // created       julien quintard   [mon aug 10 14:14:40 2009]
-// updated       julien quintard   [sat aug 15 20:20:46 2009]
+// updated       julien quintard   [tue dec  1 02:21:42 2009]
 //
 
 #ifndef ETOILE_CORE_GENRE_HH
@@ -24,7 +24,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// the genre defines the type of object: file, directory or link.
     ///
     enum Genre
       {

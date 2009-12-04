@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [thu sep 10 13:27:16 2009]
+// updated       julien quintard   [tue dec  1 02:58:06 2009]
 //
 
 #ifndef ETOILE_CORE_PUBLICKEYBLOCK_HH
@@ -38,6 +38,11 @@ namespace etoile
       public hole::Block
     {
     public:
+      //
+      // constructors & destructors
+      //
+      PublicKeyBlock(const hole::Block::Kind);
+
       //
       // methods
       //

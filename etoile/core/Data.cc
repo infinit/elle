@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [sun aug 23 10:43:45 2009]
+// updated       julien quintard   [tue dec  1 03:18:00 2009]
 //
 
 //
@@ -21,6 +21,18 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Data::Data():
+      Contents(hole::Block::KindData)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

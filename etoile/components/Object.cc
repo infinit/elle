@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [tue sep  1 01:47:09 2009]
+// updated       julien quintard   [thu dec  3 21:48:20 2009]
 //
 
 //
@@ -35,11 +35,8 @@ namespace etoile
       // set the object address.
       context.address = address;
 
-      // allocate the object.
-      context.object = new core::Object;
-
       // get the block.
-      if (depot::Depot::Get(address, *context.object) == StatusError)
+      if (depot::Depot::Get(address, context.object) == StatusError)
 	escape("unable to retrieve the block");
 
       // retrieve the subject's rights. that also means that, if the

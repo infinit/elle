@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [fri sep 11 22:49:32 2009]
+// updated       julien quintard   [tue dec  1 03:20:52 2009]
 //
 
 //
@@ -21,6 +21,18 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// this constructor set the family and kind of the underlying block.
+    ///
+    PublicKeyBlock::PublicKeyBlock(const hole::Block::Kind	kind):
+      hole::Block(hole::Block::FamilyPublicKeyBlock, kind)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [sun aug 23 10:52:05 2009]
+// updated       julien quintard   [tue dec  1 03:17:36 2009]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HH
@@ -40,6 +40,14 @@ namespace etoile
       // types
       //
       typedef Natural64		Offset;
+
+      //
+      // constructors & destructors
+      //
+      Contents(const hole::Block::Kind				kind):
+	ContentHashBlock(kind)
+      {
+      }
 
       //
       // methods

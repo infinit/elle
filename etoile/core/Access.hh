@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [mon aug 17 01:48:33 2009]
+// updated       julien quintard   [tue dec  1 03:02:09 2009]
 //
 
 #ifndef ETOILE_CORE_ACCESS_HH
@@ -76,8 +76,7 @@ namespace etoile
       //
       // constructors & destructors
       //
-
-      // XXX
+      Access();
 
       //
       // methods

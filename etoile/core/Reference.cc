@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sun aug 23 10:43:25 2009]
+// updated       julien quintard   [tue dec  1 03:20:06 2009]
 //
 
 //
@@ -21,6 +21,18 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Reference::Reference():
+      Contents(hole::Block::KindReference)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [tue sep  1 01:04:15 2009]
+// updated       julien quintard   [thu dec  3 21:38:37 2009]
 //
 
 //
@@ -99,6 +99,9 @@ namespace etoile
       // XXX
 
       // push the context in the journal.
+
+      // XXX to test the depot interface.
+      depot::Depot::Put(context.object->address, context.object);
 
       leave();
     }

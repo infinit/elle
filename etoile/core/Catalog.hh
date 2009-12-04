@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [sun aug 23 10:58:27 2009]
+// updated       julien quintard   [tue dec  1 03:04:46 2009]
 //
 
 #ifndef ETOILE_CORE_CATALOG_HH
@@ -78,6 +78,12 @@ namespace etoile
       typedef Container::const_iterator	Scoutor;
 
       //
+      // constructors & destructors
+      //
+      Catalog();
+      ~Catalog();
+
+      //
       // methods
       //
       Status		Prepare(const SecretKey&);
@@ -95,12 +101,6 @@ namespace etoile
 			       Catalog::Iterator* = NULL);
 
       Status		Size(Contents::Offset&) const;
-
-      //
-      // constructors & destructors
-      //
-      Catalog();
-      ~Catalog();
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.hh
 //
 // created       julien quintard   [mon aug 10 12:13:56 2009]
-// updated       julien quintard   [mon aug 10 16:49:01 2009]
+// updated       julien quintard   [fri dec  4 15:35:25 2009]
 //
 
 #ifndef ETOILE_CONFIGURATION_CONFIGURATION_HH
@@ -38,6 +38,7 @@ namespace etoile
       //
       // static attributes
       //
+      static const String		PathHouse;
     };
 
   }

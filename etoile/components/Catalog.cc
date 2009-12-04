@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [wed sep  9 15:06:51 2009]
+// updated       julien quintard   [thu dec  3 03:50:55 2009]
 //
 
 //
@@ -39,17 +39,16 @@ namespace etoile
       if (context.catalog != NULL)
 	leave();
 
-      // allocate a new contents.
-      context.catalog = new core::Catalog;
-
       // check if there exists a catalog. if so, load the block, otherwise
       // leave the catalog new and empty.
       if (context.object->data.contents != hole::Address::Null)
 	{
 	  // load the block.
+	  /* XXX
 	  if (depot::Depot::Get(context.object->data.contents,
-			      *context.catalog) == StatusError)
+				context.catalog) == StatusError)
 	    escape("unable to load the catalog");
+	  */
 	}
 
       leave();

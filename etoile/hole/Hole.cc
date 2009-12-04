@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [mon aug 10 21:28:21 2009]
+// updated       julien quintard   [fri dec  4 02:07:05 2009]
 //
 
 //
@@ -31,7 +31,7 @@ namespace etoile
     /// layer.
     ///
     Status		Hole::Put(const Address&		address,
-				  const Block&			block)
+				  const Block*&			block)
     {
       Archive		archive;
       String		identity;
@@ -45,7 +45,7 @@ namespace etoile
 	escape("unable to create an archive");
 
       // serialize the block.
-      if (block.Serialize(archive) == StatusError)
+      if (block->Serialize(archive) == StatusError)
 	escape("unable to serialize the block");
 
       // XXX[temporary hack emulating a storage layer]
@@ -87,7 +87,7 @@ namespace etoile
     ///    Address and Block!
     ///
     Status		Hole::Get(const Address&		address,
-				  Block&			block)
+				  Block*&			block)
     {
       Archive		archive;
       Region		region;
@@ -131,12 +131,15 @@ namespace etoile
       if (archive.Prepare(region) == StatusError)
         escape("unable to prepare the archive");
 
+      // create a new block instance.
+      block = new Block;
+
       // extract the archive.
-      if (archive.Extract(block) == StatusError)
+      if (block->Extract(archive) == StatusError)
         escape("unable to extract the given block");
 
       // verify the block's validity.
-      if (block.Validate(address) != StatusTrue)
+      if (block->Validate(address) != StatusTrue)
         escape("unable to validate the retrieved block");
 
       leave();

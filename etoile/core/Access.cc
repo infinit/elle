@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [thu jul 30 20:54:26 2009]
+// updated       julien quintard   [tue dec  1 03:04:13 2009]
 //
 
 //
@@ -23,9 +23,22 @@ namespace etoile
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Access::Access():
+      ContentHashBlock(hole::Block::KindAccess)
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
+    // XXX
 
   }
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [fri sep 11 22:47:40 2009]
+// updated       julien quintard   [tue dec  1 03:01:50 2009]
 //
 
 //
@@ -29,7 +29,8 @@ namespace etoile
     ///
     /// this method initializes the object.
     ///
-    Object::Object()
+    Object::Object():
+      PublicKeyBlock(hole::Block::KindObject)
     {
       this->meta.state = StateClean;
       this->meta.owner.permissions = PermissionNone;
