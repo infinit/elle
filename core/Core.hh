@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Core.hh
 //
 // created       julien quintard   [fri jan 30 16:14:39 2009]
-// updated       julien quintard   [sun nov 29 19:37:43 2009]
+// updated       julien quintard   [thu dec  3 03:04:25 2009]
 //
 
 #ifndef ELLE_CORE_CORE_HH
@@ -55,10 +55,10 @@ namespace elle
       // methods
       //
       template <typename T>
-      static T		Minimum(T&);
+      static T		Minimum(const T&);
 
       template <typename T>
-      static T		Maximum(T&);
+      static T		Maximum(const T&);
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [mon nov 30 15:01:19 2009]
+// updated       julien quintard   [tue dec  1 16:54:05 2009]
 //
 
 //
@@ -33,6 +33,7 @@ namespace elle
 				    const String&		host,
 				    const Natural16		port)
     {
+      Location		location;
       Address		peer;
       Probe		probe;
 
@@ -69,8 +70,12 @@ namespace elle
       if (probe.Create(this->name) == StatusError)
 	escape("unable to create a probe message");
 
+      // create a location.
+      if (location.Create(peer, port) == StatusError)
+	escape("unable to create a location");
+
       // probe the peer.
-      if (socket.Send(Location(peer, port), probe) == StatusError)
+      if (socket.Send(location, probe) == StatusError)
 	escape("unable to send the probe");
 
       leave();

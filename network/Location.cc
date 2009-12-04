@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Location.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [sun nov 29 03:28:06 2009]
+// updated       julien quintard   [tue dec  1 16:53:26 2009]
 //
 
 //
@@ -34,23 +34,12 @@ namespace elle
     {
     }
 
-    ///
-    /// this constructor has been introduced for commodity has it cannot
-    /// return an error.
-    ///
-    Location::Location(const Address&				address,
-		       const Natural16				port)
-    {
-      this->address = address;
-      this->port = port;
-    }
-
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method creates an address very much like the constructor.
+    /// this method creates an address.
     ///
     Status		Location::Create(const Address&		address,
 					 const Natural16	port)

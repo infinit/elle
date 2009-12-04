@@ -27,6 +27,7 @@ ADD_LIBRARY(elle
   network/Socket.cc
   network/Location.cc
   network/Packet.cc
+
   ${elle_MOCS}
 )
 
@@ -49,6 +50,7 @@ ADD_EXECUTABLE(test-network
   test/network/Test.cc
   test/network/Probe.cc
   test/network/Node.cc
+
   ${test-network_MOCS}
 )
 
