@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Location.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [sat nov 28 15:22:48 2009]
+// updated       julien quintard   [tue dec  1 16:53:15 2009]
 //
 
 #ifndef ELLE_NETWORK_LOCATION_HH
@@ -43,8 +43,6 @@ namespace elle
       // constructors & destructors
       //
       Location();
-      Location(const Address&,
-	       const Natural16);
 
       //
       // methods
