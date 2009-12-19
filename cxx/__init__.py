@@ -7,17 +7,14 @@ import os, re, shutil, subprocess, tempfile
 
 class Toolkit:
 
-
     def __init__(self):
 
         self.includes = []
-
 
     @classmethod
     def default(self):
 
         return GccToolkit()
-
 
     def include(self, path):
 
@@ -26,7 +23,9 @@ class Toolkit:
             p = srctree() / p
         self.includes.append(p)
 
+def concatenate(chunks, prefix = ''):
 
+    return ''.join(map(lambda v: ' %s%s' %(prefix, v), chunks))
 
 class GccToolkit(Toolkit):
 
@@ -40,7 +39,7 @@ class GccToolkit(Toolkit):
     def compile(self, cfg, src, obj):
 
         includes = ''.join(map(lambda i: ' -I %s' % shell_escape(i), list(cfg.include_path()) + list(self.includes)))
-        return 'g++%s -c %s -o %s' % (includes, src, obj)
+        return 'g++%s%s -c %s -o %s' % (concatenate(cfg.flags), includes, src, obj)
 
 
     def archive(self, cfg, objs, lib):
@@ -50,11 +49,11 @@ class GccToolkit(Toolkit):
 
     def link(self, cfg, objs, exe):
 
-        # FIXME pthread
-        return 'g++ -lpthread%s%s %s -o %s' % \
-               (''.join(map(lambda d: ' -L %s' % d, cfg.lib_paths)),
-                ''.join(map(lambda d: ' -l%s' % d, cfg.libs)),
-                ' '.join(map(str, objs)),
+        return 'g++ %s%s%s %s -o %s' % \
+               (concatenate(cfg.flags),
+                concatenate(cfg.lib_paths, '-L '),
+                concatenate(cfg.libs, '-l'),
+                concatenate(objs),
                 exe)
 
 
@@ -67,7 +66,6 @@ class GccToolkit(Toolkit):
     def exename(self, cfg, path):
 
         return Path(path)
-
 
 
 class VisualToolkit(Toolkit):
@@ -151,12 +149,18 @@ class Config:
             self._system_includes = {}
             self.lib_paths = {}
             self.libs = {}
+            self.flags = []
         else:
             self._includes = clone(model._includes)
             self._local_includes = clone(model._local_includes)
             self._system_includes = clone(model._system_includes)
             self.lib_paths = clone(model.lib_paths)
             self.libs = clone(model.libs)
+            self.flags = clone(model.flags)
+
+    def flag(self, f):
+
+        self.flags.append(f)
 
     def add_local_include_path(self, path):
 
