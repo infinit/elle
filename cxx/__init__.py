@@ -203,9 +203,11 @@ class Config:
     def __add__(self, rhs):
 
         res = Config(self)
+        res._local_includes.update(rhs._local_includes)
         res._includes.update(rhs._includes)
         res.lib_paths.update(rhs.lib_paths)
         res.libs.update(rhs.libs)
+        res.flags += rhs.flags
         return res
 
 class Compiler(Builder):
@@ -244,10 +246,13 @@ class Compiler(Builder):
             match = self.include_re.match(line)
             if match:
                 include = match.group(2)
+                found = False
                 for include_path in self.cfg.local_include_path():
                     test = include_path / include
                     if test.exists():
+                        found = True
                         res += self.mkdeps(test, lvl + 1, marks)
+                        break
 
         return res
 
