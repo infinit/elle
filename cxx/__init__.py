@@ -1,4 +1,4 @@
-from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows
+from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree
 import os, re, shutil, subprocess, tempfile
 
 # FIXME: Factor node and builder for executable and staticlib
@@ -38,7 +38,7 @@ class GccToolkit(Toolkit):
 
     def compile(self, cfg, src, obj):
 
-        includes = ''.join(map(lambda i: ' -I %s' % shell_escape(i), list(cfg.include_path()) + list(self.includes)))
+        includes = ''.join(map(lambda i: ' -I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), list(cfg.include_path()) + list(self.includes)))
         return 'g++%s%s -c %s -o %s' % (concatenate(cfg.flags), includes, src, obj)
 
 
@@ -226,20 +226,26 @@ class Compiler(Builder):
 
     def dependencies(self):
 
-        return self.mkdeps(self.src.path(), 0, {})
+        print 'mkdeps for %s' % self.src
+        return self.mkdeps(self.src, 0, {})
 
     def execute(self):
 
         return self.cmd(self.tk.compile(self.cfg, self.src.path(), self.obj.path()))
 
-    def mkdeps(self, path, lvl, marks):
+    def mkdeps(self, n, lvl, marks):
+
+        path = n.path()
+        idt = ' ' * lvl * 2
 
         if str(path) in marks:
             return []
         marks[str(path)] = True
 
-#        print ' ' * lvl * 2, path
-        res = [node(strip_srctree(path))]
+        # print idt, path
+
+        res = [n]
+        n.build()
         for line in open(str(path), 'r'):
 
             line = line.strip()
@@ -249,10 +255,29 @@ class Compiler(Builder):
                 found = False
                 for include_path in self.cfg.local_include_path():
                     test = include_path / include
+                    # print idt, 'test: %s (%s)' % (test, strip_srctree(test))
+                    # if re.compile('player-create').search(include):
+                    #     print strip_srctree(test)
+                    #     print strip_srctree(test) in Node.nodes
+                    #     try:
+                    #         print '=====> %s' %Node.nodes[strip_srctree(test)]
+                    #     except KeyError, e:
+                    #         pass
+                    # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
                     if test.exists():
                         found = True
-                        res += self.mkdeps(test, lvl + 1, marks)
+                        res += self.mkdeps(node(strip_srctree(test)), lvl + 1, marks)
                         break
+
+                    test = strip_srctree(include_path) / include
+                    if str(test) in Node.nodes:
+                        found = True
+                        res += self.mkdeps(node(test), lvl + 1, marks)
+                        break
+                # if not found:
+                #     print idt, '=> not found: %s' % include
+                #     if re.compile('player-create').search(include):
+                #         print Node.nodes
 
         return res
 
@@ -378,6 +403,8 @@ class Executable(Node):
             elif source.__class__ == Source:
                 o = Object(source, tk, cfg)
                 self.sources.append(o)
+            elif source.__class__ == Header:
+                pass
             else:
                 self.builder = True # Hack to get the right path in error message
                 raise Exception('invalid source type for executable %s: %s' % (self, source))

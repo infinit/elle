@@ -211,7 +211,7 @@ class Node:
 
         self.builder = None
         self.srctree = srctree()
-        Node.nodes[str(self.path())] = self
+        Node.nodes[str(self.id())] = self
 
 
     def clean(self):
@@ -254,7 +254,7 @@ class Node:
     def __setattr__(self, name, value):
 
         if name == 'builder' and 'builder' in self.__dict__:
-            del self.nodes[str(self.path())]
+            del self.nodes[str(self.id())]
             self.__dict__[name] = value
             self.nodes[str(self.path())] = self
         else:
