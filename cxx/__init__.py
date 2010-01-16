@@ -112,7 +112,7 @@ class VisualToolkit(Toolkit):
 
 
     def compile(self, cfg, src, obj):
-        includes = ''.join(map(lambda i: ' /I %s' % shell_escape(i), cfg.include_path() + list(self.includes)))
+        includes = ''.join(map(lambda i: ' /I %s /I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.include_path() + list(self.includes)))
         return 'cl.exe /MT /TP /nologo /DWIN32 /EHsc%s /Fo%s /c %s' % (includes, obj, src)
 
     def archive(self, cfg, objs, lib):
