@@ -123,8 +123,6 @@ int		main(int			argc,
 
       etoile::depot::Depot::Put(data->address, data);
 
-      etoile::depot::Cache::Dump();
-
       etoile::core::Object* n;
 
       if (etoile::depot::Depot::Get(o->address, n) != StatusOk)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [fri sep 11 21:35:24 2009]
+// updated       julien quintard   [fri dec 18 13:45:01 2009]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -19,6 +19,8 @@
 //
 
 #include <elle/Elle.hh>
+
+#include <etoile/hole/Family.hh>
 
 #include <ostream>
 #include <sstream>
@@ -55,7 +57,8 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const Archivable&);
+      Status		Create(const Family,
+			       const Archivable&);
       Status		Identify(String&) const;
 
       //

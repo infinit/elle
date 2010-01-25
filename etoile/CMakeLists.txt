@@ -24,9 +24,7 @@ ADD_LIBRARY(etoile
   hole/Block.cc
 
   depot/Depot.cc
-  depot/Cache.cc
   depot/Record.cc
-  depot/House.cc
 
   path/Path.cc
   path/Cache.cc

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [fri dec  4 19:12:20 2009]
+// updated       julien quintard   [thu jan  7 13:16:51 2010]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -23,6 +23,11 @@
 #include <etoile/hole/Hole.hh>
 #include <etoile/core/Core.hh>
 
+#include <etoile/depot/Record.hh>
+
+#include <map>
+#include <list>
+
 namespace etoile
 {
   namespace depot
@@ -35,8 +40,8 @@ namespace etoile
     ///
     /// this class abstracts the storage layer into three units: the cache
     /// which keeps blocks in main memory, the house which keeps block
-    /// on a stable but slower storage device such as an hard disk and
-    /// the hole which represents the only storage space.
+    /// on a stable but slower storage device such as on a hard disk and
+    /// the hole which represents the online storage space.
     ///
     /// note that blocks are passed as pointers for two reasons. firstly,
     /// without pointers, the compiler loses the derived class of the
@@ -54,9 +59,33 @@ namespace etoile
     {
     public:
       //
+      // structures
+      //
+      struct		Cache
+      {
+	//
+	// types
+	//
+	typedef std::pair<hole::Address, Record*>	Value;
+	typedef std::map<hole::Address, Record*>	Container;
+	typedef Container::iterator			Iterator;
+	typedef Container::const_iterator		Scoutor;
+      };
+
+      struct		Access
+      {
+	//
+	// types
+	//
+	typedef std::list<Record*>			Container;
+	typedef Container::iterator			Iterator;
+	typedef Container::const_iterator		Scoutor;
+      };
+
+      //
       // globals
       //
-      static core::Time		Delays[hole::Block::Families];
+      static core::Time		Delays[hole::Families];
 
       //
       // static methods
@@ -99,13 +128,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/depot/Cache.hh>
-#include <etoile/depot/Record.hh>
-#include <etoile/depot/House.hh>
 
 #endif

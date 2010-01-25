@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.hh
 //
 // created       julien quintard   [thu dec  3 03:07:53 2009]
-// updated       julien quintard   [fri dec  4 11:23:54 2009]
+// updated       julien quintard   [thu jan  7 13:20:41 2010]
 //
 
 #ifndef ETOILE_DEPOT_RECORD_HH
@@ -20,7 +20,8 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/depot/Cache.hh>
+#include <etoile/core/Core.hh>
+#include <etoile/hole/Hole.hh>
 
 #include <QObject>
 #include <QTimer>
@@ -54,6 +55,7 @@ namespace etoile
       // attributes
       //
       hole::Block*	block;
+      // XXX Unit*		unit;
 
       Natural32		expiration;
       ::QTimer*		timer;
@@ -63,6 +65,7 @@ namespace etoile
       //
       Status		Create(hole::Block*,
 			       const core::Time&);
+
       Status		Update(hole::Block*,
 			       const core::Time&);
 

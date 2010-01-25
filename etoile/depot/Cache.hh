@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cache.hh
 //
 // created       julien quintard   [wed sep  9 14:00:24 2009]
-// updated       julien quintard   [fri dec  4 12:21:07 2009]
+// updated       julien quintard   [wed dec 16 17:30:32 2009]
 //
 
 #ifndef ETOILE_DEPOT_CACHE_HH
@@ -25,8 +25,6 @@
 
 #include <etoile/depot/Record.hh>
 
-#include <map>
-#include <list>
 
 namespace etoile
 {
@@ -58,29 +56,6 @@ namespace etoile
     class Cache
     {
     public:
-      //
-      // structures
-      //
-      struct		Repository
-      {
-	//
-	// types
-	//
-	typedef std::pair<hole::Address, Record*>	Value;
-	typedef std::map<hole::Address, Record*>	Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
-
-      struct		Access
-      {
-	//
-	// types
-	//
-	typedef std::list<Record*>			Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
 
       //
       // static methods

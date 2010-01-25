@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue dec  1 02:55:39 2009]
+// updated       julien quintard   [fri dec 18 15:49:02 2009]
 //
 
 //
@@ -30,8 +30,8 @@ namespace etoile
     /// this constructor takes a family and kind and set the underlying
     /// block properties.
     ///
-    ContentHashBlock::ContentHashBlock(const hole::Block::Kind	kind):
-      hole::Block(hole::Block::FamilyContentHashBlock, kind)
+    ContentHashBlock::ContentHashBlock():
+      hole::Block(hole::FamilyContentHashBlock)
     {
     }
 
@@ -45,7 +45,7 @@ namespace etoile
     Status		ContentHashBlock::Bind()
     {
       // compute the address.
-      if (this->address.Create(*this) == StatusError)
+      if (this->address.Create(this->family, *this) == StatusError)
 	escape("unable to compute the CHB's address");
 
       leave();
@@ -66,7 +66,7 @@ namespace etoile
 	flee("the given address does not correspond to the recorded address");
 
       // compute the address of this object.
-      if (self.Create(*this) == StatusError)
+      if (self.Create(this->family, *this) == StatusError)
 	escape("unable to compute the CHB's address");
 
       // compare the address with the given one.
@@ -103,16 +103,24 @@ namespace etoile
     ///
     /// this method serializes the block object.
     ///
-    Status		ContentHashBlock::Serialize(Archive&) const
+    Status		ContentHashBlock::Serialize(Archive&	archive) const
     {
+      // serialize the parent class.
+      if (hole::Block::Serialize(archive) == StatusError)
+	escape("unable to serialize the underlying block");
+
       leave();
     }
 
     ///
     /// this method extracts the block object.
     ///
-    Status		ContentHashBlock::Extract(Archive&)
+    Status		ContentHashBlock::Extract(Archive&	archive)
     {
+      // extract the parent class.
+      if (hole::Block::Extract(archive) == StatusError)
+	escape("unable to extract the underlying block");
+
       leave();
     }
 

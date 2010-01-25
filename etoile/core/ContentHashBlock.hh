@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [tue dec  1 02:55:52 2009]
+// updated       julien quintard   [fri dec 18 12:34:48 2009]
 //
 
 #ifndef ETOILE_CORE_CONTENTHASHBLOCK_HH
@@ -41,7 +41,7 @@ namespace etoile
       //
       // constructors & destructors
       //
-      ContentHashBlock(const hole::Block::Kind);
+      ContentHashBlock();
 
       //
       // methods

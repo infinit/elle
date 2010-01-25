@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [tue dec  1 03:20:52 2009]
+// updated       julien quintard   [fri dec 18 15:48:53 2009]
 //
 
 //
@@ -29,8 +29,8 @@ namespace etoile
     ///
     /// this constructor set the family and kind of the underlying block.
     ///
-    PublicKeyBlock::PublicKeyBlock(const hole::Block::Kind	kind):
-      hole::Block(hole::Block::FamilyPublicKeyBlock, kind)
+    PublicKeyBlock::PublicKeyBlock():
+      hole::Block(hole::FamilyPublicKeyBlock)
     {
     }
 
@@ -55,7 +55,7 @@ namespace etoile
     Status		PublicKeyBlock::Bind()
     {
       // compute the address.
-      if (this->address.Create(this->K) == StatusError)
+      if (this->address.Create(this->family, this->K) == StatusError)
 	escape("unable to compute the PKB's address");
 
       leave();
@@ -77,7 +77,7 @@ namespace etoile
       // hash of the public key.
 
       // compute the address.
-      if (self.Create(this->K) == StatusError)
+      if (self.Create(this->family, this->K) == StatusError)
 	escape("unable to compute the PKB's address");
 
       // verify with the recorded address.
@@ -125,6 +125,10 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Serialize(Archive&	archive) const
     {
+      // serialize the parent class.
+      if (hole::Block::Serialize(archive) == StatusError)
+	escape("unable to serialize the underlying block");
+
       // serialize the public key.
       if (archive.Serialize(this->K) == StatusError)
 	escape("unable to serialize the public key");
@@ -137,6 +141,10 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Extract(Archive&	archive)
     {
+      // extract the parent class.
+      if (hole::Block::Extract(archive) == StatusError)
+	escape("unable to extract the underlying block");
+
       // extract the public key.
       if (archive.Extract(this->K) == StatusError)
 	escape("unable to extract the public key");

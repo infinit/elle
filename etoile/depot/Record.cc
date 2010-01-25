@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [fri dec  4 12:22:05 2009]
+// updated       julien quintard   [thu jan  7 13:19:41 2010]
 //
 
 //
@@ -161,9 +161,11 @@ namespace etoile
     ///
     void		Record::Timeout()
     {
+      /* XXX
       // remove the block from the cache.
       if (Cache::Discard(block->address) == StatusError)
 	alert("unable to discard the timeout block");
+      */
     }
 
   }

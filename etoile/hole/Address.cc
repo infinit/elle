@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [fri sep 11 21:59:35 2009]
+// updated       julien quintard   [fri dec 18 15:57:28 2009]
 //
 
 //
@@ -80,13 +80,14 @@ namespace etoile
     /// create the address based on an object by serializing it before
     /// hashing it.
     ///
-    Status		Address::Create(const Archivable&	object)
+    Status		Address::Create(const Family		family,
+					const Archivable&	object)
     {
       // allocate the digest object.
       this->digest = new Digest;
 
-      // compute the digest based on the object's archive.
-      if (OneWay::Hash(object, *this->digest) == StatusError)
+      // compute the digest based on the family and object's archive.
+      if (OneWay::Hash((Byte&)family, object, *this->digest) == StatusError)
 	escape("unable to hash the given object");
 
       leave();

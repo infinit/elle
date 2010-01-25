@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [fri dec  4 11:01:10 2009]
+// updated       julien quintard   [tue dec 22 13:04:44 2009]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <etoile/hole/Address.hh>
+#include <etoile/hole/Family.hh>
 
 namespace etoile
 {
@@ -42,52 +43,10 @@ namespace etoile
     {
     public:
       //
-      // enumerations
-      //
-
-      ///
-      /// this enumeration defines the block's physical family.
-      ///
-      enum Family
-	{
-	  FamilyUnknown,
-	  FamilyContentHashBlock,
-	  FamilyPublicKeyBlock,
-
-	  Families = FamilyPublicKeyBlock + 1
-	};
-
-      ///
-      /// this enumeration defines the block's logical family.
-      ///
-      enum Kind
-	{
-	  KindUnknown,
-	  KindAccess,
-	  KindCatalog,
-	  KindData,
-	  KindObject,
-	  KindReference,
-	  // XXX User Group etc.
-
-	  Kinds = KindReference + 1
-	};
-
-      //
       // constructors & destructors
       //
-      Block():
-	family(FamilyUnknown),
-	kind(KindUnknown)
-      {
-      }
-
-      Block(const Family					family,
-	    const Kind						kind):
-	family(family),
-	kind(kind)
-      {
-      }
+      Block();
+      Block(const Family);
 
       //
       // methods
@@ -117,11 +76,14 @@ namespace etoile
       // dumpable
       Status		Dump(const Natural32 = 0) const;
 
+      // archivable
+      Status		Serialize(Archive&) const;
+      Status		Extract(Archive&);
+
       //
       // attributes
       //
       Family		family;
-      Kind		kind;
 
       Address		address;
     };
