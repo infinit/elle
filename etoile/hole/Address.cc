@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [fri dec 18 15:57:28 2009]
+// updated       julien quintard   [thu jan 28 00:42:36 2010]
 //
 
 //
@@ -39,6 +39,7 @@ namespace etoile
     /// this method initializes the object.
     ///
     Address::Address():
+      family(FamilyUnknown),
       digest(NULL)
     {
     }
@@ -52,12 +53,14 @@ namespace etoile
       // copy the digest, if present.
       if (address.digest != NULL)
 	{
-	  this->digest = new Digest;
+	  this->family = address.family;
 
+	  this->digest = new Digest;
 	  *this->digest = *address.digest;
 	}
       else
 	{
+	  this->family = FamilyUnknown;
 	  this->digest = NULL;
 	}
     }
@@ -83,11 +86,14 @@ namespace etoile
     Status		Address::Create(const Family		family,
 					const Archivable&	object)
     {
+      // set the family.
+      this->family = family;
+
       // allocate the digest object.
       this->digest = new Digest;
 
-      // compute the digest based on the family and object's archive.
-      if (OneWay::Hash((Byte&)family, object, *this->digest) == StatusError)
+      // compute the digest based on the object's archive.
+      if (OneWay::Hash(object, *this->digest) == StatusError)
 	escape("unable to hash the given object");
 
       leave();
@@ -104,6 +110,10 @@ namespace etoile
 
       if (this->digest != NULL)
 	{
+	  // transform the family into an hexadicemal sequence.
+	  stream << std::nouppercase << std::hex
+		 << (elle::core::Natural32)this->family;
+
 	  // transform the digest data into an hexadecimal string.
 	  for (i = 0; i < this->digest->region.size; i++)
 	    stream << std::nouppercase << std::hex
@@ -143,9 +153,11 @@ namespace etoile
     {
       // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
-	return (this->digest == element.digest);
+	return ((this->family == element.family) &&
+		(this->digest == element.digest));
 
-      return (*this->digest == *element.digest);
+      return ((this->family == element.family) &&
+	      (*this->digest == *element.digest));
     }
 
     ///
@@ -172,6 +184,9 @@ namespace etoile
 
       if (this->digest != NULL)
 	{
+	  std::cout << alignment << shift << "[Family]"
+		    << std::hex << this->family << std::endl;
+
 	  if (this->digest->Dump(margin + 2) == StatusError)
 	    escape("unable to dump the digest");
 	}
@@ -195,7 +210,8 @@ namespace etoile
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
-	  if (archive.Serialize(*this->digest) == StatusError)
+	  if (archive.Serialize((Byte&)this->family,
+				*this->digest) == StatusError)
 	    escape("unable to serialize the digest");
 	}
       else
@@ -231,7 +247,8 @@ namespace etoile
 	  this->digest = new Digest;
 
 	  // extract the internal digest.
-	  if (archive.Extract(*this->digest) == StatusError)
+	  if (archive.Extract((Byte&)this->family,
+			      *this->digest) == StatusError)
 	    escape("unable to extract the digest");
 	}
 
@@ -264,6 +281,10 @@ namespace etoile
 	    true();
 	  else if (lhs.digest->region.size > rhs.digest->region.size)
 	    false();
+
+	  // compare the family.
+	  if (lhs.family < rhs.family)
+	    true();
 
 	  // finally, go through the data and compare.
 	  for (i = 0; i < lhs.digest->region.size; i++)

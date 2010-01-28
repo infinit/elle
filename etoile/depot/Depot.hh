@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [thu jan  7 13:16:51 2010]
+// updated       julien quintard   [wed jan 27 21:32:50 2010]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -23,7 +23,10 @@
 #include <etoile/hole/Hole.hh>
 #include <etoile/core/Core.hh>
 
+#include <etoile/depot/Repository.hh>
 #include <etoile/depot/Record.hh>
+#include <etoile/depot/Cell.hh>
+#include <etoile/depot/Unit.hh>
 
 #include <map>
 #include <list>
@@ -59,44 +62,10 @@ namespace etoile
     {
     public:
       //
-      // structures
-      //
-      struct		Cache
-      {
-	//
-	// types
-	//
-	typedef std::pair<hole::Address, Record*>	Value;
-	typedef std::map<hole::Address, Record*>	Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
-
-      struct		Access
-      {
-	//
-	// types
-	//
-	typedef std::list<Record*>			Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
-
-      //
-      // globals
-      //
-      static core::Time		Delays[hole::Families];
-
-      //
       // static methods
       //
       static Status	Initialize();
       static Status	Clean();
-
-      static Status	Put(const hole::Address&,
-			    hole::Block*);
-      static Status	Get(const hole::Address&,
-			    hole::Block*&);
 
       //
       // templates
@@ -113,7 +82,9 @@ namespace etoile
       {
 	// just forward the call to the appropriate method with the correct
 	// types.
-	return (Depot::Put(address, (hole::Block*)block));
+	return (Depot::Put(address,
+			   (hole::Block*)block,
+			   sizeof(T)));
       }
 
       template <typename T>
@@ -124,6 +95,16 @@ namespace etoile
 	// types.
 	return (Depot::Get(address, (hole::Block*&)block));
       }
+
+    private:
+      //
+      // static methods
+      //
+      static Status	Put(const hole::Address&,
+			    hole::Block*,
+			    const Natural32);
+      static Status	Get(const hole::Address&,
+			    hole::Block*&);
     };
 
   }

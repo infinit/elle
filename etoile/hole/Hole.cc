@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [fri dec  4 02:07:05 2009]
+// updated       julien quintard   [wed jan 27 20:55:25 2010]
 //
 
 //
@@ -31,7 +31,7 @@ namespace etoile
     /// layer.
     ///
     Status		Hole::Put(const Address&		address,
-				  const Block*&			block)
+				  const Block*			block)
     {
       Archive		archive;
       String		identity;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [thu jan  7 13:19:41 2010]
+// updated       julien quintard   [thu jan 28 00:54:29 2010]
 //
 
 //
@@ -30,23 +30,10 @@ namespace etoile
     /// default constructor
     ///
     Record::Record():
-      block(NULL),
-      timer(NULL)
+      location(LocationUnknown),
+      timer(NULL),
+      size(0)
     {
-    }
-
-    ///
-    /// destructor
-    ///
-    Record::~Record()
-    {
-      // delete the block.
-      if (this->block != NULL)
-	delete this->block;
-
-      // delete the timer.
-      if (this->timer != NULL)
-	delete this->timer;
     }
 
 //
@@ -54,73 +41,121 @@ namespace etoile
 //
 
     ///
-    /// this method creates a record.
+    /// XXX
     ///
-    Status		Record::Create(hole::Block*		block,
-				       const core::Time&	expiration)
+    Status		Record::Create(const hole::Address&	address,
+				       const Natural32		size)
     {
-      // set the block.
-      this->block = block;
+      // set the record address.
+      this->address = address;
 
-      // check if expiration is equal to infinite. if not, set a timer.
-      if (expiration.year == Variable::Maximum(expiration.year))
+      // set the block's size when it is active i.e in main memory.
+      this->size = size;
+
+      // check if this family of block expires.
+      if (Repository::delay[address.family] != NULL)
 	{
-	  // set the timer to NULL;
-	  this->timer = NULL;
+	  // allocate a new timer object.
+	  this->timer = new ::QTimer;
 
-	  leave();
+	  // connect the timeout signal.
+	  if (this->connect(this->timer, SIGNAL(timeout()),
+			    this, SLOT(Timeout())) == false)
+	    escape("unable to connect the timeout signal");
+
+	  // note that the timer is not started yet. it will be launched
+	  // once the Timer() method has been called.
 	}
-
-      // construct a new timer.
-      this->timer = new ::QTimer();
-
-      // connect the timeout signal.
-      if (this->connect(this->timer, SIGNAL(timeout()),
-			this, SLOT(Timeout())) == false)
-	escape("unable to connect the timeout signal");
-
-      // compute the number of seconds. note that day, minute and year
-      // are ignored.
-      this->expiration =
-	expiration.second +
-	expiration.minute * 60 +
-	expiration.hour * 3600;
-
-      // XXX to test
-      this->expiration = 5000;
-
-      // start the timer.
-      this->timer->start(this->expiration);
 
       leave();
     }
 
     ///
-    /// this method updates a record. this method is used in the Update()
-    /// cache method instead of deleting and allocating a new record because
-    /// that would require to also update the Stamps structure which points
-    /// to the associated record.
+    /// XXX
     ///
-    Status		Record::Update(hole::Block*		block,
-				       const core::Time&	expiration)
+    Status		Record::Timer()
     {
-      // stop and free the timer if there is one.
-      if (this->timer != NULL)
-	{
-	  // stop it.
-	  this->timer->stop();
+      Time		time;
+      Natural64		expiration;
 
-	  // free it.
-	  delete this->timer;
-	}
+      // if no timer is required for the family of block, just return.
+      if (this->timer == NULL)
+	leave();
 
-      // free the block.
-      if (this->block != NULL)
-	delete this->block;
+      // stop a potentially already existing timer.
+      this->timer->stop();
 
-      // finally, re-initialize the record.
-      if (this->Create(block, expiration) == StatusError)
-	escape("unable to re-initialize the record");
+      // compute the current time.
+      if (time.Current() == StatusError)
+	escape("unable to compute the current time");
+
+      // add the expiration delay for public key blocks.
+      time = time + *Repository::delay[this->address.family];
+
+      // compute the number of seconds. note that day, minute and year
+      // are ignored.
+      expiration = time.second + time.minute * 60 + time.hour * 3600;
+
+      // start the timer.
+      this->timer->start(expiration);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Record::Destroy()
+    {
+      ///
+      /// first, stop and release the existing timer.
+      ///
+      {
+	// release the timer, if there is one.
+	if (this->timer != NULL)
+	  {
+	    // stop the timer.
+	    this->timer->stop();
+
+	    // delete it.
+	    delete this->timer;
+	  }
+      }
+
+      ///
+      /// then, destroy the data.
+      ///
+      {
+	switch (this->location)
+	  {
+	  case LocationCache:
+	    {
+	      // destroy the cell.
+	      if (this->data.cell->Destroy() == StatusError)
+		escape("unable to destroy the cell");
+
+	      // release the cell.
+	      delete this->data.cell;
+
+	      break;
+	    }
+	  case LocationReserve:
+	    {
+	      // destroy the unit.
+	      if (this->data.unit->Destroy() == StatusError)
+		escape("unable to destroy the unit");
+
+	      // release the unit.
+	      delete this->data.unit;
+
+	      break;
+	    }
+	  case LocationUnknown:
+	    {
+	      escape("unable to locate the data");
+	    }
+	  }
+      }
 
       leave();
     }
@@ -140,15 +175,41 @@ namespace etoile
       std::cout << alignment << "[Record] "
 		<< this << std::endl;
 
-      std::cout << alignment << shift << "[Block] "
-		<< this->block << std::endl;
+      // dump the address.
+      if (this->address.Dump(margin + 2) == StatusError)
+	escape("unable to dump the address");
 
+      // dump the content.
+      switch (this->location)
+	{
+	case LocationCache:
+	  {
+	    if (this->data.cell->Dump(margin + 2) == StatusError)
+	      escape("unable to dump the cell");
+
+	    break;
+	  }
+	case LocationReserve:
+	  {
+	    if (this->data.unit->Dump(margin + 2) == StatusError)
+	      escape("unable to dump the unit");
+
+	    break;
+	  }
+	case LocationUnknown:
+	  {
+	    escape("unknown location");
+	  }
+	}
+
+      /*
       // dump the timer if any.
       if (this->timer != NULL)
 	{
 	  std::cout << alignment << shift << "[Timer] "
 		    << std::dec << this->expiration << std::endl;
 	}
+      */
     }
 
 //
@@ -157,15 +218,15 @@ namespace etoile
 
     ///
     /// this method is called whenever the element timeouts i.e must be
-    /// removed from the cache.
+    /// removed from the depot.
     ///
     void		Record::Timeout()
     {
-      /* XXX
-      // remove the block from the cache.
-      if (Cache::Discard(block->address) == StatusError)
+      printf("[XXX] timeout 0x%x\n", this);
+
+      // remove the block from the repository.
+      if (Repository::Discard(this->address) == StatusError)
 	alert("unable to discard the timeout block");
-      */
     }
 
   }

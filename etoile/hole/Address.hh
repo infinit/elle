@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [fri dec 18 13:45:01 2009]
+// updated       julien quintard   [thu jan 28 00:33:10 2010]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -64,6 +64,7 @@ namespace etoile
       //
       // attributes
       //
+      Family		family;
       Digest*		digest;
 
       //

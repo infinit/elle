@@ -24,7 +24,10 @@ ADD_LIBRARY(etoile
   hole/Block.cc
 
   depot/Depot.cc
+  depot/Repository.cc
   depot/Record.cc
+  depot/Cell.cc
+  depot/Unit.cc
 
   path/Path.cc
   path/Cache.cc

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [thu jan  7 13:18:40 2010]
+// updated       julien quintard   [wed jan 27 21:32:55 2010]
 //
 
 //
@@ -23,15 +23,6 @@ namespace etoile
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the expiration delays for blocks depending on their family.
-    ///
-    core::Time		Depot::Delays[hole::Families];
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -40,18 +31,7 @@ namespace etoile
     ///
     Status		Depot::Initialize()
     {
-      // set the content hash block.
-      Depot::Delays[hole::FamilyContentHashBlock].year =
-	Variable::Maximum(Depot::Delays[hole::FamilyContentHashBlock].year);
-
-      // set the public key blocks delay.
-      if (Depot::Delays[hole::FamilyPublicKeyBlock].Current() ==
-	  StatusError)
-	escape("unable to get the current time");
-
-      Depot::Delays[hole::FamilyPublicKeyBlock].minute = 5;
-
-      leave();
+      return (Repository::Initialize());
     }
 
     ///
@@ -59,24 +39,19 @@ namespace etoile
     ///
     Status		Depot::Clean()
     {
-      // XXX
-
-      leave();
+      return (Repository::Clean());
     }
 
     ///
     /// this method stores a block by updating the cache.
     ///
     Status		Depot::Put(const hole::Address&		address,
-				   hole::Block*			block)
+				   hole::Block*			block,
+				   const Natural32		size)
     {
-      /* XXX
-      // update the cache.
-      if (Cache::Put(address,
-		     block,
-		     Depot::Delays[block->family]) == StatusError)
-	escape("unable to put the block in the cache");
-      */
+      // put in the repository.
+      if (Repository::Put(address, block, size) == StatusError)
+	escape("unable to put the block in the repository");
 
       leave();
     }
@@ -87,23 +62,18 @@ namespace etoile
     Status		Depot::Get(const hole::Address&		address,
 				   hole::Block*&		block)
     {
-      /* XXX
-      // look into the journal.
+      // look in the journal.
       // XXX
 
-      // look in the cache.
-      if (Cache::Get(address, block) == StatusOk)
+      // look in the repository.
+      if (Repository::Get(address, block) == StatusOk)
 	leave();
-
-      // look in the house.
-      // XXX
 
       // finally, look in the hole.
       if (hole::Hole::Get(address, block) == StatusOk)
 	leave();
 
       escape("unable to find the block");
-      */
     }
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [tue dec 22 13:04:44 2009]
+// updated       julien quintard   [thu jan 28 00:43:50 2010]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -84,7 +84,6 @@ namespace etoile
       // attributes
       //
       Family		family;
-
       Address		address;
     };
 

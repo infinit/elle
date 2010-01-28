@@ -105,7 +105,6 @@ int		main(int			argc,
       pair.Dump();
     }
 
-    // XXX
     {
       etoile::depot::Depot::Initialize();
 
@@ -130,6 +129,11 @@ int		main(int			argc,
 	  printf("... could not get the block\n");
 	  return (0);
 	}
+
+      etoile::depot::Repository::Dump();
+
+      o->Dump();
+      n->Dump();
 
       expose();
 
