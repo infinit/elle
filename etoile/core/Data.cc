@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [wed dec 16 17:21:27 2009]
+// updated       julien quintard   [thu jan 28 22:07:55 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// the component identifier.
+    ///
+    const String		Data::Identifier = "Data";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -143,6 +152,10 @@ namespace etoile
     ///
     Status		Data::Serialize(Archive&		archive) const
     {
+      // serialize the component name.
+      if (archive.Serialize(Data::Identifier) == StatusError)
+	escape("unable to serialize the component identifier");
+
       // call the parent class.
       if (ContentHashBlock::Serialize(archive) == StatusError)
 	escape("unable to serialize the block");

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [fri sep 11 21:43:13 2009]
+// updated       julien quintard   [fri jan 29 16:35:20 2010]
 //
 
 //
@@ -77,22 +77,6 @@ namespace etoile
 //
 
     ///
-    /// assign the time.
-    ///
-    Time&		Time::operator=(const Time&		element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the time.
-      if (this->Recycle<Time>(&element) == StatusError)
-	yield("unable to recycle the time", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this operator compares two objects.
     ///
     Boolean		Time::operator==(const Time&		element) const
@@ -103,14 +87,6 @@ namespace etoile
 	      (this->day == element.day) &&
 	      (this->month == element.month) &&
 	      (this->year == element.year));
-    }
-
-    ///
-    /// this operator compares two objects.
-    ///
-    Boolean		Time::operator!=(const Time&		element) const
-    {
-      return (!(*this == element));
     }
 
 //

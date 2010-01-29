@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [wed jan 27 21:32:55 2010]
+// updated       julien quintard   [thu jan 28 14:22:14 2010]
 //
 
 //
@@ -43,14 +43,19 @@ namespace etoile
     }
 
     ///
-    /// this method stores a block by updating the cache.
+    /// this method stores a block by updating the repository.
     ///
     Status		Depot::Put(const hole::Address&		address,
-				   hole::Block*			block,
-				   const Natural32		size)
+				   hole::Block*			block)
     {
-      // put in the repository.
-      if (Repository::Put(address, block, size) == StatusError)
+      // XXX shouldn't the hole be updated first, maybe from the journal.
+      // XXX otherwise, we could end up with a block being accessed a lot
+      // XXX hence staying in the cache, never going to the hole.
+      // XXX => je pense qu'il faut que Journal push direct dans Hole +
+      // XXX    update le depot et donc que le depot n'update jamais le hole.
+
+      // update in the repository.
+      if (Repository::Put(address, block) == StatusError)
 	escape("unable to put the block in the repository");
 
       leave();

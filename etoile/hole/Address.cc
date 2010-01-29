@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jan 28 00:42:36 2010]
+// updated       julien quintard   [thu jan 28 13:19:28 2010]
 //
 
 //
@@ -131,22 +131,6 @@ namespace etoile
 //
 
     ///
-    /// assign the address.
-    ///
-    Address&		Address::operator=(const Address&	element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the address.
-      if (this->Recycle<Address>(&element) == StatusError)
-	yield("unable to recycle the address", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this operator compares two objects.
     ///
     Boolean		Address::operator==(const Address&	element) const
@@ -158,14 +142,6 @@ namespace etoile
 
       return ((this->family == element.family) &&
 	      (*this->digest == *element.digest));
-    }
-
-    ///
-    /// this operator compares two objects.
-    ///
-    Boolean		Address::operator!=(const Address&	element) const
-    {
-      return (!(*this == element));
     }
 
 //
@@ -184,7 +160,7 @@ namespace etoile
 
       if (this->digest != NULL)
 	{
-	  std::cout << alignment << shift << "[Family]"
+	  std::cout << alignment << shift << "[Family] "
 		    << std::hex << this->family << std::endl;
 
 	  if (this->digest->Dump(margin + 2) == StatusError)

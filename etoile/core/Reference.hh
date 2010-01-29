@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [wed dec 16 17:20:04 2009]
+// updated       julien quintard   [thu jan 28 22:07:25 2010]
 //
 
 #ifndef ETOILE_CORE_REFERENCE_HH
@@ -39,6 +39,11 @@ namespace etoile
     {
     public:
       //
+      // identifier
+      //
+      static const String	Identifier;
+
+      //
       // methods
       //
 
@@ -49,6 +54,10 @@ namespace etoile
       //
       // interfaces
       //
+
+      // entity
+      Embed(Entity, Reference);
+      // XXX operator==
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

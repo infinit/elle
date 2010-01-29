@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [wed jan 27 21:31:56 2010]
+// updated       julien quintard   [fri jan 29 16:29:55 2010]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH
@@ -20,7 +20,11 @@
 
 #include <elle/Elle.hh>
 
+#include <etoile/configuration/Configuration.hh>
+
 #include <etoile/depot/Record.hh>
+#include <etoile/depot/Cell.hh>
+#include <etoile/depot/Unit.hh>
 #include <etoile/depot/Location.hh>
 
 #include <map>
@@ -28,6 +32,8 @@
 
 namespace etoile
 {
+  using namespace configuration;
+
   namespace depot
   {
 
@@ -36,13 +42,22 @@ namespace etoile
 //
 
     class Record;
+    class Cell;
+    class Unit;
 
 //
 // ---------- classes ---------------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// the repository holds the data blocks that may be used again. the
+    /// repository stores data in records, each record being associated to
+    /// an address. then a data can be found in two forms, in main memory
+    /// stored in the cache, in a cell structure or on the hard disk, stored
+    /// in the reserve, in a unit structure.
+    ///
+    /// both the cache and the reserve have a least recently used list which
+    /// is used to discard blocks whenever space is required.
     ///
     class Repository
     {
@@ -78,8 +93,7 @@ namespace etoile
       static Status	Clean();
 
       static Status	Put(const hole::Address&,
-			    hole::Block*,
-			    const Natural32);
+			    hole::Block*);
       static Status	Get(const hole::Address&,
 			    hole::Block*&);
       static Status	Evict(const Location,
@@ -91,24 +105,26 @@ namespace etoile
       //
       // static attributes
       //
-      static core::Time*		delay[hole::Families];
+      static core::Time*		Delays[hole::Families];
 
-      static Data::Container		data;
+      static Data::Container		Container;
 
       struct				Cache
       {
-	static const Natural64		size;
-	static const Natural64		capacity;
+	static Natural64		Size;
+	static Natural64&		Capacity;
 
-	static Access::Container	access;
+	static Access::Container	Queue;
       };
 
       struct				Reserve
       {
-	static const Natural64		size;
-	static const Natural64		capacity;
+	static String&			Path;
 
-	static Access::Container	access;
+	static Natural64		Size;
+	static Natural64&		Capacity;
+
+	static Access::Container	Queue;
       };
     };
 

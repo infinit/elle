@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [wed jan 27 23:42:21 2010]
+// updated       julien quintard   [thu jan 28 23:07:51 2010]
 //
 
 #ifndef ETOILE_DEPOT_UNIT_HH
@@ -22,6 +22,8 @@
 
 #include <etoile/hole/Hole.hh>
 
+#include <etoile/depot/Repository.hh>
+
 namespace etoile
 {
   namespace depot
@@ -32,7 +34,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class holds a block in the reserve i.e on a more stable but
+    /// slower storage medium that main memory such as a hard disk.
     ///
     class Unit:
       public Dumpable
@@ -56,6 +59,7 @@ namespace etoile
       // attributes
       //
       String		path;
+      Natural32		size;
     };
 
   }

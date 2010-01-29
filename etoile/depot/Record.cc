@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [thu jan 28 00:54:29 2010]
+// updated       julien quintard   [fri jan 29 11:03:15 2010]
 //
 
 //
@@ -31,8 +31,7 @@ namespace etoile
     ///
     Record::Record():
       location(LocationUnknown),
-      timer(NULL),
-      size(0)
+      timer(NULL)
     {
     }
 
@@ -41,19 +40,19 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method initializes a record with the address of the block
+    /// it is associated.
     ///
-    Status		Record::Create(const hole::Address&	address,
-				       const Natural32		size)
+    /// this method allocates a timer for blocks which can expires, i.e
+    /// mutable blocks, such as PKBs.
+    ///
+    Status		Record::Create(const hole::Address&	address)
     {
       // set the record address.
       this->address = address;
 
-      // set the block's size when it is active i.e in main memory.
-      this->size = size;
-
       // check if this family of block expires.
-      if (Repository::delay[address.family] != NULL)
+      if (Repository::Delays[address.family] != NULL)
 	{
 	  // allocate a new timer object.
 	  this->timer = new ::QTimer;
@@ -71,11 +70,12 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method must be called whenever the timer is to be re-computed
+    /// and restarted.
     ///
     Status		Record::Timer()
     {
-      Time		time;
+      Time*		time;
       Natural64		expiration;
 
       // if no timer is required for the family of block, just return.
@@ -85,25 +85,22 @@ namespace etoile
       // stop a potentially already existing timer.
       this->timer->stop();
 
-      // compute the current time.
-      if (time.Current() == StatusError)
-	escape("unable to compute the current time");
-
-      // add the expiration delay for public key blocks.
-      time = time + *Repository::delay[this->address.family];
+      // retrieve the time.
+      time = Repository::Delays[this->address.family];
 
       // compute the number of seconds. note that day, minute and year
-      // are ignored.
-      expiration = time.second + time.minute * 60 + time.hour * 3600;
+      // are grossly computed.
+      expiration = time->second + time->minute * 60 + time->hour * 3600 +
+	time->day * 86400 + time->month * 2592000 + time->year * 31104000;
 
-      // start the timer.
-      this->timer->start(expiration);
+      // start the timer, in milli-seconds.
+      this->timer->start(expiration * 1000);
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method releases every resource allocated by the record.
     ///
     Status		Record::Destroy()
     {
@@ -201,15 +198,6 @@ namespace etoile
 	    escape("unknown location");
 	  }
 	}
-
-      /*
-      // dump the timer if any.
-      if (this->timer != NULL)
-	{
-	  std::cout << alignment << shift << "[Timer] "
-		    << std::dec << this->expiration << std::endl;
-	}
-      */
     }
 
 //
@@ -218,12 +206,10 @@ namespace etoile
 
     ///
     /// this method is called whenever the element timeouts i.e must be
-    /// removed from the depot.
+    /// removed from the repository.
     ///
     void		Record::Timeout()
     {
-      printf("[XXX] timeout 0x%x\n", this);
-
       // remove the block from the repository.
       if (Repository::Discard(this->address) == StatusError)
 	alert("unable to discard the timeout block");

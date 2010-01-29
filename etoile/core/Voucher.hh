@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [fri aug 21 22:31:18 2009]
+// updated       julien quintard   [thu jan 28 13:10:01 2010]
 //
 
 #ifndef ETOILE_CORE_VOUCHER_HH
@@ -51,9 +51,8 @@ namespace etoile
       //
 
       // entity
-      Voucher&		operator=(const Voucher&);
+      Embed(Entity, Voucher);
       Boolean		operator==(const Voucher&) const;
-      Boolean		operator!=(const Voucher&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

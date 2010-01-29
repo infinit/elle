@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [fri aug 21 22:32:38 2009]
+// updated       julien quintard   [thu jan 28 13:10:10 2010]
 //
 
 //
@@ -33,36 +33,12 @@ namespace etoile
 //
 
     ///
-    /// assign the address.
-    ///
-    Voucher&		Voucher::operator=(const Voucher&	element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the address.
-      if (this->Recycle<Voucher>(&element) == StatusError)
-	yield("unable to recycle the address", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this operator compares two objects.
     ///
     Boolean		Voucher::operator==(const Voucher&	element) const
     {
       return ((this->user == element.user) &&
 	      (this->signature == element.signature));
-    }
-
-    ///
-    /// this operator compares two objects.
-    ///
-    Boolean		Voucher::operator!=(const Voucher&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

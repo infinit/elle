@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [thu sep 10 13:27:31 2009]
+// updated       julien quintard   [thu jan 28 22:07:14 2010]
 //
 
 #ifndef ETOILE_CORE_OBJECT_HH
@@ -53,6 +53,11 @@ namespace etoile
     {
     public:
       //
+      // identifier
+      //
+      static const String	Identifier;
+
+      //
       // constructors & destructors
       //
       Object();
@@ -79,8 +84,8 @@ namespace etoile
       //
 
       // entity
-      Object&		operator=(const Object&);
-      // XXX
+      Embed(Entity, Object);
+      // XXX operator==
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

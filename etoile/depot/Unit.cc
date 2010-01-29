@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [wed jan 27 23:45:54 2010]
+// updated       julien quintard   [fri jan 29 10:52:02 2010]
 //
 
 //
@@ -27,7 +27,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method is used to load an already existing unit.
     ///
     Status		Unit::Load(String			path)
     {
@@ -38,7 +38,8 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method sets or updates the unit by serializing the block
+    /// and storing its content on the disk.
     ///
     Status		Unit::Set(hole::Block*			block)
     {
@@ -69,24 +70,72 @@ namespace etoile
       // close the file.
       ::close(fd);
 
+      // save the size.
+      this->size = archive.size;
+
       // update reserve usage.
-      // XXX
+      Repository::Reserve::Size += this->size;
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method extracts the on-disk unit and returns a live block.
     ///
     Status		Unit::Get(hole::Block*			block)
     {
-      // XXX
+      Archive		archive;
+      Region		region;
+      struct ::stat	stat;
+      Natural32		fd;
+      String		identifier;
+
+      // retrieve information on the path, especially the unit size.
+      if (::lstat(this->path.c_str(), &stat) == -1)
+	escape("unable to retrieve information on the path");
+
+      // prepare a region to receive the file's content.
+      if (region.Prepare(stat.st_size) == StatusError)
+	escape("unable to prepare the region");
+
+      region.size = stat.st_size;
+
+      // open the unit file.
+      if ((fd = ::open(this->path.c_str(), O_RDONLY)) == -1)
+	escape("unable to open the file");
+
+      // read the whole file.
+      if (::read(fd, region.contents, region.size) == -1)
+	escape("unable to read the region");
+
+      // close the file.
+      ::close(fd);
+
+      // detach the data from the region to prevent multiple resources release.
+      if (region.Detach() == StatusError)
+        escape("unable to detach the region");
+
+      // prepare the archive.
+      if (archive.Prepare(region) == StatusError)
+        escape("unable to prepare the archive");
+
+      // extract the component identifier.
+      if (archive.Extract(identifier) == StatusError)
+        escape("unable to extract the component identifier");
+
+      // build the block according to the component type.
+      if (Factory::Build(identifier, block) == StatusError)
+	escape("unable to build the block");
+
+      // extract the archive.
+      if (block->Extract(archive) == StatusError)
+        escape("unable to extract the given block");
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method destroys a unit file.
     ///
     Status		Unit::Destroy()
     {
@@ -95,7 +144,7 @@ namespace etoile
 	escape("unable to remove the unit file");
 
       // update reserve usage.
-      // XXX
+      Repository::Reserve::Size -= this->size;
 
       leave();
     }

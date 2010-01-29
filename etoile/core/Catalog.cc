@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed dec 16 17:22:17 2009]
+// updated       julien quintard   [thu jan 28 22:08:15 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// the component identifier.
+    ///
+    const String		Catalog::Identifier = "Catalog";
 
 //
 // ---------- definitions -----------------------------------------------------
@@ -232,6 +241,10 @@ namespace etoile
       Catalog::Scoutor	scoutor;
       Archive		pack;
       Cipher		cipher;
+
+      // serialize the component name.
+      if (archive.Serialize(Catalog::Identifier) == StatusError)
+	escape("unable to serialize the component identifier");
 
       // call the parent class.
       if (Contents::Serialize(archive) == StatusError)

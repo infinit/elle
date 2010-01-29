@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [wed jan 27 20:55:25 2010]
+// updated       julien quintard   [thu jan 28 22:17:35 2010]
 //
 
 //
@@ -92,6 +92,7 @@ namespace etoile
       Archive		archive;
       Region		region;
       String		identity;
+      String		identifier;
 
       // identify the address.
       if (address.Identify(identity) == StatusError)
@@ -131,8 +132,13 @@ namespace etoile
       if (archive.Prepare(region) == StatusError)
         escape("unable to prepare the archive");
 
-      // create a new block instance.
-      block = new Block;
+      // extract the component identifier.
+      if (archive.Extract(identifier) == StatusError)
+        escape("unable to extract the component identifier");
+
+      // build the block according to the component type.
+      if (Factory::Build(identifier, block) == StatusError)
+	escape("unable to build the block");
 
       // extract the archive.
       if (block->Extract(archive) == StatusError)
@@ -140,7 +146,7 @@ namespace etoile
 
       // verify the block's validity.
       if (block->Validate(address) != StatusTrue)
-        escape("unable to validate the retrieved block");
+	escape("unable to validate the retrieved block");
 
       leave();
     }

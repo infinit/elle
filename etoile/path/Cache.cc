@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [mon aug 10 20:52:24 2009]
+// updated       julien quintard   [fri jan 29 18:52:12 2010]
 //
 
 //
@@ -27,17 +27,24 @@ namespace etoile
 //
 
     ///
+    /// this container represents the root of the hierarchical data container.
+    ///
+    Item::Container		Cache::Data;
+
+    ///
+    /// this container is used for keeping track of the least recently
+    /// used items.
+    ///
+    Cache::Container		Cache::Queue;
+
+    ///
     /// this constant defines the capacity of the cache.
     ///
     /// whenever this threshold is reached, an item is dismissed from
     /// the cache.
     ///
-    const Natural32		Cache::Capacity = 4096;
-
-    ///
-    /// this container is used for keeping track of the least recently
-    /// used items.
-    Cache::Container		Cache::Queue;
+    Natural32&			Cache::Capacity =
+      Configuration::Path::Capacity;
 
     ///
     /// this variable holds the number of items currently cached.
@@ -120,7 +127,7 @@ namespace etoile
     {
       Route::Scoutor	scoutor;
       Item::Iterator	iterator;
-      Item*		item;
+      Item*		item = ;
       /*
       // for every element of the route.
       for (scoutor = route.elements.begin();

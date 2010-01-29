@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sat aug 22 14:02:30 2009]
+// updated       julien quintard   [fri jan 29 16:23:06 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this variable defines the path separator.
     ///
-    String		Path::Separator("/");
+    String&		Path::Separator = Configuration::Path::Separator;
 
     ///
     /// this variable contains the address of the root directory object.
@@ -82,7 +82,7 @@ namespace etoile
 	escape("unable to resolve part of the route through the cache");
 
       // if the cache did not resolve anything.
-      if (venue.elements.size() == 0)
+      if (venue == Venue::Null)
 	{
 	  // start with the root directory.
 	  address = Path::Root;
@@ -97,7 +97,7 @@ namespace etoile
       if (route.elements.size() == venue.elements.size())
 	leave();
 
-      // then, resolve manually by retrieving the directory object.
+      // otherwise, resolve manually by retrieving the directory object.
       for (scoutor = route.elements.begin() + venue.elements.size();
 	   scoutor != route.elements.end();
 	   scoutor++)

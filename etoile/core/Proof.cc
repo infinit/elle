@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sun aug 23 16:26:40 2009]
+// updated       julien quintard   [thu jan 28 13:10:28 2010]
 //
 
 //
@@ -86,22 +86,6 @@ namespace etoile
 //
 
     ///
-    /// assign the address.
-    ///
-    Proof&		Proof::operator=(const Proof&		element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the address.
-      if (this->Recycle<Proof>(&element) == StatusError)
-	yield("unable to recycle the address", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this operator compares two objects.
     ///
     Boolean		Proof::operator==(const Proof&		element) const
@@ -113,14 +97,6 @@ namespace etoile
 
       return ((this->index == element.index) &&
 	      (*this->voucher == *element.voucher));
-    }
-
-    ///
-    /// this operator compares two objects.
-    ///
-    Boolean		Proof::operator!=(const Proof&		element) const
-    {
-      return (!(*this == element));
     }
 
 //

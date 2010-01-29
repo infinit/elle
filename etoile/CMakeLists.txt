@@ -5,6 +5,7 @@ QT4_WRAP_CPP(etoile_MOCS
 )
 
 ADD_LIBRARY(etoile
+  core/Core.cc
   core/Access.cc
   core/Object.cc
   core/PublicKeyBlock.cc

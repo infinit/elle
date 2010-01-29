@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Core.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [fri aug 21 22:38:27 2009]
+// updated       julien quintard   [thu jan 28 22:11:08 2010]
 //
 
 #ifndef ETOILE_CORE_CORE_HH
@@ -36,5 +36,33 @@
 #include <etoile/core/Contents.hh>
 #include <etoile/core/State.hh>
 // XXX
+
+namespace etoile
+{
+  ///
+  /// XXX
+  ///
+  namespace core
+  {
+
+//
+// ---------- classes ---------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Core
+    {
+    public:
+      //
+      // static methods
+      //
+      static Status	Initialize();
+      static Status	Clean();
+    };
+
+  }
+}
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.cc
 //
 // created       julien quintard   [mon aug 10 16:46:56 2009]
-// updated       julien quintard   [fri dec  4 15:36:23 2009]
+// updated       julien quintard   [fri jan 29 16:26:06 2010]
 //
 
 //
@@ -26,7 +26,47 @@ namespace etoile
 // ---------- definitions -----------------------------------------------------
 //
 
-    const String	Configuration::PathHouse = "/home/mycure/.house";
+    ///
+    /// path-specific configuration attributes.
+    ///
+    String		Configuration::Path::Separator("/");
+    Natural32		Configuration::Path::Capacity = 4096;
+
+    ///
+    /// cache-specific configuration attributes.
+    ///
+    Natural64		Configuration::Cache::Capacity = 2097152;
+
+    ///
+    /// reserve-specific configuration attributes.
+    ///
+    String		Configuration::Reserve::Path;
+    Natural64		Configuration::Reserve::Capacity = 1073741824;
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method initializes the configuration, building attributes
+    /// that depend on other for instance.
+    ///
+    Status		Configuration::Initialize(const String&	path)
+    {
+      // build the reserve path.
+      Configuration::Reserve::Path =
+	path + Configuration::Path::Separator + String("reserve");
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the configuration resources.
+    ///
+    Status		Configuration::Clean()
+    {
+      leave();
+    }
 
   }
 }

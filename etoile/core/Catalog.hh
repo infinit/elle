@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [tue dec  1 03:04:46 2009]
+// updated       julien quintard   [thu jan 28 22:07:32 2010]
 //
 
 #ifndef ETOILE_CORE_CATALOG_HH
@@ -47,6 +47,11 @@ namespace etoile
       public Contents
     {
     public:
+      //
+      // identifier
+      //
+      static const String	Identifier;
+
       //
       // constants
       //
@@ -105,6 +110,10 @@ namespace etoile
       //
       // interfaces
       //
+
+      // entity
+      Embed(Entity, Catalog);
+      // XXX operator==
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

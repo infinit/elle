@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [fri dec 18 12:34:48 2009]
+// updated       julien quintard   [thu jan 28 13:22:16 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTHASHBLOCK_HH

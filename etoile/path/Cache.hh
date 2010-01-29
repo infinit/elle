@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [mon aug 10 16:51:17 2009]
+// updated       julien quintard   [fri jan 29 18:52:53 2010]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH
@@ -20,6 +20,8 @@
 
 #include <elle/Elle.hh>
 
+#include <etoile/configuration/Configuration.hh>
+
 #include <etoile/path/Item.hh>
 #include <etoile/path/Route.hh>
 #include <etoile/path/Venue.hh>
@@ -28,6 +30,8 @@
 
 namespace etoile
 {
+  using namespace configuration;
+
   namespace path
   {
 
@@ -66,7 +70,7 @@ namespace etoile
       //
       // constants
       //
-      static const Natural32	Capacity;
+      static Natural32&		Capacity;
 
       //
       // structures
@@ -86,9 +90,9 @@ namespace etoile
       //
       // types
       //
-      typedef std::list<Element>	Container;
-      typedef Container::iterator	Iterator;
-      typedef Container::const_iterator	Scoutor;
+      typedef std::list<Element>		Container;
+      typedef Container::iterator		Iterator;
+      typedef Container::const_iterator		Scoutor;
 
       //
       // static methods
@@ -110,7 +114,7 @@ namespace etoile
       //
       // static attributes
       //
-      static Item::Container	Hierarchy;
+      static Item		Data;
       static Container		Queue;
 
       static Natural32		Size;

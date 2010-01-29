@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.hh
 //
 // created       julien quintard   [mon aug 10 12:13:56 2009]
-// updated       julien quintard   [fri dec  4 15:35:25 2009]
+// updated       julien quintard   [fri jan 29 16:25:48 2010]
 //
 
 #ifndef ETOILE_CONFIGURATION_CONFIGURATION_HH
@@ -22,6 +22,9 @@
 
 namespace etoile
 {
+  ///
+  /// this name space contains everything related to etoile's configuration.
+  ///
   namespace configuration
   {
 
@@ -38,7 +41,28 @@ namespace etoile
       //
       // static attributes
       //
-      static const String		PathHouse;
+      struct				Path
+      {
+	static String			Separator;
+	static Natural32		Capacity;
+      };
+
+      struct				Cache
+      {
+	static Natural64		Capacity;
+      };
+
+      struct				Reserve
+      {
+	static String			Path;
+	static Natural64		Capacity;
+      };
+
+      //
+      // static methods
+      //
+      Status		Initialize(const String&);
+      Status		Clean();
     };
 
   }

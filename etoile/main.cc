@@ -47,7 +47,9 @@ int		main(int			argc,
 {
   ::QCoreApplication	app(argc, argv);
 
-  Cryptography::Initialize();
+  elle::crypto::Cryptography::Initialize();
+  etoile::core::Core::Initialize();
+
   {
     KeyPair	pair;
 
@@ -131,9 +133,6 @@ int		main(int			argc,
 	}
 
       etoile::depot::Repository::Dump();
-
-      o->Dump();
-      n->Dump();
 
       expose();
 

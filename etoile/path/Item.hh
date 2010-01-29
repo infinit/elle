@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [fri aug 14 21:09:30 2009]
+// updated       julien quintard   [fri jan 29 16:47:04 2010]
 //
 
 #ifndef ETOILE_PATH_ITEM_HH
@@ -75,7 +75,7 @@ namespace etoile
 
       Item*		directory;
 
-      Container*	hierarchy;
+      Container*	data;
     };
 
   }

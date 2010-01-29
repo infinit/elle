@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [wed dec 16 17:21:08 2009]
+// updated       julien quintard   [thu jan 28 22:07:45 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace core
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// the component identifier.
+    ///
+    const String		Object::Identifier = "Object";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -318,26 +327,6 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
-//
-
-    ///
-    /// assign the object.
-    ///
-    Object&		Object::operator=(const Object&		element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the address.
-      if (this->Recycle<Object>(&element) == StatusError)
-	yield("unable to recycle the object", *this);
-
-      return (*this);
-    }
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -445,6 +434,10 @@ namespace etoile
     ///
     Status		Object::Serialize(Archive&		archive) const
     {
+      // serialize the component name.
+      if (archive.Serialize(Object::Identifier) == StatusError)
+	escape("unable to serialize the component identifier");
+
       // call the parent class.
       if (PublicKeyBlock::Serialize(archive) == StatusError)
 	escape("unable to serialize the underlying PKB");

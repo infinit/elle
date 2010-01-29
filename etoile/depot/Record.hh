@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.hh
 //
 // created       julien quintard   [thu dec  3 03:07:53 2009]
-// updated       julien quintard   [thu jan 28 00:49:07 2010]
+// updated       julien quintard   [thu jan 28 15:10:22 2010]
 //
 
 #ifndef ETOILE_DEPOT_RECORD_HH
@@ -39,11 +39,19 @@ namespace etoile
   {
 
 //
+// ---------- forward declarations --------------------------------------------
+//
+
+    class Cell;
+    class Unit;
+
+//
 // ---------- classes ---------------------------------------------------------
 //
 
     ///
-    /// this class represents a cache record.
+    /// this class holds a block state, either in its cell form i.e in main
+    /// memory cache or in its unit form i.e in the reserve.
     ///
     class		Record:
       public ::QObject,
@@ -70,17 +78,12 @@ namespace etoile
 	Unit*		unit;
       }			data;
 
-      // XXX probleme de la taille (inaccessible de cell et unit) +
-      // probleme du timer a faire.
-      Natural32		size;
-
       ::QTimer*		timer;
 
       //
       // methods
       //
-      Status		Create(const hole::Address&,
-			       const Natural32);
+      Status		Create(const hole::Address&);
       Status		Timer();
       Status		Destroy();
 

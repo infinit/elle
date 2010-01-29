@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.cc
 //
 // created       julien quintard   [tue jan 26 14:07:29 2010]
-// updated       julien quintard   [wed jan 27 23:42:05 2010]
+// updated       julien quintard   [fri jan 29 10:52:10 2010]
 //
 
 //
@@ -39,7 +39,10 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method sets for the first time the cell or updates it.
+    ///
+    /// note that if the pointer of the current and new blocks are identical,
+    /// nothing is done as the block has already been modified in place.
     ///
     Status		Cell::Set(hole::Block*			block)
     {
@@ -63,12 +66,22 @@ namespace etoile
       // increase the cache usage.
       //
       {
-	// XXX
+	Natural32	size;
+
+	// retrieve the block's memory imprint.
+	if (this->block->Imprint(size) == StatusError)
+	  escape("unable to retrieve the object's memory imprint");
+
+	// update the cache usage.
+	Repository::Cache::Size += (Natural64)size;
       }
 
       leave();
     }
 
+    ///
+    /// this method returns the block's content.
+    ///
     Status		Cell::Get(hole::Block*&			block)
     {
       // set the value.
@@ -78,16 +91,23 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method releases the resources allocated by the cell and
+    /// therefore updates the cache usage since one block is being released.
     ///
     Status		Cell::Destroy()
     {
+      Natural32		size;
+
       // release the previously stored block.
       if (this->block != NULL)
 	delete this->block;
 
-      // update cache usage.
-      // XXX
+      // retrieve the block's memory imprint.
+      if (this->block->Imprint(size) == StatusError)
+	escape("unable to retrieve the object's memory imprint");
+
+      // update the cache usage.
+      Repository::Cache::Size -= (Natural64)size;
 
       leave();
     }
@@ -103,11 +123,19 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+      Natural32		size;
+
+      // retrieve the block's memory imprint.
+      if (this->block->Imprint(size) == StatusError)
+	escape("unable to retrieve the object's memory imprint");
 
       std::cout << alignment << "[Cell] " << std::endl;
 
       std::cout << alignment << shift << "[Block] "
 		<< std::hex << this->block << std::endl;
+
+      std::cout << alignment << shift << "[Size] "
+		<< std::hex << size << std::endl;
 
       leave();
     }

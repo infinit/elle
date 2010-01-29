@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [mon aug 31 21:11:52 2009]
+// updated       julien quintard   [thu jan 28 13:09:51 2010]
 //
 
 //
@@ -103,22 +103,6 @@ namespace etoile
 //
 
     ///
-    /// assign the address.
-    ///
-    Author&		Author::operator=(const Author&	element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the address.
-      if (this->Recycle<Author>(&element) == StatusError)
-	yield("unable to recycle the address", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this operator compares two objects.
     ///
     Boolean		Author::operator==(const Author&	element) const
@@ -130,14 +114,6 @@ namespace etoile
 
       return ((this->mode == element.mode) &&
 	      (*this->proof == *element.proof));
-    }
-
-    ///
-    /// this operator compares two objects.
-    ///
-    Boolean		Author::operator!=(const Author&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

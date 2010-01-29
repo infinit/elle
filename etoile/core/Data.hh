@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [tue dec  1 03:05:52 2009]
+// updated       julien quintard   [thu jan 28 22:07:18 2010]
 //
 
 #ifndef ETOILE_CORE_DATA_HH
@@ -37,6 +37,11 @@ namespace etoile
     {
     public:
       //
+      // identifier
+      //
+      static const String	Identifier;
+
+      //
       // constructors & destructors
       //
       Data();
@@ -57,6 +62,10 @@ namespace etoile
       //
       // interfaces
       //
+
+      // entity
+      Embed(Entity, Data);
+      // XXX operator==
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [thu jan 28 00:55:36 2010]
+// updated       julien quintard   [fri jan 29 16:30:09 2010]
 //
 
 //
@@ -29,22 +29,30 @@ namespace etoile
     ///
     /// the expiration delays for blocks depending on their family.
     ///
-    core::Time*				Repository::delay[hole::Families];
+    core::Time*				Repository::Delays[hole::Families];
 
     ///
     /// the data container.
     ///
-    Repository::Data::Container		Repository::data;
+    Repository::Data::Container		Repository::Container;
 
-    /// XXX
-    const Natural64			Repository::Cache::size = 0;
-    const Natural64			Repository::Cache::capacity = 2097152;
-    Repository::Access::Container	Repository::Cache::access;
+    ///
+    /// the cache attributes: size, capacity and LRU list.
+    ///
+    Natural64				Repository::Cache::Size = 0;
+    Natural64&				Repository::Cache::Capacity =
+      Configuration::Cache::Capacity;
+    Repository::Access::Container	Repository::Cache::Queue;
 
-    /// XXX
-    const Natural64			Repository::Reserve::size = 0;
-    const Natural64			Repository::Reserve::capacity = 1073741824;
-    Repository::Access::Container	Repository::Reserve::access;
+    ///
+    /// the reserve attributes: size, capacity and LRU list.
+    ///
+    String&				Repository::Reserve::Path =
+      Configuration::Reserve::Path;
+    Natural64				Repository::Reserve::Size = 0;
+    Natural64&				Repository::Reserve::Capacity =
+      Configuration::Reserve::Capacity;
+    Repository::Access::Container	Repository::Reserve::Queue;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -56,11 +64,11 @@ namespace etoile
     Status		Repository::Initialize()
     {
       // set the content hash block to NULL since such blocks never expire.
-      Repository::delay[hole::FamilyContentHashBlock] = NULL;
+      Repository::Delays[hole::FamilyContentHashBlock] = NULL;
 
       // set the public key blocks delay.
-      Repository::delay[hole::FamilyPublicKeyBlock] = new core::Time;
-      Repository::delay[hole::FamilyPublicKeyBlock]->minute = 5;
+      Repository::Delays[hole::FamilyPublicKeyBlock] = new core::Time;
+      Repository::Delays[hole::FamilyPublicKeyBlock]->minute = 5;
 
       leave();
     }
@@ -89,8 +97,7 @@ namespace etoile
     /// must be re-computed.
     ///
     Status		Repository::Put(const hole::Address&	address,
-					hole::Block*		block,
-					Natural32		size)
+					hole::Block*		block)
     {
       std::pair<Repository::Data::Iterator, bool>	result;
       Repository::Data::Iterator			iterator;
@@ -101,20 +108,20 @@ namespace etoile
       //
       {
 	// look for an existing record.
-	if ((iterator = Repository::data.find(address)) ==
-	    Repository::data.end())
+	if ((iterator = Repository::Container.find(address)) ==
+	    Repository::Container.end())
 	  {
 	    // if none exists, allocate a new one.
 	    record = new Record;
 
 	    // create the record.
-	    if (record->Create(address, size) == StatusError)
+	    if (record->Create(address) == StatusError)
 	      escape("unable to create the record");
 
 	    // insert the record.
 	    result =
-	      Repository::data.insert(Repository::Data::Value(address,
-							      record));
+	      Repository::Container.insert(Repository::Data::Value(address,
+								   record));
 
 	    // check the result.
 	    if (result.second == false)
@@ -131,13 +138,13 @@ namespace etoile
 	      {
 	      case LocationCache:
 		{
-		  Repository::Cache::access.remove(record);
+		  Repository::Cache::Queue.remove(record);
 
 		  break;
 		}
 	      case LocationReserve:
 		{
-		  Repository::Reserve::access.remove(record);
+		  Repository::Reserve::Queue.remove(record);
 
 		  break;
 		}
@@ -150,9 +157,15 @@ namespace etoile
       }
 
       //
-      // then, evict data.
+      // then, evict data so that the new block ca be stored.
       //
       {
+	Natural32	size;
+
+	// retrieve the size of the object.
+	if (block->Imprint(size) == StatusError)
+	  escape("unable to retrieve the object's size");
+
 	// evict enough data from the cache so that the block can be stored.
 	if (Repository::Evict(LocationCache, size) == StatusError)
 	  escape("unable to evict enough data");
@@ -231,7 +244,7 @@ namespace etoile
       //
       {
 	// put the block's address at the back of the access list.
-	Repository::Cache::access.push_back(record);
+	Repository::Cache::Queue.push_back(record);
 
 	// re-compute the expiration timer, if required.
 	if (record->Timer() == StatusError)
@@ -257,8 +270,8 @@ namespace etoile
 	Repository::Data::Iterator	iterator;
 
 	// look for an existing record.
-	if ((iterator = Repository::data.find(address)) ==
-	    Repository::data.end())
+	if ((iterator = Repository::Container.find(address)) ==
+	    Repository::Container.end())
 	  escape("unable to find the record");
 
 	// retrieve the record.
@@ -278,16 +291,30 @@ namespace etoile
 		escape("unable to get the block's data");
 
 	      // remove the access stamp.
-	      Repository::Cache::access.remove(record);
+	      Repository::Cache::Queue.remove(record);
 
 	      break;
 	    }
 	  case LocationReserve:
 	    {
+	      Natural32	size;
+
 	      //
 	      // if the data is in the reserve, get the data, destroy the
 	      // unit and create a new cell.
 	      //
+
+	      // remove the access stamp, especially for the upcoming eviction.
+	      Repository::Reserve::Queue.remove(record);
+
+	      // retrieve the size of the object.
+	      if (block->Imprint(size) == StatusError)
+		escape("unable to retrieve the object's size");
+
+	      // evict enough data from the cache so that the block
+	      // can be stored.
+	      if (Repository::Evict(LocationCache, size) == StatusError)
+		escape("unable to evict enough data");
 
 	      // get the block's data from the unit.
 	      if (record->data.unit->Get(block) == StatusError)
@@ -307,9 +334,6 @@ namespace etoile
 	      if (record->data.cell->Set(block) == StatusError)
 		escape("unable to set the cell");
 
-	      // remove the access stamp.
-	      Repository::Reserve::access.remove(record);
-
 	      break;
 	    }
 	  case LocationUnknown:
@@ -325,7 +349,7 @@ namespace etoile
       //
       {
 	// put the block's address at the back of the access list.
-	Repository::Cache::access.push_back(record);
+	Repository::Cache::Queue.push_back(record);
 
 	// re-compute the expiration timer.
 	if (record->Timer() == StatusError)
@@ -344,28 +368,28 @@ namespace etoile
       Record*				record;
 
       // look for the address.
-      if ((iterator = Repository::data.find(address)) ==
-	  Repository::data.end())
+      if ((iterator = Repository::Container.find(address)) ==
+	  Repository::Container.end())
 	escape("unable to locate the address");
 
       // retrieve the record.
       record = iterator->second;
 
       // erase the element.
-      Repository::data.erase(iterator);
+      Repository::Container.erase(iterator);
 
       // remove the associated stamp.
       switch (record->location)
 	{
 	case LocationCache:
 	  {
-	    Repository::Cache::access.remove(record);
+	    Repository::Cache::Queue.remove(record);
 
 	    break;
 	  }
 	case LocationReserve:
 	  {
-	    Repository::Reserve::access.remove(record);
+	    Repository::Reserve::Queue.remove(record);
 
 	    break;
 	  }
@@ -391,7 +415,7 @@ namespace etoile
     Status		Repository::Evict(const Location	location,
 					  const Natural32	length)
     {
-      const Natural64*			size;
+      Natural64*			size;
       const Natural64*			capacity;
       Repository::Access::Container*	access;
 
@@ -401,17 +425,17 @@ namespace etoile
 	{
 	case LocationCache:
 	  {
-	    size = &Repository::Cache::size;
-	    capacity = &Repository::Cache::capacity;
-	    access = &Repository::Cache::access;
+	    size = &Repository::Cache::Size;
+	    capacity = &Repository::Cache::Capacity;
+	    access = &Repository::Cache::Queue;
 
 	    break;
 	  }
 	case LocationReserve:
 	  {
-	    size = &Repository::Reserve::size;
-	    capacity = &Repository::Reserve::capacity;
-	    access = &Repository::Reserve::access;
+	    size = &Repository::Reserve::Size;
+	    capacity = &Repository::Reserve::Capacity;
+	    access = &Repository::Reserve::Queue;
 
 	    break;
 	  }
@@ -433,8 +457,8 @@ namespace etoile
 	  record = access->front();
 
 	  // find the element.
-	  if ((iterator = Repository::data.find(record->address)) ==
-	      Repository::data.end())
+	  if ((iterator = Repository::Container.find(record->address)) ==
+	      Repository::Container.end())
 	    escape("unable to find the record associated with the LRU stamp");
 
 	  // the following migrates the data to a larger repository.
@@ -469,7 +493,7 @@ namespace etoile
 		record->location = LocationReserve;
 
 		// add a stamp to the reserve access list.
-		Repository::Reserve::access.push_back(record);
+		Repository::Reserve::Queue.push_back(record);
 
 		break;
 	      }
@@ -488,7 +512,7 @@ namespace etoile
 		  escape("unable to destroy the record");
 
 		// remove the record from the repository.
-		Repository::data.erase(iterator);
+		Repository::Container.erase(iterator);
 
 		// delete the record.
 		delete record;
@@ -526,23 +550,23 @@ namespace etoile
 
       std::cout << alignment << shift << "[Cache]" << std::endl;
       std::cout << alignment << shift << shift << "[Size] "
-		<< std::dec << Repository::Cache::size << std::endl;
+		<< std::dec << Repository::Cache::Size << std::endl;
       std::cout << alignment << shift << shift << "[Capacity] "
-		<< std::dec << Repository::Cache::capacity << std::endl;
+		<< std::dec << Repository::Cache::Capacity << std::endl;
 
       std::cout << alignment << shift << "[Reserve]" << std::endl;
       std::cout << alignment << shift << shift << "[Size] "
-		<< std::dec << Repository::Reserve::size << std::endl;
+		<< std::dec << Repository::Reserve::Size << std::endl;
       std::cout << alignment << shift << shift << "[Capacity] "
-		<< std::dec << Repository::Reserve::capacity << std::endl;
+		<< std::dec << Repository::Reserve::Capacity << std::endl;
 
       //
       // dump the data.
       //
       std::cout << alignment << shift << "[Data]" << std::endl;
 
-      for (i = Repository::data.begin();
-	   i != Repository::data.end();
+      for (i = Repository::Container.begin();
+	   i != Repository::Container.end();
 	   i++)
 	{
 	  Record*	record = i->second;
@@ -560,8 +584,8 @@ namespace etoile
       // first, the cache accesses.
       std::cout << alignment << shift << shift << "[Cache]" << std::endl;
 
-      for (j = Repository::Cache::access.begin();
-	   j != Repository::Cache::access.end();
+      for (j = Repository::Cache::Queue.begin();
+	   j != Repository::Cache::Queue.end();
 	   j++)
 	{
 	  Record*	record = *j;
@@ -574,8 +598,8 @@ namespace etoile
       // second, the reserve accesses.
       std::cout << alignment << shift << shift << "[Reserve]" << std::endl;
 
-      for (j = Repository::Reserve::access.begin();
-	   j != Repository::Reserve::access.end();
+      for (j = Repository::Reserve::Queue.begin();
+	   j != Repository::Reserve::Queue.end();
 	   j++)
 	{
 	  Record*	record = *j;

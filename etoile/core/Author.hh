@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.hh
 //
 // created       julien quintard   [fri aug 21 22:04:45 2009]
-// updated       julien quintard   [sun aug 23 15:41:17 2009]
+// updated       julien quintard   [thu jan 28 13:09:43 2010]
 //
 
 #ifndef ETOILE_CORE_AUTHOR_HH
@@ -65,9 +65,8 @@ namespace etoile
       //
 
       // entity
-      Author&		operator=(const Author&);
+      Embed(Entity, Author);
       Boolean		operator==(const Author&) const;
-      Boolean		operator!=(const Author&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
