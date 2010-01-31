@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu dec  3 21:38:37 2009]
+// updated       julien quintard   [sat jan 30 22:29:32 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Directory::Load(context::Directory&	context,
+    Status		Directory::Load(context::Directory*	context,
 					const hole::Address&	address)
 					
     {
@@ -38,10 +38,10 @@ namespace etoile
 	escape("unable to load the object");
 
       // initialize the contents.
-      context.catalog = NULL;
+      context->catalog = NULL;
 
       // check that the object is a directory.
-      if (context.object->meta.status.genre != core::GenreDirectory)
+      if (context->object->meta.status.genre != core::GenreDirectory)
 	escape("this object is not a directory");
 
       leave();
@@ -50,7 +50,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Directory::Lookup(context::Directory&	context,
+    Status		Directory::Lookup(context::Directory*	context,
 					  const String&		name,
 					  hole::Address&	address)
     {
@@ -59,7 +59,7 @@ namespace etoile
 	escape("unable to load the catalog");
 
       // look up the entry.
-      if (context.catalog->Lookup(name, address) == StatusError)
+      if (context->catalog->Lookup(name, address) == StatusError)
 	escape("unable to find the entry in the catalog");
 
       leave();
@@ -68,7 +68,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Directory::Add(context::Directory&	context,
+    Status		Directory::Add(context::Directory*	context,
 				       const String&		name,
 				       const hole::Address&	address)
     {
@@ -77,7 +77,7 @@ namespace etoile
 	escape("unable to open the catalog");
 
       // add the entry in the catalog.
-      if (context.catalog->Add(name, address) == StatusError)
+      if (context->catalog->Add(name, address) == StatusError)
 	escape("unable to add the entry in the catalog");
 
       leave();
@@ -89,19 +89,22 @@ namespace etoile
     /// between the components and sub-components such as the object as a
     /// reference to a potentional catalog.
     ///
-    Status		Directory::Commit(context::Directory&	context)
+    Status		Directory::Commit(context::Directory*	context)
     {
-      // seal the catalog.
+      // close the catalog.
       if (Catalog::Close(context) == StatusError)
 	escape("unable tox seal the catalog");
 
-      // seal the access.
+      // close the access.
       // XXX
 
-      // push the context in the journal.
+      // seal the object.
+      if (context->object->Seal(agent::Agent::Pair.k) == StatusError)
+	escape("unable to seal the object");
 
-      // XXX to test the depot interface.
-      depot::Depot::Put(context.object->address, context.object);
+      // push the context in the journal.
+      if (journal::Journal::Push(context) == StatusError)
+	escape("unable to the context");
 
       leave();
     }
@@ -109,7 +112,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Directory::Close(context::Directory&	context)
+    Status		Directory::Close(context::Directory*	context)
     {
       // XXX
 

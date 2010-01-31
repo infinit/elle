@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [sat aug 22 02:20:24 2009]
+// updated       julien quintard   [sat jan 30 16:29:45 2010]
 //
 
 #ifndef ETOILE_CONTEXT_DIRECTORY_HH
@@ -41,6 +41,11 @@ namespace etoile
       Directory();
       Directory(const Directory&);
       ~Directory();
+
+      //
+      // methods
+      //
+      Status		Register(journal::Set::Container&);
 
       //
       // attributes

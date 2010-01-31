@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [thu dec  3 03:50:55 2009]
+// updated       julien quintard   [sat jan 30 22:21:00 2010]
 //
 
 //
@@ -33,22 +33,24 @@ namespace etoile
     /// if this method returns successfully, a catalog will be ready to be
     /// used, either empty or not.
     ///
-    Status		Catalog::Open(context::Directory&	context)
+    Status		Catalog::Open(context::Directory*	context)
     {
       // if the catalog is already opened, return.
-      if (context.catalog != NULL)
+      if (context->catalog != NULL)
 	leave();
 
-      // check if there exists a catalog. if so, load the block, otherwise
-      // leave the catalog new and empty.
-      if (context.object->data.contents != hole::Address::Null)
+      // check if there exists a catalog. if so, load the block.
+      if (context->object->data.contents != hole::Address::Null)
 	{
 	  // load the block.
-	  /* XXX
-	  if (depot::Depot::Get(context.object->data.contents,
-				context.catalog) == StatusError)
+	  if (depot::Depot::Get(context->object->data.contents,
+				context->catalog) == StatusError)
 	    escape("unable to load the catalog");
-	  */
+	}
+      else
+	{
+	  // otherwise create a new and empty catalog.
+	  context->catalog = new core::Catalog;
 	}
 
       leave();
@@ -59,42 +61,28 @@ namespace etoile
     /// or new but empty. otherwise, the new catalog address is computed
     /// and the directory object is updated.
     ///
-    Status		Catalog::Close(context::Directory&	context)
+    Status		Catalog::Close(context::Directory*	context)
     {
-      hole::Address		address;
-      hole::Address		self;
       core::Contents::Offset	size;
       SecretKey			key;
       Digest			fingerprint;
 
-      //
-      // XXX ici remplacer les Self en Seal() et utiliser Dirty pour savoir
-      // si le bloc a change.
-      //
-      /* XXX
-
       // if there is no loaded catalog, then there is nothing to do.
-      if (context.catalog == NULL)
+      if (context->catalog == NULL)
 	leave();
 
-      // compute the loaded catalog address.
-      if (context.catalog->Self(self) == StatusError)
-	escape("unable to retrieve the catalog address");
-
       // retrieve the catalog's size.
-      if (context.catalog->Size(size) == StatusError)
+      if (context->catalog->Size(size) == StatusError)
 	escape("unable to retrieve the catalog's size");
 
       // if the catalog has not changed, or if the catalog is empty, delete it.
-      if ((size == 0) ||
-	  (context.object->data.contents == self))
-	// XXX use catalog::dirty to know that instead!
+      if ((size == 0) || (context->catalog->state == StateClean))
 	{
 	  // release the catalog's memory.
-	  delete context.catalog;
+	  delete context->catalog;
 
 	  // reset the pointer.
-	  context.catalog = NULL;
+	  context->catalog = NULL;
 
 	  leave();
 	}
@@ -108,25 +96,23 @@ namespace etoile
 	escape("unable to compute a fingerprint of the key");
 
       // then record the catalog's key.
-      if (context.catalog->Prepare(key) == StatusError)
+      if (context->catalog->Prepare(key) == StatusError)
 	escape("unable to prepare the catalog");
 
-      // since the key has been changed, the address is supposed to have
-      // changed as well ... recompute it.
-      if (context.catalog->Self(address) == StatusError)
-	escape("unable to retrieve the new catalog's address");
+      // bind the catalog i.e seal it by computing its address.
+      if (context->catalog->Bind() == StatusError)
+	escape("unable to bind the catalog");
 
       // compute the author.
       if (Author::Create(context) == StatusError)
 	escape("unable to create an author");
 
       // update the object data section.
-      if (context.object->Update(context.author,
-				 address,
-				 size,
-				 fingerprint) == StatusError)
+      if (context->object->Update(context->author,
+				  context->catalog->address,
+				  size,
+				  fingerprint) == StatusError)
 	escape("unable to update the object");
-      */
 
       leave();
     }

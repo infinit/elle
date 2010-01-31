@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [wed dec 16 17:20:39 2009]
+// updated       julien quintard   [sun jan 31 01:16:22 2010]
 //
 
 #ifndef ETOILE_CORE_PUBLICKEYBLOCK_HH

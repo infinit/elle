@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.hh
 //
 // created       julien quintard   [mon aug 10 12:13:56 2009]
-// updated       julien quintard   [fri jan 29 16:25:48 2010]
+// updated       julien quintard   [sat jan 30 03:41:02 2010]
 //
 
 #ifndef ETOILE_CONFIGURATION_CONFIGURATION_HH
@@ -61,9 +61,16 @@ namespace etoile
       //
       // static methods
       //
-      Status		Initialize(const String&);
-      Status		Clean();
+      static Status	Initialize(const String&);
+      static Status	Clean();
     };
+
+    // XXX ajouter depot/Repository/Delays enfin tous les delays (path, depot)
+    // et revoir le terme "delays"
+
+    // XXX dans depot/repo et path/cache, le Evict devrait etre fait a la fin
+    // de sorte qu'on depasse la capacite mais a la fin en reequilibre. on
+    // pourrait nommer la fonction Balance d'ailleurs.
 
   }
 }

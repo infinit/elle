@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [fri dec 18 15:48:53 2009]
+// updated       julien quintard   [sat jan 30 22:18:13 2010]
 //
 
 //
@@ -69,12 +69,10 @@ namespace etoile
     {
       hole::Address	self;
 
-      // compare the recorded address with the given one.
-      if (this->address != address)
-	flee("the given address does not correspond to this block");
-
+      //
       // make sure the address has not be tampered and correspond to the
       // hash of the public key.
+      //
 
       // compute the address.
       if (self.Create(this->family, this->K) == StatusError)
@@ -84,8 +82,10 @@ namespace etoile
       if (this->address != self)
 	escape("the address does not correspond to the block's public key");
 
+      //
       // at this point the node knows that the recorded address corresponds
       // to the recorded public key and identifies the block requested.
+      //
 
       true();
     }

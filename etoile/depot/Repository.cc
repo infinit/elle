@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [fri jan 29 16:30:09 2010]
+// updated       julien quintard   [sat jan 30 04:21:39 2010]
 //
 
 //
@@ -59,7 +59,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method initializes the repository.
     ///
     Status		Repository::Initialize()
     {
@@ -74,27 +74,40 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method cleans the repository by releasing the resources used.
     ///
     Status		Repository::Clean()
     {
-      // XXX remove every record
+      Repository::Data::Scoutor		i;
+      Repository::Access::Scoutor	j;
+
+      // release the data resources.
+      for (i = Repository::Container.begin();
+	   i != Repository::Container.end();
+	   i++)
+	{
+	  Record*	record = i->second;
+
+	  // destroy the record.
+	  if (record->Destroy() == StatusError)
+	    escape("unable to dump the record");
+
+	  // delete the record.
+	  delete record;
+	}
+
+      // remove all the data elements.
+      Repository::Container.clear();
+
+      // remove all the access elements.
+      Repository::Cache::Queue.clear();
+      Repository::Reserve::Queue.clear();
 
       leave();
     }
 
     ///
     /// this method updates the repository by storing a new block.
-    ///
-    /// XXX revoir description ci-dessous
-    /// note that since only updated and new blocks are supposed to arrive
-    /// in this method, there is no need to perform verifications: the
-    /// past record can be destroyed and a new one can be created.
-    ///
-    /// indeed, assuming a CHB is stored, it cannot be an updated since
-    /// modified CHBs create a new block. assuming it is a PKB, the past cell
-    /// or unit must be replaced with a new cell while the expiration time
-    /// must be re-computed.
     ///
     Status		Repository::Put(const hole::Address&	address,
 					hole::Block*		block)
@@ -255,7 +268,8 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method retrieve a data block, possibly from the cache or the
+    /// reserve.
     ///
     Status		Repository::Get(const hole::Address&	address,
 					hole::Block*&		block)
@@ -272,7 +286,7 @@ namespace etoile
 	// look for an existing record.
 	if ((iterator = Repository::Container.find(address)) ==
 	    Repository::Container.end())
-	  escape("unable to find the record");
+	  false();
 
 	// retrieve the record.
 	record = iterator->second;
@@ -356,11 +370,11 @@ namespace etoile
 	  escape("unable to reset the timer");
       }
 
-      leave();
+      true();
     }
 
     ///
-    /// XXX
+    /// this method removes the given block from repository.
     ///
     Status		Repository::Discard(const hole::Address& address)
     {
@@ -410,7 +424,8 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method removes the least recently used elements until the
+    /// given repository, cache or reserve, has enough free space.
     ///
     Status		Repository::Evict(const Location	location,
 					  const Natural32	length)
@@ -499,13 +514,24 @@ namespace etoile
 	      }
 	    case LocationReserve:
 	      {
-		// retrieve the data from the unit.
-		if (record->data.unit->Get(block) == StatusError)
-		  escape("unable to retrieve the block from the unit");
-
-		// store the block in the hole.
-		if (hole::Hole::Put(record->address, block) == StatusError)
-		  escape("unable to store the block in the hole");
+		//
+		// note that, in this case, the block is not pushed further
+		// in the hole.
+		//
+		// indeed, also the repository may hold modified blocks
+		// waiting to be pushed to the hole, it is the journal's
+		// responsability to update the hole.
+		//
+		// one of the reason for that is that the journal has all
+		// the information for resolving upcoming conflicts. besides,
+		// by letting the repository push the modifications in the
+		// hole, the system may end up never pushing those
+		// modifications, for example if the block keeps being
+		// accessed. indeed, a block being constantly accessed would
+		// stay in cache, hence would never be transfered from
+		// the reserve to the hole, hence the modified block would
+		// never be published.
+		//
 
 		// destroy the record, including the unit.
 		if (record->Destroy() == StatusError)
@@ -614,65 +640,3 @@ namespace etoile
 
   }
 }
-
-/* XXX
-
-Put[Hole]
- -> new Record
- -> Record.Update
- -> new access
-Put[House]
- -> retrieve Record
- -> Record.Update
- -> refresh access
-Put[Cache]
- -> retrieve Record
- -> Record.Update
- -> refresh access
-
-Get[Hole]
- -> new Record
- -> Record.Update
- -> new access
-Get[House]
- -> retrieve Record
- -> Record.Update
- -> refresh access
-Get[Cache]
- -> retrieve Record
- -> refresh access
-
-Discard
- -> retrieve Record
- -> Record.Discard
- -> delete Record
-
-Evict[Cache]
- -> retrieve Record
- -> Record.Evict
-Evict[House]
- -> retrieve Record
- -> Record.Evict
-
--------------------------------------------------------------------------------
-
-Record.Evict()
- => if Cache
-  -> new Unit
-  -> destroy Cell
- => if Reserve
-  -> call Hole
-  -> destroy Unit
-  -> destroy Record
-
-Record.Update(block, size)
- => if Cache
-  -> if same pointer, just update size
- => otherwise
-  -> destroy the existing Cell/Unit, if there is
-  -> new Cell
-
-Record.Discard()
- -> destroy cell/unit
-
-*/

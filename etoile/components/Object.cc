@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [thu dec  3 21:48:20 2009]
+// updated       julien quintard   [sat jan 30 22:12:02 2010]
 //
 
 //
@@ -29,14 +29,14 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Object::Load(context::Object&		context,
+    Status		Object::Load(context::Object*		context,
 				     const hole::Address&	address)
     {
       // set the object address.
-      context.address = address;
+      context->address = address;
 
       // get the block.
-      if (depot::Depot::Get(address, context.object) == StatusError)
+      if (depot::Depot::Get(address, context->object) == StatusError)
 	escape("unable to retrieve the block");
 
       // retrieve the subject's rights. that also means that, if the
@@ -45,7 +45,7 @@ namespace etoile
       //
       // note also that everytime the object's permissions are modified,
       // the rights should be re-computed.
-      if (Object::Rights(context, context.rights) == StatusError)
+      if (Object::Rights(context, context->rights) == StatusError)
 	escape("unable to retrieve the rights");
 
       leave();
@@ -57,17 +57,17 @@ namespace etoile
     ///
     /// \todo add a default argument for the subject being a user or group.
     ///
-    Status		Object::Rights(context::Object&		context,
+    Status		Object::Rights(context::Object*		context,
 				       core::Permissions&	rights,
 				       const core::Subject&	subject)
     {
       /* XXX
       // test if the subject is the owner.
       if ((subject.type == core::Subject::TypeUser) &&
-	  (*subject.identifier.user == context.object.owner.K))
+	  (*subject.identifier.user == context->object.owner.K))
 	{
 	  // return the permissions.
-	  rights = context.object.meta.owner.permissions;
+	  rights = context->object.meta.owner.permissions;
 	}
       else
 	{

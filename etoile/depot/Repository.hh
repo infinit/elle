@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [fri jan 29 16:29:55 2010]
+// updated       julien quintard   [sat jan 30 16:20:30 2010]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH
@@ -28,6 +28,7 @@
 #include <etoile/depot/Location.hh>
 
 #include <map>
+#include <list>
 #include <utility>
 
 namespace etoile
@@ -51,8 +52,8 @@ namespace etoile
 
     ///
     /// the repository holds the data blocks that may be used again. the
-    /// repository stores data in records, each record being associated to
-    /// an address. then a data can be found in two forms, in main memory
+    /// repository stores data in records, each record being associated with
+    /// an address. then a data can be found in two forms: in main memory
     /// stored in the cache, in a cell structure or on the hard disk, stored
     /// in the reserve, in a unit structure.
     ///
@@ -70,8 +71,8 @@ namespace etoile
 	//
 	// types
 	//
-	typedef std::pair<hole::Address, Record*>	Value;
 	typedef std::map<hole::Address, Record*>	Container;
+	typedef std::pair<hole::Address, Record*>	Value;
 	typedef Container::iterator			Iterator;
 	typedef Container::const_iterator		Scoutor;
       };

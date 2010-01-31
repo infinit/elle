@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [sat aug 22 18:50:28 2009]
+// updated       julien quintard   [sat jan 30 22:29:11 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -23,6 +23,8 @@
 #include <etoile/core/Core.hh>
 #include <etoile/context/Context.hh>
 #include <etoile/hole/Hole.hh>
+#include <etoile/journal/Journal.hh>
+#include <etoile/agent/Agent.hh>
 
 #include <etoile/components/Object.hh>
 #include <etoile/components/Catalog.hh>
@@ -46,32 +48,32 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Load(context::Directory&,
+      static Status	Load(context::Directory*,
 			     const hole::Address&);
-      static Status	Create(context::Directory&);
+      static Status	Create(context::Directory*);
 
-      static Status	Consult(context::Directory&,
+      static Status	Consult(context::Directory*,
 				std::list<String>&,
 				const Natural64 = core::Catalog::Index::First,
 				const Natural64 = core::Catalog::Index::Last);
-      static Status	Lookup(context::Directory&,
+      static Status	Lookup(context::Directory*,
 			       const String&,
 			       hole::Address&);
-      static Status	Add(context::Directory&,
+      static Status	Add(context::Directory*,
 			    const String&,
 			    const hole::Address&);
-      static Status	Remove(context::Directory&,
+      static Status	Remove(context::Directory*,
 			       const String&);
-      static Status	Update(context::Directory&,
+      static Status	Update(context::Directory*,
 			       const String&,
 			       const hole::Address&);
-      static Status	Rename(context::Directory&,
+      static Status	Rename(context::Directory*,
 			       const String&,
 			       const String&);
 
-      static Status	Commit(context::Directory&);
-      static Status	Close(context::Directory&);
-      static Status	Destroy(context::Directory&);
+      static Status	Commit(context::Directory*);
+      static Status	Close(context::Directory*);
+      static Status	Destroy(context::Directory*);
     };
 
   }

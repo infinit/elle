@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [fri jan 29 16:23:06 2010]
+// updated       julien quintard   [sat jan 30 17:34:46 2010]
 //
 
 //
@@ -48,6 +48,10 @@ namespace etoile
       // initialize the root address.
       Path::Root = address;
 
+      // initialize the cache.
+      if (Cache::Initialize() == StatusError)
+	escape("unable to initialize the cache");
+
       leave();
     }
 
@@ -56,9 +60,9 @@ namespace etoile
     ///
     Status		Path::Clean()
     {
-      // purge the cache.
-      if (Cache::Purge() == StatusError)
-	escape("unable to purge the cache");
+      // clean the cache.
+      if (Cache::Clean() == StatusError)
+	escape("unable to clean the cache");
 
       leave();
     }
@@ -105,19 +109,26 @@ namespace etoile
 	  context::Directory	context;
 
 	  // load the directory referenced by address.
-	  if (components::Directory::Load(context, address) == StatusError)
+	  if (components::Directory::Load(&context, address) == StatusError)
 	    escape("unable to load one of the route's directories");
 
 	  // look up for the name.
-	  if (components::Directory::Lookup(context,
+	  if (components::Directory::Lookup(&context,
 					    *scoutor,
 					    address) == StatusError)
 	    escape("unable to find one of the route's entries");
 
 	  // close the context.
-	  if (components::Directory::Close(context) == StatusError)
+	  if (components::Directory::Close(&context) == StatusError)
 	    escape("unable to close the context");
 	}
+
+      // update the resolved path to the cache.
+      if (Cache::Update(route, venue) == StatusError)
+	escape("unable to update the cache");
+
+      // return the target address.
+      address = venue.elements[venue.elements.size() - 1];
 
       leave();
     }

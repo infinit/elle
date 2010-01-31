@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [thu jan 28 00:43:50 2010]
+// updated       julien quintard   [sat jan 30 22:16:28 2010]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -55,7 +55,7 @@ namespace etoile
       ///
       /// this method computes the address of the block.
       ///
-      virtual Status	Bind() const
+      virtual Status	Bind()
       {
 	fail("this method should never have been called");
       }
@@ -84,6 +84,10 @@ namespace etoile
       // attributes
       //
       Family		family;
+
+      ///
+      /// note that this address is never serialized.
+      ///
       Address		address;
     };
 

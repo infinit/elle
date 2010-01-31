@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [fri jan 29 16:47:04 2010]
+// updated       julien quintard   [sat jan 30 03:22:27 2010]
 //
 
 #ifndef ETOILE_PATH_ITEM_HH
@@ -26,6 +26,7 @@
 #include <etoile/hole/Hole.hh>
 
 #include <map>
+#include <utility>
 
 namespace etoile
 {
@@ -46,13 +47,15 @@ namespace etoile
     /// hierarchy variable, it would have been too much burder for no
     /// benefit.
     ///
-    struct Item
+    struct Item:
+      public Dumpable
     {
     public:
       //
       // types
       //
       typedef std::map<String, Item*>		Container;
+      typedef std::pair<String, Item*>		Value;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
@@ -60,17 +63,30 @@ namespace etoile
       // constructors & destructors
       //
       Item();
+      Item(const String&,
+	   Item*);
       ~Item();
 
       //
       // methods
       //
+      Status		Resolve(const String&,
+				Item*&);
+      Status		Update(const String&,
+			       const hole::Address&);
+      Status		Destroy();
 
-      // XXX
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0);
 
       //
       // attributes
       //
+      String		name;
       hole::Address	address;
 
       Item*		directory;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jan 28 22:08:15 2010]
+// updated       julien quintard   [sun jan 31 01:09:09 2010]
 //
 
 //
@@ -78,7 +78,7 @@ namespace etoile
     ///
     Status		Catalog::Prepare(const SecretKey&	key)
     {
-      // set the key which will be used for decrypting the contents.
+      // set the key which will be used for encrypting/decrypting the contents.
       this->key = key;
 
       leave();
@@ -208,23 +208,28 @@ namespace etoile
       if (ContentHashBlock::Dump(margin + 2) == StatusError)
 	escape("unable to dump the underlying block");
 
+      std::cout << alignment << shift << "[State] "
+		<< this->state << std::endl;
+
+      std::cout << alignment << shift << "[Key]" << std::endl;
+
+      if (this->key.Dump(margin + 4) == StatusError)
+	escape("unable to dump the key");
+
+      std::cout << alignment << shift << "[Entries]" << std::endl;
+
       for (scoutor = this->entries.begin();
 	   scoutor != this->entries.end();
 	   scoutor++)
 	{
 	  Catalog::Entry*	entry = *scoutor;
 
-	  std::cout << alignment << shift << "[Name] "
+	  std::cout << alignment << shift << shift << "[Name] "
 		    << entry->name << std::endl;
 
-	  if (entry->address.Dump(margin + 2) == StatusError)
+	  if (entry->address.Dump(margin + 6) == StatusError)
 	    escape("unable to dump the address");
 	}
-
-      std::cout << alignment << shift << "[Key]" << std::endl;
-
-      if (this->key.Dump(margin + 4) == StatusError)
-	escape("unable to dump the key");
 
       leave();
     }

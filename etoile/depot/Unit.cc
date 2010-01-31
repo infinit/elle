@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [fri jan 29 10:52:02 2010]
+// updated       julien quintard   [sat jan 30 22:03:04 2010]
 //
 
 //
@@ -130,6 +130,10 @@ namespace etoile
       // extract the archive.
       if (block->Extract(archive) == StatusError)
         escape("unable to extract the given block");
+
+      // bind so that the internal address is computed.
+      if (block->Bind() == StatusError)
+	escape("unable to bind the block");
 
       leave();
     }

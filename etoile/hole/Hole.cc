@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [thu jan 28 22:17:35 2010]
+// updated       julien quintard   [sat jan 30 22:43:37 2010]
 //
 
 //
@@ -53,7 +53,7 @@ namespace etoile
 	char		path[4096];
 	int		fd;
 
-	sprintf(path, ".device/%s", identity.c_str());
+	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
 
 	if ((fd = open(path, O_CREAT | O_TRUNC | O_WRONLY, 0600)) == -1)
 	  escape("unable to open the file");
@@ -104,10 +104,10 @@ namespace etoile
 	struct stat	stat;
 	int		fd;
 
-	sprintf(path, ".device/%s", identity.c_str());
+	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
 
 	if (lstat(path, &stat) == -1)
-	  escape("unable to retrieve information on the path");
+	  false();
 
 	if (region.Prepare(stat.st_size) == StatusError)
 	  escape("unable to prepare the region");
@@ -144,11 +144,15 @@ namespace etoile
       if (block->Extract(archive) == StatusError)
         escape("unable to extract the given block");
 
+      // bind so that the internal address is computed.
+      if (block->Bind() == StatusError)
+	escape("unable to bind the block");
+
       // verify the block's validity.
       if (block->Validate(address) != StatusTrue)
 	escape("unable to validate the retrieved block");
 
-      leave();
+      true();
     }
 
     ///

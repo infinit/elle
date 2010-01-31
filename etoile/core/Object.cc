@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [thu jan 28 22:07:45 2010]
+// updated       julien quintard   [sat jan 30 22:26:11 2010]
 //
 
 //

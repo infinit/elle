@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [sat aug  8 17:51:10 2009]
+// updated       julien quintard   [sat jan 30 02:10:25 2010]
 //
 
 #ifndef ETOILE_PATH_ROUTE_HH
@@ -34,7 +34,6 @@ namespace etoile
     ///
     /// a route is a sequence of names forming a path.
     ///
-
     class Route:
       public Dumpable
     {

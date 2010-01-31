@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [tue sep  1 01:46:43 2009]
+// updated       julien quintard   [sat jan 30 17:32:11 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -43,10 +43,10 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Load(context::Object&,
+      static Status	Load(context::Object*,
 			     const hole::Address&);
 
-      static Status	Rights(context::Object&,
+      static Status	Rights(context::Object*,
 			       core::Permissions&,
 			       const core::Subject& = agent::Agent::Subject);
     };

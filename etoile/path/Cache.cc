@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [fri jan 29 18:52:12 2010]
+// updated       julien quintard   [sat jan 30 03:24:29 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this container represents the root of the hierarchical data container.
     ///
-    Item::Container		Cache::Data;
+    Item			Cache::Data;
 
     ///
     /// this container is used for keeping track of the least recently
@@ -56,12 +56,19 @@ namespace etoile
 //
 
     ///
-    /// this method purges the cache by releasing all the cached items.
+    /// XXX
     ///
-    /// note that this method just calls the Purge() method on the
-    /// root item because every node cleans its hierarchy by itself.
+    Status		Cache::Initialize()
+    {
+      // XXX
+
+      leave();
+    }
+
     ///
-    Status		Cache::Purge()
+    /// XXX
+    ///
+    Status		Cache::Clean()
     {
       /*
       // purge the hierarchy.
@@ -77,42 +84,25 @@ namespace etoile
     Status		Cache::Update(const Route&		route,
 				      const Venue&		venue)
     {
-      // update the path.
-      //if (Cache::Root.hierarchy != NULL)
-      //{
-	  /*
-	  Route::Scoutor	r = route.elements.begin();
-	  Venue::Scoutor	v = venue.elements.begin();
-	  Item::Iterator	i;
-	  Item*			item;
+      Route::Scoutor	r;
+      Venue::Scoutor	v;
+      Item*		item = &Cache::Data;
 
-	  // look up for the name in the root item.
-	  if ((i = Cache::Root.hierarchy->find(*r)) ==
-	      Cache::Root.hierarchy->end())
-	    {
-	      // create the entry.
-	      if (Cache::Root.Create(*r, *v, &item) == StatusError)
-		escape("unable to create an entry");
-	    }
-	  else
-	    {
-	      /// \todo XXX note that we test here before we update because
-	      //    in a threaded environment, it would take use to acquire
-	      //    a write lock to update.
+      // for every element of the route.
+      for (r = route.elements.begin(), v = venue.elements.begin();
+	   (r != route.elements.end()) && (v != venue.elements.end());
+	   r++, v++)
+	{
+	  hole::Address	address;
 
-	      // retrieve the item.
-	      item = i->second;
+	  // update the item with the new address.
+	  if (item->Update(*r, *v) == StatusError)
+	    escape("unable to update the item");
 
-	      // otherwise, if the address is different, update it.
-	      if (item->address != *v)
-		item->address = *v;
-	    }
-
-	  // update the sub-item.
-	  //if (item->Update(r + 1, v + 1) == StatusError)
-	  //escape("unable to update the sub-item");
-	  */
-      //}
+	  // try to resolve within this item.
+	  if (item->Resolve(*r, item) != StatusTrue)
+	    escape("unexpected resolution failure");
+	}
 
       leave();
     }
@@ -126,27 +116,41 @@ namespace etoile
 				       Venue&			venue)
     {
       Route::Scoutor	scoutor;
-      Item::Iterator	iterator;
-      Item*		item = ;
-      /*
+      Item*		item = &Cache::Data;
+
       // for every element of the route.
       for (scoutor = route.elements.begin();
 	   scoutor != route.elements.end();
 	   scoutor++)
 	{
-	  // stop if there is no more entries.
-	  if (item->hierarchy == NULL)
-	    break;
-
-	  // look up the element in the current item .. stop if not present.
-	  if ((iterator = item->hierarchy->find(*scoutor)) ==
-	      item->hierarchy->end())
+	  // try to resolve within this item.
+	  if (item->Resolve(*scoutor, item) != StatusTrue)
 	    break;
 
 	  // add the address to the venue.
-	  venue.elements.push_back(iterator->second->address);
+	  venue.elements.push_back(item->address);
 	}
-      */
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the whole cache.
+    ///
+    Status		Cache::Dump(const Natural32		margin)
+    {
+      String				alignment(margin, ' ');
+
+      std::cout << alignment << "[Cache]" << std::endl;
+
+      // just initiate a recursive dump, starting with the root item.
+      if (Cache::Data.Dump(margin + 2) == StatusError)
+	escape("unable to dump the cache data");
+
       leave();
     }
 

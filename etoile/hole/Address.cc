@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jan 28 13:19:28 2010]
+// updated       julien quintard   [sat jan 30 21:57:38 2010]
 //
 
 //
@@ -88,6 +88,10 @@ namespace etoile
     {
       // set the family.
       this->family = family;
+
+      // release the previous digest.
+      if (this->digest != NULL)
+	delete this->digest;
 
       // allocate the digest object.
       this->digest = new Digest;

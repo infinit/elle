@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.cc
 //
 // created       julien quintard   [mon aug 10 16:46:56 2009]
-// updated       julien quintard   [fri jan 29 16:26:06 2010]
+// updated       julien quintard   [sat jan 30 03:41:59 2010]
 //
 
 //

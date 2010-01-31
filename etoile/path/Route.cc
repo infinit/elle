@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [sun aug  9 22:52:49 2009]
+// updated       julien quintard   [sat jan 30 02:10:43 2010]
 //
 
 //
@@ -40,6 +40,7 @@ namespace etoile
       start = path.find_first_not_of(Path::Separator);
       end = path.find_first_of(Path::Separator, start);
 
+      // go through the string.
       while (start < path.length())
 	{
 	  String	element;

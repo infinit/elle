@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [mon aug 24 14:20:45 2009]
+// updated       julien quintard   [sat jan 30 20:54:59 2010]
 //
 
 //
@@ -59,6 +59,26 @@ namespace etoile
       // release the access.
       if (this->access != NULL)
 	delete this->access;
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Status		Object::Register(journal::Set::Container&	set)
+    {
+      // if there is an object.
+      if (this->object != NULL)
+	set.push_front(this->object);
+
+      // if there is an access.
+      if (this->access != NULL)
+	set.push_front(this->access);
+
+      leave();
     }
 
   }

@@ -5,6 +5,8 @@ QT4_WRAP_CPP(etoile_MOCS
 )
 
 ADD_LIBRARY(etoile
+  configuration/Configuration.cc
+
   core/Core.cc
   core/Access.cc
   core/Object.cc
@@ -36,8 +38,6 @@ ADD_LIBRARY(etoile
   path/Route.cc
   path/Venue.cc
 
-  configuration/Configuration.cc
-
   context/Object.cc
   context/Directory.cc
 
@@ -47,6 +47,8 @@ ADD_LIBRARY(etoile
   components/Author.cc
 
   agent/Agent.cc
+
+  journal/Journal.cc
 
   ${etoile_MOCS}
 )

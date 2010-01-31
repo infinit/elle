@@ -47,9 +47,6 @@ int		main(int			argc,
 {
   ::QCoreApplication	app(argc, argv);
 
-  elle::crypto::Cryptography::Initialize();
-  etoile::core::Core::Initialize();
-
   {
     KeyPair	pair;
 
@@ -59,7 +56,7 @@ int		main(int			argc,
     {
       int		fd;
 
-      fd = ::open(".device/.root", O_RDONLY);
+      fd = ::open("/home/mycure/.infinit/hole/.root", O_RDONLY);
 
       Region	region;
 
@@ -85,7 +82,7 @@ int		main(int			argc,
     {
       int		fd;
 
-      fd = ::open(".device/.administrator", O_RDONLY);
+      fd = ::open("/home/mycure/.infinit/hole/.administrator", O_RDONLY);
 
       Region	region;
 
@@ -107,9 +104,15 @@ int		main(int			argc,
       pair.Dump();
     }
 
-    {
-      etoile::depot::Depot::Initialize();
+    elle::crypto::Cryptography::Initialize();
+    etoile::configuration::Configuration::Initialize(String("/home/mycure/.infinit"));
+    etoile::core::Core::Initialize();
+    etoile::path::Path::Initialize(root);
+    etoile::depot::Depot::Initialize();
+    etoile::agent::Agent::Initialize(pair);
 
+    /* XXX depot test
+    {
       etoile::core::Object* o = new etoile::core::Object;
 
       o->Create(etoile::core::GenreFile, pair.K);
@@ -139,29 +142,30 @@ int		main(int			argc,
       // QT loop
       app.exec();
     }
-
-    /* XXX
-    // init the agent.
-    Agent::Pair = pair;
-    Agent::Subject.Create(Agent::Pair.K);
-
-    // init path.
-    Path::Initialize(root);
-
-    {
-      context::Directory	context;
-
-      components::Directory::Load(context, root);
-      components::Directory::Add(context, "loop", context.address);
-      components::Directory::Commit(context);
-      //components::Directory::Close(context);
-    }
     */
 
-    expose();
+    /* XXX components test */
+    {
+      etoile::context::Directory	context;
+      etoile::hole::Address		address;
+
+      etoile::components::Directory::Load(&context, root);
+      etoile::components::Directory::Add(&context, "loop", context.address);
+      etoile::components::Directory::Commit(&context);
+
+      //etoile::components::Directory::Lookup(&context, "loop", address);
+      //etoile::components::Directory::Close(context);
+
+      expose();
+
+      // QT loop
+      app.exec();
+    }
   }
 
-  Cryptography::Clean();
+  elle::crypto::Cryptography::Clean();
 
   return (0);
 }
+
+// XXX rajouter timeout a path/cache + journal

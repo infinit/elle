@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [fri dec 18 15:49:02 2009]
+// updated       julien quintard   [sat jan 30 22:09:41 2010]
 //
 
 //
@@ -60,10 +60,6 @@ namespace etoile
       const
     {
       hole::Address	self;
-
-      // verify the recorded address with the given one.
-      if (this->address != address)
-	flee("the given address does not correspond to the recorded address");
 
       // compute the address of this object.
       if (self.Create(this->family, *this) == StatusError)

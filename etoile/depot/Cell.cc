@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.cc
 //
 // created       julien quintard   [tue jan 26 14:07:29 2010]
-// updated       julien quintard   [fri jan 29 10:52:10 2010]
+// updated       julien quintard   [sat jan 30 04:10:59 2010]
 //
 
 //
@@ -100,14 +100,17 @@ namespace etoile
 
       // release the previously stored block.
       if (this->block != NULL)
-	delete this->block;
+	{
+	  // retrieve the block's memory imprint.
+	  if (this->block->Imprint(size) == StatusError)
+	    escape("unable to retrieve the object's memory imprint");
 
-      // retrieve the block's memory imprint.
-      if (this->block->Imprint(size) == StatusError)
-	escape("unable to retrieve the object's memory imprint");
+	  // update the cache usage.
+	  Repository::Cache::Size -= (Natural64)size;
 
-      // update the cache usage.
-      Repository::Cache::Size -= (Natural64)size;
+	  // delete the block.
+	  delete this->block;
+	}
 
       leave();
     }

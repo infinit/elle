@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [fri jan 29 18:52:53 2010]
+// updated       julien quintard   [sat jan 30 03:25:16 2010]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH
@@ -73,43 +73,25 @@ namespace etoile
       static Natural32&		Capacity;
 
       //
-      // structures
-      //
-
-      ///
-      /// this structure is used in the queue to point to the item.
-      /// the name is kept as well to move up to the parent directory and
-      /// delete the item entry.
-      ///
-      struct		Element
-      {
-	String		name;
-	Item*		item;
-      };
-
-      //
       // types
       //
-      typedef std::list<Element>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::list<String>		Container;
+      typedef Container::iterator	Iterator;
+      typedef Container::const_iterator	Scoutor;
 
       //
       // static methods
       //
-      static Status	Purge();
+      static Status	Initialize();
+      static Status	Clean();
 
       static Status	Update(const Route&,
 			       const Venue&);
-      static Status	Remove(const Route&);
-
-      static Status	Dismiss(Item*);
-      static Status	Refresh(const Item*);
-
       static Status	Resolve(const Route&,
 				Venue&);
+      static Status	Evict();
 
-      static Status	Dump();
+      static Status	Dump(const Natural32 = 0);
 
       //
       // static attributes
