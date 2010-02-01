@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [wed dec 16 17:20:55 2009]
+// updated       julien quintard   [mon feb  1 01:06:27 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HH
@@ -19,6 +19,9 @@
 //
 
 #include <etoile/core/ContentHashBlock.hh>
+#include <etoile/core/Data.hh>
+#include <etoile/core/Catalog.hh>
+#include <etoile/core/Reference.hh>
 
 namespace etoile
 {
@@ -30,24 +33,68 @@ namespace etoile
 //
 
     ///
-    /// this classes abstracts the data contained in an object.
+    /// this classes abstracts the data, catalog or reference by embedding
+    /// it since the contents is always encrypted.
     ///
+    /// therefore, once a contents is retrieved from the hole, the Extract()
+    /// method is called which basically extracts an archive i.e the encrypted
+    /// version of the embedded block. Then the Decrypt() method can be called
+    /// in order (i) decrypt the embedded archive (ii) extract it (iii) build
+    /// the embedded object.
+    ///
+    template <typename T>
     class Contents:
       public ContentHashBlock
     {
     public:
       //
-      // types
+      // identifier
       //
-      typedef Natural64		Offset;
+      static const String	Identifier;
+
+      //
+      // constructors & destructors
+      //
+      Contents();
+      ~Contents();
 
       //
       // methods
       //
-      virtual Status	Size(Natural64&) const = 0;
+      Status		Create();
+
+      Status		Encrypt(const SecretKey&);
+      Status		Decrypt(const SecretKey&);
+
+      //
+      // interfaces
+      //
+
+      // entity
+      Embed(Entity, Contents);
+      // XXX operator==
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      // archivable
+      Status		Serialize(Archive&) const;
+      Status		Extract(Archive&);
+
+      //
+      // attributes
+      //
+      T*		content;
+      Cipher*		cipher;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/core/Contents.hxx>
 
 #endif

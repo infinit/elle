@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [sat jan 30 22:21:00 2010]
+// updated       julien quintard   [mon feb  1 01:17:31 2010]
 //
 
 //
@@ -42,15 +42,23 @@ namespace etoile
       // check if there exists a catalog. if so, load the block.
       if (context->object->data.contents != hole::Address::Null)
 	{
+	  printf("XXX\n");
+
 	  // load the block.
 	  if (depot::Depot::Get(context->object->data.contents,
 				context->catalog) == StatusError)
 	    escape("unable to load the catalog");
+
+	  // decrypt XXX
 	}
       else
 	{
-	  // otherwise create a new and empty catalog.
-	  context->catalog = new core::Catalog;
+	  // otherwise create a new contents.
+	  context->catalog = new core::Contents<core::Catalog>;
+
+	  // create the contents.
+	  if (context->catalog->Create() == StatusError)
+	    escape("unable to create the contents");
 	}
 
       leave();
@@ -63,7 +71,7 @@ namespace etoile
     ///
     Status		Catalog::Close(context::Directory*	context)
     {
-      core::Contents::Offset	size;
+      core::Offset		size;
       SecretKey			key;
       Digest			fingerprint;
 
@@ -72,11 +80,11 @@ namespace etoile
 	leave();
 
       // retrieve the catalog's size.
-      if (context->catalog->Size(size) == StatusError)
+      if (context->catalog->content->Size(size) == StatusError)
 	escape("unable to retrieve the catalog's size");
 
       // if the catalog has not changed, or if the catalog is empty, delete it.
-      if ((size == 0) || (context->catalog->state == StateClean))
+      if ((size == 0) || (context->catalog->content->state == StateClean))
 	{
 	  // release the catalog's memory.
 	  delete context->catalog;
@@ -95,13 +103,15 @@ namespace etoile
       if (OneWay::Hash(key, fingerprint) == StatusError)
 	escape("unable to compute a fingerprint of the key");
 
-      // then record the catalog's key.
-      if (context->catalog->Prepare(key) == StatusError)
-	escape("unable to prepare the catalog");
+      // finally, encrypt the contents.
+      if (context->catalog->Encrypt(key) == StatusError)
+	escape("unable to encrypt the contents");
 
       // bind the catalog i.e seal it by computing its address.
       if (context->catalog->Bind() == StatusError)
 	escape("unable to bind the catalog");
+
+      // XXX update the accesses with 'key'
 
       // compute the author.
       if (Author::Create(context) == StatusError)

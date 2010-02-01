@@ -15,6 +15,7 @@ ADD_LIBRARY(etoile
   core/Token.cc
   core/Proof.cc
   core/Voucher.cc
+  core/Contents.cc
   core/Catalog.cc
   core/Reference.cc
   core/Data.cc

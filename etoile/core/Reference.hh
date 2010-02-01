@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [thu jan 28 22:07:25 2010]
+// updated       julien quintard   [mon feb  1 00:48:01 2010]
 //
 
 #ifndef ETOILE_CORE_REFERENCE_HH
@@ -21,6 +21,8 @@
 #include <elle/Elle.hh>
 
 #include <etoile/core/Contents.hh>
+#include <etoile/core/State.hh>
+#include <etoile/core/Offset.hh>
 
 namespace etoile
 {
@@ -35,21 +37,17 @@ namespace etoile
     /// this class represents the contents of a link.
     ///
     class Reference:
-      public Contents
+      public Entity,
+      public Dumpable, public Archivable
     {
     public:
-      //
-      // identifier
-      //
-      static const String	Identifier;
-
       //
       // methods
       //
 
       // XXX
 
-      Status		Size(Natural64&) const;
+      Status		Size(Offset&) const;
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jan 28 22:08:04 2010]
+// updated       julien quintard   [mon feb  1 00:48:45 2010]
 //
 
 //
@@ -23,15 +23,6 @@ namespace etoile
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the component identifier.
-    ///
-    const String		Reference::Identifier = "Reference";
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -40,7 +31,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Reference::Size(Natural64&		size) const
+    Status		Reference::Size(Offset&			size) const
     {
       // set the size.
       size = this->target.length();
@@ -71,10 +62,6 @@ namespace etoile
     ///
     Status		Reference::Serialize(Archive&		archive) const
     {
-      // serialize the component name.
-      if (archive.Serialize(Reference::Identifier) == StatusError)
-	escape("unable to serialize the component identifier");
-
       // XXX
 
       leave();

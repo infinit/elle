@@ -150,10 +150,10 @@ int		main(int			argc,
       etoile::hole::Address		address;
 
       etoile::components::Directory::Load(&context, root);
-      etoile::components::Directory::Add(&context, "loop", context.address);
-      etoile::components::Directory::Commit(&context);
+      //etoile::components::Directory::Add(&context, "loop", context.address);
+      //etoile::components::Directory::Commit(&context);
 
-      //etoile::components::Directory::Lookup(&context, "loop", address);
+      etoile::components::Directory::Lookup(&context, "loop", address);
       //etoile::components::Directory::Close(context);
 
       expose();
@@ -169,3 +169,5 @@ int		main(int			argc,
 }
 
 // XXX rajouter timeout a path/cache + journal
+// peut etre vaudrait il mieux concentrer tout dans Depot et depot appelle
+// journal.

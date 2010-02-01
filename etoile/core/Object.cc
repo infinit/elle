@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sat jan 30 22:26:11 2010]
+// updated       julien quintard   [sun jan 31 22:43:17 2010]
 //
 
 //
@@ -133,7 +133,7 @@ namespace etoile
     ///
     Status		Object::Update(const Author&		author,
 				       const hole::Address&	contents,
-				       const Contents::Offset&	size,
+				       const Offset&		size,
 				       const Digest&		fingerprint)
     {
       // set the author.

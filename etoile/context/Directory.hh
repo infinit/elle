@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [sat jan 30 16:29:45 2010]
+// updated       julien quintard   [mon feb  1 00:22:35 2010]
 //
 
 #ifndef ETOILE_CONTEXT_DIRECTORY_HH
@@ -50,7 +50,7 @@ namespace etoile
       //
       // attributes
       //
-      core::Catalog*	catalog;
+      core::Contents<core::Catalog>*	catalog;
     };
 
   }

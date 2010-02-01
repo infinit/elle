@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [sat jan 30 22:44:29 2010]
+// updated       julien quintard   [mon feb  1 01:14:38 2010]
 //
 
 //
@@ -67,29 +67,8 @@ namespace etoile
 	{
 	  hole::Block*	block = *scoutor;
 
-	  /*
 	  if (hole::Hole::Put(block->address, block) == StatusError)
 	    escape("unable to publish the block through hole");
-	  */
-
-	  Archive archive;
-
-	  archive.Create();
-	  block->Serialize(archive);
-
-	  // --
-
-	  hole::Block* b;
-	  String identifier;
-
-	  archive.Seal();
-	  archive.Extract(identifier);
-	  Factory::Build(identifier, b);
-	  //b->Extract(archive);
-
-	  expose();
-
-	  printf("OK\n");
 	}
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [thu jan 28 22:07:32 2010]
+// updated       julien quintard   [mon feb  1 00:47:13 2010]
 //
 
 #ifndef ETOILE_CORE_CATALOG_HH
@@ -22,6 +22,7 @@
 
 #include <etoile/core/Contents.hh>
 #include <etoile/core/State.hh>
+#include <etoile/core/Offset.hh>
 
 #include <etoile/hole/Hole.hh>
 
@@ -44,21 +45,17 @@ namespace etoile
     /// developed.
     ///
     class Catalog:
-      public Contents
+      public Entity,
+      public Dumpable, public Archivable
     {
     public:
-      //
-      // identifier
-      //
-      static const String	Identifier;
-
       //
       // constants
       //
       struct		Index
       {
-	static const Contents::Offset	First;
-	static const Contents::Offset	Last;
+	static const Offset	First;
+	static const Offset	Last;
       };
 
       //
@@ -91,8 +88,6 @@ namespace etoile
       //
       // methods
       //
-      Status		Prepare(const SecretKey&);
-
       Status		Add(const String&,
 			    const hole::Address&);
       Status		Remove(const String&);
@@ -105,7 +100,7 @@ namespace etoile
       Status		Search(const String&,
 			       Catalog::Iterator* = NULL);
 
-      Status		Size(Contents::Offset&) const;
+      Status		Size(Offset&) const;
 
       //
       // interfaces
@@ -128,8 +123,6 @@ namespace etoile
       State		state;
 
       Container		entries;
-
-      SecretKey		key;
     };
 
   }

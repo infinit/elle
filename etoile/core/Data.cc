@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [thu jan 28 22:07:55 2010]
+// updated       julien quintard   [mon feb  1 00:49:09 2010]
 //
 
 //
@@ -21,27 +21,6 @@ namespace etoile
 {
   namespace core
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the component identifier.
-    ///
-    const String		Data::Identifier = "Data";
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    Data::Data():
-      Contents()
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -110,7 +89,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Data::Size(Natural64&			size) const
+    Status		Data::Size(Offset&			size) const
     {
       // set the size.
       size = this->region.size;
@@ -132,10 +111,6 @@ namespace etoile
 
       std::cout << alignment << "[Data]" << std::endl;
 
-      // dump the underlying block.
-      if (ContentHashBlock::Dump(margin + 2) == StatusError)
-	escape("unable to dump the underlying block");
-
       // dump the region attribute.
       if (this->region.Dump(margin + 2) == StatusError)
 	escape("unable to dump the region");
@@ -152,14 +127,6 @@ namespace etoile
     ///
     Status		Data::Serialize(Archive&		archive) const
     {
-      // serialize the component name.
-      if (archive.Serialize(Data::Identifier) == StatusError)
-	escape("unable to serialize the component identifier");
-
-      // call the parent class.
-      if (ContentHashBlock::Serialize(archive) == StatusError)
-	escape("unable to serialize the block");
-
       // serialize the internal region.
       if (archive.Serialize(this->region) == StatusError)
 	escape("unable to serialize the internal region");
@@ -172,10 +139,6 @@ namespace etoile
     ///
     Status		Data::Extract(Archive&			archive)
     {
-      // call the parent class.
-      if (ContentHashBlock::Extract(archive) == StatusError)
-	escape("unable to extract the block");
-
       // extract the region.
       if (archive.Extract(this->region) == StatusError)
 	escape("unable to extract the region");

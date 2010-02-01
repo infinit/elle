@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sun jan 31 01:09:09 2010]
+// updated       julien quintard   [mon feb  1 00:51:58 2010]
 //
 
 //
@@ -27,22 +27,11 @@ namespace etoile
 //
 
     ///
-    /// the component identifier.
-    ///
-    const String		Catalog::Identifier = "Catalog";
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
     /// this constants defines the first index.
     ///
-    const Contents::Offset	Catalog::Index::First =
-      Type<Contents::Offset>::Minimum;
+    const Offset		Catalog::Index::First = Type<Offset>::Minimum;
 
-    const Contents::Offset	Catalog::Index::Last =
-      Type<Contents::Offset>::Maximum;
+    const Offset		Catalog::Index::Last = Type<Offset>::Maximum;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -72,17 +61,6 @@ namespace etoile
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-    ///
-    /// XXX
-    ///
-    Status		Catalog::Prepare(const SecretKey&	key)
-    {
-      // set the key which will be used for encrypting/decrypting the contents.
-      this->key = key;
-
-      leave();
-    }
 
     ///
     /// XXX
@@ -182,7 +160,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Catalog::Size(Contents::Offset&		size) const
+    Status		Catalog::Size(Offset&			size) const
     {
       // set the size.
       size = this->entries.size();
@@ -205,16 +183,8 @@ namespace etoile
 
       std::cout << alignment << "[Catalog]" << std::endl;
 
-      if (ContentHashBlock::Dump(margin + 2) == StatusError)
-	escape("unable to dump the underlying block");
-
       std::cout << alignment << shift << "[State] "
 		<< this->state << std::endl;
-
-      std::cout << alignment << shift << "[Key]" << std::endl;
-
-      if (this->key.Dump(margin + 4) == StatusError)
-	escape("unable to dump the key");
 
       std::cout << alignment << shift << "[Entries]" << std::endl;
 
@@ -244,52 +214,24 @@ namespace etoile
     Status		Catalog::Serialize(Archive&		archive) const
     {
       Catalog::Scoutor	scoutor;
-      Archive		pack;
-      Cipher		cipher;
-
-      // serialize the component name.
-      if (archive.Serialize(Catalog::Identifier) == StatusError)
-	escape("unable to serialize the component identifier");
-
-      // call the parent class.
-      if (Contents::Serialize(archive) == StatusError)
-	escape("unable to serialize the block");
-      /*
-      // create a sub-archive for containing the entries that will then
-      // be encrypted.
-      if (pack.Create() == StatusError)
-	escape("unable to create a sub-archive");
 
       // serialize the number of entries.
-      if (pack.Serialize((Contents::Offset)this->entries.size()) ==
+      if (archive.Serialize((Offset)this->entries.size()) ==
 	  StatusError)
 	escape("unable to serialize the catalog size");
 
-      // serialize the list of entries.
+      // serialize the entries.
       for (scoutor = this->entries.begin();
 	   scoutor != this->entries.end();
 	   scoutor++)
 	{
 	  Catalog::Entry*	entry = *scoutor;
 
-	  // serialize an entry.
-	  if (pack.Serialize(entry->name,
-			     entry->address) == StatusError)
+	  // serialize the entry.
+	  if (archive.Serialize(entry->name,
+				entry->address) == StatusError)
 	    escape("unable to serialize the entry");
 	}
-
-      // even serialize the key to make it easier to build a valid object back.
-      if (pack.Serialize(this->key) == StatusError)
-	escape("unable to serialize the key");
-
-      // encrypt the pack with the internal secret key.
-      if (this->key.Encrypt(pack, cipher) == StatusError)
-	escape("unable to encrypt the packed entries");
-
-      // finally, serialize the encrypted entries i.e the cipher.
-      if (archive.Serialize(cipher) == StatusError)
-	escape("unable to serialize the cipher");
-      */
 
       leave();
     }
@@ -299,14 +241,8 @@ namespace etoile
     ///
     Status		Catalog::Extract(Archive&		archive)
     {
-      Natural32		size;
-      Natural32		i;
-
-      // XXX to update with encryption
-
-      // call the parent class.
-      if (ContentHashBlock::Extract(archive) == StatusError)
-	escape("unable to extract the block");
+      Offset		size;
+      Offset		i;
 
       // extract the size.
       if (archive.Extract(size) == StatusError)

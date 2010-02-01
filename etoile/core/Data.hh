@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [thu jan 28 22:07:18 2010]
+// updated       julien quintard   [mon feb  1 00:47:44 2010]
 //
 
 #ifndef ETOILE_CORE_DATA_HH
@@ -19,6 +19,8 @@
 //
 
 #include <etoile/core/Contents.hh>
+#include <etoile/core/State.hh>
+#include <etoile/core/Offset.hh>
 
 namespace etoile
 {
@@ -33,19 +35,10 @@ namespace etoile
     /// this class represents file data.
     ///
     class Data:
-      public Contents
+      public Entity,
+      public Dumpable, public Archivable
     {
     public:
-      //
-      // identifier
-      //
-      static const String	Identifier;
-
-      //
-      // constructors & destructors
-      //
-      Data();
-
       //
       // methods
       //
@@ -57,7 +50,7 @@ namespace etoile
 			      const Natural64);
       Status		Adjust(const Natural64);
 
-      Status		Size(Natural64&) const;
+      Status		Size(Offset&) const;
 
       //
       // interfaces

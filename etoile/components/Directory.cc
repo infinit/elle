@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [sat jan 30 22:29:32 2010]
+// updated       julien quintard   [mon feb  1 01:08:51 2010]
 //
 
 //
@@ -59,7 +59,7 @@ namespace etoile
 	escape("unable to load the catalog");
 
       // look up the entry.
-      if (context->catalog->Lookup(name, address) == StatusError)
+      if (context->catalog->content->Lookup(name, address) == StatusError)
 	escape("unable to find the entry in the catalog");
 
       leave();
@@ -77,7 +77,7 @@ namespace etoile
 	escape("unable to open the catalog");
 
       // add the entry in the catalog.
-      if (context->catalog->Add(name, address) == StatusError)
+      if (context->catalog->content->Add(name, address) == StatusError)
 	escape("unable to add the entry in the catalog");
 
       leave();
