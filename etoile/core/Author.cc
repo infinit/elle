@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [thu jan 28 13:09:51 2010]
+// updated       julien quintard   [tue feb  2 22:36:40 2010]
 //
 
 //
@@ -86,7 +86,7 @@ namespace etoile
 				       const Voucher&		voucher)
     {
       // set the mode.
-      this->mode = Author::ModeConsumer;
+      this->mode = Author::ModeVassal;
 
       // allocate a new proof.
       this->proof = new Proof;

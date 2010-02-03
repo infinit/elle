@@ -169,5 +169,56 @@ int		main(int			argc,
 }
 
 // XXX rajouter timeout a path/cache + journal
-// peut etre vaudrait il mieux concentrer tout dans Depot et depot appelle
-// journal.
+
+// pourquoi les context sont des pointeurs et pas des references?
+
+// Hole Publish/Pull
+
+/* XXX
+
+ Socket : remote non-connected
+ Door : remote connected [encrypted/authenticated]
+ Slot : local [encrypted/authenticated]
+
+ Message:
+  public Archivable
+ {
+ };
+
+ Ping:
+  public Message
+ {
+   Serialize();
+   Extract();
+ };
+
+ Network::Register<Ping::Tag, Ping>(object/method OR class/method OR function);
+   -> container[Tag] = Functionoid<Type>
+ Network::Dispatch(archive)
+   -> Extract(tag) -> container[tag]() -> Type.Extract(archive)
+
+server
+------
+Message::Register<TagPing, String>()
+
+client
+------
+
+door.Create(OptionEncrypted | OptionAuthenticate);
+door.Expect([PublicKey]);
+door.Connect(localhost, 1111);
+door.Bind(9999);
+door.Attach([Handler]);
+door.Open();
+
+--
+
+socket.Create();
+socket.Bind(999);
+socket.Attach([Handler]);
+socket.Open();
+
+IDEA: struct Ping: public Message {} -> Register<Message>();
+  ensuite il faut aussi faire le lien entre message -> handler
+
+   XXX */

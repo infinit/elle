@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [fri jan 29 16:35:20 2010]
+// updated       julien quintard   [tue feb  2 01:16:39 2010]
 //
 
 //

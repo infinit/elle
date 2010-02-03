@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [fri jan 29 16:34:49 2010]
+// updated       julien quintard   [mon feb  1 22:55:52 2010]
 //
 
 #ifndef ETOILE_CORE_TIME_HH

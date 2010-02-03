@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Offset.hh
 //
 // created       julien quintard   [sun jan 31 22:34:41 2010]
-// updated       julien quintard   [sun jan 31 22:41:27 2010]
+// updated       julien quintard   [tue feb  2 01:27:02 2010]
 //
 
 #ifndef ETOILE_CORE_OFFSET_HH
@@ -25,6 +25,8 @@ namespace etoile
 
     ///
     /// this type defines the offset used in data, catalogs etc.
+    ///
+    /// this type is also used in the access block.
     ///
     typedef Natural64		Offset;
 

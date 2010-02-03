@@ -45,6 +45,8 @@ ADD_LIBRARY(etoile
   components/Object.cc
   components/Directory.cc
   components/Catalog.cc
+  components/Access.cc
+  components/Rights.cc
   components/Author.cc
 
   agent/Agent.cc

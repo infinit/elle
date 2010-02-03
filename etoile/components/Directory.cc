@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [mon feb  1 01:08:51 2010]
+// updated       julien quintard   [tue feb  2 19:15:31 2010]
 //
 
 //
@@ -37,9 +37,6 @@ namespace etoile
       if (Object::Load(context, address) == StatusError)
 	escape("unable to load the object");
 
-      // initialize the contents.
-      context->catalog = NULL;
-
       // check that the object is a directory.
       if (context->object->meta.status.genre != core::GenreDirectory)
 	escape("this object is not a directory");
@@ -54,13 +51,25 @@ namespace etoile
 					  const String&		name,
 					  hole::Address&	address)
     {
+      // open the access.
+      if (Access::Open(context) == StatusError)
+	escape("unable to open the access");
+
+      // determine the rights.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // check if the current user has the right the read the catalog.
+      if (!(context->rights->permissions & core::PermissionRead))
+	escape("unable to perform the operation without the permission");
+
       // open the catalog.
       if (Catalog::Open(context) == StatusError)
 	escape("unable to load the catalog");
 
-      // look up the entry.
-      if (context->catalog->content->Lookup(name, address) == StatusError)
-	escape("unable to find the entry in the catalog");
+      // lookup the name.
+      if (Catalog::Lookup(context, name, address) == StatusError)
+	escape("unable to find the entry");
 
       leave();
     }
@@ -72,13 +81,25 @@ namespace etoile
 				       const String&		name,
 				       const hole::Address&	address)
     {
+      // open the access.
+      if (Access::Open(context) == StatusError)
+	escape("unable to open the access");
+
+      // determine the rights.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // check if the current user has the right the read the catalog.
+      if (!(context->rights->permissions & core::PermissionWrite))
+	escape("unable to perform the operation without the permission");
+
       // open the catalog.
       if (Catalog::Open(context) == StatusError)
 	escape("unable to open the catalog");
 
-      // add the entry in the catalog.
-      if (context->catalog->content->Add(name, address) == StatusError)
-	escape("unable to add the entry in the catalog");
+      // add the name.
+      if (Catalog::Add(context, name, address) == StatusError)
+	escape("unable to add the entry");
 
       leave();
     }
@@ -93,14 +114,18 @@ namespace etoile
     {
       // close the catalog.
       if (Catalog::Close(context) == StatusError)
-	escape("unable tox seal the catalog");
+	escape("unable to close the catalog");
 
       // close the access.
-      // XXX
+      if (Access::Close(context) == StatusError)
+	escape("unable to close the access");
 
       // seal the object.
       if (context->object->Seal(agent::Agent::Pair.k) == StatusError)
 	escape("unable to seal the object");
+
+      context->object->Dump();
+      context->catalog->Dump();
 
       // push the context in the journal.
       if (journal::Journal::Push(context) == StatusError)

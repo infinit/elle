@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.hh
 //
 // created       julien quintard   [mon aug 17 11:44:37 2009]
-// updated       julien quintard   [sat jan 30 17:34:01 2010]
+// updated       julien quintard   [tue feb  2 19:11:37 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_CATALOG_HH
@@ -24,6 +24,8 @@
 #include <etoile/context/Context.hh>
 
 #include <etoile/components/Author.hh>
+#include <etoile/components/Access.hh>
+#include <etoile/components/Rights.hh>
 
 namespace etoile
 {
@@ -41,10 +43,17 @@ namespace etoile
     {
     public:
       //
-      // methods
+      // static methods
       //
       static Status	Open(context::Directory*);
       static Status	Close(context::Directory*);
+
+      static Status	Lookup(context::Directory*,
+			       const String&,
+			       hole::Address&);
+      static Status	Add(context::Directory*,
+			    const String&,
+			    const hole::Address&);
     };
 
   }

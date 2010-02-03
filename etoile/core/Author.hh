@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.hh
 //
 // created       julien quintard   [fri aug 21 22:04:45 2009]
-// updated       julien quintard   [thu jan 28 13:09:43 2010]
+// updated       julien quintard   [tue feb  2 22:36:26 2010]
 //
 
 #ifndef ETOILE_CORE_AUTHOR_HH
@@ -43,7 +43,7 @@ namespace etoile
 	  ModeUnknown = 0,
 	  ModeOwner,
 	  ModeDelegate,
-	  ModeConsumer
+	  ModeVassal
 	};
 
       //

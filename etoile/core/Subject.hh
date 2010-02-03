@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Subject.hh
 //
 // created       julien quintard   [fri aug 14 16:26:10 2009]
-// updated       julien quintard   [mon aug 17 02:34:03 2009]
+// updated       julien quintard   [mon feb  1 22:56:02 2010]
 //
 
 #ifndef ETOILE_CORE_SUBJECT_HH
@@ -34,7 +34,9 @@ namespace etoile
     ///
     /// XXX
     ///
-    class Subject
+    class Subject:
+      public Entity,
+      public Dumpable, public Archivable
     {
     public:
       //
@@ -60,6 +62,21 @@ namespace etoile
       Status		Create(const hole::Address&);
 
       //
+      // interfaces
+      //
+
+      // entity
+      Embed(Entity, Subject);
+      Boolean		operator==(const Subject&) const;
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      // archivable
+      Status		Serialize(Archive&) const;
+      Status		Extract(Archive&);
+
+      //
       // attributes
       //
       Type		type;
@@ -69,8 +86,6 @@ namespace etoile
 	PublicKey*	user;
 	hole::Address*	group;
       }			identifier;
-
-      // XXX dumpable, archivable
     };
 
   }

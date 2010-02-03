@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [sat jan 30 20:54:59 2010]
+// updated       julien quintard   [tue feb  2 17:04:29 2010]
 //
 
 //
@@ -32,9 +32,10 @@ namespace etoile
     /// note that this constructor does *not* initialize the contents.
     ///
     Object::Object():
-      rights(core::PermissionNone),
       object(NULL),
-      access(NULL)
+      access(NULL),
+      rights(NULL),
+      author(NULL)
     {
     }
 
@@ -59,6 +60,14 @@ namespace etoile
       // release the access.
       if (this->access != NULL)
 	delete this->access;
+
+      // release the rights.
+      if (this->rights != NULL)
+	delete this->rights;
+
+      // release the author.
+      if (this->author != NULL)
+	delete this->author;
     }
 
 //

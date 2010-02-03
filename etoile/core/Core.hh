@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Core.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [sun jan 31 22:34:37 2010]
+// updated       julien quintard   [tue feb  2 01:11:26 2010]
 //
 
 #ifndef ETOILE_CORE_CORE_HH
@@ -36,6 +36,7 @@
 #include <etoile/core/Contents.hh>
 #include <etoile/core/State.hh>
 #include <etoile/core/Offset.hh>
+#include <etoile/core/Access.hh>
 // XXX
 
 namespace etoile

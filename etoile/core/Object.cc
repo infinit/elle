@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sun jan 31 22:43:17 2010]
+// updated       julien quintard   [tue feb  2 03:16:52 2010]
 //
 
 //
@@ -101,9 +101,10 @@ namespace etoile
 	// set the meta genre.
 	this->meta.status.genre = genre;
 
-	// set the initial owner permissions to all.
+	// set the initial owner permissions to all with an empty key.
 	if (this->Administrate(hole::Address::Null,
-			       PermissionReadWrite) == StatusError)
+			       PermissionReadWrite,
+			       this->meta.owner.token) == StatusError)
 	  escape("unable to set the initial meta data");
       }
 
@@ -162,13 +163,17 @@ namespace etoile
     /// this method updates the meta section.
     ///
     Status		Object::Administrate(const hole::Address& access,
-					     const Permissions&	permissions)
+					     const Permissions&	permissions,
+					     const Code&	token)
     {
       // set the address.
       this->meta.access = access;
 
       // set the owner permissions.
       this->meta.owner.permissions = permissions;
+
+      // set the owner token.
+      this->meta.owner.token = token;
 
       // set the last management time.
       if (this->meta.status.stamp.Current() == StatusError)

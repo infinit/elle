@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [mon feb  1 01:13:29 2010]
+// updated       julien quintard   [tue feb  2 20:27:49 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HXX
@@ -61,13 +61,13 @@ namespace etoile
     {
       Archive		archive;
 
+      // if the block is already encrypted, return.
+      if (this->cipher != NULL)
+	leave();
+
       // if there is no block, this operation cannot be performed.
       if (this->content == NULL)
 	escape("unable to encrypt a non-existing block");
-
-      // release any previous cipher.
-      if (this->cipher == NULL)
-	delete this->cipher;
 
       // allocate a new cipher.
       this->cipher = new Cipher;
@@ -97,27 +97,31 @@ namespace etoile
       Archive		archive;
       Clear		clear;
 
+      // if the block is already decrypted, leave.
+      if (this->content != NULL)
+	leave();
+
       // if there is no cipher, this operation cannot be performed.
       if (this->cipher == NULL)
 	escape("unable to decrypt a non-existing cipher");
-
-      // release any previous block.
-      if (this->content == NULL)
-	delete this->content;
 
       // allocate a new block.
       this->content = new T;
 
       // decrypt the cipher.
-      if (key.Decrypt(this->cipher, clear) == StatusError)
+      if (key.Decrypt(*this->cipher, clear) == StatusError)
 	escape("unable to decrypt the cipher");
+
+      // detach the 'clear' region as it will be taken over by the archive.
+      if (clear.Detach() == StatusError)
+	escape("unable to detach the region from the clear");
 
       // prepare the archive with the clear, which is basically a region.
       if (archive.Prepare(clear) == StatusError)
 	escape("unable to prepare the archive");
 
       // extract the block.
-      if (this->content->Extract(archive) == StatusError)
+      if (archive.Extract(*this->content) == StatusError)
 	escape("unable to extract the block");
 
       leave();

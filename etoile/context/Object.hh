@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [sat jan 30 22:27:56 2010]
+// updated       julien quintard   [tue feb  2 17:08:32 2010]
 //
 
 //
@@ -30,6 +30,8 @@
 
 #include <etoile/core/Core.hh>
 #include <etoile/hole/Hole.hh>
+
+#include <etoile/context/Rights.hh>
 
 #include <list>
 
@@ -54,6 +56,7 @@ namespace etoile
     public:
       //
       // constructors & destructors
+      //
       Object();
       Object(const Object&);
       ~Object();
@@ -66,14 +69,14 @@ namespace etoile
       //
       // attributes
       //
-      // XXX path::Route		route;
-      hole::Address			address;
+      // XXX path::Route	route;
+      hole::Address		address;
 
-      core::Object*			object;
-      core::Access*			access;
+      core::Object*		object;
+      core::Access*		access;
 
-      core::Author			author;
-      core::Permissions			rights;
+      Rights*			rights;
+      core::Author*		author;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Permissions.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [sat jul 25 04:29:06 2009]
+// updated       julien quintard   [mon feb  1 22:28:02 2010]
 //
 
 #ifndef ETOILE_CORE_RIGHTS_HH
@@ -32,7 +32,7 @@ namespace etoile
 	PermissionNone = 0,
 	PermissionRead = 1,
 	PermissionWrite = 2,
-	PermissionReadWrite = 3
+	PermissionReadWrite = PermissionRead | PermissionWrite
       };
 
   }

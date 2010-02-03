@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [mon feb  1 00:47:13 2010]
+// updated       julien quintard   [mon feb  1 22:50:00 2010]
 //
 
 #ifndef ETOILE_CORE_CATALOG_HH
@@ -75,7 +75,6 @@ namespace etoile
       // types
       //
       typedef std::list<Entry*>		Container;
-
       typedef Container::iterator	Iterator;
       typedef Container::const_iterator	Scoutor;
 

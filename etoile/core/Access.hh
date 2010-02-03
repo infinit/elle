@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [tue dec  1 03:02:09 2009]
+// updated       julien quintard   [tue feb  2 02:45:12 2010]
 //
 
 #ifndef ETOILE_CORE_ACCESS_HH
@@ -20,12 +20,15 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/ContentHashBlock.hh>
-#include <etoile/core/Permissions.hh>
-
 #include <etoile/hole/Hole.hh>
 
-#include <vector>
+#include <etoile/core/ContentHashBlock.hh>
+#include <etoile/core/Permissions.hh>
+#include <etoile/core/Subject.hh>
+#include <etoile/core/State.hh>
+#include <etoile/core/Offset.hh>
+
+#include <list>
 
 namespace etoile
 {
@@ -54,51 +57,60 @@ namespace etoile
       //
       struct		Entry
       {
-	Type		type;
-      };
-
-      struct		User:
-	public Entry
-      {
-	PublicKey	K;
+	Subject		subject;
 	Permissions	permissions;
-      };
-
-      struct		Group:
-	public Entry
-      {
-	hole::Address	descriptor;
-	Permissions	permissions;
-
-	hole::Address	members;
+	Code		token;
       };
 
       //
-      // constructors & destructors
+      // types
       //
-      Access();
+      typedef std::list<Entry*>		Container;
+      typedef Container::iterator	Iterator;
+      typedef Container::const_iterator	Scoutor;
 
       //
       // methods
       //
-      Status		Locate(const PublicKey&,
-			       Entry*);
-      Status		Locate(const hole::Address&,
-			       Entry*);
+      Status		Add(const Subject&,
+			    const Permissions&,
+			    const Code&);
+      Status		Update(const Subject&,
+			       const Permissions&,
+			       const Code&);
+      Status		Remove(const Subject&);
+      Status		Retrieve(const Subject&,
+				 Permissions&);
+      Status		Retrieve(const Subject&,
+				 const PrivateKey&,
+				 Code&);
 
-      Status		Add();
-      Status		Remove();
+      Status		Search(const Subject&,
+			       Access::Iterator* = NULL);
 
-      //
-      // attributes
-      //
-      std::vector<Entry*>	entries;
+      Status		Size(Offset&) const;
 
       //
       // interfaces
       //
 
-      // XXX
+      // entity
+      Embed(Entity, Access);
+      // XXX operator==
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      // archivable
+      Status		Serialize(Archive&) const;
+      Status		Extract(Archive&);
+
+      //
+      // attributes
+      //
+      State		state;
+
+      Container		entries;
     };
 
   }

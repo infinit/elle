@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon feb  1 00:51:58 2010]
+// updated       julien quintard   [tue feb  2 20:25:38 2010]
 //
 
 //
@@ -68,7 +68,7 @@ namespace etoile
     Status		Catalog::Add(const String&		name,
 				     const hole::Address&	address)
     {
-      Catalog::Entry*		entry;
+      Catalog::Entry*	entry;
 
       // look for an existing entry.
       if (this->Search(name) == StatusTrue)
@@ -95,7 +95,7 @@ namespace etoile
     ///
     Status		Catalog::Remove(const String&		name)
     {
-      Catalog::Iterator		iterator;
+      Catalog::Iterator	iterator;
 
       // look for an existing entry.
       if (this->Search(name, &iterator) == StatusFalse)
@@ -116,7 +116,7 @@ namespace etoile
     Status		Catalog::Lookup(const String&		name,
 					hole::Address&		address)
     {
-      Catalog::Iterator		iterator;
+      Catalog::Iterator	iterator;
 
       // look for an existing entry.
       if (this->Search(name, &iterator) == StatusFalse)
@@ -134,7 +134,7 @@ namespace etoile
     Status		Catalog::Search(const String&		name,
 					Catalog::Iterator*	pointer)
     {
-      Catalog::Iterator		iterator;
+      Catalog::Iterator	iterator;
 
       // go through the entries.
       for (iterator = this->entries.begin();

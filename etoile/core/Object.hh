@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [sun jan 31 22:43:05 2010]
+// updated       julien quintard   [tue feb  2 02:43:38 2010]
 //
 
 #ifndef ETOILE_CORE_OBJECT_HH
@@ -23,7 +23,6 @@
 #include <etoile/core/PublicKeyBlock.hh>
 #include <etoile/core/Genre.hh>
 #include <etoile/core/Access.hh>
-#include <etoile/core/Token.hh>
 #include <etoile/core/Permissions.hh>
 #include <etoile/core/Version.hh>
 #include <etoile/core/Catalog.hh>
@@ -73,7 +72,8 @@ namespace etoile
 			       const Offset&,
 			       const Digest&);
       Status		Administrate(const hole::Address&,
-				     const Permissions&);
+				     const Permissions&,
+				     const Code&);
 
       Status		Seal(const PrivateKey&);
 
@@ -112,7 +112,7 @@ namespace etoile
 	struct
 	{
 	  Permissions	permissions;
-	  Token		token;
+	  Code		token;
 	}		owner;
 
 	struct
