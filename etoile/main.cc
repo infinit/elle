@@ -174,11 +174,11 @@ int		main(int			argc,
 
 // Hole Publish/Pull
 
-/* XXX
+// XXX les types Functionoid, a mettre dans la class principale, c'est
+// plus propre! de plus ne pas declarer dans le .hxx. bref faire comme
+// elle/Network.hh
 
- Socket : remote non-connected
- Door : remote connected [encrypted/authenticated]
- Slot : local [encrypted/authenticated]
+/* XXX
 
  Message:
   public Archivable
@@ -204,19 +204,28 @@ Message::Register<TagPing, String>()
 client
 ------
 
-door.Create(OptionEncrypted | OptionAuthenticate);
-door.Expect([PublicKey]);
-door.Connect(localhost, 1111);
-door.Bind(9999);
-door.Attach([Handler]);
-door.Open();
+Channel::Initialize();
+
+gate.Create(OptionEncrypted | OptionAuthenticate);
+gate.Expect([PublicKey]);
+gate.Connect(localhost, 1111);
+gate.Bind(9999);
+gate.Attach([Handler]);
+gate.Open();
 
 --
 
-socket.Create();
-socket.Bind(999);
-socket.Attach([Handler]);
-socket.Open();
+Bridge::Initialize();
+
+door.XXX()
+
+
+--
+
+slot.Create();
+slot.Bind(999);
+slot.Attach([Handler]);
+slot.Open();
 
 IDEA: struct Ping: public Message {} -> Register<Message>();
   ensuite il faut aussi faire le lien entre message -> handler

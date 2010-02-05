@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [tue feb  2 20:27:49 2010]
+// updated       julien quintard   [wed feb  3 22:12:34 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HXX
@@ -196,7 +196,7 @@ namespace etoile
 	escape("unable to serialize an unciphered content");
 
       // serialize the component name.
-      if (archive.Serialize(Contents<T>::Identifier) == StatusError)
+      if (archive.Serialize(Contents<T>::Name) == StatusError)
 	escape("unable to serialize the component identifier");
 
       // just serialize the cipher in the archive.

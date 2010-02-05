@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon feb  1 00:45:31 2010]
+// updated       julien quintard   [wed feb  3 22:12:27 2010]
 //
 
 //
@@ -30,20 +30,20 @@ namespace etoile
     /// the component identifier.
     ///
     template <typename T>
-    const String		Contents<T>::Identifier = "Contents";
+    const String		Contents<T>::Name = "Contents";
 
     ///
     /// the component identifier specialised for the data, catalog
     /// and reference types.
     ///
     template <>
-    const String		Contents<Data>::Identifier =
+    const String		Contents<Data>::Name =
       "Contents[Data]";
     template <>
-    const String		Contents<Catalog>::Identifier =
+    const String		Contents<Catalog>::Name =
       "Contents[Catalog]";
     template <>
-    const String		Contents<Reference>::Identifier =
+    const String		Contents<Reference>::Name =
       "Contents[Reference]";
 
   }

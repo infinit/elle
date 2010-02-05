@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [tue feb  2 03:16:52 2010]
+// updated       julien quintard   [wed feb  3 22:12:03 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// the component identifier.
     ///
-    const String		Object::Identifier = "Object";
+    const String		Object::Name = "Object";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -440,7 +440,7 @@ namespace etoile
     Status		Object::Serialize(Archive&		archive) const
     {
       // serialize the component name.
-      if (archive.Serialize(Object::Identifier) == StatusError)
+      if (archive.Serialize(Object::Name) == StatusError)
 	escape("unable to serialize the component identifier");
 
       // call the parent class.

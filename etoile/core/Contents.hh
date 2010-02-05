@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [mon feb  1 01:06:27 2010]
+// updated       julien quintard   [wed feb  3 22:12:14 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HH
@@ -50,7 +50,7 @@ namespace etoile
       //
       // identifier
       //
-      static const String	Identifier;
+      static const String	Name;
 
       //
       // constructors & destructors
