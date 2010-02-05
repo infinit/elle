@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/OneWay.hxx
 //
 // created       julien quintard   [sun aug 23 17:11:22 2009]
-// updated       julien quintard   [sun aug 23 17:28:28 2009]
+// updated       julien quintard   [fri feb  5 01:57:34 2010]
 //
 
 #ifndef ELLE_CRYPTO_ONEWAY_HXX
@@ -27,10 +27,9 @@ namespace elle
     /// these methods make it easier to hash multiple items at
     /// the same time while keeping a way to catch errors.
     ///
-    /// note that the code is replicated in order to provide optimisation.
-    /// Indeed, otherwise, everytime a single item is hashed, the whole 9-step
-    /// ifs would be executed, testing if there are more than one item
-    /// to hash.
+    /// note that this code cannot benefit from variadic arguments since
+    /// the last argument must be a digest and compilers require the variadic
+    /// argument to be the last one :(
     ///
 
     ///

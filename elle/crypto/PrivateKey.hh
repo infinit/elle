@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [mon aug 24 01:23:56 2009]
+// updated       julien quintard   [fri feb  5 01:59:28 2010]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HH
@@ -88,14 +88,22 @@ namespace elle
       Status		Sign(const Plain&,
 			     Signature&) const;
 
+      template <typename T>
+      Status		Decrypt(const Code&,
+				T&) const;
+      template <typename T,
+		typename... TT>
+      Status		Decrypt(const Code&,
+				T&,
+				TT&...) const;
+
       //
       // interfaces
       //
 
       // entity
-      PrivateKey&	operator=(const PrivateKey&);
+      Embed(Entity, PrivateKey);
       Boolean		operator==(const PrivateKey&) const;
-      Boolean		operator!=(const PrivateKey&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -142,107 +150,6 @@ namespace elle
       //
       // variadic templates
       //
-
-      // decrypt
-      template <typename T1>
-      Status		Decrypt(const Code&,
-				T1&) const;
-      template <typename T1,
-		typename T2>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&) const;
-      template <typename T1,
-		typename T2,
-		typename T3>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&,
-				T3&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&,
-				T3&,
-				T4&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&,
-				T7&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&,
-				T7&,
-				T8&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8,
-		typename T9>
-      Status		Decrypt(const Code&,
-				T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&,
-				T7&,
-				T8&,
-				T9&) const;
 
       // sign
       template <typename T1>

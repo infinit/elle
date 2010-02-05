@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [tue aug  4 13:54:18 2009]
+// updated       julien quintard   [thu jan 28 12:59:51 2010]
 //
 
 //
@@ -31,36 +31,12 @@ namespace elle
 //
 
     ///
-    /// assign the given cipher by duplicating the attributes.
-    ///
-    Cipher&		Cipher::operator=(const Cipher&		element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the cipher.
-      if (this->Recycle<Cipher>(&element) == StatusError)
-	yield("unable to recycle the cipher", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two ciphers match.
     ///
     Boolean		Cipher::operator==(const Cipher&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
-    }
-
-    ///
-    /// this method checks if two ciphers dis-match.
-    ///
-    Boolean		Cipher::operator!=(const Cipher&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

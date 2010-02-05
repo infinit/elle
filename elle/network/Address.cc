@@ -7,8 +7,12 @@
 //
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
-// created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [mon nov 30 00:52:18 2009]
+// created       julien quintard   [sat nov 28 13:01:48 2009]
+// updated       julien quintard   [wed feb  3 21:50:28 2010]
+//
+
+//
+// ---------- includes --------------------------------------------------------
 //
 
 #include <elle/network/Address.hh>
@@ -19,20 +23,14 @@ namespace elle
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    const Address		Null;
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 
     ///
-    /// the default constructor initializes the object to Null.
+    /// default constructor.
     ///
     Address::Address():
-      type(TypeNull)
+      port(0)
     {
     }
 
@@ -41,45 +39,13 @@ namespace elle
 //
 
     ///
-    /// this method enables the caller the creation of special addresses.
+    /// this method creates an address.
     ///
-    Status		Address::Create(const Type		type)
+    Status		Address::Create(const Host&		host,
+					const Port		port)
     {
-      // set the type.
-      this->type = type;
-
-      // set the address accordingly.
-      switch (this->type)
-	{
-	case TypeNull:
-	case TypeAny:
-	  {
-	    this->address.clear();
-
-	    break;
-	  }
-	case TypeBroadcast:
-	  {
-	    this->address = ::QHostAddress::Broadcast;
-
-	    break;
-	  }
-	case TypeIP:
-	  {
-	    // nothing to do here.
-	  }
-	}
-
-      leave();
-    }
-
-    ///
-    /// this method creates an IPv4 or IPv6 address.
-    ///
-    Status		Address::Create(const String&		string)
-    {
-      if (this->address.setAddress(string.c_str()) == false)
-	escape("unable to set the address");
+      this->host = host;
+      this->port = port;
 
       leave();
     }
@@ -89,40 +55,16 @@ namespace elle
 //
 
     ///
-    /// this method assigns an address to another.
-    ///
-    Address&		Address::operator=(const Address&	element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the address.
-      if (this->Recycle<Address>(&element) == StatusError)
-	yield("unable to recycle the address", *this);
-
-      return (*this);
-    }
-
-    ///
     /// checks if two objects match.
     ///
     Boolean		Address::operator==(const Address&	element) const
     {
       // compare the internal values.
-      if ((this->type != element.type) ||
-	  (this->address != element.address))
+      if ((this->host != element.host) ||
+	  (this->port != element.port))
 	false();
 
       true();
-    }
-
-    ///
-    /// checks if two objects dis-match.
-    ///
-    Boolean		Address::operator!=(const Address&	element) const
-    {
-      return (!(*this == element));
     }
 
 //
@@ -139,11 +81,11 @@ namespace elle
 
       std::cout << alignment << "[Address]" << std::endl;
 
-      std::cout << alignment << shift << "[Type] "
-		<< this->type << std::endl;
+      if (this->host.Dump(margin + 2) == StatusError)
+	escape("unable to dump the host");
 
-      std::cout << alignment << shift << "[Address] "
-		<< this->address.toString().toStdString() << std::endl;
+      std::cout << alignment << shift << "[Port] "
+		<< std::dec << this->port << std::endl;
 
       leave();
     }

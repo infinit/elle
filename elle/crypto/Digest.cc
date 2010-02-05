@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [tue aug  4 13:53:51 2009]
+// updated       julien quintard   [thu jan 28 12:59:09 2010]
 //
 
 //
@@ -31,36 +31,12 @@ namespace elle
 //
 
     ///
-    /// assign the given digest by duplicating the attributes.
-    ///
-    Digest&		Digest::operator=(const Digest&		element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the digest.
-      if (this->Recycle<Digest>(&element) == StatusError)
-	yield("unable to recycle the digest", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two digests match.
     ///
     Boolean		Digest::operator==(const Digest&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
-    }
-
-    ///
-    /// this method checks if two digests dis-match.
-    ///
-    Boolean		Digest::operator!=(const Digest&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

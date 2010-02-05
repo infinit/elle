@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [fri nov 27 14:01:48 2009]
+// updated       julien quintard   [thu jan 28 12:58:50 2010]
 //
 
 //
@@ -277,36 +277,12 @@ namespace elle
 //
 
     ///
-    /// assign the secret key.
-    ///
-    SecretKey&		SecretKey::operator=(const SecretKey&	element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the secret key.
-      if (this->Recycle<SecretKey>(&element) == StatusError)
-	yield("unable to recycle the secret key", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two objects match.
     ///
     Boolean		SecretKey::operator==(const SecretKey&	element) const
     {
       // compare the internal region.
       return (this->key == element.key);
-    }
-
-    ///
-    /// this method checks if two objects dis-match.
-    ///
-    Boolean		SecretKey::operator!=(const SecretKey&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

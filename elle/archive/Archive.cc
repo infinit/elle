@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sat nov 28 14:40:17 2009]
+// updated       julien quintard   [thu feb  4 01:44:47 2010]
 //
 
 //
@@ -555,24 +555,6 @@ namespace elle
 //
 
     ///
-    /// assign the given archive by duplicating the attributes.
-    ///
-    /// note that the memory is duplicated.
-    ///
-    Archive&		Archive::operator=(const Archive&	element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the archive.
-      if (this->Recycle<Archive>(&element) == StatusError)
-	yield("unable to recycle the archive", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two archives match.
     ///
     Boolean		Archive::operator==(const Archive&	element) const
@@ -582,14 +564,6 @@ namespace elle
 	false();
 
       true();
-    }
-
-    ///
-    /// this method checks if two archive dis-match.
-    ///
-    Boolean		Archive::operator!=(const Archive&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

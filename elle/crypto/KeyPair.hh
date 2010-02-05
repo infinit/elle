@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [tue aug  4 13:52:54 2009]
+// updated       julien quintard   [thu jan 28 12:55:01 2010]
 //
 
 #ifndef ELLE_CRYPTO_KEYPAIR_HH
@@ -74,7 +74,7 @@ namespace elle
       //
       // constants
       //
-      struct Default
+      struct		Default
       {
 	static const Natural32		Length;
       };
@@ -90,9 +90,8 @@ namespace elle
       //
 
       // entity
-      KeyPair&		operator=(const KeyPair&);
+      Embed(Entity, KeyPair);
       Boolean		operator==(const KeyPair&) const;
-      Boolean		operator!=(const KeyPair&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

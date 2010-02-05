@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Referee.cc
 //
 // created       julien quintard   [wed jan 28 12:32:31 2009]
-// updated       julien quintard   [sun aug 23 21:19:19 2009]
+// updated       julien quintard   [fri jan 29 10:49:05 2010]
 //
 
 //
@@ -30,7 +30,7 @@ namespace elle
 // ---------- definitions -----------------------------------------------------
 //
 
-    std::list<Element*>			Referee::list;
+    std::list<Element*>			Referee::List;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -51,7 +51,7 @@ namespace elle
 
       element->size = size;
 
-      Referee::list.push_back(element);
+      Referee::List.push_back(element);
 
       leave();
     }
@@ -62,16 +62,16 @@ namespace elle
     {
       Element*		element;
 
-      if (Referee::list.empty() == true)
+      if (Referee::List.empty() == true)
 	escape("the referee does not contain any element any more");
 
-      element = Referee::list.front();
+      element = Referee::List.front();
 
       type = element->type;
       data = element->data;
       size = element->size;
 
-      Referee::list.pop_front();
+      Referee::List.pop_front();
 
       delete element;
 

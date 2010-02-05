@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [tue aug  4 13:53:09 2009]
+// updated       julien quintard   [thu jan 28 12:55:13 2010]
 //
 
 //
@@ -31,36 +31,12 @@ namespace elle
 //
 
     ///
-    /// assign the given code by duplicating the attributes.
-    ///
-    Code&		Code::operator=(const Code&		element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the code.
-      if (this->Recycle<Code>(&element) == StatusError)
-	yield("unable to recycle the code", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two codes match.
     ///
     Boolean		Code::operator==(const Code&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
-    }
-
-    ///
-    /// this method checks if two codes dis-match.
-    ///
-    Boolean		Code::operator!=(const Code&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

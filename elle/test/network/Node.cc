@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [tue dec  1 16:54:05 2009]
+// updated       julien quintard   [thu feb  4 02:11:27 2010]
 //
 
 //
@@ -31,29 +31,28 @@ namespace elle
     ///
     Status		Node::Start(const String&		name,
 				    const String&		host,
-				    const Natural16		port)
+				    const Port			port)
     {
-      Location		location;
-      Address		peer;
+      Host		local;
+      Address		remote;
       Probe		probe;
 
       // set the node's name.
       this->name = name;
 
-      // create an address.
-      if (peer.Create(host) == StatusError)
-	escape("unable to create an address");
+      // create an host.
+      if (local.Create(host) == StatusError)
+	escape("unable to create an host");
 
-      // create the socket.
-      if (this->socket.Create() == StatusError)
-	escape("unable to create the socket");
+      // create the slot.
+      if (this->slot.Create() == StatusError)
+	escape("unable to create the slot");
 
-      std::cout << "[port] " << socket.port << std::endl;
+      std::cout << "[port] " << this->slot.port << std::endl;
 
       // register the probe callback.
-      if (this->socket.Register<TagProbe, Probe>(this, &Node::Handle) ==
-	  StatusError)
-	escape("unable to register the probe packet");
+      if (Network::Register<Probe>(this, &Node::Handle) == StatusError)
+	escape("unable to register the probe message");
 
       // create a new timer.
       this->timer = new ::QTimer(this);
@@ -70,12 +69,12 @@ namespace elle
       if (probe.Create(this->name) == StatusError)
 	escape("unable to create a probe message");
 
-      // create a location.
-      if (location.Create(peer, port) == StatusError)
+      // create an address.
+      if (remote.Create(local, port) == StatusError)
 	escape("unable to create a location");
 
       // probe the peer.
-      if (socket.Send(location, probe) == StatusError)
+      if (slot.Send(remote, probe) == StatusError)
 	escape("unable to send the probe");
 
       leave();
@@ -84,13 +83,13 @@ namespace elle
     ///
     /// this method adds a new neighbour.
     ///
-    Status		Node::Add(const Location&		location,
+    Status		Node::Add(const Address&		address,
 				  const String&			name)
     {
       Node::Iterator	iterator;
 
       // try to locate a previous entry.
-      if (this->Locate(location, iterator) == StatusOk)
+      if (this->Locate(address, iterator) == StatusOk)
 	{
 	  // update the name.
 	  (*iterator)->name = name;
@@ -109,7 +108,7 @@ namespace elle
 	  // assign the attributes.
 	  neighbour->node = this;
 
-	  neighbour->location = location;
+	  neighbour->address = address;
 	  neighbour->name = name;
 
 	  // connect the timeout.
@@ -130,12 +129,12 @@ namespace elle
     ///
     /// this method removes a neighbour.
     ///
-    Status		Node::Remove(const Location&		location)
+    Status		Node::Remove(const Address&		address)
     {
       Node::Iterator	iterator;
 
       // try to locate a previous entry.
-      if (this->Locate(location, iterator) == StatusError)
+      if (this->Locate(address, iterator) == StatusError)
 	escape("unable to locate this neighbour");
 
       // remove the element from the list.
@@ -147,13 +146,13 @@ namespace elle
     ///
     /// this method updates a existing neighbour.
     ///
-    Status		Node::Update(const Location&		location,
+    Status		Node::Update(const Address&		address,
 				     const String&		name)
     {
       Node::Iterator	iterator;
 
       // try to locate a previous entry.
-      if (this->Locate(location, iterator) == StatusError)
+      if (this->Locate(address, iterator) == StatusError)
 	escape("unable to locate this neighbour");
 
       // update the name.
@@ -169,7 +168,7 @@ namespace elle
     ///
     /// this method locates a neighbour in the list.
     ///
-    Status		Node::Locate(const Location&		location,
+    Status		Node::Locate(const Address&		address,
 				     Node::Iterator&		iterator)
     {
       // iterator over the container.
@@ -177,8 +176,8 @@ namespace elle
 	   iterator != this->container.end();
 	   iterator++)
 	{
-	  // if the location is found, return.
-	  if ((*iterator)->location == location)
+	  // if the address is found, return.
+	  if ((*iterator)->address == address)
 	    leave();
 	}
 
@@ -192,12 +191,14 @@ namespace elle
     ///
     /// this method handles probe packets.
     ///
-    void		Node::Handle(const Location&		location,
-				     const Probe&		probe)
+    Status		Node::Handle(Environment&		environment,
+				     Probe&			probe)
     {
       // simply add the sender to the list of neighbours.
-      if (this->Add(location, probe.name) == StatusError)
-	alert("unable to add the new neighbour");
+      if (this->Add(environment.address, probe.name) == StatusError)
+	escape("unable to add the new neighbour");
+
+      leave();
     }
 
 //
@@ -222,8 +223,8 @@ namespace elle
 	{
 	  std::cout << "  [Neighbour] " << (*scoutor)->name << std::endl;
 
-	  if ((*scoutor)->location.Dump(4) == StatusError)
-	    alert("unable to dump the neighbour's location");
+	  if ((*scoutor)->address.Dump(4) == StatusError)
+	    alert("unable to dump the neighbour's address");
 	}
 
       //
@@ -240,7 +241,7 @@ namespace elle
 	    alert("unable to create a probe message");
 
 	  // send a probe message.
-	  if (this->socket.Send((*scoutor)->location, probe) == StatusError)
+	  if (this->slot.Send((*scoutor)->address, probe) == StatusError)
 	    alert("unable to send a probe");
 	}
     }
@@ -251,7 +252,7 @@ namespace elle
     void		Neighbour::Discard()
     {
       // discard the current neighbour as it has not been refreshed in time.
-      if (this->node->Remove(this->location) == StatusError)
+      if (this->node->Remove(this->address) == StatusError)
 	alert("unable to remove the current neighbour");
     }
 

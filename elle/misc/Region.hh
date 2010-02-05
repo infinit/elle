@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [tue aug  4 17:15:59 2009]
+// updated       julien quintard   [thu jan 28 13:00:18 2010]
 //
 
 #ifndef ELLE_MISC_REGION_HH
@@ -114,9 +114,8 @@ namespace elle
       //
 
       // entity
-      Region&		operator=(const Region&);
+      Embed(Entity, Region);
       Boolean		operator==(const Region&) const;
-      Boolean		operator!=(const Region&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

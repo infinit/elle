@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sat nov 28 16:45:40 2009]
+// updated       julien quintard   [wed feb  3 12:58:03 2010]
 //
 
 //
@@ -308,24 +308,6 @@ namespace elle
 //
 
     ///
-    /// assign the given region by duplicating the attributes.
-    ///
-    /// note that for a chunk, the memory is not copied.
-    ///
-    Region&		Region::operator=(const Region&		element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the object.
-      if (this->Recycle<Region>(&element) == StatusError)
-	yield("unable to recycle the object", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two regions match.
     ///
     Boolean		Region::operator==(const Region&	element) const
@@ -339,14 +321,6 @@ namespace elle
 	false();
 
       true();
-    }
-
-    ///
-    /// this method checks if two regions dis-match.
-    ///
-    Boolean		Region::operator!=(const Region&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Tag.hh
 //
 // created       julien quintard   [sun nov 29 20:23:37 2009]
-// updated       julien quintard   [sun nov 29 20:28:06 2009]
+// updated       julien quintard   [thu feb  4 18:14:46 2010]
 //
 
 #ifndef ELLE_NETWORK_CODE_HH

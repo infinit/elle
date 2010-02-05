@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [fri nov 27 14:27:46 2009]
+// updated       julien quintard   [thu jan 28 12:59:30 2010]
 //
 
 //
@@ -276,22 +276,6 @@ namespace elle
 //
 
     ///
-    /// assign the publickey.
-    ///
-    PublicKey&		PublicKey::operator=(const PublicKey&	element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the public key.
-      if (this->Recycle<PublicKey>(&element) == StatusError)
-	yield("unable to recycle the public key", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method checks if two objects match.
     ///
     Boolean		PublicKey::operator==(const PublicKey&	element) const
@@ -302,14 +286,6 @@ namespace elle
 	false();
 
       true();
-    }
-
-    ///
-    /// this method checks if two objects dis-match.
-    ///
-    Boolean		PublicKey::operator!=(const PublicKey&	element) const
-    {
-      return (!(*this == element));
     }
 
 //

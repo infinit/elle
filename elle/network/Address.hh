@@ -7,8 +7,8 @@
 //
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
-// created       julien quintard   [fri oct 16 04:10:36 2009]
-// updated       julien quintard   [sat nov 28 15:22:38 2009]
+// created       julien quintard   [sat nov 28 12:55:38 2009]
+// updated       julien quintard   [wed feb  3 21:50:22 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -19,10 +19,9 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
-#include <elle/io/IO.hh>
 
-#include <QHostAddress>
+#include <elle/network/Host.hh>
+#include <elle/network/Port.hh>
 
 namespace elle
 {
@@ -33,30 +32,17 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
+// this one is address
+// address becomes host
+
     ///
-    /// this class represents a network address.
+    /// this class represents an address i.e a host and port.
     ///
     class Address:
       public Entity,
       public Dumpable
     {
     public:
-      //
-      // globals
-      //
-      static Address		Null;
-
-      //
-      // enumerations
-      //
-      enum Type
-	{
-	  TypeNull,
-	  TypeAny,
-	  TypeIP,
-	  TypeBroadcast
-	};
-
       //
       // constructors & destructors
       //
@@ -65,17 +51,16 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Type);
-      Status		Create(const String&);
+      Status		Create(const Host&,
+			       const Port);
 
       //
       // interfaces
       //
 
       // entity
-      Address&		operator=(const Address&);
+      Embed(Entity, Address);
       Boolean		operator==(const Address&) const;
-      Boolean		operator!=(const Address&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -83,8 +68,8 @@ namespace elle
       //
       // attributes
       //
-      Type		type;
-      ::QHostAddress	address;
+      Host		host;
+      Port		port;
     };
 
   }

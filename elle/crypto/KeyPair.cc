@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [mon aug 24 14:02:06 2009]
+// updated       julien quintard   [thu jan 28 12:55:06 2010]
 //
 
 //
@@ -121,22 +121,6 @@ namespace elle
 //
 
     ///
-    /// assign the keypair by duplicating the attributes.
-    ///
-    KeyPair&		KeyPair::operator=(const KeyPair&	element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the keypair.
-      if (this->Recycle<KeyPair>(&element) == StatusError)
-	yield("unable to recycle the keypair", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two keypairs match.
     ///
     Boolean		KeyPair::operator==(const KeyPair&	element) const
@@ -146,14 +130,6 @@ namespace elle
 	false();
 
       true();
-    }
-
-    ///
-    /// this method checks if two keypairs dis-match.
-    ///
-    Boolean		KeyPair::operator!=(const KeyPair&	element) const
-    {
-      return (!(*this == element));
     }
 
 //
