@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [fri nov 27 19:34:53 2009]
+// updated       julien quintard   [fri feb  5 02:05:49 2010]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HH
@@ -76,14 +76,22 @@ namespace elle
       Status		Verify(const Signature&,
 			       const Plain&) const;
 
+      template <typename T>
+      Status		Verify(const Signature&,
+			       const T&) const;
+      template <typename T,
+		typename... TT>
+      Status		Verify(const Signature&,
+			       const T&,
+			       const TT&...) const;
+
       //
       // interfaces
       //
 
       // entity
-      PublicKey&	operator=(const PublicKey&);
+      Embed(Entity, PublicKey);
       Boolean		operator==(const PublicKey&) const;
-      Boolean		operator!=(const PublicKey&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -227,107 +235,6 @@ namespace elle
 				const T8&,
 				const T9&,
 				Code&) const;
-
-      // verify
-      template <typename T1>
-      Status		Verify(const Signature&,
-			       const T1&) const;
-      template <typename T1,
-		typename T2>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&) const;
-      template <typename T1,
-		typename T2,
-		typename T3>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&,
-			       const T3&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&,
-			       const T7&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&,
-			       const T7&,
-			       const T8&) const;
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8,
-		typename T9>
-      Status		Verify(const Signature&,
-			       const T1&,
-			       const T2&,
-			       const T3&,
-			       const T4&,
-			       const T5&,
-			       const T6&,
-			       const T7&,
-			       const T8&,
-			       const T9&) const;
     };
 
   }

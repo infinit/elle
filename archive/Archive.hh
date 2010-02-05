@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [sat nov 28 14:32:22 2009]
+// updated       julien quintard   [fri feb  5 01:36:42 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -142,9 +142,16 @@ namespace elle
 
       template <typename T>
       Status		Serialize(const T&);
-
+      template <typename T,
+		typename... TT>
+      Status		Serialize(const T&,
+				  const TT&...);
       template <typename T>
       Status		Extract(T&);
+      template <typename T,
+		typename... TT>
+      Status		Extract(T&,
+				TT&...);
 
       template <typename T>
       Status		Store(const T&);
@@ -189,9 +196,8 @@ namespace elle
       //
 
       // entity
-      Archive&		operator=(const Archive&);
+      Embed(Entity, Archive);
       Boolean		operator==(const Archive&) const;
-      Boolean		operator!=(const Archive&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -211,192 +217,8 @@ namespace elle
       //
       Status		Reserve(const Natural32);
       Status		Align(const Natural32);
-
-    public:
-      //
-      // variadic templates
-      //
-
-      // serialize
-      template <typename T1,
-		typename T2>
-      Status		Serialize(const T1&,
-				  const T2&);
-      template <typename T1,
-		typename T2,
-		typename T3>
-      Status		Serialize(const T1&,
-				  const T2&,
-				  const T3&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4>
-      Status		Serialize(const T1&,
-				  const T2&,
-				  const T3&,
-				  const T4&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5>
-      Status		Serialize(const T1&,
-				  const T2&,
-				  const T3&,
-				  const T4&,
-				  const T5&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6>
-      Status		Serialize(const T1&,
-				  const T2&,
-				  const T3&,
-				  const T4&,
-				  const T5&,
-				  const T6&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7>
-      Status		Serialize(const T1&,
-				  const T2&,
-				  const T3&,
-				  const T4&,
-				  const T5&,
-				  const T6&,
-				  const T7&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8>
-      Status		Serialize(const T1&,
-				  const T2&,
-				  const T3&,
-				  const T4&,
-				  const T5&,
-				  const T6&,
-				  const T7&,
-				  const T8&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8,
-		typename T9>
-      Status		Serialize(const T1&,
-				  const T2&,
-				  const T3&,
-				  const T4&,
-				  const T5&,
-				  const T6&,
-				  const T7&,
-				  const T8&,
-				  const T9&);
-
-      // extract
-      template <typename T1,
-		typename T2>
-      Status		Extract(T1&,
-				T2&);
-      template <typename T1,
-		typename T2,
-		typename T3>
-      Status		Extract(T1&,
-				T2&,
-				T3&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4>
-      Status		Extract(T1&,
-				T2&,
-				T3&,
-				T4&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5>
-      Status		Extract(T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6>
-      Status		Extract(T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7>
-      Status		Extract(T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&,
-				T7&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8>
-      Status		Extract(T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&,
-				T7&,
-				T8&);
-      template <typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		typename T6,
-		typename T7,
-		typename T8,
-		typename T9>
-      Status		Extract(T1&,
-				T2&,
-				T3&,
-				T4&,
-				T5&,
-				T6&,
-				T7&,
-				T8&,
-				T9&);
     };
+
   }
 }
 

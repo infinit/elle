@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [mon nov 30 14:54:07 2009]
+// updated       julien quintard   [thu feb  4 02:07:04 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -55,7 +55,7 @@ namespace elle
       //
       Node*		node;
 
-      Location		location;
+      Address		address;
       String		name;
       ::QTimer		timer;
 
@@ -84,14 +84,14 @@ namespace elle
       //
       Status		Start(const String&,
 			      const String&,
-			      const Natural16);
+			      const Port);
 
-      Status		Add(const Location&,
+      Status		Add(const Address&,
 			    const String&);
-      Status		Remove(const Location&);
-      Status		Update(const Location&,
+      Status		Remove(const Address&);
+      Status		Update(const Address&,
 			       const String&);
-      Status		Locate(const Location&,
+      Status		Locate(const Address&,
 			       Iterator&);
 
       //
@@ -100,13 +100,13 @@ namespace elle
       String		name;
       ::QTimer*		timer;
       Container		container;
-      Socket		socket;
+      Slot		slot;
 
       //
       // callbacks
       //
-      void		Handle(const Location&,
-			       const Probe&);
+      Status		Handle(Environment&,
+			       Probe&);
 
     private slots:
       //

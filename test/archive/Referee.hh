@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Referee.hh
 //
 // created       julien quintard   [tue jan 27 16:56:46 2009]
-// updated       julien quintard   [sun aug 23 21:19:02 2009]
+// updated       julien quintard   [fri jan 29 10:48:27 2010]
 //
 
 #ifndef ELLE_TEST_ARCHIVE_REFEREE_HH
@@ -62,7 +62,7 @@ namespace elle
       //
       // attributes
       //
-      static std::list<Element*>	list;
+      static std::list<Element*>	List;
     };
 
   }

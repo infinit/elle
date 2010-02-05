@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun aug 23 17:13:25 2009]
+// updated       julien quintard   [fri feb  5 02:09:06 2010]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HXX
@@ -31,10 +31,8 @@ namespace elle
     /// these methods make it easier to decrypt/sign multiple items at
     /// the same time while keeping a way to catch errors.
     ///
-    /// note that the code is replicated in order to provide optimisation.
-    /// Indeed, otherwise, everytime a single item is hashed, the whole 9-step
-    /// ifs would be executed, testing if there are more than one item
-    /// to hash.
+    /// note that the Encrypt() method cannot benefit from the variadic
+    /// template arguments.
     ///
 
     ///
@@ -294,9 +292,10 @@ namespace elle
     /// this method verifies an object by serializing it before performing
     /// the verification process.
     ///
-    template <typename T1>
+    template <typename T>
     Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1) const
+					  const T&		parameter)
+      const
     {
       Archive		archive;
 
@@ -305,7 +304,7 @@ namespace elle
 	flee("unable to create the archive");
 
       // serialize the object.
-      if (archive.Serialize(o1) == StatusError)
+      if (archive.Serialize(parameter) == StatusError)
 	flee("unable to serialize the object");
 
       // call the Verify() method.
@@ -315,214 +314,22 @@ namespace elle
       true();
     }
 
-    template <typename T1,
-	      typename T2>
+    ///
+    /// this method verifies a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
     Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2) const
+					  const T&		parameter,
+					  const TT&...		parameters)
+      const
     {
       Archive		archive;
 
       if (archive.Create() == StatusError)
 	flee("unable to create the archive");
 
-      if (archive.Serialize(o1, o2) == StatusError)
-	flee("unable to serialize the objects");
-
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
-
-      true();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2,
-					  const T3&		o3) const
-    {
-      Archive		archive;
-
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      if (archive.Serialize(o1, o2, o3) == StatusError)
-	flee("unable to serialize the objects");
-
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
-
-      true();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2,
-					  const T3&		o3,
-					  const T4&		o4) const
-    {
-      Archive		archive;
-
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      if (archive.Serialize(o1, o2, o3, o4) == StatusError)
-	flee("unable to serialize the objects");
-
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
-
-      true();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2,
-					  const T3&		o3,
-					  const T4&		o4,
-					  const T5&		o5) const
-    {
-      Archive		archive;
-
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
-	flee("unable to serialize the objects");
-
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
-
-      true();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2,
-					  const T3&		o3,
-					  const T4&		o4,
-					  const T5&		o5,
-					  const T6&		o6) const
-    {
-      Archive		archive;
-
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6) == StatusError)
-	flee("unable to serialize the objects");
-
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
-
-      true();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2,
-					  const T3&		o3,
-					  const T4&		o4,
-					  const T5&		o5,
-					  const T6&		o6,
-					  const T7&		o7) const
-    {
-      Archive		archive;
-
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7) == StatusError)
-	flee("unable to serialize the objects");
-
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
-
-      true();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2,
-					  const T3&		o3,
-					  const T4&		o4,
-					  const T5&		o5,
-					  const T6&		o6,
-					  const T7&		o7,
-					  const T8&		o8) const
-    {
-      Archive		archive;
-
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
-	flee("unable to serialize the objects");
-
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
-
-      true();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8,
-	      typename T9>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T1&		o1,
-					  const T2&		o2,
-					  const T3&		o3,
-					  const T4&		o4,
-					  const T5&		o5,
-					  const T6&		o6,
-					  const T7&		o7,
-					  const T8&		o8,
-					  const T9&		o9) const
-    {
-      Archive		archive;
-
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      if (archive.Serialize(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
+      if (archive.Serialize(parameter, parameters...) == StatusError)
 	flee("unable to serialize the objects");
 
       if (this->Verify(signature, archive) != StatusTrue)

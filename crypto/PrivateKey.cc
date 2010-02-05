@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [fri nov 27 14:27:37 2009]
+// updated       julien quintard   [thu jan 28 12:58:27 2010]
 //
 
 //
@@ -294,22 +294,6 @@ namespace elle
 //
 
     ///
-    /// assign the publickey.
-    ///
-    PrivateKey&		PrivateKey::operator=(const PrivateKey&	element)
-    {
-      // self-check.
-      if (this == &element)
-	return (*this);
-
-      // recycle the private key.
-      if (this->Recycle<PrivateKey>(&element) == StatusError)
-	yield("unable to recycle the private key", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two objects match.
     ///
     Boolean		PrivateKey::operator==(const PrivateKey& element) const
@@ -322,14 +306,6 @@ namespace elle
 	false();
 
       true();
-    }
-
-    ///
-    /// this method checks if two objects dis-match.
-    ///
-    Boolean		PrivateKey::operator!=(const PrivateKey& element) const
-    {
-      return (!(*this == element));
     }
 
 //

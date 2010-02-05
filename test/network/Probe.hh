@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/Probe.hh
 //
 // created       julien quintard   [fri nov 27 19:37:50 2009]
-// updated       julien quintard   [mon nov 30 13:16:28 2009]
+// updated       julien quintard   [wed feb  3 23:57:00 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_PROBE_HH
@@ -37,13 +37,13 @@ namespace elle
     /// this packet is used for notifying nodes.
     ///
     class Probe:
-      public Packet
+      public Message
     {
     public:
       //
-      // constructors & destructors
+      // constants
       //
-      Probe();
+      static const Tag		Identifier;
 
       //
       // methods

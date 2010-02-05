@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
-// created       julien quintard   [fri oct 16 05:17:01 2009]
-// updated       julien quintard   [mon nov 30 13:17:38 2009]
+// created       julien quintard   [wed feb  3 12:49:33 2010]
+// updated       julien quintard   [thu feb  4 14:39:15 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -19,19 +19,11 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/archive/Archive.hh>
-
-#include <elle/network/Address.hh>
-#include <elle/network/Packet.hh>
-#include <elle/network/Location.hh>
-
-#include <QObject>
-#include <QUdpSocket>
+#include <elle/io/IO.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace archive;
+  using namespace io;
 
   namespace network
   {
@@ -40,57 +32,32 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
-    ///
-    /// this class is the base class for socket-specific functionoids.
-    ///
-    class SocketDispatcher
-    {
-    public:
-      //
-      // methods
-      //
-      virtual Status		Trigger(const Location&,
-					Archive&) = 0;
-    };
 
     ///
-    /// this class represents a remote socket.
-    ///
-    /// \todo eventually this class could wrap UDP and TCP sockets.
+    /// this class abstracts the notion of socket. indeed, the socket
+    /// can be non-connected i.e a slot, connected to a channel or connected
+    /// locally to a bridge.
     ///
     class Socket:
-      public ::QObject,
       public Dumpable
     {
-      Q_OBJECT;
-
     public:
       //
-      // types
+      // enumerations
       //
-      typedef std::map<Tag, SocketDispatcher*>	Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      enum Type
+	{
+	  TypeUnknown,
+	  TypeDoor,
+	  TypeSlot,
+	  TypeGate
+	};
 
       //
-      // constructurs & destructors
+      // constructors & destructors
       //
       Socket();
-      ~Socket();
-
-      //
-      // methods
-      //
-      Status		Create(const Natural16);
-      Status		Create();
-
-      Status		Send(const Location&,
-			     const Packet&);
-
-      template <const Tag G, typename T, class C>
-      Status		Register(C*,
-				 void (C::*)(const Location&,
-					     const T&));
+      Socket(const Type&);
 
       //
       // interfaces
@@ -102,22 +69,10 @@ namespace elle
       //
       // attributes
       //
-      ::QUdpSocket*	socket;
-      Natural16		port;
-
-      Container		callbacks;
-
-    private slots:
-      void		Process();
+      Type	type;
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <elle/network/Socket.hxx>
 
 #endif

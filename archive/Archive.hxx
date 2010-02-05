@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun nov 29 20:49:21 2009]
+// updated       julien quintard   [fri feb  5 01:35:57 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -34,8 +34,8 @@ namespace elle
     template <const Archive::Type V>
     struct ArchiveType
     {
-      static const Byte		value = V;
-      static const Character*	name;
+      static const Byte		Value = V;
+      static const Character*	Name;
     };
 
     ///
@@ -63,7 +63,7 @@ namespace elle
     ///
 #define ArchiveName(_type_)						\
   template <>								\
-  const Character*	ArchiveType<Archive::Type ## _type_>::name = #_type_;
+  const Character*	ArchiveType<Archive::Type ## _type_>::Name = #_type_;
 
     ///
     /// these macro-function calls actually generate the specialized-templates
@@ -97,7 +97,7 @@ namespace elle
     Status	Archive::Behaviour<T, C>::Serialize(Archive&	archive,
 						    const T&	element)
     {
-      const Byte	type = ArchiveMap<T>::value;
+      const Byte	type = ArchiveMap<T>::Value;
 
       // serialization mode only.
       if (archive.mode != Archive::ModeSerialization)
@@ -132,7 +132,7 @@ namespace elle
 	escape("unable to load the type");
 
       // check the type.
-      if (type != ArchiveMap<T>::value)
+      if (type != ArchiveMap<T>::Value)
 	escape("wrong type");
 
       // load the element.
@@ -177,9 +177,28 @@ namespace elle
     {
       return
 	(Archive::Behaviour<T,
-	                    ArchiveMap<T>::value
+	                    ArchiveMap<T>::Value
                               ==
                             Archive::TypeUnknown>::Serialize(*this, element));
+    }
+
+    ///
+    /// this method serializes a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
+    Status		Archive::Serialize(const T&		parameter,
+					   const TT&...		parameters)
+    {
+      // serialize the first items.
+      if (this->Serialize(parameter) == StatusError)
+	escape("unable to serialize the first item");
+
+      // serialize the additional items.
+      if (this->Serialize(parameters...) == StatusError)
+	escape("unable to serialize the additional parameters");
+
+      leave();
     }
 
 //
@@ -194,9 +213,28 @@ namespace elle
     {
       return
 	(Archive::Behaviour<T,
-	                    ArchiveMap<T>::value
+	                    ArchiveMap<T>::Value
                               ==
                             Archive::TypeUnknown>::Extract(*this, element));
+    }
+
+    ///
+    /// this method extracts a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
+    Status		Archive::Extract(T&			parameter,
+					 TT&...			parameters)
+    {
+      // extract the first item.
+      if (this->Extract(parameter) == StatusError)
+	escape("unable to extract the first item");
+
+      // extract the additional items.
+      if (this->Extract(parameters...) == StatusError)
+	escape("unable to extract the additional items");
+
+      leave();
     }
 
 //
@@ -214,7 +252,7 @@ namespace elle
 	escape("unable to extract while not in extraction mode");
 
       // check if this type is a basic type.
-      if (ArchiveMap<T>::value == Archive::TypeUnknown)
+      if (ArchiveMap<T>::Value == Archive::TypeUnknown)
 	escape("unable to extract value of unknown type");
 
       // align the size if it is necessary.
@@ -249,7 +287,7 @@ namespace elle
 	escape("unable to extract while not in extraction mode");
 
       // check if this type is a basic type.
-      if (ArchiveMap<T>::value == Archive::TypeUnknown)
+      if (ArchiveMap<T>::Value == Archive::TypeUnknown)
 	escape("unable to extract value of unknown type");
 
       // align the offset if it is necessary.
@@ -269,544 +307,34 @@ namespace elle
 // ---------- show ------------------------------------------------------------
 //
 
+    ///
+    /// this method displays information on an element belonging to an
+    /// archive.
+    ///
     template <typename T>
-    Status		Show(const T&				element,
+    inline Status	Show(const T&				element,
 			     const Natural32			margin)
     {
       String		alignment(margin, ' ');
 
-      std::cout << alignment << "[" << ArchiveMap<T>::name << "] "
+      std::cout << alignment << "[" << ArchiveMap<T>::Name << "] "
 		<< element << std::endl;
 
       leave();
     }
 
-//
-// ---------- variadic templates ----------------------------------------------
-//
-
     ///
-    /// these methods make it easier to serialize/extract multiple items at
-    /// the same time while keeping a way to catch errors.
+    /// this method specifically shows a Natural8 since, by default, it
+    /// is considered as a 'char'.
     ///
-    /// note that the code is replicated in order to provide optimisation.
-    /// Indeed, otherwise, everytime a single item is serialized, the whole
-    /// 9-step ifs would be executed, testing if there are more than one item
-    /// to serialize.
-    ///
-
-    //
-    // serialize
-    //
-
-    template <typename T1,
-	      typename T2>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2)
+    template <>
+    inline Status	Show(const Natural8&			element,
+			     const Natural32			margin)
     {
-      // serialize the first item.
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
+      String		alignment(margin, ' ');
 
-      // serialize the second item.
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2,
-					   const T3&		t3)
-    {
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
-
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      if (this->Serialize(t3) == StatusError)
-	escape("unable to serialize the third item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2,
-					   const T3&		t3,
-					   const T4&		t4)
-    {
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
-
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      if (this->Serialize(t3) == StatusError)
-	escape("unable to serialize the third item");
-
-      if (this->Serialize(t4) == StatusError)
-	escape("unable to serialize the fourth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2,
-					   const T3&		t3,
-					   const T4&		t4,
-					   const T5&		t5)
-    {
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
-
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      if (this->Serialize(t3) == StatusError)
-	escape("unable to serialize the third item");
-
-      if (this->Serialize(t4) == StatusError)
-	escape("unable to serialize the fourth item");
-
-      if (this->Serialize(t5) == StatusError)
-	escape("unable to serialize the fifth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2,
-					   const T3&		t3,
-					   const T4&		t4,
-					   const T5&		t5,
-					   const T6&		t6)
-    {
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
-
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      if (this->Serialize(t3) == StatusError)
-	escape("unable to serialize the third item");
-
-      if (this->Serialize(t4) == StatusError)
-	escape("unable to serialize the fourth item");
-
-      if (this->Serialize(t5) == StatusError)
-	escape("unable to serialize the fifth item");
-
-      if (this->Serialize(t6) == StatusError)
-	escape("unable to serialize the sixth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2,
-					   const T3&		t3,
-					   const T4&		t4,
-					   const T5&		t5,
-					   const T6&		t6,
-					   const T7&		t7)
-    {
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
-
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      if (this->Serialize(t3) == StatusError)
-	escape("unable to serialize the third item");
-
-      if (this->Serialize(t4) == StatusError)
-	escape("unable to serialize the fourth item");
-
-      if (this->Serialize(t5) == StatusError)
-	escape("unable to serialize the fifth item");
-
-      if (this->Serialize(t6) == StatusError)
-	escape("unable to serialize the sixth item");
-
-      if (this->Serialize(t7) == StatusError)
-	escape("unable to serialize the seventh item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2,
-					   const T3&		t3,
-					   const T4&		t4,
-					   const T5&		t5,
-					   const T6&		t6,
-					   const T7&		t7,
-					   const T8&		t8)
-    {
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
-
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      if (this->Serialize(t3) == StatusError)
-	escape("unable to serialize the third item");
-
-      if (this->Serialize(t4) == StatusError)
-	escape("unable to serialize the fourth item");
-
-      if (this->Serialize(t5) == StatusError)
-	escape("unable to serialize the fifth item");
-
-      if (this->Serialize(t6) == StatusError)
-	escape("unable to serialize the sixth item");
-
-      if (this->Serialize(t7) == StatusError)
-	escape("unable to serialize the seventh item");
-
-      if (this->Serialize(t8) == StatusError)
-	escape("unable to serialize the eighth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8,
-	      typename T9>
-    Status		Archive::Serialize(const T1&		t1,
-					   const T2&		t2,
-					   const T3&		t3,
-					   const T4&		t4,
-					   const T5&		t5,
-					   const T6&		t6,
-					   const T7&		t7,
-					   const T8&		t8,
-					   const T9&		t9)
-    {
-      if (this->Serialize(t1) == StatusError)
-	escape("unable to serialize the first item");
-
-      if (this->Serialize(t2) == StatusError)
-	escape("unable to serialize the second item");
-
-      if (this->Serialize(t3) == StatusError)
-	escape("unable to serialize the third item");
-
-      if (this->Serialize(t4) == StatusError)
-	escape("unable to serialize the fourth item");
-
-      if (this->Serialize(t5) == StatusError)
-	escape("unable to serialize the fifth item");
-
-      if (this->Serialize(t6) == StatusError)
-	escape("unable to serialize the sixth item");
-
-      if (this->Serialize(t7) == StatusError)
-	escape("unable to serialize the seventh item");
-
-      if (this->Serialize(t8) == StatusError)
-	escape("unable to serialize the eighth item");
-
-      if (this->Serialize(t9) == StatusError)
-	escape("unable to serialize the ninth item");
-
-      leave();
-    }
-
-    //
-    // extract
-    //
-
-    template <typename T1,
-	      typename T2>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2)
-    {
-      // extract the first item.
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      // extract the second item.
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2,
-					 T3&			t3)
-    {
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      if (this->Extract(t3) == StatusError)
-	escape("unable to extract the third item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2,
-					 T3&			t3,
-					 T4&			t4)
-    {
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      if (this->Extract(t3) == StatusError)
-	escape("unable to extract the third item");
-
-      if (this->Extract(t4) == StatusError)
-	escape("unable to extract the fourth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2,
-					 T3&			t3,
-					 T4&			t4,
-					 T5&			t5)
-    {
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      if (this->Extract(t3) == StatusError)
-	escape("unable to extract the third item");
-
-      if (this->Extract(t4) == StatusError)
-	escape("unable to extract the fourth item");
-
-      if (this->Extract(t5) == StatusError)
-	escape("unable to extract the fifth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2,
-					 T3&			t3,
-					 T4&			t4,
-					 T5&			t5,
-					 T6&			t6)
-    {
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      if (this->Extract(t3) == StatusError)
-	escape("unable to extract the third item");
-
-      if (this->Extract(t4) == StatusError)
-	escape("unable to extract the fourth item");
-
-      if (this->Extract(t5) == StatusError)
-	escape("unable to extract the fifth item");
-
-      if (this->Extract(t6) == StatusError)
-	escape("unable to extract the sixth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2,
-					 T3&			t3,
-					 T4&			t4,
-					 T5&			t5,
-					 T6&			t6,
-					 T7&			t7)
-    {
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      if (this->Extract(t3) == StatusError)
-	escape("unable to extract the third item");
-
-      if (this->Extract(t4) == StatusError)
-	escape("unable to extract the fourth item");
-
-      if (this->Extract(t5) == StatusError)
-	escape("unable to extract the fifth item");
-
-      if (this->Extract(t6) == StatusError)
-	escape("unable to extract the sixth item");
-
-      if (this->Extract(t7) == StatusError)
-	escape("unable to extract the seventh item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2,
-					 T3&			t3,
-					 T4&			t4,
-					 T5&			t5,
-					 T6&			t6,
-					 T7&			t7,
-					 T8&			t8)
-    {
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      if (this->Extract(t3) == StatusError)
-	escape("unable to extract the third item");
-
-      if (this->Extract(t4) == StatusError)
-	escape("unable to extract the fourth item");
-
-      if (this->Extract(t5) == StatusError)
-	escape("unable to extract the fifth item");
-
-      if (this->Extract(t6) == StatusError)
-	escape("unable to extract the sixth item");
-
-      if (this->Extract(t7) == StatusError)
-	escape("unable to extract the seventh item");
-
-      if (this->Extract(t8) == StatusError)
-	escape("unable to extract the eighth item");
-
-      leave();
-    }
-
-    template <typename T1,
-	      typename T2,
-	      typename T3,
-	      typename T4,
-	      typename T5,
-	      typename T6,
-	      typename T7,
-	      typename T8,
-	      typename T9>
-    Status		Archive::Extract(T1&			t1,
-					 T2&			t2,
-					 T3&			t3,
-					 T4&			t4,
-					 T5&			t5,
-					 T6&			t6,
-					 T7&			t7,
-					 T8&			t8,
-					 T9&			t9)
-    {
-      if (this->Extract(t1) == StatusError)
-	escape("unable to extract the first item");
-
-      if (this->Extract(t2) == StatusError)
-	escape("unable to extract the second item");
-
-      if (this->Extract(t3) == StatusError)
-	escape("unable to extract the third item");
-
-      if (this->Extract(t4) == StatusError)
-	escape("unable to extract the fourth item");
-
-      if (this->Extract(t5) == StatusError)
-	escape("unable to extract the fifth item");
-
-      if (this->Extract(t6) == StatusError)
-	escape("unable to extract the sixth item");
-
-      if (this->Extract(t7) == StatusError)
-	escape("unable to extract the seventh item");
-
-      if (this->Extract(t8) == StatusError)
-	escape("unable to extract the eighth item");
-
-      if (this->Extract(t9) == StatusError)
-	escape("unable to extract the ninth item");
+      std::cout << alignment << "[" << ArchiveMap<Natural8>::Name << "] "
+		<< std::dec << (Natural32)element << std::endl;
 
       leave();
     }

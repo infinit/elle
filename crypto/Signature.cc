@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [tue aug  4 13:53:20 2009]
+// updated       julien quintard   [thu jan 28 12:56:08 2010]
 //
 
 //
@@ -31,36 +31,12 @@ namespace elle
 //
 
     ///
-    /// assign the given signature by duplicating the attributes.
-    ///
-    Signature&		Signature::operator=(const Signature&	element)
-    {
-      // self-check
-      if (this == &element)
-	return (*this);
-
-      // recycle the signature.
-      if (this->Recycle<Signature>(&element) == StatusError)
-	yield("unable to recycle the signature", *this);
-
-      return (*this);
-    }
-
-    ///
     /// this method check if two signatures match.
     ///
     Boolean		Signature::operator==(const Signature&	element) const
     {
       // compare the regions.
       return (this->region == element.region);
-    }
-
-    ///
-    /// this method checks if two signatures dis-match.
-    ///
-    Boolean		Signature::operator!=(const Signature&	element) const
-    {
-      return (!(*this == element));
     }
 
 //
