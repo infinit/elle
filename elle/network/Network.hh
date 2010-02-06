@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [fri feb  5 02:14:12 2010]
+// updated       julien quintard   [sat feb  6 05:06:13 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/archive/Archive.hh>
+#include <elle/misc/Misc.hh>
 
 #include <elle/network/Host.hh>
 #include <elle/network/Socket.hh>
@@ -51,59 +52,40 @@ namespace elle
       //
 
       ///
-      /// this class is the base class for functionoids.
+      /// this class represents the functionoid used to dispatch the
+      /// network event.
       ///
       class Functionoid:
 	public Dumpable
       {
       public:
 	//
-	// enumeration
-	//
-	enum Type
-	  {
-	    TypeUnknown,
-	    TypeFunction,
-	    TypeMethod
-	  };
-
-	//
-	// constructors & destructors
-	//
-	Functionoid();
-	Functionoid(Type);
-
-	//
 	// methods
 	//
-	virtual Status		Trigger(Environment&,
-					Archive&) const = 0;
-
-	//
-	// attributes
-	//
-	Type		type;
+	virtual Status	Dispatch(Environment&,
+				 Archive&) const = 0;
       };
 
       ///
-      /// this functionoid represents a callback.
+      /// this class is the real implementation, taking care of turning
+      /// the received archive into a live object.
       ///
       template <typename T>
-      class CallbackFunction:
+      class Transformer:
 	public Functionoid
       {
       public:
 	//
 	// constructors & destructors
 	//
-	CallbackFunction(Status (*)(Environment&,
-				    T&));
+	Transformer();
+	~Transformer();
 
 	//
 	// methods
 	//
-	Status		Trigger(Environment&,
-				Archive&) const;
+	Status		Dispatch(Environment&,
+				 Archive&) const;
 
 	//
 	// interfaces
@@ -115,41 +97,7 @@ namespace elle
 	//
 	// attributes
 	//
-	Status		(*function)(Environment&,
-				    T&);
-      };
-
-      template <typename T, class I>
-      class CallbackMethod:
-	public Functionoid
-      {
-      public:
-	//
-	// constructors & destructors
-	//
-	CallbackMethod(I*,
-		       Status (I::*)(Environment&,
-				     T&));
-
-	//
-	// methods
-	//
-	Status		Trigger(Environment&,
-				Archive&) const;
-
-	//
-	// interfaces
-	//
-
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
-
-	//
-	// attributes
-	//
-	I*		instance;
-	Status		(I::*method)(Environment&,
-				     T&);
+	Callback*	callback;
       };
 
       //
@@ -163,12 +111,7 @@ namespace elle
       // static methods
       //
       template <typename T>
-      static Status	Register(Status (*)(Environment&,
-					    T&));
-      template <typename T, class I>
-      static Status	Register(I*,
-				 Status (I::*)(Environment&,
-					       T&));
+      static Status	Register(Callback*);
 
       static Status	Dispatch(Environment&,
 				 Archive&);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [fri jan 29 10:57:17 2010]
+// updated       julien quintard   [fri feb  5 13:38:13 2010]
 //
 
 //

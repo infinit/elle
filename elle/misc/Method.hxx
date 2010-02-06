@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [fri feb  5 01:14:34 2010]
+// updated       julien quintard   [fri feb  5 13:22:43 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HXX
@@ -48,6 +48,32 @@ namespace elle
     Status		Method<T...>::Call(T&...		parameters)
     {
       return ((this->instance->*this->handler)(parameters...));
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the method state.
+    ///
+    template <typename... T>
+    Status		Method<T...>::Dump(const Natural32	margin) const
+    {
+      String		alignment(margin, ' ');
+      String		shift(2, ' ');
+
+      std::cout << alignment << "[Method]" << std::endl;
+
+      // dump the instance.
+      std::cout << alignment << margin << "[Instance] "
+		<< std::hex << this->instance << std::endl;
+
+      // dump the handler.
+      std::cout << alignment << margin << "[Handler] "
+		<< std::hex << this->handler << std::endl;
+
+      leave();
     }
 
   }

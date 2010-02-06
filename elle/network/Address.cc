@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [wed feb  3 21:50:28 2010]
+// updated       julien quintard   [sat feb  6 04:37:51 2010]
 //
 
 //
@@ -21,6 +21,12 @@ namespace elle
 {
   namespace network
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    const Address		Address;
 
 //
 // ---------- constructors & destructors --------------------------------------

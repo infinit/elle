@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [thu feb  4 15:22:29 2010]
+// updated       julien quintard   [fri feb  5 13:13:01 2010]
 //
 
 //
@@ -30,26 +30,6 @@ namespace elle
     /// XXX
     ///
     Network::Container		Network::Callbacks;
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default functionoid constructor.
-    ///
-    Network::Functionoid::Functionoid():
-      type(Network::Functionoid::TypeUnknown)
-    {
-    }
-
-    ///
-    /// specific functionoid constructor.
-    ///
-    Network::Functionoid::Functionoid(Network::Functionoid::Type	type):
-      type(type)
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -75,8 +55,8 @@ namespace elle
 	escape("unable to locate the callback");
 
       // trigger the callback.
-      if (scoutor->second->Trigger(environment, archive) == StatusError)
-	escape("unable to trigger the callback");
+      if (scoutor->second->Dispatch(environment, archive) == StatusError)
+	escape("unable to dispatch the event");
 
       leave();
     }

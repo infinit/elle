@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [thu feb  4 01:00:21 2010]
+// updated       julien quintard   [sat feb  6 05:11:32 2010]
 //
 
 //
@@ -68,7 +68,7 @@ namespace elle
 
       // connect the signals.
       if (this->connect(this->socket, SIGNAL(readyRead()),
-			this, SLOT(Process())) == false)
+			this, SLOT(Read())) == false)
 	escape("unable to connect the 'ready read' signal");
 
       leave();
@@ -89,7 +89,7 @@ namespace elle
 
       // connect the signals.
       if (this->connect(this->socket, SIGNAL(readyRead()),
-			this, SLOT(Process())) == false)
+			this, SLOT(Read())) == false)
 	escape("unable to connect the 'ready read' signal");
 
       leave();
@@ -99,8 +99,8 @@ namespace elle
     /// this message converts a message into a UDP packet and sends it
     /// to the given address.
     ///
-    Status		Slot::Send(const Address&		address,
-				   const Message&		message)
+    Status		Slot::Send(const Message&		message,
+				   const Address&		address)
     {
       Archive		archive;
 
@@ -130,9 +130,9 @@ namespace elle
     /// this slot is called whenever a datagram is ready on the socket.
     ///
     /// this method reads the datagram, reconstitute the archive and
-    /// triggers the associated callback.
+    /// dispatch the event.
     ///
-    void		Slot::Process()
+    void		Slot::Read()
     {
       Environment	environment(*this);
       Archive		archive;

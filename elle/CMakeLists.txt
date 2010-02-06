@@ -36,8 +36,10 @@ ADD_LIBRARY(elle
   network/Host.cc
   network/Address.cc
   network/Environment.cc
-  network/Slot.cc
   network/Socket.cc
+  network/Slot.cc
+  network/Bridge.cc
+  network/Door.cc
 
   ${elle_MOCS}
 )
@@ -75,13 +77,5 @@ TARGET_LINK_LIBRARIES(test-crypto elle ssl crypto dl)
 TARGET_LINK_LIBRARIES(test-network elle
                        ${QT_QTNETWORK_LIBRARIES}
                        ${QT_QTCORE_LIBRARIES})
-
-#ADD_EXECUTABLE(XXX
-#  XXX.cc
-#  ${XXX_MOCS}
-#)
-#TARGET_LINK_LIBRARIES(XXX elle
-#                          ${QT_QTNETWORK_LIBRARIES}
-#                          ${QT_QTCORE_LIBRARIES})
 
 TARGET_LINK_LIBRARIES(benchmark-crypto elle ssl crypto dl)
