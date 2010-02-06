@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [wed feb  3 21:50:22 2010]
+// updated       julien quintard   [sat feb  6 04:37:31 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -43,6 +43,11 @@ namespace elle
       public Dumpable
     {
     public:
+      //
+      // globals
+      //
+      static Address		Null;
+
       //
       // constructors & destructors
       //

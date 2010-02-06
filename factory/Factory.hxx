@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [fri feb  5 01:58:03 2010]
+// updated       julien quintard   [fri feb  5 13:46:13 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HXX
@@ -20,52 +20,32 @@ namespace elle
   {
 
 //
-// ---------- structures ------------------------------------------------------
+// ---------- generator -------------------------------------------------------
 //
 
     ///
-    /// this functionoid contains a method for generating an Entity object
-    /// of the given type.
+    /// a default constructor in order to keep the identifier.
     ///
     template <typename T>
-    class FactoryGenerator:
-      public FactoryFunctionoid
+    Factory::Generator<T>::Generator(const String&		identifier):
+      identifier(identifier)
     {
-    public:
-      //
-      // constructors & destructors
-      //
+    }
 
-      ///
-      /// a default constructor in order to keep the identifier.
-      ///
-      FactoryGenerator(const String				identifier)
-      {
-	this->identifier = identifier;
-      }
+    ///
+    /// this method allocates a new object of the type of the functionoid.
+    ///
+    template <typename T>
+    Status		Factory::Generator<T>::Allocate(Entity*& entity) const
+    {
+      // allocate the object.
+      entity = new T;
 
-      //
-      // methods
-      //
-
-      ///
-      /// this method allocates a new object of the type of the functionoid.
-      ///
-      Status		Allocate(Entity*&			entity) const
-      {
-	entity = new T;
-
-	leave();
-      }
-
-      //
-      // attributes
-      //
-      String		identifier;
-    };
+      leave();
+    }
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- factory ---------------------------------------------------------
 //
 
     ///
@@ -74,22 +54,24 @@ namespace elle
     template <typename T>
     Status		Factory::Register(const String&		identifier)
     {
+      Factory::Generator<T>*			generator;
+      std::pair<Factory::Iterator, Boolean>	result;
+
       // check if there is already such an identifier registerd.
       if (Factory::Map.find(identifier) == Factory::Map.end())
 	escape("unable to register an already registered identifier");
 
       // create a generator.
-      FactoryGenerator<T>* functionoid =
-	new FactoryGenerator<T>(identifier);
+      generator = new Factory::Generator<T>(identifier);
 
-      // insert the callback in the container.
-      std::pair<Factory::Iterator, Boolean> value =
-	Factory::Map.insert(std::pair<const String,
-			              FactoryFunctionoid*>(identifier,
-							   functionoid));
+      // insert the generator in the container.
+      result = Factory::Map.insert(
+                 std::pair<const String,
+		           Factory::Functionoid*>(identifier,
+						  generator));
 
       // check if the insertion was successful.
-      if (value.second == false)
+      if (result.second == false)
 	escape("unable to insert the generator into the container");
 
       leave();

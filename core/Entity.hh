@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [thu jan 28 20:10:01 2010]
+// updated       julien quintard   [sat feb  6 04:44:38 2010]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH

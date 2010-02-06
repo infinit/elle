@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [thu feb  4 14:39:15 2010]
+// updated       julien quintard   [sat feb  6 04:45:04 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -20,6 +20,8 @@
 
 #include <elle/core/Core.hh>
 #include <elle/io/IO.hh>
+
+#include <elle/network/Message.hh>
 
 namespace elle
 {
@@ -58,6 +60,14 @@ namespace elle
       //
       Socket();
       Socket(const Type&);
+
+      //
+      // methods
+      //
+      virtual Status	Send(const Message&)
+      {
+	fail("this method should never have been called");
+      }
 
       //
       // interfaces

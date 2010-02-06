@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [thu feb  4 14:38:57 2010]
+// updated       julien quintard   [sat feb  6 04:49:34 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -62,8 +62,8 @@ namespace elle
       Status		Create();
       Status		Create(const Port);
 
-      Status		Send(const Address&,
-			     const Message&);
+      Status		Send(const Message&,
+			     const Address&);
 
       //
       // attributes
@@ -75,7 +75,7 @@ namespace elle
       //
       // slots
       //
-      void		Process();
+      void		Read();
     };
 
   }

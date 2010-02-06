@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [fri feb  5 01:12:06 2010]
+// updated       julien quintard   [fri feb  5 13:20:01 2010]
 //
 
 //
@@ -62,6 +62,13 @@ namespace elle
       // methods
       //
       Status		Call(T&...);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

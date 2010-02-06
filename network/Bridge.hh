@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [thu feb  4 16:52:33 2010]
+// updated       julien quintard   [sat feb  6 05:50:09 2010]
 //
 
 #ifndef ELLE_NETWORK_BRIDGE_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/core/Core.hh>
+#include <elle/misc/Misc.hh>
 
 #include <elle/network/Door.hh>
 
@@ -45,55 +46,26 @@ namespace elle
       //
 
       ///
-      /// this class is the base class for functionoids.
+      /// this class represents a listening entity.
       ///
-      class Functionoid:
+      class Listener:
+	::QObject,
 	public Dumpable
       {
-      public:
-	//
-	// enumeration
-	//
-	enum Type
-	  {
-	    TypeUnknown,
-	    TypeFunction,
-	    TypeMethod
-	  };
+	Q_OBJECT;
 
-	//
-	// constructors & destructors
-	//
-	Functionoid();
-	Functionoid(Type);
-
-	//
-	// methods
-	//
-	virtual Status		Trigger(Door&) const = 0;
-
-	//
-	// attributes
-	//
-	Type		type;
-      };
-
-      ///
-      /// this functionoid represents a callback.
-      ///
-      class CallbackFunction:
-	public Functionoid
-      {
       public:
 	//
 	// constructors & destructors
 	//
-	CallbackFunction(Status (*)(Door&));
+	Listener();
+	~Listener();
 
 	//
 	// methods
 	//
-	Status		Trigger(Door&) const;
+	Status		Create(const String&,
+			       Callback*);
 
 	//
 	// interfaces
@@ -102,74 +74,41 @@ namespace elle
 	// dumpable
 	Status		Dump(const Natural32 = 0) const;
 
-	//
+    	//
 	// attributes
 	//
-	Status		(*function)(Door&);
-      };
-
-      template <class I>
-      class CallbackMethod:
-	public Functionoid
-      {
-      public:
-	//
-	// constructors & destructors
-	//
-	CallbackMethod(I*,
-		       Status (I::*)(Door&));
+	::QLocalServer*	server;
+	Callback*	callback;
 
 	//
-	// methods
+	// slots
 	//
-	Status		Trigger(Door&) const;
-
-	//
-	// interfaces
-	//
-
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
-
-	//
-	// attributes
-	//
-	I*		instance;
-	Status		(I::*method)(Door&);
+      private slots:
+	void		Accept();
       };
 
       //
       // types
       //
-      typedef std::list<Functionoid*>		Container;
+      typedef std::list<Listener*>		Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
       //
       // static methods
       //
-      Status		Register(const String&,
-				 Status (*)(Door&));
-      template <class I>
-      Status		Register(const String&,
-				 I*,
-				 Status (I::*)(Door&));
+      Status		Listen(const String&,
+			       Callback*);
 
       Status		Dump(const Natural32 = 0);
 
       //
       // static attributes
       //
-      static Container	Callbacks;
+      static Container	Listeners;
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-// XXX #include <elle/network/Bridge.hxx>
 
 #endif

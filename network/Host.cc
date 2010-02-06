@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [thu feb  4 14:54:34 2010]
+// updated       julien quintard   [sat feb  6 04:37:55 2010]
 //
 
 #include <elle/network/Host.hh>
@@ -22,7 +22,7 @@ namespace elle
 // ---------- definitions -----------------------------------------------------
 //
 
-    const Host		Null;
+    const Host			Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
