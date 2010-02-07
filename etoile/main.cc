@@ -174,9 +174,8 @@ int		main(int			argc,
 
 // Hole Publish/Pull
 
-// XXX les types Functionoid, a mettre dans la class principale, c'est
-// plus propre! de plus ne pas declarer dans le .hxx. bref faire comme
-// elle/Network.hh
+// chercher les XXX dans elle et etoile et mettre des commentaires
+// car ca manque.
 
 /* XXX
 

@@ -53,6 +53,8 @@ ADD_LIBRARY(etoile
 
   journal/Journal.cc
 
+  wall/Wall.cc
+
   ${etoile_MOCS}
 )
 
