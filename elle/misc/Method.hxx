@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [fri feb  5 13:22:43 2010]
+// updated       julien quintard   [sun feb  7 02:20:21 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HXX
@@ -66,11 +66,11 @@ namespace elle
       std::cout << alignment << "[Method]" << std::endl;
 
       // dump the instance.
-      std::cout << alignment << margin << "[Instance] "
+      std::cout << alignment << shift << "[Instance] "
 		<< std::hex << this->instance << std::endl;
 
       // dump the handler.
-      std::cout << alignment << margin << "[Handler] "
+      std::cout << alignment << shift << "[Handler] "
 		<< std::hex << this->handler << std::endl;
 
       leave();

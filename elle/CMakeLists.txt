@@ -2,6 +2,8 @@ PROJECT(Elle CXX)
 
 QT4_WRAP_CPP(elle_MOCS
   network/Slot.hh
+  network/Bridge.hh
+  network/Door.hh
 )
 
 ADD_LIBRARY(elle
@@ -44,38 +46,5 @@ ADD_LIBRARY(elle
   ${elle_MOCS}
 )
 
-ADD_EXECUTABLE(test-archive
-  test/archive/Generator.cc
-  test/archive/Pack.cc
-  test/archive/Referee.cc
-  test/archive/Test.cc
-)
-
-ADD_EXECUTABLE(test-crypto
-  test/crypto/Test.cc
-)
-
-QT4_WRAP_CPP(test-network_MOCS
-  test/network/Node.hh
-)
-
-ADD_EXECUTABLE(test-network
-  test/network/Test.cc
-  test/network/Probe.cc
-  test/network/Node.cc
-
-  ${test-network_MOCS}
-)
-
-ADD_EXECUTABLE(benchmark-crypto
-  benchmark/crypto/Benchmark.cc
-  benchmark/crypto/Time.cc
-)
-
-TARGET_LINK_LIBRARIES(test-archive elle ssl crypto dl)
-TARGET_LINK_LIBRARIES(test-crypto elle ssl crypto dl)
-TARGET_LINK_LIBRARIES(test-network elle
-                       ${QT_QTNETWORK_LIBRARIES}
-                       ${QT_QTCORE_LIBRARIES})
-
-TARGET_LINK_LIBRARIES(benchmark-crypto elle ssl crypto dl)
+ADD_SUBDIRECTORY(test)
+ADD_SUBDIRECTORY(benchmark)

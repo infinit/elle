@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [sat feb  6 05:06:13 2010]
+// updated       julien quintard   [sun feb  7 00:02:38 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -40,6 +40,24 @@ namespace elle
 //
 // ---------- classes ---------------------------------------------------------
 //
+
+    /// \todo Network::Dispatch devrait retourner un offset correspondant
+    /// aux donnees ne faisant pas partie du message (mais du message
+    /// suivant) qu'on mettrait dans un buffer.
+    ///
+    /// de plus, il faudrait que chaque message ait un CRC et une taille
+    /// de donnee. le slot Read() mettrait donc les donnees dans un buffer
+    /// et si les donnees sont au complet, alors on extrait le message sinon
+    /// on attend.
+    ///
+    /// a noter que la taille devrait rester dans un interval pour eviter
+    /// des problemes.
+    ///
+    /// de plus Message devrait serializer "Message" au debut cf Message.h
+    ///
+    /// pour finir, lorsque les donnees sont envoyees, la taille + CRC
+    /// devrait etre mis dans un Header qui precederait chaque Message
+    /// et c'est ca qui devrait vraiment etre envoye.
 
     ///
     /// XXX

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [sat feb  6 06:05:10 2010]
+// updated       julien quintard   [sun feb  7 02:42:58 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HH
@@ -19,6 +19,8 @@
 //
 
 #include <elle/network/Socket.hh>
+#include <elle/network/Environment.hh>
+#include <elle/network/Network.hh>
 
 #include <QObject>
 #include <QLocalSocket>
@@ -64,6 +66,7 @@ namespace elle
       Status		Create(::QLocalSocket*);
 
       Status		Connect(const String&);
+      Status		Disconnect();
 
       Status		Send(const Message&);
 
@@ -75,14 +78,15 @@ namespace elle
       //
       // signals
       //
+    signals:
       void		Disconnected();
 
       //
       // slots
       //
     private slots:
+      void		Error(QLocalSocket::LocalSocketError);
       void		Read();
-      void		Error(::QLocalSocket::LocalSocketError);
     };
 
   }

@@ -5,17 +5,17 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/network/Probe.cc
+// file          /home/mycure/infinit/elle/test/network/slot/Probe.cc
 //
 // created       julien quintard   [fri nov 27 20:07:49 2009]
-// updated       julien quintard   [thu feb  4 02:01:19 2010]
+// updated       julien quintard   [sun feb  7 00:37:17 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/Probe.hh>
+#include <elle/test/network/slot/Probe.hh>
 
 namespace elle
 {
