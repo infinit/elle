@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/network/Node.hh
+// file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [fri feb  5 13:34:47 2010]
+// updated       julien quintard   [sun feb  7 00:36:50 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -22,7 +22,7 @@
 #include <elle/misc/Misc.hh>
 #include <elle/network/Network.hh>
 
-#include <elle/test/network/Probe.hh>
+#include <elle/test/network/slot/Probe.hh>
 
 #include <QObject>
 #include <QTimer>

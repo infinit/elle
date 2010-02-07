@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [sat feb  6 05:50:09 2010]
+// updated       julien quintard   [sun feb  7 02:14:13 2010]
 //
 
 #ifndef ELLE_NETWORK_BRIDGE_HH
@@ -36,76 +36,79 @@ namespace elle
 //
 
     ///
+    /// this class represents a server waiting for connections.
+    ///
+    /// \todo XXX
+    ///   note that this class should be put as a nested class of Bridge
+    ///   but QT (as of version 4.5) does not support that feature.
+    ///
+    class Porter:
+      ::QObject,
+      public Dumpable
+    {
+      Q_OBJECT;
+
+    public:
+      //
+      // constructors & destructors
+      //
+      Porter();
+      ~Porter();
+
+      //
+      // methods
+      //
+      Status		Create(const String&,
+			       Callback*);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      //
+      // attributes
+      //
+      ::QLocalServer*	server;
+      Callback*		callback;
+
+      //
+      // slots
+      //
+    private slots:
+      void		Accept();
+    };
+
+    ///
     /// XXX
     ///
     class Bridge
     {
     public:
       //
-      // classes
-      //
-
-      ///
-      /// this class represents a listening entity.
-      ///
-      class Listener:
-	::QObject,
-	public Dumpable
-      {
-	Q_OBJECT;
-
-      public:
-	//
-	// constructors & destructors
-	//
-	Listener();
-	~Listener();
-
-	//
-	// methods
-	//
-	Status		Create(const String&,
-			       Callback*);
-
-	//
-	// interfaces
-	//
-
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
-
-    	//
-	// attributes
-	//
-	::QLocalServer*	server;
-	Callback*	callback;
-
-	//
-	// slots
-	//
-      private slots:
-	void		Accept();
-      };
-
-      //
       // types
       //
-      typedef std::list<Listener*>		Container;
+      typedef std::list<Porter*>		Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
       //
       // static methods
       //
-      Status		Listen(const String&,
+      static Status	Initialize(); // XXX todo
+      static Status	Clean(); // XXX todo: remove Porters
+
+      static Status	Listen(const String&,
 			       Callback*);
 
-      Status		Dump(const Natural32 = 0);
+      static Status	Dump(const Natural32 = 0);
 
       //
       // static attributes
       //
-      static Container	Listeners;
+      static Container	Porters;
     };
 
   }

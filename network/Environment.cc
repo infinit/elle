@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Environment.cc
 //
 // created       julien quintard   [thu feb  4 01:01:29 2010]
-// updated       julien quintard   [thu feb  4 01:03:02 2010]
+// updated       julien quintard   [sun feb  7 00:07:38 2010]
 //
 
 //

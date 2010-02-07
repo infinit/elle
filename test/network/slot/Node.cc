@@ -5,17 +5,17 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/network/Node.cc
+// file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [sat feb  6 07:24:05 2010]
+// updated       julien quintard   [sun feb  7 00:37:39 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/Node.hh>
+#include <elle/test/network/slot/Node.hh>
 
 namespace elle
 {

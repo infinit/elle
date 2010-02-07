@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Message.hh
 //
 // created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [thu feb  4 00:01:10 2010]
+// updated       julien quintard   [sat feb  6 23:17:11 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH
@@ -40,6 +40,8 @@ namespace elle
       public Dumpable, public Archivable
     {
       // nothing
+
+      // XXX Serialize identifier "Message" to delimit the start
     };
 
   }

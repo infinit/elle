@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [sat feb  6 05:51:55 2010]
+// updated       julien quintard   [sun feb  7 02:44:23 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace elle
     ///
     /// definition of the container.
     ///
-    Bridge::Container		Bridge::Listeners;
+    Bridge::Container		Bridge::Porters;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -38,7 +38,8 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    Bridge::Listener::Listener():
+    Porter::Porter():
+      server(NULL),
       callback(NULL)
     {
     }
@@ -46,7 +47,7 @@ namespace elle
     ///
     /// the destructor.
     ///
-    Bridge::Listener::~Listener()
+    Porter::~Porter()
     {
       // if there is a callback, release it.
       if (this->server != NULL)
@@ -62,13 +63,13 @@ namespace elle
 //
 
     //
-    // listener
+    // porter
     //
 
     ///
     /// this method starts listening on the given name.
     ///
-    Status		Bridge::Listener::Create(const String&	name,
+    Status		Porter::Create(const String&	name,
 						 Callback*	callback)
     {
       // allocate a new server.
@@ -97,20 +98,25 @@ namespace elle
     /// every new connection, the Accept signal is generated which, in turn,
     /// creates a new door.
     ///
+    /// note that callbacks are used because only a specific handler must
+    /// be called. by relying on QT signals/slots (though it is not possible
+    /// since the Bridge class is static), all the slots registered on the
+    /// signal would be triggered which is not want we want.
+    ///
     Status		Bridge::Listen(const String&		name,
 				       Callback*		callback)
     {
-      Bridge::Listener*	listener;
+      Porter*	porter;
 
-      // allocate a new listener.
-      listener = new Bridge::Listener;
+      // allocate a new porter.
+      porter = new Porter;
 
-      // create the listener.
-      if (listener->Create(name, callback) == StatusError)
-	escape("unable to create the listener");
+      // create the porter.
+      if (porter->Create(name, callback) == StatusError)
+	escape("unable to create the porter");
 
-      // add the listener to the container.
-      Bridge::Listeners.push_back(listener);
+      // add the porter to the container.
+      Bridge::Porters.push_back(porter);
 
       leave();
     }
@@ -119,18 +125,41 @@ namespace elle
 // ---------- dumpable --------------------------------------------------------
 //
 
+    //
+    // porter
+    //
+
     ///
-    /// this method dumps the internals of a listener.
+    /// this method dumps the internals of a porter.
     ///
-    Status		Bridge::Listener::Dump(const Natural32	margin) const
+    Status		Porter::Dump(const Natural32	margin) const
     {
-      // XXX
+      String		alignment(margin, ' ');
+      String		shift(2, ' ');
+
+      std::cout << alignment << "[Porter]" << std::endl;
+
+      // dump the server address.
+      std::cout << alignment << shift << "[Server] "
+		<< std::hex << this->server << std::endl;
+
+      // dump the platform-specific path.
+      std::cout << alignment << shift << "[Path] "
+		<< this->server->fullServerName().toStdString() << std::endl;
+
+      // dump the callback.
+      if (this->callback->Dump(margin + 2) == StatusError)
+	escape("unable to dump the callback");
 
       leave();
     }
 
+    //
+    // bridge
+    //
+
     ///
-    /// this method dumps the table of listeners.
+    /// this method dumps the table of porters.
     ///
     Status		Bridge::Dump(const Natural32		margin)
     {
@@ -141,13 +170,13 @@ namespace elle
       std::cout << alignment << "[Bridge]" << std::endl;
 
       // dump the callbacks table.
-      for (scoutor = Bridge::Listeners.begin();
-	   scoutor != Bridge::Listeners.end();
+      for (scoutor = Bridge::Porters.begin();
+	   scoutor != Bridge::Porters.end();
 	   scoutor++)
 	{
-	  // dump the listener.
+	  // dump the porter.
 	  if ((*scoutor)->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the listener");
+	    escape("unable to dump the porter");
 	}
 
       leave();
@@ -160,14 +189,14 @@ namespace elle
     ///
     /// this slot is triggered whenever a new conncetion is made.
     ///
-    void		Bridge::Listener::Accept()
+    void		Porter::Accept()
     {
       ::QLocalSocket*	socket;
       Door*		door;
 
       // retrieve the socket from the server.
       if ((socket = this->server->nextPendingConnection()) == NULL)
-	alert("unable to retrive the pending connection");
+	alert(this->server->errorString().toStdString().c_str());
 
       // allocate a new door to this bridge.
       door = new Door;
@@ -175,6 +204,10 @@ namespace elle
       // create a door with the specific socket.
       if (door->Create(socket) == StatusError)
 	alert("unable to create the door");
+
+      // trigger the associated callback.
+      if (this->callback->Trigger(door) == StatusError)
+	alert("unable to trigger the callback");
     }
 
  }

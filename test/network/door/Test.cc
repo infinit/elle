@@ -5,23 +5,22 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/network/Test.cc
+// file          /home/mycure/infinit/elle/test/network/door/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [thu feb  4 00:27:15 2010]
+// updated       julien quintard   [sun feb  7 02:24:23 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include "Test.hh"
+#include <elle/test/network/door/Test.hh>
 
 namespace elle
 {
   using namespace core;
   using namespace misc;
-  using namespace network;
 
   namespace test
   {
@@ -34,22 +33,31 @@ namespace elle
 				   char*			argv[])
     {
       QCoreApplication	app(argc, argv);
-      Node		node;
+      Server		server;
+      Client		client;
 
       // check the arguments.
-      if (argc != 4)
+      if (argc != 3)
 	{
-	  std::cerr << "[usage] " << argv[0] << " _name_ _host_ _port_"
+	  std::cerr << "[usage] " << argv[0] << " _type{client/server}_ _id_"
 		    << std::endl;
 
 	  exit(1);
 	}
 
-      // start the node
-      if (node.Start(String(argv[1]),
-		     String(argv[2]),
-		     (Port)::strtoul(argv[3], NULL, NULL)) == StatusError)
-	escape("unable to start the node");
+      // launch either the client or the server.
+      if (String(argv[1]) == String("server"))
+	{
+	  if (server.Start(argv[2]) == StatusError)
+	    escape("unable to start the server");
+	}
+      else if (String(argv[1]) == String("client"))
+	{
+	  if (client.Start(argv[2]) == StatusError)
+	    escape("unable to start the client");
+	}
+      else
+	escape("unknown type");
 
       // wait for events.
       app.exec();

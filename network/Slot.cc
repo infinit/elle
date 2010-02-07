@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sat feb  6 05:11:32 2010]
+// updated       julien quintard   [sun feb  7 02:07:47 2010]
 //
 
 //
@@ -61,7 +61,7 @@ namespace elle
 
       // bind the socket.
       if (this->socket->bind() == false)
-	escape("unable to bind the socket");
+	escape(this->socket->errorString().toStdString().c_str());
 
       // retrieve the port.
       this->port = this->socket->localPort();
@@ -69,7 +69,7 @@ namespace elle
       // connect the signals.
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(Read())) == false)
-	escape("unable to connect the 'ready read' signal");
+	escape("unable to connect the signal");
 
       leave();
     }
@@ -85,12 +85,12 @@ namespace elle
 
       // bind the socket to the port.
       if (this->socket->bind(this->port) == false)
-	escape("unable to bind the socket to the given port");
+	escape(this->socket->errorString().toStdString().c_str());
 
       // connect the signals.
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(Read())) == false)
-	escape("unable to connect the 'ready read' signal");
+	escape("unable to connect the signal");
 
       leave();
     }
@@ -117,7 +117,7 @@ namespace elle
 				      archive.size,
 				      address.host.location,
 				      address.port) != archive.size)
-	escape("unable to send the datagram");
+	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
     }
@@ -160,7 +160,7 @@ namespace elle
 					 size,
 					 &environment.address.host.location,
 					 &environment.address.port) != size)
-	    alert("unable to read the datagram");
+	    alert(this->socket->errorString().toStdString().c_str());
 
 	  // set the region's size.
 	  region.size = size;
