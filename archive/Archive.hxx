@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri feb  5 01:35:57 2010]
+// updated       julien quintard   [sun feb 21 22:09:43 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX

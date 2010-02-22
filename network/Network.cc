@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [fri feb  5 13:13:01 2010]
+// updated       julien quintard   [mon feb 22 13:30:36 2010]
 //
 
 //
@@ -41,11 +41,14 @@ namespace elle
     /// new object.
     ///
     Status		Network::Dispatch(Environment&		environment,
-					  Archive&		archive)
+					  Packet&		packet)
     {
       Network::Scoutor	scoutor;
       Tag		tag;
 
+      // XXX
+      //Message::Unpack(packet, tag, 
+      /*
       // extract the tag from the archive.
       if (archive.Extract(tag) == StatusError)
 	escape("unable to extract the tag from the archive");
@@ -57,6 +60,7 @@ namespace elle
       // trigger the callback.
       if (scoutor->second->Dispatch(environment, archive) == StatusError)
 	escape("unable to dispatch the event");
+      */
 
       leave();
     }

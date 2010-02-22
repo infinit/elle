@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [fri feb  5 01:36:42 2010]
+// updated       julien quintard   [sun feb 21 22:09:37 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH

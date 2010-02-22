@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Message.hh
 //
 // created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [sat feb  6 23:17:11 2010]
+// updated       julien quintard   [mon feb 22 14:43:14 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH
@@ -23,6 +23,8 @@
 #include <elle/archive/Archive.hh>
 
 #include <elle/network/Tag.hh>
+#include <elle/network/Packet.hh>
+#include <elle/network/Parameters.hh>
 
 namespace elle
 {
@@ -33,18 +35,151 @@ namespace elle
   {
 
     ///
-    /// this class abstracts messages so that any message intended to be
-    /// sent on the network, through a socket, should inherit this class.
+    /// this class represents a message along with the parameters that
+    /// compose it.
     ///
+    template <const Tag G>
     class Message:
-      public Dumpable, public Archivable
+      public Parameters<>
     {
-      // nothing
+    public:
+      /*
+      //
+      // identifier
+      //
+      static const String	Name;
 
-      // XXX Serialize identifier "Message" to delimit the start
+      //
+      // methods
+      //
+      static Status	Pack(Packet&);
+
+      template <const Tag G,
+		typename T1>
+      static Status	Pack(const T1&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2,
+		typename T3>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     const T3&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2,
+		typename T3,
+		typename T4>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     const T8&,
+			     Packet&);
+
+      template <const Tag G,
+		typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8,
+		typename T9>
+      static Status	Pack(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     const T8&,
+			     const T9&,
+			     Packet&);
+      */
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <elle/network/Message.hxx>
 
 #endif

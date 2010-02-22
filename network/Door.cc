@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun feb  7 02:48:30 2010]
+// updated       julien quintard   [sun feb 21 21:00:31 2010]
 //
 
 //
@@ -130,6 +130,7 @@ namespace elle
     ///
     /// XXX
     ///
+    /* XXX
     Status		Door::Send(const Message&		message)
     {
       Archive		archive;
@@ -152,6 +153,7 @@ namespace elle
 
       leave();
     }
+    */
 
 //
 // ---------- slots -----------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [sun feb  7 02:42:58 2010]
+// updated       julien quintard   [sun feb 21 21:00:23 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HH
@@ -68,7 +68,7 @@ namespace elle
       Status		Connect(const String&);
       Status		Disconnect();
 
-      Status		Send(const Message&);
+      // XXX Status		Send(const Message&);
 
       //
       // attributes
