@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [sun feb  7 11:57:36 2010]
+// updated       julien quintard   [mon feb 22 14:39:14 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -25,6 +25,7 @@
 #include <elle/network/Socket.hh>
 #include <elle/network/Tag.hh>
 #include <elle/network/Environment.hh>
+#include <elle/network/Packet.hh>
 
 namespace elle
 {
@@ -85,19 +86,19 @@ namespace elle
       };
 
       ///
-      /// this class is the real implementation, taking care of turning
-      /// the received archive into a live object.
+      /// this implementation takes an archive, extracts a number of
+      /// arguments depending on the selectionoid and triggers the callback.
       ///
-      template <typename T>
-      class Transformer:
+      template <const Natural32, class P>
+      class Selectionoid:
 	public Functionoid
       {
       public:
 	//
 	// constructors & destructors
 	//
-	Transformer();
-	~Transformer();
+	Selectionoid();
+	~Selectionoid();
 
 	//
 	// methods
@@ -128,11 +129,11 @@ namespace elle
       //
       // static methods
       //
-      template <typename T>
-      static Status	Register(Callback*);
+      template <const Tag G, class P>
+      static Status	Register(Callback&);
 
       static Status	Dispatch(Environment&,
-				 Archive&);
+				 Packet&);
 
       static Status	Dump(const Natural32 = 0);
 
@@ -158,8 +159,10 @@ namespace elle
 #include <elle/network/Address.hh>
 #include <elle/network/Port.hh>
 #include <elle/network/Message.hh>
+#include <elle/network/Packet.hh>
 #include <elle/network/Slot.hh>
 #include <elle/network/Bridge.hh>
 #include <elle/network/Door.hh>
+#include <elle/network/Parameters.hh>
 
 #endif

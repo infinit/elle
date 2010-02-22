@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sun feb  7 02:07:47 2010]
+// updated       julien quintard   [mon feb 22 13:21:52 2010]
 //
 
 //
@@ -95,33 +95,6 @@ namespace elle
       leave();
     }
 
-    ///
-    /// this message converts a message into a UDP packet and sends it
-    /// to the given address.
-    ///
-    Status		Slot::Send(const Message&		message,
-				   const Address&		address)
-    {
-      Archive		archive;
-
-      // create the archive that will receive both the tag and data.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // serialize the message.
-      if (archive.Serialize(message) == StatusError)
-	escape("unable to serialize the message");
-
-      // push the datagram into the socket.
-      if (this->socket->writeDatagram((char*)archive.contents,
-				      archive.size,
-				      address.host.location,
-				      address.port) != archive.size)
-	escape(this->socket->errorString().toStdString().c_str());
-
-      leave();
-    }
-
 //
 // ---------- slots -----------------------------------------------------------
 //
@@ -135,7 +108,7 @@ namespace elle
     void		Slot::Read()
     {
       Environment	environment(*this);
-      Archive		archive;
+      Packet		packet;
       Tag		tag;
 
       // read the pending datagrams.
@@ -169,13 +142,13 @@ namespace elle
 	  if (region.Detach() == StatusError)
 	    alert("unable to detach the region");
 
-	  // create a working archive. if it fails, just skip this datagram.
-	  if (archive.Prepare(region) == StatusError)
-	    alert("unable to prepare the archive");
+	  // create a working packet. if it fails, just skip this datagram.
+	  if (packet.Prepare(region) == StatusError)
+	    alert("unable to prepare the packet");
 	}
 
       // dispatch the event.
-      if (Network::Dispatch(environment, archive) == StatusError)
+      if (Network::Dispatch(environment, packet) == StatusError)
 	alert("unable to dispatch the event");
     }
 

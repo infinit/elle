@@ -42,9 +42,20 @@ ADD_LIBRARY(elle
   network/Slot.cc
   network/Bridge.cc
   network/Door.cc
+  network/Message.cc
 
   ${elle_MOCS}
 )
 
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+#ADD_SUBDIRECTORY(test)
+#ADD_SUBDIRECTORY(benchmark)
+
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+ADD_EXECUTABLE(XXX
+  XXX.cc
+)
+
+TARGET_LINK_LIBRARIES(XXX elle ssl crypto dl
+                      ${QT_QTNETWORK_LIBRARIES}
+                      ${QT_QTCORE_LIBRARIES})

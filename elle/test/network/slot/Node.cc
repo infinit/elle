@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [sun feb  7 00:37:39 2010]
+// updated       julien quintard   [mon feb 22 11:17:24 2010]
 //
 
 //
@@ -33,8 +33,7 @@ namespace elle
 				    const String&		host,
 				    const Port			port)
     {
-      Callback*		callback =
-	new Method<Environment, Probe>(this, &Node::Handle);
+      Method<Environment, Probe>	callback(this, &Node::Handle);
       Host				local;
       Address				remote;
       Probe				probe;
@@ -53,7 +52,8 @@ namespace elle
       std::cout << "[port] " << this->slot.port << std::endl;
 
       // register the probe message.
-      if (Network::Register<Probe>(callback) == StatusError)
+      if (Network::Register< TagProbe,
+	                     Parameters<Probe> >(callback) == StatusError)
 	escape("unable to register the probe message");
 
       // create a new timer.
@@ -76,7 +76,7 @@ namespace elle
 	escape("unable to create a location");
 
       // probe the peer.
-      if (slot.Send(probe, remote) == StatusError)
+      if (slot.Send<TagProbe>(remote, probe) == StatusError)
 	escape("unable to send the probe");
 
       leave();
@@ -243,7 +243,8 @@ namespace elle
 	    alert("unable to create a probe message");
 
 	  // send a probe message.
-	  if (this->slot.Send(probe, (*scoutor)->address) == StatusError)
+	  if (this->slot.Send<TagProbe>((*scoutor)->address,
+					probe) == StatusError)
 	    alert("unable to send a probe");
 	}
     }
