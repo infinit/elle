@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [sun feb  7 02:14:13 2010]
+// updated       julien quintard   [tue feb 23 13:37:45 2010]
 //
 
 #ifndef ELLE_NETWORK_BRIDGE_HH

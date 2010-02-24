@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [sun feb  7 02:20:21 2010]
+// updated       julien quintard   [mon feb 22 21:21:30 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HXX
@@ -64,6 +64,10 @@ namespace elle
       String		shift(2, ' ');
 
       std::cout << alignment << "[Method]" << std::endl;
+
+      // dump the quantum.
+      std::cout << alignment << shift << "[Quantum] "
+		<< std::dec << sizeof...(T) << std::endl;
 
       // dump the instance.
       std::cout << alignment << shift << "[Instance] "

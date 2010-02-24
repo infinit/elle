@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [mon feb 22 14:39:14 2010]
+// updated       julien quintard   [wed feb 24 09:08:18 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -26,6 +26,8 @@
 #include <elle/network/Tag.hh>
 #include <elle/network/Environment.hh>
 #include <elle/network/Packet.hh>
+#include <elle/network/Parameters.hh>
+#include <elle/network/Data.hh>
 
 namespace elle
 {
@@ -89,34 +91,10 @@ namespace elle
       /// this implementation takes an archive, extracts a number of
       /// arguments depending on the selectionoid and triggers the callback.
       ///
-      template <const Natural32, class P>
+      template <const Natural32, typename M>
       class Selectionoid:
 	public Functionoid
       {
-      public:
-	//
-	// constructors & destructors
-	//
-	Selectionoid();
-	~Selectionoid();
-
-	//
-	// methods
-	//
-	Status		Dispatch(Environment&,
-				 Archive&) const;
-
-	//
-	// interfaces
-	//
-
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
-
-	//
-	// attributes
-	//
-	Callback*	callback;
       };
 
       //
@@ -129,8 +107,8 @@ namespace elle
       //
       // static methods
       //
-      template <const Tag G, class P>
-      static Status	Register(Callback&);
+      template <const Tag G>
+      static Status	Register(Callback*);
 
       static Status	Dispatch(Environment&,
 				 Packet&);
@@ -159,10 +137,13 @@ namespace elle
 #include <elle/network/Address.hh>
 #include <elle/network/Port.hh>
 #include <elle/network/Message.hh>
-#include <elle/network/Packet.hh>
 #include <elle/network/Slot.hh>
 #include <elle/network/Bridge.hh>
 #include <elle/network/Door.hh>
 #include <elle/network/Parameters.hh>
+#include <elle/network/Manifest.hh>
+#include <elle/network/Arguments.hh>
+#include <elle/network/Inputs.hh>
+#include <elle/network/Outputs.hh>
 
 #endif

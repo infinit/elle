@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Packet.hh
 //
 // created       julien quintard   [mon feb 22 11:21:39 2010]
-// updated       julien quintard   [mon feb 22 11:33:56 2010]
+// updated       julien quintard   [tue feb 23 18:16:38 2010]
 //
 
 #ifndef ELLE_NETWORK_PACKET_HH
@@ -32,7 +32,7 @@ namespace elle
 //
 
     ///
-    /// this type represents a message sent over the network.
+    /// this type represents a message in its network format i.e an archive.
     ///
     typedef Archive		Packet;
 

@@ -4,7 +4,6 @@ QT4_WRAP_CPP(test-network-slot_MOCS
 
 ADD_EXECUTABLE(test-network-slot
   Test.cc
-  Probe.cc
   Node.cc
 
   ${test-network-slot_MOCS}

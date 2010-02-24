@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [mon feb 22 13:30:18 2010]
+// updated       julien quintard   [wed feb 24 11:14:14 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -26,6 +26,9 @@
 #include <elle/network/Message.hh>
 #include <elle/network/Environment.hh>
 #include <elle/network/Network.hh>
+#include <elle/network/Data.hh>
+#include <elle/network/Packet.hh>
+#include <elle/network/Inputs.hh>
 
 #include <QObject>
 #include <QUdpSocket>
@@ -62,9 +65,32 @@ namespace elle
       Status		Create();
       Status		Create(const Port);
 
-      template <const Tag G, typename... T>
+      template <typename I>
       Status		Send(const Address&,
-			     const T&...);
+			     const I&);
+      template <typename I>
+      Status		Transmit(const Address&,
+				 const I&);
+      template <typename O>
+      Status		Receive(Address&,
+				O&);
+      template <typename I,
+		typename O>
+      Status		Request(const Address&,
+				const I&,
+				O&);
+      // Request: asynchrone
+      // Call: synchrone
+
+      template <typename I>
+      Status		Reply(const Address&,
+			      const I&);
+
+      // XXX
+      // Send(): asynchronous i.e send and return.
+      // Transmit(): synchronous i.e send and wait for a ACK (unless in TCP)
+      // Receive():
+      // XXX
 
       //
       // attributes

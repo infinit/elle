@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [sun feb  7 02:20:30 2010]
+// updated       julien quintard   [mon feb 22 21:21:19 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HXX
@@ -67,6 +67,10 @@ namespace elle
       String		shift(2, ' ');
 
       std::cout << alignment << "[Function]" << std::endl;
+
+      // dump the quantum.
+      std::cout << alignment << shift << "[Quantum] "
+		<< std::dec << sizeof...(T) << std::endl;
 
       // dump the handler.
       std::cout << alignment << shift << "[Handler] "

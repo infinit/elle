@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [sun feb  7 00:36:50 2010]
+// updated       julien quintard   [tue feb 23 01:50:42 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -22,6 +22,7 @@
 #include <elle/misc/Misc.hh>
 #include <elle/network/Network.hh>
 
+#include <elle/test/network/slot/Tag.hh>
 #include <elle/test/network/slot/Probe.hh>
 
 #include <QObject>
@@ -107,7 +108,7 @@ namespace elle
       // callbacks
       //
       Status		Handle(Environment&,
-			       Probe&);
+			       String&);
 
     private slots:
       //
