@@ -1,0 +1,1 @@
+PROJECT(Hole CXX)
