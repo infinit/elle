@@ -5,7 +5,6 @@ QT4_WRAP_CPP(test-network-door_MOCS
 
 ADD_EXECUTABLE(test-network-door
   Test.cc
-  Echo.cc
   Server.cc
   Client.cc
 

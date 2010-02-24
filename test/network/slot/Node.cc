@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [mon feb 22 11:17:24 2010]
+// updated       julien quintard   [wed feb 24 08:51:15 2010]
 //
 
 //
@@ -33,10 +33,9 @@ namespace elle
 				    const String&		host,
 				    const Port			port)
     {
-      Method<Environment, Probe>	callback(this, &Node::Handle);
-      Host				local;
-      Address				remote;
-      Probe				probe;
+      static Method<Environment, String>	callback(this, &Node::Handle);
+      Host					local;
+      Address					remote;
 
       // set the node's name.
       this->name = name;
@@ -52,8 +51,7 @@ namespace elle
       std::cout << "[port] " << this->slot.port << std::endl;
 
       // register the probe message.
-      if (Network::Register< TagProbe,
-	                     Parameters<Probe> >(callback) == StatusError)
+      if (Network::Register<TagProbe>(&callback) == StatusError)
 	escape("unable to register the probe message");
 
       // create a new timer.
@@ -67,16 +65,13 @@ namespace elle
       // start the timer.
       this->timer->start(10000);
 
-      // create a probe.
-      if (probe.Create(this->name) == StatusError)
-	escape("unable to create a probe message");
-
       // create an address.
       if (remote.Create(local, port) == StatusError)
 	escape("unable to create a location");
 
       // probe the peer.
-      if (slot.Send<TagProbe>(remote, probe) == StatusError)
+      if (slot.Send(remote,
+		    Inputs<TagProbe>(this->name)) == StatusError)
 	escape("unable to send the probe");
 
       leave();
@@ -194,10 +189,10 @@ namespace elle
     /// this method handles probe packets.
     ///
     Status		Node::Handle(Environment&		environment,
-				     Probe&			probe)
+				     String&			name)
     {
       // simply add the sender to the list of neighbours.
-      if (this->Add(environment.address, probe.name) == StatusError)
+      if (this->Add(environment.address, name) == StatusError)
 	escape("unable to add the new neighbour");
 
       leave();
@@ -236,15 +231,9 @@ namespace elle
 	   scoutor != this->container.end();
 	   scoutor++)
 	{
-	  Probe		probe;
-
-	  // create a probe.
-	  if (probe.Create(this->name) == StatusError)
-	    alert("unable to create a probe message");
-
 	  // send a probe message.
-	  if (this->slot.Send<TagProbe>((*scoutor)->address,
-					probe) == StatusError)
+	  if (this->slot.Send((*scoutor)->address,
+			      Inputs<TagProbe>(this->name)) == StatusError)
 	    alert("unable to send a probe");
 	}
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [sun feb  7 02:48:54 2010]
+// updated       julien quintard   [tue feb 23 14:31:24 2010]
 //
 
 //
@@ -31,11 +31,10 @@ namespace elle
     ///
     Status		Client::Start(const String&		name)
     {
-      Callback*		receive =
-	new Method<Environment, Echo>(this, &Client::Receive);
+      static Method<Environment, String> receive(this, &Client::Receive);
 
       // register the echo message.
-      if (Network::Register<Echo>(receive) == StatusError)
+      if (Network::Register<TagEcho>(&receive) == StatusError)
 	escape("unable to register the echo message");
 
       std::cout << "[bridge] " << name << std::endl;
@@ -59,10 +58,10 @@ namespace elle
     /// this method handles echo messages.
     ///
     Status		Client::Receive(Environment&		environment,
-					Echo&			echo)
+					String&			text)
     {
       // simply display the text.
-      std::cout << "[Echo] " << echo.text << std::endl;
+      std::cout << "[Echo] " << text << std::endl;
 
       leave();
     }

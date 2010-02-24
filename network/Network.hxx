@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [sun feb 21 19:50:48 2010]
+// updated       julien quintard   [tue feb 23 18:57:57 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -28,10 +28,11 @@ namespace elle
     /// whenever a message is received, these types are extracted and the
     /// callback is triggered.
     ///
-    template <const Tag G, class P>
-    Status		Network::Register(Callback&		callback)
+    template <const Tag G>
+    Status		Network::Register(Callback*		callback)
     {
-      Selectionoid<P::Count, P>*		selectionoid;
+      Selectionoid< Message<G>::P::Quantum,
+	            typename Message<G>::P >*	selectionoid;
       std::pair<Network::Iterator, Boolean>	result;
 
       // check if this type has already been registed.
@@ -39,14 +40,12 @@ namespace elle
 	escape("unable to register an already registered type");
 
       // create a new selectionoid.
-      selectionoid = new Selectionoid<P::Count, P>;
-
-      // set the callback.
-      selectionoid->callback = new Callback(callback);
+      selectionoid = new Selectionoid< Message<G>::P::Quantum,
+                                       typename Message<G>::P >(callback);
 
       // insert the callback in the container.
       result = Network::Callbacks.insert(
-		 std::pair<Tag,
+	         std::pair<Tag,
 		           Network::Functionoid*>(G,
 						  selectionoid));
 
@@ -69,7 +68,7 @@ namespace elle
     ///
     /// empty selectionoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<0, P>:
       public Network::Functionoid
     {
@@ -77,24 +76,21 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
+	// unpack the data.
+	if (P::Unpack(data) == StatusError)
+	  escape("unable to unpack the data");
+
 	// trigger the callback.
 	if (this->callback->Trigger(environment) == StatusError)
 	  escape("unable to complete the callback");
@@ -120,7 +116,7 @@ namespace elle
     ///
     /// single-parameter selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<1, P>:
       public Network::Functionoid
     {
@@ -128,29 +124,23 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1	o1;
+	typename P::P1	o1;
 
-	// extract the objects.
-	if (archive.Extract(o1) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
@@ -178,7 +168,7 @@ namespace elle
     ///
     /// two-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<2, P>:
       public Network::Functionoid
     {
@@ -186,30 +176,24 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
+	typename P::P1	o1;
+	typename P::P2	o2;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
@@ -237,7 +221,7 @@ namespace elle
     ///
     /// three-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<3, P>:
       public Network::Functionoid
     {
@@ -245,31 +229,25 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
-	typename P::Parameter3		o3;
+	typename P::P1	o1;
+	typename P::P2	o2;
+	typename P::P3	o3;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2, o3) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2, o3) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
@@ -297,7 +275,7 @@ namespace elle
     ///
     /// four-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<4, P>:
       public Network::Functionoid
     {
@@ -305,32 +283,26 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
-	typename P::Parameter3		o3;
-	typename P::Parameter4		o4;
+	typename P::P1	o1;
+	typename P::P2	o2;
+	typename P::P3	o3;
+	typename P::P4	o4;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2, o3, o4) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2, o3, o4) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
@@ -358,7 +330,7 @@ namespace elle
     ///
     /// five-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<5, P>:
       public Network::Functionoid
     {
@@ -366,33 +338,27 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
-	typename P::Parameter3		o3;
-	typename P::Parameter4		o4;
-	typename P::Parameter5		o5;
+	typename P::P1	o1;
+	typename P::P2	o2;
+	typename P::P3	o3;
+	typename P::P4	o4;
+	typename P::P5	o5;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2, o3, o4, o5) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2, o3, o4, o5) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
@@ -420,7 +386,7 @@ namespace elle
     ///
     /// six-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<6, P>:
       public Network::Functionoid
     {
@@ -428,38 +394,34 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
-	typename P::Parameter3		o3;
-	typename P::Parameter4		o4;
-	typename P::Parameter5		o5;
-	typename P::Parameter6		o6;
+	typename P::P1	o1;
+	typename P::P2	o2;
+	typename P::P3	o3;
+	typename P::P4	o4;
+	typename P::P5	o5;
+	typename P::P6	o6;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2, o3, o4, o5, o6) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2, o3, o4, o5,
+		      o6) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5, o6) == StatusError)
+				    o1, o2, o3, o4, o5,
+				    o6) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -481,9 +443,9 @@ namespace elle
     };
 
     ///
-    /// six-parameters selectoinoid.
+    /// seven-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<7, P>:
       public Network::Functionoid
     {
@@ -491,39 +453,35 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
-	typename P::Parameter3		o3;
-	typename P::Parameter4		o4;
-	typename P::Parameter5		o5;
-	typename P::Parameter6		o6;
-	typename P::Parameter7		o7;
+	typename P::P1	o1;
+	typename P::P2	o2;
+	typename P::P3	o3;
+	typename P::P4	o4;
+	typename P::P5	o5;
+	typename P::P6	o6;
+	typename P::P7	o7;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2, o3, o4, o5, o6, o7) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2, o3, o4, o5,
+		      o6, o7) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5, o6, o7) == StatusError)
+				    o1, o2, o3, o4, o5,
+				    o6, o7) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -545,9 +503,9 @@ namespace elle
     };
 
     ///
-    /// six-parameters selectoinoid.
+    /// eight-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<8, P>:
       public Network::Functionoid
     {
@@ -555,41 +513,36 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
-	typename P::Parameter3		o3;
-	typename P::Parameter4		o4;
-	typename P::Parameter5		o5;
-	typename P::Parameter6		o6;
-	typename P::Parameter7		o7;
-	typename P::Parameter8		o8;
+	typename P::P1	o1;
+	typename P::P2	o2;
+	typename P::P3	o3;
+	typename P::P4	o4;
+	typename P::P5	o5;
+	typename P::P6	o6;
+	typename P::P7	o7;
+	typename P::P8	o8;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2, o3, o4, o5, o6, o7, o8) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2, o3, o4, o5,
+		      o6, o7, o8) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5, o6, o7, o8) ==
-	    StatusError)
+				    o1, o2, o3, o4, o5,
+				    o6, o7, o8) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -611,9 +564,9 @@ namespace elle
     };
 
     ///
-    /// six-parameters selectoinoid.
+    /// nine-parameters selectoinoid.
     ///
-    template <class P>
+    template <typename P>
     class Network::Selectionoid<9, P>:
       public Network::Functionoid
     {
@@ -621,42 +574,37 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid():
-	callback(NULL)
+      Selectionoid(Callback*					callback):
+	callback(callback)
       {
-      }
-
-      ~Selectionoid()
-      {
-	// delete the callback.
-	if (this->callback != NULL)
-	  delete this->callback;
       }
 
       //
       // methods
       //
       Status		Dispatch(Environment&			environment,
-				 Archive&			archive) const
+				 Data&				data) const
       {
-	typename P::Parameter1		o1;
-	typename P::Parameter2		o2;
-	typename P::Parameter3		o3;
-	typename P::Parameter4		o4;
-	typename P::Parameter5		o5;
-	typename P::Parameter6		o6;
-	typename P::Parameter7		o7;
-	typename P::Parameter8		o8;
-	typename P::Parameter9		o9;
+	typename P::P1	o1;
+	typename P::P2	o2;
+	typename P::P3	o3;
+	typename P::P4	o4;
+	typename P::P5	o5;
+	typename P::P6	o6;
+	typename P::P7	o7;
+	typename P::P8	o8;
+	typename P::P9	o9;
 
-	// extract the objects.
-	if (archive.Extract(o1, o2, o3, o4, o5, o6, o7, o8, o9) == StatusError)
-	  escape("unable to extract the objects");
+	// unpack the data.
+	if (P::Unpack(data,
+		      o1, o2, o3, o4, o5,
+		      o6, o7, o8, o9) == StatusError)
+	  escape("unable to unpack the data");
 
 	// trigger the callback.
 	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5, o6, o7, o8, o9) ==
-	    StatusError)
+				    o1, o2, o3, o4, o5,
+				    o6, o7, o8, o9) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();

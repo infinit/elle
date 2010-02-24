@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [mon feb 22 13:30:36 2010]
+// updated       julien quintard   [tue feb 23 18:57:22 2010]
 //
 
 //
@@ -37,30 +37,36 @@ namespace elle
 
     ///
     /// this method takes an archive, extract its identifier and trigger
-    /// the callback associated with this tag by constructing a brand
-    /// new object.
+    /// the callback associated with this tag by re-constructing the
+    /// live objects.
     ///
     Status		Network::Dispatch(Environment&		environment,
 					  Packet&		packet)
     {
       Network::Scoutor	scoutor;
-      Tag		tag;
+      Header		header;
+      Data		data;
 
-      // XXX
-      //Message::Unpack(packet, tag, 
-      /*
-      // extract the tag from the archive.
-      if (archive.Extract(tag) == StatusError)
-	escape("unable to extract the tag from the archive");
+      // first, extract the header which contain the metadata required
+      // to build the parameters, such as the tag.
+      if (packet.Extract(header) == StatusError)
+	escape("unable to extract the header");
 
-      // retrieve the associated callback.
-      if ((scoutor = Network::Callbacks.find(tag)) == Network::Callbacks.end())
+      /// XXX \todo here header.size can be used to chop the packet
+      /// and return what has not been used.
+
+      // extract the data.
+      if (packet.Extract(data) == StatusError)
+	escape("unable to extract the data");
+
+      // retrieve the callback associated to the header's tag.
+      if ((scoutor = Network::Callbacks.find(header.tag)) ==
+	  Network::Callbacks.end())
 	escape("unable to locate the callback");
 
       // trigger the callback.
-      if (scoutor->second->Dispatch(environment, archive) == StatusError)
+      if (scoutor->second->Dispatch(environment, data) == StatusError)
 	escape("unable to dispatch the event");
-      */
 
       leave();
     }

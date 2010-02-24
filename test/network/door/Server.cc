@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [sun feb  7 02:49:51 2010]
+// updated       julien quintard   [tue feb 23 14:29:55 2010]
 //
 
 //
@@ -31,13 +31,12 @@ namespace elle
     ///
     Status		Server::Start(const String&		name)
     {
-      Callback*		connection =
-	new Method<Door*>(this, &Server::Connection);
+      static Method<Door*>	connection(this, &Server::Connection);
 
       std::cout << "[bridge] " << name << std::endl;
 
       // listen for incoming connections.
-      if (Bridge::Listen(name, connection) == StatusError)
+      if (Bridge::Listen(name, &connection) == StatusError)
 	escape("unable to listen for bridge connections");
 
       leave();
@@ -52,14 +51,8 @@ namespace elle
     ///
     Status		Server::Connection(Door*&		door)
     {
-      Echo		echo;
-
-      // create the message.
-      if (echo.Create("bande!") == StatusError)
-	escape("unable to create the message");
-
       // send a message to the caller.
-      if (door->Send(echo) == StatusError)
+      if (door->Send<TagEcho>(String("bande!")) == StatusError)
 	escape("unable to send a message");
 
       // disconnect right away.

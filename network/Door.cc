@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun feb 21 21:00:31 2010]
+// updated       julien quintard   [tue feb 23 13:46:31 2010]
 //
 
 //
@@ -126,34 +126,6 @@ namespace elle
 
       leave();
     }
-
-    ///
-    /// XXX
-    ///
-    /* XXX
-    Status		Door::Send(const Message&		message)
-    {
-      Archive		archive;
-
-      // create the archive that will receive both the tag and data.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // serialize the message.
-      if (archive.Serialize(message) == StatusError)
-	escape("unable to serialize the message");
-
-      // push the packet to the socket.
-      if (this->socket->write((const char*)archive.contents,
-			      archive.size) == StatusError)
-	escape("unable to write the packet");
-
-      // flush to start sending data immediately.
-      this->socket->flush();
-
-      leave();
-    }
-    */
 
 //
 // ---------- slots -----------------------------------------------------------
