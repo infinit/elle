@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [fri aug 14 13:00:48 2009]
+// updated       julien quintard   [sun feb  7 05:04:46 2010]
 //
 
 //
@@ -26,10 +26,6 @@ namespace pig
 
   static struct fuse_operations	operations;
 
-  // XXX
-  KeyPair PIG::User;
-  // XXX
-
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -44,8 +40,8 @@ namespace pig
       escape("unable to initialize the cryptography");
 
     // set the operations.
-    /* XXX
     operations.getattr = PIG::getattr;
+    /*
     operations.setxattr = PIG::setxattr;
     operations.chmod = PIG::chmod;
     operations.chown = PIG::chown;
@@ -69,55 +65,6 @@ namespace pig
     operations.readdir = PIG::readdir;
     operations.rmdir = PIG::rmdir;
     */
-
-    // XXX[hack for the /]
-    {
-      int		fd;
-
-      fd = ::open(".device/.root", O_RDONLY);
-
-      Region	region;
-
-      region.Prepare(4096);
-
-      region.size = ::read(fd, region.contents, region.capacity);
-
-      region.Detach();
-
-      Archive		archive;
-
-      archive.Prepare(region);
-
-      Address		address;
-
-      archive.Extract(address);
-
-      String		root("/");
-
-      if (etoile::path::Path::Initialize(address) == StatusError)
-	escape("unable to initialize the path module");
-    }
-
-    // XXX[hack for the user keypair]
-    {
-      int		fd;
-
-      fd = ::open(".device/.user", O_RDONLY);
-
-      Region	region;
-
-      region.Prepare(4096);
-
-      region.size = ::read(fd, region.contents, region.capacity);
-
-      region.Detach();
-
-      Archive		archive;
-
-      archive.Prepare(region);
-
-      archive.Extract(PIG::User);
-    }
 
     leave();
   }
@@ -153,6 +100,38 @@ namespace pig
       escape("unable to clean the module");
 
     leave();
+  }
+
+//
+// ---------- interface -------------------------------------------------------
+//
+
+  ///
+  /// XXX
+  ///
+  int			PIG::getattr(const char*		path,
+				     struct stat*		stat)
+  {
+    printf("[XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, stat);
+
+    // clear the stat structure.
+    ::memset(stat, 0x0, sizeof(struct stat));
+
+    // issue a Request(Input, Output)
+
+    stat->st_uid = getuid();
+    stat->st_gid = getgid();
+
+    // XXX stat->st_size = object.meta.status.size;
+
+    // XXX[the dates must be properly converted and filled]
+    stat->st_atime = time(NULL);
+    stat->st_mtime = time(NULL);
+    stat->st_ctime = time(NULL);
+
+    return (0);
   }
 
 }

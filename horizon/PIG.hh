@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [fri aug 14 12:59:24 2009]
+// updated       julien quintard   [sun feb  7 04:12:08 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -109,12 +109,6 @@ namespace pig
     static Status	Clean();
     static Status	Main(int,
 			     char**);
-
-    //
-    // static attributes
-    //
-    // XXX[temoprary]
-    static KeyPair	User;
   };
 
 }

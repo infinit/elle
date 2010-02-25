@@ -7,4 +7,4 @@ ADD_EXECUTABLE(pig
   PIG.cc
 )
 
-TARGET_LINK_LIBRARIES(pig pthread rt fuse elle etoile)
+TARGET_LINK_LIBRARIES(pig pthread rt fuse elle ssl crypto)

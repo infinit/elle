@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/pig/system/fuse/Interface.cc
+// file          /home/mycure/infinit/pig/_backup_/system/fuse/Interface.cc
 //
 // created       julien quintard   [fri jul 31 22:47:18 2009]
-// updated       julien quintard   [wed aug 12 14:31:38 2009]
+// updated       julien quintard   [sun feb  7 04:16:40 2010]
 //
 
 //
