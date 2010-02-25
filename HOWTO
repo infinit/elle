@@ -1,0 +1,6 @@
+cd build/
+
+# for use with openssl 0.9.9
+CXXFLAGS="-I$HOME/local-ssldev/include/" LDFLAGS="-L$HOME/local-ssldev/lib/" cmake ../
+
+make
