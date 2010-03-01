@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/OneWay.cc
 //
 // created       julien quintard   [mon oct 29 13:26:52 2007]
-// updated       julien quintard   [sun aug 23 17:28:35 2009]
+// updated       julien quintard   [mon mar  1 10:27:31 2010]
 //
 
 //
@@ -47,12 +47,18 @@ namespace elle
     {
       ::EVP_MD_CTX	context;
 
+      local(context);
+      enter(structure(context, ::EVP_MD_CTX_cleanup));
+
       // allocate the digest's contents.
       if (digest.region.Prepare(EVP_MD_size(OneWay::Algorithm)) == StatusError)
 	escape("unable to allocate memory for the digest");
 
       // initialise the context.
       ::EVP_MD_CTX_init(&context);
+
+      // activate the tracking of the context.
+      track(context);
 
       // initialise the digest.
       if (::EVP_DigestInit_ex(&context, OneWay::Algorithm, NULL) <= 0)
@@ -73,6 +79,9 @@ namespace elle
       // clean the context.
       if (::EVP_MD_CTX_cleanup(&context) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // stop tracking.
+      untrack(context);
 
       leave();
     }

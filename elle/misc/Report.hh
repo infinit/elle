@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [mon nov 30 00:55:12 2009]
+// updated       julien quintard   [mon mar  1 12:38:43 2010]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -43,7 +43,23 @@ namespace elle
 //
 
 ///
+/// this macro-function releases the guarded objects cf Maid.
+///
+//#define release()
+
+// XXX[this version is the real one]
+#define release()							\
+  if (_maid_ != NULL)							\
+    {									\
+      delete _maid_;							\
+    }
+
+///
 /// this macro-function register a report entry.
+///
+/// note that this macro function should never be called directly. instead
+/// the macro functions below should be used: leave, escape, true, alert
+/// etc.
 ///
 #define report(_type_, _text_)						\
   do									\
@@ -63,19 +79,28 @@ namespace elle
 /// this macro-function is used for successfully returning from
 /// a normal method or function.
 ///
+/// XXX \todo remove the release here as everything went fine!!!
 #define leave()								\
+  release();								\
+									\
   return (elle::misc::StatusOk)
 
 ///
 /// this macro-function just returns StatusTrue.
 ///
+/// XXX \todo remove the release here as everything went fine!!!
 #define true()								\
+  release();								\
+									\
   return (elle::misc::StatusTrue)
 
 ///
 /// this macro-function just returns StatusFalse.
 ///
+/// XXX \todo remove the release here as everything went fine!!!
 #define false()								\
+  release();								\
+									\
   return (elle::misc::StatusFalse)
 
 ///
@@ -91,6 +116,8 @@ namespace elle
 #define escape(_text_)							\
   do									\
     {									\
+      release();							\
+									\
       report(elle::misc::Report::TypeError, _text_);			\
 									\
       return (elle::misc::StatusError);					\
@@ -103,6 +130,8 @@ namespace elle
 #define flee(_text_)							\
   do									\
     {									\
+      release();							\
+									\
       report(elle::misc::Report::TypeError, _text_);			\
 									\
       return (elle::misc::StatusFalse);					\
@@ -117,6 +146,8 @@ namespace elle
 #define yield(_text_, _return_)						\
   do									\
     {									\
+      release();							\
+      									\
       report(elle::misc::Report::TypeError, _text_);			\
 									\
       return (_return_);						\
@@ -125,12 +156,11 @@ namespace elle
 ///
 /// this macro-function reports an error and returns.
 ///
-/// note that the return object is specifed, hence this function
-/// perfectly fits when an error occurs in constructors etc.
-///
 #define alert(_text_)							\
   do									\
     {									\
+      release();							\
+									\
       report(elle::misc::Report::TypeError, _text_);			\
 									\
       return;								\

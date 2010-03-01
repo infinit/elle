@@ -8,17 +8,8 @@
 // file          /home/mycure/infinit/elle/misc/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [fri feb  5 13:20:09 2010]
+// updated       julien quintard   [sun feb 28 13:36:15 2010]
 //
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-///
-/// this include has been put here to avoid pre-processing issues.
-///
-#include <elle/misc/Callback.hh>
 
 #ifndef ELLE_MISC_METHOD_HH
 #define ELLE_MISC_METHOD_HH
@@ -27,9 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Natural.hh>
 
+#include <elle/misc/Status.hh>
+#include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 #include <elle/misc/Callable.hh>
+#include <elle/misc/Callback.hh>
 
 namespace elle
 {

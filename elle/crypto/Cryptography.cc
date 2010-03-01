@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Cryptography.cc
 //
 // created       julien quintard   [tue oct 30 12:16:42 2007]
-// updated       julien quintard   [sun aug 23 21:40:26 2009]
+// updated       julien quintard   [mon mar  1 13:39:05 2010]
 //
 
 //
@@ -41,13 +41,21 @@ namespace elle
       uint8_t		temporary[256];
       int		fd;
 
+      enter();
+
       // get some random data.
       if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
 	escape(::strerror(errno));
 
+      // read random data.
       if (::read(fd, temporary, sizeof(temporary)) == -1)
-	escape(::strerror(errno));
+	{
+	  ::close(fd);
 
+	  escape(::strerror(errno));
+	}
+
+      // close the file descriptor.
       ::close(fd);
 
       // seed the random generator.
@@ -71,6 +79,8 @@ namespace elle
     ///
     Status		Cryptography::Clean()
     {
+      enter();
+
       // clean the key pair generation context.
       if (KeyPair::Clean() == StatusError)
 	escape("unable to initialize the key pair generation context");

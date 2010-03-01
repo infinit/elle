@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [tue feb 23 12:32:14 2010]
+// updated       julien quintard   [sun feb 28 11:03:29 2010]
 //
 
 //
@@ -107,7 +107,7 @@ namespace elle
     ///
     void		Slot::Read()
     {
-      Environment	environment(*this);
+      Address		address;
       Packet		packet;
       Tag		tag;
 
@@ -124,15 +124,15 @@ namespace elle
 	  if (region.Prepare(size) == StatusError)
 	    alert("unable to prepare the region");
 
-	  // set the location as being an IP address.
-	  if (environment.address.host.Create(Host::TypeIP) == StatusError)
+	  // set the address as being an IP address.
+	  if (address.host.Create(Host::TypeIP) == StatusError)
 	    alert("unable to create an IP address");
 
 	  // read the datagram from the socket.
 	  if (this->socket->readDatagram((char*)region.contents,
 					 size,
-					 &environment.address.host.location,
-					 &environment.address.port) != size)
+					 &address.host.location,
+					 &address.port) != size)
 	    alert(this->socket->errorString().toStdString().c_str());
 
 	  // set the region's size.
@@ -147,8 +147,12 @@ namespace elle
 	    alert("unable to prepare the packet");
 	}
 
+      // initialize the context.
+      if (Context::Initialize(this, address) == StatusError)
+	alert("unable to initialize the context");
+
       // dispatch the event.
-      if (Network::Dispatch(environment, packet) == StatusError)
+      if (Network::Dispatch(packet) == StatusError)
 	alert("unable to dispatch the event");
     }
 

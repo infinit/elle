@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri feb  5 02:02:10 2010]
+// updated       julien quintard   [mon mar  1 12:57:58 2010]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HXX
@@ -51,6 +51,8 @@ namespace elle
       Archive		archive;
       Clear		clear;
 
+      enter();
+
       // decrypt the code.
       if (this->Decrypt(code, clear) == StatusError)
 	escape("unable to decrypt the code");
@@ -84,6 +86,8 @@ namespace elle
       Archive		archive;
       Clear		clear;
 
+      enter();
+
       if (this->Decrypt(code, clear) == StatusError)
 	escape("unable to decrypt the code");
 
@@ -115,6 +119,8 @@ namespace elle
       Archive		archive;
       Digest		digest;
 
+      enter();
+
       // create th archive.
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -140,6 +146,8 @@ namespace elle
       Archive		archive;
       Digest		digest;
 
+      enter();
+
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
 
@@ -163,6 +171,8 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -189,6 +199,8 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -217,6 +229,8 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -247,6 +261,8 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -279,6 +295,8 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -313,6 +331,8 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -349,6 +369,8 @@ namespace elle
     {
       Archive		archive;
       Digest		digest;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");

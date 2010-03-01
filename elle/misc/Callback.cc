@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Callback.cc
 //
 // created       julien quintard   [thu feb  4 22:05:00 2010]
-// updated       julien quintard   [thu feb  4 23:22:09 2010]
+// updated       julien quintard   [sun feb 28 15:10:19 2010]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.hh
 //
 // created       julien quintard   [wed feb 18 15:20:44 2009]
-// updated       julien quintard   [thu jul 30 13:27:24 2009]
+// updated       julien quintard   [mon mar  1 12:24:41 2010]
 //
 
 #ifndef ELLE_CORE_NULL_HH
@@ -29,6 +29,9 @@ namespace elle
 // ---------- enumerations ----------------------------------------------------
 //
 
+    ///
+    /// XXX
+    ///
     enum Null
       {
 	Nil

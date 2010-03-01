@@ -8,17 +8,11 @@
 // file          /home/mycure/infinit/elle/misc/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [mon feb 22 21:21:19 2010]
+// updated       julien quintard   [sun feb 28 13:34:27 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HXX
 #define ELLE_MISC_FNUCTION_HXX
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/misc/Callback.hh>
 
 namespace elle
 {
@@ -65,6 +59,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Function]" << std::endl;
 

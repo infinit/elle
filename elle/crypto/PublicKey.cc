@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [thu jan 28 12:59:30 2010]
+// updated       julien quintard   [mon mar  1 13:04:17 2010]
 //
 
 //
@@ -50,7 +50,7 @@ namespace elle
     {
       // re-create the public key by duplicate the internal numbers.
       if (this->Create(K.key) == StatusError)
-	alert("unable to duplicate the public key");
+	fail("unable to duplicate the public key");
     }
 
     ///
@@ -78,6 +78,8 @@ namespace elle
     ///
     Status		PublicKey::Create(const ::EVP_PKEY*	key)
     {
+      enter();
+
       // call the creation method.
       if (this->Create(::BN_dup(key->pkey.rsa->n),
 		       ::BN_dup(key->pkey.rsa->e)) == StatusError)
@@ -94,6 +96,8 @@ namespace elle
 					  Large*		e)
     {
       ::RSA*		rsa;
+
+      enter(routine(rsa, ::RSA_free));
 
       //
       // key
@@ -113,6 +117,10 @@ namespace elle
       // set the rsa structure into the public key.
       if (::EVP_PKEY_assign_RSA(this->key, rsa) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // stop keeping track of this variable as it has been
+      // merged with another one.
+      waive(rsa);
 
       //
       // contexts
@@ -163,6 +171,8 @@ namespace elle
 
       Code		key;
       Cipher		data;
+
+      enter();
 
       // (i)
       {
@@ -256,6 +266,8 @@ namespace elle
     {
       Digest		digest;
 
+      enter();
+
       // compute the plain's digest.
       if (OneWay::Hash(plain, digest) == StatusError)
 	flee("unable to hash the plain");
@@ -280,6 +292,8 @@ namespace elle
     ///
     Boolean		PublicKey::operator==(const PublicKey&	element) const
     {
+      enter();
+
       // compare the internal numbers.
       if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
 	  (::BN_cmp(this->key->pkey.rsa->e, element.key->pkey.rsa->e) != 0))
@@ -300,6 +314,8 @@ namespace elle
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[PublicKey]" << std::endl;
       std::cout << alignment << shift << "[n] "
 		<< *this->key->pkey.rsa->n << std::endl;
@@ -318,6 +334,8 @@ namespace elle
     ///
     Status		PublicKey::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the internal numbers.
       if (archive.Serialize(*this->key->pkey.rsa->n,
 			    *this->key->pkey.rsa->e) == StatusError)
@@ -334,14 +352,28 @@ namespace elle
       Large		n;
       Large		e;
 
+      local(n);
+      local(e);
+      enter(structure(n, ::BN_free),
+	    structure(e, ::BN_free));
+
       // extract the numbers.
       if (archive.Extract(n, e) == StatusError)
 	escape("unable to extract the internal numbers");
+
+      // track the local variables.
+      track(n);
+      track(e);
 
       // create the EVP_PKEY object from the extract numbers.
       if (this->Create(::BN_dup(&n),
 		       ::BN_dup(&e)) == StatusError)
 	escape("unable to create the public key from the archive");
+
+      // stop tracking since those variables are going to be naturally
+      // released soon.
+      untrack(n);
+      untrack(e);
 
       // release the internal used memory.
       ::BN_free(&n);

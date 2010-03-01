@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Message.hh
 //
 // created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [tue feb 23 21:35:39 2010]
+// updated       julien quintard   [thu feb 25 14:01:54 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH

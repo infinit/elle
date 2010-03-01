@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [mon feb 22 21:21:30 2010]
+// updated       julien quintard   [sun feb 28 13:36:47 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HXX
@@ -62,6 +62,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Method]" << std::endl;
 

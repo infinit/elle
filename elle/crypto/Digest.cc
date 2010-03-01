@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu jan 28 12:59:09 2010]
+// updated       julien quintard   [sun feb 28 18:37:10 2010]
 //
 
 //
@@ -50,6 +50,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
 
+      enter();
+
       std::cout << alignment << "[Digest]" << std::endl;
 
       if (this->region.Dump(margin + 2) == StatusError)
@@ -67,6 +69,8 @@ namespace elle
     ///
     Status		Digest::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the region.
       if (archive.Serialize(this->region) == StatusError)
 	escape("unable to serialize the region");
@@ -79,6 +83,8 @@ namespace elle
     ///
     Status		Digest::Extract(Archive&		archive)
     {
+      enter();
+
       // extract the content.
       if (archive.Extract(this->region) == StatusError)
 	escape("unable to extract the region");
