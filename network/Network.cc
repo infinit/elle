@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [tue feb 23 18:57:22 2010]
+// updated       julien quintard   [thu feb 25 14:01:03 2010]
 //
 
 //
@@ -40,8 +40,7 @@ namespace elle
     /// the callback associated with this tag by re-constructing the
     /// live objects.
     ///
-    Status		Network::Dispatch(Environment&		environment,
-					  Packet&		packet)
+    Status		Network::Dispatch(Packet&		packet)
     {
       Network::Scoutor	scoutor;
       Header		header;
@@ -65,7 +64,7 @@ namespace elle
 	escape("unable to locate the callback");
 
       // trigger the callback.
-      if (scoutor->second->Dispatch(environment, data) == StatusError)
+      if (scoutor->second->Dispatch(data) == StatusError)
 	escape("unable to dispatch the event");
 
       leave();

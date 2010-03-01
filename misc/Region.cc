@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [wed feb  3 12:58:03 2010]
+// updated       julien quintard   [sun feb 28 17:42:31 2010]
 //
 
 //
@@ -73,7 +73,7 @@ namespace elle
 	    this->options = Region::OptionNone;
 
 	    if (this->Duplicate(region.contents, region.size) == StatusError)
-	      alert("unable to assign the element's data");
+	      fail("unable to assign the element's data");
 	  }
 	}
     }
@@ -101,6 +101,8 @@ namespace elle
     Status		Region::Wrap(Byte*			contents,
 				     Natural32			size)
     {
+      enter();
+
       // set the type.
       this->type = Region::TypeChunk;
 
@@ -117,6 +119,8 @@ namespace elle
     Status		Region::Acquire(Byte*			contents,
 					Natural32		size)
     {
+      enter();
+
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
 	escape("region already in use");
@@ -138,6 +142,8 @@ namespace elle
     ///
     Status		Region::Prepare(const Natural32		capacity)
     {
+      enter();
+
       // check the type.
       if (this->type == Region::TypeChunk)
 	escape("unable to prepare an already in use chunk region");
@@ -164,6 +170,8 @@ namespace elle
     Status		Region::Duplicate(Byte*			contents,
 					  Natural32		size)
     {
+      enter();
+
       // check the type.
       if (this->type == Region::TypeChunk)
 	escape("unable to prepare an already in use chunk region");
@@ -199,6 +207,8 @@ namespace elle
     ///
     Status		Region::Adjust(const Natural32		size)
     {
+      enter();
+
       // check the type.
       if (this->type == Region::TypeChunk)
 	escape("unable to prepare an already in use chunk region");
@@ -232,6 +242,8 @@ namespace elle
     Status		Region::Append(const Byte*		contents,
 				       const Natural32		size)
     {
+      enter();
+
       // check the type.
       if (this->type == Region::TypeChunk)
 	escape("unable to prepare an already in use chunk region");
@@ -255,6 +267,8 @@ namespace elle
 				     Byte*			contents,
 				     const Natural32		size) const
     {
+      enter();
+
       // check that the copy stays in the bounds.
       if ((offset + size) > this->size)
 	escape("this operation is out of bounds");
@@ -273,6 +287,8 @@ namespace elle
 				      const Byte*		contents,
 				      const Natural32		size)
     {
+      enter();
+
       // check that the copy stays in the bounds.
       if ((offset + size) > this->capacity)
 	escape("this operation is out of bounds");
@@ -293,6 +309,8 @@ namespace elle
     ///
     Status		Region::Detach()
     {
+      enter();
+
       // check the type.
       if (this->type != Region::TypeBuffer)
 	escape("unable to detach non-buffer regions");
@@ -312,6 +330,8 @@ namespace elle
     ///
     Boolean		Region::operator==(const Region&	element) const
     {
+      enter();
+
       // check the size.
       if (this->size != element.size)
 	false();
@@ -334,6 +354,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
       Natural32		i;
+
+      enter();
 
       std::cout << alignment
 		<< "[Region] "

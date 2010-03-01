@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [thu feb  4 01:44:47 2010]
+// updated       julien quintard   [sun feb 28 13:00:37 2010]
 //
 
 //
@@ -105,6 +105,8 @@ namespace elle
     {
       Natural32		i;
 
+      enter();
+
       // initialise the attributes.
       this->mode = ModeSerialization;
       this->endianness = System::MachineEndianness;
@@ -144,6 +146,8 @@ namespace elle
     {
       Byte		endianness;
       Natural32		i;
+
+      enter();
 
       // initialise the attributes.
       this->mode = Archive::ModeExtraction;
@@ -187,6 +191,8 @@ namespace elle
     ///
     Status		Archive::Store(const Null&)
     {
+      enter();
+
       leave();
     }
 
@@ -196,6 +202,8 @@ namespace elle
     Status		Archive::Store(const Large&		element)
     {
       Natural32		size = BN_num_bytes(&element);
+
+      enter();
 
       // store the length.
       if (this->Store(size) == StatusError)
@@ -226,6 +234,8 @@ namespace elle
     {
       Natural32		length = element.length();
 
+      enter();
+
       // start by storing the string length.
       if (this->Store(length) == StatusError)
 	escape("unable to store the length");
@@ -252,6 +262,8 @@ namespace elle
     ///
     Status		Archive::Store(const Region&		element)
     {
+      enter();
+
       // store the size.
       if (this->Store(element.size) == StatusError)
 	escape("unable to store the size");
@@ -279,6 +291,8 @@ namespace elle
     ///
     Status		Archive::Store(const Archive&		element)
     {
+      enter();
+
       // start by storing the string length.
       if (this->Store(element.size) == StatusError)
 	escape("unable to store the size");
@@ -311,6 +325,8 @@ namespace elle
     ///
     Status		Archive::Load(Null&)
     {
+      enter();
+
       leave();
     }
 
@@ -320,6 +336,8 @@ namespace elle
     Status		Archive::Load(Large&			element)
     {
       Natural32		size;
+
+      enter();
 
       // load the data size.
       if (this->Load(size) == StatusError)
@@ -348,6 +366,8 @@ namespace elle
     {
       Natural32		length;
 
+      enter();
+
       // load the string length.
       if (this->Load(length) == StatusError)
 	escape("unable to load the string length");
@@ -371,6 +391,8 @@ namespace elle
     Status		Archive::Load(Region&			element)
     {
       Natural32		size;
+
+      enter();
 
       // load the size.
       if (this->Load(size) == StatusError)
@@ -398,6 +420,8 @@ namespace elle
     {
       Region		buffer;
       Natural32		size;
+
+      enter();
 
       // load the string length.
       if (this->Load(size) == StatusError)
@@ -436,6 +460,8 @@ namespace elle
     ///
     Status		Archive::Reserve(const Natural32	size)
     {
+      enter();
+
       // check the mode as this method makes sense only in the
       // serialization process.
       if (this->mode != Archive::ModeSerialization)
@@ -465,6 +491,8 @@ namespace elle
     ///
     Status		Archive::Align(const Natural32		size)
     {
+      enter();
+
       if (this->Reserve(size) == StatusError)
 	escape("unable to reserve memory for alignment");
 
@@ -507,6 +535,8 @@ namespace elle
       Natural32		offset = this->offset;
       Byte		byte;
 
+      enter();
+
       // load the next byte which should be a type.
       if (this->Load(byte) == StatusError)
 	escape("unable to load the next type");
@@ -530,6 +560,8 @@ namespace elle
     Status		Archive::Rewind()
     {
       Region		chunk;
+
+      enter();
 
       // wrap the archive's content so that the data is not lost.
       if (chunk.Wrap(this->contents, this->size) == StatusError)
@@ -559,6 +591,8 @@ namespace elle
     ///
     Boolean		Archive::operator==(const Archive&	element) const
     {
+      enter();
+
       // call the super-method.
       if (Region::operator==(element) == false)
 	false();
@@ -578,6 +612,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
       Archive		archive;
+
+      enter();
 
       // first copy the archive because we cannot modify it.
       archive = *this;
@@ -819,6 +855,8 @@ namespace elle
     Status		Archive::Seal()
     {
       Region		chunk;
+
+      enter();
 
       // wrap the archive's content so that the data is not lost.
       if (chunk.Wrap(this->contents, this->size) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [thu jan 28 12:58:27 2010]
+// updated       julien quintard   [mon mar  1 13:03:36 2010]
 //
 
 //
@@ -50,7 +50,7 @@ namespace elle
     {
       // create the private key by duplicating the internal numbers.
       if (this->Create(k.key) == StatusError)
-	alert("unable to duplicate the private key");
+	fail("unable to duplicate the private key");
     }
 
     ///
@@ -78,6 +78,8 @@ namespace elle
     ///
     Status		PrivateKey::Create(const ::EVP_PKEY*	key)
     {
+      enter();
+
       if (this->Create(::BN_dup(key->pkey.rsa->n),
 		       ::BN_dup(key->pkey.rsa->e),
 		       ::BN_dup(key->pkey.rsa->d),
@@ -106,6 +108,8 @@ namespace elle
     {
       ::RSA*		rsa;
 
+      enter(routine(rsa, ::RSA_free));
+
       //
       // key
       //
@@ -130,6 +134,9 @@ namespace elle
       // set the rsa structure into the private key.
       if (::EVP_PKEY_assign_RSA(this->key, rsa) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // waive the tracking since the variable has been used.
+      waive(rsa);
 
       //
       // contexts
@@ -178,6 +185,8 @@ namespace elle
       Archive		archive;
       Code		key;
       Cipher		data;
+
+      enter();
 
       // (i)
       {
@@ -259,6 +268,8 @@ namespace elle
       Digest		digest;
       size_t		size;
 
+      enter();
+
       // compute the plain's digest.
       if (OneWay::Hash(plain, digest) == StatusError)
 	escape("unable to hash the plain");
@@ -298,6 +309,8 @@ namespace elle
     ///
     Boolean		PrivateKey::operator==(const PrivateKey& element) const
     {
+      enter();
+
       // compare the internal numbers.
       if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
 	  (::BN_cmp(this->key->pkey.rsa->d, element.key->pkey.rsa->d) != 0) ||
@@ -319,6 +332,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[PrivateKey]" << std::endl;
       std::cout << alignment << shift << "[n] "
@@ -342,6 +357,8 @@ namespace elle
     ///
     Status		PrivateKey::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the internal numbers.
       if (archive.Serialize(*this->key->pkey.rsa->n,
 			    *this->key->pkey.rsa->e,
@@ -370,9 +387,36 @@ namespace elle
       Large		dmq1;
       Large		iqmp;
 
+      local(n);
+      local(e);
+      local(d);
+      local(p);
+      local(q);
+      local(dmp1);
+      local(dmq1);
+      local(iqmp);
+      enter(structure(n, ::BN_free),
+	    structure(e, ::BN_free)
+	    structure(d, ::BN_free)
+	    structure(p, ::BN_free)
+	    structure(q, ::BN_free)
+	    structure(dmp1, ::BN_free)
+	    structure(dmq1, ::BN_free)
+	    structure(iqmp, ::BN_free));
+
       // extract the numbers.
       if (archive.Extract(n, e, d, p, q, dmp1, dmq1, iqmp) == StatusError)
 	escape("unable to extract the internal numbers");
+
+      // track the local variables' deallocation.
+      track(n);
+      track(e);
+      track(d);
+      track(p);
+      track(q);
+      track(dmp1);
+      track(dmq1);
+      track(iqmp);
 
       // create the EVP_PKEY object from the extract numbers.
       if (this->Create(::BN_dup(&n),
@@ -384,6 +428,18 @@ namespace elle
 		       ::BN_dup(&dmq1),
 		       ::BN_dup(&iqmp)) == StatusError)
 	escape("unable to create the private key from the archive");
+
+      // stop tracking, though we could also let the maid cleaan those
+      // local variables but we prefer keep the original source code
+      // for readibility purposes.
+      untrack(n);
+      untrack(e);
+      untrack(d);
+      untrack(p);
+      untrack(q);
+      untrack(dmp1);
+      untrack(dmq1);
+      untrack(iqmp);
 
       // release the internal used memory.
       ::BN_free(&n);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [wed feb 24 09:08:18 2010]
+// updated       julien quintard   [thu feb 25 14:01:44 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -24,7 +24,6 @@
 #include <elle/network/Host.hh>
 #include <elle/network/Socket.hh>
 #include <elle/network/Tag.hh>
-#include <elle/network/Environment.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Parameters.hh>
 #include <elle/network/Data.hh>
@@ -83,8 +82,7 @@ namespace elle
 	//
 	// methods
 	//
-	virtual Status	Dispatch(Environment&,
-				 Archive&) const = 0;
+	virtual Status	Dispatch(Data&) const = 0;
       };
 
       ///
@@ -110,8 +108,7 @@ namespace elle
       template <const Tag G>
       static Status	Register(Callback*);
 
-      static Status	Dispatch(Environment&,
-				 Packet&);
+      static Status	Dispatch(Packet&);
 
       static Status	Dump(const Natural32 = 0);
 
@@ -136,6 +133,7 @@ namespace elle
 
 #include <elle/network/Address.hh>
 #include <elle/network/Port.hh>
+#include <elle/network/Context.hh>
 #include <elle/network/Message.hh>
 #include <elle/network/Slot.hh>
 #include <elle/network/Bridge.hh>

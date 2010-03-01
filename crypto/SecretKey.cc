@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [thu jan 28 12:58:50 2010]
+// updated       julien quintard   [mon mar  1 13:10:51 2010]
 //
 
 //
@@ -61,6 +61,8 @@ namespace elle
     ///
     Status		SecretKey::Create(const String&		password)
     {
+      enter();
+
       // assign the password to the internal key object.
       if (this->key.Duplicate((Byte*)password.c_str(),
 			      password.length()) == StatusError)
@@ -85,6 +87,8 @@ namespace elle
     Status		SecretKey::Generate(const Natural32	length)
     {
       Natural32		size;
+
+      enter();
 
       // convert the length in a byte-specific size.
       size = length / 8;
@@ -115,6 +119,9 @@ namespace elle
       int		size;
       ::EVP_CIPHER_CTX	context;
 
+      local(context);
+      enter(structure(context, ::EVP_CIPHER_CTX_cleanup));
+
       // generate a salt.
       ::RAND_pseudo_bytes((unsigned char*)salt, sizeof(salt));
 
@@ -131,6 +138,9 @@ namespace elle
 
       // initialise the context.
       ::EVP_CIPHER_CTX_init(&context);
+
+      // track the context.
+      track(context);
 
       // initialise the ciphering process.
       if (::EVP_EncryptInit_ex(&context,
@@ -181,6 +191,9 @@ namespace elle
       // update the cipher size.
       cipher.region.size += size;
 
+      // stop tracking the context as it will be released naturally.
+      untrack(context);
+
       // clean the context structure.
       ::EVP_CIPHER_CTX_cleanup(&context);
 
@@ -199,6 +212,9 @@ namespace elle
       Natural32		capacity;
       int		size;
       ::EVP_CIPHER_CTX	context;
+
+      local(context);
+      enter(structure(context, ::EVP_CIPHER_CTX_cleanup));
 
       // check whether the cipher was produced with a salt.
       if (::memcmp(SecretKey::Magic,
@@ -224,6 +240,10 @@ namespace elle
 
       // initialise the context.
       ::EVP_CIPHER_CTX_init(&context);
+
+      // track the context since it has been initialised and therefore
+      // should be released properly should an error occur.
+      track(context);
 
       // initialise the ciphering process.
       if (::EVP_DecryptInit_ex(&context,
@@ -266,6 +286,9 @@ namespace elle
       // update the clear size.
       clear.size += size;
 
+      // stop tracking the context.
+      untrack(context);
+
       // clean the context structure.
       ::EVP_CIPHER_CTX_cleanup(&context);
 
@@ -296,6 +319,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
 
+      enter();
+
       std::cout << alignment << "[SecretKey]" << std::endl;
 
       if (this->key.Dump(margin + 2) == StatusError)
@@ -313,6 +338,8 @@ namespace elle
     ///
     Status		SecretKey::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the internal key.
       if (archive.Serialize(this->key) == StatusError)
 	escape("unable to serialize the internal key");
@@ -325,6 +352,8 @@ namespace elle
     ///
     Status		SecretKey::Extract(Archive&		archive)
     {
+      enter();
+
       // extract the key.
       if (archive.Extract(this->key) == StatusError)
 	escape("unable to extract the internal key");

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [tue feb 23 13:46:31 2010]
+// updated       julien quintard   [sun feb 28 11:03:54 2010]
 //
 
 //
@@ -149,6 +149,7 @@ namespace elle
     ///
     void		Door::Read()
     {
+      /* XXX
       Environment	environment(*this);
       Archive		archive;
       Region		region;
@@ -179,6 +180,7 @@ namespace elle
       // dispatch the event.
       if (Network::Dispatch(environment, archive) == StatusError)
 	alert("unable to dispatch the event");
+      */
     }
 
   }

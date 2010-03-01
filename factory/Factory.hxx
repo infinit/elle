@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [fri feb  5 13:46:13 2010]
+// updated       julien quintard   [sun feb 28 18:20:24 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HXX
@@ -38,6 +38,8 @@ namespace elle
     template <typename T>
     Status		Factory::Generator<T>::Allocate(Entity*& entity) const
     {
+      enter();
+
       // allocate the object.
       entity = new T;
 
@@ -56,6 +58,8 @@ namespace elle
     {
       Factory::Generator<T>*			generator;
       std::pair<Factory::Iterator, Boolean>	result;
+
+      enter(keyword(generator));
 
       // check if there is already such an identifier registerd.
       if (Factory::Map.find(identifier) == Factory::Map.end())
@@ -86,6 +90,8 @@ namespace elle
 				       U*&			object)
     {
       Factory::Scoutor	scoutor;
+
+      enter();
 
       // retrieve the associated generator.
       scoutor = Factory::Map.find(identifier);

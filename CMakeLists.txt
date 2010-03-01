@@ -26,26 +26,25 @@ ADD_LIBRARY(elle
 
   factory/Factory.cc
 
-  io/IO.cc
-
-  misc/Region.cc
   misc/Report.cc
+  misc/Maid.cc
+  misc/Region.cc
   misc/Callback.cc
 
   system/System.cc
 
-  network/Network.cc
-  network/Host.cc
-  network/Address.cc
-  network/Environment.cc
-  network/Socket.cc
-  network/Slot.cc
-  network/Bridge.cc
-  network/Door.cc
-  network/Header.cc
+#  network/Network.cc
+#  network/Host.cc
+#  network/Address.cc
+#  network/Context.cc
+#  network/Socket.cc
+#  network/Slot.cc
+#  network/Bridge.cc
+#  network/Door.cc
+#  network/Header.cc
 
-  ${elle_MOCS}
+#  ${elle_MOCS}
 )
 
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+#ADD_SUBDIRECTORY(test)
+#ADD_SUBDIRECTORY(benchmark)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [fri feb  5 13:38:13 2010]
+// updated       julien quintard   [sun feb 28 15:19:17 2010]
 //
 
 //
@@ -45,6 +45,8 @@ namespace elle
       String		alignment(margin, ' ');
       String		shift(2, ' ');
       Factory::Scoutor	scoutor;
+
+      enter();
 
       std::cout << alignment << "[Factory]" << std::endl;
 

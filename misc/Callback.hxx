@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Callback.hxx
 //
 // created       julien quintard   [thu feb  4 22:08:43 2010]
-// updated       julien quintard   [fri feb  5 01:15:04 2010]
+// updated       julien quintard   [sun feb 28 12:49:23 2010]
 //
 
 #include <elle/misc/Function.hh>
@@ -37,6 +37,8 @@ namespace elle
     template <typename... T>
     Status		Callback::Trigger(T&...			parameters)
     {
+      enter();
+
       switch (this->type)
 	{
 	case Callback::TypeFunction:

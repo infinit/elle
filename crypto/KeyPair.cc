@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [thu jan 28 12:55:06 2010]
+// updated       julien quintard   [mon mar  1 13:39:26 2010]
 //
 
 //
@@ -50,6 +50,8 @@ namespace elle
     ///
     Status		KeyPair::Initialize()
     {
+      enter();
+
       // create the context for the RSA algorithm.
       if ((KeyPair::Contexts::Generate = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA,
 							       NULL)) == NULL)
@@ -67,6 +69,8 @@ namespace elle
     ///
     Status		KeyPair::Clean()
     {
+      enter();
+
       // release the generation context.
       ::EVP_PKEY_CTX_free(KeyPair::Contexts::Generate);
 
@@ -78,6 +82,8 @@ namespace elle
     ///
     Status		KeyPair::Generate()
     {
+      enter();
+
       if (this->Generate(KeyPair::Default::Length) == StatusError)
 	escape("unable to generate the key pair");
 
@@ -91,7 +97,9 @@ namespace elle
     ///
     Status		KeyPair::Generate(const Natural32	length)
     {
-      ::EVP_PKEY*	key = NULL;
+      ::EVP_PKEY*	key;
+
+      enter(routine(key, ::EVP_PKEY_free));
 
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
@@ -125,6 +133,8 @@ namespace elle
     ///
     Boolean		KeyPair::operator==(const KeyPair&	element) const
     {
+      enter();
+
       // compare the internal keys.
       if ((this->K != element.K) || (this->k != element.k))
 	false();
@@ -142,6 +152,8 @@ namespace elle
     Status		KeyPair::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
+
+      enter();
 
       std::cout << alignment << "[KeyPair]" << std::endl;
 
@@ -163,6 +175,8 @@ namespace elle
     ///
     Status		KeyPair::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the internal keys.
       if (archive.Serialize(this->K, this->k) == StatusError)
 	escape("unable to serialize the internal keys");
@@ -175,6 +189,8 @@ namespace elle
     ///
     Status		KeyPair::Extract(Archive&		archive)
     {
+      enter();
+
       // extract the internal keys.
       if (archive.Extract(this->K, this->k) == StatusError)
 	escape("unable to extract the internal keys");

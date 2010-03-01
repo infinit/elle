@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [wed feb 24 11:14:14 2010]
+// updated       julien quintard   [sun feb 28 10:54:43 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -24,7 +24,6 @@
 #include <elle/network/Port.hh>
 #include <elle/network/Address.hh>
 #include <elle/network/Message.hh>
-#include <elle/network/Environment.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Data.hh>
 #include <elle/network/Packet.hh>
@@ -65,6 +64,7 @@ namespace elle
       Status		Create();
       Status		Create(const Port);
 
+      // XXX typename D pour creer une Session
       template <typename I>
       Status		Send(const Address&,
 			     const I&);

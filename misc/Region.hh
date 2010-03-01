@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [thu jan 28 13:00:18 2010]
+// updated       julien quintard   [sun feb 28 15:15:47 2010]
 //
 
 #ifndef ELLE_MISC_REGION_HH
@@ -25,6 +25,7 @@
 #include <elle/misc/Byte.hh>
 #include <elle/misc/Status.hh>
 #include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 #include <ios>
 

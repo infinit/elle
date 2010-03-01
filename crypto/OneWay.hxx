@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/OneWay.hxx
 //
 // created       julien quintard   [sun aug 23 17:11:22 2009]
-// updated       julien quintard   [fri feb  5 01:57:34 2010]
+// updated       julien quintard   [mon mar  1 12:36:59 2010]
 //
 
 #ifndef ELLE_CRYPTO_ONEWAY_HXX
@@ -41,6 +41,8 @@ namespace elle
     {
       Archive		archive;
 
+      enter();
+
       // create an archive.
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -64,6 +66,8 @@ namespace elle
     {
       Archive		archive;
 
+      enter();
+
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
 
@@ -85,6 +89,8 @@ namespace elle
 				     Digest&			digest)
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -109,6 +115,8 @@ namespace elle
 				     Digest&			digest)
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -135,6 +143,8 @@ namespace elle
 				     Digest&			digest)
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -163,6 +173,8 @@ namespace elle
 				     Digest&			digest)
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -193,6 +205,8 @@ namespace elle
 				     Digest&			digest)
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -225,6 +239,8 @@ namespace elle
 				     Digest&			digest)
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -259,6 +275,8 @@ namespace elle
 				     Digest&			digest)
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");

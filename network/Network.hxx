@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [tue feb 23 18:57:57 2010]
+// updated       julien quintard   [thu feb 25 14:00:53 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -84,15 +84,14 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	// unpack the data.
 	if (P::Unpack(data) == StatusError)
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment) == StatusError)
+	if (this->callback->Trigger() == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -132,8 +131,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 
@@ -143,8 +141,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1) == StatusError)
+	if (this->callback->Trigger(o1) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -184,8 +181,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -196,8 +192,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2) == StatusError)
+	if (this->callback->Trigger(o1, o2) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -237,8 +232,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -250,8 +244,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2, o3) == StatusError)
+	if (this->callback->Trigger(o1, o2, o3) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -291,8 +284,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -305,8 +297,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4) == StatusError)
+	if (this->callback->Trigger(o1, o2, o3, o4) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -346,8 +337,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -361,8 +351,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5) == StatusError)
+	if (this->callback->Trigger(o1, o2, o3, o4, o5) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -402,8 +391,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -419,8 +407,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5,
+	if (this->callback->Trigger(o1, o2, o3, o4, o5,
 				    o6) == StatusError)
 	  escape("unable to complete the callback");
 
@@ -461,8 +448,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -479,8 +465,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5,
+	if (this->callback->Trigger(o1, o2, o3, o4, o5,
 				    o6, o7) == StatusError)
 	  escape("unable to complete the callback");
 
@@ -521,8 +506,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -540,8 +524,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5,
+	if (this->callback->Trigger(o1, o2, o3, o4, o5,
 				    o6, o7, o8) == StatusError)
 	  escape("unable to complete the callback");
 
@@ -582,8 +565,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Environment&			environment,
-				 Data&				data) const
+      Status		Dispatch(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -602,8 +584,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(environment,
-				    o1, o2, o3, o4, o5,
+	if (this->callback->Trigger(o1, o2, o3, o4, o5,
 				    o6, o7, o8, o9) == StatusError)
 	  escape("unable to complete the callback");
 

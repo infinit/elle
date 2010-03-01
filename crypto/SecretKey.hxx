@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/crypto/SecretKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri feb  5 02:10:41 2010]
+// updated       julien quintard   [mon mar  1 13:05:50 2010]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HXX
@@ -49,6 +49,8 @@ namespace elle
     {
       Archive		archive;
 
+      enter();
+
       // create an archive.
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -72,6 +74,8 @@ namespace elle
     {
       Archive		archive;
 
+      enter();
+
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
 
@@ -93,6 +97,8 @@ namespace elle
 					   Cipher&		cipher) const
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -117,6 +123,8 @@ namespace elle
 					   Cipher&		cipher) const
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -143,6 +151,8 @@ namespace elle
 					   Cipher&		cipher) const
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -171,6 +181,8 @@ namespace elle
 					   Cipher&		cipher) const
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -201,6 +213,8 @@ namespace elle
 					   Cipher&		cipher) const
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -233,6 +247,8 @@ namespace elle
 					   Cipher&		cipher) const
     {
       Archive		archive;
+
+      enter();
 
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
@@ -268,6 +284,8 @@ namespace elle
     {
       Archive		archive;
 
+      enter();
+
       if (archive.Create() == StatusError)
 	escape("unable to create the archive");
 
@@ -295,6 +313,8 @@ namespace elle
     {
       Archive		archive;
       Clear		clear;
+
+      enter();
 
       // decrypt the cipher.
       if (this->Decrypt(cipher, clear) == StatusError)
@@ -328,6 +348,8 @@ namespace elle
     {
       Archive		archive;
       Clear		clear;
+
+      enter();
 
       if (this->Decrypt(cipher, clear) == StatusError)
 	escape("unable to decrypt the cipher");

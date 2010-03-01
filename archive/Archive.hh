@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [sun feb 21 22:09:37 2010]
+// updated       julien quintard   [sun feb 28 15:19:58 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -26,6 +26,7 @@
 #include <elle/misc/Region.hh>
 #include <elle/misc/Status.hh>
 #include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 #include <elle/system/System.hh>
 

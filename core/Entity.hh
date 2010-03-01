@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [sat feb  6 04:44:38 2010]
+// updated       julien quintard   [mon mar  1 12:23:13 2010]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -22,6 +22,7 @@
 
 #include <elle/misc/Status.hh>
 #include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 namespace elle
 {
@@ -43,6 +44,8 @@ namespace elle
 #define EntityEmbed(_type_)						\
   _type_&		operator=(const _type_&		element)	\
   {									\
+    enter();								\
+									\
     if (this == &element)						\
       return (*this);							\
 									\
@@ -59,6 +62,8 @@ namespace elle
 									\
   Status		Imprint(Natural32&		size) const	\
   {									\
+    enter();								\
+									\
     size = sizeof(_type_);						\
 									\
     leave();								\
@@ -118,6 +123,8 @@ namespace elle
       template <typename T>
       Status		Recycle(const T*			entity = NULL)
       {
+	enter();
+
 	// release the resources.
 	this->~Entity();
 

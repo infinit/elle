@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun feb 21 22:09:43 2010]
+// updated       julien quintard   [sun feb 28 13:01:59 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -99,6 +99,8 @@ namespace elle
     {
       const Byte	type = ArchiveMap<T>::Value;
 
+      enter();
+
       // serialization mode only.
       if (archive.mode != Archive::ModeSerialization)
 	escape("unable to serialize while not in serialization mode");
@@ -122,6 +124,8 @@ namespace elle
 						  T&		element)
     {
       Byte		type;
+
+      enter();
 
       // serialization mode only.
       if (archive.mode != Archive::ModeExtraction)
@@ -190,6 +194,8 @@ namespace elle
     Status		Archive::Serialize(const T&		parameter,
 					   const TT&...		parameters)
     {
+      enter();
+
       // serialize the first items.
       if (this->Serialize(parameter) == StatusError)
 	escape("unable to serialize the first item");
@@ -226,6 +232,8 @@ namespace elle
     Status		Archive::Extract(T&			parameter,
 					 TT&...			parameters)
     {
+      enter();
+
       // extract the first item.
       if (this->Extract(parameter) == StatusError)
 	escape("unable to extract the first item");
@@ -247,6 +255,8 @@ namespace elle
     template <typename T>
     Status		Archive::Store(const T&			element)
     {
+      enter();
+
       // serialization mode only.
       if (this->mode != Archive::ModeSerialization)
 	escape("unable to extract while not in extraction mode");
@@ -282,6 +292,8 @@ namespace elle
     template <typename T>
     Status		Archive::Load(T&			element)
     {
+      enter();
+
       // extraction mode only.
       if (this->mode != Archive::ModeExtraction)
 	escape("unable to extract while not in extraction mode");
@@ -317,6 +329,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
 
+      enter();
+
       std::cout << alignment << "[" << ArchiveMap<T>::Name << "] "
 		<< element << std::endl;
 
@@ -332,6 +346,8 @@ namespace elle
 			     const Natural32			margin)
     {
       String		alignment(margin, ' ');
+
+      enter();
 
       std::cout << alignment << "[" << ArchiveMap<Natural8>::Name << "] "
 		<< std::dec << (Natural32)element << std::endl;
