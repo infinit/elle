@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [sun feb  7 05:04:46 2010]
+// updated       julien quintard   [thu mar  4 13:10:03 2010]
 //
 
 //
@@ -24,69 +24,23 @@ namespace pig
 // ---------- globals ---------------------------------------------------------
 //
 
+  ///
+  /// XXX
+  ///
   static struct fuse_operations	operations;
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- functions -------------------------------------------------------
 //
-
-  ///
-  /// this method initializes the system module.
-  ///
-  Status		PIG::Initialize()
-  {
-    // initialize the cryptographic module.
-    if (Cryptography::Initialize() == StatusError)
-      escape("unable to initialize the cryptography");
-
-    // set the operations.
-    operations.getattr = PIG::getattr;
-    /*
-    operations.setxattr = PIG::setxattr;
-    operations.chmod = PIG::chmod;
-    operations.chown = PIG::chown;
-
-    operations.access = PIG::access;
-    operations.utimens = PIG::utimens;
-
-    operations.mknod = PIG::mknod;
-    operations.open = PIG::open;
-    operations.read = PIG::read;
-    operations.write = PIG::write;
-    operations.truncate = PIG::truncate;
-    operations.release = PIG::release;
-    operations.unlink = PIG::unlink;
-    operations.rename = PIG::rename;
-    operations.readlink = PIG::readlink;
-
-    operations.symlink = PIG::symlink;
-
-    operations.mkdir = PIG::mkdir;
-    operations.readdir = PIG::readdir;
-    operations.rmdir = PIG::rmdir;
-    */
-
-    leave();
-  }
-
-  ///
-  /// this method cleans the system module.
-  ///
-  Status		PIG::Clean()
-  {
-    // clean the cryptographic module.
-    if (Cryptography::Clean() == StatusError)
-      escape("unable to clean the cryptography");
-
-    leave();
-  }
 
   ///
   /// this is the entry point of the FUSE module.
   ///
-  Status		PIG::Main(int				argc,
-				  char**			argv)
+  Status		Main(Natural32				argc,
+			     Character*				argv[])
   {
+    enter();
+
     // initialize the module.
     if (PIG::Initialize() == StatusError)
       escape("unable to initialize the module");
@@ -103,13 +57,86 @@ namespace pig
   }
 
 //
+// ---------- methods ---------------------------------------------------------
+//
+
+  ///
+  /// this method initializes the system module.
+  ///
+  Status		PIG::Initialize()
+  {
+    enter();
+
+    // initialize the Elle library.
+    if (Elle::Initialize() == StatusError)
+      escape("unable to initialize the Elle library");
+
+    //
+    // set the operations.
+    //
+    {
+      operations.getattr = PIG::Getattr;
+      /*
+	operations.setxattr = PIG::setxattr;
+	operations.chmod = PIG::chmod;
+	operations.chown = PIG::chown;
+
+	operations.access = PIG::access;
+	operations.utimens = PIG::utimens;
+
+	operations.mknod = PIG::mknod;
+	operations.open = PIG::open;
+	operations.read = PIG::read;
+	operations.write = PIG::write;
+	operations.truncate = PIG::truncate;
+	operations.release = PIG::release;
+	operations.unlink = PIG::unlink;
+	operations.rename = PIG::rename;
+	operations.readlink = PIG::readlink;
+
+	operations.symlink = PIG::symlink;
+
+	operations.mkdir = PIG::mkdir;
+	operations.readdir = PIG::readdir;
+	operations.rmdir = PIG::rmdir;
+      */
+    }
+
+    //
+    // connect to Etoile.
+    //
+    {
+      static Function<String>	challenge(&PIG::Challenge);
+
+      // register the message.
+      if (Network::Register<
+    }
+
+    leave();
+  }
+
+  ///
+  /// this method cleans the system module.
+  ///
+  Status		PIG::Clean()
+  {
+    enter();
+
+    // clean the Elle library.
+    if (Elle::Clean() == StatusError)
+      escape("unable to clean the Elle library");
+
+    leave();
+  }
+
+//
 // ---------- interface -------------------------------------------------------
 //
 
   ///
   /// XXX
   ///
-  int			PIG::getattr(const char*		path,
+  int			PIG::Getattr(const char*		path,
 				     struct stat*		stat)
   {
     printf("[XXX] %s(%s, 0x%x)\n",
@@ -134,4 +161,18 @@ namespace pig
     return (0);
   }
 
+}
+
+//
+// ---------- main ------------------------------------------------------------
+//
+
+int			main(int			argc,
+			     char**			argv)
+{
+  pig::Main(argc, argv);
+
+  expose();
+
+  return (0);
 }

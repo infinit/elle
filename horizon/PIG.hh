@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [sun feb  7 04:12:08 2010]
+// updated       julien quintard   [thu mar  4 12:56:40 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -45,61 +45,61 @@ namespace pig
     //
     // static methods
     //
-    static int	getattr(const char*,
+    static int	Getattr(const char*,
 			struct stat*);
-    static int	setxattr(const char*,
+    static int	Setxattr(const char*,
 			 const char*,
 			 const char*,
 			 size_t,
 			 int);
-    static int	chmod(const char*,
+    static int	Chmod(const char*,
 		      mode_t);
-    static int	chown(const char*,
+    static int	Chown(const char*,
 		      uid_t,
 		      gid_t);
 
-    static int	access(const char*,
+    static int	Access(const char*,
 		       int);
-    static int	utimens(const char*,
+    static int	Utimens(const char*,
 			const struct timespec[2]);
 
-    static int	mknod(const char*,
+    static int	Mknod(const char*,
 		      mode_t,
 		      dev_t);
-    static int	open(const char*,
+    static int	Open(const char*,
 		     struct fuse_file_info*);
-    static int	read(const char*,
+    static int	Read(const char*,
 		     char*,
 		     size_t,
 		     off_t,
 		     struct fuse_file_info*);
-    static int	write(const char*,
+    static int	Write(const char*,
 		      const char*,
 		      size_t,
 		      off_t,
 		      struct fuse_file_info*);
-    static int	truncate(const char*,
+    static int	Truncate(const char*,
 			 off_t);
-    static int	release(const char*,
+    static int	Release(const char*,
 			struct fuse_file_info*);
-    static int	unlink(const char*);
-    static int	rename(const char*,
+    static int	Unlink(const char*);
+    static int	Rename(const char*,
 		       const char*);
 
-    static int	symlink(const char*,
+    static int	Symlink(const char*,
 			const char*);
-    static int	readlink(const char*,
+    static int	Readlink(const char*,
 			 char*,
 			 size_t);
 
-    static int	mkdir(const char*,
+    static int	Mkdir(const char*,
 		      mode_t);
-    static int	readdir(const char*,
+    static int	Readdir(const char*,
 			void*,
 			fuse_fill_dir_t,
 			off_t,
 			struct fuse_file_info*);
-    static int	rmdir(const char*);
+    static int	Rmdir(const char*);
 
 
     //
@@ -107,8 +107,11 @@ namespace pig
     //
     static Status	Initialize();
     static Status	Clean();
-    static Status	Main(int,
-			     char**);
+
+    //
+    // static attributes
+    //
+    Door		etoile;
   };
 
 }
