@@ -1,3 +1,3 @@
 ADD_SUBDIRECTORY(archive)
-ADD_SUBDIRECTORY(crypto)
+ADD_SUBDIRECTORY(cryptography)
 ADD_SUBDIRECTORY(network)

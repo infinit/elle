@@ -1,1 +1,1 @@
-ADD_SUBDIRECTORY(crypto)
+ADD_SUBDIRECTORY(cryptography)

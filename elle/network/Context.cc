@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit
+// license       network
 //
 // file          /home/mycure/infinit/elle/network/Context.cc
 //
-// created       julien quintard   [thu feb 25 14:02:27 2010]
-// updated       julien quintard   [sun feb 28 11:02:16 2010]
+// created       julien quintard   [fri mar  5 10:52:02 2010]
+// updated       julien quintard   [sun mar  7 21:12:08 2010]
 //
 
 //
@@ -23,49 +23,83 @@ namespace elle
   {
 
 //
-// ---------- definitions -----------------------------------------------------
+// ---------- globals ---------------------------------------------------------
 //
 
     ///
-    /// the context instance is initially null.
+    /// this variables is the context specific to the current thread.
     ///
-    Context::Context*		Environment = NULL;
+    /// since events occur one after another, there can be conflicts.
+    ///
+    /// XXX \todo store this context in the thread local storage.
+    ///
+    Context*			context = NULL;
 
 //
 // ---------- constructors & destructors --------------------------------------
 //
 
-    // XXX
-    
-
-//
-// ---------- static methods --------------------------------------------------
-//
-
     ///
-    /// this method initializes the context.
+    /// this constructor sets the arguments.
     ///
-    Status		Context::Initialize(Socket*		socket,
-					    const Address&	address)
+    Context::Context(Socket*					socket,
+		     const Address&				address):
+      socket(socket),
+      address(address)
     {
-      // if a context already exists, delete it.
-      if (Context::Environment != NULL)
-	delete Context::Environment;
+    }
 
-      // then, create a new one.
-      //Context::Environment = new Context(socket, address);
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method sets the new context.
+    ///
+    Status		Context::Assign(Context*		c)
+    {
+      enter();
+
+      // release the previous context.
+      if (context != NULL)
+	delete context;
+
+      /// XXX \todo ici au lieu de faire ca, on pourrait set dans un
+      /// thread local storage, ou mieux dans currentThread() qu'on
+      /// static_const en Thread a nous et on set le context network.
+
+      // assign the new context as being the current one.
+      context = c;
 
       leave();
     }
 
-    ///
-    /// this method returns the instance of the context.
-    ///
-    Context*		Context::Instance()
-    {
-      // XXX check NULL
+//
+// ---------- dumpable --------------------------------------------------------
+//
 
-      return (Context::Environment);
+    ///
+    /// this method dumps the context.
+    ///
+    Status		Context::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+      String		shift(2, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Context]" << std::endl;
+
+      // dump the socket.
+      if (this->socket->Dump(margin + 2) == StatusError)
+	escape("unable to dump the socket");
+
+      // dump the address.
+      if (this->address.Dump(margin + 2) == StatusError)
+	escape("unable to dump the address");
+
+      leave();
     }
+
   }
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [mon mar  1 12:38:43 2010]
+// updated       julien quintard   [mon mar  8 23:07:17 2010]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -20,7 +20,12 @@
 
 #include <elle/core/Natural.hh>
 #include <elle/core/String.hh>
+#include <elle/core/Void.hh>
 
+///
+/// undefine the conflicting macro
+///
+#undef fail
 #include <sstream>
 #include <stack>
 #include <ostream>
@@ -31,184 +36,14 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <elle/core/Macro.hh>
+
 namespace elle
 {
   using namespace core;
 
   namespace misc
   {
-
-//
-// ---------- macro functions -------------------------------------------------
-//
-
-///
-/// this macro-function releases the guarded objects cf Maid.
-///
-//#define release()
-
-// XXX[this version is the real one]
-#define release()							\
-  if (_maid_ != NULL)							\
-    {									\
-      delete _maid_;							\
-    }
-
-///
-/// this macro-function register a report entry.
-///
-/// note that this macro function should never be called directly. instead
-/// the macro functions below should be used: leave, escape, true, alert
-/// etc.
-///
-#define report(_type_, _text_)						\
-  do									\
-    {									\
-      std::ostringstream	_message_;				\
-									\
-      _message_ << (_text_)						\
-                << " (" << __FILE__ << ":" << __LINE__ << " # "		\
-                << __FUNCTION__ << ")";					\
-									\
-      elle::core::String	_string_(_message_.str());		\
-									\
-      elle::misc::report.Notify(_type_, _string_);			\
-    } while (false)
-
-///
-/// this macro-function is used for successfully returning from
-/// a normal method or function.
-///
-/// XXX \todo remove the release here as everything went fine!!!
-#define leave()								\
-  release();								\
-									\
-  return (elle::misc::StatusOk)
-
-///
-/// this macro-function just returns StatusTrue.
-///
-/// XXX \todo remove the release here as everything went fine!!!
-#define true()								\
-  release();								\
-									\
-  return (elle::misc::StatusTrue)
-
-///
-/// this macro-function just returns StatusFalse.
-///
-/// XXX \todo remove the release here as everything went fine!!!
-#define false()								\
-  release();								\
-									\
-  return (elle::misc::StatusFalse)
-
-///
-/// this macro-function reports a warning.
-///
-#define warn(_text_)							\
-  report(elle::misc::Report::TypeWarning, _text_)
-
-///
-/// this macro-function indicates that an error occured
-/// and returns StatusError.
-///
-#define escape(_text_)							\
-  do									\
-    {									\
-      release();							\
-									\
-      report(elle::misc::Report::TypeError, _text_);			\
-									\
-      return (elle::misc::StatusError);					\
-    } while (false)
-
-///
-/// this macro-function indicates that an error occured
-/// and return StatusFalse.
-///
-#define flee(_text_)							\
-  do									\
-    {									\
-      release();							\
-									\
-      report(elle::misc::Report::TypeError, _text_);			\
-									\
-      return (elle::misc::StatusFalse);					\
-    } while (false)							\
-
-///
-/// this macro-function reports an error and returns.
-///
-/// note that the return object is specifed, hence this function
-/// perfectly fits when an error occurs in operators etc.
-///
-#define yield(_text_, _return_)						\
-  do									\
-    {									\
-      release();							\
-      									\
-      report(elle::misc::Report::TypeError, _text_);			\
-									\
-      return (_return_);						\
-    } while (false)
-
-///
-/// this macro-function reports an error and returns.
-///
-#define alert(_text_)							\
-  do									\
-    {									\
-      release();							\
-									\
-      report(elle::misc::Report::TypeError, _text_);			\
-									\
-      return;								\
-    } while (false)
-
-///
-/// this macro-function adds an failure, displays the stack and
-/// stops the program.
-///
-#define fail(_text_)							\
-  do									\
-    {									\
-      report(elle::misc::Report::TypeFailure, _text_);			\
-									\
-      show();								\
-									\
-      ::exit(EXIT_FAILURE);						\
-    } while (false)
-
-///
-/// this macro-function displays the error stack on the error output.
-///
-#define show()								\
-  std::cerr << elle::misc::report
-
-///
-/// this macro-function, in the case of reported errors, displays them
-/// and exits. otherwise, the function does not do anything.
-///
-#define expose()							\
-  do									\
-    {									\
-      if (elle::misc::report.store.empty() == false)			\
-        {								\
-          show();							\
-									\
-	  ::exit(EXIT_FAILURE);						\
-        }								\
-    } while (false)
-
-///
-/// this macro-function flushes all the recorded messages.
-///
-#define purge()								\
-  do									\
-    {									\
-      elle::misc::report.Flush();					\
-    } while (false)
 
 //
 // ---------- class -----------------------------------------------------------
@@ -267,8 +102,8 @@ namespace elle
       //
       // methods
       //
-      void		Flush();
-      void		Notify(Type,
+      Void		Flush();
+      Void		Notify(Type,
 			       const String&);
 
       //

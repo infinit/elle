@@ -4,16 +4,16 @@ ADD_LIBRARY(elle
   archive/Archive.cc
   core/Large.cc
   core/Null.cc
-  crypto/Cipher.cc
-  crypto/Code.cc
-  crypto/Cryptography.cc
-  crypto/Digest.cc
-  crypto/KeyPair.cc
-  crypto/OneWay.cc
-  crypto/PrivateKey.cc
-  crypto/PublicKey.cc
-  crypto/SecretKey.cc
-  crypto/Signature.cc
+  cryptography/Cipher.cc
+  cryptography/Code.cc
+  cryptography/Cryptography.cc
+  cryptography/Digest.cc
+  cryptography/KeyPair.cc
+  cryptography/OneWay.cc
+  cryptography/PrivateKey.cc
+  cryptography/PublicKey.cc
+  cryptography/SecretKey.cc
+  cryptography/Signature.cc
   io/IO.cc
   misc/Region.cc
   misc/Report.cc
@@ -28,7 +28,7 @@ ADD_EXECUTABLE(archive
 )
 
 ADD_EXECUTABLE(crypto2
-  test/crypto/Test.cc
+  test/cryptography/Test.cc
 )
 
 TARGET_LINK_LIBRARIES(archive elle ssl crypto dl)
@@ -63,18 +63,18 @@ INSTALL(FILES
   DESTINATION ${INFINIT_INCLUDEDIR}/elle/core)
 
 INSTALL(FILES
-  crypto/Cipher.hh
-  crypto/Clear.hh
-  crypto/Code.hh
-  crypto/Cryptography.hh
-  crypto/Digest.hh
-  crypto/KeyPair.hh
-  crypto/OneWay.hh
-  crypto/Plain.hh
-  crypto/PrivateKey.hh
-  crypto/PublicKey.hh
-  crypto/SecretKey.hh
-  crypto/Signature.hh
+  cryptography/Cipher.hh
+  cryptography/Clear.hh
+  cryptography/Code.hh
+  cryptography/Cryptography.hh
+  cryptography/Digest.hh
+  cryptography/KeyPair.hh
+  cryptography/OneWay.hh
+  cryptography/Plain.hh
+  cryptography/PrivateKey.hh
+  cryptography/PublicKey.hh
+  cryptography/SecretKey.hh
+  cryptography/Signature.hh
   DESTINATION ${INFINIT_INCLUDEDIR}/elle/crypto)
 
 INSTALL(FILES

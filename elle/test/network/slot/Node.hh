@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [tue feb 23 01:50:42 2010]
+// updated       julien quintard   [sun mar  7 23:31:15 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -22,10 +22,10 @@
 #include <elle/misc/Misc.hh>
 #include <elle/network/Network.hh>
 
-#include <elle/test/network/slot/Tag.hh>
-#include <elle/test/network/slot/Probe.hh>
+#include <elle/test/network/slot/Manifest.hh>
 
 #include <QObject>
+#include <QThread>
 #include <QTimer>
 
 #include <list>
@@ -68,7 +68,7 @@ namespace elle
     };
 
     class Node:
-      public ::QObject,
+      public ::QThread,
       public Callable
     {
       Q_OBJECT;
@@ -84,7 +84,7 @@ namespace elle
       //
       // methods
       //
-      Status		Start(const String&,
+      Status		Setup(const String&,
 			      const String&,
 			      const Port);
 
@@ -96,10 +96,15 @@ namespace elle
       Status		Locate(const Address&,
 			       Iterator&);
 
+      void		run();
+
       //
       // attributes
       //
       String		name;
+      String		host;
+      Port		port;
+
       ::QTimer*		timer;
       Container		container;
       Slot		slot;
@@ -107,8 +112,7 @@ namespace elle
       //
       // callbacks
       //
-      Status		Handle(Environment&,
-			       String&);
+      Status		Handle(String&);
 
     private slots:
       //

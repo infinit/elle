@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Referee.cc
 //
 // created       julien quintard   [wed jan 28 12:32:31 2009]
-// updated       julien quintard   [fri jan 29 10:49:05 2010]
+// updated       julien quintard   [wed mar  3 11:06:24 2010]
 //
 
 //
@@ -40,7 +40,11 @@ namespace elle
 				      const void*		data,
 				      const Natural32		size)
     {
-      Element*		element = new Element;
+      Element*		element;
+
+      enter(instance(element));
+
+      element = new Element;
 
       element->type = type;
 
@@ -53,6 +57,8 @@ namespace elle
 
       Referee::List.push_back(element);
 
+      waive(element);
+
       leave();
     }
 
@@ -61,6 +67,8 @@ namespace elle
 				     Natural32&			size)
     {
       Element*		element;
+
+      enter();
 
       if (Referee::List.empty() == true)
 	escape("the referee does not contain any element any more");
@@ -74,6 +82,26 @@ namespace elle
       Referee::List.pop_front();
 
       delete element;
+
+      leave();
+    }
+
+    Status		Referee::Flush()
+    {
+      Element*		element;
+
+      enter();
+
+      while (Referee::List.empty() == false)
+	{
+	  element = Referee::List.front();
+
+	  ::free(element->data);
+
+	  Referee::List.pop_front();
+
+	  delete element;
+	}
 
       leave();
     }

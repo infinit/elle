@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [sat feb 20 18:26:24 2010]
+// updated       julien quintard   [fri mar  5 16:02:41 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -60,13 +60,6 @@ namespace elle
       //
       Socket();
       Socket(const Type&);
-
-      //
-      // interfaces
-      //
-
-      // dumpable
-      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

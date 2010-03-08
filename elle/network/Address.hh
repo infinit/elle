@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [sat feb  6 04:37:31 2010]
+// updated       julien quintard   [mon mar  8 23:09:38 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -32,9 +32,6 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
-// this one is address
-// address becomes host
-
     ///
     /// this class represents an address i.e a host and port.
     ///
@@ -46,7 +43,7 @@ namespace elle
       //
       // globals
       //
-      static Address		Null;
+      static const Address		Null;
 
       //
       // constructors & destructors
@@ -64,7 +61,7 @@ namespace elle
       //
 
       // entity
-      Embed(Entity, Address);
+      embed(Entity, Address);
       Boolean		operator==(const Address&) const;
 
       // dumpable

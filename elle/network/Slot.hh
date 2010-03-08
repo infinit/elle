@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [sun feb 28 10:54:43 2010]
+// updated       julien quintard   [mon mar  8 23:07:57 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -26,11 +26,14 @@
 #include <elle/network/Message.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Data.hh>
+#include <elle/network/Raw.hh>
 #include <elle/network/Packet.hh>
-#include <elle/network/Inputs.hh>
+#include <elle/network/Identifier.hh>
 
+#undef release
 #include <QObject>
 #include <QUdpSocket>
+#include <elle/core/Macro.hh>
 
 namespace elle
 {
@@ -64,33 +67,38 @@ namespace elle
       Status		Create();
       Status		Create(const Port);
 
-      // XXX typename D pour creer une Session
       template <typename I>
       Status		Send(const Address&,
-			     const I&);
+			     const I&,
+			     const Identifier& = Identifier::Null);
       template <typename I>
       Status		Transmit(const Address&,
-				 const I&);
+				 const I&,
+				 const Identifier& = Identifier::Null);
       template <typename O>
-      Status		Receive(Address&,
+      Status		Receive(const Identifier&,
 				O&);
       template <typename I,
 		typename O>
       Status		Request(const Address&,
 				const I&,
 				O&);
-      // Request: asynchrone
-      // Call: synchrone
-
+      template <typename I,
+		typename O>
+      Status		Call(const Address&,
+			     const I&,
+			     O&);
       template <typename I>
-      Status		Reply(const Address&,
-			      const I&);
+      Status		Reply(const I&);
+      template <typename I>
+      Status		Return(const I&);
 
-      // XXX
-      // Send(): asynchronous i.e send and return.
-      // Transmit(): synchronous i.e send and wait for a ACK (unless in TCP)
-      // Receive():
-      // XXX
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes
@@ -102,7 +110,7 @@ namespace elle
       //
       // slots
       //
-      void		Read();
+      void		Fetch();
     };
 
   }

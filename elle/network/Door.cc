@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun feb 28 11:03:54 2010]
+// updated       julien quintard   [sun mar  7 16:52:11 2010]
 //
 
 //
@@ -68,10 +68,18 @@ namespace elle
     {
       ::QLocalSocket*	socket;
 
-      // allocate a new socket.
-      socket = new ::QLocalSocket(this);
+      // note that the following socket is not tracked for automatic
+      // deletion because the next Create() method should take care of it.
+      enter();
 
-      return (this->Create(socket));
+      // allocate a new socket.
+      socket = new ::QLocalSocket;
+
+      // create the door.
+      if (this->Create(socket) == StatusError)
+	escape("unable to create the door");
+
+      leave();
     }
 
     ///
@@ -79,6 +87,8 @@ namespace elle
     ///
     Status		Door::Create(::QLocalSocket*		socket)
     {
+      enter();
+
       // set the socket.
       this->socket = socket;
 
@@ -88,7 +98,7 @@ namespace elle
 	escape("unable to connect the signal");
 
       if (this->connect(this->socket, SIGNAL(readyRead()),
-			this, SLOT(Read())) == false)
+			this, SLOT(Deliver())) == false)
 	escape("unable to connect the signal");
 
       if (this->connect(this->socket,
@@ -106,6 +116,8 @@ namespace elle
     ///
     Status		Door::Connect(const String&		name)
     {
+      enter();
+
       // connect the socket to the server.
       this->socket->connectToServer(name.c_str());
 
@@ -117,15 +129,98 @@ namespace elle
     }
 
     ///
+    /// this method reads the next packet from the socket.
+    ///
+    Status		Door::Read(Packet&			packet)
+    {
+      /*
+      Region		region;
+      Natural64		size;
+
+      enter();
+
+      // retrieve the size of the data available.
+      size = this->socket->bytesAvailable();
+
+      printf("Door::Read(%u available)\n", size);
+
+      // prepare the region.
+      if (region.Prepare(size) == StatusError)
+	escape("unable to prepare the region");
+
+      // read the packet from the socket.
+      if (this->socket->read((char*)region.contents, size) != size)
+	escape(this->socket->errorString().toStdString().c_str());
+
+      // set the region's size.
+      region.size = size;
+
+      // detach the region.
+      if (region.Detach() == StatusError)
+	escape("unable to detach the region");
+
+      // create a working packet. if it fails, just skip this datagram.
+      if (packet.Prepare(region) == StatusError)
+	escape("unable to prepare the packet");
+
+      // assign the context.
+      // XXX +add Identifier in context
+      //if (Context::Assign(this, Address::Null) == StatusError)
+      //escape("unable to assign the context");
+
+      leave();
+      */
+    }
+
+    ///
     /// XXX
     ///
     Status		Door::Disconnect()
     {
+      enter();
+
       // disconnect the socket from the server.
       this->socket->disconnectFromServer();
 
       leave();
     }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Status		Door::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+      String		shift(2, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Door]" << std::endl;
+
+      // dump the state.
+      std::cout << alignment << shift << "[Valid] "
+		<< this->socket->isValid() << std::endl;
+
+      // dump the full socket path name.
+      std::cout << alignment << shift << "[Path] "
+		<< this->socket->fullServerName().toStdString() << std::endl;
+
+      // dump the peer name.
+      std::cout << alignment << shift << "[Peer] "
+		<< this->socket->serverName().toStdString() << std::endl;
+
+      leave();
+    }
+
+//
+// ---------- signals ---------------------------------------------------------
+//
+
+    /// \todo XXX disconnected
 
 //
 // ---------- slots -----------------------------------------------------------
@@ -140,6 +235,8 @@ namespace elle
     ///
     void		Door::Error(QLocalSocket::LocalSocketError	error)
     {
+      enter();
+
       // basically just report the error without doing anything else.
       alert(this->socket->errorString().toStdString().c_str());
     }
@@ -147,39 +244,24 @@ namespace elle
     ///
     /// this slot is triggered whenever data is available on the socket.
     ///
-    void		Door::Read()
+    void		Door::Deliver()
     {
-      /* XXX
-      Environment	environment(*this);
-      Archive		archive;
-      Region		region;
-      Natural64		size;
+      /*
+      Packet		packet;
 
-      // retrieve the size of the data available.
-      size = this->socket->bytesAvailable();
+      printf("Door::Deliver()\n");
 
-      // prepare the region.
-      if (region.Prepare(size) == StatusError)
-	alert("unable to prepare the region");
+      enter();
 
-      // read the packet from the socket.
-      if (this->socket->read((char*)region.contents, size) != size)
-	alert(this->socket->errorString().toStdString().c_str());
-
-      // set the region's size.
-      region.size = size;
-
-      // detach the region.
-      if (region.Detach() == StatusError)
-	alert("unable to detach the region");
-
-      // create a working archive. if it fails, just skip this datagram.
-      if (archive.Prepare(region) == StatusError)
-	alert("unable to prepare the archive");
+      // read the next packet.
+      if (this->Read(packet) == StatusError)
+	alert("unable to read the next packet");
 
       // dispatch the event.
-      if (Network::Dispatch(environment, archive) == StatusError)
+      if (Network::Dispatch(packet) == StatusError)
 	alert("unable to dispatch the event");
+
+      release();
       */
     }
 

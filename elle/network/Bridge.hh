@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [tue feb 23 13:37:45 2010]
+// updated       julien quintard   [fri mar  5 15:58:31 2010]
 //
 
 #ifndef ELLE_NETWORK_BRIDGE_HH
@@ -52,14 +52,13 @@ namespace elle
       //
       // constructors & destructors
       //
-      Porter();
+      Porter(Callback&);
       ~Porter();
 
       //
       // methods
       //
-      Status		Create(const String&,
-			       Callback*);
+      Status		Listen(const String&);
 
       //
       // interfaces
@@ -72,7 +71,7 @@ namespace elle
       // attributes
       //
       ::QLocalServer*	server;
-      Callback*		callback;
+      Callback&		callback;
 
       //
       // slots
@@ -101,7 +100,7 @@ namespace elle
       static Status	Clean(); // XXX todo: remove Porters
 
       static Status	Listen(const String&,
-			       Callback*);
+			       Callback&);
 
       static Status	Dump(const Natural32 = 0);
 

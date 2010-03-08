@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [tue feb 23 14:31:24 2010]
+// updated       julien quintard   [fri mar  5 22:42:36 2010]
 //
 
 //
@@ -27,27 +27,32 @@ namespace elle
 //
 
     ///
-    /// this method initializes the server.
+    /// this method is the thread entry point.
     ///
-    Status		Client::Start(const String&		name)
+    void		Client::run()
     {
-      static Method<Environment, String> receive(this, &Client::Receive);
+      static Method<String> challenge(this, &Client::Challenge);
 
-      // register the echo message.
-      if (Network::Register<TagEcho>(&receive) == StatusError)
-	escape("unable to register the echo message");
+      enter();
 
-      std::cout << "[bridge] " << name << std::endl;
+      // register the message.
+      if (Network::Register<TagChallenge>(challenge) == StatusError)
+	alert("unable to register the challenge message");
+
+      std::cout << "[bridge] " << this->name << std::endl;
 
       // create the door.
       if (this->door.Create() == StatusError)
-	escape("unable to create the slot");
+	alert("unable to create the slot");
 
       // connect the door.
-      if (this->door.Connect(name) == StatusError)
-	escape("unable to connect to the bridge");
+      if (this->door.Connect(this->name) == StatusError)
+	alert("unable to connect to the bridge");
 
-      leave();
+      // event loop.
+      this->exec();
+
+      release();
     }
 
 //
@@ -55,13 +60,17 @@ namespace elle
 //
 
     ///
-    /// this method handles echo messages.
+    /// this method handles messages.
     ///
-    Status		Client::Receive(Environment&		environment,
-					String&			text)
+    Status		Client::Challenge(String&			text)
     {
+      enter();
+
       // simply display the text.
-      std::cout << "[Echo] " << text << std::endl;
+      std::cout << "[Challenge] " << text << std::endl;
+
+      // XXX reply
+      //this->door.Transmit(Inputs<TagResponse>(text));
 
       leave();
     }

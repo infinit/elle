@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [sat feb  6 04:37:55 2010]
+// updated       julien quintard   [tue mar  2 15:10:11 2010]
 //
 
 #include <elle/network/Host.hh>
@@ -45,6 +45,8 @@ namespace elle
     ///
     Status		Host::Create(const Type		type)
     {
+      enter();
+
       // set the type.
       this->type = type;
 
@@ -78,6 +80,8 @@ namespace elle
     ///
     Status		Host::Create(const String&		string)
     {
+      enter();
+
       // set the address.
       if (this->location.setAddress(::QString(string.c_str())) == false)
 	escape("unable to set the location");
@@ -94,6 +98,8 @@ namespace elle
     ///
     Boolean		Host::operator==(const Host&		element) const
     {
+      enter();
+
       // compare the internal values.
       if ((this->type != element.type) ||
 	  (this->location != element.location))
@@ -113,6 +119,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Host]" << std::endl;
 

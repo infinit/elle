@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun feb  7 02:24:23 2010]
+// updated       julien quintard   [sun mar  7 22:08:05 2010]
 //
 
 //
@@ -36,6 +36,8 @@ namespace elle
       Server		server;
       Client		client;
 
+      enter();
+
       // check the arguments.
       if (argc != 3)
 	{
@@ -45,22 +47,34 @@ namespace elle
 	  exit(1);
 	}
 
+      // init the library.
+      if (Elle::Initialize() == StatusError)
+	escape("unable to initialize the Elle library");
+
       // launch either the client or the server.
       if (String(argv[1]) == String("server"))
 	{
-	  if (server.Start(argv[2]) == StatusError)
-	    escape("unable to start the server");
+	  server.name = String(argv[2]);
+
+	  // start the main thread.
+	  server.start();
 	}
       else if (String(argv[1]) == String("client"))
 	{
-	  if (client.Start(argv[2]) == StatusError)
-	    escape("unable to start the client");
+	  client.name = String(argv[2]);
+
+	  // start the main thread.
+	  client.start();
 	}
       else
 	escape("unknown type");
 
       // wait for events.
       app.exec();
+
+      // clean the library.
+      if (Elle::Clean() == StatusError)
+	escape("unable to clean the Elle library");
 
       leave();
     }

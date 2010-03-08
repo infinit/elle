@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Large.cc
 //
 // created       julien quintard   [thu feb  5 15:37:07 2009]
-// updated       julien quintard   [wed feb 18 15:59:37 2009]
+// updated       julien quintard   [fri mar  5 11:37:54 2010]
 //
 
 //
@@ -30,8 +30,16 @@ namespace std
   std::ostream&		operator<<(std::ostream&		stream,
 				   const elle::core::Large&	element)
   {
+    char*		hexadecimal;
+
+    // transform the number into hexadecimal.
+    hexadecimal = ::BN_bn2hex(&element);
+
     // put an hexadecimal representation of the big number into the stream.
-    stream << BN_bn2hex(&element);
+    stream << hexadecimal;
+
+    // free the hexadecimal.
+    ::OPENSSL_free(hexadecimal);
 
     return (stream);
   }

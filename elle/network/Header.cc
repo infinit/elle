@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.cc
 //
 // created       julien quintard   [tue feb 23 00:18:03 2010]
-// updated       julien quintard   [tue feb 23 13:17:02 2010]
+// updated       julien quintard   [fri mar  5 13:11:34 2010]
 //
 
 //
@@ -39,10 +39,14 @@ namespace elle
     ///
     /// this method initialises the tag and size.
     ///
-    Status		Header::Create(const Tag		tag,
+    Status		Header::Create(const Identifier&	identifier,
+				       const Tag		tag,
 				       const Natural32		size)
     {
+      enter();
+
       // set the attributes.
+      this->identifier = identifier;
       this->tag = tag;
       this->size = size;
 
@@ -58,9 +62,12 @@ namespace elle
     ///
     Status		Header::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the attributes.
       if (archive.Serialize(Header::Name,
-			    (Natural32&)this->tag,
+			    this->identifier,
+			    this->tag,
 			    this->size) == StatusError)
 	escape("unable to serialize the header attributes");
 
@@ -74,9 +81,12 @@ namespace elle
     {
       String		name;
 
+      enter();
+
       // extract the attributes.
       if (archive.Extract(name,
-			  (Natural32&)this->tag,
+			  this->identifier,
+			  this->tag,
 			  this->size) == StatusError)
 	escape("unable to serialize the header attributes");
 

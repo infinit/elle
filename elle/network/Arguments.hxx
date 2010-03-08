@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Arguments.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [wed feb 24 08:53:46 2010]
+// updated       julien quintard   [fri mar  5 13:04:50 2010]
 //
 
 #ifndef ELLE_NETWORK_ARGUMENTS_HXX
@@ -57,6 +57,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(archive) == StatusError)
 	  escape("unable to pack the arguments");
@@ -66,6 +68,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive) == StatusError)
 	  escape("unable to unpack the arguments");
@@ -88,12 +92,12 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
+      T1&		argument1;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1):
+      Arguments(T1&						o1):
 	tag(G),
 	argument1(o1)
       {
@@ -107,6 +111,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				archive) == StatusError)
@@ -117,6 +123,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1) == StatusError)
@@ -141,14 +149,14 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
+      T1&		argument1;
+      T2&		argument2;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2):
+      Arguments(T1&						o1,
+		T2&						o2):
 	tag(G),
 	argument1(o1),
 	argument2(o2)
@@ -163,6 +171,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -174,6 +184,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,
@@ -200,16 +212,16 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
-      const T3&		argument3;
+      T1&		argument1;
+      T2&		argument2;
+      T3&		argument3;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2,
-		const T3&					o3):
+      Arguments(T1&						o1,
+		T2&						o2,
+		T3&						o3):
 	tag(G),
 	argument1(o1),
 	argument2(o2),
@@ -225,6 +237,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -237,6 +251,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,
@@ -265,18 +281,18 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
-      const T3&		argument3;
-      const T4&		argument4;
+      T1&		argument1;
+      T2&		argument2;
+      T3&		argument3;
+      T4&		argument4;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2,
-		const T3&					o3,
-		const T4&					o4):
+      Arguments(T1&						o1,
+		T2&						o2,
+		T3&						o3,
+		T4&						o4):
 	tag(G),
 	argument1(o1),
 	argument2(o2),
@@ -293,6 +309,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -306,6 +324,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,
@@ -336,20 +356,20 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
-      const T3&		argument3;
-      const T4&		argument4;
-      const T5&		argument5;
+      T1&		argument1;
+      T2&		argument2;
+      T3&		argument3;
+      T4&		argument4;
+      T5&		argument5;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2,
-		const T3&					o3,
-		const T4&					o4,
-		const T5&					o5):
+      Arguments(T1&						o1,
+		T2&						o2,
+		T3&						o3,
+		T4&						o4,
+		T5&						o5):
 	tag(G),
 	argument1(o1),
 	argument2(o2),
@@ -367,6 +387,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -381,6 +403,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,
@@ -413,22 +437,22 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
-      const T3&		argument3;
-      const T4&		argument4;
-      const T5&		argument5;
-      const T6&		argument6;
+      T1&		argument1;
+      T2&		argument2;
+      T3&		argument3;
+      T4&		argument4;
+      T5&		argument5;
+      T6&		argument6;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2,
-		const T3&					o3,
-		const T4&					o4,
-		const T5&					o5,
-		const T6&					o6):
+      Arguments(T1&						o1,
+		T2&						o2,
+		T3&						o3,
+		T4&						o4,
+		T5&						o5,
+		T6&						o6):
 	tag(G),
 	argument1(o1),
 	argument2(o2),
@@ -447,6 +471,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -462,6 +488,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,
@@ -496,24 +524,24 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
-      const T3&		argument3;
-      const T4&		argument4;
-      const T5&		argument5;
-      const T6&		argument6;
-      const T7&		argument7;
+      T1&		argument1;
+      T2&		argument2;
+      T3&		argument3;
+      T4&		argument4;
+      T5&		argument5;
+      T6&		argument6;
+      T7&		argument7;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2,
-		const T3&					o3,
-		const T4&					o4,
-		const T5&					o5,
-		const T6&					o6,
-		const T7&					o7):
+      Arguments(T1&						o1,
+		T2&						o2,
+		T3&						o3,
+		T4&						o4,
+		T5&						o5,
+		T6&						o6,
+		T7&						o7):
 	tag(G),
 	argument1(o1),
 	argument2(o2),
@@ -533,6 +561,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -549,6 +579,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,
@@ -585,26 +617,26 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
-      const T3&		argument3;
-      const T4&		argument4;
-      const T5&		argument5;
-      const T6&		argument6;
-      const T7&		argument7;
-      const T8&		argument8;
+      T1&		argument1;
+      T2&		argument2;
+      T3&		argument3;
+      T4&		argument4;
+      T5&		argument5;
+      T6&		argument6;
+      T7&		argument7;
+      T8&		argument8;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2,
-		const T3&					o3,
-		const T4&					o4,
-		const T5&					o5,
-		const T6&					o6,
-		const T7&					o7,
-		const T8&					o8):
+      Arguments(T1&						o1,
+		T2&						o2,
+		T3&						o3,
+		T4&						o4,
+		T5&						o5,
+		T6&						o6,
+		T7&						o7,
+		T8&						o8):
 	tag(G),
 	argument1(o1),
 	argument2(o2),
@@ -625,6 +657,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -642,6 +676,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,
@@ -680,28 +716,28 @@ namespace elle
       //
       const Tag		tag;
 
-      const T1&		argument1;
-      const T2&		argument2;
-      const T3&		argument3;
-      const T4&		argument4;
-      const T5&		argument5;
-      const T6&		argument6;
-      const T7&		argument7;
-      const T8&		argument8;
-      const T9&		argument9;
+      T1&		argument1;
+      T2&		argument2;
+      T3&		argument3;
+      T4&		argument4;
+      T5&		argument5;
+      T6&		argument6;
+      T7&		argument7;
+      T8&		argument8;
+      T9&		argument9;
 
       //
       // constructors & destructors
       //
-      Arguments(const T1&					o1,
-		const T2&					o2,
-		const T3&					o3,
-		const T4&					o4,
-		const T5&					o5,
-		const T6&					o6,
-		const T7&					o7,
-		const T8&					o8,
-		const T9&					o9):
+      Arguments(T1&						o1,
+		T2&						o2,
+		T3&						o3,
+		T4&						o4,
+		T5&						o5,
+		T6&						o6,
+		T7&						o7,
+		T8&						o8,
+		T9&						o9):
 	tag(G),
 	argument1(o1),
 	argument2(o2),
@@ -723,6 +759,8 @@ namespace elle
 
       Status		Serialize(Archive&			archive) const
       {
+	enter();
+
 	// pack the arguments according to the parameters.
 	if (Message<G>::P::Pack(this->argument1,
 				this->argument2,
@@ -741,6 +779,8 @@ namespace elle
 
       Status		Extract(Archive&			archive)
       {
+	enter();
+
 	// unpack the arguments according to the parameters.
 	if (Message<G>::P::Unpack(archive,
 				  this->argument1,

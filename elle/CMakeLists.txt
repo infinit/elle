@@ -13,38 +13,43 @@ ADD_LIBRARY(elle
   core/Null.cc
   core/Void.cc
 
-  crypto/Cipher.cc
-  crypto/Code.cc
-  crypto/Cryptography.cc
-  crypto/Digest.cc
-  crypto/KeyPair.cc
-  crypto/OneWay.cc
-  crypto/PrivateKey.cc
-  crypto/PublicKey.cc
-  crypto/SecretKey.cc
-  crypto/Signature.cc
+  cryptography/Cipher.cc
+  cryptography/Code.cc
+  cryptography/Cryptography.cc
+  cryptography/Digest.cc
+  cryptography/KeyPair.cc
+  cryptography/OneWay.cc
+  cryptography/PrivateKey.cc
+  cryptography/PublicKey.cc
+  cryptography/SecretKey.cc
+  cryptography/Signature.cc
 
   factory/Factory.cc
 
   misc/Report.cc
-  misc/Maid.cc
   misc/Region.cc
   misc/Callback.cc
 
   system/System.cc
 
-#  network/Network.cc
-#  network/Host.cc
-#  network/Address.cc
-#  network/Context.cc
-#  network/Socket.cc
-#  network/Slot.cc
-#  network/Bridge.cc
-#  network/Door.cc
-#  network/Header.cc
+  network/Network.cc
+  network/Host.cc
+  network/Address.cc
+  network/Socket.cc
+  network/Slot.cc
+  network/Bridge.cc
+  network/Door.cc
+  network/Header.cc
+  network/Identifier.cc
+  network/Context.cc
 
-#  ${elle_MOCS}
+  concurrency/Mutex.cc
+  concurrency/Semaphore.cc
+
+  Elle.cc
+
+  ${elle_MOCS}
 )
 
-#ADD_SUBDIRECTORY(test)
-#ADD_SUBDIRECTORY(benchmark)
+ADD_SUBDIRECTORY(test)
+ADD_SUBDIRECTORY(benchmark)

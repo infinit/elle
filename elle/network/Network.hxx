@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [thu feb 25 14:00:53 2010]
+// updated       julien quintard   [sun mar  7 22:30:06 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -29,11 +29,13 @@ namespace elle
     /// callback is triggered.
     ///
     template <const Tag G>
-    Status		Network::Register(Callback*		callback)
+    Status		Network::Register(Callback&		callback)
     {
       Selectionoid< Message<G>::P::Quantum,
-	            typename Message<G>::P >*	selectionoid;
-      std::pair<Network::Iterator, Boolean>	result;
+	            typename Message<G>::P >*		selectionoid;
+      std::pair<Network::Trig::Iterator, Boolean>	result;
+
+      enter(instance(selectionoid));
 
       // check if this type has already been registed.
       if (Network::Callbacks.find(G) != Network::Callbacks.end())
@@ -52,6 +54,74 @@ namespace elle
       // check if the insertion was successful.
       if (result.second == false)
 	escape("unable to insert the callback in the container");
+
+      // waive the selectionoid tracking.
+      waive(selectionoid);
+
+      leave();
+    }
+
+    ///
+    /// this method waits for a message with the given identifier.
+    ///
+    template <typename O>
+    Status		Network::Receive(const Identifier&	identifier,
+					 O&			outputs,
+					 Natural32		timeout)
+    {
+      Network::Wait::Value*				value;
+      std::pair<Network::Wait::Iterator, Boolean>	result;
+
+      enter(instance(value));
+
+      // check if someone is already waiting for the packet.
+      if (Network::Receivers.find(identifier) != Network::Receivers.end())
+	escape("unable to wait for a packet that someone is "
+	       "already waiting for");
+
+      // allocate the value.
+      value = new Network::Wait::Value;
+
+      // set the data pointer.
+      value->second = NULL;
+
+      // insert the receiver in the container.
+      result = Network::Receivers.insert(
+	         std::pair<const Identifier,
+                           Network::Wait::Value*>(identifier,
+						  value));
+
+      // check if the insertion was successful.
+      if (result.second == false)
+	escape("unable to insert the callback in the container");
+
+      // waive the selectionoid tracking.
+      waive(value);
+
+      // now wait on the semaphore until the packet has been received.
+      if (value->first.Acquire(1, timeout) == StatusError)
+	{
+	  // erase the receiver.
+	  Network::Receivers.erase(result.first);
+
+	  // delete the value.
+	  delete value;
+
+	  escape("unable to receive the packet in time");
+	}
+
+      // extract the outputs arguments.
+      if (outputs.Extract(*value->second) == StatusError)
+	escape("unable to extract the output arguments");
+
+      // delete the data.
+      delete value->second;
+
+      // delete the value.
+      delete value;
+
+      // note that there is no need to remove the entry since it should
+      // have been removed by the dispatcher, cf Dispatch().
 
       leave();
     }
@@ -76,7 +146,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -84,14 +154,16 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
+	enter();
+
 	// unpack the data.
 	if (P::Unpack(data) == StatusError)
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger() == StatusError)
+	if (this->callback.Trigger() == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -99,8 +171,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -109,7 +183,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -123,7 +197,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -131,9 +205,11 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
+
+	enter();
 
 	// unpack the data.
 	if (P::Unpack(data,
@@ -141,7 +217,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1) == StatusError)
+	if (this->callback.Trigger(o1) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -149,8 +225,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -159,7 +237,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -173,7 +251,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -181,10 +259,12 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
+
+	enter();
 
 	// unpack the data.
 	if (P::Unpack(data,
@@ -192,7 +272,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2) == StatusError)
+	if (this->callback.Trigger(o1, o2) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -200,8 +280,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -210,7 +292,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -224,7 +306,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -232,11 +314,13 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
 	typename P::P3	o3;
+
+	enter();
 
 	// unpack the data.
 	if (P::Unpack(data,
@@ -244,7 +328,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3) == StatusError)
+	if (this->callback.Trigger(o1, o2, o3) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -252,8 +336,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -262,7 +348,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -276,7 +362,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -284,12 +370,14 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
 	typename P::P3	o3;
 	typename P::P4	o4;
+
+	enter();
 
 	// unpack the data.
 	if (P::Unpack(data,
@@ -297,7 +385,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4) == StatusError)
+	if (this->callback.Trigger(o1, o2, o3, o4) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -305,8 +393,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -315,7 +405,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -329,7 +419,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -337,7 +427,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -345,13 +435,15 @@ namespace elle
 	typename P::P4	o4;
 	typename P::P5	o5;
 
+	enter();
+
 	// unpack the data.
 	if (P::Unpack(data,
 		      o1, o2, o3, o4, o5) == StatusError)
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5) == StatusError)
+	if (this->callback.Trigger(o1, o2, o3, o4, o5) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -359,8 +451,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -369,7 +463,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -383,7 +477,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -391,7 +485,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -400,6 +494,8 @@ namespace elle
 	typename P::P5	o5;
 	typename P::P6	o6;
 
+	enter();
+
 	// unpack the data.
 	if (P::Unpack(data,
 		      o1, o2, o3, o4, o5,
@@ -407,7 +503,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
+	if (this->callback.Trigger(o1, o2, o3, o4, o5,
 				    o6) == StatusError)
 	  escape("unable to complete the callback");
 
@@ -416,8 +512,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -426,7 +524,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -440,7 +538,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -448,7 +546,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -458,6 +556,8 @@ namespace elle
 	typename P::P6	o6;
 	typename P::P7	o7;
 
+	enter();
+
 	// unpack the data.
 	if (P::Unpack(data,
 		      o1, o2, o3, o4, o5,
@@ -465,7 +565,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
+	if (this->callback.Trigger(o1, o2, o3, o4, o5,
 				    o6, o7) == StatusError)
 	  escape("unable to complete the callback");
 
@@ -474,8 +574,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -484,7 +586,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -498,7 +600,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -506,7 +608,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -517,6 +619,8 @@ namespace elle
 	typename P::P7	o7;
 	typename P::P8	o8;
 
+	enter();
+
 	// unpack the data.
 	if (P::Unpack(data,
 		      o1, o2, o3, o4, o5,
@@ -524,7 +628,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
+	if (this->callback.Trigger(o1, o2, o3, o4, o5,
 				    o6, o7, o8) == StatusError)
 	  escape("unable to complete the callback");
 
@@ -533,8 +637,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -543,7 +649,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
     ///
@@ -557,7 +663,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(Callback&					callback):
 	callback(callback)
       {
       }
@@ -565,7 +671,7 @@ namespace elle
       //
       // methods
       //
-      Status		Dispatch(Data&				data) const
+      Status		Call(Data&				data) const
       {
 	typename P::P1	o1;
 	typename P::P2	o2;
@@ -577,6 +683,8 @@ namespace elle
 	typename P::P8	o8;
 	typename P::P9	o9;
 
+	enter();
+
 	// unpack the data.
 	if (P::Unpack(data,
 		      o1, o2, o3, o4, o5,
@@ -584,7 +692,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
+	if (this->callback.Trigger(o1, o2, o3, o4, o5,
 				    o6, o7, o8, o9) == StatusError)
 	  escape("unable to complete the callback");
 
@@ -593,8 +701,10 @@ namespace elle
 
       Status		Dump(const Natural32			margin) const
       {
+	enter();
+
 	// dump the callback.
-	if (this->callback->Dump(margin) == StatusError)
+	if (this->callback.Dump(margin) == StatusError)
 	  escape("unable to dump the callback");
 
 	leave();
@@ -603,7 +713,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      Callback&		callback;
     };
 
   }

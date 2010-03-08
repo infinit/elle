@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [sun feb 28 15:19:58 2010]
+// updated       julien quintard   [mon mar  8 23:08:29 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -197,7 +197,7 @@ namespace elle
       //
 
       // entity
-      Embed(Entity, Archive);
+      embed(Entity, Archive);
       Boolean		operator==(const Archive&) const;
 
       // dumpable

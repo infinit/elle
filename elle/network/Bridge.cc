@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [sun feb  7 02:44:23 2010]
+// updated       julien quintard   [fri mar  5 21:52:24 2010]
 //
 
 //
@@ -38,9 +38,9 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    Porter::Porter():
+    Porter::Porter(Callback&					callback):
       server(NULL),
-      callback(NULL)
+      callback(callback)
     {
     }
 
@@ -52,10 +52,6 @@ namespace elle
       // if there is a callback, release it.
       if (this->server != NULL)
 	delete this->server;
-
-      // if there is a callback, release it.
-      if (this->callback != NULL)
-	delete this->callback;
     }
 
 //
@@ -69,14 +65,12 @@ namespace elle
     ///
     /// this method starts listening on the given name.
     ///
-    Status		Porter::Create(const String&	name,
-						 Callback*	callback)
+    Status		Porter::Listen(const String&		name)
     {
-      // allocate a new server.
-      this->server = new ::QLocalServer(this);
+      enter();
 
-      // set the callback.
-      this->callback = callback;
+      // allocate a new server.
+      this->server = new ::QLocalServer;
 
       // start listening.
       if (this->server->listen(name.c_str()) == false)
@@ -104,19 +98,24 @@ namespace elle
     /// signal would be triggered which is not want we want.
     ///
     Status		Bridge::Listen(const String&		name,
-				       Callback*		callback)
+				       Callback&		callback)
     {
       Porter*	porter;
 
-      // allocate a new porter.
-      porter = new Porter;
+      enter(instance(porter));
 
-      // create the porter.
-      if (porter->Create(name, callback) == StatusError)
-	escape("unable to create the porter");
+      // allocate a new porter.
+      porter = new Porter(callback);
+
+      // start listening.
+      if (porter->Listen(name) == StatusError)
+	escape("unable to listen on the bridge");
 
       // add the porter to the container.
       Bridge::Porters.push_back(porter);
+
+      // stop tracking porter.
+      waive(porter);
 
       leave();
     }
@@ -137,6 +136,8 @@ namespace elle
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Porter]" << std::endl;
 
       // dump the server address.
@@ -148,7 +149,7 @@ namespace elle
 		<< this->server->fullServerName().toStdString() << std::endl;
 
       // dump the callback.
-      if (this->callback->Dump(margin + 2) == StatusError)
+      if (this->callback.Dump(margin + 2) == StatusError)
 	escape("unable to dump the callback");
 
       leave();
@@ -167,9 +168,11 @@ namespace elle
       String		shift(2, ' ');
       Bridge::Scoutor	scoutor;
 
+      enter();
+
       std::cout << alignment << "[Bridge]" << std::endl;
 
-      // dump the callbacks table.
+      // dump the porters table.
       for (scoutor = Bridge::Porters.begin();
 	   scoutor != Bridge::Porters.end();
 	   scoutor++)
@@ -194,6 +197,10 @@ namespace elle
       ::QLocalSocket*	socket;
       Door*		door;
 
+      printf("Porter::Accept\n");
+
+      enter(instance(door));
+
       // retrieve the socket from the server.
       if ((socket = this->server->nextPendingConnection()) == NULL)
 	alert(this->server->errorString().toStdString().c_str());
@@ -206,8 +213,13 @@ namespace elle
 	alert("unable to create the door");
 
       // trigger the associated callback.
-      if (this->callback->Trigger(door) == StatusError)
+      if (this->callback.Trigger(door) == StatusError)
 	alert("unable to trigger the callback");
+
+      // stop tracking door as it has been handed to the callback.
+      waive(door);
+
+      release();
     }
 
  }

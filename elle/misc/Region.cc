@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sun feb 28 17:42:31 2010]
+// updated       julien quintard   [sun mar  7 11:03:15 2010]
 //
 
 //
@@ -86,7 +86,7 @@ namespace elle
       // release resources.
       if ((this->contents != NULL) &&
 	  (this->type == Region::TypeBuffer) &&
-	  (this->options & Region::OptionDetach) == 0)
+	  ((this->options & Region::OptionDetach) == 0))
 	::free(this->contents);
     }
 
@@ -361,7 +361,7 @@ namespace elle
 		<< "[Region] "
 		<< "type(" << this->type << ") "
 		<< "options(" << this->options << ") "
-		<< "address(" << (void*)this->contents << ") "
+		<< "address(" << (Void*)this->contents << ") "
 		<< "size(" << std::dec << this->size << ") "
 		<< "capacity(" << std::dec << this->capacity << ")"
 		<< std::endl;

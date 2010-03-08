@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun aug 23 21:25:48 2009]
+// updated       julien quintard   [sun mar  7 23:36:18 2010]
 //
 
 //
@@ -19,9 +19,6 @@
 
 namespace elle
 {
-  using namespace misc;
-  using namespace archive;
-
   namespace test
   {
 
@@ -43,8 +40,11 @@ namespace elle
       Archive		ar;
       Archive		a;
 
-      // initialise the random generator.
-      ::srand(::getpid()); 
+      enter();
+
+      // init the library.
+      if (Elle::Initialize() == StatusError)
+	escape("unable to initialize the Elle library");
 
       // compute the archive's size.
       size = Random::Generate(Test::MinimumPackSize,
@@ -77,6 +77,10 @@ namespace elle
       // verify the archive.
       if (Pack::Verify(a) == StatusError)
 	escape("an error has been detected while verifying the archive");
+
+      // clean the elle library.
+      if (Elle::Clean() == StatusError)
+	escape("unable to clean the Elle library");
 
       leave();
     }
