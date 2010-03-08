@@ -1,3 +1,5 @@
+#include <QCoreApplication>
+
 #include <elle/Elle.hh>
 
 #include <etoile/core/Core.hh>
@@ -6,8 +8,6 @@
 #include <etoile/agent/Agent.hh>
 
 #include <etoile/context/Context.hh>
-
-#include <QCoreApplication>
 
 //
 // [OPENSSL]
@@ -111,40 +111,6 @@ int		main(int			argc,
     etoile::depot::Depot::Initialize();
     etoile::agent::Agent::Initialize(pair);
 
-    /* XXX depot test
-    {
-      etoile::core::Object* o = new etoile::core::Object;
-
-      o->Create(etoile::core::GenreFile, pair.K);
-      o->Seal(pair.k);
-      o->Bind();
-
-      etoile::depot::Depot::Put(o->address, o);
-
-      etoile::core::Data* data = new etoile::core::Data;
-      data->Write(0, (Byte*)"suce", 4);
-      data->Bind();
-
-      etoile::depot::Depot::Put(data->address, data);
-
-      etoile::core::Object* n;
-
-      if (etoile::depot::Depot::Get(o->address, n) != StatusOk)
-	{
-	  printf("... could not get the block\n");
-	  return (0);
-	}
-
-      etoile::depot::Repository::Dump();
-
-      expose();
-
-      // QT loop
-      app.exec();
-    }
-    */
-
-    /* XXX components test */
     {
       etoile::context::Directory	context;
       etoile::hole::Address		address;
@@ -176,57 +142,3 @@ int		main(int			argc,
 
 // chercher les XXX dans elle et etoile et mettre des commentaires
 // car ca manque.
-
-/* XXX
-
- Message:
-  public Archivable
- {
- };
-
- Ping:
-  public Message
- {
-   Serialize();
-   Extract();
- };
-
- Network::Register<Ping::Tag, Ping>(object/method OR class/method OR function);
-   -> container[Tag] = Functionoid<Type>
- Network::Dispatch(archive)
-   -> Extract(tag) -> container[tag]() -> Type.Extract(archive)
-
-server
-------
-Message::Register<TagPing, String>()
-
-client
-------
-
-Channel::Initialize();
-
-gate.Create(OptionEncrypted | OptionAuthenticate);
-gate.Expect([PublicKey]);
-gate.Connect(localhost, 1111);
-gate.Bind(9999);
-gate.Attach([Handler]);
-gate.Open();
-
---
-
-Bridge::Initialize();
-
-door.XXX()
-
-
---
-
-slot.Create();
-slot.Bind(999);
-slot.Attach([Handler]);
-slot.Open();
-
-IDEA: struct Ping: public Message {} -> Register<Message>();
-  ensuite il faut aussi faire le lien entre message -> handler
-
-   XXX */

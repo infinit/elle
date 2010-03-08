@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Types.hh
 //
 // created       julien quintard   [fri aug 14 17:41:49 2009]
-// updated       julien quintard   [fri aug 14 17:42:06 2009]
+// updated       julien quintard   [thu mar  4 16:47:15 2010]
 //
 
 #ifndef ETOILE_WALL_TYPES_HH
@@ -29,6 +29,7 @@ namespace etoile
 // ---------- types -----------------------------------------------------------
 //
 
+    // XXX
     typedef core::Permissions	Permissions;
     typedef core::Version	Version;
 
@@ -40,6 +41,15 @@ namespace etoile
     typedef String		Path;
 
     typedef core::Subject	Subject;
+
+    typedef std::list<String>	Report;
+
+    class Metadata
+    {
+    public:
+      // XXX
+    };
+
   }
 }
 

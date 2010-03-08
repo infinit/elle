@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [mon feb  1 00:49:09 2010]
+// updated       julien quintard   [wed mar  3 16:13:21 2010]
 //
 
 //
@@ -33,6 +33,8 @@ namespace etoile
 				   Byte*			buffer,
 				   Natural64&			size) const
     {
+      enter();
+
       // check the offset.
       if (offset > this->region.size)
 	escape("the offset is out of bound");
@@ -56,6 +58,8 @@ namespace etoile
 				    const Byte*			buffer,
 				    const Natural64		size)
     {
+      enter();
+
       // check if the region needs expanding.
       if ((offset + size) > region.size)
 	{
@@ -76,6 +80,8 @@ namespace etoile
     ///
     Status		Data::Adjust(const Natural64		size)
     {
+      enter();
+
       // first, make sure the region's capacity is large enough.
       if (this->region.Adjust(size) == StatusError)
 	escape("unable to adjust the region size");
@@ -91,6 +97,8 @@ namespace etoile
     ///
     Status		Data::Size(Offset&			size) const
     {
+      enter();
+
       // set the size.
       size = this->region.size;
 
@@ -108,6 +116,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Data]" << std::endl;
 
@@ -127,6 +137,8 @@ namespace etoile
     ///
     Status		Data::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the internal region.
       if (archive.Serialize(this->region) == StatusError)
 	escape("unable to serialize the internal region");
@@ -139,6 +151,8 @@ namespace etoile
     ///
     Status		Data::Extract(Archive&			archive)
     {
+      enter();
+
       // extract the region.
       if (archive.Extract(this->region) == StatusError)
 	escape("unable to extract the region");

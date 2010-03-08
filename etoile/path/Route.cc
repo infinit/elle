@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [sat jan 30 02:10:43 2010]
+// updated       julien quintard   [wed mar  3 16:40:06 2010]
 //
 
 //
@@ -35,6 +35,8 @@ namespace etoile
     {
       Natural32		start;
       Natural32		end;
+
+      enter();
 
       // initialize the pointers.
       start = path.find_first_not_of(Path::Separator);
@@ -67,6 +69,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
       Route::Scoutor	scoutor;
+
+      enter();
 
       std::cout << alignment << "[Route]" << std::endl;
 

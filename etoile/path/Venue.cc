@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [fri jan 29 16:40:17 2010]
+// updated       julien quintard   [wed mar  3 16:40:24 2010]
 //
 
 //
@@ -50,6 +50,8 @@ namespace etoile
       String		shift(2, ' ');
       Venue::Scoutor	scoutor;
 
+      enter();
+
       std::cout << alignment << "[Venue]" << std::endl;
 
       // for every element.
@@ -73,6 +75,8 @@ namespace etoile
     {
       Venue::Scoutor	s;
       Venue::Scoutor	t;
+
+      enter();
 
       // compare the size.
       if (this->elements.size() != element.elements.size())

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [mon feb  1 22:55:52 2010]
+// updated       julien quintard   [mon mar  8 23:12:18 2010]
 //
 
 #ifndef ETOILE_CORE_TIME_HH
@@ -54,7 +54,7 @@ namespace etoile
       //
 
       // entity
-      Embed(Entity, Time);
+      embed(Entity, Time);
       Boolean		operator==(const Time&) const;
 
       // dumpable
@@ -80,11 +80,11 @@ namespace etoile
 // ---------- operators -------------------------------------------------------
 //
 
-    etoile::core::Time	operator+(const etoile::core::Time&,
-				  const etoile::core::Time&);
+    Time		operator+(const Time&,
+				  const Time&);
 
-    elle::Boolean	operator<(const etoile::core::Time&,
-				  const etoile::core::Time&);
+    Boolean		operator<(const Time&,
+				  const Time&);
 
   }
 }

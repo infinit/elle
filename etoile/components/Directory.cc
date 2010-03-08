@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [tue feb  2 19:15:31 2010]
+// updated       julien quintard   [wed mar  3 16:07:24 2010]
 //
 
 //
@@ -33,6 +33,8 @@ namespace etoile
 					const hole::Address&	address)
 					
     {
+      enter();
+
       // load the object.
       if (Object::Load(context, address) == StatusError)
 	escape("unable to load the object");
@@ -51,6 +53,8 @@ namespace etoile
 					  const String&		name,
 					  hole::Address&	address)
     {
+      enter();
+
       // open the access.
       if (Access::Open(context) == StatusError)
 	escape("unable to open the access");
@@ -81,6 +85,8 @@ namespace etoile
 				       const String&		name,
 				       const hole::Address&	address)
     {
+      enter();
+
       // open the access.
       if (Access::Open(context) == StatusError)
 	escape("unable to open the access");
@@ -112,6 +118,8 @@ namespace etoile
     ///
     Status		Directory::Commit(context::Directory*	context)
     {
+      enter();
+
       // close the catalog.
       if (Catalog::Close(context) == StatusError)
 	escape("unable to close the catalog");
@@ -139,6 +147,8 @@ namespace etoile
     ///
     Status		Directory::Close(context::Directory*	context)
     {
+      enter();
+
       // XXX
 
       leave();

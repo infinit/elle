@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [sat jan 30 22:18:13 2010]
+// updated       julien quintard   [wed mar  3 16:17:04 2010]
 //
 
 //
@@ -43,6 +43,8 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Create(const KeyPair&	pair)
     {
+      enter();
+
       // copy the public key.
       this->K = pair.K;
 
@@ -54,6 +56,8 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Bind()
     {
+      enter();
+
       // compute the address.
       if (this->address.Create(this->family, this->K) == StatusError)
 	escape("unable to compute the PKB's address");
@@ -68,6 +72,8 @@ namespace etoile
       const
     {
       hole::Address	self;
+
+      enter();
 
       //
       // make sure the address has not be tampered and correspond to the
@@ -102,6 +108,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
 
       // dump the parent class.
@@ -125,6 +133,8 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Serialize(Archive&	archive) const
     {
+      enter();
+
       // serialize the parent class.
       if (hole::Block::Serialize(archive) == StatusError)
 	escape("unable to serialize the underlying block");
@@ -141,6 +151,8 @@ namespace etoile
     ///
     Status		PublicKeyBlock::Extract(Archive&	archive)
     {
+      enter();
+
       // extract the parent class.
       if (hole::Block::Extract(archive) == StatusError)
 	escape("unable to extract the underlying block");

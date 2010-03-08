@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jan 28 13:10:28 2010]
+// updated       julien quintard   [wed mar  3 16:46:31 2010]
 //
 
 //
@@ -54,6 +54,8 @@ namespace etoile
     ///
     Status		Proof::Specify(const Natural32&		index)
     {
+      enter();
+
       // set the index.
       this->index = index;
 
@@ -69,6 +71,8 @@ namespace etoile
     Status		Proof::Specify(const Natural32&		index,
 				       const Voucher&		voucher)
     {
+      enter();
+
       // set the index.
       this->index = index;
 
@@ -90,6 +94,8 @@ namespace etoile
     ///
     Boolean		Proof::operator==(const Proof&		element) const
     {
+      enter();
+
       // compare the addresses since one of them is null.
       if ((this->voucher == NULL) || (element.voucher == NULL))
 	return ((this->index == element.index) &&
@@ -110,6 +116,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Proof]" << std::endl;
 
@@ -138,6 +146,8 @@ namespace etoile
     ///
     Status		Proof::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the attributes.
       if (archive.Serialize(this->index) == StatusError)
 	escape("unable to serialize the index");
@@ -164,6 +174,8 @@ namespace etoile
     Status		Proof::Extract(Archive&			archive)
     {
       Archive::Type	type;
+
+      enter();
 
       // extract the attributes.
       if (archive.Extract(this->index) == StatusError)

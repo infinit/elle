@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [sat jan 30 22:00:53 2010]
+// updated       julien quintard   [wed mar  3 16:37:00 2010]
 //
 
 //
@@ -48,6 +48,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Block]" << std::endl;
 
       // dump the block address.
@@ -70,6 +72,8 @@ namespace etoile
     ///
     Status		Block::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the attributes.
       if (archive.Serialize((Byte&)this->family) == StatusError)
 	escape("unable to serialize the block's attributes");
@@ -82,9 +86,13 @@ namespace etoile
     ///
     Status		Block::Extract(Archive&			archive)
     {
+      enter();
+
       // extracts the attributes.
       if (archive.Extract((Byte&)this->family) == StatusError)
 	escape("unable to extract the block's attributes");
+
+      leave();
     }
 
   }

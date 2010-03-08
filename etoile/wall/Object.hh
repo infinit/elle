@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [sun feb  7 14:57:41 2010]
+// updated       julien quintard   [wed mar  3 20:10:06 2010]
 //
 
 #ifndef ETOILE_WALL_OBJECT_HH
@@ -31,9 +31,6 @@ namespace etoile
 // ---------- classes ---------------------------------------------------------
 //
 
-    // XXX
-    class Information {};
-
     ///
     /// XXX
     ///
@@ -52,8 +49,8 @@ namespace etoile
       static Status	Lock(const Identifier&);
       static Status	Release(const Identifier&);
 
-      static Status	Meta(const Identifier&,
-			     Information&);
+      static Status	Information(const Identifier&,
+				    Metadata&);
 
       static Status	Rollback(const Identifier&,
 				 Version&);

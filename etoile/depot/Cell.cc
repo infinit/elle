@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.cc
 //
 // created       julien quintard   [tue jan 26 14:07:29 2010]
-// updated       julien quintard   [sat jan 30 04:10:59 2010]
+// updated       julien quintard   [wed mar  3 16:22:17 2010]
 //
 
 //
@@ -46,6 +46,8 @@ namespace etoile
     ///
     Status		Cell::Set(hole::Block*			block)
     {
+      enter();
+
       //
       // update the internal attributes
       //
@@ -84,6 +86,8 @@ namespace etoile
     ///
     Status		Cell::Get(hole::Block*&			block)
     {
+      enter();
+
       // set the value.
       block = this->block;
 
@@ -97,6 +101,8 @@ namespace etoile
     Status		Cell::Destroy()
     {
       Natural32		size;
+
+      enter();
 
       // release the previously stored block.
       if (this->block != NULL)
@@ -127,6 +133,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
       Natural32		size;
+
+      enter();
 
       // retrieve the block's memory imprint.
       if (this->block->Imprint(size) == StatusError)

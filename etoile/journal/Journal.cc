@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [mon feb  1 01:14:38 2010]
+// updated       julien quintard   [wed mar  3 16:38:01 2010]
 //
 
 //
@@ -31,6 +31,8 @@ namespace etoile
     ///
     Status		Journal::Initialize()
     {
+      enter();
+
       // XXX
 
       leave();
@@ -41,6 +43,8 @@ namespace etoile
     ///
     Status		Journal::Clean()
     {
+      enter();
+
       // XXX
 
       leave();
@@ -53,6 +57,8 @@ namespace etoile
     {
       Set::Container	set;
       Set::Scoutor	scoutor;
+
+      enter();
 
       // XXX easy temporary version, just publish everything.
 
@@ -79,6 +85,8 @@ namespace etoile
     ///
     Status		Journal::Pop(context::Context*&		context)
     {
+      enter();
+
       // XXX
 
       leave();
@@ -90,6 +98,8 @@ namespace etoile
     Status		Journal::Get(const hole::Address&	address,
 				     hole::Block*&		block)
     {
+      enter();
+
       // XXX
 
       leave();

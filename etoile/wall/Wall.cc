@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [sun feb  7 14:57:17 2010]
+// updated       julien quintard   [fri mar  5 11:15:26 2010]
 //
 
 //
@@ -27,9 +27,14 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this defines the name of the door which will be used by clients.
     ///
-    Wall::Container		Wall::Interface;
+    const String&		Wall::Line = Configuration::Wall::Line;
+
+    ///
+    /// this variable contains the unauthenticated connections.
+    ///
+    Wall::Container		Wall::Guests;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -40,16 +45,21 @@ namespace etoile
     ///
     Status		Wall::Initialize()
     {
-      //Wall::Register<Identifier, Information>("Object::Meta", &Object::Meta);
+      static Function<Door*>	callback(&Wall::Connection);
 
-      // XXX ensuite on fait Bridge::Listen avec comme callback une methode
-      // statique de Wall qui, une fois recue un message, extrait son nom
-      // (String) et lance une fonctionoid qui extrait les bons types et
-      // declenche le callback du fonctionoid.
+      enter();
 
-      // XXX fournir aussi Wall::Request() qui est template et juste concatene
-      // les types comme ca pas besoin d'avoir un message par arguments
-      // d'inputs sinon ca va etre la merde.
+      /// XXX \todo le faire proprement en quittant, tout nettoyer, notamment
+      ///     en catchant les signaux (UNIX/QT) et via unlink dans Bridge.
+      ::unlink("/tmp/etoile");
+
+      // initialize the interface.
+      if (Interface::Initialize() == StatusError)
+	escape("unable to initialize the interface");
+
+      // listen for incoming connection.
+      if (Bridge::Listen(Wall::Line, callback) == StatusError)
+	escape("unable to listen for bridge connections");
 
       leave();
     }
@@ -59,7 +69,32 @@ namespace etoile
     ///
     Status		Wall::Clean()
     {
-      // XXX remove callbacks
+      enter();
+
+      // clean the interface.
+      if (Interface::Clean() == StatusError)
+	escape("unable to clean the interface");
+
+      leave();
+    }
+
+//
+// ---------- callbacks -------------------------------------------------------
+//
+
+    ///
+    /// this callback is triggered whenever a connection is made to etoile
+    /// through the wall.
+    ///
+    Status		Wall::Connection(Door*&			door)
+    {
+      enter();
+
+      printf("Wall::Connection\n");
+
+      // simply record the new guest in the list of unauthenticated
+      // connections.
+      Wall::Guests.push_front(door);
 
       leave();
     }

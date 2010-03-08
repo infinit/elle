@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.cc
 //
 // created       julien quintard   [fri aug  7 21:44:49 2009]
-// updated       julien quintard   [sat jan 30 03:35:11 2010]
+// updated       julien quintard   [wed mar  3 23:48:32 2010]
 //
 
 //
@@ -69,6 +69,8 @@ namespace etoile
     {
       Item::Scoutor	scoutor;
 
+      enter();
+
       // stop if there is no more entries.
       if (this->data == NULL)
 	false();
@@ -92,6 +94,8 @@ namespace etoile
       std::pair<Item::Iterator, bool>	result;
       Item::Scoutor			scoutor;
       Item*				item;
+
+      enter(instance(item));
 
       // if there is no data yet, create it.
       if (this->data == NULL)
@@ -124,6 +128,9 @@ namespace etoile
       if (result.second == false)
 	escape("unable to insert the new item");
 
+      // stop tracking.
+      waive(item);
+
       leave();
     }
 
@@ -132,6 +139,8 @@ namespace etoile
     ///
     Status		Item::Destroy()
     {
+      enter();
+
       // XXX
 
       leave();
@@ -148,6 +157,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Item]" << std::endl;
 

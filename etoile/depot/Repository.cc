@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [sat jan 30 04:21:39 2010]
+// updated       julien quintard   [wed mar  3 16:32:12 2010]
 //
 
 //
@@ -63,6 +63,8 @@ namespace etoile
     ///
     Status		Repository::Initialize()
     {
+      enter();
+
       // set the content hash block to NULL since such blocks never expire.
       Repository::Delays[hole::FamilyContentHashBlock] = NULL;
 
@@ -80,6 +82,8 @@ namespace etoile
     {
       Repository::Data::Scoutor		i;
       Repository::Access::Scoutor	j;
+
+      enter();
 
       // release the data resources.
       for (i = Repository::Container.begin();
@@ -116,6 +120,8 @@ namespace etoile
       Repository::Data::Iterator			iterator;
       Record*						record;
 
+      enter(instance(record));
+
       //
       // first, retrieve the existing record or create a new one.
       //
@@ -139,6 +145,9 @@ namespace etoile
 	    // check the result.
 	    if (result.second == false)
 	      escape("unable to insert the block");
+
+	    // stop tracking record.
+	    waive(record);
 	  }
 	else
 	  {
@@ -276,6 +285,8 @@ namespace etoile
     {
       Record*		record;
 
+      enter();
+
       //
       // first, the block is retrieve from the repository, either located
       // in the cache or in the reserve.
@@ -381,6 +392,8 @@ namespace etoile
       Repository::Data::Iterator	iterator;
       Record*				record;
 
+      enter(instance(record));
+
       // look for the address.
       if ((iterator = Repository::Container.find(address)) ==
 	  Repository::Container.end())
@@ -417,6 +430,9 @@ namespace etoile
       if (record->Destroy() == StatusError)
 	escape("unable to destroy the record");
 
+      // stop tracking.
+      waive(record);
+
       // delete the record.
       delete record;
 
@@ -433,6 +449,8 @@ namespace etoile
       Natural64*			size;
       const Natural64*			capacity;
       Repository::Access::Container*	access;
+
+      enter();
 
       // retrieve the information related to the repository to treat, cache
       // or reserve, such as the size, capacity and access list.
@@ -483,6 +501,8 @@ namespace etoile
 	      {
 		Unit*	unit;
 
+		enter(instance(unit));
+
 		// retrieve the block.
 		if (record->data.cell->Get(block) == StatusError)
 		  escape("unable to retrieve the block from the cell");
@@ -504,11 +524,16 @@ namespace etoile
 		// attach the unit.
 		record->data.unit = unit;
 
+		// stop tracking the unit.
+		waive(unit);
+
 		// set the location.
 		record->location = LocationReserve;
 
 		// add a stamp to the reserve access list.
 		Repository::Reserve::Queue.push_back(record);
+
+		release();
 
 		break;
 	      }
@@ -571,6 +596,8 @@ namespace etoile
       String				shift(2, ' ');
       Repository::Data::Scoutor		i;
       Repository::Access::Scoutor	j;
+
+      enter();
 
       std::cout << alignment << "[Repository]" << std::endl;
 

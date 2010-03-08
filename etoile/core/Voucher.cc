@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu jan 28 13:10:10 2010]
+// updated       julien quintard   [wed mar  3 16:20:44 2010]
 //
 
 //
@@ -53,6 +53,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Voucher]" << std::endl;
 
       if (this->user.Dump(margin + 2) == StatusError)
@@ -73,6 +75,8 @@ namespace etoile
     ///
     Status		Voucher::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the attributes.
       if (archive.Serialize(this->user,
 			    this->signature) == StatusError)
@@ -86,6 +90,8 @@ namespace etoile
     ///
     Status		Voucher::Extract(Archive&		archive)
     {
+      enter();
+
       // extract the attributes.
       if (archive.Extract(this->user,
 			  this->signature) == StatusError)

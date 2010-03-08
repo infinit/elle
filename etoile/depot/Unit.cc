@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [sat jan 30 22:03:04 2010]
+// updated       julien quintard   [wed mar  3 16:33:49 2010]
 //
 
 //
@@ -31,6 +31,8 @@ namespace etoile
     ///
     Status		Unit::Load(String			path)
     {
+      enter();
+
       // assign the path.
       this->path = path;
 
@@ -45,6 +47,8 @@ namespace etoile
     {
       Archive		archive;
       Natural32		fd;
+
+      enter();
 
       // create the path based on the block's address.
       if (block->address.Identify(this->path) == StatusError)
@@ -65,7 +69,11 @@ namespace etoile
 
       // write the block's archive to the file.
       if (::write(fd, archive.contents, archive.size) != archive.size)
-	escape("unable to write the block's archive");
+	{
+	  ::close(fd);
+
+	  escape("unable to write the block's archive");
+	}
 
       // close the file.
       ::close(fd);
@@ -90,6 +98,8 @@ namespace etoile
       Natural32		fd;
       String		identifier;
 
+      enter();
+
       // retrieve information on the path, especially the unit size.
       if (::lstat(this->path.c_str(), &stat) == -1)
 	escape("unable to retrieve information on the path");
@@ -106,7 +116,11 @@ namespace etoile
 
       // read the whole file.
       if (::read(fd, region.contents, region.size) == -1)
-	escape("unable to read the region");
+	{
+	  ::close(fd);
+
+	  escape("unable to read the region");
+	}
 
       // close the file.
       ::close(fd);
@@ -143,6 +157,8 @@ namespace etoile
     ///
     Status		Unit::Destroy()
     {
+      enter();
+
       // destroy the file.
       if (::unlink(this->path.c_str()) != 0)
 	escape("unable to remove the unit file");
@@ -164,6 +180,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Unit] " << std::endl;
 

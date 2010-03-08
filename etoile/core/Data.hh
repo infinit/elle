@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [mon feb  1 00:47:44 2010]
+// updated       julien quintard   [mon mar  8 23:12:10 2010]
 //
 
 #ifndef ETOILE_CORE_DATA_HH
@@ -57,7 +57,7 @@ namespace etoile
       //
 
       // entity
-      Embed(Entity, Data);
+      embed(Entity, Data);
       // XXX operator==
 
       // dumpable

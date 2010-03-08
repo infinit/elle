@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/agent/Agent.cc
 //
 // created       julien quintard   [mon aug 17 01:20:54 2009]
-// updated       julien quintard   [mon aug 17 02:09:46 2009]
+// updated       julien quintard   [fri mar  5 10:41:57 2010]
 //
 
 //
@@ -26,7 +26,7 @@ namespace etoile
 // ---------- definitions -----------------------------------------------------
 //
 
-    // XXX
+    // XXX A CHANGER!!!
     KeyPair		Agent::Pair;
     core::Subject	Agent::Subject;
 
@@ -34,7 +34,29 @@ namespace etoile
 // ---------- methods ---------------------------------------------------------
 //
 
-    // XXX
+    ///
+    /// this method initializes the agent.
+    ///
+    Status		Agent::Initialize()
+    {
+      enter();
+
+      // XXX
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the agent.
+    ///
+    Status		Agent::Clean()
+    {
+      enter();
+
+      // XXX
+
+      leave();
+    }
 
   }
 }

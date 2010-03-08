@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [tue feb  2 22:36:40 2010]
+// updated       julien quintard   [wed mar  3 16:10:56 2010]
 //
 
 //
@@ -54,6 +54,8 @@ namespace etoile
     ///
     Status		Author::Create()
     {
+      enter();
+
       // set the mode.
       this->mode = Author::ModeOwner;
       this->proof = NULL;
@@ -66,6 +68,8 @@ namespace etoile
     ///
     Status		Author::Create(const Natural32&		index)
     {
+      enter();
+
       // set the mode.
       this->mode = Author::ModeDelegate;
 
@@ -85,6 +89,8 @@ namespace etoile
     Status		Author::Create(const Natural32&		index,
 				       const Voucher&		voucher)
     {
+      enter();
+
       // set the mode.
       this->mode = Author::ModeVassal;
 
@@ -128,6 +134,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Author]" << std::endl;
 
       std::cout << alignment << shift << "[Mode] "
@@ -155,6 +163,8 @@ namespace etoile
     ///
     Status		Author::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the mode.
       if (archive.Serialize((Byte&)this->mode) == StatusError)
 	escape("unable to serialize the mode");
@@ -181,6 +191,8 @@ namespace etoile
     Status		Author::Extract(Archive&		archive)
     {
       Archive::Type	type;
+
+      enter();
 
       // extract the mode.
       if (archive.Extract((Byte&)this->mode) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat jan 30 22:09:41 2010]
+// updated       julien quintard   [wed mar  3 16:12:11 2010]
 //
 
 //
@@ -44,6 +44,8 @@ namespace etoile
     ///
     Status		ContentHashBlock::Bind()
     {
+      enter();
+
       // compute the address.
       if (this->address.Create(this->family, *this) == StatusError)
 	escape("unable to compute the CHB's address");
@@ -60,6 +62,8 @@ namespace etoile
       const
     {
       hole::Address	self;
+
+      enter();
 
       // compute the address of this object.
       if (self.Create(this->family, *this) == StatusError)
@@ -83,6 +87,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
 
+      enter();
+
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
 
       // dump the parent class.
@@ -101,6 +107,8 @@ namespace etoile
     ///
     Status		ContentHashBlock::Serialize(Archive&	archive) const
     {
+      enter();
+
       // serialize the parent class.
       if (hole::Block::Serialize(archive) == StatusError)
 	escape("unable to serialize the underlying block");
@@ -113,6 +121,8 @@ namespace etoile
     ///
     Status		ContentHashBlock::Extract(Archive&	archive)
     {
+      enter();
+
       // extract the parent class.
       if (hole::Block::Extract(archive) == StatusError)
 	escape("unable to extract the underlying block");

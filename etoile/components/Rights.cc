@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [tue feb  2 19:40:49 2010]
+// updated       julien quintard   [wed mar  3 16:07:40 2010]
 //
 
 //
@@ -33,6 +33,8 @@ namespace etoile
     {
       Digest		fingerprint;
       Code		token;
+
+      enter();
 
       // if the rights have already been determined, return.
       if (context->rights != NULL)

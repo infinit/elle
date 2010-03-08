@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/agent/Agent.hh
 //
 // created       julien quintard   [mon aug 17 01:12:15 2009]
-// updated       julien quintard   [sat jan 30 04:18:54 2010]
+// updated       julien quintard   [fri mar  5 10:23:27 2010]
 //
 
 #ifndef ETOILE_AGENT_AGENT_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <etoile/core/Core.hh>
+#include <etoile/configuration/Configuration.hh>
 
 namespace etoile
 {
@@ -43,19 +44,14 @@ namespace etoile
     {
     public:
       //
-      // attributes
+      // static methods
       //
+      static Status	Initialize();
+      static Status	Clean();
 
-      // XXX[temporary since no external agent yet]
-      static Status	Initialize(const KeyPair&		pair)
-      {
-	Agent::Pair = pair;
-
-	Agent::Subject.Create(Agent::Pair.K);
-
-	leave();
-      }
-
+      //
+      // static attributes
+      //
       static core::Subject	Subject;
       static KeyPair		Pair;
     };

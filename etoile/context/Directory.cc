@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [sat jan 30 20:54:12 2010]
+// updated       julien quintard   [wed mar  3 16:08:33 2010]
 //
 
 //
@@ -62,6 +62,8 @@ namespace etoile
     ///
     Status		Directory::Register(journal::Set::Container&	set)
     {
+      enter();
+
       // call the object register method.
       if (Object::Register(set) == StatusError)
 	escape("unable to register the object context");

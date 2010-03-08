@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [sat jan 30 22:43:37 2010]
+// updated       julien quintard   [wed mar  3 16:37:30 2010]
 //
 
 //
@@ -35,6 +35,8 @@ namespace etoile
     {
       Archive		archive;
       String		identity;
+
+      enter();
 
       // first, turns the address into a string.
       if (address.Identify(identity) == StatusError)
@@ -93,6 +95,8 @@ namespace etoile
       Region		region;
       String		identity;
       String		identifier;
+
+      enter();
 
       // identify the address.
       if (address.Identify(identity) == StatusError)
@@ -164,6 +168,8 @@ namespace etoile
     ///
     Status		Hole::Destroy(const Address&		address)
     {
+      enter();
+
       // XXX
 
       leave();

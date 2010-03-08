@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [thu jan 28 13:10:57 2010]
+// updated       julien quintard   [mon mar  8 23:12:46 2010]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -72,7 +72,7 @@ namespace etoile
       //
 
       // entity
-      Embed(Entity, Address);
+      embed(Entity, Address);
       Boolean		operator==(const Address&) const;
 
       // dumpable

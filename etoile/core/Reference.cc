@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon feb  1 00:48:45 2010]
+// updated       julien quintard   [wed mar  3 16:17:25 2010]
 //
 
 //
@@ -33,6 +33,8 @@ namespace etoile
     ///
     Status		Reference::Size(Offset&			size) const
     {
+      enter();
+
       // set the size.
       size = this->target.length();
 
@@ -48,6 +50,8 @@ namespace etoile
     ///
     Status		Reference::Dump(Natural32		margin) const
     {
+      enter();
+
       // XXX
 
       leave();
@@ -62,6 +66,8 @@ namespace etoile
     ///
     Status		Reference::Serialize(Archive&		archive) const
     {
+      enter();
+
       // XXX
 
       leave();
@@ -72,6 +78,8 @@ namespace etoile
     ///
     Status		Reference::Extract(Archive&		archive)
     {
+      enter();
+
       // XXX
 
       leave();

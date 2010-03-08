@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [mon feb  1 23:12:45 2010]
+// updated       julien quintard   [wed mar  3 16:18:05 2010]
 //
 
 //
@@ -69,6 +69,8 @@ namespace etoile
     ///
     Status		Subject::Create(const PublicKey&	K)
     {
+      enter();
+
       // set the type.
       this->type = Subject::TypeUser;
 
@@ -86,6 +88,8 @@ namespace etoile
     ///
     Status		Subject::Create(const hole::Address&	descriptor)
     {
+      enter();
+
       // set the type.
       this->type = Subject::TypeGroup;
 
@@ -107,6 +111,8 @@ namespace etoile
     ///
     Boolean		Subject::operator==(const Subject&	element) const
     {
+      enter();
+
       // compare the type.
       if (this->type != element.type)
 	false();
@@ -143,6 +149,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Subject]" << std::endl;
 
@@ -191,6 +199,8 @@ namespace etoile
     ///
     Status		Subject::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the type.
       if (archive.Serialize((Byte&)this->type) == StatusError)
 	escape("unable to serialize the type");
@@ -228,6 +238,8 @@ namespace etoile
     ///
     Status		Subject::Extract(Archive&		archive)
     {
+      enter();
+
       // extract the type.
       if (archive.Extract((Byte&)this->type) == StatusError)
 	escape("unable to extract the type");

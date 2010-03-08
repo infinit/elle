@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Core.cc
 //
 // created       julien quintard   [thu jan 28 22:01:03 2010]
-// updated       julien quintard   [wed feb  3 22:12:46 2010]
+// updated       julien quintard   [wed mar  3 17:18:38 2010]
 //
 
 //
@@ -32,6 +32,8 @@ namespace etoile
     ///
     Status		Core::Initialize()
     {
+      enter();
+
       // register the component types.
       Factory::Register< Object >(Object::Name);
       Factory::Register< Contents<Data> >(Contents<Data>::Name);
@@ -46,6 +48,8 @@ namespace etoile
     ///
     Status		Core::Clean()
     {
+      enter();
+
       // XXX
 
       leave();
@@ -53,4 +57,3 @@ namespace etoile
 
   }
 }
-

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [tue feb  2 17:04:29 2010]
+// updated       julien quintard   [wed mar  3 16:08:42 2010]
 //
 
 //
@@ -79,6 +79,8 @@ namespace etoile
     ///
     Status		Object::Register(journal::Set::Container&	set)
     {
+      enter();
+
       // if there is an object.
       if (this->object != NULL)
 	set.push_front(this->object);

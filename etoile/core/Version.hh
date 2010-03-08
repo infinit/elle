@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [fri aug 14 16:25:17 2009]
+// updated       julien quintard   [wed mar  3 16:20:17 2010]
 //
 
 #ifndef ETOILE_CORE_VERSION_HH
@@ -23,6 +23,9 @@ namespace etoile
 // ---------- types -----------------------------------------------------------
 //
 
+    ///
+    /// XXX
+    ///
     typedef Natural32		Version;
 
   }

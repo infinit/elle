@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [wed feb  3 22:12:34 2010]
+// updated       julien quintard   [wed mar  3 16:12:42 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HXX
@@ -61,6 +61,8 @@ namespace etoile
     {
       Archive		archive;
 
+      enter();
+
       // if the block is already encrypted, return.
       if (this->cipher != NULL)
 	leave();
@@ -96,6 +98,8 @@ namespace etoile
     {
       Archive		archive;
       Clear		clear;
+
+      enter();
 
       // if the block is already decrypted, leave.
       if (this->content != NULL)
@@ -137,6 +141,8 @@ namespace etoile
     template <typename T>
     Status		Contents<T>::Create()
     {
+      enter();
+
       // allocate the block.
       this->content = new T;
 
@@ -151,6 +157,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Contents]" << std::endl;
 
@@ -191,6 +199,8 @@ namespace etoile
     template <typename T>
     Status		Contents<T>::Serialize(Archive&		archive) const
     {
+      enter();
+
       // check if the block's ciphered version is ready.
       if (this->cipher == NULL)
 	escape("unable to serialize an unciphered content");
@@ -213,6 +223,8 @@ namespace etoile
     template <typename T>
     Status		Contents<T>::Extract(Archive&		archive)
     {
+      enter();
+
       // allocate a new cipher.
       this->cipher = new Cipher;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue aug  4 13:55:55 2009]
+// updated       julien quintard   [wed mar  3 16:20:05 2010]
 //
 
 //
@@ -54,6 +54,8 @@ namespace etoile
     Status		Token::Update(SecretKey&	key,
 				      PublicKey&	K)
     {
+      enter();
+
       // release the resources in the case the token has already been
       // updated before.
       if (this->code != NULL)
@@ -83,6 +85,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Token]" << std::endl;
 
       if (this->code != NULL)
@@ -107,6 +111,8 @@ namespace etoile
     ///
     Status		Token::Serialize(Archive&	archive) const
     {
+      enter();
+
       if (this->code != NULL)
 	{
 	  // serialize the internal code.
@@ -129,6 +135,8 @@ namespace etoile
     Status		Token::Extract(Archive&	archive)
     {
       Archive::Type	type;
+
+      enter();
 
       // fetch the next element's type.
       if (archive.Fetch(type) == StatusError)

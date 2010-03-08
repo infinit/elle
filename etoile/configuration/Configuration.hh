@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.hh
 //
 // created       julien quintard   [mon aug 10 12:13:56 2009]
-// updated       julien quintard   [sat jan 30 03:41:02 2010]
+// updated       julien quintard   [fri mar  5 10:23:52 2010]
 //
 
 #ifndef ETOILE_CONFIGURATION_CONFIGURATION_HH
@@ -56,6 +56,11 @@ namespace etoile
       {
 	static String			Path;
 	static Natural64		Capacity;
+      };
+
+      struct				Wall
+      {
+	static String			Line;
       };
 
       //

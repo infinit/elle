@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sat jan 30 17:34:46 2010]
+// updated       julien quintard   [wed mar  3 16:39:55 2010]
 //
 
 //
@@ -45,6 +45,8 @@ namespace etoile
     ///
     Status		Path::Initialize(const hole::Address&	address)
     {
+      enter();
+
       // initialize the root address.
       Path::Root = address;
 
@@ -60,6 +62,8 @@ namespace etoile
     ///
     Status		Path::Clean()
     {
+      enter();
+
       // clean the cache.
       if (Cache::Clean() == StatusError)
 	escape("unable to clean the cache");
@@ -80,6 +84,8 @@ namespace etoile
     {
       Venue		venue;
       Route::Scoutor	scoutor;
+
+      enter();
 
       // first ask the cache to resolve as much as it can.
       if (Cache::Resolve(route, venue) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [fri jan 29 11:03:15 2010]
+// updated       julien quintard   [wed mar  3 16:51:14 2010]
 //
 
 //
@@ -48,6 +48,8 @@ namespace etoile
     ///
     Status		Record::Create(const hole::Address&	address)
     {
+      enter();
+
       // set the record address.
       this->address = address;
 
@@ -78,6 +80,8 @@ namespace etoile
       Time*		time;
       Natural64		expiration;
 
+      enter();
+
       // if no timer is required for the family of block, just return.
       if (this->timer == NULL)
 	leave();
@@ -104,6 +108,8 @@ namespace etoile
     ///
     Status		Record::Destroy()
     {
+      enter();
+
       ///
       /// first, stop and release the existing timer.
       ///
@@ -169,6 +175,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Record] "
 		<< this << std::endl;
 
@@ -210,9 +218,13 @@ namespace etoile
     ///
     void		Record::Timeout()
     {
+      enter();
+
       // remove the block from the repository.
       if (Repository::Discard(this->address) == StatusError)
 	alert("unable to discard the timeout block");
+
+      release();
     }
 
   }

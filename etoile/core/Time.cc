@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [tue feb  2 01:16:39 2010]
+// updated       julien quintard   [sun mar  7 21:00:13 2010]
 //
 
 //
@@ -53,6 +53,8 @@ namespace etoile
     {
       ::time_t		timer;
       struct ::tm*	tm;
+
+      enter();
 
       // retrieve the local time.
       if (::time(&timer) == -1)
@@ -101,6 +103,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Time]" << std::endl;
 
       std::cout << alignment << shift << "[Second] "
@@ -135,6 +139,8 @@ namespace etoile
     ///
     Status		Time::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the internal attributes.
       if (archive.Serialize(this->second,
 			    this->minute,
@@ -152,6 +158,8 @@ namespace etoile
     ///
     Status		Time::Extract(Archive&			archive)
     {
+      enter();
+
       // extract the internal attributes.
       if (archive.Extract(this->second,
 			  this->minute,
@@ -171,10 +179,12 @@ namespace etoile
     ///
     /// this operator adds two times together.
     ///
-    etoile::core::Time	operator+(const etoile::core::Time&	lhs,
-				  const etoile::core::Time&	rhs)
+    Time		operator+(const Time&			lhs,
+				  const Time&			rhs)
     {
-      etoile::core::Time	result(lhs);
+      Time		result(lhs);
+
+      enter();
 
       result.second += rhs.second;
       result.hour += rhs.hour;
@@ -220,8 +230,8 @@ namespace etoile
     ///
     /// this operator compares two times.
     ///
-    elle::Boolean	operator<(const etoile::core::Time&	lhs,
-				  const etoile::core::Time&	rhs)
+    Boolean		operator<(const Time&			lhs,
+				  const Time&			rhs)
     {
       return ((lhs.year < rhs.year) ||
 	      (lhs.month < rhs.month) ||

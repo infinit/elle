@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.cc
 //
 // created       julien quintard   [mon aug 10 16:46:56 2009]
-// updated       julien quintard   [sat jan 30 03:41:59 2010]
+// updated       julien quintard   [fri mar  5 10:24:04 2010]
 //
 
 //
@@ -43,6 +43,11 @@ namespace etoile
     String		Configuration::Reserve::Path;
     Natural64		Configuration::Reserve::Capacity = 1073741824;
 
+    ///
+    /// wall-specific configuration attributes
+    ///
+    String		Configuration::Wall::Line("etoile");
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -53,6 +58,8 @@ namespace etoile
     ///
     Status		Configuration::Initialize(const String&	path)
     {
+      enter();
+
       // build the reserve path.
       Configuration::Reserve::Path =
 	path + Configuration::Path::Separator + String("reserve");
@@ -65,6 +72,8 @@ namespace etoile
     ///
     Status		Configuration::Clean()
     {
+      enter();
+
       leave();
     }
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Subject.hh
 //
 // created       julien quintard   [fri aug 14 16:26:10 2009]
-// updated       julien quintard   [mon feb  1 22:56:02 2010]
+// updated       julien quintard   [mon mar  8 23:11:44 2010]
 //
 
 #ifndef ETOILE_CORE_SUBJECT_HH
@@ -66,7 +66,7 @@ namespace etoile
       //
 
       // entity
-      Embed(Entity, Subject);
+      embed(Entity, Subject);
       Boolean		operator==(const Subject&) const;
 
       // dumpable

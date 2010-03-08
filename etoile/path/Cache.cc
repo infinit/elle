@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [sat jan 30 03:24:29 2010]
+// updated       julien quintard   [wed mar  3 16:38:42 2010]
 //
 
 //
@@ -60,6 +60,8 @@ namespace etoile
     ///
     Status		Cache::Initialize()
     {
+      enter();
+
       // XXX
 
       leave();
@@ -70,11 +72,14 @@ namespace etoile
     ///
     Status		Cache::Clean()
     {
-      /*
+      enter();
+
+      /* XXX
       // purge the hierarchy.
       if (Cache::Root.Purge() == StatusError)
 	escape("unable to purge the root directory item");
       */
+
       leave();
     }
 
@@ -87,6 +92,8 @@ namespace etoile
       Route::Scoutor	r;
       Venue::Scoutor	v;
       Item*		item = &Cache::Data;
+
+      enter();
 
       // for every element of the route.
       for (r = route.elements.begin(), v = venue.elements.begin();
@@ -118,6 +125,8 @@ namespace etoile
       Route::Scoutor	scoutor;
       Item*		item = &Cache::Data;
 
+      enter();
+
       // for every element of the route.
       for (scoutor = route.elements.begin();
 	   scoutor != route.elements.end();
@@ -144,6 +153,8 @@ namespace etoile
     Status		Cache::Dump(const Natural32		margin)
     {
       String				alignment(margin, ' ');
+
+      enter();
 
       std::cout << alignment << "[Cache]" << std::endl;
 

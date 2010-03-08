@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [wed feb  3 22:12:03 2010]
+// updated       julien quintard   [wed mar  3 16:16:11 2010]
 //
 
 //
@@ -68,6 +68,8 @@ namespace etoile
 				       const PublicKey&		owner)
     {
       KeyPair		pair;
+
+      enter();
 
       // (i)
       {
@@ -137,6 +139,8 @@ namespace etoile
 				       const Offset&		size,
 				       const Digest&		fingerprint)
     {
+      enter();
+
       // set the author.
       this->author = author;
 
@@ -166,6 +170,8 @@ namespace etoile
 					     const Permissions&	permissions,
 					     const Code&	token)
     {
+      enter();
+
       // set the address.
       this->meta.access = access;
 
@@ -190,6 +196,8 @@ namespace etoile
     ///
     Status		Object::Seal(const PrivateKey&		user)
     {
+      enter();
+
       // re-sign the data if required.
       if (this->data.state == StateDirty)
 	{
@@ -261,6 +269,8 @@ namespace etoile
       const
     {
       const PublicKey*	author;
+
+      enter();
 
       // (i)
       {
@@ -342,6 +352,8 @@ namespace etoile
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Object]" << std::endl;
 
@@ -439,6 +451,8 @@ namespace etoile
     ///
     Status		Object::Serialize(Archive&		archive) const
     {
+      enter();
+
       // serialize the component name.
       if (archive.Serialize(Object::Name) == StatusError)
 	escape("unable to serialize the component identifier");
@@ -484,6 +498,8 @@ namespace etoile
     Status		Object::Extract(Archive&		archive)
     {
       Archive::Type	type;
+
+      enter();
 
       // call the parent class.
       if (PublicKeyBlock::Extract(archive) == StatusError)

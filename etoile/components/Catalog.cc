@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Catalog.cc
 //
 // created       julien quintard   [mon aug 17 11:46:30 2009]
-// updated       julien quintard   [tue feb  2 22:34:38 2010]
+// updated       julien quintard   [wed mar  3 16:06:26 2010]
 //
 
 //
@@ -35,6 +35,8 @@ namespace etoile
     ///
     Status		Catalog::Open(context::Directory*	context)
     {
+      enter();
+
       // if the catalog is already opened, return.
       if (context->catalog != NULL)
 	leave();
@@ -81,6 +83,8 @@ namespace etoile
     {
       SecretKey			key;
       core::Offset		size;
+
+      enter();
 
       //
       // first, the method verifies that a catalog is present and that it
@@ -175,6 +179,8 @@ namespace etoile
 					const String&		name,
 					hole::Address&		address)
     {
+      enter();
+
       // look up the entry.
       if (context->catalog->content->Lookup(name, address) == StatusError)
 	escape("unable to find the entry in the catalog");
@@ -189,6 +195,8 @@ namespace etoile
 				     const String&		name,
 				     const hole::Address&	address)
     {
+      enter();
+
       // add the entry in the catalog.
       if (context->catalog->content->Add(name, address) == StatusError)
 	escape("unable to add the entry in the catalog");

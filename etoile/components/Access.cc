@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [tue feb  2 22:36:00 2010]
+// updated       julien quintard   [wed mar  3 16:05:35 2010]
 //
 
 //
@@ -31,6 +31,8 @@ namespace etoile
     ///
     Status		Access::Open(context::Object*		context)
     {
+      enter();
+
       // if the access is already opened, return.
       if (context->access != NULL)
 	leave();
@@ -58,6 +60,8 @@ namespace etoile
     Status		Access::Close(context::Object*		context)
     {
       core::Offset	size;
+
+      enter();
 
       // if there is no loaded access, then there is nothing to do.
       if (context->access == NULL)
@@ -103,6 +107,8 @@ namespace etoile
 					 core::Permissions&	permissions,
 					 Code&			token)
     {
+      enter();
+
       // test if the subject is the object's owner.
       if ((subject.type == core::Subject::TypeUser) &&
 	  (*subject.identifier.user == context->object->owner.K))
@@ -128,6 +134,8 @@ namespace etoile
     Status		Access::Upgrade(context::Object*	context,
 					const SecretKey&	key)
     {
+      enter();
+
       //
       // first, go through all the access entries and upgrade the key.
       //

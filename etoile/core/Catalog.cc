@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue feb  2 20:25:38 2010]
+// updated       julien quintard   [wed mar  3 16:11:43 2010]
 //
 
 //
@@ -70,6 +70,8 @@ namespace etoile
     {
       Catalog::Entry*	entry;
 
+      enter(instance(entry));
+
       // look for an existing entry.
       if (this->Search(name) == StatusTrue)
 	escape("another entry with the same name seems to already exist");
@@ -84,6 +86,9 @@ namespace etoile
       // add the entry to the catalog entries.
       this->entries.push_back(entry);
 
+      // stop tracking entry.
+      waive(entry);
+
       // mark the catalog as dirty.
       this->state = StateDirty;
 
@@ -96,6 +101,8 @@ namespace etoile
     Status		Catalog::Remove(const String&		name)
     {
       Catalog::Iterator	iterator;
+
+      enter();
 
       // look for an existing entry.
       if (this->Search(name, &iterator) == StatusFalse)
@@ -118,6 +125,8 @@ namespace etoile
     {
       Catalog::Iterator	iterator;
 
+      enter();
+
       // look for an existing entry.
       if (this->Search(name, &iterator) == StatusFalse)
 	escape("unable to find the given named entry");
@@ -135,6 +144,8 @@ namespace etoile
 					Catalog::Iterator*	pointer)
     {
       Catalog::Iterator	iterator;
+
+      enter();
 
       // go through the entries.
       for (iterator = this->entries.begin();
@@ -162,6 +173,8 @@ namespace etoile
     ///
     Status		Catalog::Size(Offset&			size) const
     {
+      enter();
+
       // set the size.
       size = this->entries.size();
 
@@ -180,6 +193,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
       Catalog::Scoutor	scoutor;
+
+      enter();
 
       std::cout << alignment << "[Catalog]" << std::endl;
 
@@ -215,6 +230,8 @@ namespace etoile
     {
       Catalog::Scoutor	scoutor;
 
+      enter();
+
       // serialize the number of entries.
       if (archive.Serialize((Offset)this->entries.size()) ==
 	  StatusError)
@@ -243,6 +260,8 @@ namespace etoile
     {
       Offset		size;
       Offset		i;
+
+      enter();
 
       // extract the size.
       if (archive.Extract(size) == StatusError)

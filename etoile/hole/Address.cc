@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat jan 30 21:57:38 2010]
+// updated       julien quintard   [wed mar  3 16:34:25 2010]
 //
 
 //
@@ -86,6 +86,8 @@ namespace etoile
     Status		Address::Create(const Family		family,
 					const Archivable&	object)
     {
+      enter();
+
       // set the family.
       this->family = family;
 
@@ -111,6 +113,8 @@ namespace etoile
     {
       Natural32			i;
       std::ostringstream	stream;
+
+      enter();
 
       if (this->digest != NULL)
 	{
@@ -160,6 +164,8 @@ namespace etoile
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
+      enter();
+
       std::cout << alignment << "[Address]" << std::endl;
 
       if (this->digest != NULL)
@@ -187,6 +193,8 @@ namespace etoile
     ///
     Status		Address::Serialize(Archive&		archive) const
     {
+      enter();
+
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
@@ -210,6 +218,8 @@ namespace etoile
     Status		Address::Extract(Archive&		archive)
     {
       Archive::Type	type;
+
+      enter();
 
       // fetch the next element's type.
       if (archive.Fetch(type) == StatusError)
@@ -245,6 +255,8 @@ namespace etoile
     elle::Boolean	operator<(const etoile::hole::Address&	lhs,
 				  const etoile::hole::Address&	rhs)
     {
+      enter();
+
       // test for a null digest.
       if ((lhs.digest == NULL) && (rhs.digest == NULL))
 	false();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [tue feb  2 02:45:12 2010]
+// updated       julien quintard   [mon mar  8 23:12:29 2010]
 //
 
 #ifndef ETOILE_CORE_ACCESS_HH
@@ -95,7 +95,7 @@ namespace etoile
       //
 
       // entity
-      Embed(Entity, Access);
+      embed(Entity, Access);
       // XXX operator==
 
       // dumpable
