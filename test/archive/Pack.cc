@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Pack.cc
 //
 // created       julien quintard   [wed jan 28 12:08:47 2009]
-// updated       julien quintard   [sun aug 23 21:20:32 2009]
+// updated       julien quintard   [wed mar  3 11:29:32 2010]
 //
 
 //
@@ -39,12 +39,11 @@ namespace elle
     {
       Natural32		i;
 
+      enter();
+
       for (i = 0; i < n; i++)
 	{
 	  Byte		random = Random::Generate(Archive::TypeBoolean, Archive::TypeArchive);
-
-	  // XXX
-	  random = Archive::TypeInteger32;
 
 	  switch ((enum Archive::Type)random)
 	    {
@@ -270,8 +269,13 @@ namespace elle
 		void*		buffer;
 		Natural32	size;
 
+		enter(slab(buffer, ::free));
+
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a large");
+
+		if (archive.Serialize(value) == StatusError)
+		  escape("unable to serialize the element");
 
 		size = BN_num_bytes(&value);
 
@@ -280,8 +284,7 @@ namespace elle
 
 		::BN_bn2bin(&value, (unsigned char*)buffer);
 
-		if (archive.Serialize(value) == StatusError)
-		  escape("unable to serialize the element");
+		::BN_clear_free(&value);
 
 		if (refer)
 		  if (Referee::Push(Archive::TypeLarge,
@@ -290,6 +293,10 @@ namespace elle
 		    escape("unable to push the element into the referee");
 
 		free(buffer);
+
+		waive(buffer);
+
+		release();
 
 		break;
 	      }
@@ -362,6 +369,8 @@ namespace elle
       Archive::Type	type;
       void*		data;
       Natural32		size;
+
+      enter();
 
       while (archive.offset != archive.size)
 	{
@@ -528,6 +537,8 @@ namespace elle
 		Natural32	s;
 		void*		buffer;
 
+		enter(slab(buffer, ::free));
+
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the element");
 
@@ -538,11 +549,19 @@ namespace elle
 
 		::BN_bn2bin(&value, (unsigned char*)buffer);
 
+		::BN_clear_free(&value);
+
 		if (s != size)
 		  escape("different size between the archive and the referee");
 
 		if (::memcmp(buffer, data, size) != 0)
 		  escape("different values between the archive and the referee");
+
+		::free(buffer);
+
+		waive(buffer);
+
+		release();
 
 		break;
 	      }

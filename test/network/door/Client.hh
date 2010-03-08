@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [tue feb 23 13:31:06 2010]
+// updated       julien quintard   [fri mar  5 21:24:30 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_CLIENT_HH
@@ -18,14 +18,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <QObject>
+#include <QThread>
+#include <QTimer>
+
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
 #include <elle/network/Network.hh>
 
-#include <elle/test/network/door/Echo.hh>
-
-#include <QObject>
-#include <QTimer>
+#include <elle/test/network/door/Manifest.hh>
 
 #include <list>
 
@@ -43,7 +44,7 @@ namespace elle
 //
 
     class Client:
-      public ::QObject,
+      public ::QThread,
       public Callable
     {
       Q_OBJECT;
@@ -52,17 +53,17 @@ namespace elle
       //
       // methods
       //
-      Status		Start(const String&);
+      void		run();
 
       //
       // callbacks
       //
-      Status		Receive(Environment&,
-				String&);
+      Status		Challenge(String&);
 
       //
       // attributes
       //
+      String		name;
       Door		door;
     };
 

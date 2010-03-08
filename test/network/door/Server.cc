@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [tue feb 23 14:29:55 2010]
+// updated       julien quintard   [fri mar  5 22:41:54 2010]
 //
 
 //
@@ -27,19 +27,24 @@ namespace elle
 //
 
     ///
-    /// this method initializes the server.
+    /// this method is the thread entry point.
     ///
-    Status		Server::Start(const String&		name)
+    void		Server::run()
     {
       static Method<Door*>	connection(this, &Server::Connection);
+
+      enter();
 
       std::cout << "[bridge] " << name << std::endl;
 
       // listen for incoming connections.
-      if (Bridge::Listen(name, &connection) == StatusError)
-	escape("unable to listen for bridge connections");
+      if (Bridge::Listen(this->name, connection) == StatusError)
+	alert("unable to listen for bridge connections");
 
-      leave();
+      // event loop.
+      this->exec();
+
+      release();
     }
 
 //
@@ -51,16 +56,37 @@ namespace elle
     ///
     Status		Server::Connection(Door*&		door)
     {
+      String		challenge("bande!");
+      String		response;
+
+      enter();
+
+      printf("Server::Connection\n");
+
+      // push the door in the container.
+      this->doors.push_front(door);
+
+      // XXX
+      door->Transmit(Inputs<TagChallenge>(challenge));
+      //door->Transmit(Inputs<TagChallenge>(challenge));
+
+      //door->Call(Inputs<TagChallenge>(challenge),
+      //Outputs<TagResponse>(response));
+
+      /*
       // send a message to the caller.
-      if (door->Send<TagEcho>(String("bande!")) == StatusError)
+      if (door->Call(Inputs<TagChallenge>(challenge),
+		     Outputs<TagResponse>(response)) == StatusError)
+	{
+	  // XXX
+	  expose();
+
 	escape("unable to send a message");
+	}
 
-      // disconnect right away.
-      if (door->Disconnect() == StatusError)
-	escape("unable to disconnect");
-
-      // delete the door.
-      delete door;
+      // print the response.
+      std::cout << "[Response] " << response << std::endl;
+      */
 
       leave();
     }

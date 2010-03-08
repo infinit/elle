@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [thu feb 25 14:01:03 2010]
+// updated       julien quintard   [sun mar  7 23:26:54 2010]
 //
 
 //
@@ -27,45 +27,109 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this container holds the list of registered callbacks.
     ///
-    Network::Container		Network::Callbacks;
+    Network::Trig::Container		Network::Callbacks;
+
+    ///
+    /// this container holds the list of threads waiting for a specific
+    /// packet.
+    ///
+    Network::Wait::Container		Network::Receivers;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method takes an archive, extract its identifier and trigger
-    /// the callback associated with this tag by re-constructing the
-    /// live objects.
+    /// this method takes a newly received packet and dispatch it.
     ///
-    Status		Network::Dispatch(Packet&		packet)
+    Status		Network::Dispatch(Context*		context,
+					  Header*		header,
+					  Data*			data)
     {
-      Network::Scoutor	scoutor;
-      Header		header;
-      Data		data;
+      Context*		c = context;
+      Header*		h = header;
+      Data*		d = data;
 
-      // first, extract the header which contain the metadata required
-      // to build the parameters, such as the tag.
-      if (packet.Extract(header) == StatusError)
-	escape("unable to extract the header");
+      enter(instance(context),
+	    instance(header),
+	    instance(data));
 
-      /// XXX \todo here header.size can be used to chop the packet
-      /// and return what has not been used.
+      // reset the variables that are now tracked.
+      context = c;
+      header = h;
+      data = d;
 
-      // extract the data.
-      if (packet.Extract(data) == StatusError)
-	escape("unable to extract the data");
+      printf("Network::Dispatch(%u)\n", header->tag);
 
-      // retrieve the callback associated to the header's tag.
-      if ((scoutor = Network::Callbacks.find(header.tag)) ==
-	  Network::Callbacks.end())
-	escape("unable to locate the callback");
+      //
+      // assign the new context.
+      //
+      if (Context::Assign(context) == StatusError)
+	escape("unable to assign the context");
 
-      // trigger the callback.
-      if (scoutor->second->Dispatch(data) == StatusError)
-	escape("unable to dispatch the event");
+      // stop tracking context.
+      waive(context);
+
+      //
+      // first, look at the receivers waiting for this very specific packet.
+      //
+      {
+	Network::Wait::Iterator		iterator;
+
+	// retrieve the condition associated to the header's tag.
+	if ((iterator = Network::Receivers.find(header->identifier)) !=
+	    Network::Receivers.end())
+	  {
+	    // set the data pointer.
+	    iterator->second->second = data;
+
+	    // wake up the receiver.
+	    iterator->second->first.Release();
+
+	    // delete the header.
+	    delete header;
+
+	    // stop tracking the header and data.
+	    waive(header);
+	    waive(data);
+
+	    // delete the entry in the receivers container since
+	    // it will no longer be used.
+	    //
+	    // note that since the entry value has been allocated, it
+	    // will not be deleted so that the waited thread will get
+	    // the data pointer has expected.
+	    Network::Receivers.erase(iterator);
+
+	    leave();
+	  }
+      }
+
+      //
+      // second, call an associated callback.
+      //
+      {
+	Network::Trig::Scoutor		scoutor;
+
+	// retrieve the callback associated to the header's tag.
+	if ((scoutor = Network::Callbacks.find(header->tag)) ==
+	    Network::Callbacks.end())
+	  escape("unable to locate the callback");
+
+	// trigger the callback.
+	if (scoutor->second->Call(*data) == StatusError)
+	  escape("unable to dispatch the event");
+
+	// delete the header and data.
+	delete header;
+	delete data;
+
+	// stop tracking the header and data.
+	waive(header);
+	waive(data);
+      }
 
       leave();
     }
@@ -79,9 +143,11 @@ namespace elle
     ///
     Status		Network::Dump(const Natural32		margin)
     {
-      String		alignment(margin, ' ');
-      String		shift(2, ' ');
-      Network::Scoutor	scoutor;
+      String			alignment(margin, ' ');
+      String			shift(2, ' ');
+      Network::Trig::Scoutor	scoutor;
+
+      enter();
 
       std::cout << alignment << "[Network]" << std::endl;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [sun feb 28 18:20:24 2010]
+// updated       julien quintard   [wed mar  3 17:15:55 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HXX
@@ -59,10 +59,10 @@ namespace elle
       Factory::Generator<T>*			generator;
       std::pair<Factory::Iterator, Boolean>	result;
 
-      enter(keyword(generator));
+      enter(instance(generator));
 
       // check if there is already such an identifier registerd.
-      if (Factory::Map.find(identifier) == Factory::Map.end())
+      if (Factory::Map.find(identifier) != Factory::Map.end())
 	escape("unable to register an already registered identifier");
 
       // create a generator.
@@ -77,6 +77,9 @@ namespace elle
       // check if the insertion was successful.
       if (result.second == false)
 	escape("unable to insert the generator into the container");
+
+      // give up the tracking.
+      waive(generator);
 
       leave();
     }

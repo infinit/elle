@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [mon mar  1 12:23:13 2010]
+// updated       julien quintard   [fri mar  5 13:06:31 2010]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -153,7 +153,9 @@ namespace elle
       ///
       virtual Status	Imprint(Natural32&			size) const
       {
-	fail("this method should never have been called");
+	enter();
+
+	escape("this method should never have been called");
       }
 
       //
@@ -179,7 +181,9 @@ namespace elle
       ///
       virtual Boolean	operator==(const Entity&) const
       {
-	fail("this method should never have been called");
+	enter();
+
+	flee("this method should never have been called");
       }
 
       ///
@@ -189,7 +193,9 @@ namespace elle
       ///
       virtual Boolean	operator!=(const Entity&) const
       {
-	fail("this method should never have been called");
+	enter();
+
+	flee("this method should never have been called");
       }
     };
 

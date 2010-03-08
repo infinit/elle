@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [thu feb 25 14:07:45 2010]
+// updated       julien quintard   [fri mar  5 21:14:16 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HH
@@ -18,11 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Socket.hh>
-#include <elle/network/Network.hh>
-
 #include <QObject>
 #include <QLocalSocket>
+
+#include <elle/network/Socket.hh>
+#include <elle/network/Network.hh>
+#include <elle/network/Identifier.hh>
+#include <elle/network/Packet.hh>
 
 namespace elle
 {
@@ -41,8 +43,8 @@ namespace elle
     /// or local domain sockets.
     ///
     class Door:
-      ::QObject,
-      Socket
+      public ::QObject,
+      public Socket
     {
       Q_OBJECT;
 
@@ -65,10 +67,37 @@ namespace elle
       Status		Create(::QLocalSocket*);
 
       Status		Connect(const String&);
+      Status		Read(Packet&);
       Status		Disconnect();
 
-      template <const Tag G, typename... T>
-      Status		Send(const T&...);
+      template <typename I>
+      Status		Send(const I&,
+			     const Identifier& = Identifier::Null);
+      template <typename I>
+      Status		Transmit(const I&,
+				 const Identifier& = Identifier::Null);
+      template <typename O>
+      Status		Receive(const Identifier&,
+				O);
+      template <typename I,
+		typename O>
+      Status		Request(const I&,
+				O&);
+      template <typename I,
+		typename O>
+      Status		Call(const I&,
+			     O);
+      template <typename I>
+      Status		Reply(const I&);
+      template <typename I>
+      Status		Return(const I&);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes
@@ -86,7 +115,7 @@ namespace elle
       //
     private slots:
       void		Error(QLocalSocket::LocalSocketError);
-      void		Read();
+      void		Deliver();
     };
 
   }

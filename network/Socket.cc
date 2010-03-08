@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [wed feb  3 12:58:55 2010]
+// updated       julien quintard   [fri mar  5 16:03:00 2010]
 //
 
 //
@@ -40,24 +40,6 @@ namespace elle
     Socket::Socket(const Socket::Type&				type):
       type(type)
     {
-    }
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    Status		Socket::Dump(const Natural32		margin) const
-    {
-      String		alignment(margin, ' ');
-      String		shift(2, ' ');
-
-      std::cout << alignment << "[Socket]" << std::endl;
-
-      // dump the type.
-      std::cout << alignment << shift << "[Type] "
-		<< this->type << std::endl;
-
-      leave();
     }
 
   }

@@ -8,22 +8,9 @@
 // file          /home/mycure/infinit/elle/misc/Maid.hh
 //
 // created       julien quintard   [sun feb 28 09:00:00 2010]
-// updated       julien quintard   [mon mar  1 14:57:05 2010]
+// updated       julien quintard   [mon mar  8 23:05:14 2010]
 //
 
-
-
-
-
-
-
-
-
-///////////////////////////// XXX
-// renommer en army composee de guards
-// faire une unique template pour army qui prend des types, fait le sizeof
-// pour connaitre le nombre d'elements et creer un tableau de guard.
-//
 #ifndef ELLE_MISC_MAID_HH
 #define ELLE_MISC_MAID_HH
 
@@ -33,6 +20,11 @@
 
 #include <elle/core/Natural.hh>
 #include <elle/core/Void.hh>
+#include <elle/core/Macro.hh>
+
+#include <elle/misc/Report.hh>
+
+#include <cstdarg>
 
 namespace elle
 {
@@ -42,76 +34,172 @@ namespace elle
   {
 
 //
-// ---------- macro functions -------------------------------------------------
-//
-
-///
-/// this macro function allocates memory within the current scope through
-/// the use of alloca() before creating a Guard.
-///
-/// only the pointers to variables that must be deallocated automatically
-/// should an error occur must be passed to this macro function.
-///
-#define enter(_objects_...)						\
-    Maid::Shell* _maid_ =						\
-      Maid::Install((Void*)alloca(Maid::Shell::Size), ##_objects_)
-
-///
-/// XXX
-///
-// XXX utiliser auto au lieu de Void* pour garder le type!
-// XXX faire une methode genre Init() qui retourne le type recu en
-// pointer et retourne donc NULL pour ce type la. comme ca auto marchera
-#define local(_name_)							\
-  Void*		_ ## _name_ ## _
-
-///
-/// XXX
-///
-#define track(_name_)							\
-  _ ## _name_ ## _ = &_name_
-
-///
-/// XXX
-///
-#define untrack(_name_)							\
-  _ ## _name_ ## _ = NULL
-
-///
-/// XXX
-///
-#define waive(_pointer_)						\
-  _pointer_ = NULL
-
-///
-/// XXX
-///
-#define keyword(_pointer_)						\
-  Maid::Monitor((Void*)alloca(Maid::Object::Size),			\
-                _pointer_)
-
-///
-/// XXX
-///
-#define routine(_pointer_, _function_)					\
-  Maid::Monitor((Void*)alloca(Maid::Object::Size),			\
-                _pointer_, _function_)
-
-///
-/// XXX
-///
-#define structure(_name_, _function_)					\
-  Maid::Monitor((Void*)alloca(Maid::Object::Size),			\
-                _ ## _name_ ## _, _function_)
-
-//
 // ---------- classes ---------------------------------------------------------
 //
 
     ///
-    /// this class references pointers that may need deletion.
+    /// this class represents a subsystem of the elle library targeting the
+    /// ancient problem of memory deallocation, more specifically when
+    /// errors occur.
     ///
-    /// XXX expliquer tout le concept general
+    /// the following example illustrates the problem:
+    ///
+    /// void		foo(B*			b)
+    /// {
+    ///   A*		a;
+    ///
+    ///   a = new A(42);
+    ///
+    ///   if (bar(a) == -1)
+    ///     return (-1);
+    ///
+    ///   b = new B(a);
+    ///
+    ///   return (0);
+    /// }
+    ///
+    /// in this example, should the call to bar() fail, the instance 'a'
+    /// would be lost, leading to memory leak. the safe way of programming
+    /// is to release every object allocated before the error occurs.
+    ///
+    /// unfortunately, few are the developers dealing with the burden
+    /// especially since this problem rarely occurs, only when errors
+    /// are detected which are, by definition, not part of the normal
+    /// process.
+    ///
+    /// exceptions cannot solve this problem either because objects
+    /// may have been allocated in the calling function/method such
+    /// that throwing an exception containing the set of pointers
+    /// to the objects to release would go back up through all the
+    /// function scopes until it is catched, leading to the release
+    /// of those objects. unfortunately, many objects will have been
+    /// forgotten. this only way to do it properly with exception would
+    /// be to catch the exception in every scope, release the objects
+    /// of the called function and forward the exception such that the
+    /// source code will look like this:
+    ///
+    /// void		foo()
+    /// {
+    ///   [...]
+    ///
+    ///   try
+    ///   {
+    ///     bar();
+    ///   }
+    ///   catch (Exception e)
+    ///   {
+    ///     e.Release();
+    ///   }
+    ///
+    ///   [...]
+    /// }
+    ///
+    /// void		bar()
+    /// {
+    ///   [...]
+    ///
+    ///   try
+    ///   {
+    ///     baz();
+    ///   }
+    ///   catch (Exception e)
+    ///   {
+    ///     e.Release();
+    ///   }
+    ///
+    ///   [...]
+    /// }
+    ///
+    /// void		baz()
+    /// {
+    ///   [...]
+    ///
+    ///   if (sometest is wrong)
+    ///   {
+    ///     throw Memory(a, b, c);
+    ///   }
+    ///
+    ///   [...]
+    /// }
+    ///
+    /// since this way of using exceptions is not appropriate,
+    /// a specific system for releasing automatically memory
+    /// has been designed.
+    ///
+    /// this system consists in defining the pointers to track
+    /// so that when leaving the scope, if those pointers are
+    /// different from NULL, the cleaning method is called on
+    /// behalf of the user.
+    ///
+    /// note that this system can be used to generally release
+    /// memory for the developer though programmers are strongly
+    /// encouraged to release the memory manually in the normal
+    /// case scenario, mainly for reading purposes.
+    ///
+    /// the system has been designed with intrusion in mind
+    /// such that the developer only has to specify the
+    /// variables to track in the enter() macro-function. then,
+    /// whenever the function leaves the scope through a leave(),
+    /// escape() etc. the pointers are released if necessary.
+    ///
+    /// note that since pointers are considered as requiring
+    /// deallocation when there are different from NULL, the
+    /// developer must inform the system to stop tracking a
+    /// variable if it is manually released or integrated in
+    /// another variable that will release it automatically.
+    /// The waive() macro-function takes a pointer to stop
+    /// tracking.
+    ///
+    /// two types of variables can be used with this system:
+    /// instances of classes which will be released via
+    /// the delete statement and non-objects which such as
+    /// ::RSA* structures etc. that are released through
+    /// the call to a specific function such as ::RSA_free().
+    ///
+    /// the following illustrates how to use the system:
+    ///
+    /// void		foo()
+    /// {
+    ///   ::RSA*	rsa;
+    ///   PublicKey*	pk;
+    ///
+    ///   enter(instance(pk),
+    ///         slab(rsa, ::RSA_free));
+    ///
+    ///   [...]
+    ///
+    ///   leave();
+    /// }
+    ///
+    /// noteworthy is that non-pointer variables can also
+    /// be used. indeed, sometimes a structure is passed
+    /// to functions that may allocate/deallocate data
+    /// without the developer knowing. the following
+    /// illustrates how to use Maid for this purpose.
+    ///
+    /// note that the developer must, in this case, specify
+    /// the system when to start and stop tracking the
+    /// variable through track() and untrack().
+    ///
+    /// void		foo()
+    /// {
+    ///   ::EVP_MD_CTX	context;
+    ///
+    ///   wrap(context);
+    ///   enter(local(context, ::EVP_MD_CTX_cleanup));
+    ///
+    ///   ::EVP_MD_CTX_init(&context);
+    ///
+    ///   track(context);
+    ///
+    ///   [...]
+    ///
+    ///   ::EVP_MD_CTX_cleanup(&context);
+    ///
+    ///   untrack(context);
+    ///
+    ///   leave();
+    /// }
     ///
     class Maid
     {
@@ -121,7 +209,7 @@ namespace elle
       //
       struct		Size
       {
-	static const Natural32		Army;
+	static const Natural32		Garrison;
 	static const Natural32		Guard;
       };
 
@@ -130,7 +218,7 @@ namespace elle
       //
       enum Type
 	{
-	  TypeKeyword,
+	  TypeDelete,
 	  TypeRoutine,
 	};
 
@@ -139,76 +227,133 @@ namespace elle
       //
 
       ///
-      /// this class represents the base class.
+      /// this class represents an object to be released.
       ///
       /// the new and delete operators are overloaded because instances
-      /// of these classes are always allocated on the function/method's
+      /// of this classe are always allocated on the function/method's
       /// stack via the alloca() builtin. therefore, both the new
-      /// and delete operators do not do anything.
+      /// and delete operators do nothing.
       ///
-      class Shell
+      class Guard
       {
       public:
 	//
-	// constructors and destructors
+	// types
 	//
-	virtual ~Shell()
+
+	//
+	// constructors & destructors
+	//
+	virtual ~Guard()
 	{
 	}
 
 	//
 	// operators
 	//
-	Void*		operator new(Natural32			size,
-				     Void*			memory)
+	Void*			operator new(Natural32,
+					     Void*		memory)
 	{
 	  // return the same pointer.
 	  return (memory);
 	}
 
-	Void		operator delete(Void*			memory)
+	Void			operator delete(Void*)
 	{
 	  // do not release any memory as this will be done automatically.
 	}
       };
 
       ///
-      /// this class keeps track of multiple pointers.
+      /// this class stores a set of guards.
       ///
-      template <typename... T>
-      class Army:
-	public Shell
-      {
-      };
-
+      /// the new and delete operators are overloaded because instances
+      /// of this classe are always allocated on the function/method's
+      /// stack via the alloca() builtin. therefore, both the new
+      /// and delete operators do nothing.
       ///
-      /// this class represents an object to be released.
-      ///
-      class Object
+      class Garrison
       {
       public:
 	//
-	// constants
+	// constant
 	//
-	static const Natural32		Size;
-      };
+	static const Natural32		Capacity = 9;
 
-      ///
-      /// this class keeps track of an class instance.
-      ///
-      template <typename T>
-      class Keyword:
-	public Object
-      {
+	//
+	// attributes
+	//
+	Guard*			guards[Capacity];
+	Natural32		size;
+
 	//
 	// constructors & destructors
 	//
-	Keyword(T&						pointer):
+	Garrison(Natural32					size,
+		 ...):
+	  size(size)
+	{
+	  va_list		ap;
+	  Natural32		i;
+
+	  // check the size.
+	  if (this->size > Maid::Garrison::Capacity)
+	    fail("unable to store more guards than the garrison's capacity");
+
+	  // start the variadic extraction.
+	  va_start(ap, size);
+
+	  // read the arguments and set the guards.
+	  for (i = 0; i < size; i++)
+	    this->guards[i] = va_arg(ap, Maid::Guard*);
+
+	  // stop the extraction.
+	  va_end(ap);
+	}
+
+	~Garrison()
+	{
+	  Natural32		i;
+
+	  // go through all the guards.
+	  for (i = 0; i < this->size; i++)
+	    delete this->guards[i];
+	}
+
+	//
+	// operators
+	//
+	Void*			operator new(Natural32,
+					     Void*		memory)
+	{
+	  // return the same pointer.
+	  return (memory);
+	}
+
+	Void			operator delete(Void*)
+	{
+	  // do not release any memory as this will be done automatically.
+	}
+      };
+
+      ///
+      /// this class keeps track of a class instance i.e objects that
+      /// must be released through the use of the delete keyword.
+      ///
+      template <typename T>
+      class Instance:
+	public Guard
+      {
+      public:
+	//
+	// constructors & destructors
+	//
+	Instance(T&						pointer):
 	  pointer(pointer)
 	{
 	}
 
-	~Keyword()
+	~Instance()
 	{
 	  if (this->pointer != NULL)
 	    delete this->pointer;
@@ -217,54 +362,56 @@ namespace elle
 	//
 	// attributes
 	//
-	T		pointer;
+	T&		pointer;
       };
 
       ///
-      /// this class represents an object allocated
-      /// through a specific function.
+      /// this class represents an object allocated through a
+      /// specific function such as malloc/free or RSA_new/RSA_free
+      /// for instance but also BN_init which actually does not allocate
+      /// anything but simply initialises.
       ///
       template <typename T, typename F>
-      class Routine:
-	public Object
+      class Slab:
+	public Guard
       {
       public:
 	//
-	// attributes
-	//
-	T		pointer;
-	F		function;
-
-	//
 	// constructors & destructors
 	//
-	Routine(T&						pointer,
-		F						function):
+	Slab(T&							pointer,
+	     F							function):
 	  pointer(pointer),
 	  function(function)
 	{
 	}
 
-	~Routine()
+	~Slab()
 	{
 	  if (this->pointer != NULL)
 	    (Void)this->function(this->pointer);
 	}
+
+	//
+	// attributes
+	//
+	T&		pointer;
+	F		function;
       };
 
       //
       // static methods
       //
       template <typename... T>
-      static Shell*		Install(Void*,
-					T&...);
+      static Garrison*		Install(Void*,
+					T...);
       template <typename... T>
-      static Shell*		Install(Void*);
+      static Garrison*		Install(Void*);
 
       template <typename T>
-      static Keyword<T>		Monitor(Void*, T&);
+      static Guard*		Monitor(Void*, T&);
       template <typename T, typename F>
-      static Routine<T, F>	Monitor(Void*, T&, F);
+      static Guard*		Monitor(Void*, T&, F);
     };
 
   }

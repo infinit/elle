@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun feb 28 13:01:59 2010]
+// updated       julien quintard   [sun mar  7 23:04:15 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -129,7 +129,7 @@ namespace elle
 
       // serialization mode only.
       if (archive.mode != Archive::ModeExtraction)
-	escape("unable to serialize while not in serialization mode");
+	escape("unable to extract while not in extraction mode");
 
       // load the type.
       if (archive.Load(type) == StatusError)

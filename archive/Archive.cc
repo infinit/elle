@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sun feb 28 13:00:37 2010]
+// updated       julien quintard   [sun mar  7 23:00:52 2010]
 //
 
 //
@@ -618,10 +618,6 @@ namespace elle
       // first copy the archive because we cannot modify it.
       archive = *this;
 
-      // rewind the archive.
-      if (archive.Rewind() == StatusError)
-	escape("unable to rewind the archive");
-
       std::cout << alignment
 		<< "[Archive] "
 		<< "mode(" << archive.mode << ") "
@@ -630,12 +626,19 @@ namespace elle
 		<< "capacity(" << archive.capacity << ")"
 		<< std::endl;
 
+      // rewind the archive.
+      if (archive.Rewind() == StatusError)
+	escape("unable to rewind the archive");
+
       while (archive.offset != archive.size)
 	{
 	  Archive::Type		type;
 
 	  if (archive.Fetch(type) == StatusError)
 	    escape("unable to fetch the next element's type");
+
+	  if (this->offset == archive.offset)
+	    std::cout << alignment << "> " << std::endl;
 
 	  switch (type)
 	    {
@@ -790,6 +793,8 @@ namespace elle
 
 		if (Show(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
+
+		::BN_clear_free(&value);
 
 		break;
 	      }

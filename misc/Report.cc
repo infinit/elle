@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [wed mar 11 14:03:36 2009]
+// updated       julien quintard   [fri mar  5 15:51:19 2010]
 //
 
 //
@@ -59,7 +59,7 @@ namespace elle
     ///
     /// this method flushes the report.
     ///
-    void		Report::Flush()
+    Void		Report::Flush()
     {
       while (this->store.empty() == false)
 	{
@@ -77,7 +77,7 @@ namespace elle
     ///
     /// this method adds a warning to the report.
     ///
-    void		Report::Notify(Report::Type		type,
+    Void		Report::Notify(Report::Type		type,
 				       const String&		text)
     {
       String*		message = new String(text);

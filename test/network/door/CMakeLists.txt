@@ -11,6 +11,6 @@ ADD_EXECUTABLE(test-network-door
   ${test-network-door_MOCS}
 )
 
-TARGET_LINK_LIBRARIES(test-network-door elle
+TARGET_LINK_LIBRARIES(test-network-door elle crypto ssl dl
                       ${QT_QTNETWORK_LIBRARIES}
                       ${QT_QTCORE_LIBRARIES})

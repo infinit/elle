@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [tue feb 23 18:08:05 2010]
+// updated       julien quintard   [wed mar  3 20:33:26 2010]
 //
 
 #ifndef ELLE_NETWORK_PARAMETERS_HXX
@@ -40,11 +40,13 @@ namespace elle
       //
       static Status	Pack(Archive&)
       {
+	enter();
 	leave();
       }
 
       static Status	Unpack(Archive&)
       {
+	enter();
 	leave();
       }
     };
@@ -72,6 +74,8 @@ namespace elle
       static Status	Pack(const P1&				o1,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1) == StatusError)
 	  escape("unable to serialize the objects");
@@ -82,6 +86,8 @@ namespace elle
       static Status	Unpack(Archive&				archive,
 			       P1&				o1)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1) == StatusError)
 	  escape("unable to extract the objects");
@@ -116,6 +122,8 @@ namespace elle
 			     const P2&				o2,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2) == StatusError)
 	  escape("unable to serialize the objects");
@@ -127,6 +135,8 @@ namespace elle
 			       P1&				o1,
 			       P2&				o2)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2) == StatusError)
 	  escape("unable to extract the objects");
@@ -164,6 +174,8 @@ namespace elle
 			     const P3&				o3,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2, o3) == StatusError)
 	  escape("unable to serialize the objects");
@@ -176,6 +188,8 @@ namespace elle
 			       P2&				o2,
 			       P3&				o3)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2, o3) == StatusError)
 	  escape("unable to extract the objects");
@@ -216,6 +230,8 @@ namespace elle
 			     const P4&				o4,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2, o3, o4) == StatusError)
 	  escape("unable to serialize the objects");
@@ -229,6 +245,8 @@ namespace elle
 			       P3&				o3,
 			       P4&				o4)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2, o3, o4) == StatusError)
 	  escape("unable to extract the objects");
@@ -272,6 +290,8 @@ namespace elle
 			     const P5&				o5,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2, o3, o4, o5) == StatusError)
 	  escape("unable to serialize the objects");
@@ -286,6 +306,8 @@ namespace elle
 			       P4&				o4,
 			       P5&				o5)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2, o3, o4, o5) == StatusError)
 	  escape("unable to extract the objects");
@@ -332,6 +354,8 @@ namespace elle
 			     const P6&				o6,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2, o3, o4, o5,
 			      o6) == StatusError)
@@ -348,6 +372,8 @@ namespace elle
 			       P5&				o5,
 			       P6&				o6)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2, o3, o4, o5,
 			    o6) == StatusError)
@@ -398,6 +424,8 @@ namespace elle
 			     const P7&				o7,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2, o3, o4, o5,
 			      o6, o7) == StatusError)
@@ -415,6 +443,8 @@ namespace elle
 			       P6&				o6,
 			       P7&				o7)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2, o3, o4, o5,
 			    o6, o7) == StatusError)
@@ -468,6 +498,8 @@ namespace elle
 			     const P8&				o8,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2, o3, o4, o5,
 			      o6, o7, o8) == StatusError)
@@ -486,6 +518,8 @@ namespace elle
 			       P7&				o7,
 			       P8&				o8)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2, o3, o4, o5,
 			    o6, o7, o8) == StatusError)
@@ -542,6 +576,8 @@ namespace elle
 			     const P9&				o9,
 			     Archive&				archive)
       {
+	enter();
+
 	// serialize the objects.
 	if (archive.Serialize(o1, o2, o3, o4, o5,
 			      o6, o7, o8, o9) == StatusError)
@@ -561,6 +597,8 @@ namespace elle
 			       P8&				o8,
 			       P9&				o9)
       {
+	enter();
+
 	// extract the objects.
 	if (archive.Extract(o1, o2, o3, o4, o5,
 			    o6, o7, o8, o9) == StatusError)

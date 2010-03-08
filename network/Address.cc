@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [sat feb  6 04:37:51 2010]
+// updated       julien quintard   [fri mar  5 15:08:00 2010]
 //
 
 //
@@ -26,7 +26,10 @@ namespace elle
 // ---------- definitions -----------------------------------------------------
 //
 
-    const Address		Address;
+    ///
+    /// the definition of a Null address.
+    ///
+    const Address		Address::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -50,6 +53,8 @@ namespace elle
     Status		Address::Create(const Host&		host,
 					const Port		port)
     {
+      enter();
+
       this->host = host;
       this->port = port;
 
@@ -65,6 +70,8 @@ namespace elle
     ///
     Boolean		Address::operator==(const Address&	element) const
     {
+      enter();
+
       // compare the internal values.
       if ((this->host != element.host) ||
 	  (this->port != element.port))
@@ -84,6 +91,8 @@ namespace elle
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
+
+      enter();
 
       std::cout << alignment << "[Address]" << std::endl;
 

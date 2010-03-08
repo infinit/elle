@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Core.hh
 //
 // created       julien quintard   [fri jan 30 16:14:39 2009]
-// updated       julien quintard   [thu jan 28 12:50:55 2010]
+// updated       julien quintard   [mon mar  8 23:06:42 2010]
 //
 
 #ifndef ELLE_CORE_CORE_HH
@@ -22,6 +22,7 @@
 #include <elle/core/Character.hh>
 #include <elle/core/Integer.hh>
 #include <elle/core/Large.hh>
+#include <elle/core/Macro.hh>
 #include <elle/core/Meta.hh>
 #include <elle/core/Natural.hh>
 #include <elle/core/Null.hh>
@@ -38,18 +39,6 @@ namespace elle
   ///
   namespace core
   {
-
-//
-// ---------- macro functions -------------------------------------------------
-//
-
-///
-/// this macro function enables the caller to embed source code
-/// automatically for a specific type. this functionality is used
-/// by the Entity class for instance.
-///
-#define Embed(_identifier_, _type_)					\
-  _identifier_ ## Embed(_type_)
 
 //
 // ---------- core -----------------------------------------------------------

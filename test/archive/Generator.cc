@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Generator.cc
 //
 // created       julien quintard   [fri jan 30 03:09:18 2009]
-// updated       julien quintard   [sun aug 23 21:14:56 2009]
+// updated       julien quintard   [wed mar  3 11:27:45 2010]
 //
 
 //
@@ -84,6 +84,8 @@ namespace elle
 
     Status		Generator::Create(Boolean&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumBooleanSize,
 			       Generator::MaximumBooleanSize);
 
@@ -92,6 +94,8 @@ namespace elle
 
     Status		Generator::Create(Character&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumCharacterSize,
 			       Generator::MaximumCharacterSize);
 
@@ -100,6 +104,8 @@ namespace elle
 
     Status		Generator::Create(Real&			value)
     {
+      enter();
+
       value =
 	((Real)Random::Generate(Generator::MinimumRealSize,
 				Generator::MaximumRealSize)) +
@@ -111,6 +117,8 @@ namespace elle
 
     Status		Generator::Create(Integer8&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumInteger8Size,
 			       Generator::MaximumInteger8Size);
 
@@ -119,6 +127,8 @@ namespace elle
 
     Status		Generator::Create(Integer16&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumInteger16Size,
 			       Generator::MaximumInteger16Size);
 
@@ -127,6 +137,8 @@ namespace elle
 
     Status		Generator::Create(Integer32&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumInteger32Size,
 			       Generator::MaximumInteger32Size);
 
@@ -135,6 +147,8 @@ namespace elle
 
     Status		Generator::Create(Integer64&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumInteger64Size,
 			       Generator::MaximumInteger64Size);
 
@@ -143,6 +157,8 @@ namespace elle
 
     Status		Generator::Create(Natural8&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumNatural8Size,
 			       Generator::MaximumNatural8Size);
 
@@ -151,6 +167,8 @@ namespace elle
 
     Status		Generator::Create(Natural16&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumNatural16Size,
 			       Generator::MaximumNatural16Size);
 
@@ -159,6 +177,8 @@ namespace elle
 
     Status		Generator::Create(Natural32&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumNatural32Size,
 			       Generator::MaximumNatural32Size);
 
@@ -167,6 +187,8 @@ namespace elle
 
     Status		Generator::Create(Natural64&		value)
     {
+      enter();
+
       value = Random::Generate(Generator::MinimumNatural64Size,
 			       Generator::MaximumNatural64Size);
 
@@ -175,9 +197,14 @@ namespace elle
 
     Status		Generator::Create(Large&		value)
     {
+      enter();
+
       ::BN_init(&value);
-      ::BN_rand(&value, Random::Generate(Generator::MinimumLargeSize,
-					 Generator::MaximumLargeSize), 0, 0);
+      ::BN_rand(&value,
+		Random::Generate(Generator::MinimumLargeSize,
+				 Generator::MaximumLargeSize),
+		0,
+		0);
 
       leave();
     }
@@ -186,6 +213,8 @@ namespace elle
     {
       Natural32		length;
       Natural32		i;
+
+      enter();
 
       length = Random::Generate(Generator::MinimumStringLength,
 				Generator::MaximumStringLength);
@@ -204,6 +233,8 @@ namespace elle
 						Generator::MaximumRegionSize);
       Natural32		i;
 
+      enter();
+
       if (value.Prepare(size) == NULL)
 	escape("unable to prepare the region");
 
@@ -220,6 +251,8 @@ namespace elle
     {
       Integer64		choice = Random::Generate(Generator::MinimumArchiveChoice,
 						  Generator::MaximumArchiveChoice);
+
+      enter();
 
       if (choice == 0)
 	{

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Packet.hh
 //
 // created       julien quintard   [mon feb 22 11:21:39 2010]
-// updated       julien quintard   [tue feb 23 18:16:38 2010]
+// updated       julien quintard   [sun mar  7 12:39:53 2010]
 //
 
 #ifndef ELLE_NETWORK_PACKET_HH

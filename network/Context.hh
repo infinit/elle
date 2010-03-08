@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit
+// license       network
 //
 // file          /home/mycure/infinit/elle/network/Context.hh
 //
-// created       julien quintard   [thu feb 25 13:50:42 2010]
-// updated       julien quintard   [sun feb 28 11:01:52 2010]
+// created       julien quintard   [fri mar  5 10:43:11 2010]
+// updated       julien quintard   [sun mar  7 20:09:10 2010]
 //
 
 #ifndef ELLE_NETWORK_CONTEXT_HH
@@ -18,13 +18,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
 
-#include <elle/network/Address.hh>
 #include <elle/network/Socket.hh>
+#include <elle/network/Address.hh>
 
 namespace elle
 {
+  using namespace core;
+  using namespace misc;
+
   namespace network
   {
 
@@ -33,37 +37,17 @@ namespace elle
 //
 
     ///
-    /// this class enables receivers to access metadata related to a
-    /// network communication such as the correspondant address etc.
+    /// this class contains metadata related to an event such as the
+    /// socket and sender's address for instance.
     ///
-    /// XXX \todo this class should be put in the local storage so that
-    ///     every thread has one.
-    ///
-    class Context
+    class Context:
+      public Dumpable
     {
     public:
       //
-      // enumerations
-      //
-      enum Mode
-	{
-	  ModeMessage,
-	  ModeResponse,
-	  ModeReturn
-	};
-
-      //
       // static methods
       //
-      static Status	Initialize(Socket*,
-				   const Address&);
-
-      static Context*	Instance();
-
-      //
-      // static attrributes
-      //
-      static Context*	Environment; // XXX find another name!!!
+      static Status	Assign(Context*);
 
       //
       // constructors & destructors
@@ -72,12 +56,24 @@ namespace elle
 	      const Address&);
 
       //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      //
       // attributes
       //
       Socket*		socket;
       Address		address;
-      Mode		mode;
     };
+
+//
+// ---------- extern ----------------------------------------------------------
+//
+
+    extern Context*		context;
 
   }
 }

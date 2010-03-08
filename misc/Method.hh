@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [sun feb 28 13:36:15 2010]
+// updated       julien quintard   [tue mar  2 14:53:15 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HH
@@ -66,7 +66,7 @@ namespace elle
       //
       // attributes
       //
-      Callable*		instance;
+      Callable*		object;
       Handler		handler;
     };
 
