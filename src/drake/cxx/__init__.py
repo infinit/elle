@@ -10,18 +10,27 @@ class Toolkit:
     def __init__(self):
 
         self.includes = []
+        self._hook_object_deps = []
 
     @classmethod
     def default(self):
 
         return GccToolkit()
 
-    def include(self, path):
+    def hook_object_deps_add(self, f):
 
-        p = Path(path)
-        if not p.absolute:
-            p = srctree() / p
-        self.includes.append(p)
+        self._hook_object_deps.append(f)
+
+    def hook_object_deps(self):
+
+        return self._hook_object_deps
+
+    # def include(self, path):
+
+    #     p = Path(path)
+    #     if not p.absolute:
+    #         p = srctree() / p
+    #     self.includes.append(p)
 
 def concatenate(chunks, prefix = ''):
 
@@ -38,8 +47,9 @@ class GccToolkit(Toolkit):
 
     def compile(self, cfg, src, obj):
 
-        includes = ''.join(map(lambda i: ' -I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), list(cfg.include_path()) + list(self.includes)))
-        return 'g++%s%s -c %s -o %s' % (concatenate(cfg.flags), includes, src, obj)
+        system_includes = ''.join(map(lambda i: ' -I %s' % shell_escape(i), cfg.system_include_path()))
+        local_includes  = ''.join(map(lambda i: ' -I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.local_include_path()))
+        return 'g++%s%s%s -c %s -o %s' % (concatenate(cfg.flags), system_includes, local_includes, src, obj)
 
 
     def archive(self, cfg, objs, lib):
@@ -188,6 +198,10 @@ class Config:
         return list(self._local_includes)
 
 
+    def system_include_path(self):
+
+        return list(self._system_includes)
+
 
     def lib_path(self, path):
 
@@ -206,6 +220,7 @@ class Config:
 
         res = Config(self)
         res._local_includes.update(rhs._local_includes)
+        res._system_includes.update(rhs._system_includes)
         res._includes.update(rhs._includes)
         res.lib_paths.update(rhs.lib_paths)
         res.libs.update(rhs.libs)
@@ -229,7 +244,10 @@ class Compiler(Builder):
     def dependencies(self):
 
         print 'mkdeps for %s' % self.src
-        return self.mkdeps(self.src, 0, {})
+        res = self.mkdeps(self.src, 0, {})
+        for hook in self.tk.hook_object_deps():
+            hook(self.obj)
+        return res
 
     def execute(self):
 
@@ -247,6 +265,7 @@ class Compiler(Builder):
         # print idt, path
 
         res = [n]
+        self.add_src(n)
         n.build()
         for line in open(str(path), 'r'):
 
@@ -287,9 +306,20 @@ class Linker(Builder):
 
     name = 'executable linkage'
 
+    def dependencies(self):
+
+        res = []
+        for path in self.srcs:
+            src = self.srcs[path]
+            if src.__class__ == Object:
+                for buddy in src.buddies():
+                    res.append(buddy)
+        for src in res:
+            self.add_src(src)
+        return res
+
     def __init__(self, objs, exe, tk, cfg):
 
-        self.objs = objs
         self.exe = exe
         self.tk = tk
         self.cfg = cfg
@@ -297,7 +327,7 @@ class Linker(Builder):
 
     def execute(self):
 
-        return self.cmd(self.tk.link(self.cfg, self.objs, self.exe))
+        return self.cmd(self.tk.link(self.cfg, self.srcs.values(), self.exe))
 
 class StaticLibArchiver(ShellCommand):
 
@@ -341,11 +371,23 @@ class Object(Node):
     def __init__(self, source, tk, cfg):
 
         self.source = source
+        self._buddies = []
+        self.toolkit = tk
+        self.cfg = cfg
         path = clone(source.sym_path)
         path.extension = tk.object_extension()
         Node.__init__(self, path)
 
         Compiler(source, self, tk, cfg)
+
+    def buddy_add(self, buddy):
+
+        assert buddy.__class__ == Object
+        self._buddies.append(buddy)
+
+    def buddies(self):
+
+        return self._buddies
 
 Node.extensions['o'] = Object
 
@@ -396,19 +438,28 @@ class Executable(Node):
 
         Node.__init__(self, path)
 
+        self.toolkit = tk
+        self.config = cfg
         self.sources = []
 
         for source in sources:
+            self.source_add(source)
 
-            if source.__class__ == Object or source.__class__ == StaticLib:
+        Linker(self.sources, self, tk, cfg)
+
+    def source_add(self, source):
+
+            if source.__class__ == Object:
+                self.sources.append(source)
+            elif source.__class__ == StaticLib:
                 self.sources.append(source)
             elif source.__class__ == Source:
-                o = Object(source, tk, cfg)
-                self.sources.append(o)
+                o = Object(source, self.toolkit, self.config)
+                self.source_add(o)
             elif source.__class__ == Header:
                 pass
             else:
                 self.builder = True # Hack to get the right path in error message
                 raise Exception('invalid source type for executable %s: %s' % (self, source))
 
-        Linker(self.sources, self, tk, cfg)
+

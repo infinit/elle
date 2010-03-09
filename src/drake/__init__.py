@@ -106,7 +106,10 @@ class Path:
     def __div__(self, rhs):
 
         if self == '.':
-            return clone(rhs)
+            if rhs.__class__ == Path:
+                return clone(rhs)
+            else:
+                return Path(rhs)
         if rhs == '.':
             return clone(self)
 
@@ -122,7 +125,8 @@ class Path:
         if self.path[0:len(rhs.path)] != rhs.path:
             raise Exception("%s is not a prefix of %s" % (rhs, self))
         self.path = self.path[len(rhs.path):]
-        assert self.path
+        if not self.path:
+            self.path = ['.']
 
 
 class DepFile:
@@ -335,11 +339,11 @@ class Builder:
 
         return []
 
-
     def run(self):
 
         if self.built:
             debug('  Already built in this run.')
+            # FIXME: return??
 
         execute = False
 
@@ -379,7 +383,6 @@ class Builder:
 
             for dep in self.dependencies():
                 dep.build()
-                self.add_src(dep)
 
             if not self.execute():
                 raise Exception('%s failed' % self.name)
@@ -426,6 +429,16 @@ class Builder:
 
         self.srcs[str(src.path())] = src
         self.src_list.append(src)
+
+
+    def all_srcs(self):
+
+        res = []
+        for src in self.src_list:
+            res.append(src)
+            if src.builder is not None:
+                res += src.builder.all_srcs()
+        return res
 
 
 
