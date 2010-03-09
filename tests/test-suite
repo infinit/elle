@@ -1,0 +1,33 @@
+#!/bin/sh
+
+red="[33;01;31m"
+green="[33;01;32m"
+blue="[33;01;36m"
+yellow="[33;01;33m"
+purple="[33;01;34m"
+lred="[33;00;31m"
+lgreen="[33;00;32m"
+lblue="[33;00;36m"
+lyellow="[33;00;33m"
+lpurple="[33;00;34m"
+tst="[33;00;35m"
+white="[0m"
+
+SELF="$0"
+ROOT="$(dirname $0)"
+export PYTHONPATH="$PWD/$ROOT/../src:$PYTHONPATH"
+
+for test in $(find . -name 'drake-build.py'); do
+    {
+        echo -n "${purple}${test}:${white} "
+        cd $(dirname "$test")
+        ./drake-build.py > out.log 2> err.log
+        rv=$?
+        echo $rv > rv.log
+        if test $rv -eq 0; then
+            echo "${green}PASS${white}"
+        else
+            echo "${red}FAIL${white}"
+        fi
+    }
+done
