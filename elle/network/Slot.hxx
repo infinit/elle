@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [fri mar  5 13:01:39 2010]
+// updated       julien quintard   [wed mar 10 20:06:40 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -76,84 +76,6 @@ namespace elle
     Status		Slot::Transmit(const Address&		address,
 				       const I&			inputs,
 				       const Identifier&	identifier)
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    ///
-    /// XXX return packet for the given identifier (blocking).
-    ///
-    template <typename O>
-    Status		Slot::Receive(const Identifier&		identifier,
-				      O&			outputs)
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    /* XXX
-    ///
-    /// XXX send(asynchronous) + receive(blocking).
-    ///
-    /// XXX fournir une interface asynchrone genre tu passes des arguments
-    /// outputs et tu recois un ticket. et plus tard tu peux interroger le
-    /// ticket pour savoir si c'est bon.
-    ///
-    template <typename I,
-	      typename O>
-    Status		Request(const Address&			address,
-				const I&			inputs,
-				O&				ouputs)
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-    */
-
-    ///
-    /// XXX transmit(synchro) + receive(blocking)
-    ///
-    template <typename I,
-	      typename O>
-    Status		Slot::Call(const Address&		address,
-				   const I&			inputs,
-				   O&				ouputs)
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    ///
-    /// XXX take current session's id and correspondent's address and send it.
-    ///
-    template <typename I>
-    Status		Slot::Reply(const I&			inputs)
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    ///
-    /// XXX idem
-    ///
-    template <typename I>
-    Status		Slot::Return(const I&			inputs)
     {
       enter();
 

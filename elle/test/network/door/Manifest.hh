@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Manifest.hh
 //
 // created       julien quintard   [tue feb 23 21:40:13 2010]
-// updated       julien quintard   [fri mar  5 15:32:05 2010]
+// updated       julien quintard   [wed mar 10 21:10:16 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_DOOR_ECHO_HH
@@ -46,9 +46,9 @@ namespace elle
 // ---------- definitions -----------------------------------------------------
 //
 
-Outward(::elle::test::TagChallenge,
-	Parameters(String));
-Inward(::elle::test::TagResponse,
-       Parameters(String));
+outward(::elle::test::TagChallenge,
+	parameters(String));
+inward(::elle::test::TagResponse,
+       parameters(String));
 
 #endif

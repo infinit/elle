@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun mar  7 16:52:11 2010]
+// updated       julien quintard   [wed mar 10 20:51:15 2010]
 //
 
 //
@@ -34,6 +34,11 @@ namespace elle
     ///
     const Natural32		Door::Timeout = 1000;
 
+    ///
+    /// this value defines the maximum capacity of a buffered packed, in bytes.
+    ///
+    const Natural32		Door::Capacity = 524288;
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -42,7 +47,9 @@ namespace elle
     /// the default constructor.
     ///
     Door::Door():
-      socket(NULL)
+      socket(NULL),
+      buffer(NULL),
+      offset(0)
     {
     }
 
@@ -54,6 +61,10 @@ namespace elle
       // check the socket presence.
       if (this->socket != NULL)
 	delete this->socket;
+
+      // delete the buffer.
+      if (this->buffer != NULL)
+	delete this->buffer;
     }
 
 //
@@ -98,7 +109,7 @@ namespace elle
 	escape("unable to connect the signal");
 
       if (this->connect(this->socket, SIGNAL(readyRead()),
-			this, SLOT(Deliver())) == false)
+			this, SLOT(Fetch())) == false)
 	escape("unable to connect the signal");
 
       if (this->connect(this->socket,
@@ -126,50 +137,6 @@ namespace elle
 	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
-    }
-
-    ///
-    /// this method reads the next packet from the socket.
-    ///
-    Status		Door::Read(Packet&			packet)
-    {
-      /*
-      Region		region;
-      Natural64		size;
-
-      enter();
-
-      // retrieve the size of the data available.
-      size = this->socket->bytesAvailable();
-
-      printf("Door::Read(%u available)\n", size);
-
-      // prepare the region.
-      if (region.Prepare(size) == StatusError)
-	escape("unable to prepare the region");
-
-      // read the packet from the socket.
-      if (this->socket->read((char*)region.contents, size) != size)
-	escape(this->socket->errorString().toStdString().c_str());
-
-      // set the region's size.
-      region.size = size;
-
-      // detach the region.
-      if (region.Detach() == StatusError)
-	escape("unable to detach the region");
-
-      // create a working packet. if it fails, just skip this datagram.
-      if (packet.Prepare(region) == StatusError)
-	escape("unable to prepare the packet");
-
-      // assign the context.
-      // XXX +add Identifier in context
-      //if (Context::Assign(this, Address::Null) == StatusError)
-      //escape("unable to assign the context");
-
-      leave();
-      */
     }
 
     ///
@@ -242,27 +209,169 @@ namespace elle
     }
 
     ///
-    /// this slot is triggered whenever data is available on the socket.
+    /// this method fetches packets from the socket.
     ///
-    void		Door::Deliver()
+    /// note that since doors are stream-based socket, the data fetched
+    /// may be incomplete. in such a case, the data should be stored in
+    /// a buffer, waiting for the completing data.
+    ///
+    /// note however that in order to prevent clients from sending huge
+    /// meaningless data in order to force the server to buffer data,
+    /// the size of a meaningfull packet is limited.
+    ///
+    void		Door::Fetch()
     {
-      /*
-      Packet		packet;
+      Raw*		raw;
+      Address		address;
 
-      printf("Door::Deliver()\n");
+      enter(instance(raw));
 
-      enter();
+      printf("[XXX] Door::Fetch(%u)\n", this->socket->bytesAvailable());
 
-      // read the next packet.
-      if (this->Read(packet) == StatusError)
-	alert("unable to read the next packet");
+      //
+      // read the pending datagrams in a raw.
+      //
+      {
+	Natural32	size;
 
-      // dispatch the event.
-      if (Network::Dispatch(packet) == StatusError)
-	alert("unable to dispatch the event");
+	// retrieve the size of the data available.
+	size = this->socket->bytesAvailable();
+
+	// check if there is data to be read.
+	if (size == 0)
+	  return;
+
+	// allocate a new raw.
+	raw = new Raw;
+
+	// prepare the raw
+	if (raw->Prepare(size) == StatusError)
+	  alert("unable to prepare the raw");
+
+	// set the address as being an IP address.
+	if (address.host.Create(Host::TypeIP) == StatusError)
+	  alert("unable to create an IP address");
+
+	// read the packet from the socket.
+	if (this->socket->read((char*)raw->contents, size) != size)
+	  alert(this->socket->errorString().toStdString().c_str());
+
+	// set the raw's size.
+	raw->size = size;
+
+	// append those raw data to the buffer.
+	if (this->buffer == NULL)
+	  this->buffer = raw;
+	else
+	  {
+	    // if the offset is too far, first move the existing data to the
+	    // beginning of the buffer.
+	    if (this->offset >= Door::Capacity)
+	      {
+		// move the data.
+		::memmove(this->buffer->contents,
+			  this->buffer->contents + this->offset,
+			  this->buffer->size - this->offset);
+
+		// reinitialize the buffer size.
+		this->buffer->size = this->buffer->size - this->offset;
+
+		// reinitialize the offset.
+		this->offset = 0;
+	      }
+
+	    // then append the new data.
+	    if (this->buffer->Append(raw->contents, raw->size) == StatusError)
+	      alert("unable to append the fetched raw to the buffer");
+
+	    // delete the raw.
+	    delete raw;
+	  }
+
+	// stop tracking the raw.
+	waive(raw);
+      }
+
+      //
+      // try to extract a serie of packet from the received raw.
+      //
+      while ((this->buffer->size - this->offset) > 0)
+	{
+	  Region	frame;
+	  Packet	packet;
+	  Context*	context;
+	  Header*	header;
+	  Data*		data;
+
+	  enter(instance(context),
+		instance(header),
+		instance(data));
+
+	  // create the frame based on the previously extracted raw.
+	  if (frame.Wrap(this->buffer->contents + this->offset,
+			 this->buffer->size - this->offset) == StatusError)
+	    alert("unable to wrap a frame in the raw");
+
+	  // prepare the packet based on the frame.
+	  if (packet.Prepare(frame) == StatusError)
+	    alert("unable to prepare the packet");
+
+	  // detach the frame from the packet so that the region is
+	  // not released once the packet is destroyed.
+	  if (packet.Detach() == StatusError)
+	    alert("unable to detach the frame");
+
+	  // allocate the header.
+	  header = new Header;
+
+	  // extract the header.
+	  if (header->Extract(packet) == StatusError)
+	    alert("unable to extract the header");
+
+	  // test if there is enough data.
+	  if ((Integer32)((packet.size - packet.offset) - header->size) < 0)
+	    {
+	      // test if we exceeded the buffer capacity meaning that the
+	      // waiting packet will probably never come. therefore just
+	      // discard everything!
+	      if ((this->buffer->size - this->offset) > Door::Capacity)
+		{
+		  // delete the buffer.
+		  delete this->buffer;
+
+		  // re-set it to NULL.
+		  this->buffer = NULL;
+		  this->offset = 0;
+
+		  alert("exceeded the buffer capacity without making sense "
+			"out of the fetched data");
+		}
+
+	      alert("not enough data to extract the whole packet");
+	    }
+
+	  // allocate the data.
+	  data = new Data;
+
+	  // extract the data.
+	  if (packet.Extract(*data) == StatusError)
+	    alert("unable to extract the data");
+
+	  // allocate the context.
+	  context = new Context(this, address, header->identifier);
+
+	  // record this packet to the network manager.
+	  if (Network::Dispatch(context, header, data) == StatusError)
+	    alert("unable to record the packet");
+
+	  // move to the next frame by setting the offset at the end of
+	  // the extracted frame.
+	  this->offset = this->offset + packet.offset;
+
+	  release();
+	}
 
       release();
-      */
     }
 
   }

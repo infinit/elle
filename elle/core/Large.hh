@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Large.hh
 //
 // created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [fri sep 11 21:39:24 2009]
+// updated       julien quintard   [wed mar 10 20:39:13 2010]
 //
 
 #ifndef ELLE_CORE_LARGE_HH
@@ -18,9 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <openssl/bn.h>
-
-#include <ostream>
+#include <elle/idiom/Close.hh>
+# include <openssl/bn.h>
+# include <ostream>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

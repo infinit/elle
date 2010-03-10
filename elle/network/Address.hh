@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [mon mar  8 23:09:38 2010]
+// updated       julien quintard   [wed mar 10 20:41:39 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -22,6 +22,8 @@
 
 #include <elle/network/Host.hh>
 #include <elle/network/Port.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

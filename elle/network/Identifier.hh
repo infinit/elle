@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [mon mar  8 23:09:45 2010]
+// updated       julien quintard   [wed mar 10 20:44:00 2010]
 //
 
 #ifndef ELLE_NETWORK_IDENTIFIER_HH
@@ -22,8 +22,10 @@
 #include <elle/misc/Misc.hh>
 #include <elle/archive/Archive.hh>
 
-#include <openssl/rand.h>
-#include <openssl/err.h>
+#include <elle/idiom/Close.hh>
+# include <openssl/rand.h>
+# include <openssl/err.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

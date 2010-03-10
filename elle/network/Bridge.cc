@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [fri mar  5 21:52:24 2010]
+// updated       julien quintard   [wed mar 10 20:11:08 2010]
 //
 
 //
@@ -30,6 +30,11 @@ namespace elle
     /// definition of the container.
     ///
     Bridge::Container		Bridge::Porters;
+
+    ///
+    /// this variable control the access to the bridge.
+    ///
+    Accord			Bridge::Control;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -88,6 +93,28 @@ namespace elle
     //
 
     ///
+    /// this method initializes the bridge.
+    ///
+    Status		Bridge::Initialize()
+    {
+      enter();
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the bridge.
+    ///
+    Status		Bridge::Clean()
+    {
+      enter();
+
+      /// XXX \todo remove all the porters
+
+      leave();
+    }
+
+    ///
     /// this method starts a server and waits for new connection. for
     /// every new connection, the Accept signal is generated which, in turn,
     /// creates a new door.
@@ -111,8 +138,13 @@ namespace elle
       if (porter->Listen(name) == StatusError)
 	escape("unable to listen on the bridge");
 
-      // add the porter to the container.
-      Bridge::Porters.push_back(porter);
+      // lock in writing.
+      Bridge::Control.Lock(ModeWrite);
+      {
+	// add the porter to the container.
+	Bridge::Porters.push_back(porter);
+      }
+      Bridge::Control.Unlock();
 
       // stop tracking porter.
       waive(porter);
@@ -172,15 +204,20 @@ namespace elle
 
       std::cout << alignment << "[Bridge]" << std::endl;
 
-      // dump the porters table.
-      for (scoutor = Bridge::Porters.begin();
-	   scoutor != Bridge::Porters.end();
-	   scoutor++)
-	{
-	  // dump the porter.
-	  if ((*scoutor)->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the porter");
-	}
+      // lock in reading.
+      Bridge::Control.Lock(ModeRead);
+      {
+	// dump the porters table.
+	for (scoutor = Bridge::Porters.begin();
+	     scoutor != Bridge::Porters.end();
+	     scoutor++)
+	  {
+	    // dump the porter.
+	    if ((*scoutor)->Dump(margin + 2) == StatusError)
+	      escape("unable to dump the porter");
+	  }
+      }
+      Bridge::Control.Unlock();
 
       leave();
     }
@@ -196,8 +233,6 @@ namespace elle
     {
       ::QLocalSocket*	socket;
       Door*		door;
-
-      printf("Porter::Accept\n");
 
       enter(instance(door));
 

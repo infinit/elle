@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Arguments.hh
 //
 // created       julien quintard   [wed feb 24 08:03:32 2010]
-// updated       julien quintard   [wed feb 24 08:53:08 2010]
+// updated       julien quintard   [wed mar 10 20:42:05 2010]
 //
 
 #ifndef ELLE_NETWORK_ARGUMENTS_HH
@@ -19,7 +19,8 @@
 //
 
 #include <elle/network/Tag.hh>
-#include <elle/network/Parameters.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [fri mar  5 15:58:31 2010]
+// updated       julien quintard   [wed mar 10 20:42:21 2010]
 //
 
 #ifndef ELLE_NETWORK_BRIDGE_HH
@@ -20,14 +20,21 @@
 
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
+#include <elle/concurrency/Concurrency.hh>
 
 #include <elle/network/Door.hh>
 
-#include <QObject>
-#include <QLocalServer>
+#include <elle/idiom/Close.hh>
+# include <QObject>
+# include <QLocalServer>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
+  using namespace core;
+  using namespace misc;
+  using namespace concurrency;
+
   namespace network
   {
 
@@ -83,6 +90,8 @@ namespace elle
     ///
     /// XXX
     ///
+    /// the Initialize() and Clean() are obviously not thread-safe.
+    ///
     class Bridge
     {
     public:
@@ -96,8 +105,8 @@ namespace elle
       //
       // static methods
       //
-      static Status	Initialize(); // XXX todo
-      static Status	Clean(); // XXX todo: remove Porters
+      static Status	Initialize();
+      static Status	Clean();
 
       static Status	Listen(const String&,
 			       Callback&);
@@ -107,6 +116,8 @@ namespace elle
       //
       // static attributes
       //
+      static Accord	Control;
+
       static Container	Porters;
     };
 

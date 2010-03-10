@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Digest.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [mon mar  8 23:09:01 2010]
+// updated       julien quintard   [wed mar 10 20:29:07 2010]
 //
 
 #ifndef ELLE_CRYPTO_DIGEST_HH
@@ -21,6 +21,8 @@
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
 #include <elle/archive/Archive.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

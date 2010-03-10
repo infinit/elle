@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [mon mar  8 23:08:47 2010]
+// updated       julien quintard   [wed mar 10 20:29:28 2010]
 //
 
 #ifndef ELLE_CRYPTO_KEYPAIR_HH
@@ -33,11 +33,12 @@
 #include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Signature.hh>
 
-#include <openssl/engine.h>
-#include <openssl/err.h>
-#include <openssl/evp.h>
-
-#include <fcntl.h>
+#include <elle/idiom/Close.hh>
+# include <openssl/engine.h>
+# include <openssl/err.h>
+# include <openssl/evp.h>
+# include <fcntl.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

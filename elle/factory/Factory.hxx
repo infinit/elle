@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [wed mar  3 17:15:55 2010]
+// updated       julien quintard   [tue mar  9 12:04:19 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HXX
@@ -68,11 +68,16 @@ namespace elle
       // create a generator.
       generator = new Factory::Generator<T>(identifier);
 
-      // insert the generator in the container.
-      result = Factory::Map.insert(
-                 std::pair<const String,
-		           Factory::Functionoid*>(identifier,
-						  generator));
+      // lock in writing.
+      Factory::Control.Lock(ModeWrite);
+      {
+	// insert the generator in the container.
+	result = Factory::Map.insert(
+		   std::pair<const String,
+		             Factory::Functionoid*>(identifier,
+						    generator));
+      }
+      Factory::Control.Unlock();
 
       // check if the insertion was successful.
       if (result.second == false)
@@ -96,16 +101,27 @@ namespace elle
 
       enter();
 
-      // retrieve the associated generator.
-      scoutor = Factory::Map.find(identifier);
+      // lock in reading.
+      Factory::Control.Lock(ModeRead);
+      {
+	// retrieve the associated generator.
+	scoutor = Factory::Map.find(identifier);
 
-      // check if this identifier has been registered.
-      if (scoutor == Factory::Map.end())
-	escape("unable to locate the generator for the given identifier");
+	// check if this identifier has been registered.
+	if (scoutor == Factory::Map.end())
+	  {
+	    Factory::Control.Unlock();
+	    escape("unable to locate the generator for the given identifier");
+	  }
 
-      // allocate an object of the type handled by the generator.
-      if (scoutor->second->Allocate((Entity*&)object) == StatusError)
-	escape("unable to allocate the object");
+	// allocate an object of the type handled by the generator.
+	if (scoutor->second->Allocate((Entity*&)object) == StatusError)
+	  {
+	    Factory::Control.Unlock();
+	    escape("unable to allocate the object");
+	  }
+      }
+      Factory::Control.Unlock();
 
       leave();
     }

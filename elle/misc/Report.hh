@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [mon mar  8 23:07:17 2010]
+// updated       julien quintard   [wed mar 10 20:33:41 2010]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -22,21 +22,16 @@
 #include <elle/core/String.hh>
 #include <elle/core/Void.hh>
 
-///
-/// undefine the conflicting macro
-///
-#undef fail
-#include <sstream>
-#include <stack>
-#include <ostream>
-#include <iostream>
-
-#include <string.h>
-#include <assert.h>
-#include <errno.h>
-#include <stdlib.h>
-
-#include <elle/core/Macro.hh>
+#include <elle/idiom/Close.hh>
+# include <sstream>
+# include <stack>
+# include <ostream>
+# include <iostream>
+# include <string.h>
+# include <assert.h>
+# include <errno.h>
+# include <stdlib.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

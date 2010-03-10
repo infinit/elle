@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sun mar  7 23:34:02 2010]
+// updated       julien quintard   [wed mar 10 20:50:07 2010]
 //
 
 //
@@ -126,7 +126,7 @@ namespace elle
 //
 
     ///
-    /// this method fetches the data datagram(s) on the socket.
+    /// this method fetches the datagram(s) on the socket.
     ///
     /// note that since UDP datagrams are constrained by a maxium size,
     /// there is no need to buffer the fetched datagram hoping for the next
@@ -191,7 +191,9 @@ namespace elle
 	Header*		header;
 	Data*		data;
 
-	enter();
+	enter(instance(context),
+	      instance(header),
+	      instance(data));
 
 	// create the frame based on the previously extracted raw.
 	if (frame.Wrap(raw.contents + offset,
@@ -222,7 +224,7 @@ namespace elle
 	  alert("unable to extract the data");
 
 	// allocate the context.
-	context = new Context(this, address);
+	context = new Context(this, address, header->identifier);
 
 	// record this packet to the network manager.
 	if (Network::Dispatch(context, header, data) == StatusError)

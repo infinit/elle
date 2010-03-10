@@ -8,19 +8,11 @@
 // file          /home/mycure/infinit/elle/core/Character.hh
 //
 // created       julien quintard   [fri nov 30 16:44:49 2007]
-// updated       julien quintard   [mon feb 16 14:23:50 2009]
+// updated       julien quintard   [wed mar 10 20:40:14 2010]
 //
 
 #ifndef ELLE_CORE_CHARACTER_HH
 #define ELLE_CORE_CHARACTER_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <ostream>
-
-#include <inttypes.h>
 
 namespace elle
 {

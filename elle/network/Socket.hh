@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [fri mar  5 16:02:41 2010]
+// updated       julien quintard   [wed mar 10 20:46:11 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -22,6 +22,8 @@
 #include <elle/io/IO.hh>
 
 #include <elle/network/Message.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

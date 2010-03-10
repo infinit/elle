@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Core.hxx
 //
 // created       julien quintard   [fri jan 30 16:29:55 2009]
-// updated       julien quintard   [thu dec  3 03:04:08 2009]
+// updated       julien quintard   [wed mar 10 20:39:01 2010]
 //
 
 #ifndef ELLE_CORE_CORE_HXX
@@ -18,7 +18,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <limits.h>
+#include <elle/idiom/Close.hh>
+# include <limits.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -51,7 +53,7 @@ namespace elle
     /// this template-generated links a type to its limits, therefore
     /// enables code to access limits from the type.
     ///
-#define TypeDeclare(_type_, _minimum_, _maximum_)			\
+#define CoreDeclare(_type_, _minimum_, _maximum_)			\
   template <>								\
   class Type<_type_>:							\
     public Limits<_type_, _minimum_, _maximum_>	\
@@ -62,17 +64,17 @@ namespace elle
     /// these macro-function calls define the limits of the following basic
     /// core: boolean, character, integer, natural, real.
     ///
-    TypeDeclare(Null, Nil, Nil);
-    TypeDeclare(Boolean, false, true);
-    TypeDeclare(Character, 0, CHAR_MAX);
-    TypeDeclare(Integer8, CHAR_MIN, CHAR_MAX);
-    TypeDeclare(Integer16, SHRT_MIN, SHRT_MAX);
-    TypeDeclare(Integer32, INT_MIN, INT_MAX);
-    TypeDeclare(Integer64, LLONG_MIN, LLONG_MAX);
-    TypeDeclare(Natural8, 0, UCHAR_MAX);
-    TypeDeclare(Natural16, 0, USHRT_MAX);
-    TypeDeclare(Natural32, 0, UINT_MAX);
-    TypeDeclare(Natural64, 0, ULLONG_MAX);
+    CoreDeclare(Null, Nil, Nil);
+    CoreDeclare(Boolean, false, true);
+    CoreDeclare(Character, 0, CHAR_MAX);
+    CoreDeclare(Integer8, CHAR_MIN, CHAR_MAX);
+    CoreDeclare(Integer16, SHRT_MIN, SHRT_MAX);
+    CoreDeclare(Integer32, INT_MIN, INT_MAX);
+    CoreDeclare(Integer64, LLONG_MIN, LLONG_MAX);
+    CoreDeclare(Natural8, 0, UCHAR_MAX);
+    CoreDeclare(Natural16, 0, USHRT_MAX);
+    CoreDeclare(Natural32, 0, UINT_MAX);
+    CoreDeclare(Natural64, 0, ULLONG_MAX);
 
 //
 // ---------- variable --------------------------------------------------------

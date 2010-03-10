@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [sun feb 28 15:19:47 2010]
+// updated       julien quintard   [wed mar 10 20:31:02 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HH
@@ -19,14 +19,18 @@
 //
 
 #include <elle/core/Core.hh>
-
 #include <elle/misc/Misc.hh>
+#include <elle/concurrency/Concurrency.hh>
 
-#include <map>
+#include <elle/idiom/Close.hh>
+# include <map>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
   using namespace core;
+  using namespace misc;
+  using namespace concurrency;
 
   ///
   /// this namespace contains components related to the generations of types.
@@ -105,6 +109,9 @@ namespace elle
       //
       // static methods
       //
+      static Status	Initialize();
+      static Status	Clean();
+
       template <typename T>
       static Status	Register(const String&);
 
@@ -117,6 +124,8 @@ namespace elle
       //
       // attributes
       //
+      static Accord	Control;
+
       static Container	Map;
     };
 

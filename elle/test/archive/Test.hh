@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [sun mar  7 22:08:34 2010]
+// updated       julien quintard   [wed mar 10 21:09:04 2010]
 //
 
 #ifndef ELLE_TEST_ARCHIVE_TEST_HH
@@ -24,7 +24,9 @@
 #include "Random.hh"
 #include "Generator.hh"
 
-#include <iostream>
+#include <elle/idiom/Close.hh>
+# include <iostream>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

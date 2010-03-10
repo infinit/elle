@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [sun mar  7 23:26:54 2010]
+// updated       julien quintard   [wed mar 10 20:11:53 2010]
 //
 
 //
@@ -29,39 +29,62 @@ namespace elle
     ///
     /// this container holds the list of registered callbacks.
     ///
-    Network::Trig::Container		Network::Callbacks;
+    Network::Container		Network::Callbacks;
 
     ///
-    /// this container holds the list of threads waiting for a specific
-    /// packet.
+    /// this variable control the access to the network.
     ///
-    Network::Wait::Container		Network::Receivers;
+    Accord			Network::Control;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
+    /// this method initializes the network components.
+    ///
+    Status		Network::Initialize()
+    {
+      enter();
+
+      // initialize the bridge.
+      if (Bridge::Initialize() == StatusError)
+	escape("unable to initialize the bridge");
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the network components.
+    ///
+    Status		Network::Clean()
+    {
+      enter();
+
+      // clean the bridge.
+      if (Bridge::Clean() == StatusError)
+	escape("unable to clean the bridge");
+
+      /// XXX \todo clean the callbacks and receivers.
+
+      leave();
+    }
+
+    ///
     /// this method takes a newly received packet and dispatch it.
     ///
-    Status		Network::Dispatch(Context*		context,
-					  Header*		header,
-					  Data*			data)
+    /// note that the input variables are not tracked for automatic
+    /// deletion because the caller should already been tracking them.
+    ///
+    Status		Network::Dispatch(Context*&		context,
+					  Header*&		header,
+					  Data*&		data)
     {
-      Context*		c = context;
-      Header*		h = header;
-      Data*		d = data;
+      Network::Scoutor		scoutor;
 
-      enter(instance(context),
-	    instance(header),
-	    instance(data));
+      enter();
 
-      // reset the variables that are now tracked.
-      context = c;
-      header = h;
-      data = d;
-
-      printf("Network::Dispatch(%u)\n", header->tag);
+      printf("[XXX] Network::Dispatch(%u)\n", header->tag);
 
       //
       // assign the new context.
@@ -72,64 +95,40 @@ namespace elle
       // stop tracking context.
       waive(context);
 
-      //
-      // first, look at the receivers waiting for this very specific packet.
-      //
+      // lock in reading.
+      Network::Control.Lock(ModeRead);
       {
-	Network::Wait::Iterator		iterator;
-
-	// retrieve the condition associated to the header's tag.
-	if ((iterator = Network::Receivers.find(header->identifier)) !=
-	    Network::Receivers.end())
-	  {
-	    // set the data pointer.
-	    iterator->second->second = data;
-
-	    // wake up the receiver.
-	    iterator->second->first.Release();
-
-	    // delete the header.
-	    delete header;
-
-	    // stop tracking the header and data.
-	    waive(header);
-	    waive(data);
-
-	    // delete the entry in the receivers container since
-	    // it will no longer be used.
-	    //
-	    // note that since the entry value has been allocated, it
-	    // will not be deleted so that the waited thread will get
-	    // the data pointer has expected.
-	    Network::Receivers.erase(iterator);
-
-	    leave();
-	  }
-      }
-
-      //
-      // second, call an associated callback.
-      //
-      {
-	Network::Trig::Scoutor		scoutor;
-
 	// retrieve the callback associated to the header's tag.
 	if ((scoutor = Network::Callbacks.find(header->tag)) ==
 	    Network::Callbacks.end())
-	  escape("unable to locate the callback");
+	  {
+	    Network::Control.Unlock();
+	    escape("unable to locate the callback");
+	  }
 
-	// trigger the callback.
-	if (scoutor->second->Call(*data) == StatusError)
-	  escape("unable to dispatch the event");
-
-	// delete the header and data.
-	delete header;
-	delete data;
-
-	// stop tracking the header and data.
-	waive(header);
-	waive(data);
+	// note that, at this point, the lock is release though the
+	// scoutor is still going to be used.
+	//
+	// this is necessary since the callbacks triggered may need to
+	// access the network and, for instance, register new callbacks
+	// etc.
+	//
+	// this should not be a problem since callbacks are, theoretically,
+	// never unregistered.
       }
+      Network::Control.Unlock();
+
+      // trigger the callback.
+      if (scoutor->second->Call(*data) == StatusError)
+	escape("unable to dispatch the event");
+
+      // delete the header and data.
+      delete header;
+      delete data;
+
+      // stop tracking the header and data.
+      waive(header);
+      waive(data);
 
       leave();
     }
@@ -143,27 +142,35 @@ namespace elle
     ///
     Status		Network::Dump(const Natural32		margin)
     {
-      String			alignment(margin, ' ');
-      String			shift(2, ' ');
-      Network::Trig::Scoutor	scoutor;
+      String		alignment(margin, ' ');
+      String		shift(2, ' ');
+      Network::Scoutor	scoutor;
 
       enter();
 
       std::cout << alignment << "[Network]" << std::endl;
 
-      // dump the callbacks table.
-      for (scoutor = Network::Callbacks.begin();
-	   scoutor != Network::Callbacks.end();
-	   scoutor++)
-	{
-	  // dump the identifier.
-	  std::cout << alignment << shift << "[Identifier] "
-		    << std::dec << scoutor->first << std::endl;
+      // lock in reading.
+      Network::Control.Lock(ModeRead);
+      {
+	// dump the callbacks table.
+	for (scoutor = Network::Callbacks.begin();
+	     scoutor != Network::Callbacks.end();
+	     scoutor++)
+	  {
+	    // dump the tag.
+	    std::cout << alignment << shift << "[Tag] "
+		      << std::dec << scoutor->first << std::endl;
 
-	  // dump the functionoid.
-	  if (scoutor->second->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the functionoid");
-	}
+	    // dump the functionoid.
+	    if (scoutor->second->Dump(margin + 2) == StatusError)
+	      {
+		Network::Control.Unlock();
+		escape("unable to dump the functionoid");
+	      }
+	  }
+      }
+      Network::Control.Unlock();
 
       leave();
     }

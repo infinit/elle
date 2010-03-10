@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [mon mar  8 23:09:10 2010]
+// updated       julien quintard   [wed mar 10 20:30:11 2010]
 //
 
 #ifndef ELLE_CRYPTO_PUBLICKEY_HH
@@ -30,10 +30,12 @@
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 
-#include <openssl/rsa.h>
-#include <openssl/bn.h>
-#include <openssl/err.h>
-#include <openssl/evp.h>
+#include <elle/idiom/Close.hh>
+# include <openssl/rsa.h>
+# include <openssl/bn.h>
+# include <openssl/err.h>
+# include <openssl/evp.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

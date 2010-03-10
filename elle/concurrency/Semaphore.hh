@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Semaphore.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [mon mar  8 23:05:24 2010]
+// updated       julien quintard   [wed mar 10 20:25:04 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_SEMAPHORE_HH
@@ -21,9 +21,9 @@
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
 
-#undef release
-#include <QSemaphore>
-#include <elle/core/Macro.hh>
+#include <elle/idiom/Close.hh>
+# include <QSemaphore>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

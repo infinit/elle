@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Maid.hh
 //
 // created       julien quintard   [sun feb 28 09:00:00 2010]
-// updated       julien quintard   [mon mar  8 23:05:14 2010]
+// updated       julien quintard   [wed mar 10 20:32:40 2010]
 //
 
 #ifndef ELLE_MISC_MAID_HH
@@ -20,11 +20,12 @@
 
 #include <elle/core/Natural.hh>
 #include <elle/core/Void.hh>
-#include <elle/core/Macro.hh>
 
 #include <elle/misc/Report.hh>
 
-#include <cstdarg>
+#include <elle/idiom/Close.hh>
+# include <cstdarg>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -356,7 +357,11 @@ namespace elle
 	~Instance()
 	{
 	  if (this->pointer != NULL)
-	    delete this->pointer;
+	    {
+	      delete this->pointer;
+
+	      this->pointer = NULL;
+	    }
 	}
 
 	//
@@ -389,7 +394,11 @@ namespace elle
 	~Slab()
 	{
 	  if (this->pointer != NULL)
-	    (Void)this->function(this->pointer);
+	    {
+	      (Void)this->function(this->pointer);
+
+	      this->pointer = NULL;
+	    }
 	}
 
 	//

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [fri mar  5 23:14:39 2010]
+// updated       julien quintard   [wed mar 10 19:53:34 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_SERVER_HH
@@ -18,13 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <QObject>
-#include <QThread>
-#include <QTimer>
-
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
 #include <elle/network/Network.hh>
+#include <elle/concurrency/Concurrency.hh>
 
 #include <elle/test/network/door/Manifest.hh>
 
@@ -43,26 +40,20 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
-    class Thread1:
-      public ::QThread
-    {
-      Q_OBJECT;
-    };
-
-    class Server:
-      public Thread1,
-      public Callable
+    class Server
+      //public Thread
     {
     public:
       //
       // methods
       //
-      void		run();
+      Status		Run();
 
       //
       // callbacks
       //
       Status		Connection(Door*&);
+      Status		Response(String&);
 
       //
       // attributes

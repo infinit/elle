@@ -8,9 +8,12 @@
 // file          /home/mycure/infinit/elle/misc/Callback.hxx
 //
 // created       julien quintard   [thu feb  4 22:08:43 2010]
-// updated       julien quintard   [sun feb 28 12:49:23 2010]
+// updated       julien quintard   [wed mar 10 20:32:16 2010]
 //
 
+///
+/// these includes have been placed here on purpose.
+///
 #include <elle/misc/Function.hh>
 #include <elle/misc/Method.hh>
 

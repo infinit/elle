@@ -10,5 +10,5 @@ ADD_EXECUTABLE(test-network-slot
 )
 
 TARGET_LINK_LIBRARIES(test-network-slot elle crypto ssl dl
-                      ${QT_QTNETWORK_LIBRARIES}
-                      ${QT_QTCORE_LIBRARIES})
+					${QT_QTNETWORK_LIBRARIES}
+					${QT_QTCORE_LIBRARIES})

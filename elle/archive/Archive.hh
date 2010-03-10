@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [mon mar  8 23:08:29 2010]
+// updated       julien quintard   [wed mar 10 20:37:34 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -32,7 +32,9 @@
 
 #include <elle/archive/Archivable.hh>
 
-#include <stdlib.h>
+#include <elle/idiom/Close.hh>
+# include <stdlib.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

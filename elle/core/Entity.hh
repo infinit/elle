@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [fri mar  5 13:06:31 2010]
+// updated       julien quintard   [wed mar 10 20:25:57 2010]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -23,6 +23,8 @@
 #include <elle/misc/Status.hh>
 #include <elle/misc/Report.hh>
 #include <elle/misc/Maid.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

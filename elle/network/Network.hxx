@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [sun mar  7 22:30:06 2010]
+// updated       julien quintard   [wed mar 10 20:08:14 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -32,24 +32,37 @@ namespace elle
     Status		Network::Register(Callback&		callback)
     {
       Selectionoid< Message<G>::P::Quantum,
-	            typename Message<G>::P >*		selectionoid;
-      std::pair<Network::Trig::Iterator, Boolean>	result;
+	            typename Message<G>::P >*	selectionoid;
+      std::pair<Network::Iterator, Boolean>	result;
 
       enter(instance(selectionoid));
 
-      // check if this type has already been registed.
-      if (Network::Callbacks.find(G) != Network::Callbacks.end())
-	escape("unable to register an already registered type");
+      // lock in reading.
+      Network::Control.Lock(ModeRead);
+      {
+	// check if this type has already been registed.
+	if (Network::Callbacks.find(G) != Network::Callbacks.end())
+	  {
+	    Network::Control.Unlock();
+	    escape("unable to register an already registered type");
+	  }
+      }
+      Network::Control.Unlock();
 
       // create a new selectionoid.
       selectionoid = new Selectionoid< Message<G>::P::Quantum,
                                        typename Message<G>::P >(callback);
 
-      // insert the callback in the container.
-      result = Network::Callbacks.insert(
-	         std::pair<Tag,
-		           Network::Functionoid*>(G,
-						  selectionoid));
+      // lock in writing.
+      Network::Control.Lock(ModeWrite);
+      {
+	// insert the callback in the container.
+	result = Network::Callbacks.insert(
+		   std::pair<Tag,
+		             Network::Functionoid*>(G,
+						    selectionoid));
+      }
+      Network::Control.Unlock();
 
       // check if the insertion was successful.
       if (result.second == false)
@@ -57,71 +70,6 @@ namespace elle
 
       // waive the selectionoid tracking.
       waive(selectionoid);
-
-      leave();
-    }
-
-    ///
-    /// this method waits for a message with the given identifier.
-    ///
-    template <typename O>
-    Status		Network::Receive(const Identifier&	identifier,
-					 O&			outputs,
-					 Natural32		timeout)
-    {
-      Network::Wait::Value*				value;
-      std::pair<Network::Wait::Iterator, Boolean>	result;
-
-      enter(instance(value));
-
-      // check if someone is already waiting for the packet.
-      if (Network::Receivers.find(identifier) != Network::Receivers.end())
-	escape("unable to wait for a packet that someone is "
-	       "already waiting for");
-
-      // allocate the value.
-      value = new Network::Wait::Value;
-
-      // set the data pointer.
-      value->second = NULL;
-
-      // insert the receiver in the container.
-      result = Network::Receivers.insert(
-	         std::pair<const Identifier,
-                           Network::Wait::Value*>(identifier,
-						  value));
-
-      // check if the insertion was successful.
-      if (result.second == false)
-	escape("unable to insert the callback in the container");
-
-      // waive the selectionoid tracking.
-      waive(value);
-
-      // now wait on the semaphore until the packet has been received.
-      if (value->first.Acquire(1, timeout) == StatusError)
-	{
-	  // erase the receiver.
-	  Network::Receivers.erase(result.first);
-
-	  // delete the value.
-	  delete value;
-
-	  escape("unable to receive the packet in time");
-	}
-
-      // extract the outputs arguments.
-      if (outputs.Extract(*value->second) == StatusError)
-	escape("unable to extract the output arguments");
-
-      // delete the data.
-      delete value->second;
-
-      // delete the value.
-      delete value;
-
-      // note that there is no need to remove the entry since it should
-      // have been removed by the dispatcher, cf Dispatch().
 
       leave();
     }

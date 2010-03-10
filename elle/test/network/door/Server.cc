@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [fri mar  5 22:41:54 2010]
+// updated       julien quintard   [wed mar 10 20:01:59 2010]
 //
 
 //
@@ -29,22 +29,24 @@ namespace elle
     ///
     /// this method is the thread entry point.
     ///
-    void		Server::run()
+    Status		Server::Run()
     {
       static Method<Door*>	connection(this, &Server::Connection);
+      static Method<String>	response(this, &Server::Response);
 
       enter();
 
       std::cout << "[bridge] " << name << std::endl;
 
+      // register the message.
+      if (Network::Register<TagResponse>(response) == StatusError)
+	escape("unable to register the response message");
+
       // listen for incoming connections.
       if (Bridge::Listen(this->name, connection) == StatusError)
-	alert("unable to listen for bridge connections");
+	escape("unable to listen for bridge connections");
 
-      // event loop.
-      this->exec();
-
-      release();
+      leave();
     }
 
 //
@@ -57,36 +59,28 @@ namespace elle
     Status		Server::Connection(Door*&		door)
     {
       String		challenge("bande!");
-      String		response;
 
       enter();
-
-      printf("Server::Connection\n");
 
       // push the door in the container.
       this->doors.push_front(door);
 
-      // XXX
-      door->Transmit(Inputs<TagChallenge>(challenge));
-      //door->Transmit(Inputs<TagChallenge>(challenge));
+      // send the challenge.
+      if (door->Send(Inputs<TagChallenge>(challenge)) == StatusError)
+	escape("unable to send the challenge");
 
-      //door->Call(Inputs<TagChallenge>(challenge),
-      //Outputs<TagResponse>(response));
+      leave();
+    }
 
-      /*
-      // send a message to the caller.
-      if (door->Call(Inputs<TagChallenge>(challenge),
-		     Outputs<TagResponse>(response)) == StatusError)
-	{
-	  // XXX
-	  expose();
+    ///
+    /// this method handles the response
+    ///
+    Status		Server::Response(String&		text)
+    {
+      enter();
 
-	escape("unable to send a message");
-	}
-
-      // print the response.
-      std::cout << "[Response] " << response << std::endl;
-      */
+      // simply display the text.
+      std::cout << "[Response] " << text << std::endl;
 
       leave();
     }

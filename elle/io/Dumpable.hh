@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.hh
 //
 // created       julien quintard   [mon feb  9 21:22:34 2009]
-// updated       julien quintard   [sun feb 28 15:10:05 2010]
+// updated       julien quintard   [wed mar 10 20:31:27 2010]
 //
 
 #ifndef ELLE_IO_DUMPABLE_HH
@@ -23,6 +23,8 @@
 #include <elle/misc/Status.hh>
 #include <elle/misc/Report.hh>
 #include <elle/misc/Maid.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

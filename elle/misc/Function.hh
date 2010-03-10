@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [sun feb 28 13:36:11 2010]
+// updated       julien quintard   [wed mar 10 20:32:22 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HH
@@ -24,6 +24,8 @@
 #include <elle/misc/Report.hh>
 #include <elle/misc/Maid.hh>
 #include <elle/misc/Callback.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

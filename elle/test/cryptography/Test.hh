@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [sun mar  7 22:12:40 2010]
+// updated       julien quintard   [wed mar 10 21:08:53 2010]
 //
 
 #ifndef ELLE_TEST_CRYPTO_TEST_HH
@@ -22,7 +22,9 @@
 
 #include "Random.hh"
 
-#include <iostream>
+#include <elle/idiom/Close.hh>
+# include <iostream>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

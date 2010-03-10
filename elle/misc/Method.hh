@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [tue mar  2 14:53:15 2010]
+// updated       julien quintard   [wed mar 10 20:51:38 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HH
@@ -23,8 +23,9 @@
 #include <elle/misc/Status.hh>
 #include <elle/misc/Report.hh>
 #include <elle/misc/Maid.hh>
-#include <elle/misc/Callable.hh>
 #include <elle/misc/Callback.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -40,9 +41,56 @@ namespace elle
     {
     public:
       //
-      // types
+      // classes
       //
-      typedef Status		(Callable::*Handler)(T&...);
+
+      ///
+      /// XXX
+      ///
+      class Shell:
+	public Dumpable
+      {
+      public:
+	virtual Status	Call(T&...) = 0;
+      };
+
+      ///
+      /// XXX
+      ///
+      template <typename U>
+      class Wrap:
+	public Shell
+      {
+      public:
+	//
+	// types
+	//
+	typedef Status		(U::*Handler)(T&...);
+
+	//
+	// constructors & destructors
+	//
+	Wrap(U*,
+	     Handler);
+
+	//
+	// methods
+	//
+	Status		Call(T&...);
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
+
+	//
+	// attributes
+	//
+	U*		object;
+	Handler		handler;
+      };
 
       //
       // constructors & destructors
@@ -66,8 +114,7 @@ namespace elle
       //
       // attributes
       //
-      Callable*		object;
-      Handler		handler;
+      Shell*		shell;
     };
 
   }

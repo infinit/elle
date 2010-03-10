@@ -4,6 +4,8 @@ QT4_WRAP_CPP(elle_MOCS
   network/Slot.hh
   network/Bridge.hh
   network/Door.hh
+
+#  concurrency/Thread.hh
 )
 
 ADD_LIBRARY(elle
@@ -11,7 +13,6 @@ ADD_LIBRARY(elle
 
   core/Large.cc
   core/Null.cc
-  core/Void.cc
 
   cryptography/Cipher.cc
   cryptography/Code.cc
@@ -43,8 +44,10 @@ ADD_LIBRARY(elle
   network/Identifier.cc
   network/Context.cc
 
+  concurrency/Accord.cc
   concurrency/Mutex.cc
   concurrency/Semaphore.cc
+  concurrency/Thread.cc
 
   Elle.cc
 

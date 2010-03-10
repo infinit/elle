@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.hh
 //
 // created       julien quintard   [tue oct 30 12:15:12 2007]
-// updated       julien quintard   [mon aug 24 14:12:05 2009]
+// updated       julien quintard   [wed mar 10 20:28:53 2010]
 //
 
 #ifndef ELLE_CRYPTO_CRYPTOGRAPHY_HH
@@ -32,9 +32,11 @@
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Signature.hh>
 
-#include <openssl/engine.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
+#include <elle/idiom/Close.hh>
+# include <openssl/engine.h>
+# include <openssl/err.h>
+# include <openssl/rand.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -72,6 +74,9 @@ namespace elle
     /// properly deleted. one should therefore avoid using such static
     /// objects or use static pointers with initialization and cleaning
     /// methods.
+    ///
+    /// note that Initialize() and Clean() should be called from a single
+    /// thread as, obviously, these method are *not* thread-safe.
     ///
     class Cryptography
     {
