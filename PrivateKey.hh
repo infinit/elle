@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [mon mar  8 23:08:54 2010]
+// updated       julien quintard   [wed mar 10 20:29:58 2010]
 //
 
 #ifndef ELLE_CRYPTO_PRIVATEKEY_HH
@@ -34,12 +34,14 @@
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
 
-#include <openssl/rsa.h>
-#include <openssl/engine.h>
-#include <openssl/bn.h>
-#include <openssl/crypto.h>
-#include <openssl/err.h>
-#include <openssl/evp.h>
+#include <elle/idiom/Close.hh>
+# include <openssl/rsa.h>
+# include <openssl/engine.h>
+# include <openssl/bn.h>
+# include <openssl/crypto.h>
+# include <openssl/err.h>
+# include <openssl/evp.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

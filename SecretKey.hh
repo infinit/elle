@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [mon mar  8 23:09:25 2010]
+// updated       julien quintard   [wed mar 10 20:30:24 2010]
 //
 
 #ifndef ELLE_CRYPTO_SECRETKEY_HH
@@ -32,11 +32,12 @@
 #include <elle/cryptography/Digest.hh>
 #include <elle/cryptography/OneWay.hh>
 
-#include <openssl/evp.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-
-#include <fcntl.h>
+#include <elle/idiom/Close.hh>
+# include <openssl/evp.h>
+# include <openssl/err.h>
+# include <openssl/rand.h>
+# include <fcntl.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
