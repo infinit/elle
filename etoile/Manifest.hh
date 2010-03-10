@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [thu mar  4 18:32:46 2010]
+// updated       julien quintard   [wed mar 10 22:09:05 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -40,8 +40,11 @@ namespace etoile
 
       // User
       TagUserIdentify,
+      TagUserChallenge,
       TagUserAuthenticate,
+      TagUserAuthenticated,
       TagUserConnect,
+      TagUserConnected,
 
       // Object
       TagObjectLoad,
@@ -68,21 +71,21 @@ namespace etoile
 ///
 
 // User
-Inward(::etoile::TagUserIdentify,
-       Parameters(::elle::crypto::PublicKey,
+
+inward(::etoile::TagUserIdentify,
+       parameters(::elle::cryptography::PublicKey,
 		  ::elle::core::String));
-Outward(::etoile::TagUserIdentify,
-	Parameters(::elle::crypto::Code));
+outward(::etoile::TagUserChallenge,
+	parameters(::elle::cryptography::Code));
+inward(::etoile::TagUserAuthenticate,
+       parameters(::elle::cryptography::Digest));
+outward(::etoile::TagUserAuthenticated,
+	parameters(::etoile::wall::Report));
 
-Inward(::etoile::TagUserAuthenticate,
-       Parameters(::elle::crypto::Digest));
-Outward(::etoile::TagUserAuthenticate,
-	Parameters(::etoile::wall::Report));
-
-Inward(::etoile::TagUserConnect,
-       Parameters(::elle::core::String));
-Outward(::etoile::TagUserConnect,
-	Parameters(::etoile::wall::Report));
+inward(::etoile::TagUserConnect,
+       parameters(::elle::core::String));
+outward(::etoile::TagUserConnected,
+	parameters(::etoile::wall::Report));
 
 // Object
 /*

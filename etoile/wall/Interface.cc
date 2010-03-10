@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [thu mar  4 17:56:36 2010]
+// updated       julien quintard   [wed mar 10 21:57:57 2010]
 //
 
 //
@@ -46,14 +46,14 @@ namespace etoile
       // user
       InterfaceRegister(::etoile::TagUserIdentify,
 			User::Identify,
-			Parameters(const PublicKey,
+			parameters(const PublicKey,
 				   const String));
       InterfaceRegister(::etoile::TagUserAuthenticate,
 			User::Authenticate,
-			Parameters(const Digest));
+			parameters(const Digest));
       InterfaceRegister(::etoile::TagUserConnect,
 			User::Connect,
-			Parameters(const String));
+			parameters(const String));
 
       // object
       /*

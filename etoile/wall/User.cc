@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/User.cc
 //
 // created       julien quintard   [thu mar  4 16:27:52 2010]
-// updated       julien quintard   [fri mar  5 11:36:23 2010]
+// updated       julien quintard   [wed mar 10 22:11:50 2010]
 //
 
 //
@@ -36,7 +36,7 @@ namespace etoile
 
       printf("User::Identifiy\n");
 
-      context.Dump();
+      context->Dump();
 
       // XXX
 
