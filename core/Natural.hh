@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Natural.hh
 //
 // created       julien quintard   [thu nov 29 20:13:16 2007]
-// updated       julien quintard   [mon feb 16 14:24:00 2009]
+// updated       julien quintard   [wed mar 10 20:40:19 2010]
 //
 
 #ifndef ELLE_CORE_NATURAL_HH
@@ -18,7 +18,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <inttypes.h>
+#include <elle/idiom/Close.hh>
+# include <inttypes.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

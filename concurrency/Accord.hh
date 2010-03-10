@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Condition.hh
+// file          /home/mycure/infinit/elle/concurrency/Accord.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [wed mar 10 20:38:10 2010]
+// updated       julien quintard   [wed mar 10 20:24:16 2010]
 //
 
-#ifndef ELLE_CONCURRENCY_CONDITION_HH
-#define ELLE_CONCURRENCY_CONDITION_HH
+#ifndef ELLE_CONCURRENCY_ACCORD_HH
+#define ELLE_CONCURRENCY_ACCORD_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,8 +21,10 @@
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
 
+#include <elle/concurrency/Mode.hh>
+
 #include <elle/idiom/Close.hh>
-# include <QWaitCondition>
+# include <QReadWriteLock>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -35,11 +37,12 @@ namespace elle
 //
 
     ///
-    /// this class provides a condition functionality.
+    /// this class provides an accord functionality i.e the possibility
+    /// to access a resource in reading or writing such that multi read
+    /// accesses are authorised but a single write access is exclusive to
+    /// the others.
     ///
-    /// XXX \todo this class has to be written!
-    ///
-    class Condition
+    class Accord
     {
     public:
       //
@@ -50,13 +53,14 @@ namespace elle
       //
       // methods
       //
-      Status		Wait(const Natural32 = Timeout);
-      Status		Wake(/*options*/);
+      Status		Lock(const Mode,
+			     const Natural32 = Timeout);
+      Status		Unlock();
 
       //
       // attributes
       //
-      ::QWaitCondition	condition;
+      //::QReadWriteLock	accord;
     };
 
   }

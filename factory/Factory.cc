@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [sun feb 28 15:19:17 2010]
+// updated       julien quintard   [tue mar  9 12:11:26 2010]
 //
 
 //
@@ -33,8 +33,39 @@ namespace elle
     ///
     Factory::Container		Factory::Map;
 
+    ///
+    /// this variable control the access to the factory.
+    ///
+    Accord			Factory::Control;
+
 //
 // ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method initializes the factory.
+    ///
+    Status		Factory::Initialize()
+    {
+      enter();
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the factory.
+    ///
+    Status		Factory::Clean()
+    {
+      enter();
+
+      /// XXX \todo remove the types.
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
 //
 
     ///
@@ -50,13 +81,18 @@ namespace elle
 
       std::cout << alignment << "[Factory]" << std::endl;
 
-      // go through the map.
-      for (scoutor = Factory::Map.begin();
-	   scoutor != Factory::Map.end();
-	   scoutor++)
-	{
-	  std::cout << alignment << shift << scoutor->first << std::endl;
-	}
+      // lock in reading.
+      Factory::Control.Lock(ModeRead);
+      {
+	// go through the map.
+	for (scoutor = Factory::Map.begin();
+	     scoutor != Factory::Map.end();
+	     scoutor++)
+	  {
+	    std::cout << alignment << shift << scoutor->first << std::endl;
+	  }
+      }
+      Factory::Control.Unlock();
 
       leave();
     }

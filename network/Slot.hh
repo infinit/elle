@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [mon mar  8 23:07:57 2010]
+// updated       julien quintard   [wed mar 10 20:45:59 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -30,10 +30,10 @@
 #include <elle/network/Packet.hh>
 #include <elle/network/Identifier.hh>
 
-#undef release
-#include <QObject>
-#include <QUdpSocket>
-#include <elle/core/Macro.hh>
+#include <elle/idiom/Close.hh>
+# include <QObject>
+# include <QUdpSocket>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -75,23 +75,6 @@ namespace elle
       Status		Transmit(const Address&,
 				 const I&,
 				 const Identifier& = Identifier::Null);
-      template <typename O>
-      Status		Receive(const Identifier&,
-				O&);
-      template <typename I,
-		typename O>
-      Status		Request(const Address&,
-				const I&,
-				O&);
-      template <typename I,
-		typename O>
-      Status		Call(const Address&,
-			     const I&,
-			     O&);
-      template <typename I>
-      Status		Reply(const I&);
-      template <typename I>
-      Status		Return(const I&);
 
       //
       // interfaces

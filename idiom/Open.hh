@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Macro.hh
+// file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [mon mar  8 23:06:10 2010]
+// updated       julien quintard   [wed mar 10 22:09:00 2010]
 //
 
 //
@@ -19,6 +19,22 @@
 /// these macro functions are used to make using the Elle library
 /// functionalities easier.
 ///
+
+//
+// ---------- elle ------------------------------------------------------------
+//
+
+///
+/// this macro function enables the caller to embed source code
+/// automatically for a specific type. this functionality is used
+/// by the Entity class for instance.
+///
+#define embed(_identifier_, _type_)					\
+  _identifier_ ## Embed(_type_)
+
+//
+// ---------- report ----------------------------------------------------------
+//
 
 ///
 /// this macro-function register a report entry.
@@ -188,7 +204,7 @@
     } while (false)
 
 //
-// ---------- macro functions -------------------------------------------------
+// ---------- maid ------------------------------------------------------------
 //
 
 ///
@@ -268,10 +284,51 @@
 	}								\
     } while (false)
 
+//
+// ---------- message ---------------------------------------------------------
+//
+
 ///
-/// this macro function enables the caller to embed source code
-/// automatically for a specific type. this functionality is used
-/// by the Entity class for instance.
+/// this macro-function defines an inward message part of the
+/// interface.
 ///
-#define embed(_identifier_, _type_)					\
-  _identifier_ ## Embed(_type_)
+#define inward(_tag_, _parameters_)					\
+  namespace elle							\
+  {									\
+    namespace network							\
+    {									\
+      template <>							\
+      class Message< _tag_ >						\
+      {									\
+      public:								\
+        typedef Parameters< _parameters_ >	P;			\
+      };								\
+    }									\
+  }
+
+///
+/// this macro-function defines an outward message i.e response
+/// to a previously received inward message.
+///
+/// note that outward messages' tag is the negative counterpart
+/// of the corresponding inward message.
+///
+#define outward(_tag_, _parameters_)					\
+  namespace elle							\
+  {									\
+    namespace network							\
+    {									\
+      template <>							\
+      class Message< _tag_ >						\
+      {									\
+      public:								\
+        typedef Parameters< _parameters_ >	P;			\
+      };								\
+    }									\
+  }
+
+///
+/// syntaxic sugar.
+///
+#define parameters(_parameters_...)					\
+  _parameters_

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Semaphore.cc
 //
 // created       julien quintard   [sun mar  7 19:07:03 2010]
-// updated       julien quintard   [sun mar  7 20:24:01 2010]
+// updated       julien quintard   [wed mar 10 13:16:15 2010]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Misc.hh
 //
 // created       julien quintard   [thu feb  5 15:42:17 2009]
-// updated       julien quintard   [mon mar  8 23:06:32 2010]
+// updated       julien quintard   [tue mar  9 21:43:41 2010]
 //
 
 #ifndef ELLE_MISC_MISC_HH
@@ -30,7 +30,6 @@ namespace elle
 
 #include <elle/misc/Byte.hh>
 #include <elle/misc/Callback.hh>
-#include <elle/misc/Callable.hh>
 #include <elle/misc/Function.hh>
 #include <elle/misc/Maid.hh>
 #include <elle/misc/Method.hh>

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.hh
 //
 // created       julien quintard   [fri oct 16 04:10:36 2009]
-// updated       julien quintard   [mon mar  8 23:09:51 2010]
+// updated       julien quintard   [wed mar 10 20:43:48 2010]
 //
 
 #ifndef ELLE_NETWORK_HOST_HH
@@ -22,10 +22,10 @@
 #include <elle/misc/Misc.hh>
 #include <elle/io/IO.hh>
 
-#undef release
-#include <QHostAddress>
-#include <QString>
-#include <elle/core/Macro.hh>
+#include <elle/idiom/Close.hh>
+# include <QHostAddress>
+# include <QString>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

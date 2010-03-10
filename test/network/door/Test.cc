@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun mar  7 22:08:05 2010]
+// updated       julien quintard   [wed mar 10 17:14:48 2010]
 //
 
 //
@@ -56,15 +56,15 @@ namespace elle
 	{
 	  server.name = String(argv[2]);
 
-	  // start the main thread.
-	  server.start();
+	  // start the server.
+	  server.Run();
 	}
       else if (String(argv[1]) == String("client"))
 	{
 	  client.name = String(argv[2]);
 
-	  // start the main thread.
-	  client.start();
+	  // start the client.
+	  client.Run();
 	}
       else
 	escape("unknown type");

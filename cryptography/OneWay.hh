@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/OneWay.hh
 //
 // created       julien quintard   [mon oct 29 13:19:49 2007]
-// updated       julien quintard   [fri feb  5 01:56:18 2010]
+// updated       julien quintard   [wed mar 10 20:29:39 2010]
 //
 
 #ifndef ELLE_CRYPTO_ONEWAY_HH
@@ -25,8 +25,10 @@
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Digest.hh>
 
-#include <openssl/evp.h>
-#include <openssl/err.h>
+#include <elle/idiom/Close.hh>
+# include <openssl/evp.h>
+# include <openssl/err.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -42,6 +44,8 @@ namespace elle
 
     ///
     /// this class provides one-way functions.
+    ///
+    /// note that, although static, these methods are thread-safe.
     ///
     class OneWay
     {
@@ -62,13 +66,12 @@ namespace elle
       //
 
       ///
-      /// this methods are required because the compiler, given an Archive
+      /// this method is required because the compiler, given an Archive
       /// object will call a template-based method instead of the Plain one.
       ///
       /// we do not want this especially because the template-based methods
       /// build archives and we are already receiving an archive.
       ///
-
       static Status	Hash(const Archive&		archive,
 			     Digest&			digest)
       {

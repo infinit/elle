@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/String.hh
 //
 // created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [fri feb  6 20:56:51 2009]
+// updated       julien quintard   [wed mar 10 20:39:22 2010]
 //
 
 #ifndef ELLE_CORE_STRING_HH
@@ -18,7 +18,9 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <string>
+#include <elle/idiom/Close.hh>
+# include <string>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

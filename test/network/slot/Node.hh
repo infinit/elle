@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [sun mar  7 23:31:15 2010]
+// updated       julien quintard   [tue mar  9 21:46:53 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -68,8 +68,7 @@ namespace elle
     };
 
     class Node:
-      public ::QThread,
-      public Callable
+      public ::QThread
     {
       Q_OBJECT;
 

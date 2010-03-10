@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [fri mar  5 21:14:16 2010]
+// updated       julien quintard   [wed mar 10 20:42:57 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HH
@@ -18,13 +18,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <QObject>
-#include <QLocalSocket>
+#include <elle/concurrency/Concurrency.hh>
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Identifier.hh>
 #include <elle/network/Packet.hh>
+
+#include <elle/idiom/Close.hh>
+# include <QObject>
+# include <QLocalSocket>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -53,6 +57,7 @@ namespace elle
       // constants
       //
       static const Natural32		Timeout;
+      static const Natural32		Capacity;
 
       //
       // constructors & destructors
@@ -67,7 +72,6 @@ namespace elle
       Status		Create(::QLocalSocket*);
 
       Status		Connect(const String&);
-      Status		Read(Packet&);
       Status		Disconnect();
 
       template <typename I>
@@ -76,21 +80,6 @@ namespace elle
       template <typename I>
       Status		Transmit(const I&,
 				 const Identifier& = Identifier::Null);
-      template <typename O>
-      Status		Receive(const Identifier&,
-				O);
-      template <typename I,
-		typename O>
-      Status		Request(const I&,
-				O&);
-      template <typename I,
-		typename O>
-      Status		Call(const I&,
-			     O);
-      template <typename I>
-      Status		Reply(const I&);
-      template <typename I>
-      Status		Return(const I&);
 
       //
       // interfaces
@@ -104,6 +93,9 @@ namespace elle
       //
       ::QLocalSocket*	socket;
 
+      Region*		buffer;
+      Natural32		offset;
+
       //
       // signals
       //
@@ -115,7 +107,7 @@ namespace elle
       //
     private slots:
       void		Error(QLocalSocket::LocalSocketError);
-      void		Deliver();
+      void		Fetch();
     };
 
   }

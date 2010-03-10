@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.hh
 //
 // created       julien quintard   [mon feb 22 23:48:40 2010]
-// updated       julien quintard   [wed mar  3 14:00:29 2010]
+// updated       julien quintard   [wed mar 10 20:43:34 2010]
 //
 
 #ifndef ELLE_NETWORK_HEADER_HH
@@ -22,6 +22,8 @@
 
 #include <elle/network/Tag.hh>
 #include <elle/network/Identifier.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

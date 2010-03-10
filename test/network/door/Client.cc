@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [fri mar  5 22:42:36 2010]
+// updated       julien quintard   [wed mar 10 19:53:11 2010]
 //
 
 //
@@ -29,30 +29,27 @@ namespace elle
     ///
     /// this method is the thread entry point.
     ///
-    void		Client::run()
+    Status		Client::Run()
     {
       static Method<String> challenge(this, &Client::Challenge);
 
       enter();
 
+      std::cout << "[bridge] " << this->name << std::endl;
+
       // register the message.
       if (Network::Register<TagChallenge>(challenge) == StatusError)
-	alert("unable to register the challenge message");
-
-      std::cout << "[bridge] " << this->name << std::endl;
+	escape("unable to register the challenge message");
 
       // create the door.
       if (this->door.Create() == StatusError)
-	alert("unable to create the slot");
+	escape("unable to create the slot");
 
       // connect the door.
       if (this->door.Connect(this->name) == StatusError)
-	alert("unable to connect to the bridge");
+	escape("unable to connect to the bridge");
 
-      // event loop.
-      this->exec();
-
-      release();
+      leave();
     }
 
 //
@@ -69,8 +66,9 @@ namespace elle
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;
 
-      // XXX reply
-      //this->door.Transmit(Inputs<TagResponse>(text));
+      // respond.
+      if (this->door.Send(Inputs<TagResponse>(text)) == StatusError)
+	escape("unable to reply to the challenge");
 
       leave();
     }

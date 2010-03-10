@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Mutex.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [sun mar  7 19:36:31 2010]
+// updated       julien quintard   [wed mar 10 20:38:23 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_MUTEX_HH
@@ -18,10 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <QMutex>
-
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
+
+#include <elle/idiom/Close.hh>
+#include <QMutex>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
