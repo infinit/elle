@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.hh
 //
 // created       julien quintard   [thu mar  4 11:56:54 2010]
-// updated       julien quintard   [fri mar  5 10:36:23 2010]
+// updated       julien quintard   [thu mar 11 11:13:38 2010]
 //
 
 #ifndef ETOILE_USER_USER_HH
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/user/Individual.hh>
+#include <etoile/user/Agent.hh>
+#include <etoile/user/Application.hh>
 
-#include <map>
 #include <list>
 
 namespace etoile
@@ -43,43 +43,22 @@ namespace etoile
       //
       // types
       //
-      struct Data
-      {
-	typedef std::map<PublicKey, Individual*>	Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
-
-      struct Temporary
-      {
-	typedef Door*					Value;
-	typedef std::list<Value>			Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
+      typedef std::list<Application*>		Container;
+      typedef Container::iterator		Iterator;
+      typedef Container::const_iterator		Scoutor;
 
       //
-      // static methods
+      // attributes
       //
-      static Status	Record(Door*);
-      static Status	Register(Individual*);
-
-      //
-      // static attributes
-      //
-      static Data::Container		Bank;
-      static Temporary::Container	Queue;
+      Agent*		agent;
+      Container		applications;
     };
 
   }
 }
 
-//
-// ---------- manifests -------------------------------------------------------
-//
+<PublicKey, User> Users;
 
-///
-/// definitions of the messages expected to authenticate an individual.
-///
+<Door*, User*> Access;
 
 #endif
