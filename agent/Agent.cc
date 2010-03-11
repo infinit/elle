@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri mar  5 12:50:09 2010]
+// updated       julien quintard   [thu mar 11 10:25:26 2010]
 //
 
 //
@@ -147,9 +147,8 @@ namespace agent
 
       // identify to etoile by passing the user's public key for challenging
       // along with the phrase.
-      if (Agent::Socket.Call(Inputs< ::etoile::TagUserIdentify >(Agent::Pair.K,
-								 phrase),
-	                     Outputs< ::etoile::TagUserIdentify >(code)) ==
+      if (Agent::Socket.Send(Inputs< ::etoile::TagUserIdentify >(Agent::Pair.K,
+								 phrase)) ==
 	  StatusError)
 	escape("unable to identify to etoile");
     }
