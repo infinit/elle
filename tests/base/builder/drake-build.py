@@ -8,7 +8,8 @@ try:
     root = drake.raw_include('drakefile.py')
     tgt = drake.Node.nodes['tgt']
     # Remove stray target file
-    os.remove(str(tgt))
+    if os.path.exists(str(tgt)):
+        os.remove(str(tgt))
     assert not os.path.exists(str(tgt))
     assert not drake.run
     # Check it's built

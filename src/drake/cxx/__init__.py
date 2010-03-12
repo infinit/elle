@@ -227,9 +227,16 @@ class Config:
         res.flags += rhs.flags
         return res
 
+def deps_handler(builder, path, data):
+
+    return node(path)
+
 class Compiler(Builder):
 
     name = 'C++ compilation'
+    deps = 'drake.cxx.inclusions'
+
+    Builder.register_deps_handler(deps, deps_handler)
 
     include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
 
@@ -237,21 +244,22 @@ class Compiler(Builder):
 
         self.src = src
         self.obj = obj
-        self.cfg = cfg
-        self.tk = tk
+        self.config = cfg
+        self.toolkit = tk
         Builder.__init__(self, [src], [obj])
+
 
     def dependencies(self):
 
-        print 'mkdeps for %s' % self.src
-        res = self.mkdeps(self.src, 0, {})
-        for hook in self.tk.hook_object_deps():
-            hook(self.obj)
-        return res
+        for dep in self.mkdeps(self.src, 0, {}):
+            self.add_dynsrc(self.deps, dep)
+        for hook in self.toolkit.hook_object_deps():
+            hook(self)
+
 
     def execute(self):
 
-        return self.cmd(self.tk.compile(self.cfg, self.src.path(), self.obj.path()))
+        return self.cmd(self.toolkit.compile(self.config, self.src.path(), self.obj.path()))
 
     def mkdeps(self, n, lvl, marks):
 
@@ -265,7 +273,6 @@ class Compiler(Builder):
         # print idt, path
 
         res = [n]
-        self.add_src(n)
         n.build()
         for line in open(str(path), 'r'):
 
@@ -274,7 +281,7 @@ class Compiler(Builder):
             if match:
                 include = match.group(2)
                 found = False
-                for include_path in self.cfg.local_include_path():
+                for include_path in self.config.local_include_path():
                     test = include_path / include
                     # print idt, 'test: %s (%s)' % (test, strip_srctree(test))
                     # if re.compile('player-create').search(include):
@@ -302,32 +309,51 @@ class Compiler(Builder):
 
         return res
 
+
+
 class Linker(Builder):
+
 
     name = 'executable linkage'
 
+
     def dependencies(self):
 
-        res = []
-        for path in self.srcs:
+        offset = 0
+        marks = {}
+        for i in range(len(self.objs)):
+            path = str(self.objs[i + offset])
             src = self.srcs[path]
             if src.__class__ == Object:
-                for buddy in src.buddies():
-                    res.append(buddy)
-        for src in res:
-            self.add_src(src)
-        return res
+                for name, buddy in src.buddies():
+                    if str(buddy) in self.srcs or str(buddy) in marks:
+                        continue
+                    marks[str(buddy)] = None
+                    self.add_dynsrc(name, buddy)
+                    # Put buddies together. Order matters.
+                    self.objs.insert(i + offset + 1, buddy)
+                    offset += 1
+
 
     def __init__(self, objs, exe, tk, cfg):
 
         self.exe = exe
-        self.tk = tk
-        self.cfg = cfg
+        self.toolkit = tk
+        self.config = cfg
+        # This duplicates self.srcs, but preserves the order.
+        self.objs = objs
         Builder.__init__(self, objs, [exe])
+
 
     def execute(self):
 
-        return self.cmd(self.tk.link(self.cfg, self.srcs.values(), self.exe))
+        return self.cmd(self.toolkit.link(self.config, self.objs, self.exe))
+
+    def __repr__(self):
+
+        return 'Compiler for %s' % self.exe
+
+
 
 class StaticLibArchiver(ShellCommand):
 
@@ -380,10 +406,11 @@ class Object(Node):
 
         Compiler(source, self, tk, cfg)
 
-    def buddy_add(self, buddy):
+    def buddy_add(self, name, buddy):
 
         assert buddy.__class__ == Object
-        self._buddies.append(buddy)
+        if buddy not in self._buddies:
+            self._buddies.append((name, buddy))
 
     def buddies(self):
 
@@ -461,5 +488,3 @@ class Executable(Node):
             else:
                 self.builder = True # Hack to get the right path in error message
                 raise Exception('invalid source type for executable %s: %s' % (self, source))
-
-

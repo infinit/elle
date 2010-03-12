@@ -1,6 +1,5 @@
 import copy, os, hashlib, platform, re, sys, time
 
-
 def clone(o):
 
     return copy.deepcopy(o)
@@ -26,6 +25,8 @@ class Path:
         self.absolute = False
         if path.__class__ == list:
             self.path = path
+        elif path.__class__ == Path:
+            self.path = clone(path.path)
         else:
             assert path
             if platform.system() == 'Windows':
@@ -50,10 +51,14 @@ class Path:
         if name == 'extension':
             parts = self.path[-1].split('.')
             if len(parts) > 1:
-                parts[-1] = value
+                if value == '':
+                    parts.pop()
+                else:
+                    parts[-1] = value
                 self.path[-1] = '.'.join(parts)
             else:
-                self.path[-1] += '.%s' % value
+                if value != '':
+                    self.path[-1] += '.%s' % value
         else:
             self.__dict__[name] = value
         return value
@@ -105,19 +110,15 @@ class Path:
 
     def __div__(self, rhs):
 
+        rhs = Path(rhs)
+
         if self == '.':
-            if rhs.__class__ == Path:
-                return clone(rhs)
-            else:
-                return Path(rhs)
-        if rhs == '.':
+            return rhs
+        if rhs == Path('.'):
             return clone(self)
 
         res = clone(self)
-        if rhs.__class__ == Path:
-            res.path += rhs.path
-        else:
-            res.path.append(rhs)
+        res.path += rhs.path
         return res
 
     def strip_prefix(self, rhs):
@@ -128,24 +129,37 @@ class Path:
         if not self.path:
             self.path = ['.']
 
+CACHEDIR = Path('.drake')
 
 class DepFile:
 
-
-    CACHEDIR = '.drake'
-
-
-    def __init__(self, builder):
+    def __init__(self, builder, name):
 
         self.builder = builder
+        self.name = name
         builder.dsts.sort()
-        self.deps = {}
-        self.current_deps = {}
+        self._files = {}
+        self._sha1 = {}
+
+
+    def files(self):
+
+        return self._files.values()
+
+
+    def sha1s(self):
+
+        return self._sha1
+
+
+    def register(self, node):
+
+        self._files[str(node.path())] = node
 
 
     def path(self):
-        path = self.builder.dsts[0].path()
-        return prefix() / path.dirname() / self.CACHEDIR / path.basename()
+
+        return self.builder.cachedir() / self.name
 
 
     def read(self):
@@ -155,18 +169,15 @@ class DepFile:
         self.path().touch()
         for line in open(str(self.path()), 'r'):
             sha1 = line[:40]
-            src = node(Path(line[41:-1])) # Chomp the \n
-            if str(src.path()) not in self.builder.srcs:
-                res.append(src)
-            self.deps[str(src.path())] = sha1
-        return res
+            src = Path(line[41:-1]) # Chomp the \n
+            self._sha1[str(src)] = sha1
 
     def up_to_date(self):
 
-        for path in self.deps:
-            h = hashlib.sha1(open(path).read()).hexdigest()
-            self.current_deps[path] = h
-            if self.deps[path] != h:
+        for path in self._sha1:
+            assert str(path) in Node.nodes
+            h = hashlib.sha1(open(str(node(path).path())).read()).hexdigest()
+            if self._sha1[path] != h:
                 debug('  Execution needed because hash is outdated: %s.' % path)
                 return False
 
@@ -175,14 +186,10 @@ class DepFile:
 
     def update(self):
 
-#        self.up_to_date()
         f = open(str(self.path()), 'w')
-        for path in self.builder.srcs:
-            if path in self.current_deps:
-                h = self.current_deps[path]
-            else:
-                h = hashlib.sha1(open(path).read()).hexdigest()
-            print >>f, '%s %s' % (h, self.builder.srcs[path].id())
+        for path in self._files:
+            h = hashlib.sha1(open(path).read()).hexdigest()
+            print >>f, '%s %s' % (h, self._files[path].id())
 
     def __repr__(self):
 
@@ -281,7 +288,6 @@ class Node:
 
 
 
-
 def node(path):
 
     if path.__class__ != Path:
@@ -311,13 +317,16 @@ class Builder:
     uid = 0
 
     name = 'build'
+    _deps_handlers = {}
 
+    @classmethod
+    def register_deps_handler(self, name, f):
+        self._deps_handlers[name] = f
 
     def __init__(self, srcs, dsts):
 
         assert srcs.__class__ == list
         self.srcs = {}
-        self.src_list = []
         for src in srcs:
             self.add_src(src)
 #        self.srcs = srcs
@@ -331,65 +340,124 @@ class Builder:
         Builder.uid += 1
         Builder.builders.append(self)
 
-        self.depfile = DepFile(self)
+        self._depfiles = {}
+        self._depfile = DepFile(self, 'drake')
         self.built = False
+        self.dynsrc = {}
+
+
+    def cachedir(self):
+
+        path = self.dsts[0].path()
+        res = prefix() / path.dirname() / CACHEDIR / path.basename()
+        res.mkpath()
+        return res
 
 
     def dependencies(self):
 
         return []
 
+
+    def depfile(self, name):
+
+        if name not in self._depfiles:
+            self._depfiles[name] = DepFile(self, name)
+        return self._depfiles[name]
+
+
+    def add_dynsrc(self, name, node, data = None):
+
+        self.depfile(name).register(node)
+        self.dynsrc[str(node.path())] = node
+
+
     def run(self):
 
+        # If we were already executed, just skip
         if self.built:
             debug('  Already built in this run.')
-            # FIXME: return??
+            return
 
+        # The list of static dependencies is now fixed
+        for path in self.srcs:
+            self._depfile.register(self.srcs[path])
+
+        # See Whether we need to execute or not
         execute = False
 
-        other_deps = self.depfile.read()
-        for node in other_deps:
-            if node.builder is None and not node.path().exists():
-                execute = True
-                debug('  Execution needed because of unkown (probably deprecated) dependency: %s.' % node)
-                break
+        # Reload dynamic dependencies
+        if not execute:
+            for f in os.listdir(str(self.cachedir())):
+                if f == 'drake':
+                    continue
+                depfile = self.depfile(f)
+                depfile.read()
+                handler = self._deps_handlers[f]
 
+                for path in depfile.sha1s():
+
+                    if path in self.srcs or path in self.dynsrc:
+                        continue
+
+                    if path in Node.nodes:
+                        node = Node.nodes[path]
+                    else:
+                        node = handler(self, path, None)
+
+                    self.add_dynsrc(f, node, None)
+
+        # Build all dependencies
         for path in self.srcs:
             self.srcs[path].build()
+        for path in self.dynsrc:
+            self.dynsrc[path].build()
 
+        # If any target is missing, we must rebuild.
         if not execute:
             for dst in self.dsts:
                 if not dst.path().exists():
                     debug('  Execution needed because of missing target: %s.' % dst.path())
                     execute = True
 
+        # Load static dependencies
+        self._depfile.read()
+
+        # If a new dependency appeared, we must rebuild.
         if not execute:
-            for path in self.srcs:
-                if path not in self.depfile.deps:
-                    debug('  Execution needed because hash is unknown: %s.' % path)
+            for p in self.srcs:
+                path = self.srcs[p].id()
+                if path not in self._depfile._sha1:
+                    debug('  Execution needed because a new dependency appeared: %s.' % path)
                     execute = True
                     break
 
+        # Check if we are up to date wrt all dependencies
         if not execute:
-            for node in other_deps:
-                node.build()
-            if not self.depfile.up_to_date():
+            if not self._depfile.up_to_date():
                 execute = True
-            else:
-                for node in other_deps:
-                    self.add_src(node)
+            for f in self._depfiles:
+                if not self._depfiles[f].up_to_date():
+                    execute = True
+
 
         if execute:
 
-            for dep in self.dependencies():
-                dep.build()
+            # Regenerate dynamic dependencies
+            self.dynsrc = {}
+            self._depfiles = {}
+            self.dependencies()
+            for path in self.dynsrc:
+                self.dynsrc[path].build()
 
             if not self.execute():
                 raise Exception('%s failed' % self.name)
             for dst in self.dsts:
                 if not dst.path().exists():
                     raise Exception('%s wasn\'t created by %s' % (dst, self))
-            self.depfile.update()
+            self._depfile.update()
+            for name in self._depfiles:
+                self._depfiles[name].update()
             self.built = True
         else:
             debug('  Everything is up to date.')
@@ -417,7 +485,6 @@ class Builder:
 
         args = map(str, args)
         for arg in args:
-            print arg
             if rg.match(arg):
                 pass
         command = fmt % tuple(args)
@@ -428,13 +495,12 @@ class Builder:
     def add_src(self, src):
 
         self.srcs[str(src.path())] = src
-        self.src_list.append(src)
 
 
     def all_srcs(self):
 
         res = []
-        for src in self.src_list:
+        for src in self.srcs.values() + self.dynsrc.values():
             res.append(src)
             if src.builder is not None:
                 res += src.builder.all_srcs()
@@ -536,6 +602,9 @@ def dot(*filters):
         for src in builder.srcs:
             if take(src):
                 print '  node_%s -> builder_%s' % (builder.srcs[src].uid, builder.uid)
+        for src in builder.dynsrc:
+            if take(src):
+                print '  node_%s -> builder_%s' % (builder.dynsrc[src].uid, builder.uid)
         for dst in builder.dsts:
             if take(str(dst.path())):
                 print '  builder_%s -> node_%s' % (builder.uid, dst.uid)

@@ -1,14 +1,16 @@
 import re
-from .. import Builder, Exception, Path, srctree
+from .. import Builder, Exception, Node, Path, node, srctree, CACHEDIR
 from .  import Config, StaticLib, Header, Object, Source
 
 #class MocBuilder:
 
-
+deps_handler_name = 'drake.cxx.qt.moc'
 
 class Qt:
 
     def __init__(self, prefix = None, gui = False):
+
+        self.files = {}
 
         if prefix is None:
             test = ['/usr', '/usr/local']
@@ -48,23 +50,54 @@ class Qt:
     def plug(self, tk):
 
         tk.hook_object_deps_add(self.hook_object_deps)
+        tk.qt = self
 
     moc_re = re.compile('Q_OBJECT')
-    def hook_object_deps(self, o):
+    def hook_object_deps(self, compiler):
 
-        for header in [src for src in o.builder.all_srcs() if src.__class__ == Header]: # FIXME: inheritance
+        for header in [src for src in compiler.all_srcs() if src.__class__ == Header]: # FIXME: inheritance
             found = False
             for line in open(str(header), 'r'):
                 if re.search(self.moc_re, line):
                     found = True
                     break
             if found:
-                p = header.path()
-                p.extension = 'moc.cc'
-                src = Source(p)
-                obj = Object(src, o.toolkit, o.cfg)
-                o.buddy_add(obj)
-                Moc(self, header, src)
+                self.moc_file(compiler, header)
+
+    def moc_file(self, compiler, header):
+        p = Path(header.src_path)
+        p.extension = 'moc.cc'
+        src = node(p)
+        if src.builder is None:
+            Moc(self, header, src)
+        obj_path = Path(p)
+        obj_path.extension = 'o'
+        obj = None
+        if obj_path in Node.nodes:
+            obj = node(obj_path)
+        else:
+            obj = Object(src, compiler.toolkit, compiler.config)
+        compiler.obj.buddy_add(deps_handler_name, obj)
+
+def deps_handler(builder, path_obj, data):
+
+    if path_obj in Node.nodes:
+        return node(path_obj)
+    path_src = Path(path_obj)
+    path_src.extension = 'cc'
+    src = node(path_src)
+    path_header = Path(path_obj)
+    path_header.extension = ''
+    path_header.extension = 'hh'
+    header = node(path_header)
+    Moc(builder.toolkit.qt, header, src)
+    buddy = Object(src, builder.toolkit, builder.config)
+#    builder.obj.buddy_add(deps_handler_name, buddy)
+    return buddy
+
+Builder.register_deps_handler(deps_handler_name, deps_handler)
+Node.extensions['moc.cc'] = Source
+
 
 class Moc(Builder):
 
@@ -80,3 +113,4 @@ class Moc(Builder):
     def execute(self):
 
         return self.cmd('%s/bin/moc %s -o %s', self.qt.prefix, self.src, self.tgt)
+

@@ -18,7 +18,7 @@ ROOT="$(dirname $0)"
 export PYTHONPATH="$PWD/$ROOT/../src:$PYTHONPATH"
 
 for test in $(find . -name 'drake-build.py'); do
-    {
+    (
         echo -n "${purple}${test}:${white} "
         cd $(dirname "$test")
         ./drake-build.py > out.log 2> err.log
@@ -29,5 +29,5 @@ for test in $(find . -name 'drake-build.py'); do
         else
             echo "${red}FAIL${white}"
         fi
-    }
+    )
 done
