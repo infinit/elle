@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed aug  5 15:26:18 2009]
 //
 
-#ifndef ELLE_BENCHMARK_CRYPTO_TIME_HH
-#define ELLE_BENCHMARK_CRYPTO_TIME_HH
+#ifndef ELLE_BENCHMARK_CRYPTOGRAPHY_TIME_HH
+#define ELLE_BENCHMARK_CRYPTOGRAPHY_TIME_HH
 
 //
 // ---------- includes --------------------------------------------------------

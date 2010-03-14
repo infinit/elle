@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [mon mar  1 12:57:58 2010]
+// updated       julien quintard   [thu mar 11 16:40:31 2010]
 //
 
-#ifndef ELLE_CRYPTO_PRIVATEKEY_HXX
-#define ELLE_CRYPTO_PRIVATEKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
+#define ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
 
 namespace elle
 {

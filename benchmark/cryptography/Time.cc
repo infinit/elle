@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/benchmark/cryptography/Time.cc
 //
 // created       julien quintard   [wed aug  5 15:25:54 2009]
-// updated       julien quintard   [tue mar  2 15:19:19 2010]
+// updated       julien quintard   [thu mar 11 16:17:33 2010]
 //
 
 //
@@ -58,7 +58,7 @@ namespace elle
 
       mseconds = (Real)useconds / 1000.0;
 
-      std::cout << mseconds;
+      std::cout << mseconds << " ms";
 
       leave();
     }

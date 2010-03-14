@@ -11,8 +11,8 @@
 // updated       julien quintard   [sat mar  7 23:02:16 2009]
 //
 
-#ifndef ELLE_CRYPTO_CLEAR_HH
-#define ELLE_CRYPTO_CLEAR_HH
+#ifndef ELLE_CRYPTOGRAPHY_CLEAR_HH
+#define ELLE_CRYPTOGRAPHY_CLEAR_HH
 
 //
 // ---------- includes --------------------------------------------------------

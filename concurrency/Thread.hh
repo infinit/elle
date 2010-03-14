@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Thread.hh
 //
 // created       julien quintard   [tue mar  9 18:42:07 2010]
-// updated       julien quintard   [wed mar 10 20:25:26 2010]
+// updated       julien quintard   [sun mar 14 13:07:51 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_THREAD_HH
@@ -20,6 +20,8 @@
 
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
+
+#include <elle/concurrency/Event.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QThread>
@@ -44,30 +46,25 @@ namespace elle
       //
       // static methods
       //
-      static Thread*	Domain();
+      static Thread*	Retrieve();
       template <typename T>
-      static Thread*	Domain(T*);
+      static Thread*	Retrieve(T*);
+
+      Status		Start();
 
       //
       // constructors & destructors
       //
-      Thread()
-      {
-      }
+      Thread() {}; // XXX
+      ~Thread() {}; // XXX
 
-      ~Thread()
-      {
-      }
+      //
+      // interface
+      //
+      virtual Status	Run() = 0;
 
-      virtual Status Run() = 0;
-
-      void run()
-      {
-	this->Run();
-
-	// event loop.
-	this->exec();
-      }
+      // qthread
+      void		run();
     };
 
   }

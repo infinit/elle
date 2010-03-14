@@ -11,8 +11,8 @@
 // updated       julien quintard   [mon mar  1 12:36:59 2010]
 //
 
-#ifndef ELLE_CRYPTO_ONEWAY_HXX
-#define ELLE_CRYPTO_ONEWAY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HXX
+#define ELLE_CRYPTOGRAPHY_ONEWAY_HXX
 
 namespace elle
 {

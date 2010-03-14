@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 10 21:08:53 2010]
 //
 
-#ifndef ELLE_TEST_CRYPTO_TEST_HH
-#define ELLE_TEST_CRYPTO_TEST_HH
+#ifndef ELLE_TEST_CRYPTOGRAPHY_TEST_HH
+#define ELLE_TEST_CRYPTOGRAPHY_TEST_HH
 
 //
 // ---------- includes --------------------------------------------------------
