@@ -11,8 +11,8 @@
 // updated       julien quintard   [thu oct 15 20:11:38 2009]
 //
 
-#ifndef ELLE_TEST_CRYPTO_RANDOM_HH
-#define ELLE_TEST_CRYPTO_RANDOM_HH
+#ifndef ELLE_TEST_CRYPTOGRAPHY_RANDOM_HH
+#define ELLE_TEST_CRYPTOGRAPHY_RANDOM_HH
 
 //
 // ---------- includes --------------------------------------------------------

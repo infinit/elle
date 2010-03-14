@@ -11,8 +11,8 @@
 // updated       julien quintard   [mon mar  1 13:05:50 2010]
 //
 
-#ifndef ELLE_CRYPTO_SECRETKEY_HXX
-#define ELLE_CRYPTO_SECRETKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
+#define ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
 
 namespace elle
 {

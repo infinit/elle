@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 10 20:29:28 2010]
 //
 
-#ifndef ELLE_CRYPTO_KEYPAIR_HH
-#define ELLE_CRYPTO_KEYPAIR_HH
+#ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
+#define ELLE_CRYPTOGRAPHY_KEYPAIR_HH
 
 //
 // ---------- includes --------------------------------------------------------

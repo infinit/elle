@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 10 20:30:24 2010]
 //
 
-#ifndef ELLE_CRYPTO_SECRETKEY_HH
-#define ELLE_CRYPTO_SECRETKEY_HH
+#ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
+#define ELLE_CRYPTOGRAPHY_SECRETKEY_HH
 
 //
 // ---------- includes --------------------------------------------------------

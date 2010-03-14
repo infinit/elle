@@ -11,8 +11,8 @@
 // updated       julien quintard   [sat mar  7 22:03:03 2009]
 //
 
-#ifndef ELLE_CRYPTO_PLAIN_HH
-#define ELLE_CRYPTO_PLAIN_HH
+#ifndef ELLE_CRYPTOGRAPHY_PLAIN_HH
+#define ELLE_CRYPTOGRAPHY_PLAIN_HH
 
 //
 // ---------- includes --------------------------------------------------------

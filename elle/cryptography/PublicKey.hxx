@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [mon mar  1 12:59:25 2010]
+// updated       julien quintard   [thu mar 11 16:46:48 2010]
 //
 
-#ifndef ELLE_CRYPTO_PUBLICKEY_HXX
-#define ELLE_CRYPTO_PUBLICKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
+#define ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
 
 namespace elle
 {
@@ -35,9 +35,9 @@ namespace elle
     /// template arguments.
     ///
 
-    ///
-    /// encrypt
-    ///
+    //
+    // encrypt
+    //
 
     ///
     /// this method takes any object and encrypts it.
@@ -302,9 +302,9 @@ namespace elle
       leave();
     }
 
-    ///
-    /// verify
-    ///
+    //
+    // verify
+    //
 
     ///
     /// this method verifies an object by serializing it before performing
