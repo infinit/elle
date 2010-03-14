@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [thu mar  4 21:24:34 2010]
+// updated       julien quintard   [thu mar 11 17:21:00 2010]
 //
 
 //
@@ -73,10 +73,6 @@ namespace etoile
     if (Elle::Initialize() == StatusError)
       escape("unable to initialize the Elle library");
 
-    // initialize the agent.
-    if (Agent::Initialize() == StatusError)
-      escape("unable to initialize the agent");
-
     // initialize the configuration.
     if (Configuration::Initialize(path) == StatusError)
       escape("unable to initialize the configuration");
@@ -134,10 +130,6 @@ namespace etoile
     // clean the configuration.
     if (Configuration::Clean() == StatusError)
       escape("unable to clean the configuration");
-
-    // clean the agent.
-    if (Agent::Clean() == StatusError)
-      escape("unable to clean the agent");
 
     // clean the Elle library.
     if (Elle::Clean() == StatusError)

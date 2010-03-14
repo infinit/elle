@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [sat jan 30 16:20:30 2010]
+// updated       julien quintard   [thu mar 11 16:26:27 2010]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH
@@ -60,6 +60,9 @@ namespace etoile
     /// both the cache and the reserve have a least recently used list which
     /// is used to discard blocks whenever space is required.
     ///
+    /// XXX \todo explain that the capacity consumption is based on
+    ///           Imprint() which is not very precise since an object
+    ///           can point to other allocated data!
     class Repository
     {
     public:

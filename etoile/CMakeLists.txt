@@ -54,7 +54,9 @@ ADD_EXECUTABLE(etoile
   journal/Journal.cc
 
   user/User.cc
-  user/Individual.cc
+  user/Client.cc
+  user/Agent.cc
+  user/Application.cc
 
   wall/Wall.cc
   wall/Interface.cc
