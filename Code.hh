@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 10 20:28:24 2010]
 //
 
-#ifndef ELLE_CRYPTO_CODE_HH
-#define ELLE_CRYPTO_CODE_HH
+#ifndef ELLE_CRYPTOGRAPHY_CODE_HH
+#define ELLE_CRYPTOGRAPHY_CODE_HH
 
 //
 // ---------- includes --------------------------------------------------------

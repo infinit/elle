@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 10 20:29:39 2010]
 //
 
-#ifndef ELLE_CRYPTO_ONEWAY_HH
-#define ELLE_CRYPTO_ONEWAY_HH
+#ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HH
+#define ELLE_CRYPTOGRAPHY_ONEWAY_HH
 
 //
 // ---------- includes --------------------------------------------------------

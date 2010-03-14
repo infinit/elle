@@ -11,8 +11,8 @@
 // updated       julien quintard   [wed mar 10 20:30:35 2010]
 //
 
-#ifndef ELLE_CRYPTO_SIGNATURE_HH
-#define ELLE_CRYPTO_SIGNATURE_HH
+#ifndef ELLE_CRYPTOGRAPHY_SIGNATURE_HH
+#define ELLE_CRYPTOGRAPHY_SIGNATURE_HH
 
 //
 // ---------- includes --------------------------------------------------------

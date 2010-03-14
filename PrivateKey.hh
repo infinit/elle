@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [wed mar 10 20:29:58 2010]
+// updated       julien quintard   [thu mar 11 16:49:24 2010]
 //
 
-#ifndef ELLE_CRYPTO_PRIVATEKEY_HH
-#define ELLE_CRYPTO_PRIVATEKEY_HH
+#ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
+#define ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
 
 //
 // ---------- includes --------------------------------------------------------
