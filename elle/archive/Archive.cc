@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sun mar  7 23:00:52 2010]
+// updated       julien quintard   [mon mar 15 18:08:14 2010]
 //
 
 //
@@ -70,7 +70,7 @@ namespace elle
     ///
     Archive::Archive():
       mode(Archive::ModeUnknown),
-      endianness(System::MachineEndianness),
+      endianness(System::Endianness),
       offset(0)
     {
     }
@@ -109,7 +109,7 @@ namespace elle
 
       // initialise the attributes.
       this->mode = ModeSerialization;
-      this->endianness = System::MachineEndianness;
+      this->endianness = System::Endianness;
       this->offset = 0;
       this->size = 0;
       this->capacity = 0;
@@ -126,7 +126,7 @@ namespace elle
 	}
 
       // pack the endianness of the archive.
-      if (this->Store((Byte)System::MachineEndianness) == StatusError)
+      if (this->Store((Byte)System::Endianness) == StatusError)
 	escape("unable to store the archive endianness");
 
       leave();
@@ -174,7 +174,7 @@ namespace elle
       if (this->Load(endianness) == StatusError)
 	escape("unable to load the archive endianness");
 
-      this->endianness = (System::Endianness)endianness;
+      this->endianness = (System::Order)endianness;
 
       leave();
     }

@@ -39,14 +39,15 @@ ADD_LIBRARY(elle
   network/Bridge.cc
   network/Door.cc
   network/Header.cc
-  network/Identifier.cc
   network/Context.cc
+  network/Parcel.cc
 
   concurrency/Accord.cc
   concurrency/Mutex.cc
+  concurrency/Identifier.cc
   concurrency/Semaphore.cc
   concurrency/Thread.cc
-  concurrency/Event.cc
+  concurrency/Application.cc
 
   Elle.cc
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Context.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [wed mar 10 20:43:25 2010]
+// updated       julien quintard   [tue mar 16 12:28:33 2010]
 //
 
 #ifndef ELLE_NETWORK_CONTEXT_HH
@@ -20,10 +20,10 @@
 
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
+#include <elle/concurrency/Concurrency.hh>
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Address.hh>
-#include <elle/network/Identifier.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -31,6 +31,7 @@ namespace elle
 {
   using namespace core;
   using namespace misc;
+  using namespace concurrency;
 
   namespace network
   {
@@ -55,9 +56,14 @@ namespace elle
       //
       // constructors & destructors
       //
-      Context(Socket*,
-	      const Address&,
-	      const Identifier&);
+      Context();
+
+      //
+      // methods
+      //
+      Status		Create(Socket*,
+			       const Address&,
+			       const Identifier&);
 
       //
       // interfaces

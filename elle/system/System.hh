@@ -8,14 +8,27 @@
 // file          /home/mycure/infinit/elle/system/System.hh
 //
 // created       julien quintard   [mon jan 26 20:21:10 2009]
-// updated       julien quintard   [thu oct 15 20:07:21 2009]
+// updated       julien quintard   [mon mar 15 18:16:35 2010]
 //
 
 #ifndef ELLE_SYSTEM_SYSTEM_HH
 #define ELLE_SYSTEM_SYSTEM_HH
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/core/Core.hh>
+
+#include <elle/idiom/Close.hh>
+# include <QSysInfo>
+# include <QDir>
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
+  using namespace core;
+
   ///
   /// this namespace contains system-related stuff.
   ///
@@ -39,25 +52,30 @@ namespace elle
       ///
       /// this enumeration represents the endianness.
       ///
-      enum Endianness
+      enum Order
 	{
-	  EndiannessLittle = 0x1,
-	  EndiannessBig
+	  OrderLittle = 0x1,
+	  OrderBig
 	};
 
       //
       // constants
       //
+      static Order			Endianness;
 
-      ///
-      /// this variable represents the endianness of the current machine.
-      ///
-      /// autoconf defines the WORDS_BIGENDIAN macro for us so that we know
-      /// what is the current endianness.
-      ///
-      /// \todo XXX to fix cause not using autoconf any more
-      ///
-      static const Endianness		MachineEndianness;
+      struct Path
+      {
+	static Character		Separator;
+	static String			Home;
+	static String			Root;
+	static String			Current;
+      };
+
+      //
+      // static methods
+      //
+      static Status	Initialize();
+      static Status	Clean();
     };
 
   }

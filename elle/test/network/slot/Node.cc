@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [sun mar  7 23:39:32 2010]
+// updated       julien quintard   [tue mar 16 00:08:57 2010]
 //
 
 //
@@ -46,7 +46,7 @@ namespace elle
     ///
     /// this is the thread entry point.
     ///
-    void		Node::run()
+    Status		Node::Run()
     {
       static Method<String>	callback(this, &Node::Handle);
       Host			local;
@@ -56,17 +56,17 @@ namespace elle
 
       // create an host.
       if (local.Create(this->host) == StatusError)
-	alert("unable to create an host");
+	escape("unable to create an host");
 
       // create the slot.
       if (this->slot.Create() == StatusError)
-	alert("unable to create the slot");
+	escape("unable to create the slot");
 
       std::cout << "[port] " << this->slot.port << std::endl;
 
       // register the probe message.
       if (Network::Register<TagProbe>(callback) == StatusError)
-	alert("unable to register the probe message");
+	escape("unable to register the probe message");
 
       // create a new timer.
       this->timer = new ::QTimer;
@@ -74,24 +74,21 @@ namespace elle
       // connect the timeout signal to the refresh slot.
       if (this->connect(this->timer, SIGNAL(timeout()),
 			this, SLOT(Refresh())) == false)
-	alert("unable to connect the timeout signal");
+	escape("unable to connect the timeout signal");
 
       // start the timer.
       this->timer->start(10000);
 
       // create an address.
       if (remote.Create(local, this->port) == StatusError)
-	alert("unable to create a location");
+	escape("unable to create a location");
 
       // probe the peer.
       if (this->slot.Send(remote,
 			  Inputs<TagProbe>(this->name)) == StatusError)
-	alert("unable to send the probe");
+	escape("unable to send the probe");
 
-      // wait for events.
-      this->exec();
-
-      release();
+      leave();
     }
 
     ///

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [wed mar 10 20:45:59 2010]
+// updated       julien quintard   [mon mar 15 22:51:30 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/core/Core.hh>
+#include <elle/concurrency/Concurrency.hh>
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Port.hh>
@@ -28,7 +29,6 @@
 #include <elle/network/Data.hh>
 #include <elle/network/Raw.hh>
 #include <elle/network/Packet.hh>
-#include <elle/network/Identifier.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
