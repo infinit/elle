@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [wed mar 10 20:11:53 2010]
+// updated       julien quintard   [tue mar 16 12:46:42 2010]
 //
 
 //
@@ -76,59 +76,76 @@ namespace elle
     /// note that the input variables are not tracked for automatic
     /// deletion because the caller should already been tracking them.
     ///
-    Status		Network::Dispatch(Context*&		context,
-					  Header*&		header,
-					  Data*&		data)
+    Status		Network::Dispatch(Parcel*		p)
     {
       Network::Scoutor		scoutor;
+      Parcel*			parcel;
 
-      enter();
+      enter(instance(parcel));
 
       printf("[XXX] Network::Dispatch(%u)\n", header->tag);
 
-      //
-      // assign the new context.
-      //
-      if (Context::Assign(context) == StatusError)
-	escape("unable to assign the context");
+      // retrieve the argument and takes over the tracking.
+      parcel = p;
 
-      // stop tracking context.
-      waive(context);
-
-      // lock in reading.
-      Network::Control.Lock(ModeRead);
+      //
+      // first, try to  wake up a waiting slot.
+      //
       {
-	// retrieve the callback associated to the header's tag.
-	if ((scoutor = Network::Callbacks.find(header->tag)) ==
-	    Network::Callbacks.end())
+	// try to wake up a slot.
+	if (Application::Awake(parcel->header->identifier,
+			       parcel) == StatusTrue)
 	  {
-	    Network::Control.Unlock();
-	    escape("unable to locate the callback");
+	    // since the awakening has been successful, stop tracking parcel.
+	    waive(parcel);
+
+	    leave();
 	  }
-
-	// note that, at this point, the lock is release though the
-	// scoutor is still going to be used.
-	//
-	// this is necessary since the callbacks triggered may need to
-	// access the network and, for instance, register new callbacks
-	// etc.
-	//
-	// this should not be a problem since callbacks are, theoretically,
-	// never unregistered.
       }
-      Network::Control.Unlock();
 
-      // trigger the callback.
-      if (scoutor->second->Call(*data) == StatusError)
-	escape("unable to dispatch the event");
+      //
+      // if no slot is waiting for this event, dispatch it right away.
+      //
+      {
+	// assign the new context.
+	if (Context::Assign(parcel->context) == StatusError)
+	  escape("unable to assign the context");
 
-      // delete the header and data.
-      delete header;
-      delete data;
+	// lock in reading.
+	Network::Control.Lock(ModeRead);
+	{
+	  // retrieve the callback associated to the header's tag.
+	  if ((scoutor = Network::Callbacks.find(parcel->header->tag)) ==
+	      Network::Callbacks.end())
+	    {
+	      Network::Control.Unlock();
+	      escape("unable to locate the callback");
+	    }
 
-      // stop tracking the header and data.
-      waive(header);
-      waive(data);
+	  // note that, at this point, the lock is release though the
+	  // scoutor is still going to be used.
+	  //
+	  // this is necessary since the callbacks triggered may need to
+	  // access the network and, for instance, register new callbacks
+	  // etc.
+	  //
+	  // this should not be a problem since callbacks are, theoretically,
+	  // never unregistered.
+	}
+	Network::Control.Unlock();
+
+	// trigger the callback.
+	if (scoutor->second->Call(*data) == StatusError)
+	  escape("unable to dispatch the event");
+
+	// delete the header and data.
+	delete header;
+	delete data;
+
+	// stop tracking the header and data.
+	waive(header);
+	waive(data);
+      }
 
       leave();
     }

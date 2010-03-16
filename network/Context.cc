@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Context.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [wed mar 10 13:34:51 2010]
+// updated       julien quintard   [tue mar 16 12:28:54 2010]
 //
 
 //
@@ -40,20 +40,33 @@ namespace elle
 //
 
     ///
-    /// this constructor sets the arguments.
+    /// default constructor.
     ///
-    Context::Context(Socket*					socket,
-		     const Address&				address,
-		     const Identifier&				identifier):
-      socket(socket),
-      address(address),
-      identifier(identifier)
+    Context::Context():
+      socket(NULL)
     {
     }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method sets the arguments.
+    ///
+    Status		Context::Context(Socket*		socket,
+					 const Address&		address,
+					 const Identifier&	identifier)
+    {
+      enter();
+
+      // set the attributes.
+      this->socket = socket;
+      this->address = address;
+      this->identifier = identifier;
+
+      leave();
+    }
 
     ///
     /// this method sets the new context.

@@ -5,21 +5,21 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Identifier.cc
+// file          /home/mycure/infinit/elle/concurrency/Identifier.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [sun mar  7 21:00:59 2010]
+// updated       julien quintard   [mon mar 15 22:51:43 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Identifier.hh>
+#include <elle/concurrency/Identifier.hh>
 
 namespace elle
 {
-  namespace network
+  namespace concurrency
   {
 
 //

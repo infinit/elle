@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [wed mar 10 20:42:57 2010]
+// updated       julien quintard   [mon mar 15 22:51:20 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HH
@@ -22,7 +22,6 @@
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Network.hh>
-#include <elle/network/Identifier.hh>
 #include <elle/network/Packet.hh>
 
 #include <elle/idiom/Close.hh>

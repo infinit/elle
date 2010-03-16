@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archivable.hh
 //
 // created       julien quintard   [tue jan 27 01:08:40 2009]
-// updated       julien quintard   [wed mar 10 20:23:47 2010]
+// updated       julien quintard   [mon mar 15 22:46:25 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVABLE_HH
@@ -18,14 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Misc.hh>
-
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace misc;
 
   namespace archive
   {

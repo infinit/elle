@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [tue mar  9 21:46:53 2010]
+// updated       julien quintard   [mon mar 15 23:58:28 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -68,7 +68,7 @@ namespace elle
     };
 
     class Node:
-      public ::QThread
+      public ::QObject
     {
       Q_OBJECT;
 
@@ -95,7 +95,7 @@ namespace elle
       Status		Locate(const Address&,
 			       Iterator&);
 
-      void		run();
+      Status		Run();
 
       //
       // attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [wed mar 10 20:37:34 2010]
+// updated       julien quintard   [mon mar 15 18:07:39 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -210,7 +210,7 @@ namespace elle
       //
       Mode		mode;
 
-      System::Endianness endianness;
+      System::Order	endianness;
 
       Natural32		offset;
 

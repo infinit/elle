@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun mar  7 23:38:09 2010]
+// updated       julien quintard   [tue mar 16 00:05:55 2010]
 //
 
 //
@@ -29,7 +29,6 @@ namespace elle
     Status		Test::Main(int				argc,
 				   char*			argv[])
     {
-      QCoreApplication	app(argc, argv);
       Node		node;
 
       enter();
@@ -47,6 +46,10 @@ namespace elle
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the Elle library");
 
+      // set up the application
+      if (Application::Setup(argc, argv) == StatusError)
+	escape("unable to set up the application");
+
       // set up the node
       if (node.Setup(String(argv[1]),
 		     String(argv[2]),
@@ -54,10 +57,12 @@ namespace elle
 	escape("unable to start the node");
 
       // start the node.
-      node.start();
+      if (node.Run() == StatusError)
+	escape("unable to start the node");
 
-      // wait for events.
-      app.exec();
+      // process the events.
+      if (Application::Process() == StatusError)
+	escape("an error occured during the event processing");
 
       // clean the library.
       if (Elle::Clean() == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [wed mar 10 20:50:07 2010]
+// updated       julien quintard   [tue mar 16 12:30:27 2010]
 //
 
 //
@@ -187,13 +187,9 @@ namespace elle
       {
 	Region		frame;
 	Packet		packet;
-	Context*	context;
-	Header*		header;
-	Data*		data;
+	Parcel*		parcel;
 
-	enter(instance(context),
-	      instance(header),
-	      instance(data));
+	enter(instance(parcel));
 
 	// create the frame based on the previously extracted raw.
 	if (frame.Wrap(raw.contents + offset,
@@ -209,26 +205,31 @@ namespace elle
 	if (packet.Detach() == StatusError)
 	  alert("unable to detach the frame");
 
-	// allocate the header.
-	header = new Header;
+	// allocate the parcel.
+	parcel = new Parcel;
 
 	// extract the header.
-	if (header->Extract(packet) == StatusError)
+	if (header->Extract(parcel->packet) == StatusError)
 	  alert("unable to extract the header");
 
-	// allocate the data.
-	data = new Data;
-
 	// extract the data.
-	if (packet.Extract(*data) == StatusError)
+	if (packet.Extract(*parcel->data) == StatusError)
 	  alert("unable to extract the data");
 
 	// allocate the context.
-	context = new Context(this, address, header->identifier);
+	if (parcel->context->Create(this, address, header->identifier) ==
+	    StatusError)
+	  escape("unable to create the context");
 
 	// record this packet to the network manager.
-	if (Network::Dispatch(context, header, data) == StatusError)
+	//
+	// note that a this point, the network is responsible for the
+	// parcel and its memory.
+	if (Network::Dispatch(parcel) == StatusError)
 	  alert("unable to record the packet");
+
+	// stop tracking the parcel.
+	waive(parcel);
 
 	// move to the next frame by setting the offset at the end of
 	// the extracted frame.

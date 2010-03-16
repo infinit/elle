@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Identifier.hh
+// file          /home/mycure/infinit/elle/concurrency/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [wed mar 10 20:44:00 2010]
+// updated       julien quintard   [mon mar 15 22:56:07 2010]
 //
 
-#ifndef ELLE_NETWORK_IDENTIFIER_HH
-#define ELLE_NETWORK_IDENTIFIER_HH
+#ifndef ELLE_CONCURRENCY_IDENTIFIER_HH
+#define ELLE_CONCURRENCY_IDENTIFIER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,6 +21,7 @@
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
 #include <elle/archive/Archive.hh>
+#include <elle/io/IO.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rand.h>
@@ -32,8 +33,9 @@ namespace elle
   using namespace core;
   using namespace misc;
   using namespace archive;
+  using namespace io;
 
-  namespace network
+  namespace concurrency
   {
 
 //
@@ -41,7 +43,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// identifiers are used to uniquely identify events, network packets and
+    /// so on.
     ///
     class Identifier:
       public Entity,
@@ -81,7 +84,7 @@ namespace elle
       //
       // attributes
       //
-      Natural32		value;
+      Natural64		value;
     };
 
 //

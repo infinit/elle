@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.cc
 //
 // created       julien quintard   [wed mar  3 23:26:52 2010]
-// updated       julien quintard   [tue mar  9 10:21:12 2010]
+// updated       julien quintard   [mon mar 15 18:10:34 2010]
 //
 
 //
@@ -31,6 +31,10 @@ namespace elle
   {
     enter();
 
+    // initialize the system module.
+    if (System::Initialize() == StatusError)
+      escape("unable to initialize the system module");
+
     // initialize the crypto module.
     if (Cryptography::Initialize() == StatusError)
       escape("unable to initialize the cryptographic module");
@@ -52,6 +56,10 @@ namespace elle
   Status		Elle::Clean()
   {
     enter();
+
+    // clean the system module.
+    if (System::Clean() == StatusError)
+      escape("unable to clean the system module");
 
     // clean the factory module.
     if (Factory::Clean() == StatusError)
