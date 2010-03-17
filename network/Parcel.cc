@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [tue mar 16 12:24:21 2010]
+// updated       julien quintard   [tue mar 16 21:53:55 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Parcel::Parcel()
+    Parcel::Parcel():
       context(new Context),
       header(new Header),
       data(new Data)
@@ -39,9 +39,9 @@ namespace elle
     ///
     /// specific constructor.
     ///
-    Parcel::Parcel(Context*&					context,
-		   Header*&					header,
-		   Data*&					data):
+    Parcel::Parcel(Context*					context,
+		   Header*					header,
+		   Data*					data):
       context(context),
       header(header),
       data(data)

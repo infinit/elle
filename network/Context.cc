@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Context.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [tue mar 16 12:28:54 2010]
+// updated       julien quintard   [tue mar 16 21:52:59 2010]
 //
 
 //
@@ -54,9 +54,9 @@ namespace elle
     ///
     /// this method sets the arguments.
     ///
-    Status		Context::Context(Socket*		socket,
-					 const Address&		address,
-					 const Identifier&	identifier)
+    Status		Context::Create(Socket*			socket,
+					const Address&		address,
+					const Identifier&	identifier)
     {
       enter();
 
@@ -74,10 +74,6 @@ namespace elle
     Status		Context::Assign(Context*		c)
     {
       enter();
-
-      // release the previous context.
-      if (context != NULL)
-	delete context;
 
       /// XXX \todo ici au lieu de faire ca, on pourrait set dans un
       /// thread local storage, ou mieux dans currentThread() qu'on

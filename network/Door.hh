@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [mon mar 15 22:51:20 2010]
+// updated       julien quintard   [tue mar 16 23:45:33 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HH
@@ -74,11 +74,20 @@ namespace elle
       Status		Disconnect();
 
       template <typename I>
-      Status		Send(const I&,
+      Status		Send(const I,
 			     const Identifier& = Identifier::Null);
       template <typename I>
-      Status		Transmit(const I&,
+      Status		Transmit(const I,
 				 const Identifier& = Identifier::Null);
+      template <typename I,
+		typename O>
+      Status		Call(const I,
+			     O);
+      template <typename O>
+      Status		Receive(const Identifier&,
+				O);
+      template <typename I>
+      Status		Reply(const I);
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed mar 10 17:14:15 2010]
+// updated       julien quintard   [wed mar 17 10:37:12 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_CLIENT_HH
@@ -25,7 +25,9 @@
 
 #include <elle/test/network/door/Manifest.hh>
 
-#include <list>
+#include <elle/idiom/Close.hh>
+# include <list>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -41,12 +43,12 @@ namespace elle
 //
 
     class Client
-      //public Thread
     {
     public:
       //
       // methods
       //
+      Status		Setup(const String&);
       Status		Run();
 
       //
@@ -57,7 +59,7 @@ namespace elle
       //
       // attributes
       //
-      String		name;
+      String		line;
       Door		door;
     };
 

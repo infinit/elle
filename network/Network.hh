@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [tue mar 16 12:20:49 2010]
+// updated       julien quintard   [wed mar 17 11:31:40 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -104,10 +104,10 @@ namespace elle
 
       template <const Tag G>
       static Status	Register(Callback&);
-
-      static Status	Dispatch(Context*&,
-				 Header*&,
-				 Data*&);
+      static Status	Dispatch(Parcel*);
+      template <typename O>
+      static Status	Receive(const Identifier&,
+				O&);
 
       static Status	Dump(const Natural32 = 0);
 

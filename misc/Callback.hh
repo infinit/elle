@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Callback.hh
 //
 // created       julien quintard   [thu feb  4 16:59:50 2010]
-// updated       julien quintard   [wed mar 10 20:31:44 2010]
+// updated       julien quintard   [wed mar 17 09:53:47 2010]
 //
 
 #ifndef ELLE_MISC_CALLBACK_HH
@@ -18,6 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/core/Core.hh>
 #include <elle/io/Dumpable.hh>
 
 #include <elle/misc/Status.hh>
@@ -52,6 +53,7 @@ namespace elle
     /// methods while QT's slots can only be methods.
     ///
     class Callback:
+      public Entity,
       public Dumpable
     {
     public:

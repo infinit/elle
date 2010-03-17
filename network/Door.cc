@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [wed mar 10 20:51:15 2010]
+// updated       julien quintard   [wed mar 17 12:31:13 2010]
 //
 
 //
@@ -299,13 +299,9 @@ namespace elle
 	{
 	  Region	frame;
 	  Packet	packet;
-	  Context*	context;
-	  Header*	header;
-	  Data*		data;
+	  Parcel*	parcel;
 
-	  enter(instance(context),
-		instance(header),
-		instance(data));
+	  enter(instance(parcel));
 
 	  // create the frame based on the previously extracted raw.
 	  if (frame.Wrap(this->buffer->contents + this->offset,
@@ -321,15 +317,16 @@ namespace elle
 	  if (packet.Detach() == StatusError)
 	    alert("unable to detach the frame");
 
-	  // allocate the header.
-	  header = new Header;
+	  // allocate the parcel.
+	  parcel = new Parcel;
 
 	  // extract the header.
-	  if (header->Extract(packet) == StatusError)
+	  if (parcel->header->Extract(packet) == StatusError)
 	    alert("unable to extract the header");
 
 	  // test if there is enough data.
-	  if ((Integer32)((packet.size - packet.offset) - header->size) < 0)
+	  if ((Integer32)((packet.size - packet.offset) -
+			  parcel->header->size) < 0)
 	    {
 	      // test if we exceeded the buffer capacity meaning that the
 	      // waiting packet will probably never come. therefore just
@@ -350,19 +347,23 @@ namespace elle
 	      alert("not enough data to extract the whole packet");
 	    }
 
-	  // allocate the data.
-	  data = new Data;
-
 	  // extract the data.
-	  if (packet.Extract(*data) == StatusError)
+	  if (packet.Extract(*parcel->data) == StatusError)
 	    alert("unable to extract the data");
 
-	  // allocate the context.
-	  context = new Context(this, address, header->identifier);
+	  // create the context.
+	  if (parcel->context->Create(this,
+				      address,
+				      parcel->header->identifier) ==
+	      StatusError)
+	    alert("unable to create the context");
 
 	  // record this packet to the network manager.
-	  if (Network::Dispatch(context, header, data) == StatusError)
+	  if (Network::Dispatch(parcel) == StatusError)
 	    alert("unable to record the packet");
+
+	  // stop tracking the parcel.
+	  waive(parcel);
 
 	  // move to the next frame by setting the offset at the end of
 	  // the extracted frame.

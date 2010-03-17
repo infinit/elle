@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [wed mar 10 20:25:57 2010]
+// updated       julien quintard   [wed mar 17 10:00:35 2010]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -67,6 +67,24 @@ namespace elle
     enter();								\
 									\
     size = sizeof(_type_);						\
+									\
+    leave();								\
+  }									\
+									\
+  Status		Construct(Entity*&		element) const	\
+  {									\
+    enter();								\
+									\
+    element = new _type_;						\
+									\
+    leave();								\
+  }									\
+									\
+  Status		Clone(Entity*&			element) const	\
+  {									\
+    enter();								\
+									\
+    element = new _type_(*this);					\
 									\
     leave();								\
   }
@@ -154,6 +172,28 @@ namespace elle
       /// the Embed(Entity, T) macro function.
       ///
       virtual Status	Imprint(Natural32&			size) const
+      {
+	enter();
+
+	escape("this method should never have been called");
+      }
+
+      ///
+      /// this method builds an object of the same type as
+      /// the current object.
+      ///
+      virtual Status	Construct(Entity*&) const
+      {
+	enter();
+
+	escape("this method should never have been called");
+      }
+
+      ///
+      /// this method clones the current object by allocating a new
+      /// one through the copy constructor.
+      ///
+      virtual Status	Clone(Entity*&) const
       {
 	enter();
 

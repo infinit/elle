@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Application.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [tue mar 16 11:45:23 2010]
+// updated       julien quintard   [tue mar 16 23:51:28 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_APPLICATION_HH

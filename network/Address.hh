@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [wed mar 10 20:41:39 2010]
+// updated       julien quintard   [wed mar 17 16:06:36 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/core/Core.hh>
+#include <elle/archive/Archive.hh>
 
 #include <elle/network/Host.hh>
 #include <elle/network/Port.hh>
@@ -39,7 +40,7 @@ namespace elle
     ///
     class Address:
       public Entity,
-      public Dumpable
+      public Dumpable, public Archivable
     {
     public:
       //
@@ -65,6 +66,10 @@ namespace elle
       // entity
       embed(Entity, Address);
       Boolean		operator==(const Address&) const;
+
+      // archivable
+      Status		Serialize(Archive&) const;
+      Status		Extract(Archive&);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Application.hxx
 //
 // created       julien quintard   [tue mar 16 11:28:32 2010]
-// updated       julien quintard   [tue mar 16 11:35:37 2010]
+// updated       julien quintard   [tue mar 16 23:53:56 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_APPLICATION_HXX
@@ -36,7 +36,7 @@ namespace elle
       enter();
 
       // allocate a new value.
-      value = new Application::Value(identifier, NULL);
+      value = new Application::Value(identifier, (Void*)NULL);
 
       // lock in writing.
       Application::Control.Lock(ModeWrite);
@@ -57,7 +57,7 @@ namespace elle
 	value = Application::Events.front();
 
 	// return the data.
-	data = value->second;
+	data = (T*)value->second;
 
 	// delete the entry.
 	delete value;
@@ -105,7 +105,7 @@ namespace elle
 	    if (identifier == (*iterator)->first)
 	      {
 		// set the event as awaken by specifying the data pointer.
-		(*iterator)->second = data;
+		(*iterator)->second = (Void*)data;
 
 		Application::Control.Unlock();
 

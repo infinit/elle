@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [tue mar 16 12:46:42 2010]
+// updated       julien quintard   [tue mar 16 22:45:33 2010]
 //
 
 //
@@ -83,8 +83,6 @@ namespace elle
 
       enter(instance(parcel));
 
-      printf("[XXX] Network::Dispatch(%u)\n", header->tag);
-
       // retrieve the argument and takes over the tracking.
       parcel = p;
 
@@ -107,10 +105,6 @@ namespace elle
       // if no slot is waiting for this event, dispatch it right away.
       //
       {
-	// assign the new context.
-	if (Context::Assign(parcel->context) == StatusError)
-	  escape("unable to assign the context");
-
 	// lock in reading.
 	Network::Control.Lock(ModeRead);
 	{
@@ -134,17 +128,19 @@ namespace elle
 	}
 	Network::Control.Unlock();
 
+	// assign the new context.
+	if (Context::Assign(parcel->context) == StatusError)
+	  escape("unable to assign the context");
+
 	// trigger the callback.
-	if (scoutor->second->Call(*data) == StatusError)
+	if (scoutor->second->Call(*parcel->data) == StatusError)
 	  escape("unable to dispatch the event");
 
-	// delete the header and data.
-	delete header;
-	delete data;
+	// delete the parcel.
+	delete parcel;
 
-	// stop tracking the header and data.
-	waive(header);
-	waive(data);
+	// stop tracking the parcel since it has just been deleted.
+	waive(parcel);
       }
 
       leave();

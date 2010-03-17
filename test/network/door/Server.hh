@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed mar 10 19:53:34 2010]
+// updated       julien quintard   [wed mar 17 10:37:05 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_SERVER_HH
@@ -25,7 +25,9 @@
 
 #include <elle/test/network/door/Manifest.hh>
 
-#include <list>
+#include <elle/idiom/Close.hh>
+# include <list>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -41,24 +43,23 @@ namespace elle
 //
 
     class Server
-      //public Thread
     {
     public:
       //
       // methods
       //
+      Status		Setup(const String&);
       Status		Run();
 
       //
       // callbacks
       //
       Status		Connection(Door*&);
-      Status		Response(String&);
 
       //
       // attributes
       //
-      String		name;
+      String		line;
       std::list<Door*>	doors;
     };
 

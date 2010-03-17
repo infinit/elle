@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [mon mar 15 23:58:28 2010]
+// updated       julien quintard   [wed mar 17 14:05:56 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -22,13 +22,8 @@
 #include <elle/misc/Misc.hh>
 #include <elle/network/Network.hh>
 
+#include <elle/test/network/slot/Table.hh>
 #include <elle/test/network/slot/Manifest.hh>
-
-#include <QObject>
-#include <QThread>
-#include <QTimer>
-
-#include <list>
 
 namespace elle
 {
@@ -43,42 +38,13 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
-    class Node;
-
-    class		Neighbour:
-      public ::QObject
+    class Node
     {
-      Q_OBJECT;
-
     public:
       //
-      // attributes
+      // constants
       //
-      Node*		node;
-
-      Address		address;
-      String		name;
-      ::QTimer		timer;
-
-    private slots:
-      //
-      // slots
-      //
-      void		Discard();
-    };
-
-    class Node:
-      public ::QObject
-    {
-      Q_OBJECT;
-
-    public:
-      //
-      // types
-      //
-      typedef std::list<Neighbour*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      static const Natural32			Rate = 10000;
 
       //
       // methods
@@ -87,37 +53,25 @@ namespace elle
 			      const String&,
 			      const Port);
 
-      Status		Add(const Address&,
-			    const String&);
-      Status		Remove(const Address&);
-      Status		Update(const Address&,
-			       const String&);
-      Status		Locate(const Address&,
-			       Iterator&);
-
       Status		Run();
 
       //
       // attributes
       //
-      String		name;
       String		host;
       Port		port;
 
-      ::QTimer*		timer;
-      Container		container;
       Slot		slot;
+
+      String		name;
+      Table		table;
 
       //
       // callbacks
       //
-      Status		Handle(String&);
-
-    private slots:
-      //
-      // slots
-      //
-      void		Refresh();
+      Status		Handle(String&,
+			       Table&);
+      Status		Refresh();
     };
 
   }
