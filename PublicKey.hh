@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [thu mar 11 16:49:56 2010]
+// updated       julien quintard   [wed mar 17 16:39:48 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
@@ -46,6 +46,7 @@ namespace elle
 
   namespace cryptography
   {
+
 
 //
 // ---------- classes ---------------------------------------------------------
