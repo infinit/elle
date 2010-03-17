@@ -1,12 +1,8 @@
-QT4_WRAP_CPP(test-network-slot_MOCS
-  Node.hh
-)
-
 ADD_EXECUTABLE(test-network-slot
   Test.cc
   Node.cc
-
-  ${test-network-slot_MOCS}
+  Neighbour.cc
+  Table.cc
 )
 
 TARGET_LINK_LIBRARIES(test-network-slot elle crypto ssl dl

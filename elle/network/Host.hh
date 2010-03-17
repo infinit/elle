@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.hh
 //
 // created       julien quintard   [fri oct 16 04:10:36 2009]
-// updated       julien quintard   [wed mar 10 20:43:48 2010]
+// updated       julien quintard   [wed mar 17 16:06:56 2010]
 //
 
 #ifndef ELLE_NETWORK_HOST_HH
@@ -20,6 +20,7 @@
 
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
+#include <elle/archive/Archive.hh>
 #include <elle/io/IO.hh>
 
 #include <elle/idiom/Close.hh>
@@ -29,6 +30,8 @@
 
 namespace elle
 {
+  using namespace archive;
+
   namespace network
   {
 
@@ -41,7 +44,7 @@ namespace elle
     ///
     class Host:
       public Entity,
-      public Dumpable
+      public Dumpable, public Archivable
     {
     public:
       //
@@ -78,6 +81,10 @@ namespace elle
       // entity
       embed(Entity, Host);
       Boolean		operator==(const Host&) const;
+
+      // archivable
+      Status		Serialize(Archive&) const;
+      Status		Extract(Archive&);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

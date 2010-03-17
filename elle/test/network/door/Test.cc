@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [wed mar 10 17:14:48 2010]
+// updated       julien quintard   [wed mar 17 10:34:02 2010]
 //
 
 //
@@ -32,7 +32,6 @@ namespace elle
     Status		Test::Main(int				argc,
 				   char*			argv[])
     {
-      QCoreApplication	app(argc, argv);
       Server		server;
       Client		client;
 
@@ -51,26 +50,37 @@ namespace elle
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the Elle library");
 
+      // setup the application.
+      if (Application::Setup(argc, argv) == StatusError)
+	escape("unable to set up the application");
+
       // launch either the client or the server.
       if (String(argv[1]) == String("server"))
 	{
-	  server.name = String(argv[2]);
+	  // set up the server.
+	  if (server.Setup(argv[2]) == StatusError)
+	    escape("unable to set up the server");
 
 	  // start the server.
-	  server.Run();
+	  if (server.Run() == StatusError)
+	    escape("unable to run the server");
 	}
       else if (String(argv[1]) == String("client"))
 	{
-	  client.name = String(argv[2]);
+	  // set up the client.
+	  if (client.Setup(argv[2]) == StatusError)
+	    escape("unable to set up the client");
 
 	  // start the client.
-	  client.Run();
+	  if (client.Run() == StatusError)
+	    escape("unable to run the client");
 	}
       else
 	escape("unknown type");
 
-      // wait for events.
-      app.exec();
+      // process the events.
+      if (Application::Process() == StatusError)
+	escape("an error occured during the event processing");
 
       // clean the library.
       if (Elle::Clean() == StatusError)

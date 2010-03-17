@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed mar 10 20:01:59 2010]
+// updated       julien quintard   [wed mar 17 10:36:24 2010]
 //
 
 //
@@ -27,23 +27,31 @@ namespace elle
 //
 
     ///
+    /// this method initializes the server.
+    ///
+    Status		Server::Setup(const String&		line)
+    {
+      enter();
+
+      // set the line.
+      this->line = line;
+
+      leave();
+    }
+
+    ///
     /// this method is the thread entry point.
     ///
     Status		Server::Run()
     {
-      static Method<Door*>	connection(this, &Server::Connection);
-      static Method<String>	response(this, &Server::Response);
+      Method<Door*>	connection(this, &Server::Connection);
 
       enter();
 
-      std::cout << "[bridge] " << name << std::endl;
-
-      // register the message.
-      if (Network::Register<TagResponse>(response) == StatusError)
-	escape("unable to register the response message");
+      std::cout << "[bridge] " << line << std::endl;
 
       // listen for incoming connections.
-      if (Bridge::Listen(this->name, connection) == StatusError)
+      if (Bridge::Listen(this->line, connection) == StatusError)
 	escape("unable to listen for bridge connections");
 
       leave();
@@ -58,29 +66,22 @@ namespace elle
     ///
     Status		Server::Connection(Door*&		door)
     {
-      String		challenge("bande!");
+      String		challenge("CHALLENGE");
+      String		response;
 
       enter();
 
-      // push the door in the container.
+      // push the door in the container in order not to lose the object.
       this->doors.push_front(door);
 
-      // send the challenge.
-      if (door->Send(Inputs<TagChallenge>(challenge)) == StatusError)
-	escape("unable to send the challenge");
+      std::cout << "[challenging...] " << std::endl;
 
-      leave();
-    }
+      // call the challenge.
+      if (door->Call(Inputs<TagChallenge>(challenge),
+		     Outputs<TagResponse>(response)) == StatusError)
+	escape("unable to call the challenge");
 
-    ///
-    /// this method handles the response
-    ///
-    Status		Server::Response(String&		text)
-    {
-      enter();
-
-      // simply display the text.
-      std::cout << "[Response] " << text << std::endl;
+      std::cout << "[response] " << response << std::endl;
 
       leave();
     }

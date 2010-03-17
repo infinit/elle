@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [tue mar 16 12:30:27 2010]
+// updated       julien quintard   [wed mar 17 12:31:31 2010]
 //
 
 //
@@ -146,6 +146,8 @@ namespace elle
 
       enter();
 
+      printf("[XXX] Slot::Fetch(%u)\n", this->socket->pendingDatagramSize());
+
       //
       // read the pending datagrams in a raw.
       //
@@ -209,17 +211,18 @@ namespace elle
 	parcel = new Parcel;
 
 	// extract the header.
-	if (header->Extract(parcel->packet) == StatusError)
+	if (parcel->header->Extract(packet) == StatusError)
 	  alert("unable to extract the header");
 
 	// extract the data.
 	if (packet.Extract(*parcel->data) == StatusError)
 	  alert("unable to extract the data");
 
-	// allocate the context.
-	if (parcel->context->Create(this, address, header->identifier) ==
-	    StatusError)
-	  escape("unable to create the context");
+	// create the context.
+	if (parcel->context->Create(this,
+				    address,
+				    parcel->header->identifier) == StatusError)
+	  alert("unable to create the context");
 
 	// record this packet to the network manager.
 	//

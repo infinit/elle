@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [fri mar  5 15:08:00 2010]
+// updated       julien quintard   [wed mar 17 16:01:52 2010]
 //
 
 //
@@ -78,6 +78,40 @@ namespace elle
 	false();
 
       true();
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method serializes the address.
+    ///
+    Status		Address::Serialize(Archive&		archive) const
+    {
+      enter();
+
+      // serialize the host and port.
+      if (archive.Serialize(this->host,
+			    this->port) == StatusError)
+	escape("unable to serialize the address attributes");
+
+      leave();
+    }
+
+    ///
+    /// this method extracts an address.
+    ///
+    Status		Address::Extract(Archive&		archive)
+    {
+      enter();
+
+      // extract the address.
+      if (archive.Extract(this->host,
+			  this->port) == StatusError)
+	escape("unable to extract the address attributes");
+
+      leave();
     }
 
 //

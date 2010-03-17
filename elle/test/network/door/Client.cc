@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [wed mar 10 19:53:11 2010]
+// updated       julien quintard   [wed mar 17 10:36:07 2010]
 //
 
 //
@@ -27,15 +27,28 @@ namespace elle
 //
 
     ///
+    /// this method initializes the client.
+    ///
+    Status		Client::Setup(const String&		line)
+    {
+      enter();
+
+      // set the line.
+      this->line = line;
+
+      leave();
+    }
+
+    ///
     /// this method is the thread entry point.
     ///
     Status		Client::Run()
     {
-      static Method<String> challenge(this, &Client::Challenge);
+      Method<String>	challenge(this, &Client::Challenge);
 
       enter();
 
-      std::cout << "[bridge] " << this->name << std::endl;
+      std::cout << "[bridge] " << this->line << std::endl;
 
       // register the message.
       if (Network::Register<TagChallenge>(challenge) == StatusError)
@@ -46,7 +59,7 @@ namespace elle
 	escape("unable to create the slot");
 
       // connect the door.
-      if (this->door.Connect(this->name) == StatusError)
+      if (this->door.Connect(this->line) == StatusError)
 	escape("unable to connect to the bridge");
 
       leave();
@@ -61,13 +74,15 @@ namespace elle
     ///
     Status		Client::Challenge(String&			text)
     {
+      String		response("RESPONSE");
+
       enter();
 
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;
 
       // respond.
-      if (this->door.Send(Inputs<TagResponse>(text)) == StatusError)
+      if (this->door.Reply(Inputs<TagResponse>(response)) == StatusError)
 	escape("unable to reply to the challenge");
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [tue mar  2 15:10:11 2010]
+// updated       julien quintard   [wed mar 17 16:17:28 2010]
 //
 
 #include <elle/network/Host.hh>
@@ -106,6 +106,48 @@ namespace elle
 	false();
 
       true();
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method serializes the host.
+    ///
+    Status		Host::Serialize(Archive&		archive) const
+    {
+      String		host(this->location.toString().toStdString());
+
+      enter();
+
+      // serialize the host and port.
+      if (archive.Serialize((Byte&)this->type,
+			    host) == StatusError)
+	escape("unable to serialize the host");
+
+      leave();
+    }
+
+    ///
+    /// this method extracts a host.
+    ///
+    Status		Host::Extract(Archive&			archive)
+    {
+      String		host;
+
+      enter();
+
+      // extract the host.
+      if (archive.Extract((Byte&)this->type,
+			  host) == StatusError)
+	escape("unable to extract the host");
+
+      // create the host properly.
+      if (this->Create(host) == StatusError)
+	escape("unable to create the host");
+
+      leave();
     }
 
 //

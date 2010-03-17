@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.hh
 //
 // created       julien quintard   [tue mar 16 12:04:48 2010]
-// updated       julien quintard   [tue mar 16 12:23:54 2010]
+// updated       julien quintard   [tue mar 16 23:49:31 2010]
 //
 
 #ifndef ELLE_NETWORK_PARCEL_HH
@@ -34,28 +34,24 @@ namespace elle
     ///
     /// this class is just a wrapper for packets freshly received.
     ///
-    /// this class inherits Entity for convenience because the Application
-    /// is capable of passing Entity* between slots and blocked slots.
-    ///
-    class Parcel:
-      public Entity
+    class Parcel
     {
     public:
       //
       // constructors & destructors
       //
       Parcel();
-      Parcel(Context*&,
-	     Header*&,
-	     Data*&);
+      Parcel(Context*,
+	     Header*,
+	     Data*);
       ~Parcel();
 
       //
       // attributes
       //
-      Context*&		context;
-      Header*&		header;
-      Data*&		data;
+      Context*		context;
+      Header*		header;
+      Data*		data;
     };
 
   }

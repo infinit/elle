@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [tue mar 16 00:05:55 2010]
+// updated       julien quintard   [tue mar 16 21:57:31 2010]
 //
 
 //
