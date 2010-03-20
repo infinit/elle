@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [thu mar 11 16:59:07 2010]
+// updated       julien quintard   [sat mar 20 15:28:51 2010]
 //
 
 //
@@ -310,6 +310,10 @@ namespace elle
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the internal numbers.
       if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
 	  (::BN_cmp(this->key->pkey.rsa->d, element.key->pkey.rsa->d) != 0) ||
@@ -319,6 +323,11 @@ namespace elle
 
       true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, PrivateKey);
 
 //
 // ---------- dumpable --------------------------------------------------------

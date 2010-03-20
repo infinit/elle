@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cipher.hh
 //
 // created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [mon mar 15 22:48:15 2010]
+// updated       julien quintard   [sat mar 20 03:30:42 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CIPHER_HH
@@ -50,7 +50,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Cipher);
+      declare(Entity, Cipher);
       Boolean		operator==(const Cipher&) const;
 
       // dumpable

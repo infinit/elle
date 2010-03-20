@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [wed mar 10 20:30:24 2010]
+// updated       julien quintard   [sat mar 20 03:39:58 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
@@ -104,7 +104,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, SecretKey);
+      declare(Entity, SecretKey);
       Boolean		operator==(const SecretKey&) const;
 
       // dumpable

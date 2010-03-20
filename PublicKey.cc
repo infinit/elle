@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [wed mar 17 14:04:10 2010]
+// updated       julien quintard   [sat mar 20 13:13:02 2010]
 //
 
 //
@@ -293,6 +293,10 @@ namespace elle
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the internal numbers.
       if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
 	  (::BN_cmp(this->key->pkey.rsa->e, element.key->pkey.rsa->e) != 0))
@@ -300,6 +304,11 @@ namespace elle
 
       true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, PublicKey);
 
 //
 // ---------- dumpable --------------------------------------------------------

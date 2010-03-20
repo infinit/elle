@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [tue mar  2 14:57:02 2010]
+// updated       julien quintard   [sat mar 20 13:11:48 2010]
 //
 
 //
@@ -138,12 +138,21 @@ namespace elle
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the internal keys.
       if ((this->K != element.K) || (this->k != element.k))
 	false();
 
       true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, KeyPair);
 
 //
 // ---------- dumpable --------------------------------------------------------

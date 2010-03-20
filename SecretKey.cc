@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [tue mar  2 14:59:46 2010]
+// updated       julien quintard   [sat mar 20 13:17:40 2010]
 //
 
 //
@@ -304,9 +304,23 @@ namespace elle
     ///
     Boolean		SecretKey::operator==(const SecretKey&	element) const
     {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the internal region.
-      return (this->key == element.key);
+      if (this->key != element.key)
+	false();
+
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, SecretKey);
 
 //
 // ---------- dumpable --------------------------------------------------------

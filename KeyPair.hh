@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [wed mar 10 20:29:28 2010]
+// updated       julien quintard   [sat mar 20 03:36:31 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
@@ -91,7 +91,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, KeyPair);
+      declare(Entity, KeyPair);
       Boolean		operator==(const KeyPair&) const;
 
       // dumpable
