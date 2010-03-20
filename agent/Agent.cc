@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu mar 11 10:25:26 2010]
+// updated       julien quintard   [sat mar 20 16:25:09 2010]
 //
 
 //
@@ -43,7 +43,12 @@ namespace agent
   ///
   /// the door to Etoile.
   ///
-  Door			Agent::Socket;
+  Door			Agent::Link;
+
+  ///
+  /// the phrase used to connect applications to Etoile.
+  ///
+  String		Agent::Phrase;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -115,12 +120,18 @@ namespace agent
     // connect the agent to etoile.
     //
     {
+      Function<const String>	monitor(&Agent::Monitor);
+
       // create the door.
-      if (Agent::Socket.Create() == StatusError)
+      if (Agent::Link.Create() == StatusError)
+	escape("unable to create the door");
+
+      // monitor the socket.
+      if (Agent::Link.Monitor(monitor) == StatusError)
 	escape("unable to create the door");
 
       // connect the door.
-      if (Agent::Socket.Connect(Agent::Line) == StatusError)
+      if (Agent::Link.Connect(Agent::Line) == StatusError)
 	escape("unable to connect to Etoile");
     }
 
@@ -128,29 +139,35 @@ namespace agent
     // authenticate.
     //
     {
-      Large		number;
-      char*		hexadecimal;
-      String		phrase;
-      Code		code;
-
-      // initialize and random generate a large.
-      ::BN_init(&number);
-      ::BN_rand(&number, 256, 0, 0);
-
-      // retrieve the hexadecimal representation.
-      hexadecimal = ::BN_bn2hex(&number);
-
-      // build a string on this representation.
-      phrase.assign(hexadecimal);
-
-      std::cout << phrase << std::endl;
+      Code			code;
+      Digest			digest;
+      ::etoile::wall::Result	result;
 
       // identify to etoile by passing the user's public key for challenging
       // along with the phrase.
-      if (Agent::Socket.Send(Inputs< ::etoile::TagUserIdentify >(Agent::Pair.K,
-								 phrase)) ==
-	  StatusError)
+      if (Agent::Link.Call(
+	    Inputs< ::etoile::TagWallIdentify >(Agent::Pair.K),
+	    Outputs< ::etoile::TagWallChallenge >(code)) == StatusError)
 	escape("unable to identify to etoile");
+
+      // decrypt the code with the private key.
+      if (Agent::Pair.k.Decrypt(code, Agent::Phrase) == StatusError)
+	escape("unable to decrypt the code");
+
+      // hash the phrase.
+      if (OneWay::Hash(Agent::Phrase, digest) == StatusError)
+	escape("unable to hash the phrase");
+
+      // authenticate by sending the hash of the phrase.
+      if (Agent::Link.Call(
+	    Inputs< ::etoile::TagWallAuthenticate >(digest),
+	    Outputs< ::etoile::TagWallAuthenticated >(result)) == StatusError)
+	escape("unable to authenticate to etoile");
+
+      // test the result.
+      if (result == etoile::wall::Result::Error)
+	printf("ERROR\n");
+      //escape(result.report); // XXX method templates dans Report
     }
 
     leave();
@@ -167,6 +184,27 @@ namespace agent
   }
 
 //
+// ---------- callbacks -------------------------------------------------------
+//
+
+  ///
+  /// this callback is triggered whenever an error occurs on the socket.
+  ///
+  Status		Agent::Monitor(const String&		error)
+  {
+    enter();
+
+    printf("[XXX] Agent::Monitor()\n");
+
+    // XXX
+    //report(error);
+    //Application::Exit();
+    std::cerr << error << std::endl;
+
+    leave();
+  }
+
+//
 // ---------- functions -------------------------------------------------------
 //
 
@@ -176,7 +214,6 @@ namespace agent
   Status		Main(Natural32				argc,
 			     Character*				argv[])
   {
-    ::QCoreApplication	application((int&)argc, (char**)argv);
     String		name;
 
     enter();
@@ -189,16 +226,29 @@ namespace agent
       name.assign(argv[1]);
     }
 
+    // initialize the Elle library.
+    if (Elle::Initialize() == StatusError)
+      escape("unable to initialize the Elle library");
+
+    // set up the application.
+    if (Application::Setup(argc, argv) == StatusError)
+      escape("unable to set up the application");
+
     // initialize the agent.
     if (Agent::Initialize(name) == StatusError)
       escape("unable to initialize the agent");
 
-    // start the application event loop.
-    application.exec();
+    // process the events.
+    if (Application::Process() == StatusError)
+      escape("unable to process the events");
 
     // clean the agent.
     if (Agent::Clean() == StatusError)
       escape("unable to clean the agent");
+
+    // clean the Elle library.
+    if (Elle::Clean() == StatusError)
+      escape("unable to clean the Elle library");
 
     leave();
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [fri mar  5 12:46:00 2010]
+// updated       julien quintard   [fri mar 19 23:27:17 2010]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -18,14 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <QStringList>
-#include <QCoreApplication>
-
 #include <elle/Elle.hh>
 
 #include <etoile/Manifest.hh>
 
-#include <sys/stat.h>
+#include <elle/idiom/Close.hh>
+# include <sys/stat.h>
+#include <elle/idiom/Open.hh>
 
 namespace agent
 {
@@ -61,11 +60,14 @@ namespace agent
     static Status	Sign(const Plain&,
 			     Signature);
 
+    static Status	Monitor(const String&);
+
     //
     // static attributes
     //
     static KeyPair	Pair;
-    static Door		Socket;
+    static Door		Link;
+    static String	Phrase;
   };
 
 }
