@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [wed mar  3 16:51:14 2010]
+// updated       julien quintard   [wed mar 17 22:26:47 2010]
 //
 
 //
@@ -56,13 +56,15 @@ namespace etoile
       // check if this family of block expires.
       if (Repository::Delays[address.family] != NULL)
 	{
-	  // allocate a new timer object.
-	  this->timer = new ::QTimer;
+	  Method<>	discard(this, &Record::Discard);
 
-	  // connect the timeout signal.
-	  if (this->connect(this->timer, SIGNAL(timeout()),
-			    this, SLOT(Timeout())) == false)
-	    escape("unable to connect the timeout signal");
+	  // allocate a new timer object.
+	  this->timer = new Timer;
+
+	  // set up the timer.
+	  if (this->timer->Create(Timer::ModeSingle,
+				  discard) == StatusError)
+	    escape("unable to set up the timer");
 
 	  // note that the timer is not started yet. it will be launched
 	  // once the Timer() method has been called.
@@ -75,7 +77,7 @@ namespace etoile
     /// this method must be called whenever the timer is to be re-computed
     /// and restarted.
     ///
-    Status		Record::Timer()
+    Status		Record::Monitor()
     {
       Time*		time;
       Natural64		expiration;
@@ -87,7 +89,8 @@ namespace etoile
 	leave();
 
       // stop a potentially already existing timer.
-      this->timer->stop();
+      if (this->timer->Stop() == StatusError)
+	escape("unable to stop the timer");
 
       // retrieve the time.
       time = Repository::Delays[this->address.family];
@@ -98,7 +101,8 @@ namespace etoile
 	time->day * 86400 + time->month * 2592000 + time->year * 31104000;
 
       // start the timer, in milli-seconds.
-      this->timer->start(expiration * 1000);
+      if (this->timer->Start(expiration * 1000) == StatusError)
+	escape("unable to restart the timer");
 
       leave();
     }
@@ -118,7 +122,8 @@ namespace etoile
 	if (this->timer != NULL)
 	  {
 	    // stop the timer.
-	    this->timer->stop();
+	    if (this->timer->Stop() == StatusError)
+	      escape("unable to stop the timer");
 
 	    // delete it.
 	    delete this->timer;
@@ -209,22 +214,22 @@ namespace etoile
     }
 
 //
-// ---------- slots -----------------------------------------------------------
+// ---------- callbacks -------------------------------------------------------
 //
 
     ///
     /// this method is called whenever the element timeouts i.e must be
     /// removed from the repository.
     ///
-    void		Record::Timeout()
+    Status		Record::Discard()
     {
       enter();
 
       // remove the block from the repository.
       if (Repository::Discard(this->address) == StatusError)
-	alert("unable to discard the timeout block");
+	escape("unable to discard the timeout block");
 
-      release();
+      leave();
     }
 
   }

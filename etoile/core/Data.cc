@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [wed mar  3 16:13:21 2010]
+// updated       julien quintard   [sat mar 20 04:10:52 2010]
 //
 
 //
@@ -104,6 +104,15 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Data);
 
 //
 // ---------- dumpable --------------------------------------------------------

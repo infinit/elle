@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [wed mar  3 16:12:42 2010]
+// updated       julien quintard   [sat mar 20 04:13:30 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HXX
@@ -130,6 +130,15 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Contents<T>, template <typename T>);
 
 //
 // ---------- dumpable --------------------------------------------------------

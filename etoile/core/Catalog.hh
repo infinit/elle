@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [mon mar  8 23:11:54 2010]
+// updated       julien quintard   [sat mar 20 04:09:19 2010]
 //
 
 #ifndef ETOILE_CORE_CATALOG_HH
@@ -106,7 +106,7 @@ namespace etoile
       //
 
       // entity
-      embed(Entity, Catalog);
+      declare(Entity, Catalog);
       // XXX operator==
 
       // dumpable

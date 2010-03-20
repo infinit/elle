@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.hh
 //
 // created       julien quintard   [thu dec  3 03:07:53 2009]
-// updated       julien quintard   [thu jan 28 15:10:22 2010]
+// updated       julien quintard   [wed mar 17 22:25:21 2010]
 //
 
 #ifndef ETOILE_DEPOT_RECORD_HH
@@ -27,9 +27,6 @@
 #include <etoile/depot/Unit.hh>
 #include <etoile/depot/Repository.hh>
 #include <etoile/depot/Location.hh>
-
-#include <QObject>
-#include <QTimer>
 
 namespace etoile
 {
@@ -53,12 +50,9 @@ namespace etoile
     /// this class holds a block state, either in its cell form i.e in main
     /// memory cache or in its unit form i.e in the reserve.
     ///
-    class		Record:
-      public ::QObject,
+    class Record:
       public Dumpable
     {
-      Q_OBJECT;
-
     public:
       //
       // constructors & destructors
@@ -78,13 +72,13 @@ namespace etoile
 	Unit*		unit;
       }			data;
 
-      ::QTimer*		timer;
+      Timer*		timer;
 
       //
       // methods
       //
       Status		Create(const hole::Address&);
-      Status		Timer();
+      Status		Monitor();
       Status		Destroy();
 
       //
@@ -92,11 +86,10 @@ namespace etoile
       //
       Status		Dump(const Natural32 = 0) const;
 
-    private slots:
       //
-      // slots
+      // callbacks
       //
-      void		Timeout();
+      Status		Discard();
     };
 
   }

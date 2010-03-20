@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [wed mar  3 16:10:56 2010]
+// updated       julien quintard   [sat mar 20 13:20:13 2010]
 //
 
 //
@@ -113,14 +113,33 @@ namespace etoile
     ///
     Boolean		Author::operator==(const Author&	element) const
     {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the addresses since one of them is null.
       if ((this->proof == NULL) || (element.proof == NULL))
-	return ((this->mode == element.mode) &&
-		(this->proof == element.proof));
+	{
+	  if ((this->mode != element.mode) ||
+	      (this->proof != element.proof))
+	    false();
+	}
+      else
+	{
+	  if ((this->mode != element.mode) ||
+	      (*this->proof != *element.proof))
+	    false();
+	}
 
-      return ((this->mode == element.mode) &&
-	      (*this->proof == *element.proof));
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Author);
 
 //
 // ---------- dumpable --------------------------------------------------------

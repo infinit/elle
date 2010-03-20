@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [wed mar  3 16:39:55 2010]
+// updated       julien quintard   [wed mar 17 17:44:58 2010]
 //
 
 //
@@ -25,11 +25,6 @@ namespace etoile
 //
 // ---------- definitions -----------------------------------------------------
 //
-
-    ///
-    /// this variable defines the path separator.
-    ///
-    String&		Path::Separator = Configuration::Path::Separator;
 
     ///
     /// this variable contains the address of the root directory object.

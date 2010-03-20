@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [fri jan 29 16:21:36 2010]
+// updated       julien quintard   [wed mar 17 17:45:03 2010]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -45,11 +45,6 @@ namespace etoile
     class Path
     {
     public:
-      //
-      // constants
-      //
-      static String&		Separator;
-
       //
       // static methods
       //

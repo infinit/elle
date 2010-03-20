@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [thu mar 11 16:26:27 2010]
+// updated       julien quintard   [fri mar 19 17:07:13 2010]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH
@@ -104,7 +104,7 @@ namespace etoile
 			      const Natural32);
       static Status	Discard(const hole::Address&);
 
-      static Status	Dump(const Natural32 = 0);
+      static Status	Show(const Natural32 = 0);
 
       //
       // static attributes

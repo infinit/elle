@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [thu mar 11 17:21:48 2010]
+// updated       julien quintard   [sat mar 20 15:25:51 2010]
 //
 
 #ifndef ETOILE_ETOILE_HH
@@ -31,6 +31,7 @@
 #include <etoile/path/Path.hh>
 #include <etoile/wall/User.hh>
 #include <etoile/wall/Wall.hh>
+#include <etoile/idiom/Idiom.hh>
 
 using namespace etoile;
 using namespace etoile::agent;
@@ -44,10 +45,6 @@ using namespace etoile::journal;
 using namespace etoile::path;
 using namespace etoile::user;
 using namespace etoile::wall;
-
-#include <elle/idiom/Close.hh>
-# include <QCoreApplication>
-#include <elle/idiom/Open.hh>
 
 ///
 /// the principal namespace

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [wed mar  3 16:10:14 2010]
+// updated       julien quintard   [sat mar 20 04:12:10 2010]
 //
 
 //
@@ -158,6 +158,15 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Access);
 
 //
 // ---------- dumpable --------------------------------------------------------

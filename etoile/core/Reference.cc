@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed mar  3 16:17:25 2010]
+// updated       julien quintard   [sat mar 20 04:12:27 2010]
 //
 
 //
@@ -40,6 +40,15 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Reference);
 
 //
 // ---------- dumpable --------------------------------------------------------

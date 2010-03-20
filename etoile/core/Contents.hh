@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [mon mar  8 23:12:04 2010]
+// updated       julien quintard   [sat mar 20 04:13:37 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HH
@@ -71,7 +71,7 @@ namespace etoile
       //
 
       // entity
-      embed(Entity, Contents);
+      declare(Entity, Contents<T>);
       // XXX operator==
 
       // dumpable

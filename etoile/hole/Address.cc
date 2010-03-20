@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed mar  3 16:34:25 2010]
+// updated       julien quintard   [sat mar 20 13:25:08 2010]
 //
 
 //
@@ -143,14 +143,33 @@ namespace etoile
     ///
     Boolean		Address::operator==(const Address&	element) const
     {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
-	return ((this->family == element.family) &&
-		(this->digest == element.digest));
+	{
+	  if ((this->family != element.family) ||
+	      (this->digest != element.digest))
+	    false();
+	}
+      else
+	{
+	  if ((this->family != element.family) ||
+	      (*this->digest != *element.digest))
+	    false();
+	}
 
-      return ((this->family == element.family) &&
-	      (*this->digest == *element.digest));
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Address);
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [wed mar  3 16:32:12 2010]
+// updated       julien quintard   [fri mar 19 17:07:23 2010]
 //
 
 //
@@ -269,7 +269,7 @@ namespace etoile
 	Repository::Cache::Queue.push_back(record);
 
 	// re-compute the expiration timer, if required.
-	if (record->Timer() == StatusError)
+	if (record->Monitor() == StatusError)
 	  escape("unable to reset the timer");
       }
 
@@ -377,7 +377,7 @@ namespace etoile
 	Repository::Cache::Queue.push_back(record);
 
 	// re-compute the expiration timer.
-	if (record->Timer() == StatusError)
+	if (record->Monitor() == StatusError)
 	  escape("unable to reset the timer");
       }
 
@@ -583,14 +583,10 @@ namespace etoile
       leave();
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
     ///
     /// this method dumps the whole repository.
     ///
-    Status		Repository::Dump(const Natural32	margin)
+    Status		Repository::Show(const Natural32	margin)
     {
       String				alignment(margin, ' ');
       String				shift(2, ' ');

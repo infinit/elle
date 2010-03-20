@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [wed mar  3 16:18:05 2010]
+// updated       julien quintard   [sat mar 20 13:20:21 2010]
 //
 
 //
@@ -113,6 +113,10 @@ namespace etoile
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the type.
       if (this->type != element.type)
 	false();
@@ -137,6 +141,11 @@ namespace etoile
       // unreachable.
       flee("unable to compare these objects");
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Subject);
 
 //
 // ---------- dumpable --------------------------------------------------------

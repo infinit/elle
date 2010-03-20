@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [thu mar 11 17:16:07 2010]
+// updated       julien quintard   [fri mar 19 20:12:18 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -19,6 +19,8 @@
 //
 
 #include <elle/Elle.hh>
+
+#include <etoile/user/Map.hh>
 
 namespace etoile
 {
@@ -33,17 +35,52 @@ namespace etoile
     /// this class acts on the behalf of a user by performing cryptographic
     /// operations or, whenever unable, requesting the agent to do it.
     ///
-    class Agent
+    class Agent:
+      public Dumpable
     {
     public:
       //
+      // constants
+      //
+      static const Natural32		Expiration;
+
+      //
+      // enumerations
+      //
+      enum State
+	{
+	  StateUnauthenticated,
+	  StateAuthenticated
+	};
+
+      //
       // constructors & destructors
       //
-      Agent(const PublicKey&);
+      Agent();
       ~Agent();
 
       //
       // methods
+      //
+      Status		Create(const PublicKey&,
+			       Link*);
+      Status		Destroy();
+
+      //
+      // callbacks
+      //
+      Status		Timeout();
+      Status		Error(const String&);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      //
+      // template methods
       //
       template <typename... T>
       Status		Encrypt(T&...) const;
@@ -196,8 +233,10 @@ namespace etoile
       //
       // attributes
       //
+      State		state;
+      Timer		timer;
       PublicKey		K;
-      Socket*		socket;
+      Link*		link;
     };
 
   }

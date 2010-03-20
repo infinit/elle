@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [sun mar  7 21:00:13 2010]
+// updated       julien quintard   [sat mar 20 13:23:55 2010]
 //
 
 //
@@ -83,13 +83,28 @@ namespace etoile
     ///
     Boolean		Time::operator==(const Time&		element) const
     {
-      return ((this->second == element.second) &&
-	      (this->minute == element.minute) &&
-	      (this->hour == element.hour) &&
-	      (this->day == element.day) &&
-	      (this->month == element.month) &&
-	      (this->year == element.year));
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the attributes.
+      if ((this->second != element.second) ||
+	  (this->minute != element.minute) ||
+	  (this->hour != element.hour) ||
+	  (this->day != element.day) ||
+	  (this->month != element.month) ||
+	  (this->year != element.year))
+	false();
+
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Time);
 
 //
 // ---------- dumpable --------------------------------------------------------

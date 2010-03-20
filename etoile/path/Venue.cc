@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [wed mar  3 16:40:24 2010]
+// updated       julien quintard   [sat mar 20 13:27:29 2010]
 //
 
 //
@@ -78,6 +78,10 @@ namespace etoile
 
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the size.
       if (this->elements.size() != element.elements.size())
 	false();
@@ -91,6 +95,11 @@ namespace etoile
 
       true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Venue);
 
   }
 }

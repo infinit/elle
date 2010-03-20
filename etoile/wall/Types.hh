@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Types.hh
 //
 // created       julien quintard   [fri aug 14 17:41:49 2009]
-// updated       julien quintard   [thu mar  4 16:47:15 2010]
+// updated       julien quintard   [fri mar 19 23:49:05 2010]
 //
 
 #ifndef ETOILE_WALL_TYPES_HH
@@ -41,8 +41,6 @@ namespace etoile
     typedef String		Path;
 
     typedef core::Subject	Subject;
-
-    typedef std::list<String>	Report;
 
     class Metadata
     {

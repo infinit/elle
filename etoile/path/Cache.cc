@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [wed mar  3 16:38:42 2010]
+// updated       julien quintard   [fri mar 19 17:07:04 2010]
 //
 
 //
@@ -143,16 +143,12 @@ namespace etoile
       leave();
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
     ///
     /// this method dumps the whole cache.
     ///
-    Status		Cache::Dump(const Natural32		margin)
+    Status		Cache::Show(const Natural32		margin)
     {
-      String				alignment(margin, ' ');
+      String		alignment(margin, ' ');
 
       enter();
 

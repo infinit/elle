@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [wed mar  3 16:40:06 2010]
+// updated       julien quintard   [wed mar 17 17:45:38 2010]
 //
 
 //
@@ -39,8 +39,8 @@ namespace etoile
       enter();
 
       // initialize the pointers.
-      start = path.find_first_not_of(Path::Separator);
-      end = path.find_first_of(Path::Separator, start);
+      start = path.find_first_not_of(System::Path::Separator);
+      end = path.find_first_of(System::Path::Separator, start);
 
       // go through the string.
       while (start < path.length())
@@ -54,8 +54,8 @@ namespace etoile
 	  this->elements.push_back(element);
 
 	  // compute the next offsets.
-	  start = path.find_first_not_of(Path::Separator, end);
-	  end = path.find_first_of(Path::Separator, start);
+	  start = path.find_first_not_of(System::Path::Separator, end);
+	  end = path.find_first_of(System::Path::Separator, start);
 	}
 
       leave();

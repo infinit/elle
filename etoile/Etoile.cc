@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [thu mar 11 17:21:00 2010]
+// updated       julien quintard   [fri mar 19 14:55:48 2010]
 //
 
 //
@@ -69,10 +69,6 @@ namespace etoile
       }
     }
 
-    // initialize the Elle library.
-    if (Elle::Initialize() == StatusError)
-      escape("unable to initialize the Elle library");
-
     // initialize the configuration.
     if (Configuration::Initialize(path) == StatusError)
       escape("unable to initialize the configuration");
@@ -131,10 +127,6 @@ namespace etoile
     if (Configuration::Clean() == StatusError)
       escape("unable to clean the configuration");
 
-    // clean the Elle library.
-    if (Elle::Clean() == StatusError)
-      escape("unable to clean the Elle library");
-
     leave();
   }
 
@@ -145,21 +137,31 @@ namespace etoile
   Status		Main(Natural32			argc,
 			     Character*			argv[])
   {
-    ::QCoreApplication	application((int&)argc, (char**)argv);
-
     enter();
+
+    // initialize the Elle library.
+    if (Elle::Initialize() == StatusError)
+      escape("unable to initialize the Elle library");
+
+    // set up the application.
+    if (elle::Application::Setup(argc, argv) == StatusError)
+      escape("unable to set up the application");
 
     // initialize etoile.
     if (Etoile::Initialize() == StatusError)
       escape("unable to initialize etoile");
 
-    // this call enters an infinite loop which triggers slots according
-    // to occuring events.
-    application.exec();
+    // process events.
+    if (elle::Application::Process() == StatusError)
+      escape("an error occured while processing events");
 
     // clean etoile.
     if (Etoile::Clean() == StatusError)
       escape("unable to clean etoile");
+
+    // clean the Elle library.
+    if (Elle::Clean() == StatusError)
+      escape("unable to clean the Elle library");
 
     leave();
   }

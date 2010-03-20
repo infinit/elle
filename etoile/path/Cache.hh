@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [sat jan 30 03:25:16 2010]
+// updated       julien quintard   [fri mar 19 17:06:14 2010]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH
@@ -91,7 +91,7 @@ namespace etoile
 				Venue&);
       static Status	Evict();
 
-      static Status	Dump(const Natural32 = 0);
+      static Status	Show(const Natural32 = 0);
 
       //
       // static attributes

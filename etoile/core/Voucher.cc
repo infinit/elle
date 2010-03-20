@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed mar  3 16:20:44 2010]
+// updated       julien quintard   [sat mar 20 13:21:30 2010]
 //
 
 //
@@ -37,9 +37,24 @@ namespace etoile
     ///
     Boolean		Voucher::operator==(const Voucher&	element) const
     {
-      return ((this->user == element.user) &&
-	      (this->signature == element.signature));
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the attributes.
+      if ((this->user != element.user) ||
+	  (this->signature != element.signature))
+	false();
+
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Voucher);
 
 //
 // ---------- dumpable --------------------------------------------------------

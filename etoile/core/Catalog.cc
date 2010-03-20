@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed mar  3 16:11:43 2010]
+// updated       julien quintard   [sat mar 20 04:09:46 2010]
 //
 
 //
@@ -180,6 +180,15 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Catalog);
 
 //
 // ---------- dumpable --------------------------------------------------------

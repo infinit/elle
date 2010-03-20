@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [mon mar  8 23:12:14 2010]
+// updated       julien quintard   [sat mar 20 04:10:59 2010]
 //
 
 #ifndef ETOILE_CORE_PROOF_HH
@@ -57,7 +57,7 @@ namespace etoile
       //
 
       // entity
-      embed(Entity, Proof);
+      declare(Entity, Proof);
       Boolean		operator==(const Proof&) const;
 
       // dumpable

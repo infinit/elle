@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [fri mar  5 11:15:26 2010]
+// updated       julien quintard   [sat mar 20 16:29:22 2010]
 //
 
 //
@@ -31,13 +31,8 @@ namespace etoile
     ///
     const String&		Wall::Line = Configuration::Wall::Line;
 
-    ///
-    /// this variable contains the unauthenticated connections.
-    ///
-    Wall::Container		Wall::Guests;
-
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- static methods --------------------------------------------------
 //
 
     ///
@@ -45,7 +40,7 @@ namespace etoile
     ///
     Status		Wall::Initialize()
     {
-      static Function<Door*>	callback(&Wall::Connection);
+      Function<Door*>	callback(&Wall::Connection);
 
       enter();
 
@@ -78,6 +73,115 @@ namespace etoile
       leave();
     }
 
+    ///
+    /// XXX
+    ///
+    Status		Wall::Identify(const PublicKey&		K)
+    {
+      Code		code;
+      user::Guest*	guest;
+      user::Agent*	agent;
+      user::Client*	client;
+
+      enter(instance(agent),
+	    instance(client));
+
+      // retrieve the guest.
+      if (user::Guest::Retrieve((Link*)context->socket, guest) == StatusError)
+	escape("unable to locate the sender's guest record");
+
+      // allocate a new agent.
+      agent = new user::Agent;
+
+      // create the agent.
+      if (agent->Create(K, guest->link) == StatusError)
+	escape("unable to create the agent");
+
+      // allocate a new client.
+      client = new user::Client;
+
+      // create the client.
+      if (client->Create() == StatusError)
+	escape("unable to create the client");
+
+      // record the agent.
+      if (client->Record(agent) == StatusError)
+	escape("unable to record the agent");
+
+      // assign the client as being the current one.
+      if (user::User::Assign(client) == StatusError)
+	escape("unable to assign the current user");
+
+      // stop tracking the agent;
+      waive(agent);
+
+      // register the client.
+      if (user::Client::Add(client) == StatusError)
+	escape("unable to add the client");
+
+      // stop tracking the client.
+      waive(client);
+
+      // detach the link from the guest so that it does not get lost.
+      if (guest->Detach() == StatusError)
+	escape("unable to detach the link from the guest");
+
+      // destroy the guest.
+      if (user::Guest::Remove(guest) == StatusError)
+	escape("unable to destroy the guest");
+
+      // encrypts the phrase with the user's public key.
+      if (user::user.client->agent->K.Encrypt(user::user.client->phrase,
+					      code) == StatusError)
+	escape("unable to encrypt the phrase");
+
+      // send the challenge to the agent.
+      if (user::user.client->agent->link->Reply(
+	    Inputs<TagWallChallenge>(code)) == StatusError)
+	escape("unable to send the challenge to the agent");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Wall::Authenticate(const Digest&	digest)
+    {
+      Digest		d;
+
+      enter();
+
+      printf("[XXX] Wall::Authenticate()\n");
+
+      // load the current user.
+      if (user::User::Assign() == StatusError)
+	escape("unable to load the user");
+
+      // compute the phrase digest.
+      if (OneWay::Hash(user::user.client->phrase, d) == StatusError)
+	escape("unable to compute the phrase's digest");
+
+      // compare the received digest with the phrase's one.
+      if (digest != d)
+	reply(user::user.client->agent->link, TagWallAuthenticated,
+	      "the digest does not correspond to the encrypted phrase");
+
+      result(
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Wall::Connect(const String&		phrase)
+    {
+      enter();
+
+      // XXX
+
+      leave();
+    }
+
 //
 // ---------- callbacks -------------------------------------------------------
 //
@@ -88,13 +192,23 @@ namespace etoile
     ///
     Status		Wall::Connection(Door*&			door)
     {
-      enter();
+      Guest*		guest;
 
-      printf("Wall::Connection\n");
+      enter(instance(guest));
 
-      // simply record the new guest in the list of unauthenticated
-      // connections.
-      Wall::Guests.push_front(door);
+      // allocate a new guest.
+      guest = new user::Guest;
+
+      // create the guest.
+      if (guest->Create(door) == StatusError)
+	escape("unable to create the guest");
+
+      // record the guest.
+      if (user::Guest::Add(guest) == StatusError)
+	escape("unable to add the new guest");
+
+      // stop tracking the guest.
+      waive(guest);
 
       leave();
     }

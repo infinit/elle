@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed mar  3 16:46:31 2010]
+// updated       julien quintard   [sat mar 20 13:23:12 2010]
 //
 
 //
@@ -96,14 +96,31 @@ namespace etoile
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the addresses since one of them is null.
       if ((this->voucher == NULL) || (element.voucher == NULL))
-	return ((this->index == element.index) &&
-		(this->voucher == element.voucher));
+	{
+	  if ((this->index != element.index) ||
+	      (this->voucher != element.voucher))
+	    false();
+	}
+      else
+	{
+	  if ((this->index != element.index) ||
+	      (*this->voucher != *element.voucher))
+	    false();
+	}
 
-      return ((this->index == element.index) &&
-	      (*this->voucher == *element.voucher));
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Proof);
 
 //
 // ---------- dumpable --------------------------------------------------------

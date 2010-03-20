@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [wed mar 10 22:09:05 2010]
+// updated       julien quintard   [sat mar 20 15:34:26 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-//#include <etoile/wall/Wall.hh>
+#include <etoile/wall/Result.hh>
 #include <etoile/wall/Types.hh>
 
 namespace etoile
@@ -38,13 +38,16 @@ namespace etoile
       /// XXX \todo trouver un truc plus propre pour eviter les collisions
       TagNone = 0,
 
-      // User
-      TagUserIdentify,
-      TagUserChallenge,
-      TagUserAuthenticate,
-      TagUserAuthenticated,
-      TagUserConnect,
-      TagUserConnected,
+      // Error
+      TagError,
+
+      // Wall
+      TagWallIdentify,
+      TagWallChallenge,
+      TagWallAuthenticate,
+      TagWallAuthenticated,
+      TagWallConnect,
+      TagWallConnected,
 
       // Object
       TagObjectLoad,
@@ -70,22 +73,24 @@ namespace etoile
 /// below are the definitions of the inward and outward messages.
 ///
 
-// User
+// Error
+outward(::etoile::TagError,
+	parameters(::elle::core::String));
 
-inward(::etoile::TagUserIdentify,
-       parameters(::elle::cryptography::PublicKey,
-		  ::elle::core::String));
-outward(::etoile::TagUserChallenge,
+// Wall
+inward(::etoile::TagWallIdentify,
+       parameters(::elle::cryptography::PublicKey));
+outward(::etoile::TagWallChallenge,
 	parameters(::elle::cryptography::Code));
-inward(::etoile::TagUserAuthenticate,
+inward(::etoile::TagWallAuthenticate,
        parameters(::elle::cryptography::Digest));
-outward(::etoile::TagUserAuthenticated,
-	parameters(::etoile::wall::Report));
+outward(::etoile::TagWallAuthenticated,
+	parameters(::etoile::wall::Result));
 
-inward(::etoile::TagUserConnect,
+inward(::etoile::TagWallConnect,
        parameters(::elle::core::String));
-outward(::etoile::TagUserConnected,
-	parameters(::etoile::wall::Report));
+outward(::etoile::TagWallConnected,
+	parameters(::etoile::wall::Result));
 
 // Object
 /*
