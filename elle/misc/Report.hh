@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [wed mar 10 20:33:41 2010]
+// updated       julien quintard   [sat mar 20 13:44:17 2010]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -18,13 +18,16 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
 #include <elle/core/String.hh>
 #include <elle/core/Void.hh>
 
+#include <elle/archive/Archivable.hh>
+
+#include <elle/io/Dumpable.hh>
+
 #include <elle/idiom/Close.hh>
 # include <sstream>
-# include <stack>
+# include <list>
 # include <ostream>
 # include <iostream>
 # include <string.h>
@@ -36,6 +39,21 @@
 namespace elle
 {
   using namespace core;
+  using namespace archive;
+  using namespace io;
+
+  namespace archive
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Archive;
+  }
 
   namespace misc
   {
@@ -55,7 +73,8 @@ namespace elle
     ///
     /// \todo add a date to the messages and remove the indentation
     ///
-    class Report
+    class Report:
+      public Dumpable, public Archivable
     {
     public:
       //
@@ -86,8 +105,15 @@ namespace elle
       struct Entry
       {
 	Type		type;
-	String*		message;
+	String		message;
       };
+
+      //
+      // types
+      //
+      typedef std::list<Entry*>			Container;
+      typedef Container::iterator		Iterator;
+      typedef Container::const_iterator		Scoutor;
 
       //
       // constructors & destructors
@@ -98,13 +124,24 @@ namespace elle
       // methods
       //
       Void		Flush();
-      Void		Notify(Type,
+      Void		Record(Type,
 			       const String&);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      // archivable
+      Status		Serialize(Archive&) const;
+      Status		Extract(Archive&);
 
       //
       // attributes
       //
-      std::stack<Entry*>	store;
+      Container		store;
     };
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [wed mar 17 12:31:31 2010]
+// updated       julien quintard   [fri mar 19 23:24:16 2010]
 //
 
 //
@@ -30,7 +30,7 @@ namespace elle
     /// default constructor.
     ///
     Slot::Slot():
-      Socket(Socket::TypeSlot),
+      Socket::Socket(Socket::TypeSlot),
 
       socket(NULL),
       port(0)
@@ -72,6 +72,13 @@ namespace elle
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(Fetch())) == false)
 	escape("unable to connect the signal");
+
+      if (this->connect(this->socket,
+			SIGNAL(error(QLocalSocket::LocalSocketError)),
+			this,
+			SLOT(Error(QLocalSocket::LocalSocketError))) ==
+	  false)
+	escape("unable to connect to signal");
 
       leave();
     }
@@ -124,6 +131,24 @@ namespace elle
 //
 // ---------- slots -----------------------------------------------------------
 //
+
+    ///
+    /// this slot is triggered whenever the socket changes state or
+    /// if an error occurs.
+    ///
+    void		Slot::Error(QAbstractSocket::SocketError	error)
+    {
+      String		text(this->socket->errorString().toStdString());
+
+      enter();
+
+      // trigger the callback if it has been registered.
+      if (this->callback != NULL)
+	if (this->callback->Trigger(text) == StatusError)
+	  alert("an error occured in the callback");
+
+      release();
+    }
 
     ///
     /// this method fetches the datagram(s) on the socket.
@@ -229,7 +254,13 @@ namespace elle
 	// note that a this point, the network is responsible for the
 	// parcel and its memory.
 	if (Network::Dispatch(parcel) == StatusError)
-	  alert("unable to record the packet");
+	  {
+	    // stop tracking the parcel since it should have been deleted
+	    // in Dispatch().
+	    waive(parcel);
+
+	    alert("unable to record the packet");
+	  }
 
 	// stop tracking the parcel.
 	waive(parcel);

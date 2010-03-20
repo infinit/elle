@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [wed mar 17 13:52:47 2010]
+// updated       julien quintard   [sat mar 20 03:01:25 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HH
@@ -21,8 +21,6 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/misc/Status.hh>
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
 #include <elle/misc/Callback.hh>
 
 #include <elle/idiom/Open.hh>
@@ -54,14 +52,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Function():
-	Callback::Callback(Callback::TypeFunction)
-      {
-	enter();
-
-	alert("this method should never have been called");
-      }
-
+      Function();
       Function(Handler);
 
       //
@@ -74,7 +65,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Function);
+      declare(Entity, Function<T...>);
       // XXX
 
       // dumpable

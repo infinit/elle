@@ -8,11 +8,18 @@
 // file          /home/mycure/infinit/elle/misc/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [sun feb 28 13:34:27 2010]
+// updated       julien quintard   [sat mar 20 03:13:57 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HXX
 #define ELLE_MISC_FNUCTION_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 namespace elle
 {
@@ -22,6 +29,18 @@ namespace elle
 //
 // ---------- constructors & destructors --------------------------------------
 //
+
+    ///
+    /// constructor that should never been used.
+    ///
+    template <typename... T>
+    Function<T...>::Function():
+      Callback::Callback(Callback::TypeFunction)
+    {
+      enter();
+
+      alert("this method should never have been called");
+    }
 
     ///
     /// the default constructor.
@@ -74,6 +93,15 @@ namespace elle
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Function<T...>, template <typename... T>);
 
   }
 }

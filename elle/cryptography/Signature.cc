@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon mar  1 13:11:15 2010]
+// updated       julien quintard   [sat mar 20 13:17:57 2010]
 //
 
 //
@@ -35,9 +35,23 @@ namespace elle
     ///
     Boolean		Signature::operator==(const Signature&	element) const
     {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the regions.
-      return (this->region == element.region);
+      if (this->region != element.region)
+	false();
+
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Signature);
 
 //
 // ---------- dumpable --------------------------------------------------------

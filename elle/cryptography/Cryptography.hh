@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.hh
 //
 // created       julien quintard   [tue oct 30 12:15:12 2007]
-// updated       julien quintard   [wed mar 10 20:28:53 2010]
+// updated       julien quintard   [sat mar 20 01:30:51 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CRYPTOGRAPHYGRAPHY_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Misc.hh>
+#include <elle/misc/Status.hh>
 
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/Clear.hh>

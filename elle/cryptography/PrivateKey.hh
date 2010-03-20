@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [thu mar 11 16:49:24 2010]
+// updated       julien quintard   [sat mar 20 03:38:48 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -104,7 +104,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, PrivateKey);
+      declare(Entity, PrivateKey);
       Boolean		operator==(const PrivateKey&) const;
 
       // dumpable

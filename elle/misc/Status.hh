@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Status.hh
 //
 // created       julien quintard   [sat oct 27 18:10:10 2007]
-// updated       julien quintard   [tue mar 10 01:17:05 2009]
+// updated       julien quintard   [sat mar 20 13:49:06 2010]
 //
 
 #ifndef ELLE_MISC_STATUS_HH
@@ -31,6 +31,8 @@ namespace elle
     ///
     enum Status
       {
+	StatusUnknown,
+
 	StatusFalse = false,
 	StatusTrue = true,
 	StatusOk = 42,

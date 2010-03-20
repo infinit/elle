@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [wed mar 17 16:06:36 2010]
+// updated       julien quintard   [sat mar 20 03:54:03 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -64,7 +64,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Address);
+      declare(Entity, Address);
       Boolean		operator==(const Address&) const;
 
       // archivable

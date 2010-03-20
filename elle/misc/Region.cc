@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sun mar  7 11:03:15 2010]
+// updated       julien quintard   [sat mar 20 15:29:08 2010]
 //
 
 //
@@ -16,6 +16,13 @@
 //
 
 #include <elle/misc/Region.hh>
+
+///
+/// these includes are placed here in order to prevent pre-processing
+/// conflicts.
+///
+#include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 namespace elle
 {
@@ -332,6 +339,10 @@ namespace elle
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // check the size.
       if (this->size != element.size)
 	false();
@@ -342,6 +353,11 @@ namespace elle
 
       true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Region);
 
 //
 // ---------- dumpable --------------------------------------------------------

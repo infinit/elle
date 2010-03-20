@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon mar  1 12:25:29 2010]
+// updated       julien quintard   [sat mar 20 13:16:09 2010]
 //
 
 //
@@ -35,9 +35,23 @@ namespace elle
     ///
     Boolean		Cipher::operator==(const Cipher&	element) const
     {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the regions.
-      return (this->region == element.region);
+      if (this->region != element.region)
+	false();
+
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Cipher);
 
 //
 // ---------- dumpable --------------------------------------------------------

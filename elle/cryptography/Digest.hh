@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Digest.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [wed mar 10 20:29:07 2010]
+// updated       julien quintard   [sat mar 20 03:36:09 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_DIGEST_HH
@@ -50,7 +50,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Digest);
+      declare(Entity, Digest);
       Boolean		operator==(const Digest&) const;
 
       // dumpable

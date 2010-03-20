@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [wed mar 17 13:52:32 2010]
+// updated       julien quintard   [sat mar 20 03:06:01 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HH
@@ -20,9 +20,9 @@
 
 #include <elle/core/Natural.hh>
 
+#include <elle/io/Dumpable.hh>
+
 #include <elle/misc/Status.hh>
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
 #include <elle/misc/Callback.hh>
 
 #include <elle/idiom/Open.hh>
@@ -95,14 +95,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Method():
-	Callback::Callback(Callback::TypeMethod)
-      {
-	enter();
-
-	alert("this method should never have been called");
-      }
-
+      Method();
       template <typename X>
       Method(X*,
 	     Status (X::*)(T&...));
@@ -117,7 +110,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Method);
+      declare(Entity, Method<T...>);
       // XXX
 
       // dumpable

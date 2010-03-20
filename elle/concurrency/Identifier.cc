@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Identifier.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [mon mar 15 22:51:43 2010]
+// updated       julien quintard   [sat mar 20 13:14:56 2010]
 //
 
 //
@@ -75,8 +75,23 @@ namespace elle
     ///
     Boolean		Identifier::operator==(const Identifier& element) const
     {
-      return (this->value == element.value);
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the value.
+      if (this->value != element.value)
+	false();
+
+      true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Identifier);
 
 //
 // ---------- archivable ------------------------------------------------------

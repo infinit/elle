@@ -9,10 +9,19 @@ QT4_WRAP_CPP(elle_MOCS
 )
 
 ADD_LIBRARY(elle
-  archive/Archive.cc
-
   core/Large.cc
   core/Null.cc
+  core/Entity.cc
+
+  io/Dumpable.cc
+
+  misc/Region.cc
+  misc/Callback.cc
+  misc/Maid.cc
+  misc/Report.cc
+
+  archive/Archive.cc
+  archive/Archivable.cc
 
   cryptography/Cipher.cc
   cryptography/Code.cc
@@ -27,10 +36,6 @@ ADD_LIBRARY(elle
 
   factory/Factory.cc
 
-  misc/Report.cc
-  misc/Region.cc
-  misc/Callback.cc
-
   system/System.cc
 
   network/Network.cc
@@ -38,11 +43,12 @@ ADD_LIBRARY(elle
   network/Address.cc
   network/Socket.cc
   network/Slot.cc
-  network/Bridge.cc
-  network/Door.cc
   network/Header.cc
   network/Context.cc
   network/Parcel.cc
+  network/Door.cc
+  network/Bridge.cc
+  network/Link.cc
 
   concurrency/Accord.cc
   concurrency/Mutex.cc

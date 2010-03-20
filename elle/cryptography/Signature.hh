@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Signature.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [wed mar 10 20:30:35 2010]
+// updated       julien quintard   [sat mar 20 03:40:20 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SIGNATURE_HH
@@ -50,7 +50,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Signature);
+      declare(Entity, Signature);
       Boolean		operator==(const Signature&) const;
 
       // dumpable

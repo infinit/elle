@@ -8,14 +8,8 @@
 // file          /home/mycure/infinit/elle/misc/Callback.hxx
 //
 // created       julien quintard   [thu feb  4 22:08:43 2010]
-// updated       julien quintard   [wed mar 10 20:32:16 2010]
+// updated       julien quintard   [sat mar 20 03:30:09 2010]
 //
-
-///
-/// these includes have been placed here on purpose.
-///
-#include <elle/misc/Function.hh>
-#include <elle/misc/Method.hh>
 
 #ifndef ELLE_MISC_CALLBACK_HXX
 #define ELLE_MISC_CALLBACK_HXX
@@ -23,6 +17,13 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
+#include <elle/misc/Function.hh>
+#include <elle/misc/Method.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -60,7 +61,7 @@ namespace elle
 	  }
 	}
 
-      leave();
+      escape("invalid callback type");
     }
 
   }

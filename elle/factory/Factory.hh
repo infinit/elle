@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [wed mar 10 20:31:02 2010]
+// updated       julien quintard   [fri mar 19 17:05:03 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HH
@@ -119,7 +119,7 @@ namespace elle
       static Status	Build(const String&,
 			      U*&);
 
-      static Status	Dump(const Natural32 = 0);
+      static Status	Show(const Natural32 = 0);
 
       //
       // attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Maid.hh
 //
 // created       julien quintard   [sun feb 28 09:00:00 2010]
-// updated       julien quintard   [wed mar 10 20:32:40 2010]
+// updated       julien quintard   [sat mar 20 02:46:12 2010]
 //
 
 #ifndef ELLE_MISC_MAID_HH
@@ -21,10 +21,10 @@
 #include <elle/core/Natural.hh>
 #include <elle/core/Void.hh>
 
-#include <elle/misc/Report.hh>
-
 #include <elle/idiom/Close.hh>
 # include <cstdarg>
+# include <iostream>
+# include <sstream>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -290,36 +290,9 @@ namespace elle
 	//
 	// constructors & destructors
 	//
-	Garrison(Natural32					size,
-		 ...):
-	  size(size)
-	{
-	  va_list		ap;
-	  Natural32		i;
-
-	  // check the size.
-	  if (this->size > Maid::Garrison::Capacity)
-	    fail("unable to store more guards than the garrison's capacity");
-
-	  // start the variadic extraction.
-	  va_start(ap, size);
-
-	  // read the arguments and set the guards.
-	  for (i = 0; i < size; i++)
-	    this->guards[i] = va_arg(ap, Maid::Guard*);
-
-	  // stop the extraction.
-	  va_end(ap);
-	}
-
-	~Garrison()
-	{
-	  Natural32		i;
-
-	  // go through all the guards.
-	  for (i = 0; i < this->size; i++)
-	    delete this->guards[i];
-	}
+	Garrison(Natural32,
+		 ...);
+	~Garrison();
 
 	//
 	// operators

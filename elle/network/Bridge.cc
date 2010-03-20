@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [wed mar 10 20:11:08 2010]
+// updated       julien quintard   [fri mar 19 17:06:03 2010]
 //
 
 //
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    Porter::Porter(Callback&					callback):
+    Porter::Porter(Callback*					callback):
       server(NULL),
       callback(callback)
     {
@@ -55,6 +55,10 @@ namespace elle
     Porter::~Porter()
     {
       // if there is a callback, release it.
+      if (this->callback != NULL)
+	delete this->callback;
+
+      // if there is a server, release it.
       if (this->server != NULL)
 	delete this->server;
     }
@@ -82,8 +86,9 @@ namespace elle
 	escape(this->server->errorString().toStdString().c_str());
 
       // connect the signals.
-      this->connect(this->server, SIGNAL(newConnection()),
-		    this, SLOT(Accept()));
+      if (this->connect(this->server, SIGNAL(newConnection()),
+			this, SLOT(Accept())) == false)
+	escape("unable to connect the signal");
 
       leave();
     }
@@ -127,12 +132,21 @@ namespace elle
     Status		Bridge::Listen(const String&		name,
 				       Callback&		callback)
     {
-      Porter*	porter;
+      Callback*		clone;
+      Porter*		porter;
 
-      enter(instance(porter));
+      enter(instance(clone),
+	    instance(porter));
+
+      // clone the callback.
+      if (callback.Clone((Entity*&)clone) == StatusError)
+	escape("unable to clone the callback");
 
       // allocate a new porter.
-      porter = new Porter(callback);
+      porter = new Porter(clone);
+
+      // stop tracking the clone.
+      waive(clone);
 
       // start listening.
       if (porter->Listen(name) == StatusError)
@@ -181,7 +195,7 @@ namespace elle
 		<< this->server->fullServerName().toStdString() << std::endl;
 
       // dump the callback.
-      if (this->callback.Dump(margin + 2) == StatusError)
+      if (this->callback->Dump(margin + 2) == StatusError)
 	escape("unable to dump the callback");
 
       leave();
@@ -194,7 +208,7 @@ namespace elle
     ///
     /// this method dumps the table of porters.
     ///
-    Status		Bridge::Dump(const Natural32		margin)
+    Status		Bridge::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
@@ -248,7 +262,7 @@ namespace elle
 	alert("unable to create the door");
 
       // trigger the associated callback.
-      if (this->callback.Trigger(door) == StatusError)
+      if (this->callback->Trigger(door) == StatusError)
 	alert("unable to trigger the callback");
 
       // stop tracking door as it has been handed to the callback.
