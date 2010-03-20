@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [wed mar 17 12:31:13 2010]
+// updated       julien quintard   [fri mar 19 23:24:02 2010]
 //
 
 //
@@ -47,6 +47,8 @@ namespace elle
     /// the default constructor.
     ///
     Door::Door():
+      Link::Link(Socket::TypeDoor),
+
       socket(NULL),
       buffer(NULL),
       offset(0)
@@ -104,10 +106,6 @@ namespace elle
       this->socket = socket;
 
       // connect the signals.
-      if (this->connect(this->socket, SIGNAL(disconnected()),
-			this, SIGNAL(Disconnected())) == false)
-	escape("unable to connect the signal");
-
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(Fetch())) == false)
 	escape("unable to connect the signal");
@@ -184,12 +182,6 @@ namespace elle
     }
 
 //
-// ---------- signals ---------------------------------------------------------
-//
-
-    /// \todo XXX disconnected
-
-//
 // ---------- slots -----------------------------------------------------------
 //
 
@@ -202,14 +194,20 @@ namespace elle
     ///
     void		Door::Error(QLocalSocket::LocalSocketError	error)
     {
+      String		text(this->socket->errorString().toStdString());
+
       enter();
 
-      // basically just report the error without doing anything else.
-      alert(this->socket->errorString().toStdString().c_str());
+      // trigger the callback if it has been registered.
+      if (this->callback != NULL)
+	if (this->callback->Trigger(text) == StatusError)
+	  alert("an error occured in the callback");
+
+      release();
     }
 
     ///
-    /// this method fetches packets from the socket.
+    /// this slot fetches packets from the socket.
     ///
     /// note that since doors are stream-based socket, the data fetched
     /// may be incomplete. in such a case, the data should be stored in
@@ -359,8 +357,17 @@ namespace elle
 	    alert("unable to create the context");
 
 	  // record this packet to the network manager.
+	  //
+	  // note that a this point, the network is responsible for the
+	  // parcel and its memory.
 	  if (Network::Dispatch(parcel) == StatusError)
-	    alert("unable to record the packet");
+	    {
+	      // stop tracking the parcel since it should have been deleted
+	      // in Dispatch().
+	      waive(parcel);
+
+	      alert("unable to record the packet");
+	    }
 
 	  // stop tracking the parcel.
 	  waive(parcel);

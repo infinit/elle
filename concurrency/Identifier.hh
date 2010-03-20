@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [mon mar 15 22:56:07 2010]
+// updated       julien quintard   [sat mar 20 03:56:59 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_IDENTIFIER_HH
@@ -71,7 +71,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Identifier);
+      declare(Entity, Identifier);
       Boolean		operator==(const Identifier&) const;
 
       // archivable

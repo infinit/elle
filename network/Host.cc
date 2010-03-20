@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [wed mar 17 16:17:28 2010]
+// updated       julien quintard   [sat mar 20 13:15:03 2010]
 //
 
 #include <elle/network/Host.hh>
@@ -100,6 +100,10 @@ namespace elle
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the internal values.
       if ((this->type != element.type) ||
 	  (this->location != element.location))
@@ -107,6 +111,11 @@ namespace elle
 
       true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Host);
 
 //
 // ---------- archivable ------------------------------------------------------

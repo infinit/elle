@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [fri mar  5 15:51:19 2010]
+// updated       julien quintard   [sat mar 20 04:47:47 2010]
 //
 
 //
@@ -16,6 +16,12 @@
 //
 
 #include <elle/misc/Report.hh>
+
+///
+/// these includes are placed here in order to prevent pre-processing
+/// conflicts.
+///
+#include <elle/archive/Archive.hh>
 
 namespace elle
 {
@@ -65,28 +71,124 @@ namespace elle
 	{
 	  Report::Entry*	entry;
 
-	  entry = this->store.top();
+	  entry = this->store.front();
 
-	  delete entry->message;
 	  delete entry;
 
-	  this->store.pop();
+	  this->store.pop_front();
 	}
     }
 
     ///
-    /// this method adds a warning to the report.
+    /// this method adds a message to the report.
     ///
-    Void		Report::Notify(Report::Type		type,
+    Void		Report::Record(Report::Type		type,
 				       const String&		text)
     {
-      String*		message = new String(text);
-      Entry*		entry = new Entry;
+      Report::Entry*	entry;
 
+      // allocate the entry.
+      entry = new Report::Entry;
+
+      // set the fields.
       entry->type = type;
-      entry->message = message;
+      entry->message = text;
 
-      this->store.push(entry);
+      this->store.push_front(entry);
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the report.
+    ///
+    Status		Report::Dump(const Natural32		margin) const
+    {
+      Report::Scoutor	scoutor;
+      String		alignment(margin, ' ');
+      String		shift(2, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Report]" << std::endl;
+
+      // go through the container.
+      for (scoutor = this->store.begin();
+	   scoutor != this->store.end();
+	   scoutor++)
+	{
+	  Report::Entry*	entry = *scoutor;
+
+	  // display the entry.
+	  std::cout << alignment << shift << "[Entry] ("
+		    << entry->type << ") " << entry->message << std::endl;
+	}
+
+      leave();
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method serializes a report.
+    ///
+    Status		Report::Serialize(Archive&		archive) const
+    {
+      Report::Scoutor	scoutor;
+
+      enter();
+
+      // serialize the number of messages.
+      if (archive.Serialize((Natural32)this->store.size()) == StatusError)
+	escape("unable to serialize the number of messages");
+
+      // go through the container.
+      for (scoutor = this->store.begin();
+	   scoutor != this->store.end();
+	   scoutor++)
+	{
+	  // serialize the entry.
+	  if (archive.Serialize((Byte&)(*scoutor)->type,
+				(*scoutor)->message) == StatusError)
+	    escape("unable to serialize the entry");
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method extracts a report.
+    ///
+    Status		Report::Extract(Archive&		archive)
+    {
+      Natural32		size;
+      Natural32		i;
+
+      enter();
+
+      // extract the number of messages.
+      if (archive.Extract((Natural32&)size) == StatusError)
+	escape("unable to extract the number of messages");
+
+      // iterate and recreate the messages.
+      for (i = 0; i < size; i++)
+	{
+	  Report::Entry*	entry;
+
+	  // allocate a new entry.
+	  entry = new Report::Entry;
+
+	  // extract the entry.
+	  if (archive.Serialize((Byte&)entry->type,
+				entry->message) == StatusError)
+	    escape("unable to serialize the entry");
+	}
+
+      leave();
     }
 
   }
@@ -111,11 +213,10 @@ namespace std
 
     for (i = 0; report.store.empty() == false; i++)
       {
-	elle::core::Natural32		j;
-	elle::misc::Report::Entry*	entry = report.store.top();
+	elle::misc::Report::Entry*	entry = report.store.front();
+	elle::core::String		alignment(i, ' ');
 
-	for (j = 0; j < i; j++)
-	  stream << "  ";
+	stream << alignment;
 
 	switch (entry->type)
 	  {
@@ -136,12 +237,11 @@ namespace std
 	    }
 	  }
 
-	stream << *entry->message << std::endl;
+	stream << entry->message << std::endl;
 
-	delete entry->message;
 	delete entry;
 
-	report.store.pop();
+	report.store.pop_front();
       }
 
     return (stream);

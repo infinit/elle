@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Callback.hh
 //
 // created       julien quintard   [thu feb  4 16:59:50 2010]
-// updated       julien quintard   [wed mar 17 09:53:47 2010]
+// updated       julien quintard   [sat mar 20 02:43:10 2010]
 //
 
 #ifndef ELLE_MISC_CALLBACK_HH
@@ -18,14 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Entity.hh>
+
 #include <elle/io/Dumpable.hh>
 
 #include <elle/misc/Status.hh>
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
-
-#include <elle/idiom/Open.hh>
 
 namespace elle
 {

@@ -8,11 +8,18 @@
 // file          /home/mycure/infinit/elle/misc/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [wed mar 17 00:35:02 2010]
+// updated       julien quintard   [sat mar 20 03:19:45 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HXX
 #define ELLE_MISC_METHOD_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 namespace elle
 {
@@ -84,6 +91,18 @@ namespace elle
 //
 
     ///
+    /// constructor that should not be used.
+    ///
+    template <typename... T>
+    Method<T...>::Method():
+      Callback::Callback(Callback::TypeMethod)
+    {
+      enter();
+
+      alert("this method should never have been called");
+    }
+
+    ///
     /// the default constructor.
     ///
     template <typename... T>
@@ -124,6 +143,15 @@ namespace elle
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// these are generated automatically.
+    ///
+    embed(Entity, Method<T...>, template <typename... T>);
 
   }
 }

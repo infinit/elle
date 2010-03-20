@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [mon mar 15 18:07:39 2010]
+// updated       julien quintard   [sat mar 20 03:27:57 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -18,19 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/io/IO.hh>
-
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Byte.hh>
-#include <elle/misc/Region.hh>
 #include <elle/misc/Status.hh>
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
+#include <elle/misc/Region.hh>
 
 #include <elle/system/System.hh>
-
-#include <elle/archive/Archivable.hh>
 
 #include <elle/idiom/Close.hh>
 # include <stdlib.h>
@@ -49,6 +42,15 @@ namespace elle
   ///
   namespace archive
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Archivable;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -199,7 +201,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Archive);
+      declare(Entity, Archive);
       Boolean		operator==(const Archive&) const;
 
       // dumpable
@@ -224,6 +226,12 @@ namespace elle
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/archive/Archivable.hh>
 
 //
 // ---------- templates -------------------------------------------------------

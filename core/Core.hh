@@ -8,26 +8,11 @@
 // file          /home/mycure/infinit/elle/core/Core.hh
 //
 // created       julien quintard   [fri jan 30 16:14:39 2009]
-// updated       julien quintard   [wed mar 10 20:27:45 2010]
+// updated       julien quintard   [sat mar 20 02:41:04 2010]
 //
 
 #ifndef ELLE_CORE_CORE_HH
 #define ELLE_CORE_CORE_HH
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/core/Boolean.hh>
-#include <elle/core/Character.hh>
-#include <elle/core/Integer.hh>
-#include <elle/core/Large.hh>
-#include <elle/core/Meta.hh>
-#include <elle/core/Natural.hh>
-#include <elle/core/Null.hh>
-#include <elle/core/Entity.hh>
-#include <elle/core/Real.hh>
-#include <elle/core/String.hh>
 
 namespace elle
 {
@@ -62,6 +47,21 @@ namespace elle
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/core/Boolean.hh>
+#include <elle/core/Character.hh>
+#include <elle/core/Integer.hh>
+#include <elle/core/Large.hh>
+#include <elle/core/Meta.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Null.hh>
+#include <elle/core/Entity.hh>
+#include <elle/core/Real.hh>
+#include <elle/core/String.hh>
 
 //
 // ---------- templates -------------------------------------------------------

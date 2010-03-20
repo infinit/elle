@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [wed mar 17 16:01:52 2010]
+// updated       julien quintard   [sat mar 20 13:14:48 2010]
 //
 
 //
@@ -72,6 +72,10 @@ namespace elle
     {
       enter();
 
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
       // compare the internal values.
       if ((this->host != element.host) ||
 	  (this->port != element.port))
@@ -79,6 +83,11 @@ namespace elle
 
       true();
     }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Address);
 
 //
 // ---------- archivable ------------------------------------------------------

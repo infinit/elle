@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [tue mar 16 22:45:33 2010]
+// updated       julien quintard   [fri mar 19 23:02:48 2010]
 //
 
 //
@@ -37,7 +37,7 @@ namespace elle
     Accord			Network::Control;
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- static methods --------------------------------------------------
 //
 
     ///
@@ -146,14 +146,10 @@ namespace elle
       leave();
     }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
     ///
     /// this method dumps the table of callbacks.
     ///
-    Status		Network::Dump(const Natural32		margin)
+    Status		Network::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

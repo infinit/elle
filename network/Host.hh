@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.hh
 //
 // created       julien quintard   [fri oct 16 04:10:36 2009]
-// updated       julien quintard   [wed mar 17 16:06:56 2010]
+// updated       julien quintard   [sat mar 20 03:54:45 2010]
 //
 
 #ifndef ELLE_NETWORK_HOST_HH
@@ -79,7 +79,7 @@ namespace elle
       //
 
       // entity
-      embed(Entity, Host);
+      declare(Entity, Host);
       Boolean		operator==(const Host&) const;
 
       // archivable

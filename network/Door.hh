@@ -8,8 +8,19 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [tue mar 16 23:45:33 2010]
+// updated       julien quintard   [fri mar 19 16:55:05 2010]
 //
+
+///
+/// this very special include is required as Link needs to know Door/Gate
+/// while Door/Gate inherit Link. including Link.hh normally makes moc,
+/// the QT meta object compiler, unable to detect the QObject classes.
+///
+/// therefore, Link.hh is not included when moc processes a header file.
+///
+#ifndef Q_MOC_RUN
+# include <elle/network/Link.hh>
+#endif
 
 #ifndef ELLE_NETWORK_DOOR_HH
 #define ELLE_NETWORK_DOOR_HH
@@ -20,9 +31,9 @@
 
 #include <elle/concurrency/Concurrency.hh>
 
-#include <elle/network/Socket.hh>
 #include <elle/network/Network.hh>
 #include <elle/network/Packet.hh>
+#include <elle/network/Link.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -47,7 +58,7 @@ namespace elle
     ///
     class Door:
       public ::QObject,
-      public Socket
+      public Link
     {
       Q_OBJECT;
 
@@ -103,12 +114,6 @@ namespace elle
 
       Region*		buffer;
       Natural32		offset;
-
-      //
-      // signals
-      //
-    signals:
-      void		Disconnected();
 
       //
       // slots

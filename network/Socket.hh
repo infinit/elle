@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [wed mar 10 20:46:11 2010]
+// updated       julien quintard   [sat mar 20 15:54:56 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -20,8 +20,7 @@
 
 #include <elle/core/Core.hh>
 #include <elle/io/IO.hh>
-
-#include <elle/network/Message.hh>
+#include <elle/misc/Misc.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -52,9 +51,13 @@ namespace elle
       enum Type
 	{
 	  TypeUnknown,
-	  TypeDoor,
-	  TypeSlot,
-	  TypeGate
+
+	  TypeLink = 0x1,
+
+	  TypeDoor = TypeLink | 0x0,
+	  TypeGate = TypeLink | 0x2,
+
+	  TypeSlot = 0x4
 	};
 
       //
@@ -62,11 +65,20 @@ namespace elle
       //
       Socket();
       Socket(const Type&);
+      ~Socket();
+
+      //
+      // methods
+      //
+      Status		Monitor(Callback&);
+      Status		Withdraw();
 
       //
       // attributes
       //
-      Type	type;
+      Type		type;
+
+      Callback*		callback;
     };
 
   }

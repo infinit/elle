@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [wed mar 10 22:09:00 2010]
+// updated       julien quintard   [sat mar 20 15:29:19 2010]
 //
 
 //
@@ -25,12 +25,19 @@
 //
 
 ///
+/// this macro function enables the caller to generate the prototypes
+/// for the source code generated through the following macro-function.
+///
+#define declare(_identifier_, _type_)					\
+  _identifier_ ## Declare(_type_)
+
+///
 /// this macro function enables the caller to embed source code
 /// automatically for a specific type. this functionality is used
 /// by the Entity class for instance.
 ///
-#define embed(_identifier_, _type_)					\
-  _identifier_ ## Embed(_type_)
+#define embed(_identifier_, _type_, _template_...)			\
+  _identifier_ ## Embed(_type_, ##_template_)
 
 //
 // ---------- report ----------------------------------------------------------
@@ -54,7 +61,7 @@
 									\
       elle::core::String	_string_(_message_.str());		\
 									\
-      elle::misc::report.Notify(_type_, _string_);			\
+      elle::misc::report.Record(_type_, _string_);			\
     } while (false)
 
 ///
@@ -104,9 +111,9 @@
 #define escape(_text_)							\
   do									\
     {									\
-      release();							\
-									\
       report(elle::misc::Report::TypeError, _text_);			\
+									\
+      release();							\
 									\
       return (elle::misc::StatusError);					\
     } while (false)
@@ -118,9 +125,9 @@
 #define flee(_text_)							\
   do									\
     {									\
-      release();							\
-									\
       report(elle::misc::Report::TypeError, _text_);			\
+									\
+      release();							\
 									\
       return (elle::misc::StatusFalse);					\
     } while (false)							\
@@ -134,10 +141,10 @@
 #define yield(_text_, _return_)						\
   do									\
     {									\
-      release();							\
-      									\
       report(elle::misc::Report::TypeError, _text_);			\
 									\
+      release();							\
+      									\
       return (_return_);						\
     } while (false)
 
@@ -150,11 +157,11 @@
 #define alert(_text_)							\
   do									\
     {									\
-      release();							\
-									\
       report(elle::misc::Report::TypeError, _text_);			\
 									\
       show();								\
+									\
+      release();							\
 									\
       return;								\
     } while (false)

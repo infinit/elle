@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [tue mar  9 12:11:26 2010]
+// updated       julien quintard   [fri mar 19 17:05:10 2010]
 //
 
 //
@@ -71,7 +71,7 @@ namespace elle
     ///
     /// this method dumps the factory.
     ///
-    Status		Factory::Dump(const Natural32		margin)
+    Status		Factory::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');

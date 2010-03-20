@@ -8,8 +8,19 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [wed mar 10 20:42:21 2010]
+// updated       julien quintard   [fri mar 19 17:05:53 2010]
 //
+
+///
+/// this very special include is required as Link needs to know Door/Gate
+/// while Door/Gate inherit Link. including Link.hh normally makes moc,
+/// the QT meta object compiler, unable to detect the QObject classes.
+///
+/// therefore, Link.hh is not included when moc processes a header file.
+///
+#ifndef Q_MOC_RUN
+# include <elle/network/Link.hh>
+#endif
 
 #ifndef ELLE_NETWORK_BRIDGE_HH
 #define ELLE_NETWORK_BRIDGE_HH
@@ -59,7 +70,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Porter(Callback&);
+      Porter(Callback*);
       ~Porter();
 
       //
@@ -78,7 +89,7 @@ namespace elle
       // attributes
       //
       ::QLocalServer*	server;
-      Callback&		callback;
+      Callback*		callback;
 
       //
       // slots
@@ -111,7 +122,7 @@ namespace elle
       static Status	Listen(const String&,
 			       Callback&);
 
-      static Status	Dump(const Natural32 = 0);
+      static Status	Show(const Natural32 = 0);
 
       //
       // static attributes

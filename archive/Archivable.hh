@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archivable.hh
 //
 // created       julien quintard   [tue jan 27 01:08:40 2009]
-// updated       julien quintard   [mon mar 15 22:46:25 2010]
+// updated       julien quintard   [sat mar 20 03:24:02 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVABLE_HH
@@ -18,11 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/idiom/Open.hh>
+#include <elle/misc/Status.hh>
 
 namespace elle
 {
-  using namespace core;
+  using namespace misc;
 
   namespace archive
   {
@@ -49,19 +49,8 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Serialize(Archive&) const
-      {
-	enter();
-
-	escape("this method should never have been called");
-      }
-
-      virtual Status	Extract(Archive&)
-      {
-	enter();
-
-	escape("this method should never have been called");
-      }
+      virtual Status	Serialize(Archive&) const;
+      virtual Status	Extract(Archive&);
     };
 
   }
