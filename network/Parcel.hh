@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.hh
 //
 // created       julien quintard   [tue mar 16 12:04:48 2010]
-// updated       julien quintard   [tue mar 16 23:49:31 2010]
+// updated       julien quintard   [sun mar 21 16:39:14 2010]
 //
 
 #ifndef ELLE_NETWORK_PARCEL_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Context.hh>
+#include <elle/network/Session.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Data.hh>
 
@@ -41,7 +41,7 @@ namespace elle
       // constructors & destructors
       //
       Parcel();
-      Parcel(Context*,
+      Parcel(Session*,
 	     Header*,
 	     Data*);
       ~Parcel();
@@ -49,7 +49,7 @@ namespace elle
       //
       // attributes
       //
-      Context*		context;
+      Session*		session;
       Header*		header;
       Data*		data;
     };

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [wed mar 17 12:48:58 2010]
+// updated       julien quintard   [mon mar 22 20:56:35 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -20,6 +20,7 @@
 
 #include <elle/core/Core.hh>
 #include <elle/misc/Misc.hh>
+#include <elle/system/System.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -28,6 +29,8 @@
 
 namespace elle
 {
+  using namespace system;
+
   namespace concurrency
   {
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [fri mar 19 23:02:48 2010]
+// updated       julien quintard   [sun mar 21 16:39:44 2010]
 //
 
 //
@@ -86,6 +86,9 @@ namespace elle
       // retrieve the argument and takes over the tracking.
       parcel = p;
 
+      printf("[XXX] Network::Dispatch(%u[%qu])\n",
+	     parcel->header->tag, parcel->header->identifier.value);
+
       //
       // first, try to  wake up a waiting slot.
       //
@@ -128,9 +131,9 @@ namespace elle
 	}
 	Network::Control.Unlock();
 
-	// assign the new context.
-	if (Context::Assign(parcel->context) == StatusError)
-	  escape("unable to assign the context");
+	// assign the new session.
+	if (Session::Assign(parcel->session) == StatusError)
+	  escape("unable to assign the session");
 
 	// trigger the callback.
 	if (scoutor->second->Call(*parcel->data) == StatusError)

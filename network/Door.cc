@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [fri mar 19 23:24:02 2010]
+// updated       julien quintard   [sun mar 21 23:08:15 2010]
 //
 
 //
@@ -126,6 +126,8 @@ namespace elle
     Status		Door::Connect(const String&		name)
     {
       enter();
+
+      /// XXX \todo ca segfault si le client est lance sans serveur...???
 
       // connect the socket to the server.
       this->socket->connectToServer(name.c_str());
@@ -349,12 +351,12 @@ namespace elle
 	  if (packet.Extract(*parcel->data) == StatusError)
 	    alert("unable to extract the data");
 
-	  // create the context.
-	  if (parcel->context->Create(this,
+	  // create the session.
+	  if (parcel->session->Create(this,
 				      address,
 				      parcel->header->identifier) ==
 	      StatusError)
-	    alert("unable to create the context");
+	    alert("unable to create the session");
 
 	  // record this packet to the network manager.
 	  //
@@ -366,7 +368,7 @@ namespace elle
 	      // in Dispatch().
 	      waive(parcel);
 
-	      alert("unable to record the packet");
+	      alert("unable to dispatch the packet");
 	    }
 
 	  // stop tracking the parcel.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [wed mar 10 20:53:43 2010]
+// updated       julien quintard   [sun mar 21 16:01:28 2010]
 //
 
 #ifndef ELLE_ELLE_HH
@@ -27,6 +27,8 @@
 #include <elle/network/Network.hh>
 #include <elle/concurrency/Concurrency.hh>
 #include <elle/idiom/Idom.hh>
+
+#include <elle/Manifest.hh>
 
 //
 // ---------- namespaces ------------------------------------------------------

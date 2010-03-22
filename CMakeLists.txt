@@ -37,6 +37,7 @@ ADD_LIBRARY(elle
   factory/Factory.cc
 
   system/System.cc
+  system/Frame.cc
 
   network/Network.cc
   network/Host.cc
@@ -44,7 +45,7 @@ ADD_LIBRARY(elle
   network/Socket.cc
   network/Slot.cc
   network/Header.cc
-  network/Context.cc
+  network/Session.cc
   network/Parcel.cc
   network/Door.cc
   network/Bridge.cc
@@ -62,6 +63,14 @@ ADD_LIBRARY(elle
 
   ${elle_MOCS}
 )
+
+ADD_EXECUTABLE(XXX
+  XXX.cc
+)
+
+TARGET_LINK_LIBRARIES(XXX elle ssl crypto dl
+			  ${QT_QTNETWORK_LIBRARIES}
+			  ${QT_QTCORE_LIBRARIES})
 
 ADD_SUBDIRECTORY(test)
 ADD_SUBDIRECTORY(benchmark)

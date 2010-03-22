@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [fri mar 19 23:24:16 2010]
+// updated       julien quintard   [mon mar 22 21:06:54 2010]
 //
 
 //
@@ -74,9 +74,9 @@ namespace elle
 	escape("unable to connect the signal");
 
       if (this->connect(this->socket,
-			SIGNAL(error(QLocalSocket::LocalSocketError)),
+			SIGNAL(error(QAbstractSocket::SocketError)),
 			this,
-			SLOT(Error(QLocalSocket::LocalSocketError))) ==
+			SLOT(Error(QAbstractSocket::SocketError))) ==
 	  false)
 	escape("unable to connect to signal");
 
@@ -243,11 +243,11 @@ namespace elle
 	if (packet.Extract(*parcel->data) == StatusError)
 	  alert("unable to extract the data");
 
-	// create the context.
-	if (parcel->context->Create(this,
+	// create the session.
+	if (parcel->session->Create(this,
 				    address,
 				    parcel->header->identifier) == StatusError)
-	  alert("unable to create the context");
+	  alert("unable to create the session");
 
 	// record this packet to the network manager.
 	//
@@ -259,7 +259,7 @@ namespace elle
 	    // in Dispatch().
 	    waive(parcel);
 
-	    alert("unable to record the packet");
+	    alert("unable to dispatch the packet");
 	  }
 
 	// stop tracking the parcel.

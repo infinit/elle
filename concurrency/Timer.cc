@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [fri mar 19 22:24:46 2010]
+// updated       julien quintard   [mon mar 22 21:30:42 2010]
 //
 
 //
@@ -123,8 +123,18 @@ namespace elle
     ///
     void		Timer::Timeout()
     {
+      // XXX FRAME
+      frame(Frame::Event);
+
+      printf("Timer::Timeout()\n");
+
       // trigger the callback.
       this->callback->Trigger();
+
+      printf("/Timer::Timeout()\n");
+
+      // XXX FRAME
+      frame(&Frame::Application);
     }
 
   }

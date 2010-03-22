@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [sat mar 20 13:44:17 2010]
+// updated       julien quintard   [sun mar 21 15:50:04 2010]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -105,6 +105,7 @@ namespace elle
       struct Entry
       {
 	Type		type;
+	String		meta;
 	String		message;
       };
 
@@ -114,6 +115,8 @@ namespace elle
       typedef std::list<Entry*>			Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
+      typedef Container::reverse_iterator	ReverseIterator;
+      typedef Container::const_reverse_iterator	ReverseScoutor;
 
       //
       // constructors & destructors
@@ -125,7 +128,14 @@ namespace elle
       //
       Void		Flush();
       Void		Record(Type,
+			       const String&,
+			       const char[]);
+      Void		Record(Type,
+			       const String&,
 			       const String&);
+      Void		Record(Type,
+			       const String&,
+			       const Report&);
 
       //
       // interfaces
@@ -151,18 +161,6 @@ namespace elle
     extern Report	report;
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  std::ostream&		operator<<(std::ostream&,
-				   elle::misc::Report&);
-
 }
 
 #endif
