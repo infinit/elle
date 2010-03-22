@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed mar 17 17:25:43 2010]
+// updated       julien quintard   [sun mar 21 16:42:45 2010]
 //
 
 //
@@ -98,11 +98,11 @@ namespace elle
       enter();
 
       // simply add the sender to the table.
-      if (this->table.Update(context->address, name) == StatusError)
+      if (this->table.Update(session->address, name) == StatusError)
 	escape("unable to add the new neighbour");
 
       // refresh the sender.
-      if (this->table.Refresh(context->address) == StatusError)
+      if (this->table.Refresh(session->address) == StatusError)
 	escape("unable to refresh the sender's entry");
 
       // merge the table with the received one.

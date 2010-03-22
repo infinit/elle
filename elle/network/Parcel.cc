@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [tue mar 16 21:53:55 2010]
+// updated       julien quintard   [sun mar 21 16:40:21 2010]
 //
 
 //
@@ -30,7 +30,7 @@ namespace elle
     /// default constructor.
     ///
     Parcel::Parcel():
-      context(new Context),
+      session(new Session),
       header(new Header),
       data(new Data)
     {
@@ -39,10 +39,10 @@ namespace elle
     ///
     /// specific constructor.
     ///
-    Parcel::Parcel(Context*					context,
+    Parcel::Parcel(Session*					session,
 		   Header*					header,
 		   Data*					data):
-      context(context),
+      session(session),
       header(header),
       data(data)
     {
@@ -53,9 +53,9 @@ namespace elle
     ///
     Parcel::~Parcel()
     {
-      // release the context.
-      if (this->context != NULL)
-	delete this->context;
+      // release the session.
+      if (this->session != NULL)
+	delete this->session;
 
       // release the header.
       if (this->header != NULL)

@@ -5,17 +5,17 @@
 //
 // license       network
 //
-// file          /home/mycure/infinit/elle/network/Context.cc
+// file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [tue mar 16 21:52:59 2010]
+// updated       julien quintard   [sun mar 21 16:38:41 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Context.hh>
+#include <elle/network/Session.hh>
 
 namespace elle
 {
@@ -27,13 +27,13 @@ namespace elle
 //
 
     ///
-    /// this variables is the context specific to the current thread.
+    /// this variables is the session specific to the current thread.
     ///
     /// since events occur one after another, there can be conflicts.
     ///
-    /// XXX \todo store this context in the thread local storage.
+    /// XXX \todo store this session in the thread local storage.
     ///
-    Context*			context = NULL;
+    Session*			session = NULL;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -42,7 +42,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Context::Context():
+    Session::Session():
       socket(NULL)
     {
     }
@@ -54,7 +54,7 @@ namespace elle
     ///
     /// this method sets the arguments.
     ///
-    Status		Context::Create(Socket*			socket,
+    Status		Session::Create(Socket*			socket,
 					const Address&		address,
 					const Identifier&	identifier)
     {
@@ -69,18 +69,18 @@ namespace elle
     }
 
     ///
-    /// this method sets the new context.
+    /// this method sets the new session.
     ///
-    Status		Context::Assign(Context*		c)
+    Status		Session::Assign(Session*		s)
     {
       enter();
 
       /// XXX \todo ici au lieu de faire ca, on pourrait set dans un
       /// thread local storage, ou mieux dans currentThread() qu'on
-      /// static_const en Thread a nous et on set le context network.
+      /// static_const en Thread a nous et on set le session network.
 
-      // assign the new context as being the current one.
-      context = c;
+      // assign the new session as being the current one.
+      session = s;
 
       leave();
     }
@@ -90,16 +90,16 @@ namespace elle
 //
 
     ///
-    /// this method dumps the context.
+    /// this method dumps the session.
     ///
-    Status		Context::Dump(const Natural32		margin) const
+    Status		Session::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
 
       enter();
 
-      std::cout << alignment << "[Context]" << std::endl;
+      std::cout << alignment << "[Session]" << std::endl;
 
       // dump the socket.
       if (this->socket->Dump(margin + 2) == StatusError)

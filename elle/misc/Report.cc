@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [sat mar 20 04:47:47 2010]
+// updated       julien quintard   [sun mar 21 15:54:30 2010]
 //
 
 //
@@ -80,9 +80,23 @@ namespace elle
     }
 
     ///
+    /// this method adds a text message to the report.
+    ///
+    Void		Report::Record(Report::Type		type,
+				       const String&		meta,
+				       const char*		text)
+    {
+      String		message(text);
+
+      // record the message.
+      Report::Record(type, meta, message);
+    }
+
+    ///
     /// this method adds a message to the report.
     ///
     Void		Report::Record(Report::Type		type,
+				       const String&		meta,
 				       const String&		text)
     {
       Report::Entry*	entry;
@@ -92,9 +106,39 @@ namespace elle
 
       // set the fields.
       entry->type = type;
+      entry->meta = meta;
       entry->message = text;
 
       this->store.push_front(entry);
+    }
+
+    ///
+    /// this method adds a set of messages to the report.
+    ///
+    Void		Report::Record(Report::Type		type,
+				       const String&		meta,
+				       const Report&		report)
+    {
+      Report::ReverseScoutor	scoutor;
+
+      // go through the record and record every message.
+      for (scoutor = report.store.rbegin();
+	   scoutor != report.store.rend();
+	   scoutor++)
+	{
+	  Report::Entry*	entry = *scoutor;
+	  String		message;
+
+	  // create the message by prepending a margin.
+	  message.append("  ");
+	  message.append(entry->message);
+
+	  // record the message.
+	  Report::Record(entry->type, entry->meta, message);
+	}
+
+      // create a headline message of the given type.
+      Report::Record(type, meta, "Report");
     }
 
 //
@@ -121,9 +165,34 @@ namespace elle
 	{
 	  Report::Entry*	entry = *scoutor;
 
+	  // display the error type.
+	  switch (entry->type)
+	    {
+	    case elle::misc::Report::TypeWarning:
+	      {
+		std::cout << alignment << shift << "[Warning] ";
+		break;
+	      }
+	    case elle::misc::Report::TypeError:
+	      {
+		std::cout << alignment << shift << "[Error] ";
+		break;
+	      }
+	    case elle::misc::Report::TypeFailure:
+	      {
+		std::cout << alignment << shift << "[Failure] ";
+		break;
+	      }
+	    default:
+	      {
+		std::cout << alignment << shift << "[Unknown] ";
+		break;
+	      }
+	    }
+
 	  // display the entry.
-	  std::cout << alignment << shift << "[Entry] ("
-		    << entry->type << ") " << entry->message << std::endl;
+	  std::cout << entry->message << " ("
+		    << entry->meta << ")" << std::endl;
 	}
 
       leave();
@@ -153,6 +222,7 @@ namespace elle
 	{
 	  // serialize the entry.
 	  if (archive.Serialize((Byte&)(*scoutor)->type,
+				(*scoutor)->meta,
 				(*scoutor)->message) == StatusError)
 	    escape("unable to serialize the entry");
 	}
@@ -171,80 +241,32 @@ namespace elle
       enter();
 
       // extract the number of messages.
-      if (archive.Extract((Natural32&)size) == StatusError)
+      if (archive.Extract(size) == StatusError)
 	escape("unable to extract the number of messages");
 
       // iterate and recreate the messages.
       for (i = 0; i < size; i++)
 	{
 	  Report::Entry*	entry;
+	  Byte			type;
 
 	  // allocate a new entry.
 	  entry = new Report::Entry;
 
 	  // extract the entry.
-	  if (archive.Serialize((Byte&)entry->type,
-				entry->message) == StatusError)
+	  if (archive.Extract(type,
+			      entry->meta,
+			      entry->message) == StatusError)
 	    escape("unable to serialize the entry");
+
+	  entry->type = (Report::Type)type;
+
+	  // push the extract entry in the container.
+	  this->store.push_front(entry);
 	}
 
       leave();
     }
 
   }
-}
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-namespace std
-{
-
-  ///
-  /// this operator allows functions to easily dump the current report.
-  ///
-  /// this function flushes the report.
-  ///
-  std::ostream&		operator<<(std::ostream&		stream,
-				   elle::misc::Report&		report)
-  {
-    elle::core::Natural32	i;
-
-    for (i = 0; report.store.empty() == false; i++)
-      {
-	elle::misc::Report::Entry*	entry = report.store.front();
-	elle::core::String		alignment(i, ' ');
-
-	stream << alignment;
-
-	switch (entry->type)
-	  {
-	  case elle::misc::Report::TypeWarning:
-	    {
-	      stream << "[warning] ";
-	      break;
-	    }
-	  case elle::misc::Report::TypeError:
-	    {
-	      stream << "[error] ";
-	      break;
-	    }
-	  case elle::misc::Report::TypeFailure:
-	    {
-	      stream << "[failure] ";
-	      break;
-	    }
-	  }
-
-	stream << entry->message << std::endl;
-
-	delete entry;
-
-	report.store.pop_front();
-      }
-
-    return (stream);
-  }
-
 }

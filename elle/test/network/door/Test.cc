@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [wed mar 17 10:34:02 2010]
+// updated       julien quintard   [sun mar 21 14:13:01 2010]
 //
 
 //
@@ -101,7 +101,7 @@ int			main(int				argc,
 {
   if (elle::test::Test::Main(argc, argv) == elle::misc::StatusError)
     {
-      std::cerr << elle::misc::report << std::endl;
+      show();
 
       return (1);
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Application.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [tue mar 16 23:51:28 2010]
+// updated       julien quintard   [mon mar 22 13:37:47 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_APPLICATION_HH
@@ -27,6 +27,11 @@
 #include <elle/idiom/Close.hh>
 # include <QCoreApplication>
 # include <list>
+
+// XXX
+# include <QAbstractEventDispatcher>
+// XXX
+
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -58,6 +63,15 @@ namespace elle
     {
     public:
       //
+      // enumerations
+      //
+      enum Flags
+	{
+	  FlagNone,
+	  FlagExit
+	};
+
+      //
       // types
       //
       typedef std::pair<const Identifier, Void*>	Value;
@@ -73,6 +87,7 @@ namespace elle
 
       static Status		Setup(int,
 				      char**);
+      static Status		Exit(Status);
 
       static Status		Process();
 
@@ -86,27 +101,13 @@ namespace elle
       //
       // static attributes
       //
-      static Accord		Control;
+      static Accord			Control;
 
-      static Container		Events;
+      static Container			Events;
 
-      //
-      // constructors & destructors
-      //
-      Application(int,
-		  char**);
-
-      //
-      // attributes
-      //
-      ::QCoreApplication	core;
+      static Flags			Flag;
+      static ::QCoreApplication*	Core;
     };
-
-//
-// ---------- extern ----------------------------------------------------------
-//
-
-    extern Application*				application;
 
   }
 }

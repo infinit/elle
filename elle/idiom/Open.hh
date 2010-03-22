@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sat mar 20 15:29:19 2010]
+// updated       julien quintard   [sun mar 21 16:29:07 2010]
 //
 
 //
@@ -55,13 +55,11 @@
     {									\
       std::ostringstream	_message_;				\
 									\
-      _message_ << (_text_)						\
-                << " (" << __FILE__ << ":" << __LINE__ << " # "		\
-                << __FUNCTION__ << ")";					\
+      _message_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;\
 									\
-      elle::core::String	_string_(_message_.str());		\
+      elle::core::String	_header_(_message_.str());		\
 									\
-      elle::misc::report.Record(_type_, _string_);			\
+      elle::misc::report.Record(_type_, _header_, _text_);		\
     } while (false)
 
 ///
@@ -184,7 +182,12 @@
 /// this macro-function displays the error stack on the error output.
 ///
 #define show()								\
-  std::cerr << elle::misc::report
+  do									\
+    {									\
+      ::elle::misc::report.Dump();					\
+									\
+      ::elle::misc::report.Flush();					\
+    } while (false)
 
 ///
 /// this macro-function, in the case of reported errors, displays them
@@ -339,3 +342,35 @@
 ///
 #define parameters(_parameters_...)					\
   _parameters_
+
+//
+// ---------- network ---------------------------------------------------------
+//
+
+///
+/// this macro-function is used to reply to a request by sending an
+/// negative result, along with a report.
+///
+#define abort(_socket_, _text_)						\
+  do									\
+    {									\
+      report(elle::misc::Report::TypeError, _text_);			\
+									\
+      if ((_socket_)->Send(						\
+	    Inputs< ::elle::TagError >(::elle::misc::report)) ==	\
+	  StatusError)							\
+	escape("unable to send an error report");			\
+									\
+      leave();								\
+    } while (false)
+
+///
+/// this macro-function sends a message in order to inform the
+/// caller that every went as expected.
+///
+#define acknowledge(_socket_, _tag_)					\
+  do									\
+    {									\
+      if ((_socket_)->Reply(Inputs< _tag_ >()) == StatusError)		\
+	escape("unable to reply");					\
+    } while (false)
