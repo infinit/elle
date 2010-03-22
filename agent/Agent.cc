@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat mar 20 16:25:09 2010]
+// updated       julien quintard   [sun mar 21 22:47:09 2010]
 //
 
 //
@@ -110,24 +110,50 @@ namespace agent
     }
 
     //
+    // dump the user's identity.
+    //
+    {
+      // dump the name.
+      std::cout << "[Name] " << name << std::endl;
+
+      // dump the public key.
+      if (Agent::Pair.K.Dump() == StatusError)
+	escape("unable to dump the user's public key");
+    }
+
+    //
     // register the inward messages.
     //
     {
-      // XXX
+      Function<const Report>	error(&Agent::Error);
+      Function<const Code>	decrypt(&Agent::Decrypt);
+      Function<const Plain>	sign(&Agent::Sign);
+
+      // register the error message.
+      if (Network::Register<TagError>(error) == StatusError)
+        escape("unable to register the error callback");
+
+      // register the decrypt message.
+      if (Network::Register<TagDecrypt>(decrypt) == StatusError)
+        escape("unable to register the decrypt callback");
+
+      // register the sign message.
+      if (Network::Register<TagSign>(sign) == StatusError)
+        escape("unable to register the sign callback");
     }
 
     //
     // connect the agent to etoile.
     //
     {
-      Function<const String>	monitor(&Agent::Monitor);
+      Function<const String>	error(&Agent::Error);
 
       // create the door.
       if (Agent::Link.Create() == StatusError)
 	escape("unable to create the door");
 
       // monitor the socket.
-      if (Agent::Link.Monitor(monitor) == StatusError)
+      if (Agent::Link.Monitor(error) == StatusError)
 	escape("unable to create the door");
 
       // connect the door.
@@ -141,8 +167,6 @@ namespace agent
     {
       Code			code;
       Digest			digest;
-      ::etoile::wall::Result	result;
-
       // identify to etoile by passing the user's public key for challenging
       // along with the phrase.
       if (Agent::Link.Call(
@@ -161,14 +185,12 @@ namespace agent
       // authenticate by sending the hash of the phrase.
       if (Agent::Link.Call(
 	    Inputs< ::etoile::TagWallAuthenticate >(digest),
-	    Outputs< ::etoile::TagWallAuthenticated >(result)) == StatusError)
+	    Outputs< ::etoile::TagWallAuthenticated >()) == StatusError)
 	escape("unable to authenticate to etoile");
-
-      // test the result.
-      if (result == etoile::wall::Result::Error)
-	printf("ERROR\n");
-      //escape(result.report); // XXX method templates dans Report
     }
+
+    printf("OK\n");
+    Agent::Link.Send(Inputs< ::etoile::TagWallConnect >(Agent::Phrase));
 
     leave();
   }
@@ -188,18 +210,82 @@ namespace agent
 //
 
   ///
-  /// this callback is triggered whenever an error occurs on the socket.
+  /// this callback is triggered whenever Etoile needs to decrypt
+  /// a code with the agent's private key.
   ///
-  Status		Agent::Monitor(const String&		error)
+  Status		Agent::Decrypt(const Code&		code)
+  {
+    Clear		clear;
+
+    enter();
+
+    printf("[XXX] Agent::Decrypt()\n");
+
+    // perform the cryptographic operation.
+    //if (Agent::Pair.k.Decrypt(code, clear) == StatusError)
+    //escape("unable to perform the decryption");
+
+    // reply to the caller.
+    if (Agent::Link.Reply(Inputs<TagDecrypted>(clear)) == StatusError)
+      escape("unable to reply to the caller");
+
+    printf("[XXX] /Agent::Decrypt()\n");
+
+    leave();
+  }
+
+  ///
+  /// this callback is triggered whenever Etoile needs to perform a signature.
+  ///
+  Status		Agent::Sign(const Plain&		plain)
+  {
+    Signature		signature;
+
+    enter();
+
+    printf("[XXX] Agent::Sign()\n");
+
+    // perform the cryptographic operation.
+    if (Agent::Pair.k.Sign(plain, signature) == StatusError)
+      escape("unable to perform the signature");
+
+    // reply to the caller.
+    if (Agent::Link.Reply(Inputs<TagSigned>(signature)) == StatusError)
+      escape("unable to reply to the caller");
+
+    printf("[XXX] /Agent::Sign()\n");
+
+    leave();
+  }
+
+  ///
+  /// this callback is triggered whenever an error on Etoile.
+  ///
+  Status		Agent::Error(const Report&		report)
   {
     enter();
 
-    printf("[XXX] Agent::Monitor()\n");
+    // report the error.
+    report(Report::TypeError, report);
 
-    // XXX
-    //report(error);
-    //Application::Exit();
-    std::cerr << error << std::endl;
+    // quit the application.
+    Application::Exit(StatusError);
+
+    leave();
+  }
+
+  ///
+  /// this callback is triggered whenever an error occurs on the socket.
+  ///
+  Status		Agent::Error(const String&		error)
+  {
+    enter();
+
+    // report the error.
+    report(Report::TypeError, error);
+
+    // quit the application.
+    Application::Exit(StatusError);
 
     leave();
   }

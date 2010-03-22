@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [fri mar 19 23:27:17 2010]
+// updated       julien quintard   [sun mar 21 13:27:10 2010]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <etoile/Manifest.hh>
+#include <agent/Manifest.hh>
 
 #include <elle/idiom/Close.hh>
 # include <sys/stat.h>
@@ -55,12 +56,11 @@ namespace agent
     //
     // callbacks
     //
-    static Status	Decrypt(const Code&,
-				Clear&);
-    static Status	Sign(const Plain&,
-			     Signature);
+    static Status	Decrypt(const Code&);
+    static Status	Sign(const Plain&);
+    static Status	Error(const Report&);
 
-    static Status	Monitor(const String&);
+    static Status	Error(const String&);
 
     //
     // static attributes

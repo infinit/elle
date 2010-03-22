@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:34:08 2010]
-// updated       julien quintard   [thu mar  4 18:35:43 2010]
+// updated       julien quintard   [sun mar 21 13:20:22 2010]
 //
 
 #ifndef AGENT_MANIFEST_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <agent/Agent.hh>
+#include <elle/Elle.hh>
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -36,7 +36,9 @@ namespace agent
       TagNone = 1000,
 
       TagDecrypt,
+      TagDecrypted,
       TagSign,
+      TagSigned,
 
       Tags = TagSign + 1
     };
@@ -47,9 +49,14 @@ namespace agent
 // ---------- manifest --------------------------------------------------------
 //
 
-Inward(::agent::Agent::TagDecrypt,
-       Parameters(::elle::crypto::Code));
-Outward(::agent::Agent:::Interface::TagUserIdentify,
-        Parameters(::elle::crypto::Code));
+inward(::agent::TagDecrypt,
+       parameters(::elle::cryptography::Code));
+outward(::agent::TagDecrypted,
+        parameters(::elle::cryptography::Clear));
+
+inward(::agent::TagSign,
+       parameters(::elle::cryptography::Plain));
+outward(::agent::TagSigned,
+        parameters(::elle::cryptography::Signature));
 
 #endif
