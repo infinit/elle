@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [wed mar  3 16:07:24 2010]
+// updated       julien quintard   [sun mar 21 18:11:39 2010]
 //
 
 //
@@ -129,11 +129,8 @@ namespace etoile
 	escape("unable to close the access");
 
       // seal the object.
-      if (context->object->Seal(agent::Agent::Pair.k) == StatusError)
+      if (context->object->Seal(*user::user.client->agent) == StatusError)
 	escape("unable to seal the object");
-
-      context->object->Dump();
-      context->catalog->Dump();
 
       // push the context in the journal.
       if (journal::Journal::Push(context) == StatusError)

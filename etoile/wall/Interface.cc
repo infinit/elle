@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [sat mar 20 16:00:35 2010]
+// updated       julien quintard   [sun mar 21 16:32:49 2010]
 //
 
 //
@@ -86,7 +86,7 @@ namespace etoile
       enter();
 
       // delete the callbacks.
-      for (i = ::etoile::TagNone; i < ::etoile::Tags; i++)
+      for (i = TagNone; i < ::etoile::Tags; i++)
 	delete Interface::Callbacks[i];
 
       leave();

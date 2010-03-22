@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:54:18 2010]
-// updated       julien quintard   [tue feb  2 18:55:34 2010]
+// updated       julien quintard   [sun mar 21 18:12:05 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_RIGHTS_HH
@@ -20,8 +20,8 @@
 
 #include <elle/Elle.hh>
 
+#include <etoile/user/User.hh>
 #include <etoile/context/Context.hh>
-#include <etoile/agent/Agent.hh>
 
 #include <etoile/components/Access.hh>
 

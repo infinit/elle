@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [tue feb  2 15:47:04 2010]
+// updated       julien quintard   [sun mar 21 17:42:34 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -23,7 +23,6 @@
 #include <etoile/core/Core.hh>
 #include <etoile/depot/Depot.hh>
 #include <etoile/context/Context.hh>
-#include <etoile/agent/Agent.hh>
 
 namespace etoile
 {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.cc
 //
 // created       julien quintard   [thu mar  4 12:39:12 2010]
-// updated       julien quintard   [sat mar 20 15:52:50 2010]
+// updated       julien quintard   [sun mar 21 16:44:22 2010]
 //
 
 //
@@ -114,18 +114,18 @@ namespace etoile
 
       enter();
 
-      // check if the context's socket is a link.
-      if ((context->socket->type & Socket::TypeLink) == 0)
-	escape("the context's socket is not a link");
+      // check if the session's socket is a link.
+      if ((session->socket->type & Socket::TypeLink) == 0)
+	escape("the session's socket is not a link");
 
       // retrieve the client.
-      if (Map::Retrieve(static_cast<Link*>(context->socket),
+      if (Map::Retrieve(static_cast<Link*>(session->socket),
 			client) == StatusError)
-	escape("unablt to retrive the client from the context's socket");
+	escape("unablt to retrive the client from the session's socket");
 
       // assign this client.
       if (User::Assign(client) == StatusError)
-	escape("unable to assign the context's client");
+	escape("unable to assign the session's client");
 
       leave();
     }

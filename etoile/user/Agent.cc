@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [fri mar 19 22:21:36 2010]
+// updated       julien quintard   [sun mar 21 22:08:54 2010]
 //
 
 //
@@ -32,7 +32,7 @@ namespace etoile
     ///
     /// this value is in milli-seconds.
     ///
-    const Natural32		Agent::Expiration = 2000;
+    const Natural32		Agent::Expiration = 20000; // XXX -0
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -90,6 +90,24 @@ namespace etoile
     }
 
     ///
+    /// this method marks the agent as authenticated by stopping the timer
+    /// and so on.
+    ///
+    Status		Agent::Authenticate()
+    {
+      enter();
+
+      // set the state.
+      this->state = Agent::StateAuthenticated;
+
+      // stop the timer.
+      if (this->timer.Stop() == StatusError)
+	escape("unable to stop the timer");
+
+      leave();
+    }
+
+    ///
     /// this method destroyes the agent.
     ///
     Status		Agent::Destroy()
@@ -116,8 +134,19 @@ namespace etoile
     {
       enter();
 
-      // XXX
-      printf("[XXX] Agent::Decrypt\n");
+      printf("[XXX] Agent::Decrypt()\n");
+
+      // send a request to the agent.
+      /*
+      if (this->link->Call(
+            Inputs< ::agent::TagDecrypt >(code),
+	    Outputs< ::agent::TagDecrypted >(clear)) == StatusError)
+	escape("unable to call the agent for decrypting a code");
+      */
+      if (this->link->Send(Inputs< ::agent::TagDecrypt >(code)) == StatusError)
+	escape("ERROR");
+
+      printf("[XXX] /Agent::Decrypt()\n");
 
       leave();
     }
@@ -132,8 +161,15 @@ namespace etoile
     {
       enter();
 
-      // XXX
       printf("[XXX] Agent::Sign\n");
+
+      // send a request to the agent.
+      if (this->link->Call(
+            Inputs< ::agent::TagSign >(plain),
+	    Outputs< ::agent::TagSigned >(signature)) == StatusError)
+	escape("unable to call the agent for performing a signature");
+
+      printf("[XXX] /Agent::Sign\n");
 
       leave();
     }
@@ -159,6 +195,8 @@ namespace etoile
       if (Client::Remove(client) == StatusError)
 	escape("unable to remove the client");
 
+      printf("[XXX] Agent::Timeout()\n");
+
       leave();
     }
 
@@ -178,6 +216,8 @@ namespace etoile
       // remove the whole client since the agent timed-out.
       if (Client::Remove(client) == StatusError)
 	escape("unable to remove the client");
+
+      printf("[XXX] Agent::Error()\n");
 
       leave();
     }

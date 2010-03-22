@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [sat mar 20 15:25:51 2010]
+// updated       julien quintard   [sun mar 21 18:18:57 2010]
 //
 
 #ifndef ETOILE_ETOILE_HH
@@ -20,7 +20,6 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/agent/Agent.hh>
 #include <etoile/components/Components.hh>
 #include <etoile/configuration/Configuration.hh>
 #include <etoile/context/Context.hh>
@@ -31,10 +30,8 @@
 #include <etoile/path/Path.hh>
 #include <etoile/wall/User.hh>
 #include <etoile/wall/Wall.hh>
-#include <etoile/idiom/Idiom.hh>
 
 using namespace etoile;
-using namespace etoile::agent;
 using namespace etoile::components;
 using namespace etoile::configuration;
 using namespace etoile::context;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sat mar 20 04:11:52 2010]
+// updated       julien quintard   [sun mar 21 17:46:39 2010]
 //
 
 //
@@ -194,7 +194,7 @@ namespace etoile
     ///
     /// this method seals the data and meta data by signing them.
     ///
-    Status		Object::Seal(const PrivateKey&		user)
+    Status		Object::Seal(user::Agent&		agent)
     {
       enter();
 
@@ -205,12 +205,12 @@ namespace etoile
 	  this->data.version += 1;
 
 	  // sign the archive with the author key.
-	  if (user.Sign(this->data.contents,
-			this->data.size,
-			this->data.stamp,
-			this->data.fingerprint,
-			this->data.version,
-			this->data.signature) == StatusError)
+	  if (agent.Sign(this->data.contents,
+			 this->data.size,
+			 this->data.stamp,
+			 this->data.fingerprint,
+			 this->data.version,
+			 this->data.signature) == StatusError)
 	    escape("unable to sign the data archive");
 
 	  // mark the section as clean.
@@ -231,13 +231,13 @@ namespace etoile
 	  if (this->meta.access == hole::Address::Null)
 	    {
 	      // sign the meta data..
-	      if (user.Sign((Byte&)this->meta.owner.permissions,
-			    this->meta.owner.token,
-			    (Byte&)this->meta.status.genre,
-			    this->meta.status.stamp,
-			    this->meta.access,
-			    this->meta.version,
-			    this->meta.signature) == StatusError)
+	      if (agent.Sign((Byte&)this->meta.owner.permissions,
+			     this->meta.owner.token,
+			     (Byte&)this->meta.status.genre,
+			     this->meta.status.stamp,
+			     this->meta.access,
+			     this->meta.version,
+			     this->meta.signature) == StatusError)
 		escape("unable to sign the meta archive");
 	    }
 	  else

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [fri mar 19 20:12:18 2010]
+// updated       julien quintard   [sun mar 21 18:26:01 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -21,6 +21,8 @@
 #include <elle/Elle.hh>
 
 #include <etoile/user/Map.hh>
+
+#include <agent/Manifest.hh>
 
 namespace etoile
 {
@@ -64,6 +66,7 @@ namespace etoile
       //
       Status		Create(const PublicKey&,
 			       Link*);
+      Status		Authenticate();
       Status		Destroy();
 
       //
@@ -78,6 +81,14 @@ namespace etoile
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
+
+      //
+      // attributes
+      //
+      State		state;
+      Timer		timer;
+      PublicKey		K;
+      Link*		link;
 
       //
       // template methods
@@ -229,17 +240,15 @@ namespace etoile
       {
 	return (this->Sign((Plain&)archive, signature));
       }
-
-      //
-      // attributes
-      //
-      State		state;
-      Timer		timer;
-      PublicKey		K;
-      Link*		link;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/user/Agent.hxx>
 
 #endif

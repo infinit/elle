@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [wed mar  3 16:07:40 2010]
+// updated       julien quintard   [sun mar 21 18:17:38 2010]
 //
 
 //
@@ -50,14 +50,15 @@ namespace etoile
       // get the permissions and token of the given subject i.e
       // the current user.
       if (Access::Retrieve(context,
-			   agent::Agent::Subject,
+			   user::user.client->subject,
 			   context->rights->permissions,
 			   token) == StatusError)
 	escape("unable to retrieve the permissions and token");
 
-      // decrypt the token with the user's private key.
-      if (agent::Agent::Pair.k.Decrypt(token,
-				       context->rights->key) == StatusError)
+      // decrypt the token by calling the agent.
+      if (user::user.client->agent->Decrypt(token,
+					    context->rights->key) ==
+	  StatusError)
 	escape("unable to decrypt the token");
 
       // compute a fingerprint of the key.

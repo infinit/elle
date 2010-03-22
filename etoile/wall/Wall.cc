@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [sat mar 20 16:29:22 2010]
+// updated       julien quintard   [sun mar 21 22:48:47 2010]
 //
 
 //
@@ -86,8 +86,13 @@ namespace etoile
       enter(instance(agent),
 	    instance(client));
 
+      printf("[XXX] Wall::Identify()\n");
+
+      /// XXX \todo regarde si il y a deja un client sur cette socket,
+      /// et verifier que l'agent n'est pas deja authentifie
+
       // retrieve the guest.
-      if (user::Guest::Retrieve((Link*)context->socket, guest) == StatusError)
+      if (user::Guest::Retrieve((Link*)session->socket, guest) == StatusError)
 	escape("unable to locate the sender's guest record");
 
       // allocate a new agent.
@@ -154,6 +159,9 @@ namespace etoile
 
       printf("[XXX] Wall::Authenticate()\n");
 
+      /// XXX \todo regarde si il y a deja un client sur cette socket,
+      /// et verifier que l'agent n'est pas deja authentifie
+
       // load the current user.
       if (user::User::Assign() == StatusError)
 	escape("unable to load the user");
@@ -164,10 +172,18 @@ namespace etoile
 
       // compare the received digest with the phrase's one.
       if (digest != d)
-	reply(user::user.client->agent->link, TagWallAuthenticated,
+	abort(user::user.client->agent->link,
 	      "the digest does not correspond to the encrypted phrase");
 
-      result(
+      // set the agent as authenticated.
+      if (user::user.client->agent->Authenticate() == StatusError)
+	escape("unable to set the agent as authenticated");
+
+      // acknowledge the authentication.
+      acknowledge(user::user.client->agent->link,
+		  TagWallAuthenticated);
+
+      leave();
     }
 
     ///
@@ -177,7 +193,33 @@ namespace etoile
     {
       enter();
 
+      printf("[XXX] Wall::Connect()\n");
+
       // XXX
+      context::Directory	context;
+      hole::Address		address;
+
+      //components::Directory::Load(&context, path::Path::Root);
+      //components::Directory::Add(&context, "loop", context.address);
+      //components::Directory::Commit(&context);
+
+      //components::Directory::Lookup(&context, "loop", address);
+      //components::Directory::Close(context);
+
+      //context.Dump();
+
+      {
+	::elle::concurrency::Identifier identifier;
+	Code code;
+	Clear clear;
+
+	identifier.value = 12345;
+	printf("[identifier] %qu\n", identifier.value);
+
+	((Link*)(session->socket))->Send(Inputs< ::agent::TagDecrypt >(code), identifier);
+	((Link*)(session->socket))->Receive(identifier, Outputs< ::agent::TagDecrypted >(clear));
+	printf("AFTER\n");
+      }
 
       leave();
     }

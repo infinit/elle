@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sat mar 20 15:34:26 2010]
+// updated       julien quintard   [sun mar 21 20:11:45 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -35,14 +35,8 @@ namespace etoile
   //
   enum Tag
     {
-      /// XXX \todo trouver un truc plus propre pour eviter les collisions
-      TagNone = 0,
-
-      // Error
-      TagError,
-
       // Wall
-      TagWallIdentify,
+      TagWallIdentify = ::elle::Tags, // XXX
       TagWallChallenge,
       TagWallAuthenticate,
       TagWallAuthenticated,
@@ -73,10 +67,6 @@ namespace etoile
 /// below are the definitions of the inward and outward messages.
 ///
 
-// Error
-outward(::etoile::TagError,
-	parameters(::elle::core::String));
-
 // Wall
 inward(::etoile::TagWallIdentify,
        parameters(::elle::cryptography::PublicKey));
@@ -85,7 +75,7 @@ outward(::etoile::TagWallChallenge,
 inward(::etoile::TagWallAuthenticate,
        parameters(::elle::cryptography::Digest));
 outward(::etoile::TagWallAuthenticated,
-	parameters(::etoile::wall::Result));
+	parameters());
 
 inward(::etoile::TagWallConnect,
        parameters(::elle::core::String));

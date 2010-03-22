@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [mon feb  1 00:22:35 2010]
+// updated       julien quintard   [sun mar 21 16:58:38 2010]
 //
 
 #ifndef ETOILE_CONTEXT_DIRECTORY_HH
@@ -46,6 +46,13 @@ namespace etoile
       // methods
       //
       Status		Register(journal::Set::Container&);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

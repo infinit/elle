@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Author.hh
 //
 // created       julien quintard   [sun aug 23 15:30:06 2009]
-// updated       julien quintard   [tue feb  2 17:18:33 2010]
+// updated       julien quintard   [sun mar 21 18:18:16 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_AUTHOR_HH
@@ -21,8 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <etoile/context/Context.hh>
-
-#include <etoile/agent/Agent.hh>
+#include <etoile/user/User.hh>
 
 namespace etoile
 {

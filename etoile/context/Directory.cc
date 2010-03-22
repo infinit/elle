@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [wed mar  3 16:08:33 2010]
+// updated       julien quintard   [sun mar 21 17:05:51 2010]
 //
 
 //
@@ -71,6 +71,33 @@ namespace etoile
       // if there is catalog.
       if (this->catalog != NULL)
 	set.push_front(this->catalog);
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the catalog along the the inherited object context.
+    ///
+    Status		Directory::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Directory]" << std::endl;
+
+      // dump the inherited object.
+      if (Object::Dump(margin + 2) == StatusError)
+	escape("unable to dump the inherited object");
+
+      // dump the catalog.
+      if (this->catalog != NULL)
+	if (this->catalog->Dump(margin + 4) == StatusError)
+	  escape("unable to dump the catalog");
 
       leave();
     }

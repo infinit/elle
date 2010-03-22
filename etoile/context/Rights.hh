@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:59:43 2010]
-// updated       julien quintard   [tue feb  2 19:08:56 2010]
+// updated       julien quintard   [sun mar 21 16:55:12 2010]
 //
 
 #ifndef ETOILE_CONTEXT_RIGHTS_HH
@@ -18,6 +18,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/Elle.hh>
+
 #include <etoile/core/Core.hh>
 
 namespace etoile
@@ -26,15 +28,23 @@ namespace etoile
   {
 
 //
-// ---------- structures ------------------------------------------------------
+// ---------- classes ---------------------------------------------------------
 //
 
     ///
     /// XXX
     ///
-    struct Rights
+    class Rights:
+      public Dumpable
     {
     public:
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status			Dump(const Natural32 = 0) const;
+
       //
       // attributes
       //

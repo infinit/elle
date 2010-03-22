@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [tue feb  2 17:05:03 2010]
+// updated       julien quintard   [sun mar 21 18:12:11 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -24,7 +24,7 @@
 #include <etoile/context/Context.hh>
 #include <etoile/hole/Hole.hh>
 #include <etoile/journal/Journal.hh>
-#include <etoile/agent/Agent.hh>
+#include <etoile/user/User.hh>
 
 #include <etoile/components/Object.hh>
 #include <etoile/components/Catalog.hh>

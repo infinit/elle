@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.cc
 //
 // created       julien quintard   [thu mar 11 16:21:11 2010]
-// updated       julien quintard   [fri mar 19 21:40:30 2010]
+// updated       julien quintard   [sun mar 21 17:38:48 2010]
 //
 
 //
@@ -138,6 +138,11 @@ namespace etoile
       // add a mapping between the agent's link and the client.
       if (Map::Add(this->agent->link, this) == StatusError)
 	escape("unable to add a mapping between the agent and the client");
+
+      // create the subject in order to makes manipulating the user
+      // a lot easier in many contexts.
+      if (this->subject.Create(agent->K) == StatusError)
+	escape("unable to create the subject");
 
       leave();
     }

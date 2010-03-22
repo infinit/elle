@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [fri mar 19 14:55:48 2010]
+// updated       julien quintard   [sun mar 21 22:05:46 2010]
 //
 
 //
@@ -152,8 +152,9 @@ namespace etoile
       escape("unable to initialize etoile");
 
     // process events.
-    if (elle::Application::Process() == StatusError)
-      escape("an error occured while processing events");
+    //if (elle::Application::Process() == StatusError)
+    //escape("an error occured while processing events");
+    ::elle::concurrency::Application::Core->exec();
 
     // clean etoile.
     if (Etoile::Clean() == StatusError)

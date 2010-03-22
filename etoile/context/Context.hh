@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hh
 //
 // created       julien quintard   [fri aug 14 22:36:10 2009]
-// updated       julien quintard   [tue feb  2 17:08:06 2010]
+// updated       julien quintard   [sun mar 21 16:45:57 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 
 ///
-/// this file is directly inserted to avoid pre-processing issues.
+/// this file is directly included to avoid pre-processing issues.
 ///
 #include <etoile/journal/Set.hh>
 
@@ -40,7 +40,8 @@ namespace etoile
     ///
     /// XXX
     ///
-    class Context
+    class Context:
+      public Dumpable
     {
     public:
       //

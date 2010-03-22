@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [sat mar 20 04:11:38 2010]
+// updated       julien quintard   [sun mar 21 17:46:55 2010]
 //
 
 #ifndef ETOILE_CORE_OBJECT_HH
@@ -34,6 +34,8 @@
 #include <etoile/core/Time.hh>
 
 #include <etoile/hole/Hole.hh>
+
+#include <etoile/user/Agent.hh>
 
 namespace etoile
 {
@@ -75,7 +77,7 @@ namespace etoile
 				     const Permissions&,
 				     const Code&);
 
-      Status		Seal(const PrivateKey&);
+      Status		Seal(user::Agent&);
 
       Status		Validate(const hole::Address&) const;
 

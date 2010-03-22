@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [tue feb  2 17:08:32 2010]
+// updated       julien quintard   [sun mar 21 16:49:08 2010]
 //
 
 //
@@ -65,6 +65,13 @@ namespace etoile
       // methods
       //
       Status		Register(journal::Set::Container&);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status			Dump(const Natural32 = 0) const;
 
       //
       // attributes

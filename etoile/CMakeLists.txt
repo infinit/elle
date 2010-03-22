@@ -37,6 +37,7 @@ ADD_LIBRARY(etoile
 
   context/Object.cc
   context/Directory.cc
+  context/Rights.cc
 
   components/Object.cc
   components/Directory.cc
@@ -44,8 +45,6 @@ ADD_LIBRARY(etoile
   components/Access.cc
   components/Rights.cc
   components/Author.cc
-
-  agent/Agent.cc
 
   journal/Journal.cc
 

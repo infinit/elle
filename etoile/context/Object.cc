@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [wed mar  3 16:08:42 2010]
+// updated       julien quintard   [sun mar 21 16:58:19 2010]
 //
 
 //
@@ -88,6 +88,49 @@ namespace etoile
       // if there is an access.
       if (this->access != NULL)
 	set.push_front(this->access);
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps a context.
+    ///
+    Status		Object::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      // dump the parent context.
+      std::cout << alignment << "[Object]" << std::endl;
+
+      // dump the address.
+      if (this->address.Dump(margin + 2) == StatusError)
+	escape("unable to dump the address");
+
+      // dump the object.
+      if (this->object != NULL)
+	if (this->object->Dump(margin + 2) == StatusError)
+	  escape("unable to dump the object");
+
+      // dump the access.
+      if (this->access != NULL)
+	if (this->access->Dump(margin + 2) == StatusError)
+	  escape("unable to dump the access");
+
+      // dump the rights.
+      if (this->rights != NULL)
+	if (this->rights->Dump(margin + 2) == StatusError)
+	  escape("unable to dump the rights");
+
+      // dump the author.
+      if (this->author != NULL)
+	if (this->author->Dump(margin + 2) == StatusError)
+	  escape("unable to dump the author");
 
       leave();
     }
