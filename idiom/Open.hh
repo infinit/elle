@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sun mar 21 16:29:07 2010]
+// updated       julien quintard   [wed mar 24 17:24:02 2010]
 //
 
 //
@@ -25,11 +25,18 @@
 //
 
 ///
+/// this macro function is sometimes use to group several parameter which
+/// can be pretty useful when a parameter contains a comma for instance.
+///
+#define _(_parameters_...)						\
+  _parameters_
+
+///
 /// this macro function enables the caller to generate the prototypes
 /// for the source code generated through the following macro-function.
 ///
 #define declare(_identifier_, _type_)					\
-  _identifier_ ## Declare(_type_)
+  _identifier_ ## Declare(_(_type_))
 
 ///
 /// this macro function enables the caller to embed source code
@@ -37,7 +44,7 @@
 /// by the Entity class for instance.
 ///
 #define embed(_identifier_, _type_, _template_...)			\
-  _identifier_ ## Embed(_type_, ##_template_)
+  _identifier_ ## Embed(_(_type_), ##_template_)
 
 //
 // ---------- report ----------------------------------------------------------

@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Bridge.cc
+// file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [fri mar 19 17:06:03 2010]
+// updated       julien quintard   [thu mar 25 00:56:10 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Bridge.hh>
+#include <elle/network/Lane.hh>
 
 namespace elle
 {
@@ -29,12 +29,12 @@ namespace elle
     ///
     /// definition of the container.
     ///
-    Bridge::Container		Bridge::Porters;
+    Lane::Container		Lane::Porters;
 
     ///
-    /// this variable control the access to the bridge.
+    /// this variable control the access to the lane.
     ///
-    Accord			Bridge::Control;
+    Accord			Lane::Control;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    Porter::Porter(Callback*					callback):
+    LanePorter::LanePorter(Callback*				callback):
       server(NULL),
       callback(callback)
     {
@@ -52,7 +52,7 @@ namespace elle
     ///
     /// the destructor.
     ///
-    Porter::~Porter()
+    LanePorter::~LanePorter()
     {
       // if there is a callback, release it.
       if (this->callback != NULL)
@@ -74,7 +74,7 @@ namespace elle
     ///
     /// this method starts listening on the given name.
     ///
-    Status		Porter::Listen(const String&		name)
+    Status		LanePorter::Listen(const String&		name)
     {
       enter();
 
@@ -94,13 +94,13 @@ namespace elle
     }
 
     //
-    // bridge
+    // lane
     //
 
     ///
-    /// this method initializes the bridge.
+    /// this method initializes the lane.
     ///
-    Status		Bridge::Initialize()
+    Status		Lane::Initialize()
     {
       enter();
 
@@ -108,9 +108,9 @@ namespace elle
     }
 
     ///
-    /// this method cleans the bridge.
+    /// this method cleans the lane.
     ///
-    Status		Bridge::Clean()
+    Status		Lane::Clean()
     {
       enter();
 
@@ -126,14 +126,14 @@ namespace elle
     ///
     /// note that callbacks are used because only a specific handler must
     /// be called. by relying on QT signals/slots (though it is not possible
-    /// since the Bridge class is static), all the slots registered on the
+    /// since the Lane class is static), all the slots registered on the
     /// signal would be triggered which is not want we want.
     ///
-    Status		Bridge::Listen(const String&		name,
-				       Callback&		callback)
+    Status		Lane::Listen(const String&		name,
+				     Callback&			callback)
     {
       Callback*		clone;
-      Porter*		porter;
+      LanePorter*	porter;
 
       enter(instance(clone),
 	    instance(porter));
@@ -143,22 +143,22 @@ namespace elle
 	escape("unable to clone the callback");
 
       // allocate a new porter.
-      porter = new Porter(clone);
+      porter = new LanePorter(clone);
 
       // stop tracking the clone.
       waive(clone);
 
       // start listening.
       if (porter->Listen(name) == StatusError)
-	escape("unable to listen on the bridge");
+	escape("unable to listen on the lane");
 
       // lock in writing.
-      Bridge::Control.Lock(ModeWrite);
+      Lane::Control.Lock(ModeWrite);
       {
 	// add the porter to the container.
-	Bridge::Porters.push_back(porter);
+	Lane::Porters.push_back(porter);
       }
-      Bridge::Control.Unlock();
+      Lane::Control.Unlock();
 
       // stop tracking porter.
       waive(porter);
@@ -177,7 +177,7 @@ namespace elle
     ///
     /// this method dumps the internals of a porter.
     ///
-    Status		Porter::Dump(const Natural32	margin) const
+    Status		LanePorter::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
@@ -202,28 +202,28 @@ namespace elle
     }
 
     //
-    // bridge
+    // lane
     //
 
     ///
     /// this method dumps the table of porters.
     ///
-    Status		Bridge::Show(const Natural32		margin)
+    Status		Lane::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
       String		shift(2, ' ');
-      Bridge::Scoutor	scoutor;
+      Lane::Scoutor	scoutor;
 
       enter();
 
-      std::cout << alignment << "[Bridge]" << std::endl;
+      std::cout << alignment << "[Lane]" << std::endl;
 
       // lock in reading.
-      Bridge::Control.Lock(ModeRead);
+      Lane::Control.Lock(ModeRead);
       {
 	// dump the porters table.
-	for (scoutor = Bridge::Porters.begin();
-	     scoutor != Bridge::Porters.end();
+	for (scoutor = Lane::Porters.begin();
+	     scoutor != Lane::Porters.end();
 	     scoutor++)
 	  {
 	    // dump the porter.
@@ -231,7 +231,7 @@ namespace elle
 	      escape("unable to dump the porter");
 	  }
       }
-      Bridge::Control.Unlock();
+      Lane::Control.Unlock();
 
       leave();
     }
@@ -243,7 +243,7 @@ namespace elle
     ///
     /// this slot is triggered whenever a new conncetion is made.
     ///
-    void		Porter::Accept()
+    void		LanePorter::Accept()
     {
       ::QLocalSocket*	socket;
       Door*		door;
@@ -254,7 +254,7 @@ namespace elle
       if ((socket = this->server->nextPendingConnection()) == NULL)
 	alert(this->server->errorString().toStdString().c_str());
 
-      // allocate a new door to this bridge.
+      // allocate a new door to this lane.
       door = new Door;
 
       // create a door with the specific socket.
@@ -262,7 +262,7 @@ namespace elle
 	alert("unable to create the door");
 
       // trigger the associated callback.
-      if (this->callback->Trigger(door) == StatusError)
+      if (this->callback->Call(door) == StatusError)
 	alert("unable to trigger the callback");
 
       // stop tracking door as it has been handed to the callback.

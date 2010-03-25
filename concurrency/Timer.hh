@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [mon mar 22 20:56:35 2010]
+// updated       julien quintard   [thu mar 25 01:04:19 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -19,8 +19,11 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
-#include <elle/system/System.hh>
+
+#include <elle/misc/Status.hh>
+#include <elle/misc/Entrance.hh>
+
+#include <elle/concurrency/Event.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -29,7 +32,7 @@
 
 namespace elle
 {
-  using namespace system;
+  using namespace misc;
 
   namespace concurrency
   {
@@ -67,7 +70,7 @@ namespace elle
       // methods
       //
       Status		Create(const Mode,
-			       Callback&);
+			       Entrance&);
       Status		Start(Natural32);
       Status		Stop();
       Status		Restart(Natural32);
@@ -78,7 +81,8 @@ namespace elle
       ::QTimer		timer;
 
       Mode		mode;
-      Callback*		callback;
+      Event		event;
+      Entrance*		entrance;
 
     private slots:
       //

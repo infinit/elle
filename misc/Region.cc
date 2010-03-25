@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sat mar 20 15:29:08 2010]
+// updated       julien quintard   [wed mar 24 23:54:13 2010]
 //
 
 //

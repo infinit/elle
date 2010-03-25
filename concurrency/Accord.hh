@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Accord.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [wed mar 10 20:24:16 2010]
+// updated       julien quintard   [thu mar 25 00:57:13 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ACCORD_HH
@@ -19,7 +19,8 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+
+#include <elle/misc/Status.hh>
 
 #include <elle/concurrency/Mode.hh>
 
@@ -29,6 +30,8 @@
 
 namespace elle
 {
+  using namespace core;
+
   namespace concurrency
   {
 
@@ -60,7 +63,7 @@ namespace elle
       //
       // attributes
       //
-      //::QReadWriteLock	accord;
+      ::QReadWriteLock	accord;
     };
 
   }

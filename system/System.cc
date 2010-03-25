@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/system/System.cc
 //
 // created       julien quintard   [mon jan 26 20:23:52 2009]
-// updated       julien quintard   [mon mar 15 18:22:06 2010]
+// updated       julien quintard   [wed mar 24 22:14:56 2010]
 //
 
 //
@@ -16,6 +16,13 @@
 //
 
 #include <elle/system/System.hh>
+
+///
+/// these includes are placed here in order to prevent
+/// pre-processing conflicts.
+///
+#include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 namespace elle
 {
@@ -80,6 +87,8 @@ namespace elle
     Status		System::Clean()
     {
       enter();
+
+      // nothing to do
 
       leave();
     }

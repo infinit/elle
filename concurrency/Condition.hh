@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Condition.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [wed mar 10 20:38:10 2010]
+// updated       julien quintard   [wed mar 24 22:23:03 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CONDITION_HH
@@ -19,7 +19,8 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+
+#include <elle/misc/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QWaitCondition>

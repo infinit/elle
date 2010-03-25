@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun mar 21 23:08:15 2010]
+// updated       julien quintard   [thu mar 25 00:03:06 2010]
 //
 
 //
@@ -28,7 +28,7 @@ namespace elle
 
     ///
     /// this value defines the time to wait for a door to connect to
-    /// a bridge after which the connection is assumed to have failed.
+    /// a lane after which the connection is assumed to have failed.
     ///
     /// this value is set by default to 1 second.
     ///
@@ -47,7 +47,7 @@ namespace elle
     /// the default constructor.
     ///
     Door::Door():
-      Link::Link(Socket::TypeDoor),
+      Channel::Channel(Socket::TypeDoor),
 
       socket(NULL),
       buffer(NULL),
@@ -202,7 +202,7 @@ namespace elle
 
       // trigger the callback if it has been registered.
       if (this->callback != NULL)
-	if (this->callback->Trigger(text) == StatusError)
+	if (this->callback->Call(text) == StatusError)
 	  alert("an error occured in the callback");
 
       release();
@@ -221,6 +221,8 @@ namespace elle
     ///
     void		Door::Fetch()
     {
+      /*
+      Entrance<Parcel*>	entrance(&Network::Dispatch);
       Raw*		raw;
       Address		address;
 
@@ -354,15 +356,14 @@ namespace elle
 	  // create the session.
 	  if (parcel->session->Create(this,
 				      address,
-				      parcel->header->identifier) ==
-	      StatusError)
+				      parcel->header->event) == StatusError)
 	    alert("unable to create the session");
 
 	  // record this packet to the network manager.
 	  //
 	  // note that a this point, the network is responsible for the
 	  // parcel and its memory.
-	  if (Network::Dispatch(parcel) == StatusError)
+	  if (Fiber::Spawn(&entrance, parcel) == StatusError)
 	    {
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().
@@ -382,6 +383,7 @@ namespace elle
 	}
 
       release();
+      */
     }
 
   }

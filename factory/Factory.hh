@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [fri mar 19 17:05:03 2010]
+// updated       julien quintard   [wed mar 24 22:20:44 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HH
@@ -19,8 +19,9 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
 #include <elle/concurrency/Concurrency.hh>
+
+#include <elle/misc/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>

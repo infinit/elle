@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [sat mar 20 03:19:45 2010]
+// updated       julien quintard   [thu mar 25 00:32:54 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HXX
@@ -27,27 +27,45 @@ namespace elle
   {
 
 //
-// ---------- method ----------------------------------------------------------
+// ---------- wrap ------------------------------------------------------------
 //
 
     ///
     /// the default constructor.
     ///
     template <typename... T>
-    template <typename U>
-    Method<T...>::Wrap<U>::Wrap(U*				object,
-				Method<T...>::Wrap<U>::Handler	handler):
+    template <typename C>
+    Method<T...>::Wrap<C>::Wrap(C*				object,
+				Method<T...>::Wrap<C>::Handler	handler):
       object(object),
       handler(handler)
     {
     }
 
     ///
-    /// this method actually calls the handler.
+    /// this method triggers the handler by considering arguments as pointers:
+    /// required by entrances.
     ///
     template <typename... T>
-    template <typename U>
-    Status		Method<T...>::Wrap<U>::Call(T&...	arguments)
+    template <typename C>
+    Status		Method<T...>::Wrap<C>::Trigger(T*...	arguments)
+    {
+      enter();
+
+      // trigger the callback.
+      if ((this->object->*this->handler)(arguments...) == StatusError)
+	escape("an error occured in the callback");
+
+      leave();
+    }
+
+    ///
+    /// this method calls the handler by considering arguments as references:
+    /// required by callbacks.
+    ///
+    template <typename... T>
+    template <typename C>
+    Status		Method<T...>::Wrap<C>::Call(T&...	arguments)
     {
       enter();
 
@@ -62,8 +80,8 @@ namespace elle
     /// this method dumps the method state.
     ///
     template <typename... T>
-    template <typename U>
-    Status		Method<T...>::Wrap<U>::Dump(const Natural32	margin)
+    template <typename C>
+    Status		Method<T...>::Wrap<C>::Dump(const Natural32	margin)
       const
     {
       String		alignment(margin, ' ');
@@ -91,33 +109,31 @@ namespace elle
 //
 
     ///
-    /// constructor that should not be used.
-    ///
-    template <typename... T>
-    Method<T...>::Method():
-      Callback::Callback(Callback::TypeMethod)
-    {
-      enter();
-
-      alert("this method should never have been called");
-    }
-
-    ///
     /// the default constructor.
     ///
     template <typename... T>
     template <typename X>
     Method<T...>::Method(X*				object,
-			 Status				(X::*handler)(T&...)):
-      Callback::Callback(Callback::TypeMethod),
+			 Status				(X::*handler)(T...)):
+      Routine::Routine(Routine::TypeMethod),
 
-      shell(NULL)
+      shell(new Method::Wrap<X>(object, handler))
     {
-      this->shell = new Method::Wrap<X>(object, handler);
     }
 
     ///
-    /// this method actually calls the handler.
+    /// this method triggers the handler by considering the arguments as
+    /// pointers: required by entrances.
+    ///
+    template <typename... T>
+    Status		Method<T...>::Trigger(T*...		arguments)
+    {
+      return (this->shell->Trigger(arguments...));
+    }
+
+    ///
+    /// this method calls the handler by considering the arguments as
+    /// references: required by callbacks.
     ///
     template <typename... T>
     Status		Method<T...>::Call(T&...		arguments)
@@ -143,10 +159,6 @@ namespace elle
 
       leave();
     }
-
-//
-// ---------- entity ----------------------------------------------------------
-//
 
     ///
     /// these are generated automatically.

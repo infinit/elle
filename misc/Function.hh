@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [sat mar 20 03:01:25 2010]
+// updated       julien quintard   [thu mar 25 00:39:11 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HH
@@ -21,7 +21,7 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/misc/Status.hh>
-#include <elle/misc/Callback.hh>
+#include <elle/misc/Routine.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -37,27 +37,28 @@ namespace elle
 //
 
     ///
-    /// this class represents a function callback.
+    /// this class represents a function.
     ///
     template <typename... T>
     class Function:
-      public Callback
+      public Routine
     {
     public:
       //
       // types
       //
-      typedef Status			(*Handler)(T&...);
+      typedef Status		(*Handler)(T...);
 
       //
       // constructors & destructors
       //
-      Function();
       Function(Handler);
+      Function(const Function<T...>&);
 
       //
       // methods
       //
+      Status		Trigger(T*...);
       Status		Call(T&...);
 
       //
@@ -65,7 +66,7 @@ namespace elle
       //
 
       // entity
-      declare(Entity, Function<T...>);
+      declare(Entity, Function);
       // XXX
 
       // dumpable

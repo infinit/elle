@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed mar 17 10:36:24 2010]
+// updated       julien quintard   [wed mar 24 13:47:23 2010]
 //
 
 //
@@ -48,11 +48,11 @@ namespace elle
 
       enter();
 
-      std::cout << "[bridge] " << line << std::endl;
+      std::cout << "[lane] " << line << std::endl;
 
       // listen for incoming connections.
-      if (Bridge::Listen(this->line, connection) == StatusError)
-	escape("unable to listen for bridge connections");
+      if (Lane::Listen(this->line, connection) == StatusError)
+	escape("unable to listen for lane connections");
 
       leave();
     }

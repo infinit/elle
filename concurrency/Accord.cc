@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Accord.cc
 //
 // created       julien quintard   [sun mar  7 19:07:03 2010]
-// updated       julien quintard   [tue mar  9 12:12:50 2010]
+// updated       julien quintard   [thu mar 25 00:57:02 2010]
 //
 
 //
@@ -16,6 +16,13 @@
 //
 
 #include <elle/concurrency/Accord.hh>
+
+///
+/// these includes are placed here in order to prevent pre-processing
+/// conflicts.
+///
+#include <elle/misc/Report.hh>
+#include <elle/misc/Maid.hh>
 
 namespace elle
 {
@@ -34,7 +41,6 @@ namespace elle
     {
       enter();
 
-      /*
       // lock depending on the mode.
       switch (mode)
 	{
@@ -65,7 +71,7 @@ namespace elle
 	    break;
 	  }
 	}
-      */
+
       leave();
     }
 
@@ -77,7 +83,7 @@ namespace elle
       enter();
 
       // release the resources.
-      //this->accord.unlock();
+      this->accord.unlock();
 
       leave();
     }

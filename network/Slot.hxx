@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [wed mar 17 16:44:59 2010]
+// updated       julien quintard   [tue mar 23 21:08:48 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -31,7 +31,7 @@ namespace elle
     template <typename I>
     Status		Slot::Send(const Address&		address,
 				   const I&			inputs,
-				   const Identifier&		identifier)
+				   const Event&			event)
     {
       Packet		packet;
       Header		header;
@@ -48,7 +48,7 @@ namespace elle
 	escape("unable to serialize the inputs");
 
       // create the header.
-      if (header.Create(identifier, inputs.tag, data.size) == StatusError)
+      if (header.Create(event, inputs.tag, data.size) == StatusError)
 	escape("unable to create the header");
 
       // prepare the packet.
@@ -77,7 +77,7 @@ namespace elle
     template <typename I>
     Status		Slot::Transmit(const Address&		address,
 				       const I&			inputs,
-				       const Identifier&	identifier)
+				       const Event&		event)
     {
       enter();
 

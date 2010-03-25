@@ -5,24 +5,30 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Callback.hh
+// file          /home/mycure/infinit/elle/misc/Routine.hh
 //
-// created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [thu mar 25 01:38:45 2010]
+// created       julien quintard   [wed mar 24 19:50:08 2010]
+// updated       julien quintard   [thu mar 25 00:39:56 2010]
 //
 
-#ifndef ELLE_MISC_CALLBACK_HH
-#define ELLE_MISC_CALLBACK_HH
+#ifndef ELLE_MISC_ROUTINE_HH
+#define ELLE_MISC_ROUTINE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/core/Entity.hh>
+
 #include <elle/misc/Status.hh>
-#include <elle/misc/Routine.hh>
+
+#include <elle/io/Dumpable.hh>
 
 namespace elle
 {
+  using namespace core;
+  using namespace io;
+
   namespace misc
   {
 
@@ -31,24 +37,36 @@ namespace elle
 //
 
     ///
-    /// this class represents an callback i.e a pointer-based routine.
+    /// this class represents a routine, being a function, a method
+    /// or static method.
     ///
-    class Callback:
+    class Routine:
       public Entity,
       public Dumpable
     {
     public:
       //
+      // enumerations
+      //
+      enum Type
+	{
+	  TypeUnknown,
+
+	  TypeFunction,
+	  TypeMethod
+	};
+
+      //
       // constructors & destructors
       //
-      Callback();
-      Callback(const Routine&);
-      Callback(const Callback&);
-      ~Callback();
+      Routine();
+      Routine(const Type);
 
       //
       // methods
       //
+      template <typename... T>
+      Status		Trigger(T*...);
       template <typename... T>
       Status		Call(T&...);
 
@@ -57,7 +75,7 @@ namespace elle
       //
 
       // entity
-      declare(Entity, Callback);
+      declare(Entity, Routine);
       // XXX
 
       // dumpable
@@ -66,7 +84,7 @@ namespace elle
       //
       // attributes
       //
-      Routine*		routine;
+      Type		type;
     };
 
   }
@@ -76,6 +94,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Callback.hxx>
+#include <elle/misc/Routine.hxx>
 
 #endif

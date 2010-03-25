@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/system/System.hh
 //
 // created       julien quintard   [mon jan 26 20:21:10 2009]
-// updated       julien quintard   [mon mar 22 20:55:32 2010]
+// updated       julien quintard   [wed mar 24 22:14:15 2010]
 //
 
 #ifndef ELLE_SYSTEM_SYSTEM_HH
@@ -20,7 +20,7 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Misc.hh>
+#include <elle/misc/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QSysInfo>
@@ -82,11 +82,5 @@ namespace elle
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/system/Frame.hh>
 
 #endif

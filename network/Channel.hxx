@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Link.hxx
+// file          /home/mycure/infinit/elle/network/Channel.hxx
 //
 // created       julien quintard   [thu mar 18 21:23:33 2010]
-// updated       julien quintard   [thu mar 18 23:30:22 2010]
+// updated       julien quintard   [wed mar 24 13:11:57 2010]
 //
 
 ///
@@ -17,8 +17,8 @@
 #include <elle/network/Door.hh>
 #include <elle/network/Gate.hh>
 
-#ifndef ELLE_NETWORK_LINK_HXX
-#define ELLE_NETWORK_LINK_HXX
+#ifndef ELLE_NETWORK_CHANNEL_HXX
+#define ELLE_NETWORK_CHANNEL_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -37,8 +37,8 @@ namespace elle
     /// this method sends a packet in an asynchronous manner.
     ///
     template <typename I>
-    Status		Link::Send(const I			inputs,
-				   const Identifier&		identifier)
+    Status		Channel::Send(const I			inputs,
+				      const Event&		event)
     {
       enter();
 
@@ -46,15 +46,15 @@ namespace elle
 	{
 	case Socket::TypeDoor:
 	  {
-	    Door*	link = static_cast<Door*>(this);
+	    Door*	channel = static_cast<Door*>(this);
 
-	    return (link->Send(inputs, identifier));
+	    return (channel->Send(inputs, event));
 	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	link = static_cast<Gate*>(this);
+	    Gate*	channel = static_cast<Gate*>(this);
 
-	    return (link->Send(inputs, identifier));
+	    return (channel->Send(inputs, event));
 	  }
 	}
 
@@ -65,8 +65,8 @@ namespace elle
     /// this method sends a packet in a synchronous way.
     ///
     template <typename I>
-    Status		Link::Transmit(const I			inputs,
-				       const Identifier&	identifier)
+    Status		Channel::Transmit(const I		inputs,
+					  const Event&		event)
     {
       enter();
 
@@ -74,15 +74,15 @@ namespace elle
 	{
 	case Socket::TypeDoor:
 	  {
-	    Door*	link = static_cast<Door*>(this);
+	    Door*	channel = static_cast<Door*>(this);
 
-	    return (link->Transmit(inputs, identifier));
+	    return (channel->Transmit(inputs, event));
 	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	link = static_cast<Gate*>(this);
+	    Gate*	channel = static_cast<Gate*>(this);
 
-	    return (link->Transmit(inputs, identifier));
+	    return (channel->Transmit(inputs, event));
 	  }
 	}
 
@@ -95,8 +95,8 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		Link::Call(const I			inputs,
-				   O				outputs)
+    Status		Channel::Call(const I			inputs,
+				      O				outputs)
     {
       enter();
 
@@ -104,15 +104,15 @@ namespace elle
 	{
 	case Socket::TypeDoor:
 	  {
-	    Door*	link = static_cast<Door*>(this);
+	    Door*	channel = static_cast<Door*>(this);
 
-	    return (link->Call(inputs, outputs));
+	    return (channel->Call(inputs, outputs));
 	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	link = static_cast<Gate*>(this);
+	    Gate*	channel = static_cast<Gate*>(this);
 
-	    return (link->Call(inputs, outputs));
+	    return (channel->Call(inputs, outputs));
 	  }
 	}
 
@@ -123,8 +123,8 @@ namespace elle
     /// this method receives a packet by blocking.
     ///
     template <typename O>
-    Status		Link::Receive(const Identifier&		identifier,
-				      O				outputs)
+    Status		Channel::Receive(const Event&		event,
+					 O			outputs)
     {
       enter();
 
@@ -132,15 +132,15 @@ namespace elle
 	{
 	case Socket::TypeDoor:
 	  {
-	    Door*	link = static_cast<Door*>(this);
+	    Door*	channel = static_cast<Door*>(this);
 
-	    return (link->Receive(identifier, outputs));
+	    return (channel->Receive(event, outputs));
 	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	link = static_cast<Gate*>(this);
+	    Gate*	channel = static_cast<Gate*>(this);
 
-	    return (link->Receive(identifier, outputs));
+	    return (channel->Receive(event, outputs));
 	  }
 	}
 
@@ -151,7 +151,7 @@ namespace elle
     /// this method replies to the freshly received call.
     ///
     template <typename I>
-    Status		Link::Reply(const I			inputs)
+    Status		Channel::Reply(const I			inputs)
     {
       enter();
 
@@ -159,15 +159,15 @@ namespace elle
 	{
 	case Socket::TypeDoor:
 	  {
-	    Door*	link = static_cast<Door*>(this);
+	    Door*	channel = static_cast<Door*>(this);
 
-	    return (link->Reply(inputs));
+	    return (channel->Reply(inputs));
 	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	link = static_cast<Gate*>(this);
+	    Gate*	channel = static_cast<Gate*>(this);
 
-	    return (link->Reply(inputs));
+	    return (channel->Reply(inputs));
 	  }
 	}
 

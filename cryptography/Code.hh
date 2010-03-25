@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Code.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [sat mar 20 03:35:25 2010]
+// updated       julien quintard   [wed mar 24 22:17:47 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CODE_HH
@@ -19,8 +19,9 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
 #include <elle/archive/Archive.hh>
+
+#include <elle/misc/Status.hh>
 
 #include <elle/idiom/Open.hh>
 

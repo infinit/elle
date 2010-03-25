@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [sun mar 21 16:38:41 2010]
+// updated       julien quintard   [tue mar 23 21:07:11 2010]
 //
 
 //
@@ -56,14 +56,14 @@ namespace elle
     ///
     Status		Session::Create(Socket*			socket,
 					const Address&		address,
-					const Identifier&	identifier)
+					const Event&		event)
     {
       enter();
 
       // set the attributes.
       this->socket = socket;
       this->address = address;
-      this->identifier = identifier;
+      this->event = event;
 
       leave();
     }

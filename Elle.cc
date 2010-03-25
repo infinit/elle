@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.cc
 //
 // created       julien quintard   [wed mar  3 23:26:52 2010]
-// updated       julien quintard   [mon mar 15 18:10:34 2010]
+// updated       julien quintard   [tue mar 23 15:04:37 2010]
 //
 
 //
@@ -39,13 +39,17 @@ namespace elle
     if (Cryptography::Initialize() == StatusError)
       escape("unable to initialize the cryptographic module");
 
-    // initialize the network module.
-    if (Network::Initialize() == StatusError)
-      escape("unable to initialize the network module");
-
     // initialize the factory module.
     if (Factory::Initialize() == StatusError)
       escape("unable to initialize the factory module");
+
+    // initialize the concurrency module.
+    if (Concurrency::Initialize() == StatusError)
+      escape("unable to initialize the concurrency module");
+
+    // initialize the network module.
+    if (Network::Initialize() == StatusError)
+      escape("unable to initialize the network module");
 
     leave();
   }
@@ -57,21 +61,25 @@ namespace elle
   {
     enter();
 
-    // clean the system module.
-    if (System::Clean() == StatusError)
-      escape("unable to clean the system module");
+    // clean the network module.
+    if (Network::Clean() == StatusError)
+      escape("unable to clean the network module");
+
+    // clean the concurrency module.
+    if (Concurrency::Clean() == StatusError)
+      escape("unable to clean the concurrency module");
 
     // clean the factory module.
     if (Factory::Clean() == StatusError)
       escape("unable to clean the factory module");
 
-    // clean the network module.
-    if (Network::Clean() == StatusError)
-      escape("unable to clean the network module");
-
     // clean the crypto module.
     if (Cryptography::Clean() == StatusError)
       escape("unable to clean the cryptographic module");
+
+    // clean the system module.
+    if (System::Clean() == StatusError)
+      escape("unable to clean the system module");
 
     leave();
   }

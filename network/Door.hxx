@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [sun mar 21 21:41:50 2010]
+// updated       julien quintard   [tue mar 23 22:32:28 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -30,9 +30,9 @@ namespace elle
     ///
     template <typename I>
     Status		Door::Send(const I			inputs,
-				   const Identifier&		identifier)
+				   const Event&			event)
     {
-      return (this->Transmit(inputs, identifier));
+      return (this->Transmit(inputs, event));
     }
 
     ///
@@ -40,7 +40,7 @@ namespace elle
     ///
     template <typename I>
     Status		Door::Transmit(const I			inputs,
-				       const Identifier&	identifier)
+				       const Event&		event)
     {
       Packet		packet;
       Header		header;
@@ -57,7 +57,7 @@ namespace elle
 	escape("unable to serialize the inputs");
 
       // create the header.
-      if (header.Create(identifier, inputs.tag, data.size) == StatusError)
+      if (header.Create(event, inputs.tag, data.size) == StatusError)
 	escape("unable to create the header");
 
       // prepare the packet.
@@ -69,7 +69,8 @@ namespace elle
 	escape("unable to serialize the message");
 
       // XXX
-      printf("[XXX] Door::Transmitting(%qu)\n", identifier.value);
+      printf("[XXX] Door::Transmitting(tag[%u] identifier[%qu])\n",
+	     header.tag, header.event.identifier);
 
       // push the packet to the socket.
       if (this->socket->write((const char*)packet.contents,
@@ -90,20 +91,20 @@ namespace elle
     Status		Door::Call(const I			inputs,
 				   O				outputs)
     {
-      Identifier	identifier;
+      Event		event;
 
       enter();
 
-      // generate an identifier to link the request with the response.
-      if (identifier.Generate() == StatusError)
-	escape("unable to generate the identifier");
+      // generate an event to link the request with the response.
+      if (event.Generate() == StatusError)
+	escape("unable to generate the event");
 
       // transmit the inputs.
-      if (this->Transmit(inputs, identifier) == StatusError)
+      if (this->Transmit(inputs, event) == StatusError)
 	escape("unable to transmit the inputs");
 
       // wait for the reply.
-      if (this->Receive(identifier, outputs) == StatusError)
+      if (this->Receive(event, outputs) == StatusError)
 	escape("unable to transmit the inputs");
 
       leave();
@@ -113,14 +114,14 @@ namespace elle
     /// XXX
     ///
     template <typename O>
-    Status		Door::Receive(const Identifier&		identifier,
+    Status		Door::Receive(const Event&		event,
 				      O				outputs)
     {
       enter();
 
       // ask the network to block until the message with the specified
-      // identifier is received.
-      if (Network::Receive(identifier, outputs) == StatusError)
+      // event is received.
+      if (Network::Receive(event, outputs) == StatusError)
 	escape("unable to receive the specified message");
 
       leave();
@@ -134,9 +135,9 @@ namespace elle
     {
       enter();
 
-      // transmit a message as a response by using the identifier of
+      // transmit a message as a response by using the event of
       // the received message i.e the current session.
-      if (this->Transmit(inputs, session->identifier) == StatusError)
+      if (this->Transmit(inputs, session->event) == StatusError)
 	escape("unable to transmit the reply");
 
       leave();

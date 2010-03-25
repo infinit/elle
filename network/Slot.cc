@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [mon mar 22 21:06:54 2010]
+// updated       julien quintard   [thu mar 25 00:02:46 2010]
 //
 
 //
@@ -144,7 +144,7 @@ namespace elle
 
       // trigger the callback if it has been registered.
       if (this->callback != NULL)
-	if (this->callback->Trigger(text) == StatusError)
+	if (this->callback->Call(text) == StatusError)
 	  alert("an error occured in the callback");
 
       release();
@@ -165,6 +165,8 @@ namespace elle
     ///
     void		Slot::Fetch()
     {
+      /*
+      Entrance<Parcel*>	entrance(&Network::Dispatch);
       Raw		raw;
       Address		address;
       Natural32		offset;
@@ -246,14 +248,17 @@ namespace elle
 	// create the session.
 	if (parcel->session->Create(this,
 				    address,
-				    parcel->header->identifier) == StatusError)
+				    parcel->header->event) == StatusError)
 	  alert("unable to create the session");
 
 	// record this packet to the network manager.
 	//
 	// note that a this point, the network is responsible for the
 	// parcel and its memory.
-	if (Network::Dispatch(parcel) == StatusError)
+
+	printf("[XXX 0x%x] Slot::Fetch(0x%x)\n", Fiber::Current, parcel);
+
+	if (Fiber::Spawn(&entrance, parcel) == StatusError)
 	  {
 	    // stop tracking the parcel since it should have been deleted
 	    // in Dispatch().
@@ -273,6 +278,7 @@ namespace elle
       }
 
       release();
+      */
     }
 
   }

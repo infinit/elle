@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [mon mar 22 21:30:42 2010]
+// updated       julien quintard   [thu mar 25 01:04:30 2010]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <elle/concurrency/Timer.hh>
+#include <elle/concurrency/Fiber.hh>
 
 namespace elle
 {
@@ -30,7 +31,7 @@ namespace elle
     /// the default constructor.
     ///
     Timer::Timer():
-      callback(NULL)
+      entrance(NULL)
     {
     }
 
@@ -39,9 +40,9 @@ namespace elle
     ///
     Timer::~Timer()
     {
-      // release the callback.
-      if (this->callback != NULL)
-	delete this->callback;
+      // release the entrance.
+      if (this->entrance != NULL)
+	delete this->entrance;
     }
 
 //
@@ -49,16 +50,12 @@ namespace elle
 //
 
     ///
-    /// this method sets up the timer by recording the callback.
+    /// this method sets up the timer by recording the entrance.
     ///
     Status		Timer::Create(const Mode		mode,
-				      Callback&			callback)
+				      Entrance&			entrance)
     {
       enter();
-
-      // clone the given callback.
-      if (callback.Clone((Entity*&)this->callback) == StatusError)
-	escape("unable to clone the callback");
 
       // set the mode attribute.
       this->mode = mode;
@@ -66,6 +63,14 @@ namespace elle
       // set the timer mode.
       if (this->mode == Timer::ModeSingle)
 	this->timer.setSingleShot(true);
+
+      // clone the given entrance.
+      if (entrance.Clone((Entity*&)this->entrance) == StatusError)
+	escape("unable to clone the entrance");
+
+      // generate an event identifier related to this timer.
+      if (this->event.Generate() == StatusError)
+	escape("unable to generate the event");
 
       // connect the signal.
       if (this->connect(&this->timer, SIGNAL(timeout()),
@@ -123,18 +128,17 @@ namespace elle
     ///
     void		Timer::Timeout()
     {
-      // XXX FRAME
-      frame(Frame::Event);
+      enter();
 
-      printf("Timer::Timeout()\n");
+      // awaken the fibers waiting for this event.
+      if (Fiber::Awaken(this->event) == StatusError)
+	alert("unable to awaken the fibers");
 
-      // trigger the callback.
-      this->callback->Trigger();
+      // trigger the entrance in a fresh fiber.
+      if (Fiber::Spawn(this->entrance) == StatusError)
+	alert("an error occured while spawning the fiber");
 
-      printf("/Timer::Timeout()\n");
-
-      // XXX FRAME
-      frame(&Frame::Application);
+      release();
     }
 
   }

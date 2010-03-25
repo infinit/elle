@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Identifier.cc
+// file          /home/mycure/infinit/elle/concurrency/Event.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [sat mar 20 13:14:56 2010]
+// updated       julien quintard   [tue mar 23 22:31:05 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/concurrency/Identifier.hh>
+#include <elle/concurrency/Event.hh>
 
 namespace elle
 {
@@ -27,9 +27,9 @@ namespace elle
 //
 
     ///
-    /// this variable defines an unused hence null Identifier.
+    /// this variable defines an unused hence null Event.
     ///
-    const Identifier			Identifier::Null;
+    const Event				Event::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -38,8 +38,8 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Identifier::Identifier():
-      value(0)
+    Event::Event():
+      identifier(0)
     {
     }
 
@@ -48,20 +48,20 @@ namespace elle
 //
 
     ///
-    /// this method generates a new unique identifier.
+    /// this method generates a new unique event.
     ///
-    Status		Identifier::Generate()
+    Status		Event::Generate()
     {
       enter();
 
-      // try until the generated identifier is different from Null.
+      // try until the generated event is different from Null.
       do
 	{
 	  // generate random bytes.
-	  if (RAND_bytes((unsigned char*)&this->value,
-			 sizeof(this->value)) == 0)
+	  if (RAND_bytes((unsigned char*)&this->identifier,
+			 sizeof(this->identifier)) == 0)
 	    escape(::ERR_error_string(ERR_get_error(), NULL));
-	} while (*this == Identifier::Null);
+	} while (*this == Event::Null);
 
       leave();
     }
@@ -71,9 +71,9 @@ namespace elle
 //
 
     ///
-    /// this method check if two identifiers match.
+    /// this method check if two events match.
     ///
-    Boolean		Identifier::operator==(const Identifier& element) const
+    Boolean		Event::operator==(const Event&		element) const
     {
       enter();
 
@@ -81,8 +81,8 @@ namespace elle
       if (this == &element)
 	true();
 
-      // compare the value.
-      if (this->value != element.value)
+      // compare the identifier.
+      if (this->identifier != element.identifier)
 	false();
 
       true();
@@ -91,36 +91,36 @@ namespace elle
     ///
     /// this macro-function call generates the entity.
     ///
-    embed(Entity, Identifier);
+    embed(Entity, Event);
 
 //
 // ---------- archivable ------------------------------------------------------
 //
 
     ///
-    /// this method serializes the identifier.
+    /// this method serializes the event.
     ///
-    Status		Identifier::Serialize(Archive&		archive) const
+    Status		Event::Serialize(Archive&		archive) const
     {
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize(this->value) == StatusError)
-	escape("unable to serialize the identifier attributes");
+      if (archive.Serialize(this->identifier) == StatusError)
+	escape("unable to serialize the event attributes");
 
       leave();
     };
 
     ///
-    /// this method extracts the identifier.
+    /// this method extracts the event.
     ///
-    Status		Identifier::Extract(Archive&		archive)
+    Status		Event::Extract(Archive&			archive)
     {
       enter();
 
       // extract the attributes.
-      if (archive.Extract(this->value) == StatusError)
-	escape("unable to extract the identifier attributes");
+      if (archive.Extract(this->identifier) == StatusError)
+	escape("unable to extract the event attributes");
 
       leave();
     };
@@ -130,15 +130,15 @@ namespace elle
 //
 
     ///
-    /// this method dumps an identifier.
+    /// this method dumps an event.
     ///
-    Status		Identifier::Dump(const Natural32	margin) const
+    Status		Event::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Identifier] " << this->value << std::endl;
+      std::cout << alignment << "[Event] " << this->identifier << std::endl;
 
       leave();
     }
@@ -148,12 +148,12 @@ namespace elle
 //
 
     ///
-    /// this operator compares two identifiers.
+    /// this operator compares two events.
     ///
-    Boolean		operator<(const Identifier&		lhs,
-				  const Identifier&		rhs)
+    Boolean		operator<(const Event&			lhs,
+				  const Event&			rhs)
     {
-      return (lhs.value < rhs.value);
+      return (lhs.identifier < rhs.identifier);
     }
 
   }

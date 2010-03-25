@@ -8,18 +8,18 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [fri mar 19 16:55:05 2010]
+// updated       julien quintard   [wed mar 24 13:14:04 2010]
 //
 
 ///
-/// this very special include is required as Link needs to know Door/Gate
-/// while Door/Gate inherit Link. including Link.hh normally makes moc,
+/// this very special include is required as Channel needs to know Door/Gate
+/// while Door/Gate inherit Channel. including Channel.hh normally makes moc,
 /// the QT meta object compiler, unable to detect the QObject classes.
 ///
-/// therefore, Link.hh is not included when moc processes a header file.
+/// therefore, Channel.hh is not included when moc processes a header file.
 ///
 #ifndef Q_MOC_RUN
-# include <elle/network/Link.hh>
+# include <elle/network/Channel.hh>
 #endif
 
 #ifndef ELLE_NETWORK_DOOR_HH
@@ -33,7 +33,7 @@
 
 #include <elle/network/Network.hh>
 #include <elle/network/Packet.hh>
-#include <elle/network/Link.hh>
+#include <elle/network/Channel.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -51,14 +51,14 @@ namespace elle
 
     ///
     /// this class represents a socket locally connected to another door
-    /// through a bridge.
+    /// through a lane.
     ///
     /// such doors are often implemented on the system through pipes
     /// or local domain sockets.
     ///
     class Door:
       public ::QObject,
-      public Link
+      public Channel
     {
       Q_OBJECT;
 
@@ -86,16 +86,16 @@ namespace elle
 
       template <typename I>
       Status		Send(const I,
-			     const Identifier& = Identifier::Null);
+			     const Event& = Event::Null);
       template <typename I>
       Status		Transmit(const I,
-				 const Identifier& = Identifier::Null);
+				 const Event& = Event::Null);
       template <typename I,
 		typename O>
       Status		Call(const I,
 			     O);
       template <typename O>
-      Status		Receive(const Identifier&,
+      Status		Receive(const Event&,
 				O);
       template <typename I>
       Status		Reply(const I);

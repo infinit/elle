@@ -2,7 +2,7 @@ PROJECT(Elle CXX)
 
 QT4_WRAP_CPP(elle_MOCS
   network/Slot.hh
-  network/Bridge.hh
+  network/Lane.hh
   network/Door.hh
 
   concurrency/Timer.hh
@@ -16,9 +16,11 @@ ADD_LIBRARY(elle
   io/Dumpable.cc
 
   misc/Region.cc
-  misc/Callback.cc
   misc/Maid.cc
   misc/Report.cc
+  misc/Routine.cc
+  misc/Entrance.cc
+  misc/Callback.cc
 
   archive/Archive.cc
   archive/Archivable.cc
@@ -37,7 +39,6 @@ ADD_LIBRARY(elle
   factory/Factory.cc
 
   system/System.cc
-  system/Frame.cc
 
   network/Network.cc
   network/Host.cc
@@ -48,16 +49,19 @@ ADD_LIBRARY(elle
   network/Session.cc
   network/Parcel.cc
   network/Door.cc
-  network/Bridge.cc
-  network/Link.cc
+  network/Lane.cc
+  network/Channel.cc
 
+  concurrency/Concurrency.cc
   concurrency/Accord.cc
   concurrency/Mutex.cc
-  concurrency/Identifier.cc
+  concurrency/Event.cc
   concurrency/Semaphore.cc
   concurrency/Thread.cc
   concurrency/Application.cc
   concurrency/Timer.cc
+  concurrency/Frame.cc
+  concurrency/Fiber.cc
 
   Elle.cc
 
@@ -72,5 +76,5 @@ TARGET_LINK_LIBRARIES(XXX elle ssl crypto dl
 			  ${QT_QTNETWORK_LIBRARIES}
 			  ${QT_QTCORE_LIBRARIES})
 
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+#ADD_SUBDIRECTORY(test)
+#ADD_SUBDIRECTORY(benchmark)
