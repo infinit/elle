@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [sat mar 20 03:36:31 2010]
+// updated       julien quintard   [wed mar 24 22:18:28 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
@@ -22,9 +22,9 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Misc.hh>
-
 #include <elle/archive/Archive.hh>
+
+#include <elle/misc/Status.hh>
 
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/PrivateKey.hh>

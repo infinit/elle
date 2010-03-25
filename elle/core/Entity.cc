@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.cc
 //
 // created       julien quintard   [sat mar 20 00:46:21 2010]
-// updated       julien quintard   [sat mar 20 15:29:14 2010]
+// updated       julien quintard   [thu mar 25 00:54:12 2010]
 //
 
 //
@@ -44,17 +44,6 @@ namespace elle
     /// the Embed(Entity, T) macro function.
     ///
     Status		Entity::Imprint(Natural32&) const
-    {
-      enter();
-
-      escape("this method should never have been called");
-    }
-
-    ///
-    /// this method builds an object of the same type as
-    /// the current object.
-    ///
-    Status		Entity::Construct(Entity*&) const
     {
       enter();
 

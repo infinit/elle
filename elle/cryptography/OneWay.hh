@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/OneWay.hh
 //
 // created       julien quintard   [mon oct 29 13:19:49 2007]
-// updated       julien quintard   [wed mar 10 20:29:39 2010]
+// updated       julien quintard   [wed mar 24 22:19:00 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HH
@@ -20,7 +20,7 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Misc.hh>
+#include <elle/misc/Status.hh>
 
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Digest.hh>

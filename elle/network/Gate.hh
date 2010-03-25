@@ -1,7 +1,7 @@
 #ifndef ELLE_NETWORK_GATE_HH
 #define ELLE_NETWORK_GATE_HH
 
-// XXX equivalent de Door mais pour Channel(TCP)
+// XXX equivalent de Door mais pour Bridge(TCP)
 
 namespace elle
 {
@@ -9,7 +9,7 @@ namespace elle
   {
 
     class Gate:
-      public Link
+      public Channel
     {
     };
 

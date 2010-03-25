@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [sun mar 21 16:39:44 2010]
+// updated       julien quintard   [wed mar 24 14:05:59 2010]
 //
 
 //
@@ -47,9 +47,11 @@ namespace elle
     {
       enter();
 
-      // initialize the bridge.
-      if (Bridge::Initialize() == StatusError)
-	escape("unable to initialize the bridge");
+      // initialize the lane.
+      if (Lane::Initialize() == StatusError)
+	escape("unable to initialize the lane");
+
+      // XXX bridge
 
       leave();
     }
@@ -61,9 +63,11 @@ namespace elle
     {
       enter();
 
-      // clean the bridge.
-      if (Bridge::Clean() == StatusError)
-	escape("unable to clean the bridge");
+      // clean the lane
+      if (Lane::Clean() == StatusError)
+	escape("unable to clean the lane");
+
+      // XXX bridge
 
       /// XXX \todo clean the callbacks and receivers.
 
@@ -86,16 +90,16 @@ namespace elle
       // retrieve the argument and takes over the tracking.
       parcel = p;
 
-      printf("[XXX] Network::Dispatch(%u[%qu])\n",
-	     parcel->header->tag, parcel->header->identifier.value);
+      printf("[XXX] Network::Dispatch(tag[%u] identifier[%qu])\n",
+	     parcel->header->tag, parcel->header->event.identifier);
 
       //
       // first, try to  wake up a waiting slot.
       //
       {
 	// try to wake up a slot.
-	if (Application::Awake(parcel->header->identifier,
-			       parcel) == StatusTrue)
+	if (Fiber::Awaken(parcel->header->event,
+			  parcel) == StatusTrue)
 	  {
 	    // since the awakening has been successful, stop tracking parcel.
 	    waive(parcel);

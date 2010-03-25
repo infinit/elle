@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [wed mar  3 20:33:26 2010]
+// updated       julien quintard   [wed mar 24 14:24:01 2010]
 //
 
 #ifndef ELLE_NETWORK_PARAMETERS_HXX

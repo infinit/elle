@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [sun mar 21 15:00:49 2010]
+// updated       julien quintard   [thu mar 25 00:26:06 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HXX
@@ -31,25 +31,22 @@ namespace elle
 //
 
     ///
-    /// constructor that should never been used.
-    ///
-    template <typename... T>
-    Function<T...>::Function():
-      Callback::Callback(Callback::TypeFunction)
-    {
-      enter();
-
-      alert("this method should never have been called");
-    }
-
-    ///
     /// the default constructor.
     ///
     template <typename... T>
-    Function<T...>::Function(Function::Handler			handler):
-      Callback::Callback(Callback::TypeFunction),
+    Function<T...>::Function(Handler				handler):
+      Routine::Routine(Routine::TypeFunction),
 
       handler(handler)
+    {
+    }
+
+    ///
+    /// the copy constructor.
+    ///
+    template <typename... T>
+    Function<T...>::Function(const Function<T...>&		function):
+      handler(function.handler)
     {
     }
 
@@ -58,13 +55,33 @@ namespace elle
 //
 
     ///
-    /// this method actually calls the handler.
+    /// this method triggers the handler by considering arguments as pointers:
+    /// especially required by entrances.
     ///
     template <typename... T>
-    Status		Function<T...>::Call(T&...		parameters)
+    Status		Function<T...>::Trigger(T*...		arguments)
     {
-      return (this->handler(parameters...));
+      return (this->handler(arguments...));
     }
+
+    ///
+    /// this method calls the handler by considering arguments as references:
+    /// especially required by callbacks.
+    ///
+    template <typename... T>
+    Status		Function<T...>::Call(T&...		arguments)
+    {
+      return (this->handler(arguments...));
+    }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Function<T...>, template <typename... T>);
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -93,15 +110,6 @@ namespace elle
 
       leave();
     }
-
-//
-// ---------- entity ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the entity.
-    ///
-    embed(Entity, Function<T...>, template <typename... T>);
 
   }
 }

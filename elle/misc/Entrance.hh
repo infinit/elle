@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Callback.hh
+// file          /home/mycure/infinit/elle/misc/Entrance.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [thu mar 25 01:38:45 2010]
+// updated       julien quintard   [thu mar 25 00:28:32 2010]
 //
 
-#ifndef ELLE_MISC_CALLBACK_HH
-#define ELLE_MISC_CALLBACK_HH
+#ifndef ELLE_MISC_ENTRANCE_HH
+#define ELLE_MISC_ENTRANCE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -31,9 +31,9 @@ namespace elle
 //
 
     ///
-    /// this class represents an callback i.e a pointer-based routine.
+    /// this class represents an entrance i.e a pointer-based routine.
     ///
-    class Callback:
+    class Entrance:
       public Entity,
       public Dumpable
     {
@@ -41,23 +41,23 @@ namespace elle
       //
       // constructors & destructors
       //
-      Callback();
-      Callback(const Routine&);
-      Callback(const Callback&);
-      ~Callback();
+      Entrance();
+      Entrance(const Routine&);
+      Entrance(const Entrance&);
+      ~Entrance();
 
       //
       // methods
       //
       template <typename... T>
-      Status		Call(T&...);
+      Status		Trigger(T*...);
 
       //
       // interfaces
       //
 
       // entity
-      declare(Entity, Callback);
+      declare(Entity, Entrance);
       // XXX
 
       // dumpable
@@ -76,6 +76,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Callback.hxx>
+#include <elle/misc/Entrance.hxx>
 
 #endif

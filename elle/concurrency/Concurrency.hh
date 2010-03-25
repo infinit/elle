@@ -8,19 +8,44 @@
 // file          /home/mycure/infinit/elle/concurrency/Concurrency.hh
 //
 // created       julien quintard   [sun mar  7 17:14:02 2010]
-// updated       julien quintard   [wed mar 17 11:40:33 2010]
+// updated       julien quintard   [wed mar 24 22:21:29 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CONCURRENCY_HH
 #define ELLE_CONCURRENCY_CONCURRENCY_HH
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/misc/Status.hh>
+
 namespace elle
 {
+  using namespace misc;
+
   ///
   /// this namespace contains functionalities for concurrency purposes.
   ///
   namespace concurrency
   {
+
+//
+// ---------- classes ---------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Concurrency
+    {
+    public:
+      //
+      // static methods
+      //
+      static Status	Initialize();
+      static Status	Clean();
+    };
 
   }
 }
@@ -37,5 +62,7 @@ namespace elle
 #include <elle/concurrency/Semaphore.hh>
 #include <elle/concurrency/Thread.hh>
 #include <elle/concurrency/Timer.hh>
+#include <elle/concurrency/Fiber.hh>
+#include <elle/concurrency/Event.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [sun mar 21 16:38:18 2010]
+// updated       julien quintard   [tue mar 23 21:07:18 2010]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH
@@ -63,7 +63,7 @@ namespace elle
       //
       Status		Create(Socket*,
 			       const Address&,
-			       const Identifier&);
+			       const Event&);
 
       //
       // interfaces
@@ -77,7 +77,7 @@ namespace elle
       //
       Socket*		socket;
       Address		address;
-      Identifier	identifier;
+      Event		event;
     };
 
 //

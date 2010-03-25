@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.hh
 //
 // created       julien quintard   [mon feb 22 23:48:40 2010]
-// updated       julien quintard   [mon mar 15 22:58:03 2010]
+// updated       julien quintard   [tue mar 23 22:30:13 2010]
 //
 
 #ifndef ELLE_NETWORK_HEADER_HH
@@ -52,7 +52,7 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Identifier&,
+      Status		Create(const Event&,
 			       const Tag,
 			       const Natural32);
 
@@ -67,7 +67,7 @@ namespace elle
       //
       // attributes
       //
-      Identifier	identifier;
+      Event		event;
       Tag		tag;
       Natural32		size;
     };

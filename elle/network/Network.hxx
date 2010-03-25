@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [sun mar 21 16:39:54 2010]
+// updated       julien quintard   [thu mar 25 01:24:33 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -52,7 +52,7 @@ namespace elle
 
       // clone the callback to make sure the network system holds a long-living
       // object.
-      if (callback.Clone((Entity*&)clone) == StatusError)
+      if (callback.Clone((Entity*)clone) == StatusError)
 	escape("unable to clone the callback");
 
       // create a new selectionoid.
@@ -84,15 +84,15 @@ namespace elle
     /// XXX
     ///
     template <typename O>
-    Status		Network::Receive(const Identifier&	identifier,
+    Status		Network::Receive(const Event&		event,
 					 O&			outputs)
     {
       Parcel*		parcel;
 
       enter(instance(parcel));
 
-      // request the application to wait until the given event is received.
-      if (Application::Wait(identifier, parcel) == StatusError)
+      // block the current fiber until the given event is received.
+      if (Fiber::Wait(event, parcel) == StatusError)
 	escape("an error occured while waiting for a specific event");
 
       // assign the new session.
@@ -149,7 +149,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger() == StatusError)
+	if (this->callback->Call() == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -203,7 +203,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1) == StatusError)
+	if (this->callback->Call(o1) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -258,7 +258,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2) == StatusError)
+	if (this->callback->Call(o1, o2) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -314,7 +314,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3) == StatusError)
+	if (this->callback->Call(o1, o2, o3) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -371,7 +371,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4) == StatusError)
+	if (this->callback->Call(o1, o2, o3, o4) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -429,7 +429,7 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5) == StatusError)
+	if (this->callback->Call(o1, o2, o3, o4, o5) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -489,8 +489,8 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
-				    o6) == StatusError)
+	if (this->callback->Call(o1, o2, o3, o4, o5,
+				 o6) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -551,8 +551,8 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
-				    o6, o7) == StatusError)
+	if (this->callback->Call(o1, o2, o3, o4, o5,
+				 o6, o7) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -614,8 +614,8 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
-				    o6, o7, o8) == StatusError)
+	if (this->callback->Call(o1, o2, o3, o4, o5,
+				 o6, o7, o8) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();
@@ -678,8 +678,8 @@ namespace elle
 	  escape("unable to unpack the data");
 
 	// trigger the callback.
-	if (this->callback->Trigger(o1, o2, o3, o4, o5,
-				    o6, o7, o8, o9) == StatusError)
+	if (this->callback->Call(o1, o2, o3, o4, o5,
+				 o6, o7, o8, o9) == StatusError)
 	  escape("unable to complete the callback");
 
 	leave();

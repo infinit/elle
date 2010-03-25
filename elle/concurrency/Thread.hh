@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Thread.hh
 //
 // created       julien quintard   [tue mar  9 18:42:07 2010]
-// updated       julien quintard   [tue mar 16 00:00:48 2010]
+// updated       julien quintard   [wed mar 24 22:23:33 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_THREAD_HH
@@ -19,7 +19,8 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+
+#include <elle/misc/Status.hh>
 
 #include <elle/concurrency/Application.hh>
 

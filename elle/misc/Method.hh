@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [sat mar 20 03:06:01 2010]
+// updated       julien quintard   [thu mar 25 00:32:37 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HH
@@ -23,7 +23,7 @@
 #include <elle/io/Dumpable.hh>
 
 #include <elle/misc/Status.hh>
-#include <elle/misc/Callback.hh>
+#include <elle/misc/Routine.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -33,11 +33,11 @@ namespace elle
   {
 
     ///
-    /// this class represents a method callback.
+    /// this class represents a method.
     ///
     template <typename... T>
     class Method:
-      public Callback
+      public Routine
     {
     public:
       //
@@ -45,19 +45,27 @@ namespace elle
       //
 
       ///
-      /// XXX
+      /// the Shell and Wrap classes are required so that the Method
+      /// class can be retrieved from T..., meaning without C which is
+      /// only used at the Method construction time.
+      ///
+      /// this class is a base for inheritance.
       ///
       class Shell:
 	public Dumpable
       {
       public:
-	virtual Status	Call(T&...) = 0;
+	//
+	// methods
+	//
+	virtual Status Trigger(T*...) = 0;
+	virtual Status Call(T&...) = 0;
       };
 
       ///
-      /// XXX
+      /// this class is C-specific.
       ///
-      template <typename U>
+      template <typename C>
       class Wrap:
 	public Shell
       {
@@ -65,22 +73,28 @@ namespace elle
 	//
 	// types
 	//
-	typedef Status		(U::*Handler)(T&...);
+      typedef Status		(C::*Handler)(T...);
 
 	//
 	// constructors & destructors
 	//
-	Wrap(U*,
+	Wrap(C*,
 	     Handler);
+	Wrap(const Wrap<C>&);
 
 	//
 	// methods
 	//
+	Status		Trigger(T*...);
 	Status		Call(T&...);
 
 	//
 	// interfaces
 	//
+
+	// entity
+	declare(Entity, Wrap);
+	// XXX
 
 	// dumpable
 	Status		Dump(const Natural32 = 0) const;
@@ -88,21 +102,21 @@ namespace elle
 	//
 	// attributes
 	//
-	U*		object;
+	C*		object;
 	Handler		handler;
       };
 
       //
-      // constructors & destructors
+      // constructors & destructors.
       //
-      Method();
       template <typename X>
       Method(X*,
-	     Status (X::*)(T&...));
+	     Status (X::*)(T...));
 
       //
       // methods
       //
+      Status		Trigger(T*...);
       Status		Call(T&...);
 
       //

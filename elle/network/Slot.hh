@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [fri mar 19 16:55:02 2010]
+// updated       julien quintard   [tue mar 23 21:08:31 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -70,11 +70,11 @@ namespace elle
       template <typename I>
       Status		Send(const Address&,
 			     const I&,
-			     const Identifier& = Identifier::Null);
+			     const Event& = Event::Null);
       template <typename I>
       Status		Transmit(const Address&,
 				 const I&,
-				 const Identifier& = Identifier::Null);
+				 const Event& = Event::Null);
 
       //
       // interfaces

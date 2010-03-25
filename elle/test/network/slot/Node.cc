@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [sun mar 21 16:42:45 2010]
+// updated       julien quintard   [wed mar 24 15:04:07 2010]
 //
 
 //
@@ -51,7 +51,7 @@ namespace elle
       Method<String, Table>	handle(this, &Node::Handle);
       Host			local;
       Address			remote;
-      
+
       enter();
 
       // create an host.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [sat mar 20 15:54:56 2010]
+// updated       julien quintard   [thu mar 25 01:44:05 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -20,7 +20,10 @@
 
 #include <elle/core/Core.hh>
 #include <elle/io/IO.hh>
-#include <elle/misc/Misc.hh>
+#include <elle/concurrency/Concurrency.hh>
+
+#include <elle/misc/Status.hh>
+#include <elle/misc/Callback.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -52,10 +55,10 @@ namespace elle
 	{
 	  TypeUnknown,
 
-	  TypeLink = 0x1,
+	  TypeChannel = 0x1,
 
-	  TypeDoor = TypeLink | 0x0,
-	  TypeGate = TypeLink | 0x2,
+	  TypeDoor = TypeChannel | 0x0,
+	  TypeGate = TypeChannel | 0x2,
 
 	  TypeSlot = 0x4
 	};

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [sat mar 20 03:19:10 2010]
+// updated       julien quintard   [thu mar 25 00:53:50 2010]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -44,8 +44,6 @@ namespace elle
 									\
   Status		Imprint(Natural32&) const;			\
 									\
-  Status		Construct(Entity*&) const;			\
-									\
   Status		Clone(Entity*&) const;
 
 ///
@@ -63,7 +61,7 @@ namespace elle
     if (this == &element)						\
       return (*this);							\
 									\
-    if (this->Recycle<_type_>(&element) == StatusError)			\
+    if (this->Recycle(&element) == StatusError)				\
       yield("unable to recycle the object", *this);			\
 									\
     return (*this);							\
@@ -81,16 +79,6 @@ namespace elle
     enter();								\
 									\
     size = sizeof(_type_);						\
-									\
-    leave();								\
-  }									\
-									\
-  _template_								\
-  Status	_type_::Construct(Entity*&		element) const	\
-  {									\
-    enter();								\
-									\
-    element = new _type_;						\
 									\
     leave();								\
   }									\
@@ -178,7 +166,6 @@ namespace elle
       }
 
       virtual Status	Imprint(Natural32&) const;
-      virtual Status	Construct(Entity*&) const;
       virtual Status	Clone(Entity*&) const;
 
       //

@@ -5,20 +5,20 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Callback.cc
+// file          /home/mycure/infinit/elle/misc/Entrance.cc
 //
 // created       julien quintard   [wed mar 24 15:51:36 2010]
-// updated       julien quintard   [thu mar 25 00:54:57 2010]
+// updated       julien quintard   [thu mar 25 00:54:37 2010]
 //
 
-#ifndef ELLE_MISC_CALLBACK_HXX
-#define ELLE_MISC_CALLBACK_HXX
+#ifndef ELLE_MISC_ENTRANCE_HXX
+#define ELLE_MISC_ENTRANCE_HXX
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Callback.hh>
+#include <elle/misc/Entrance.hh>
 
 ///
 /// these includes are placed here in order to prevent pre-processing
@@ -39,7 +39,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Callback::Callback():
+    Entrance::Entrance():
       routine(NULL)
     {
     }
@@ -47,7 +47,7 @@ namespace elle
     ///
     /// routine constructor.
     ///
-    Callback::Callback(const Routine&			routine):
+    Entrance::Entrance(const Routine&			routine):
       routine(NULL)
     {
       enter();
@@ -62,7 +62,7 @@ namespace elle
     ///
     /// copy constructor.
     ///
-    Callback::Callback(const Callback&			callback)
+    Entrance::Entrance(const Entrance&			entrance)
     {
       enter();
 
@@ -71,10 +71,10 @@ namespace elle
 	delete this->routine;
 
       // allocate and copy the routine, if necessary.
-      if (callback.routine != NULL)
+      if (entrance.routine != NULL)
 	{
 	  // clone the routine.
-	  if (this->routine->Clone((Entity*&)this->routine) == StatusError)
+	  if (entrance.routine->Clone((Entity*&)this->routine) == StatusError)
 	    alert("unable to clone the routine");
 	}
       else
@@ -89,7 +89,7 @@ namespace elle
     ///
     /// destructor.
     ///
-    Callback::~Callback()
+    Entrance::~Entrance()
     {
       // release the routine.
       if (this->routine != NULL)
@@ -103,22 +103,22 @@ namespace elle
     ///
     /// this macro-function call generates the entity.
     ///
-    embed(Entity, Callback);
+    embed(Entity, Entrance);
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// this method dumps the callback.
+    /// this method dumps the entrance.
     ///
-    Status		Callback::Dump(const Natural32		margin) const
+    Status		Entrance::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Callback]" << std::endl;
+      std::cout << alignment << "[Entrance]" << std::endl;
 
       // dump the routine.
       if (this->routine != NULL)

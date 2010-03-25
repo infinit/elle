@@ -5,23 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Identifier.hh
+// file          /home/mycure/infinit/elle/concurrency/Event.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [sat mar 20 03:56:59 2010]
+// updated       julien quintard   [wed mar 24 22:22:20 2010]
 //
 
-#ifndef ELLE_CONCURRENCY_IDENTIFIER_HH
-#define ELLE_CONCURRENCY_IDENTIFIER_HH
+#ifndef ELLE_CONCURRENCY_EVENT_HH
+#define ELLE_CONCURRENCY_EVENT_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
 #include <elle/archive/Archive.hh>
 #include <elle/io/IO.hh>
+
+#include <elle/misc/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rand.h>
@@ -43,10 +44,10 @@ namespace elle
 //
 
     ///
-    /// identifiers are used to uniquely identify events, network packets and
+    /// events are used to uniquely identify events, network packets and
     /// so on.
     ///
-    class Identifier:
+    class Event:
       public Entity,
       public Dumpable, public Archivable
     {
@@ -54,12 +55,12 @@ namespace elle
       //
       // constants
       //
-      static const Identifier	Null;
+      static const Event	Null;
 
       //
       // constructors & destructors
       //
-      Identifier();
+      Event();
 
       //
       // methods
@@ -71,8 +72,8 @@ namespace elle
       //
 
       // entity
-      declare(Entity, Identifier);
-      Boolean		operator==(const Identifier&) const;
+      declare(Entity, Event);
+      Boolean		operator==(const Event&) const;
 
       // archivable
       Status		Serialize(Archive&) const;
@@ -84,15 +85,15 @@ namespace elle
       //
       // attributes
       //
-      Natural64		value;
+      Natural64		identifier;
     };
 
 //
 // ---------- operators -------------------------------------------------------
 //
 
-    Boolean		operator<(const Identifier&,
-				  const Identifier&);
+    Boolean		operator<(const Event&,
+				  const Event&);
 
   }
 }

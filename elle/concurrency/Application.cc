@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Application.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [mon mar 22 20:57:43 2010]
+// updated       julien quintard   [wed mar 24 13:34:55 2010]
 //
 
 //
@@ -30,11 +30,6 @@ namespace elle
     /// this variable is used for controlling the concurrent accesses.
     ///
     Accord				Application::Control;
-
-    ///
-    /// this variable holds the slots waiting for a specific event.
-    ///
-    Application::Container		Application::Events;
 
     ///
     /// this variable holds the QT application.
@@ -96,25 +91,25 @@ namespace elle
     {
       enter();
 
-      // check the status and display the report if necessary.
-      if (status != StatusOk)
-	show();
-
-      /// XXX \todo this is what should be done but since blocking frames
-      /// are not supported yet, the application quit manually instead of
-      /// setting the flag.
-      /*
       // lock in writing.
       Application::Control.Lock(ModeWrite);
       {
-	// set the exit flag.
-	Application::Flag = Application::FlagExit;
+	// check the status and display the report if necessary.
+	if (status == StatusError)
+	  {
+	    // display the report.
+	    show();
+
+	    // exit.
+	    Application::Core->exit(EXIT_FAILURE);
+	  }
+	else
+	  {
+	    // exit.
+	    Application::Core->exit(EXIT_SUCCESS);
+	  }
       }
       Application::Control.Unlock();
-      */
-
-      // XXX
-      ::exit(0);
 
       leave();
     }
@@ -126,8 +121,6 @@ namespace elle
     {
       enter();
 
-      printf("[XXX] Application::Process()\n");
-
       // check the application.
       if (Application::Core == NULL)
 	escape("unable to process events since the application has not "
@@ -136,24 +129,8 @@ namespace elle
       while (true)
 	{
 	  // XXX
-	  //printf("Processing...\n");
-	  //::sleep(1);
+	  ::sleep(1);
 	  // XXX
-
-	  // lock in reading.
-	  Application::Control.Lock(ModeRead);
-	  {
-	    // check if we should quit or return.
-	    if ((Application::Flag == Application::FlagExit) ||
-		((Application::Events.empty() == false) &&
-		 (Application::Events.front()->second != NULL)))
-	      {
-		Application::Control.Unlock();
-
-		break;
-	      }
-	  }
-	  Application::Control.Unlock();
 
 	  // process events.
 	  Application::Core->processEvents();
