@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sun mar 21 22:47:09 2010]
+// updated       julien quintard   [thu mar 25 22:54:12 2010]
 //
 
 //
@@ -43,12 +43,19 @@ namespace agent
   ///
   /// the door to Etoile.
   ///
-  Door			Agent::Link;
+  Door			Agent::Channel;
 
   ///
   /// the phrase used to connect applications to Etoile.
   ///
   String		Agent::Phrase;
+
+  ///
+  /// this timer is simply used to trigger the Start() callback as
+  /// soon as the agent is initialized and ready to authentify to
+  /// Etoile.
+  ///
+  Timer			Agent::Event;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -125,9 +132,9 @@ namespace agent
     // register the inward messages.
     //
     {
-      Function<const Report>	error(&Agent::Error);
-      Function<const Code>	decrypt(&Agent::Decrypt);
-      Function<const Plain>	sign(&Agent::Sign);
+      Callback<const Report>	error(&Agent::Error);
+      Callback<const Code>	decrypt(&Agent::Decrypt);
+      Callback<const Plain>	sign(&Agent::Sign);
 
       // register the error message.
       if (Network::Register<TagError>(error) == StatusError)
@@ -143,54 +150,21 @@ namespace agent
     }
 
     //
-    // connect the agent to etoile.
+    // set the timer so that it triggers the first event as the
+    // system requires to be processing events in order to perform
+    // normally i.e wait for resources etc.
     //
     {
-      Function<const String>	error(&Agent::Error);
+      Callback<>		start(&Agent::Start);
 
-      // create the door.
-      if (Agent::Link.Create() == StatusError)
-	escape("unable to create the door");
+      // create the timer.
+      if (Agent::Event.Create(Timer::ModeSingle, start) == StatusError)
+	escape("unable to create the event timer");
 
-      // monitor the socket.
-      if (Agent::Link.Monitor(error) == StatusError)
-	escape("unable to create the door");
-
-      // connect the door.
-      if (Agent::Link.Connect(Agent::Line) == StatusError)
-	escape("unable to connect to Etoile");
+      // start the timer so that it triggers immediately.
+      if (Agent::Event.Start() == StatusError)
+	escape("unable to start the timer");
     }
-
-    //
-    // authenticate.
-    //
-    {
-      Code			code;
-      Digest			digest;
-      // identify to etoile by passing the user's public key for challenging
-      // along with the phrase.
-      if (Agent::Link.Call(
-	    Inputs< ::etoile::TagWallIdentify >(Agent::Pair.K),
-	    Outputs< ::etoile::TagWallChallenge >(code)) == StatusError)
-	escape("unable to identify to etoile");
-
-      // decrypt the code with the private key.
-      if (Agent::Pair.k.Decrypt(code, Agent::Phrase) == StatusError)
-	escape("unable to decrypt the code");
-
-      // hash the phrase.
-      if (OneWay::Hash(Agent::Phrase, digest) == StatusError)
-	escape("unable to hash the phrase");
-
-      // authenticate by sending the hash of the phrase.
-      if (Agent::Link.Call(
-	    Inputs< ::etoile::TagWallAuthenticate >(digest),
-	    Outputs< ::etoile::TagWallAuthenticated >()) == StatusError)
-	escape("unable to authenticate to etoile");
-    }
-
-    printf("OK\n");
-    Agent::Link.Send(Inputs< ::etoile::TagWallConnect >(Agent::Phrase));
 
     leave();
   }
@@ -210,6 +184,66 @@ namespace agent
 //
 
   ///
+  /// this callback is triggered as soon as the agent has been initialized.
+  ///
+  Status		Agent::Start()
+  {
+    enter();
+
+    //
+    // connect the agent to etoile.
+    //
+    {
+      Callback<const String>	error(&Agent::Error);
+
+      // create the door.
+      if (Agent::Channel.Create() == StatusError)
+	escape("unable to create the door");
+
+      // monitor the socket.
+      if (Agent::Channel.Monitor(error) == StatusError)
+	escape("unable to create the door");
+
+      // connect the door.
+      if (Agent::Channel.Connect(Agent::Line) == StatusError)
+	escape("unable to connect to Etoile");
+    }
+
+    //
+    // authenticate.
+    //
+    {
+      Code			code;
+      Digest			digest;
+      // identify to etoile by passing the user's public key for challenging
+      // along with the phrase.
+      if (Agent::Channel.Call(
+	    Inputs< ::etoile::TagWallIdentify >(Agent::Pair.K),
+	    Outputs< ::etoile::TagWallChallenge >(code)) == StatusError)
+	escape("unable to identify to etoile");
+
+      // decrypt the code with the private key.
+      if (Agent::Pair.k.Decrypt(code, Agent::Phrase) == StatusError)
+	escape("unable to decrypt the code");
+
+      // hash the phrase.
+      if (OneWay::Hash(Agent::Phrase, digest) == StatusError)
+	escape("unable to hash the phrase");
+
+      // authenticate by sending the hash of the phrase.
+      if (Agent::Channel.Call(
+	    Inputs< ::etoile::TagWallAuthenticate >(digest),
+	    Outputs< ::etoile::TagWallAuthenticated >()) == StatusError)
+	escape("unable to authenticate to etoile");
+    }
+
+    printf("OK\n");
+    Agent::Channel.Send(Inputs< ::etoile::TagWallConnect >(Agent::Phrase));
+
+    leave();
+  }
+
+  ///
   /// this callback is triggered whenever Etoile needs to decrypt
   /// a code with the agent's private key.
   ///
@@ -219,17 +253,13 @@ namespace agent
 
     enter();
 
-    printf("[XXX] Agent::Decrypt()\n");
-
     // perform the cryptographic operation.
-    //if (Agent::Pair.k.Decrypt(code, clear) == StatusError)
-    //escape("unable to perform the decryption");
+    if (Agent::Pair.k.Decrypt(code, clear) == StatusError)
+      escape("unable to perform the decryption");
 
     // reply to the caller.
-    if (Agent::Link.Reply(Inputs<TagDecrypted>(clear)) == StatusError)
+    if (Agent::Channel.Reply(Inputs<TagDecrypted>(clear)) == StatusError)
       escape("unable to reply to the caller");
-
-    printf("[XXX] /Agent::Decrypt()\n");
 
     leave();
   }
@@ -243,17 +273,13 @@ namespace agent
 
     enter();
 
-    printf("[XXX] Agent::Sign()\n");
-
     // perform the cryptographic operation.
     if (Agent::Pair.k.Sign(plain, signature) == StatusError)
       escape("unable to perform the signature");
 
     // reply to the caller.
-    if (Agent::Link.Reply(Inputs<TagSigned>(signature)) == StatusError)
+    if (Agent::Channel.Reply(Inputs<TagSigned>(signature)) == StatusError)
       escape("unable to reply to the caller");
-
-    printf("[XXX] /Agent::Sign()\n");
 
     leave();
   }

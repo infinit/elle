@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:34:08 2010]
-// updated       julien quintard   [sun mar 21 13:20:22 2010]
+// updated       julien quintard   [thu mar 25 21:21:44 2010]
 //
 
 #ifndef AGENT_MANIFEST_HH
@@ -33,7 +33,7 @@ namespace agent
   enum Tag
     {
       /// XXX \todo trouver un truc plus propre pour eviter les collisions
-      TagNone = 1000,
+      TagNone = 10000,
 
       TagDecrypt,
       TagDecrypted,
@@ -50,13 +50,13 @@ namespace agent
 //
 
 inward(::agent::TagDecrypt,
-       parameters(::elle::cryptography::Code));
+       parameters(const ::elle::cryptography::Code));
 outward(::agent::TagDecrypted,
-        parameters(::elle::cryptography::Clear));
+        parameters(const ::elle::cryptography::Clear));
 
 inward(::agent::TagSign,
-       parameters(::elle::cryptography::Plain));
+       parameters(const ::elle::cryptography::Plain));
 outward(::agent::TagSigned,
-        parameters(::elle::cryptography::Signature));
+        parameters(const ::elle::cryptography::Signature));
 
 #endif
