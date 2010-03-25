@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.cc
 //
 // created       julien quintard   [tue feb 23 00:18:03 2010]
-// updated       julien quintard   [tue mar 23 21:05:54 2010]
+// updated       julien quintard   [thu mar 25 17:41:50 2010]
 //
 
 //
@@ -49,6 +49,36 @@ namespace elle
       this->event = event;
       this->tag = tag;
       this->size = size;
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the header.
+    ///
+    Status		Header::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Header] " << std::endl;
+
+      // dump the event.
+      if (this->event.Dump(margin + 2) == StatusError)
+	escape("unable to dump the event");
+
+      // dump the tag.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Tag] " << this->tag << std::endl;
+
+      // dump the size.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Size] " << this->size << std::endl;
 
       leave();
     }

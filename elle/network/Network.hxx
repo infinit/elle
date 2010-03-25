@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [thu mar 25 01:24:33 2010]
+// updated       julien quintard   [thu mar 25 17:28:13 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -29,12 +29,12 @@ namespace elle
     /// callback is triggered.
     ///
     template <const Tag G>
-    Status		Network::Register(Callback&		callback)
+    Status		Network::Register(typename
+					    Message<G>::C&	callback)
     {
-      Selectionoid< Message<G>::P::Quantum,
-	            typename Message<G>::P >*	selectionoid;
+      Selectionoid<G, Message<G>::P::Quantum>*	selectionoid;
       std::pair<Network::Iterator, Boolean>	result;
-      Callback*					clone;
+      typename Message<G>::C*			clone;
 
       enter(instance(selectionoid));
 
@@ -50,14 +50,11 @@ namespace elle
       }
       Network::Control.Unlock();
 
-      // clone the callback to make sure the network system holds a long-living
-      // object.
-      if (callback.Clone((Entity*)clone) == StatusError)
-	escape("unable to clone the callback");
+      // clone the callback.
+      clone = new typename Message<G>::C(callback);
 
       // create a new selectionoid.
-      selectionoid = new Selectionoid< Message<G>::P::Quantum,
-	                               typename Message<G>::P >(clone);
+      selectionoid = new Selectionoid<G, Message<G>::P::Quantum>(clone);
 
       // lock in writing.
       Network::Control.Lock(ModeWrite);
@@ -124,15 +121,21 @@ namespace elle
     ///
     /// empty selectionoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<0, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 0>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -169,21 +172,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// single-parameter selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<1, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 1>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -223,21 +232,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// two-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<2, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 2>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -278,21 +293,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// three-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<3, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 3>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -334,21 +355,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// four-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<4, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 4>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -391,21 +418,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// five-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<5, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 5>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -449,21 +482,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// six-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<6, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 6>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -510,21 +549,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// seven-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<7, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 7>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -572,21 +617,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// eight-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<8, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 8>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -635,21 +686,27 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
     ///
     /// nine-parameters selectoinoid.
     ///
-    template <typename P>
-    class Network::Selectionoid<9, P>:
+    template <const Tag G>
+    class Network::Selectionoid<G, 9>:
       public Network::Functionoid
     {
     public:
       //
+      // types
+      //
+      typedef typename Message<G>::P	P;
+      typedef typename Message<G>::C	C;
+
+      //
       // constructors & destructors
       //
-      Selectionoid(Callback*					callback):
+      Selectionoid(C*					callback):
 	callback(callback)
       {
       }
@@ -699,7 +756,7 @@ namespace elle
       //
       // attributes
       //
-      Callback*		callback;
+      C*		callback;
     };
 
   }

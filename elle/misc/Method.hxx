@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [thu mar 25 00:32:54 2010]
+// updated       julien quintard   [thu mar 25 18:13:34 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HXX
@@ -35,37 +35,19 @@ namespace elle
     ///
     template <typename... T>
     template <typename C>
-    Method<T...>::Wrap<C>::Wrap(C*				object,
-				Method<T...>::Wrap<C>::Handler	handler):
+    Method<T...>::Wrap<C>::Wrap(Handler				handler,
+				C*				object):
       object(object),
       handler(handler)
     {
     }
 
     ///
-    /// this method triggers the handler by considering arguments as pointers:
-    /// required by entrances.
+    /// this method calls the handler.
     ///
     template <typename... T>
     template <typename C>
-    Status		Method<T...>::Wrap<C>::Trigger(T*...	arguments)
-    {
-      enter();
-
-      // trigger the callback.
-      if ((this->object->*this->handler)(arguments...) == StatusError)
-	escape("an error occured in the callback");
-
-      leave();
-    }
-
-    ///
-    /// this method calls the handler by considering arguments as references:
-    /// required by callbacks.
-    ///
-    template <typename... T>
-    template <typename C>
-    Status		Method<T...>::Wrap<C>::Call(T&...	arguments)
+    Status		Method<T...>::Wrap<C>::Call(T...	arguments)
     {
       enter();
 
@@ -85,20 +67,19 @@ namespace elle
       const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       // dump the quantum.
-      std::cout << alignment << shift << "[Quantum] "
+      std::cout << alignment << Dumpable::Shift << "[Quantum] "
 		<< std::dec << sizeof...(T) << std::endl;
 
       // dump the object.
-      std::cout << alignment << shift << "[Object] "
+      std::cout << alignment << Dumpable::Shift << "[Object] "
 		<< std::hex << this->object << std::endl;
 
       // dump the handler.
-      std::cout << alignment << shift << "[Handler] "
+      std::cout << alignment << Dumpable::Shift << "[Handler] "
 		<< std::hex << this->handler << std::endl;
 
       leave();
@@ -112,31 +93,18 @@ namespace elle
     /// the default constructor.
     ///
     template <typename... T>
-    template <typename X>
-    Method<T...>::Method(X*				object,
-			 Status				(X::*handler)(T...)):
-      Routine::Routine(Routine::TypeMethod),
-
-      shell(new Method::Wrap<X>(object, handler))
+    template <typename C>
+    Method<T...>::Method(Status				(C::*handler)(T...),
+			 C*				object):
+      shell(new Method::Wrap<C>(handler, object))
     {
     }
 
     ///
-    /// this method triggers the handler by considering the arguments as
-    /// pointers: required by entrances.
+    /// this method calls the handler.
     ///
     template <typename... T>
-    Status		Method<T...>::Trigger(T*...		arguments)
-    {
-      return (this->shell->Trigger(arguments...));
-    }
-
-    ///
-    /// this method calls the handler by considering the arguments as
-    /// references: required by callbacks.
-    ///
-    template <typename... T>
-    Status		Method<T...>::Call(T&...		arguments)
+    Status		Method<T...>::Call(T...			arguments)
     {
       return (this->shell->Call(arguments...));
     }
@@ -148,7 +116,6 @@ namespace elle
     Status		Method<T...>::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 

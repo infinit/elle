@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [thu mar 25 01:23:58 2010]
+// updated       julien quintard   [thu mar 25 22:31:53 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -21,7 +21,7 @@
 #include <elle/core/Core.hh>
 
 #include <elle/misc/Status.hh>
-#include <elle/misc/Entrance.hh>
+#include <elle/misc/Closure.hh>
 
 #include <elle/concurrency/Frame.hh>
 #include <elle/concurrency/Event.hh>
@@ -86,7 +86,7 @@ namespace elle
       //
       static Container		Fibers;
 
-      static Fiber*		Application;
+      static Fiber		Application;
       static Fiber*		Handler;
 
       static Fiber*		Current;
@@ -100,11 +100,9 @@ namespace elle
       static Status	Clean();
 
       template <typename... T>
-      static Status	Spawn(Entrance*,
-			      T*...);
+      static Status	Spawn(Closure<T...>&);
       template <typename... T>
-      static Void	Trigger(Entrance*,
-				T*...);
+      static Void	Trigger(Closure<T...>*);
 
       template <typename T = Void>
       static Status	Wait(const Event&,
@@ -117,6 +115,8 @@ namespace elle
 
       static Status	Add(Fiber*);
       static Status	Locate(const Fiber*,
+			       Iterator&);
+      static Status	Locate(const Event&,
 			       Iterator&);
       static Status	Remove(Fiber*);
 

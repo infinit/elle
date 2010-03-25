@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [wed mar 24 17:24:02 2010]
+// updated       julien quintard   [thu mar 25 20:11:08 2010]
 //
 
 //
@@ -319,6 +319,7 @@
       {									\
       public:								\
         typedef Parameters< _parameters_ >	P;			\
+	typedef Callback< _parameters_ >	C;			\
       };								\
     }									\
   }
@@ -340,6 +341,7 @@
       {									\
       public:								\
         typedef Parameters< _parameters_ >	P;			\
+	typedef Callback< _parameters_ >	C;			\
       };								\
     }									\
   }

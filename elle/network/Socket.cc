@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [thu mar 25 00:55:55 2010]
+// updated       julien quintard   [thu mar 25 18:05:38 2010]
 //
 
 //
@@ -30,7 +30,8 @@ namespace elle
     /// the default constructor
     ///
     Socket::Socket():
-      type(Socket::TypeUnknown)
+      type(Socket::TypeUnknown),
+      callback(NULL)
     {
     }
 
@@ -38,7 +39,8 @@ namespace elle
     /// a constructor which specifies the type of socket.
     ///
     Socket::Socket(const Socket::Type&				type):
-      type(type)
+      type(type),
+      callback(NULL)
     {
     }
 
@@ -60,7 +62,7 @@ namespace elle
     /// this method registers the callback that will be triggered
     /// should an error occur on the socket.
     ///
-    Status		Socket::Monitor(Callback&		callback)
+    Status		Socket::Monitor(Callback<const String>&	callback)
     {
       enter();
 
@@ -68,9 +70,8 @@ namespace elle
       if (this->callback != NULL)
 	delete this->callback;
 
-      // clone the callback to keep it.
-      if (callback.Clone((Entity*&)this->callback) == StatusError)
-	escape("unable to clone the callback");
+      // allocate and copy a new callback.
+      this->callback = new Callback<const String>(callback);
 
       leave();
     }

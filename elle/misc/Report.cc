@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [sun mar 21 15:54:30 2010]
+// updated       julien quintard   [thu mar 25 17:39:37 2010]
 //
 
 //
@@ -152,7 +152,6 @@ namespace elle
     {
       Report::Scoutor	scoutor;
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -170,22 +169,22 @@ namespace elle
 	    {
 	    case elle::misc::Report::TypeWarning:
 	      {
-		std::cout << alignment << shift << "[Warning] ";
+		std::cout << alignment << Dumpable::Shift << "[Warning] ";
 		break;
 	      }
 	    case elle::misc::Report::TypeError:
 	      {
-		std::cout << alignment << shift << "[Error] ";
+		std::cout << alignment << Dumpable::Shift << "[Error] ";
 		break;
 	      }
 	    case elle::misc::Report::TypeFailure:
 	      {
-		std::cout << alignment << shift << "[Failure] ";
+		std::cout << alignment << Dumpable::Shift << "[Failure] ";
 		break;
 	      }
 	    default:
 	      {
-		std::cout << alignment << shift << "[Unknown] ";
+		std::cout << alignment << Dumpable::Shift << "[Unknown] ";
 		break;
 	      }
 	    }

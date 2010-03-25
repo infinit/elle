@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Outputs.hh
 //
 // created       julien quintard   [tue feb 23 22:03:00 2010]
-// updated       julien quintard   [wed feb 24 08:55:10 2010]
+// updated       julien quintard   [thu mar 25 19:37:05 2010]
 //
 
 #ifndef ELLE_NETWORK_OUTPUTS_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/network/Arguments.hh>
+#include <elle/network/Message.hh>
 
 namespace elle
 {

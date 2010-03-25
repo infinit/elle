@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [thu mar 25 01:04:30 2010]
+// updated       julien quintard   [thu mar 25 13:27:19 2010]
 //
 
 //
@@ -24,36 +24,14 @@ namespace elle
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// the default constructor.
-    ///
-    Timer::Timer():
-      entrance(NULL)
-    {
-    }
-
-    ///
-    /// the destructor.
-    ///
-    Timer::~Timer()
-    {
-      // release the entrance.
-      if (this->entrance != NULL)
-	delete this->entrance;
-    }
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method sets up the timer by recording the entrance.
+    /// this method sets up the timer by recording the callback.
     ///
     Status		Timer::Create(const Mode		mode,
-				      Entrance&			entrance)
+				      Callback<>&		callback)
     {
       enter();
 
@@ -64,9 +42,8 @@ namespace elle
       if (this->mode == Timer::ModeSingle)
 	this->timer.setSingleShot(true);
 
-      // clone the given entrance.
-      if (entrance.Clone((Entity*&)this->entrance) == StatusError)
-	escape("unable to clone the entrance");
+      // set the callback.
+      this->callback = callback;
 
       // generate an event identifier related to this timer.
       if (this->event.Generate() == StatusError)
@@ -128,14 +105,16 @@ namespace elle
     ///
     void		Timer::Timeout()
     {
+      Closure<>		closure(this->callback);
+
       enter();
 
       // awaken the fibers waiting for this event.
       if (Fiber::Awaken(this->event) == StatusError)
 	alert("unable to awaken the fibers");
 
-      // trigger the entrance in a fresh fiber.
-      if (Fiber::Spawn(this->entrance) == StatusError)
+      // spawn a fiber by providing the callback's closure.
+      if (Fiber::Spawn(closure) == StatusError)
 	alert("an error occured while spawning the fiber");
 
       release();

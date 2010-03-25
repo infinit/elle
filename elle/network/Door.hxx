@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [tue mar 23 22:32:28 2010]
+// updated       julien quintard   [thu mar 25 22:55:39 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -68,9 +68,8 @@ namespace elle
       if (packet.Serialize(header, data) == StatusError)
 	escape("unable to serialize the message");
 
-      // XXX
-      printf("[XXX] Door::Transmitting(tag[%u] identifier[%qu])\n",
-	     header.tag, header.event.identifier);
+      //printf("[XXX] Door::Transmit(tag[%u] identifier[%qu])\n",
+      //header.tag, header.event.identifier);
 
       // push the packet to the socket.
       if (this->socket->write((const char*)packet.contents,

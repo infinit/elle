@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [thu mar 25 00:00:16 2010]
+// updated       julien quintard   [thu mar 25 15:14:09 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -19,10 +19,12 @@
 //
 
 #include <elle/archive/Archive.hh>
-#include <elle/concurrency/Concurrency.hh>
 
 #include <elle/misc/Status.hh>
 #include <elle/misc/Callback.hh>
+
+#include <elle/concurrency/Fiber.hh>
+#include <elle/concurrency/Accord.hh>
 
 #include <elle/network/Host.hh>
 #include <elle/network/Socket.hh>
@@ -86,7 +88,7 @@ namespace elle
       /// this implementation takes an archive, extracts a number of
       /// arguments depending on the selectionoid and triggers the callback.
       ///
-      template <const Natural32, typename M>
+      template <const Tag G, const Natural32 N>
       class Selectionoid:
 	public Functionoid
       {
@@ -106,8 +108,8 @@ namespace elle
       static Status	Clean();
 
       template <const Tag G>
-      static Status	Register(Callback&);
-      static Status	Dispatch(Parcel*);
+      static Status	Register(typename Message<G>::C&);
+      static Status	Dispatch(Parcel*&);
 
       template <typename O>
       static Status	Receive(const Event&,

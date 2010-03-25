@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [sat mar 20 13:13:02 2010]
+// updated       julien quintard   [thu mar 25 17:38:36 2010]
 //
 
 //
@@ -320,14 +320,13 @@ namespace elle
     Status		PublicKey::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[PublicKey]" << std::endl;
-      std::cout << alignment << shift << "[n] "
+      std::cout << alignment << Dumpable::Shift << "[n] "
 		<< *this->key->pkey.rsa->n << std::endl;
-      std::cout << alignment << shift << "[e] "
+      std::cout << alignment << Dumpable::Shift << "[e] "
 		<< *this->key->pkey.rsa->e << std::endl;
 
       leave();

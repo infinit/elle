@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [thu mar 25 00:56:10 2010]
+// updated       julien quintard   [thu mar 25 17:41:32 2010]
 //
 
 //
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    LanePorter::LanePorter(Callback*				callback):
+    LanePorter::LanePorter(Callback<Door*>&			callback):
       server(NULL),
       callback(callback)
     {
@@ -54,10 +54,6 @@ namespace elle
     ///
     LanePorter::~LanePorter()
     {
-      // if there is a callback, release it.
-      if (this->callback != NULL)
-	delete this->callback;
-
       // if there is a server, release it.
       if (this->server != NULL)
 	delete this->server;
@@ -130,23 +126,14 @@ namespace elle
     /// signal would be triggered which is not want we want.
     ///
     Status		Lane::Listen(const String&		name,
-				     Callback&			callback)
+				     Callback<Door*>&		callback)
     {
-      Callback*		clone;
       LanePorter*	porter;
 
-      enter(instance(clone),
-	    instance(porter));
-
-      // clone the callback.
-      if (callback.Clone((Entity*&)clone) == StatusError)
-	escape("unable to clone the callback");
+      enter(instance(porter));
 
       // allocate a new porter.
-      porter = new LanePorter(clone);
-
-      // stop tracking the clone.
-      waive(clone);
+      porter = new LanePorter(callback);
 
       // start listening.
       if (porter->Listen(name) == StatusError)
@@ -180,22 +167,21 @@ namespace elle
     Status		LanePorter::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Porter]" << std::endl;
 
       // dump the server address.
-      std::cout << alignment << shift << "[Server] "
+      std::cout << alignment << Dumpable::Shift << "[Server] "
 		<< std::hex << this->server << std::endl;
 
       // dump the platform-specific path.
-      std::cout << alignment << shift << "[Path] "
+      std::cout << alignment << Dumpable::Shift << "[Path] "
 		<< this->server->fullServerName().toStdString() << std::endl;
 
       // dump the callback.
-      if (this->callback->Dump(margin + 2) == StatusError)
+      if (this->callback.Dump(margin + 2) == StatusError)
 	escape("unable to dump the callback");
 
       leave();
@@ -211,7 +197,6 @@ namespace elle
     Status		Lane::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
       Lane::Scoutor	scoutor;
 
       enter();
@@ -261,9 +246,12 @@ namespace elle
       if (door->Create(socket) == StatusError)
 	alert("unable to create the door");
 
-      // trigger the associated callback.
-      if (this->callback->Call(door) == StatusError)
-	alert("unable to trigger the callback");
+      // create a closure to trigge the callback.
+      Closure<Door*>	closure(this->callback, door);
+
+      // spawn a new fiber.
+      if (Fiber::Spawn(closure) == StatusError)
+	alert("an error occured in the spawn fiber");
 
       // stop tracking door as it has been handed to the callback.
       waive(door);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [fri mar 19 17:05:10 2010]
+// updated       julien quintard   [thu mar 25 17:38:50 2010]
 //
 
 //
@@ -74,7 +74,6 @@ namespace elle
     Status		Factory::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
       Factory::Scoutor	scoutor;
 
       enter();
@@ -89,7 +88,8 @@ namespace elle
 	     scoutor != Factory::Map.end();
 	     scoutor++)
 	  {
-	    std::cout << alignment << shift << scoutor->first << std::endl;
+	    std::cout << alignment << Dumpable::Shift
+		      << scoutor->first << std::endl;
 	  }
       }
       Factory::Control.Unlock();

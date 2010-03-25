@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [thu mar 25 00:02:46 2010]
+// updated       julien quintard   [thu mar 25 22:54:47 2010]
 //
 
 //
@@ -116,7 +116,6 @@ namespace elle
     Status		Slot::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -136,16 +135,20 @@ namespace elle
     /// this slot is triggered whenever the socket changes state or
     /// if an error occurs.
     ///
-    void		Slot::Error(QAbstractSocket::SocketError	error)
+    void		Slot::Error(QAbstractSocket::SocketError)
     {
-      String		text(this->socket->errorString().toStdString());
-
       enter();
 
-      // trigger the callback if it has been registered.
+      // only process the error if a monitor callback has been registered.
       if (this->callback != NULL)
-	if (this->callback->Call(text) == StatusError)
-	  alert("an error occured in the callback");
+	{
+	  String		text(this->socket->errorString().toStdString());
+	  Closure<const String>	closure(*this->callback, text);
+
+	  // spawn a fiber.
+	  if (Fiber::Spawn(closure) == StatusError)
+	    alert("an error occured in the fiber");
+	}
 
       release();
     }
@@ -165,15 +168,14 @@ namespace elle
     ///
     void		Slot::Fetch()
     {
-      /*
-      Entrance<Parcel*>	entrance(&Network::Dispatch);
+      Callback<Parcel*>	callback(&Network::Dispatch);
       Raw		raw;
       Address		address;
       Natural32		offset;
 
       enter();
 
-      printf("[XXX] Slot::Fetch(%u)\n", this->socket->pendingDatagramSize());
+      //printf("[XXX] Slot::Fetch(%u)\n", this->socket->pendingDatagramSize());
 
       //
       // read the pending datagrams in a raw.
@@ -251,14 +253,14 @@ namespace elle
 				    parcel->header->event) == StatusError)
 	  alert("unable to create the session");
 
+	// create a closure for the callback.
+	Closure<Parcel*>	closure(callback, parcel);
+
 	// record this packet to the network manager.
 	//
 	// note that a this point, the network is responsible for the
 	// parcel and its memory.
-
-	printf("[XXX 0x%x] Slot::Fetch(0x%x)\n", Fiber::Current, parcel);
-
-	if (Fiber::Spawn(&entrance, parcel) == StatusError)
+	if (Fiber::Spawn(closure) == StatusError)
 	  {
 	    // stop tracking the parcel since it should have been deleted
 	    // in Dispatch().
@@ -278,7 +280,6 @@ namespace elle
       }
 
       release();
-      */
     }
 
   }

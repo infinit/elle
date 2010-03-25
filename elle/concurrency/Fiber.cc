@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [wed mar 24 13:22:06 2010]
+// updated       julien quintard   [thu mar 25 22:50:15 2010]
 //
 
 //
@@ -43,7 +43,7 @@ namespace elle
     /// this fiber corresponds to the application just when entering
     /// the processing of an event.
     ///
-    Fiber*			Fiber::Application = NULL;
+    Fiber			Fiber::Application;
 
     ///
     /// this variable holds the frame that will be used for processing event.
@@ -84,13 +84,6 @@ namespace elle
     {
       enter();
 
-      // allocate the application fiber.
-      Fiber::Application = new Fiber;
-
-      // create the application fiber.
-      if (Fiber::Application->Create() == StatusError)
-	escape("unable to create the application fiber");
-
       // allocate the event fiber;
       Fiber::Handler = new Fiber;
 
@@ -99,7 +92,7 @@ namespace elle
 	escape("unable to create the handler fiber");
 
       // set the current fiber as being the application.
-      Fiber::Current = Fiber::Application;
+      Fiber::Current = &Fiber::Application;
 
       leave();
     }
@@ -125,6 +118,8 @@ namespace elle
 
       enter();
 
+      //printf("[XXX 0x%x] Fiber::Schedule()\n", Fiber::Current);
+
       // if there is not fibers, return.
       if (Fiber::Fibers.empty() == true)
 	leave();
@@ -139,10 +134,14 @@ namespace elle
 	  // if this fiber needs scheduling.
 	  if (fiber->state == Fiber::StateAwaken)
 	    {
-	      printf("[XXX] Fiber::Schedule(0x%x)\n", fiber);
+	      //printf("[XXX 0x%x] Fiber::Schedule() :: 0x%x\n",
+	      //Fiber::Current, fiber);
 
 	      // set as active
 	      fiber->state = Fiber::StateActive;
+
+	      // set the current fiber.
+	      Fiber::Current = fiber;
 
 	      // set the context of the suspended fiber.
 	      if (::setcontext(&fiber->context) == -1)
@@ -192,11 +191,37 @@ namespace elle
     }
 
     ///
+    /// this method tries to locate a fiber waiting for the given event.
+    ///
+    Status		Fiber::Locate(const Event&		event,
+				      Fiber::Iterator&		iterator)
+    {
+      enter();
+
+      // iterator over the container.
+      for (iterator = Fiber::Fibers.begin();
+	   iterator != Fiber::Fibers.end();
+	   iterator++)
+	{
+	  Fiber*	fiber = *iterator;
+
+	  // check if this fiber is waiting for the given event.
+	  if (event == fiber->event)
+	    true();
+	}
+
+      false();
+    }
+
+    ///
     /// this method removes a fiber from the container.
     ///
     Status		Fiber::Remove(Fiber*			fiber)
     {
       Fiber::Iterator	iterator;
+
+      //printf("[XXX 0x%x] Fiber::Remove(0x%x)\n",
+      //Fiber::Current, fiber);
 
       enter();
 
@@ -220,7 +245,6 @@ namespace elle
     Status		Fiber::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
       Fiber::Scoutor	scoutor;
 
       enter();
@@ -228,7 +252,7 @@ namespace elle
       std::cout << alignment << "[Fiber] " << std::endl;
 
       // dump all the fibers.
-      std::cout << alignment << shift << "[Fibers] " << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Fibers] " << std::endl;
 
       for (scoutor = Fiber::Fibers.begin();
 	   scoutor != Fiber::Fibers.end();
@@ -237,21 +261,21 @@ namespace elle
 	  escape("unable to dump the fiber");
 
       // dump the application.
-      std::cout << alignment << shift << "[Application] "
-		<< std::hex << Fiber::Application << std::endl;
+      std::cout << alignment << Dumpable::Shift
+		<< "[Application]" << std::endl;
 
-      if (Fiber::Application->Dump(margin + 4) == StatusError)
+      if (Fiber::Application.Dump(margin + 4) == StatusError)
 	escape("unable to dump the application fiber");
 
       // dump the handler.
-      std::cout << alignment << shift << "[Handler]"
-		<< std::hex << Fiber::Handler << std::endl;
+      std::cout << alignment << Dumpable::Shift
+		<< "[Handler]" << std::endl;
 
       if (Fiber::Handler->Dump(margin + 4) == StatusError)
 	escape("unable to dump the handler fiber");
 
       // dump the current fiber pointer.
-      std::cout << alignment << shift << "[Current] "
+      std::cout << alignment << Dumpable::Shift << "[Current] "
 		<< std::hex << Fiber::Current << std::endl;
 
       leave();
@@ -313,7 +337,6 @@ namespace elle
     Status		Fiber::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -326,14 +349,15 @@ namespace elle
 	    escape("unable to dump the frame");
 	}
       else
-	std::cout << alignment << shift << "[Frame] null" << std::endl;
+	std::cout << alignment << Dumpable::Shift
+		  << "[Frame] null" << std::endl;
 
       // dump the state.
-      std::cout << alignment << shift << "[State] "
+      std::cout << alignment << Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
       // dump the status.
-      std::cout << alignment << shift << "[Status] "
+      std::cout << alignment << Dumpable::Shift << "[Status] "
 		<< this->status << std::endl;
 
       // dump the event.

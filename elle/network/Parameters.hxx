@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [wed mar 24 14:24:01 2010]
+// updated       julien quintard   [thu mar 25 19:28:03 2010]
 //
 
 #ifndef ELLE_NETWORK_PARAMETERS_HXX
@@ -55,7 +55,7 @@ namespace elle
     /// one parameter.
     ///
     template <typename T1>
-    class Parameters<T1>
+    class Parameters<const T1>
     {
     public:
       //
@@ -101,7 +101,8 @@ namespace elle
     ///
     template <typename T1,
 	      typename T2>
-    class Parameters<T1, T2>
+    class Parameters<const T1,
+		     const T2>
     {
     public:
       //
@@ -151,7 +152,9 @@ namespace elle
     template <typename T1,
 	      typename T2,
 	      typename T3>
-    class Parameters<T1, T2, T3>
+    class Parameters<const T1,
+		     const T2,
+		     const T3>
     {
     public:
       //
@@ -205,7 +208,10 @@ namespace elle
 	      typename T2,
 	      typename T3,
 	      typename T4>
-    class Parameters<T1, T2, T3, T4>
+    class Parameters<const T1,
+		     const T2,
+		     const T3,
+		     const T4>
     {
     public:
       //
@@ -263,7 +269,11 @@ namespace elle
 	      typename T3,
 	      typename T4,
 	      typename T5>
-    class Parameters<T1, T2, T3, T4, T5>
+    class Parameters<const T1,
+		     const T2,
+		     const T3,
+		     const T4,
+		     const T5>
     {
     public:
       //
@@ -325,7 +335,12 @@ namespace elle
 	      typename T4,
 	      typename T5,
 	      typename T6>
-    class Parameters<T1, T2, T3, T4, T5, T6>
+    class Parameters<const T1,
+		     const T2,
+		     const T3,
+		     const T4,
+		     const T5,
+		     const T6>
     {
     public:
       //
@@ -393,7 +408,13 @@ namespace elle
 	      typename T5,
 	      typename T6,
 	      typename T7>
-    class Parameters<T1, T2, T3, T4, T5, T6, T7>
+    class Parameters<const T1,
+		     const T2,
+		     const T3,
+		     const T4,
+		     const T5,
+		     const T6,
+		     const T7>
     {
     public:
       //
@@ -465,7 +486,14 @@ namespace elle
 	      typename T6,
 	      typename T7,
 	      typename T8>
-    class Parameters<T1, T2, T3, T4, T5, T6, T7, T8>
+    class Parameters<const T1,
+		     const T2,
+		     const T3,
+		     const T4,
+		     const T5,
+		     const T6,
+		     const T7,
+		     const T8>
     {
     public:
       //
@@ -541,7 +569,15 @@ namespace elle
 	      typename T7,
 	      typename T8,
 	      typename T9>
-    class Parameters<T1, T2, T3, T4, T5, T6, T7, T8, T9>
+    class Parameters<const T1,
+		     const T2,
+		     const T3,
+		     const T4,
+		     const T5,
+		     const T6,
+		     const T7,
+		     const T8,
+		     const T9>
     {
     public:
       //

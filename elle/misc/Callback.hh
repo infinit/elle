@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [thu mar 25 01:38:45 2010]
+// updated       julien quintard   [thu mar 25 18:10:24 2010]
 //
 
 #ifndef ELLE_MISC_CALLBACK_HH
@@ -20,6 +20,8 @@
 
 #include <elle/misc/Status.hh>
 #include <elle/misc/Routine.hh>
+#include <elle/misc/Function.hh>
+#include <elle/misc/Method.hh>
 
 namespace elle
 {
@@ -31,25 +33,27 @@ namespace elle
 //
 
     ///
-    /// this class represents an callback i.e a pointer-based routine.
+    /// this class represents an callback i.e a reference-based routine.
     ///
+    template <typename... T>
     class Callback:
-      public Entity,
-      public Dumpable
+      public Routine
     {
     public:
       //
       // constructors & destructors
       //
       Callback();
-      Callback(const Routine&);
+      Callback(typename Function<T&...>::Handler);
+      template <typename C>
+      Callback(typename Method<T&...>:: template Wrap<C>::Handler,
+	       C*);
       Callback(const Callback&);
       ~Callback();
 
       //
       // methods
       //
-      template <typename... T>
       Status		Call(T&...);
 
       //
@@ -66,7 +70,13 @@ namespace elle
       //
       // attributes
       //
-      Routine*		routine;
+      typename Routine::Scheme	scheme;
+
+      union
+      {
+	Function<T&...>*	function;
+	Method<T&...>*		method;
+      };
     };
 
   }

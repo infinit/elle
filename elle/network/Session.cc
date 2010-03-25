@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [tue mar 23 21:07:11 2010]
+// updated       julien quintard   [thu mar 25 17:40:48 2010]
 //
 
 //
@@ -95,7 +95,6 @@ namespace elle
     Status		Session::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 

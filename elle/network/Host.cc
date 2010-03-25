@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [sat mar 20 13:15:03 2010]
+// updated       julien quintard   [thu mar 25 17:42:07 2010]
 //
 
 #include <elle/network/Host.hh>
@@ -169,16 +169,15 @@ namespace elle
     Status		Host::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Host]" << std::endl;
 
-      std::cout << alignment << shift << "[Type] "
+      std::cout << alignment << Dumpable::Shift << "[Type] "
 		<< this->type << std::endl;
 
-      std::cout << alignment << shift << "[Location] "
+      std::cout << alignment << Dumpable::Shift << "[Location] "
 		<< this->location.toString().toStdString() << std::endl;
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [tue mar 23 21:07:18 2010]
+// updated       julien quintard   [thu mar 25 13:21:08 2010]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH
@@ -35,6 +35,15 @@ namespace elle
 
   namespace network
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Socket;
 
 //
 // ---------- classes ---------------------------------------------------------

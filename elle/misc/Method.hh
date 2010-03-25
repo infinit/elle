@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [thu mar 25 00:32:37 2010]
+// updated       julien quintard   [thu mar 25 18:09:32 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HH
@@ -23,7 +23,6 @@
 #include <elle/io/Dumpable.hh>
 
 #include <elle/misc/Status.hh>
-#include <elle/misc/Routine.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -37,7 +36,8 @@ namespace elle
     ///
     template <typename... T>
     class Method:
-      public Routine
+      public Entity,
+      public Dumpable
     {
     public:
       //
@@ -58,8 +58,7 @@ namespace elle
 	//
 	// methods
 	//
-	virtual Status Trigger(T*...) = 0;
-	virtual Status Call(T&...) = 0;
+	virtual Status Call(T...) = 0;
       };
 
       ///
@@ -73,20 +72,19 @@ namespace elle
 	//
 	// types
 	//
-      typedef Status		(C::*Handler)(T...);
+	typedef Status		(C::*Handler)(T...);
 
 	//
 	// constructors & destructors
 	//
-	Wrap(C*,
-	     Handler);
+	Wrap(Handler,
+	     C*);
 	Wrap(const Wrap<C>&);
 
 	//
 	// methods
 	//
-	Status		Trigger(T*...);
-	Status		Call(T&...);
+	Status		Call(T...);
 
 	//
 	// interfaces
@@ -109,15 +107,14 @@ namespace elle
       //
       // constructors & destructors.
       //
-      template <typename X>
-      Method(X*,
-	     Status (X::*)(T...));
+      template <typename C>
+      Method(Status (C::*)(T...),
+	     C*);
 
       //
       // methods
       //
-      Status		Trigger(T*...);
-      Status		Call(T&...);
+      Status		Call(T...);
 
       //
       // interfaces

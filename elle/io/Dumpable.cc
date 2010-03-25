@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.cc
 //
 // created       julien quintard   [sat mar 20 00:43:22 2010]
-// updated       julien quintard   [sat mar 20 02:42:02 2010]
+// updated       julien quintard   [thu mar 25 17:36:47 2010]
 //
 
 //
@@ -30,6 +30,16 @@ namespace elle
 {
   namespace io
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this string represents the shifting used when displaying
+    /// information.
+    ///
+    const String		Dumpable::Shift(2, ' ');
 
 //
 // ---------- methods ---------------------------------------------------------

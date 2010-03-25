@@ -19,8 +19,6 @@ ADD_LIBRARY(elle
   misc/Maid.cc
   misc/Report.cc
   misc/Routine.cc
-  misc/Entrance.cc
-  misc/Callback.cc
 
   archive/Archive.cc
   archive/Archivable.cc
@@ -68,13 +66,5 @@ ADD_LIBRARY(elle
   ${elle_MOCS}
 )
 
-ADD_EXECUTABLE(XXX
-  XXX.cc
-)
-
-TARGET_LINK_LIBRARIES(XXX elle ssl crypto dl
-			  ${QT_QTNETWORK_LIBRARIES}
-			  ${QT_QTCORE_LIBRARIES})
-
-#ADD_SUBDIRECTORY(test)
-#ADD_SUBDIRECTORY(benchmark)
+ADD_SUBDIRECTORY(test)
+ADD_SUBDIRECTORY(benchmark)
