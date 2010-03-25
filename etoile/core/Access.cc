@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [sat mar 20 04:12:10 2010]
+// updated       julien quintard   [thu mar 25 17:48:08 2010]
 //
 
 //
@@ -178,7 +178,6 @@ namespace etoile
     Status		Access::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 

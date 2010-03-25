@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.cc
 //
 // created       julien quintard   [fri aug  7 21:44:49 2009]
-// updated       julien quintard   [wed mar  3 23:48:32 2010]
+// updated       julien quintard   [thu mar 25 17:51:37 2010]
 //
 
 //
@@ -156,20 +156,19 @@ namespace etoile
     Status		Item::Dump(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Item]" << std::endl;
 
       // dump the attributes.
-      std::cout << alignment << shift << "[Name] "
+      std::cout << alignment << Dumpable::Shift << "[Name] "
 		<< this->name << std::endl;
 
       if (this->address.Dump(margin + 2) == StatusError)
 	escape("unable to dump the address");
 
-      std::cout << alignment << shift << "[Directory] "
+      std::cout << alignment << Dumpable::Shift << "[Directory] "
 		<< std::hex << this->directory << std::endl;
 
       // dump the data, if there is any.
@@ -177,7 +176,7 @@ namespace etoile
 	{
 	  Item::Scoutor	scoutor;
 
-	  std::cout << alignment << shift << "[Data]" << std::endl;
+	  std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
 
 	  // recursively dump all the sub-items.
 	  for (scoutor = this->data->begin();

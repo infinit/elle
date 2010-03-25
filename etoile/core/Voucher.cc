@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat mar 20 13:21:30 2010]
+// updated       julien quintard   [thu mar 25 17:48:57 2010]
 //
 
 //
@@ -66,7 +66,6 @@ namespace etoile
     Status		Voucher::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 

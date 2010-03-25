@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.cc
 //
 // created       julien quintard   [thu mar 11 17:09:58 2010]
-// updated       julien quintard   [fri mar 19 21:57:29 2010]
+// updated       julien quintard   [thu mar 25 18:22:53 2010]
 //
 
 //
@@ -42,7 +42,7 @@ namespace etoile
     /// default constructor.
     ///
     Application::Application():
-      link(NULL)
+      channel(NULL)
     {
     }
 
@@ -51,9 +51,9 @@ namespace etoile
     ///
     Application::~Application()
     {
-      // release the link.
-      if (this->link != NULL)
-	delete this->link;
+      // release the channel.
+      if (this->channel != NULL)
+	delete this->channel;
     }
 
 //
@@ -61,25 +61,25 @@ namespace etoile
 //
 
     ///
-    /// this method creates the link.
+    /// this method creates the channel.
     ///
-    Status		Application::Create(Link*		link)
+    Status		Application::Create(Channel*		channel)
     {
-      Method<>			timeout(this, &Application::Timeout);
-      Method<const String>	error(this, &Application::Error);
+      Callback<>		timeout(&Application::Timeout, this);
+      Callback<const String>	error(&Application::Error, this);
 
       enter();
 
       // set the attributes.
       this->state = Application::StateUnconnected;
-      this->link = link;
+      this->channel = channel;
 
       // create the timer.
       if (this->timer.Create(Timer::ModeSingle, timeout) == StatusError)
 	escape("unable to create the timer");
 
       // register the error callback to the deletion.
-      if (this->link->Monitor(error) == StatusError)
+      if (this->channel->Monitor(error) == StatusError)
 	escape("unable to monitor the callback");
 
       // start the timer.
@@ -101,7 +101,7 @@ namespace etoile
 	escape("unable to stop the timer");
 
       // withdraw the control management.
-      if (this->link->Withdraw() == StatusError)
+      if (this->channel->Withdraw() == StatusError)
 	escape("unable to withdraw the socket control");
 
       leave();
@@ -122,8 +122,8 @@ namespace etoile
 
       printf("[XXX] Application::Timeout(0x%x)\n", this);
 
-      // retrieve the client related to this application's link.
-      if (Map::Retrieve(this->link, client) == StatusError)
+      // retrieve the client related to this application's channel.
+      if (Map::Retrieve(this->channel, client) == StatusError)
 	escape("unable to retrieve the client-application mapping");
 
       // remove the whole client since the application timed-out.
@@ -134,7 +134,7 @@ namespace etoile
     }
 
     ///
-    /// this callbacks is triggered if an error occurs on the link.
+    /// this callbacks is triggered if an error occurs on the channel.
     ///
     Status		Application::Error(const String&)
     {
@@ -157,15 +157,14 @@ namespace etoile
     Status		Application::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Application]" << std::endl;
 
-      // dump the link.
-      if (this->link->Dump(margin + 2) == StatusError)
-	escape("unable to dump the link");
+      // dump the channel.
+      if (this->channel->Dump(margin + 2) == StatusError)
+	escape("unable to dump the channel");
 
       leave();
     }

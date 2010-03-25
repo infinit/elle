@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [wed mar 17 22:26:47 2010]
+// updated       julien quintard   [thu mar 25 18:21:52 2010]
 //
 
 //
@@ -56,7 +56,7 @@ namespace etoile
       // check if this family of block expires.
       if (Repository::Delays[address.family] != NULL)
 	{
-	  Method<>	discard(this, &Record::Discard);
+	  Callback<>	discard(&Record::Discard, this);
 
 	  // allocate a new timer object.
 	  this->timer = new Timer;
@@ -178,7 +178,6 @@ namespace etoile
     Status		Record::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.cc
 //
 // created       julien quintard   [sun mar 21 16:55:17 2010]
-// updated       julien quintard   [sun mar 21 16:57:44 2010]
+// updated       julien quintard   [thu mar 25 17:42:59 2010]
 //
 
 //
@@ -32,14 +32,13 @@ namespace etoile
     Status		Rights::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Rights]" << std::endl;
 
       // dump the permissions.
-      std::cout << alignment << shift << "[Permissions] "
+      std::cout << alignment << Dumpable::Shift << "[Permissions] "
 		<< this->permissions << std::endl;
 
       // dump the secret key.

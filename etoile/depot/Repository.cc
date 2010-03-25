@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [fri mar 19 17:07:23 2010]
+// updated       julien quintard   [thu mar 25 17:50:39 2010]
 //
 
 //
@@ -589,7 +589,6 @@ namespace etoile
     Status		Repository::Show(const Natural32	margin)
     {
       String				alignment(margin, ' ');
-      String				shift(2, ' ');
       Repository::Data::Scoutor		i;
       Repository::Access::Scoutor	j;
 
@@ -597,22 +596,24 @@ namespace etoile
 
       std::cout << alignment << "[Repository]" << std::endl;
 
-      std::cout << alignment << shift << "[Cache]" << std::endl;
-      std::cout << alignment << shift << shift << "[Size] "
+      std::cout << alignment << Dumpable::Shift << "[Cache]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift << "[Size] "
 		<< std::dec << Repository::Cache::Size << std::endl;
-      std::cout << alignment << shift << shift << "[Capacity] "
-		<< std::dec << Repository::Cache::Capacity << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Capacity] " << std::dec << Repository::Cache::Capacity
+		<< std::endl;
 
-      std::cout << alignment << shift << "[Reserve]" << std::endl;
-      std::cout << alignment << shift << shift << "[Size] "
+      std::cout << alignment << Dumpable::Shift << "[Reserve]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift << "[Size] "
 		<< std::dec << Repository::Reserve::Size << std::endl;
-      std::cout << alignment << shift << shift << "[Capacity] "
-		<< std::dec << Repository::Reserve::Capacity << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Capacity] " << std::dec << Repository::Reserve::Capacity
+		<< std::endl;
 
       //
       // dump the data.
       //
-      std::cout << alignment << shift << "[Data]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
 
       for (i = Repository::Container.begin();
 	   i != Repository::Container.end();
@@ -628,10 +629,11 @@ namespace etoile
       //
       // dump the access.
       //
-      std::cout << alignment << shift << "[Access]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Access]" << std::endl;
 
       // first, the cache accesses.
-      std::cout << alignment << shift << shift << "[Cache]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Cache]" << std::endl;
 
       for (j = Repository::Cache::Queue.begin();
 	   j != Repository::Cache::Queue.end();
@@ -640,12 +642,13 @@ namespace etoile
 	  Record*	record = *j;
 
 	  // dump the record's address.
-	  std::cout << alignment << shift << shift << shift << "[Pointer] "
-		    << record << std::endl;
+	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		    << Dumpable::Shift << "[Pointer] " << record << std::endl;
 	}
 
       // second, the reserve accesses.
-      std::cout << alignment << shift << shift << "[Reserve]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Reserve]" << std::endl;
 
       for (j = Repository::Reserve::Queue.begin();
 	   j != Repository::Reserve::Queue.end();
@@ -654,8 +657,8 @@ namespace etoile
 	  Record*	record = *j;
 
 	  // dump the record's address.
-	  std::cout << alignment << shift << shift << shift << "[Pointer] "
-		    << record << std::endl;
+	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		    << Dumpable::Shift << "[Pointer] " << record << std::endl;
 	}
 
       leave();

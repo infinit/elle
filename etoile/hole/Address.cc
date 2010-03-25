@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat mar 20 13:25:08 2010]
+// updated       julien quintard   [thu mar 25 17:51:17 2010]
 //
 
 //
@@ -181,7 +181,6 @@ namespace etoile
     Status		Address::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -189,7 +188,7 @@ namespace etoile
 
       if (this->digest != NULL)
 	{
-	  std::cout << alignment << shift << "[Family] "
+	  std::cout << alignment << Dumpable::Shift << "[Family] "
 		    << std::hex << this->family << std::endl;
 
 	  if (this->digest->Dump(margin + 2) == StatusError)
@@ -197,7 +196,8 @@ namespace etoile
 	}
       else
 	{
-	  std::cout << alignment << shift << "[Digest] " << none << std::endl;
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Digest] " << none << std::endl;
 	}
 
       leave();

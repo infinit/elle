@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.cc
 //
 // created       julien quintard   [thu mar  4 12:39:12 2010]
-// updated       julien quintard   [sun mar 21 16:44:22 2010]
+// updated       julien quintard   [thu mar 25 18:03:13 2010]
 //
 
 //
@@ -71,7 +71,7 @@ namespace etoile
 
     ///
     /// this method cleans the user module by destroying all the clients
-    /// and links.
+    /// and channels.
     ///
     Status		User::Clean()
     {
@@ -114,12 +114,12 @@ namespace etoile
 
       enter();
 
-      // check if the session's socket is a link.
-      if ((session->socket->type & Socket::TypeLink) == 0)
-	escape("the session's socket is not a link");
+      // check if the session's socket is a channel.
+      if ((session->socket->type & Socket::TypeChannel) == 0)
+	escape("the session's socket is not a channel");
 
       // retrieve the client.
-      if (Map::Retrieve(static_cast<Link*>(session->socket),
+      if (Map::Retrieve(static_cast<Channel*>(session->socket),
 			client) == StatusError)
 	escape("unablt to retrive the client from the session's socket");
 

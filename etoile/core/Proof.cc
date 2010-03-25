@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sat mar 20 13:23:12 2010]
+// updated       julien quintard   [thu mar 25 17:48:50 2010]
 //
 
 //
@@ -132,13 +132,12 @@ namespace etoile
     Status		Proof::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Proof]" << std::endl;
 
-      std::cout << alignment << shift << "[Index] "
+      std::cout << alignment << Dumpable::Shift << "[Index] "
 		<< this->index << std::endl;
 
       if (this->voucher != NULL)
@@ -148,7 +147,8 @@ namespace etoile
 	}
       else
 	{
-	  std::cout << alignment << shift << "[Voucher] " << none << std::endl;
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Voucher] " << none << std::endl;
 	}
 
       leave();

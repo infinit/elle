@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.cc
 //
 // created       julien quintard   [tue jan 26 14:07:29 2010]
-// updated       julien quintard   [wed mar  3 16:22:17 2010]
+// updated       julien quintard   [thu mar 25 17:50:56 2010]
 //
 
 //
@@ -131,8 +131,7 @@ namespace etoile
     Status		Cell::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
-      Natural32		size;
+ Natural32		size;
 
       enter();
 
@@ -142,10 +141,10 @@ namespace etoile
 
       std::cout << alignment << "[Cell] " << std::endl;
 
-      std::cout << alignment << shift << "[Block] "
+      std::cout << alignment << Dumpable::Shift << "[Block] "
 		<< std::hex << this->block << std::endl;
 
-      std::cout << alignment << shift << "[Size] "
+      std::cout << alignment << Dumpable::Shift << "[Size] "
 		<< std::hex << size << std::endl;
 
       leave();

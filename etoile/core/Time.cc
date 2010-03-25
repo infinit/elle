@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [sat mar 20 13:23:55 2010]
+// updated       julien quintard   [thu mar 25 17:48:39 2010]
 //
 
 //
@@ -116,29 +116,28 @@ namespace etoile
     Status		Time::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
-
+ 
       enter();
 
       std::cout << alignment << "[Time]" << std::endl;
 
-      std::cout << alignment << shift << "[Second] "
+      std::cout << alignment << Dumpable::Shift << "[Second] "
 		<< std::nouppercase << std::dec	
 		<< (Natural32)this->second << std::endl;
-      std::cout << alignment << shift << "[Minute] "
+      std::cout << alignment << Dumpable::Shift << "[Minute] "
 		<< std::nouppercase << std::dec
 		<< (Natural32)this->minute << std::endl;
-      std::cout << alignment << shift << "[Hour] "
+      std::cout << alignment << Dumpable::Shift << "[Hour] "
 		<< std::nouppercase << std::dec
 		<< (Natural32)this->hour << std::endl;
 
-      std::cout << alignment << shift << "[Day] "
+      std::cout << alignment << Dumpable::Shift << "[Day] "
 		<< std::nouppercase << std::dec
 		<< (Natural32)this->day << std::endl;
-      std::cout << alignment << shift << "[Month] "
+      std::cout << alignment << Dumpable::Shift << "[Month] "
 		<< std::nouppercase << std::dec
 		<< (Natural32)this->month << std::endl;
-      std::cout << alignment << shift << "[Year] "
+      std::cout << alignment << Dumpable::Shift << "[Year] "
 		<< std::nouppercase << std::dec
 		<< (Natural32)this->year << std::endl;
 

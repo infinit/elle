@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [sun mar 21 22:48:47 2010]
+// updated       julien quintard   [thu mar 25 21:17:37 2010]
 //
 
 //
@@ -40,7 +40,7 @@ namespace etoile
     ///
     Status		Wall::Initialize()
     {
-      Function<Door*>	callback(&Wall::Connection);
+      Callback<Door*>	callback(&Wall::Connection);
 
       enter();
 
@@ -53,7 +53,7 @@ namespace etoile
 	escape("unable to initialize the interface");
 
       // listen for incoming connection.
-      if (Bridge::Listen(Wall::Line, callback) == StatusError)
+      if (Lane::Listen(Wall::Line, callback) == StatusError)
 	escape("unable to listen for bridge connections");
 
       leave();
@@ -92,14 +92,15 @@ namespace etoile
       /// et verifier que l'agent n'est pas deja authentifie
 
       // retrieve the guest.
-      if (user::Guest::Retrieve((Link*)session->socket, guest) == StatusError)
+      if (user::Guest::Retrieve((Channel*)session->socket, guest) ==
+	  StatusError)
 	escape("unable to locate the sender's guest record");
 
       // allocate a new agent.
       agent = new user::Agent;
 
       // create the agent.
-      if (agent->Create(K, guest->link) == StatusError)
+      if (agent->Create(K, guest->channel) == StatusError)
 	escape("unable to create the agent");
 
       // allocate a new client.
@@ -127,9 +128,9 @@ namespace etoile
       // stop tracking the client.
       waive(client);
 
-      // detach the link from the guest so that it does not get lost.
+      // detach the channel from the guest so that it does not get lost.
       if (guest->Detach() == StatusError)
-	escape("unable to detach the link from the guest");
+	escape("unable to detach the channel from the guest");
 
       // destroy the guest.
       if (user::Guest::Remove(guest) == StatusError)
@@ -141,9 +142,11 @@ namespace etoile
 	escape("unable to encrypt the phrase");
 
       // send the challenge to the agent.
-      if (user::user.client->agent->link->Reply(
+      if (user::user.client->agent->channel->Reply(
 	    Inputs<TagWallChallenge>(code)) == StatusError)
 	escape("unable to send the challenge to the agent");
+
+      printf("[/XXX] Wall::Identify()\n");
 
       leave();
     }
@@ -172,7 +175,7 @@ namespace etoile
 
       // compare the received digest with the phrase's one.
       if (digest != d)
-	abort(user::user.client->agent->link,
+	abort(user::user.client->agent->channel,
 	      "the digest does not correspond to the encrypted phrase");
 
       // set the agent as authenticated.
@@ -180,8 +183,10 @@ namespace etoile
 	escape("unable to set the agent as authenticated");
 
       // acknowledge the authentication.
-      acknowledge(user::user.client->agent->link,
+      acknowledge(user::user.client->agent->channel,
 		  TagWallAuthenticated);
+
+      printf("[/XXX] Wall::Authenticate()\n");
 
       leave();
     }
@@ -199,27 +204,16 @@ namespace etoile
       context::Directory	context;
       hole::Address		address;
 
-      //components::Directory::Load(&context, path::Path::Root);
+      components::Directory::Load(&context, path::Path::Root);
       //components::Directory::Add(&context, "loop", context.address);
       //components::Directory::Commit(&context);
 
-      //components::Directory::Lookup(&context, "loop", address);
+      components::Directory::Lookup(&context, "loop", address);
       //components::Directory::Close(context);
 
-      //context.Dump();
+      context.Dump();
 
-      {
-	::elle::concurrency::Identifier identifier;
-	Code code;
-	Clear clear;
-
-	identifier.value = 12345;
-	printf("[identifier] %qu\n", identifier.value);
-
-	((Link*)(session->socket))->Send(Inputs< ::agent::TagDecrypt >(code), identifier);
-	((Link*)(session->socket))->Receive(identifier, Outputs< ::agent::TagDecrypted >(clear));
-	printf("AFTER\n");
-      }
+      printf("[/XXX] Wall::Connect()\n");
 
       leave();
     }

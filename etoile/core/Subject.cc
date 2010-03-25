@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [sat mar 20 13:20:21 2010]
+// updated       julien quintard   [thu mar 25 17:43:11 2010]
 //
 
 //
@@ -157,14 +157,13 @@ namespace etoile
     Status		Subject::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Subject]" << std::endl;
 
       // display the type.
-      std::cout << alignment << shift << "[Type] "
+      std::cout << alignment << Dumpable::Shift << "[Type] "
 		<< this->type << std::endl;
 
       // compare the identifier.
@@ -172,7 +171,8 @@ namespace etoile
 	{
 	case Subject::TypeUser:
 	  {
-	    std::cout << alignment << shift << "[Identifier]" << std::endl;
+	    std::cout << alignment << Dumpable::Shift
+		      << "[Identifier]" << std::endl;
 
 	    // dump the user public key.
 	    if (this->identifier.user->Dump(margin + 4) == StatusError)
@@ -182,7 +182,8 @@ namespace etoile
 	  }
 	case Subject::TypeGroup:
 	  {
-	    std::cout << alignment << shift << "[Identifier]" << std::endl;
+	    std::cout << alignment << Dumpable::Shift
+		      << "[Identifier]" << std::endl;
 
 	    // dump the group address.
 	    if (this->identifier.group->Dump(margin + 4) == StatusError)

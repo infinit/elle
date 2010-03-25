@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [sun mar 21 16:32:49 2010]
+// updated       julien quintard   [thu mar 25 20:21:26 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this array contains the interface callbacks.
     ///
-    Callback*		Interface::Callbacks[::etoile::Tags];
+    Routine*		Interface::Callbacks[::etoile::Tags];
 
 //
 // ---------- methods ---------------------------------------------------------

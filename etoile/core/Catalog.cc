@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Catalog.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat mar 20 04:09:46 2010]
+// updated       julien quintard   [thu mar 25 17:49:42 2010]
 //
 
 //
@@ -200,17 +200,16 @@ namespace etoile
     Status		Catalog::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
       Catalog::Scoutor	scoutor;
 
       enter();
 
       std::cout << alignment << "[Catalog]" << std::endl;
 
-      std::cout << alignment << shift << "[State] "
+      std::cout << alignment << Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
-      std::cout << alignment << shift << "[Entries]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Entries]" << std::endl;
 
       for (scoutor = this->entries.begin();
 	   scoutor != this->entries.end();
@@ -218,8 +217,8 @@ namespace etoile
 	{
 	  Catalog::Entry*	entry = *scoutor;
 
-	  std::cout << alignment << shift << shift << "[Name] "
-		    << entry->name << std::endl;
+	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		    << "[Name] " << entry->name << std::endl;
 
 	  if (entry->address.Dump(margin + 6) == StatusError)
 	    escape("unable to dump the address");

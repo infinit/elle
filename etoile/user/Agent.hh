@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [sun mar 21 18:26:01 2010]
+// updated       julien quintard   [thu mar 25 17:59:03 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -65,7 +65,7 @@ namespace etoile
       // methods
       //
       Status		Create(const PublicKey&,
-			       Link*);
+			       Channel*);
       Status		Authenticate();
       Status		Destroy();
 
@@ -88,7 +88,7 @@ namespace etoile
       State		state;
       Timer		timer;
       PublicKey		K;
-      Link*		link;
+      Channel*		channel;
 
       //
       // template methods

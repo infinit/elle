@@ -59,7 +59,6 @@ ADD_LIBRARY(etoile
   wall/Interface.cc
   wall/User.cc
   wall/Object.cc
-  wall/Result.cc
 )
 
 ADD_EXECUTABLE(Etoile

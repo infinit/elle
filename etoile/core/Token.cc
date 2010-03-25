@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed mar  3 16:20:05 2010]
+// updated       julien quintard   [thu mar 25 17:43:26 2010]
 //
 
 //
@@ -83,7 +83,6 @@ namespace etoile
     Status		Token::Dump(Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -96,7 +95,8 @@ namespace etoile
 	}
       else
 	{
-	  std::cout << alignment << shift << "[Code] " << none << std::endl;
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Code] " << none << std::endl;
 	}
 
       leave();

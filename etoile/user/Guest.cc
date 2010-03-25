@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Guest.cc
 //
 // created       julien quintard   [wed mar 17 22:13:51 2010]
-// updated       julien quintard   [fri mar 19 22:21:42 2010]
+// updated       julien quintard   [thu mar 25 18:23:04 2010]
 //
 
 //
@@ -35,7 +35,7 @@ namespace etoile
     const Natural32		Guest::Expiration = 2000;
 
     ///
-    /// this container holds the unconnected and auauthentified links also
+    /// this container holds the unconnected and auauthentified channels also
     /// known as guests.
     ///
     Guest::Container		Guest::Guests;
@@ -49,7 +49,7 @@ namespace etoile
     ///
     Guest::Guest():
       options(Guest::OptionNone),
-      link(NULL)
+      channel(NULL)
     {
     }
 
@@ -58,10 +58,10 @@ namespace etoile
     ///
     Guest::~Guest()
     {
-      // release the link if needed.
+      // release the channel if needed.
       if (((this->options & Guest::OptionDetach) == 0) &&
-	  (this->link != NULL))
-	delete this->link;
+	  (this->channel != NULL))
+	delete this->channel;
     }
 
 //
@@ -69,25 +69,25 @@ namespace etoile
 //
 
     ///
-    /// this method creates a guest by recording the link and setting
+    /// this method creates a guest by recording the channel and setting
     /// a timer.
     ///
-    Status		Guest::Create(Link*			link)
+    Status		Guest::Create(Channel*			channel)
     {
-      Method<>			timeout(this, &Guest::Timeout);
-      Method<const String>	error(this, &Guest::Error);
+      Callback<>		timeout(&Guest::Timeout, this);
+      Callback<const String>	error(&Guest::Error, this);
 
       enter();
 
-      // set the link attribute.
-      this->link = link;
+      // set the channel attribute.
+      this->channel = channel;
 
       // create the timer.
       if (this->timer.Create(Timer::ModeSingle, timeout) == StatusError)
 	escape("unable to create the timer");
 
       // register the error callback to the guest deletion.
-      if (this->link->Monitor(error) == StatusError)
+      if (this->channel->Monitor(error) == StatusError)
 	escape("unable to monitor the callback");
 
       // start the timer.
@@ -98,7 +98,7 @@ namespace etoile
     }
 
     ///
-    /// this method creates a guest by recording the link and setting
+    /// this method creates a guest by recording the channel and setting
     /// a timer.
     ///
     Status		Guest::Destroy()
@@ -110,14 +110,14 @@ namespace etoile
 	escape("unable to stop the timer");
 
       // withdraw the control management.
-      if (this->link->Withdraw() == StatusError)
+      if (this->channel->Withdraw() == StatusError)
 	escape("unable to withdraw the socket control");
 
       leave();
     }
 
     ///
-    /// this method detaches the link from the guest so that it does
+    /// this method detaches the channel from the guest so that it does
     /// not get deleted along with the guest.
     ///
     Status		Guest::Detach()
@@ -145,9 +145,9 @@ namespace etoile
 
       std::cout << alignment << "[Guest] " << std::hex << this << std::endl;
 
-      // dump the link.
-      if (this->link->Dump(margin + 2) == StatusError)
-	escape("unable to dump the link");
+      // dump the channel.
+      if (this->channel->Dump(margin + 2) == StatusError)
+	escape("unable to dump the channel");
 
       leave();
     }
@@ -171,7 +171,7 @@ namespace etoile
     }
 
     ///
-    /// this callbacks is triggered if an error occurs on the link.
+    /// this callbacks is triggered if an error occurs on the channel.
     ///
     Status		Guest::Error(const String&)
     {
@@ -228,18 +228,18 @@ namespace etoile
     }
 
     ///
-    /// this method tries to locate a guest based on its link.
+    /// this method tries to locate a guest based on its channel.
     ///
-    Status		Guest::Locate(Link*			link,
+    Status		Guest::Locate(Channel*			channel,
 				      Guest::Iterator&		iterator)
     {
       enter();
 
-      // look for the link.
+      // look for the channel.
       for (iterator = Guest::Guests.begin();
 	   iterator != Guest::Guests.end();
 	   iterator++)
-	if (link = (*iterator)->link)
+	if (channel = (*iterator)->channel)
 	  true();
 
       false();
@@ -248,7 +248,7 @@ namespace etoile
     ///
     /// this method returns a guest.
     ///
-    Status		Guest::Retrieve(Link*			link,
+    Status		Guest::Retrieve(Channel*		channel,
 					Guest*&			guest)
     {
       Guest::Iterator	iterator;
@@ -256,8 +256,8 @@ namespace etoile
       enter();
 
       // locate the guest.
-      if (Guest::Locate(link, iterator) != StatusTrue)
-	escape("unable to locate the link");
+      if (Guest::Locate(channel, iterator) != StatusTrue)
+	escape("unable to locate the channel");
 
       // return the value.
       guest = *iterator;
@@ -275,7 +275,7 @@ namespace etoile
       enter();
 
       // locate the guest in the list.
-      if (Guest::Locate(guest->link, iterator) != StatusTrue)
+      if (Guest::Locate(guest->channel, iterator) != StatusTrue)
 	escape("unable to locate the guest");
 
       // remove the guest.

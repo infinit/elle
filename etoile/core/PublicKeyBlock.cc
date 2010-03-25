@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [wed mar  3 16:17:04 2010]
+// updated       julien quintard   [thu mar 25 17:48:21 2010]
 //
 
 //
@@ -106,7 +106,6 @@ namespace etoile
     Status		PublicKeyBlock::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -117,7 +116,7 @@ namespace etoile
 	escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
-      std::cout << alignment << shift << "[K]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[K]" << std::endl;
       if (this->K.Dump(margin + 4) == StatusError)
 	escape("unable to dump the public key");
 

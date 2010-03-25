@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sun mar 21 17:46:39 2010]
+// updated       julien quintard   [thu mar 25 17:45:12 2010]
 //
 
 //
@@ -360,7 +360,6 @@ namespace etoile
     Status		Object::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -371,13 +370,15 @@ namespace etoile
 	escape("unable to dump the underlying public key block");
 
       // dump the owner part.
-      std::cout << alignment << shift << "[Owner]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Owner]" << std::endl;
 
-      std::cout << alignment << shift << shift << "[K]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[K]" << std::endl;
       if (this->owner.K.Dump(margin + 6) == StatusError)
 	escape("unable to dump the owner's public key");
 
-      std::cout << alignment << shift << shift << "[Signature]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Signature]" << std::endl;
       if (this->owner.signature.Dump(margin + 6) == StatusError)
 	escape("unable to dump the owner's signature");
 
@@ -386,67 +387,77 @@ namespace etoile
 	escape("unable to dump the author");
 
       // dump the meta part.
-      std::cout << alignment << shift << "[Meta]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Meta]" << std::endl;
 
-      std::cout << alignment << shift << shift << "[Owner] " << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Owner] " << std::endl;
 
-      std::cout << alignment << shift << shift << shift << "[Permissions] "
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< Dumpable::Shift << "[Permissions] "
 		<< this->meta.owner.permissions << std::endl;
 
       if (this->meta.owner.token.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta owner's token");
 
-      std::cout << alignment << shift << shift << "[Status] " << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Status] " << std::endl;
 
-      std::cout << alignment << shift << shift << shift << "[Genre] "
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< Dumpable::Shift << "[Genre] "
 		<< this->meta.status.genre << std::endl;
 
-      std::cout << alignment << shift << shift << shift << "[Stamp] "
-		<< std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< Dumpable::Shift << "[Stamp] " << std::endl;
       if (this->meta.status.stamp.Dump(margin + 8) == StatusError)
 	escape("unable to dump the meta stamp");
 
-      std::cout << alignment << shift << shift << "[Access]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Access]" << std::endl;
       if (this->meta.access.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta access address");
 
-      std::cout << alignment << shift << shift << "[Version] "
-		<< this->meta.version << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Version] " << this->meta.version << std::endl;
 
-      std::cout << alignment << shift << shift << "[Signature]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Signature]" << std::endl;
       if (this->meta.signature.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta signature");
 
-      std::cout << alignment << shift << shift << "[State] "
-		<< this->meta.state << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[State] " << this->meta.state << std::endl;
 
       // dump the data part.
-      std::cout << alignment << shift << "[Data]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
 
-      std::cout << alignment << shift << shift << "[Contents]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Contents]" << std::endl;
       if (this->data.contents.Dump(margin + 6) == StatusError)
 	escape("unable to dump the contents' address");
 
-      std::cout << alignment << shift << shift << "[Size] "
-		<< this->data.size << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Size] " << this->data.size << std::endl;
 
-      std::cout << alignment << shift << shift << "[Stamp]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Stamp]" << std::endl;
       if (this->data.stamp.Dump(margin + 6) == StatusError)
 	escape("unable to dump the data stamp");
 
-      std::cout << alignment << shift << shift << "[Fingerprint]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Fingerprint]" << std::endl;
       if (this->data.fingerprint.Dump(margin + 6) == StatusError)
 	escape("unable to dump the fingerprint");
 
-      std::cout << alignment << shift << shift << "[Version] "
-		<< this->data.version << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Version] " << this->data.version << std::endl;
 
-      std::cout << alignment << shift << shift << "[Signature]" << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[Signature]" << std::endl;
       if (this->data.signature.Dump(margin + 6) == StatusError)
 	escape("unable to dump the data signature");
 
-      std::cout << alignment << shift << shift << "[State] "
-		<< this->data.state << std::endl;
+      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		<< "[State] " << this->data.state << std::endl;
 
       leave();
     }

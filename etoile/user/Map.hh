@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Map.hh
 //
 // created       julien quintard   [fri mar 19 11:59:09 2010]
-// updated       julien quintard   [fri mar 19 20:13:19 2010]
+// updated       julien quintard   [thu mar 25 17:58:16 2010]
 //
 
 #ifndef ETOILE_USER_MAP_HH
@@ -43,7 +43,7 @@ namespace etoile
 //
 
     ///
-    /// this class enables anyone to retrive a client based on a link
+    /// this class enables anyone to retrive a client based on a channel
     /// it is associated with.
     ///
     class Map
@@ -52,8 +52,8 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<Link*, Client*>		Value;
-      typedef std::map<Link*, Client*>		Container;
+      typedef std::pair<Channel*, Client*>		Value;
+      typedef std::map<Channel*, Client*>		Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
@@ -63,11 +63,11 @@ namespace etoile
       static Status	Initialize();
       static Status	Clean();
 
-      static Status	Add(Link*,
+      static Status	Add(Channel*,
 			    Client*);
-      static Status	Retrieve(Link*,
+      static Status	Retrieve(Channel*,
 				 Client*&);
-      static Status	Remove(Link*);
+      static Status	Remove(Channel*);
 
       static Status	Show(const Natural32 = 0);
 

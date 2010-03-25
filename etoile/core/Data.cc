@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [sat mar 20 04:10:52 2010]
+// updated       julien quintard   [thu mar 25 17:49:27 2010]
 //
 
 //
@@ -124,7 +124,6 @@ namespace etoile
     Status		Data::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 

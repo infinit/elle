@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sun mar 21 20:11:45 2010]
+// updated       julien quintard   [thu mar 25 20:21:00 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -20,7 +20,6 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/wall/Result.hh>
 #include <etoile/wall/Types.hh>
 
 namespace etoile
@@ -69,18 +68,18 @@ namespace etoile
 
 // Wall
 inward(::etoile::TagWallIdentify,
-       parameters(::elle::cryptography::PublicKey));
+       parameters(const ::elle::cryptography::PublicKey));
 outward(::etoile::TagWallChallenge,
-	parameters(::elle::cryptography::Code));
+	parameters(const ::elle::cryptography::Code));
 inward(::etoile::TagWallAuthenticate,
-       parameters(::elle::cryptography::Digest));
+       parameters(const ::elle::cryptography::Digest));
 outward(::etoile::TagWallAuthenticated,
 	parameters());
 
 inward(::etoile::TagWallConnect,
-       parameters(::elle::core::String));
+       parameters(const ::elle::core::String));
 outward(::etoile::TagWallConnected,
-	parameters(::etoile::wall::Result));
+	parameters());
 
 // Object
 /*

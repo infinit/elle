@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.hh
 //
 // created       julien quintard   [wed mar  3 18:24:27 2010]
-// updated       julien quintard   [fri mar 19 23:34:15 2010]
+// updated       julien quintard   [thu mar 25 18:28:49 2010]
 //
 
 #ifndef ETOILE_WALL_INTERFACE_HH
@@ -50,7 +50,7 @@ namespace etoile
       //
       // static attributes
       //
-      static Callback*		Callbacks[::etoile::Tags];
+      static Routine*		Callbacks[::etoile::Tags];
     };
 
 //
@@ -63,12 +63,14 @@ namespace etoile
 #define InterfaceRegister(_tag_, _function_, _parameters_...)		\
   do									\
     {									\
-      Interface::Callbacks[_tag_] =					\
-        new Function<_parameters_>(&_function_);			\
+      Callback< _parameters_ >*	_callback_ =				\
+        new Callback< _parameters_ >(&_function_);			\
 									\
-      if (Network::Register<_tag_>(*Interface::Callbacks[_tag_]) ==	\
+      if (Network::Register<_tag_>(*_callback_) ==			\
           StatusError)							\
         escape("unable to register the callback");			\
+									\
+      Interface::Callbacks[_tag_] = _callback_;				\
     } while (false)
 
   }

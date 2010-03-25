@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.cc
 //
 // created       julien quintard   [thu mar 11 16:21:11 2010]
-// updated       julien quintard   [sun mar 21 17:38:48 2010]
+// updated       julien quintard   [thu mar 25 17:59:44 2010]
 //
 
 //
@@ -101,7 +101,7 @@ namespace etoile
       enter();
 
       // destroy the mapping for the agent.
-      if (Map::Remove(this->agent->link) == StatusError)
+      if (Map::Remove(this->agent->channel) == StatusError)
 	escape("unable to remove the agent mapping");
 
       // destroy the agent.
@@ -114,7 +114,7 @@ namespace etoile
 	   iterator++)
 	{
 	  // remove the mapping.
-	  if (Map::Remove((*iterator)->link) == StatusError)
+	  if (Map::Remove((*iterator)->channel) == StatusError)
 	    escape("unable to remove the application mapping");
 
 	  // destroy the application
@@ -135,8 +135,8 @@ namespace etoile
       // set the agent.
       this->agent = agent;
 
-      // add a mapping between the agent's link and the client.
-      if (Map::Add(this->agent->link, this) == StatusError)
+      // add a mapping between the agent's channel and the client.
+      if (Map::Add(this->agent->channel, this) == StatusError)
 	escape("unable to add a mapping between the agent and the client");
 
       // create the subject in order to makes manipulating the user
@@ -157,8 +157,8 @@ namespace etoile
       // add the application.
       this->applications.push_front(application);
 
-      // add a mapping between the application's link and the client.
-      if (Map::Add(application->link, this) == StatusError)
+      // add a mapping between the application's channel and the client.
+      if (Map::Add(application->channel, this) == StatusError)
 	escape("unable to add a mapping between the agent and the client");
 
       leave();
@@ -172,7 +172,7 @@ namespace etoile
     {
       enter();
 
-      // look for the link.
+      // look for the channel.
       for (iterator = this->applications.begin();
 	   iterator != this->applications.end();
 	   iterator++)
@@ -214,7 +214,6 @@ namespace etoile
     Status		Client::Dump(const Natural32		margin) const
     {
       String			alignment(margin, ' ');
-      String			shift(2, ' ');
       Client::A::Scoutor	scoutor;
 
       enter();
@@ -222,7 +221,7 @@ namespace etoile
       std::cout << alignment << "[Client] " << std::hex << this << std::endl;
 
       // dump the phrase
-      std::cout << alignment << shift << "[Phrase] "
+      std::cout << alignment << Dumpable::Shift << "[Phrase] "
 		<< this->phrase << std::endl;
 
       // dump the agent.
@@ -336,7 +335,6 @@ namespace etoile
     {
       Client::C::Scoutor	scoutor;
       String			alignment(margin, ' ');
-      String			shift(2, ' ');
 
       enter();
 

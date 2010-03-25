@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [sat mar 20 13:20:13 2010]
+// updated       julien quintard   [thu mar 25 17:49:05 2010]
 //
 
 //
@@ -151,13 +151,12 @@ namespace etoile
     Status		Author::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Author]" << std::endl;
 
-      std::cout << alignment << shift << "[Mode] "
+      std::cout << alignment << Dumpable::Shift << "[Mode] "
 		<< this->mode << std::endl;
 
       if (this->proof != NULL)
@@ -167,7 +166,8 @@ namespace etoile
 	}
       else
 	{
-	  std::cout << alignment << shift << "[Proof] " << none << std::endl;
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Proof] " << none << std::endl;
 	}
 
       leave();

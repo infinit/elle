@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [wed mar 17 17:45:38 2010]
+// updated       julien quintard   [thu mar 25 17:51:43 2010]
 //
 
 //
@@ -67,7 +67,6 @@ namespace etoile
     Status		Route::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
       Route::Scoutor	scoutor;
 
       enter();
@@ -78,7 +77,7 @@ namespace etoile
       for (scoutor = this->elements.begin();
 	   scoutor != this->elements.end();
 	   scoutor++)
-	std::cout << alignment << shift << *scoutor << std::endl;
+	std::cout << alignment << Dumpable::Shift << *scoutor << std::endl;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [sat mar 20 13:27:29 2010]
+// updated       julien quintard   [thu mar 25 17:51:28 2010]
 //
 
 //
@@ -47,7 +47,6 @@ namespace etoile
     Status		Venue::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
       Venue::Scoutor	scoutor;
 
       enter();

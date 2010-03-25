@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [wed mar  3 16:33:49 2010]
+// updated       julien quintard   [thu mar 25 17:50:47 2010]
 //
 
 //
@@ -179,13 +179,12 @@ namespace etoile
     Status		Unit::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Unit] " << std::endl;
 
-      std::cout << alignment << shift << "[Path] "
+      std::cout << alignment << Dumpable::Shift << "[Path] "
 		<< std::hex << this->path << std::endl;
 
       leave();

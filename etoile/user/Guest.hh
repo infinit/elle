@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Guest.hh
 //
 // created       julien quintard   [wed mar 17 21:49:41 2010]
-// updated       julien quintard   [fri mar 19 19:10:52 2010]
+// updated       julien quintard   [thu mar 25 18:02:10 2010]
 //
 
 #ifndef ETOILE_USER_GUEST_HH
@@ -69,7 +69,7 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(Link*);
+      Status		Create(Channel*);
       Status		Detach();
       Status		Destroy();
 
@@ -87,9 +87,9 @@ namespace etoile
       static Status	Clean();
 
       static Status	Add(Guest*);
-      static Status	Locate(Link*,
+      static Status	Locate(Channel*,
 			       Iterator&);
-      static Status	Retrieve(Link*,
+      static Status	Retrieve(Channel*,
 				 Guest*&);
       static Status	Remove(Guest*);
 
@@ -111,7 +111,7 @@ namespace etoile
       //
       Timer		timer;
       Options		options;
-      Link*		link;
+      Channel*		channel;
     };
 
   }

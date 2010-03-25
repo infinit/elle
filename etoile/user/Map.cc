@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Map.cc
 //
 // created       julien quintard   [fri mar 19 13:37:42 2010]
-// updated       julien quintard   [fri mar 19 19:47:15 2010]
+// updated       julien quintard   [thu mar 25 17:58:49 2010]
 //
 
 //
@@ -27,8 +27,8 @@ namespace etoile
 //
 
     ///
-    /// this container holds the links in use in order to speed up the
-    /// process of retrieving a client from a link.
+    /// this container holds the channels in use in order to speed up the
+    /// process of retrieving a client from a channel.
     ///
     Map::Container			Map::Mappings;
 
@@ -70,7 +70,7 @@ namespace etoile
     ///
     /// this method adds a mapping.
     ///
-    Status		Map::Add(Link*				link,
+    Status		Map::Add(Channel*			channel,
 				 Client*			client)
     {
       std::pair<Map::Iterator, Boolean>		result;
@@ -78,7 +78,7 @@ namespace etoile
       enter();
 
       // insert the new mapping.
-      result = Map::Mappings.insert(Map::Value(link, client));
+      result = Map::Mappings.insert(Map::Value(channel, client));
 
       // check the result.
       if (result.second != true)
@@ -88,9 +88,9 @@ namespace etoile
     }
 
     ///
-    /// this method retrieves a client from its associated link.
+    /// this method retrieves a client from its associated channel.
     ///
-    Status		Map::Retrieve(Link*			link,
+    Status		Map::Retrieve(Channel*			channel,
 				      Client*&			client)
     {
       Map::Iterator	iterator;
@@ -98,11 +98,11 @@ namespace etoile
       enter();
 
       // find the entry.
-      iterator = Map::Mappings.find(link);
+      iterator = Map::Mappings.find(channel);
 
       // check the result.
       if (iterator == Map::Mappings.end())
-	escape("unable to locate the given link");
+	escape("unable to locate the given channel");
 
       // set the client.
       client = iterator->second;
@@ -113,13 +113,13 @@ namespace etoile
     ///
     /// this method removes a mapping.
     ///
-    Status		Map::Remove(Link*			link)
+    Status		Map::Remove(Channel*			channel)
     {
       enter();
 
       // remove the entry.
-      if (Map::Mappings.erase(link) != 1)
-	escape("unable to remove the given link");
+      if (Map::Mappings.erase(channel) != 1)
+	escape("unable to remove the given channel");
 
       leave();
     }
@@ -131,7 +131,6 @@ namespace etoile
     {
       Map::Scoutor	scoutor;
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -143,7 +142,7 @@ namespace etoile
 	   scoutor++)
 	{
 	  // print the record.
-	  std::cout << alignment << shift << "[Link/Client] "
+	  std::cout << alignment << Dumpable::Shift << "[Channel/Client] "
 		    << std::hex << scoutor->first << " / "
 		    << std::hex << scoutor->second << std::endl;
 	}

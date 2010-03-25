@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [wed mar  3 16:37:00 2010]
+// updated       julien quintard   [thu mar 25 17:51:09 2010]
 //
 
 //
@@ -46,7 +46,6 @@ namespace etoile
     Status		Block::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -57,7 +56,7 @@ namespace etoile
 	escape("unable to dump the address");
 
       // dump the family.
-      std::cout << alignment << shift << "[Family] "
+      std::cout << alignment << Dumpable::Shift << "[Family] "
 		<< this->family << std::endl;
 
       leave();

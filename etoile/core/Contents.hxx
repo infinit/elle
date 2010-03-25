@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/core/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [sat mar 20 04:13:30 2010]
+// updated       julien quintard   [thu mar 25 17:49:18 2010]
 //
 
 #ifndef ETOILE_CORE_CONTENTS_HXX
@@ -165,7 +165,6 @@ namespace etoile
     Status		Contents<T>::Dump(Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -178,7 +177,8 @@ namespace etoile
       // if present, dump the content.
       if (this->content != NULL)
 	{
-	  std::cout << alignment << shift << "[Content]" << std::endl;
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Content]" << std::endl;
 
 	  if (this->content->Dump(margin + 4) == StatusError)
 	    escape("unable to dump the content");
@@ -187,7 +187,8 @@ namespace etoile
       // if present, dump the cipher.
       if (this->cipher != NULL)
 	{
-	  std::cout << alignment << shift << "[Cipher]" << std::endl;
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Cipher]" << std::endl;
 
 	  if (this->cipher->Dump(margin + 4) == StatusError)
 	    escape("unable to dump the cipher");
