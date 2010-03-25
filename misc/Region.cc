@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [wed mar 24 23:54:13 2010]
+// updated       julien quintard   [thu mar 25 17:40:38 2010]
 //
 
 //
@@ -384,10 +384,9 @@ namespace elle
 
       for (i = 0; i < this->size; i++)
 	{
-	  String	shift(2, ' ');
-
 	  if (i == 0)
-	    std::cout << alignment << shift << std::nouppercase << std::hex
+	    std::cout << alignment << Dumpable::Shift
+		      << std::nouppercase << std::hex
 		      << (Natural32)this->contents[i];
 	  else
 	    std::cout << std::hex << std::nouppercase
@@ -398,7 +397,7 @@ namespace elle
 	      std::cout << std::endl;
 
 	      if ((i + 1) < this->size)
-		std::cout << alignment << shift;
+		std::cout << alignment << Dumpable::Shift;
 	    }
 	  else
 	    {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.hh
 //
 // created       julien quintard   [mon feb  9 21:22:34 2009]
-// updated       julien quintard   [sat mar 20 02:41:42 2010]
+// updated       julien quintard   [thu mar 25 17:56:34 2010]
 //
 
 #ifndef ELLE_IO_DUMPABLE_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
 
 #include <elle/misc/Status.hh>
 
@@ -40,6 +41,11 @@ namespace elle
     class Dumpable
     {
     public:
+      //
+      // constants
+      //
+      static const String		Shift;
+
       //
       // constructors & destructors
       //

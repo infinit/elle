@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.hh
 //
 // created       julien quintard   [tue mar 16 12:04:48 2010]
-// updated       julien quintard   [sun mar 21 16:39:14 2010]
+// updated       julien quintard   [thu mar 25 16:20:12 2010]
 //
 
 #ifndef ELLE_NETWORK_PARCEL_HH
@@ -34,7 +34,8 @@ namespace elle
     ///
     /// this class is just a wrapper for packets freshly received.
     ///
-    class Parcel
+    class Parcel:
+      public Dumpable
     {
     public:
       //
@@ -45,6 +46,13 @@ namespace elle
 	     Header*,
 	     Data*);
       ~Parcel();
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

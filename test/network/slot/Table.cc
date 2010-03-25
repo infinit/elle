@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.cc
 //
 // created       julien quintard   [wed mar 17 13:23:40 2010]
-// updated       julien quintard   [wed mar 17 17:26:56 2010]
+// updated       julien quintard   [thu mar 25 18:17:00 2010]
 //
 
 //
@@ -31,7 +31,7 @@ namespace elle
     ///
     Status		Table::Create(Node*			node)
     {
-      Method<>			refresh(this, &Table::Refresh);
+      Callback<>	refresh(&Table::Refresh, this);
 
       enter();
 

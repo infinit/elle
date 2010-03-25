@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed mar 17 14:05:56 2010]
+// updated       julien quintard   [thu mar 25 19:28:51 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -69,8 +69,8 @@ namespace elle
       //
       // callbacks
       //
-      Status		Handle(String&,
-			       Table&);
+      Status		Handle(const String&,
+			       const Table&);
       Status		Refresh();
     };
 

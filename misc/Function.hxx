@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [thu mar 25 00:26:06 2010]
+// updated       julien quintard   [thu mar 25 17:39:02 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HXX
@@ -35,8 +35,6 @@ namespace elle
     ///
     template <typename... T>
     Function<T...>::Function(Handler				handler):
-      Routine::Routine(Routine::TypeFunction),
-
       handler(handler)
     {
     }
@@ -55,21 +53,10 @@ namespace elle
 //
 
     ///
-    /// this method triggers the handler by considering arguments as pointers:
-    /// especially required by entrances.
+    /// this method calls the handler.
     ///
     template <typename... T>
-    Status		Function<T...>::Trigger(T*...		arguments)
-    {
-      return (this->handler(arguments...));
-    }
-
-    ///
-    /// this method calls the handler by considering arguments as references:
-    /// especially required by callbacks.
-    ///
-    template <typename... T>
-    Status		Function<T...>::Call(T&...		arguments)
+    Status		Function<T...>::Call(T...		arguments)
     {
       return (this->handler(arguments...));
     }
@@ -94,18 +81,17 @@ namespace elle
     Status		Function<T...>::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Function]" << std::endl;
 
       // dump the quantum.
-      std::cout << alignment << shift << "[Quantum] "
+      std::cout << alignment << Dumpable::Shift << "[Quantum] "
 		<< std::dec << sizeof...(T) << std::endl;
 
       // dump the handler.
-      std::cout << alignment << shift << "[Handler] "
+      std::cout << alignment << Dumpable::Shift << "[Handler] "
 		<< std::hex << this->handler << std::endl;
 
       leave();

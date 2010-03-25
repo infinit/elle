@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Routine.hh
 //
 // created       julien quintard   [wed mar 24 19:50:08 2010]
-// updated       julien quintard   [thu mar 25 00:39:56 2010]
+// updated       julien quintard   [thu mar 25 15:22:21 2010]
 //
 
 #ifndef ELLE_MISC_ROUTINE_HH
@@ -52,8 +52,16 @@ namespace elle
 	{
 	  TypeUnknown,
 
-	  TypeFunction,
-	  TypeMethod
+	  TypeCallback,
+	  TypeEntrance
+	};
+
+      enum Scheme
+	{
+	  SchemeUnknown,
+
+	  SchemeFunction,
+	  SchemeMethod
 	};
 
       //
@@ -61,14 +69,6 @@ namespace elle
       //
       Routine();
       Routine(const Type);
-
-      //
-      // methods
-      //
-      template <typename... T>
-      Status		Trigger(T*...);
-      template <typename... T>
-      Status		Call(T&...);
 
       //
       // interfaces
@@ -89,11 +89,5 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <elle/misc/Routine.hxx>
 
 #endif

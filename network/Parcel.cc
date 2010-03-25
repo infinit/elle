@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [sun mar 21 16:40:21 2010]
+// updated       julien quintard   [thu mar 25 16:22:17 2010]
 //
 
 //
@@ -64,6 +64,39 @@ namespace elle
       // release the data.
       if (this->data != NULL)
 	delete this->data;
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the parcel's content.
+    ///
+    Status		Parcel::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Parcel] " << std::hex << this << std::endl;
+
+      // dump the session.
+      if (this->session != NULL)
+	if (this->session->Dump(margin + 2) == StatusError)
+	  escape("unable to dump the session");
+
+      // dump the header.
+      if (this->header != NULL)
+	if (this->header->Dump(margin + 2) == StatusError)
+	  escape("unable to dump the header");
+
+      // dump the data.
+      if (this->data != NULL)
+	if (this->data->Dump(margin + 2) == StatusError)
+	  escape("unable to dump the data");
+
+      leave();
     }
 
   }

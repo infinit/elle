@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Frame.cc
 //
 // created       julien quintard   [tue mar 23 14:22:43 2010]
-// updated       julien quintard   [wed mar 24 00:01:03 2010]
+// updated       julien quintard   [thu mar 25 22:29:17 2010]
 //
 
 //
@@ -75,15 +75,14 @@ namespace elle
     Status		Frame::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Frame] " << std::hex << this << std::endl;
 
       // dump the stack address.
-      std::cout << alignment << shift << "[Stack] "
-		<< std::hex << this->stack << std::endl;
+      std::cout << alignment << Dumpable::Shift << "[Stack] "
+		<< std::hex << (Void*)this->stack << std::endl;
 
       leave();
     }

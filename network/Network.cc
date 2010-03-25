@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [wed mar 24 14:05:59 2010]
+// updated       julien quintard   [thu mar 25 22:54:37 2010]
 //
 
 //
@@ -80,7 +80,7 @@ namespace elle
     /// note that the input variables are not tracked for automatic
     /// deletion because the caller should already been tracking them.
     ///
-    Status		Network::Dispatch(Parcel*		p)
+    Status		Network::Dispatch(Parcel*&		p)
     {
       Network::Scoutor		scoutor;
       Parcel*			parcel;
@@ -90,8 +90,8 @@ namespace elle
       // retrieve the argument and takes over the tracking.
       parcel = p;
 
-      printf("[XXX] Network::Dispatch(tag[%u] identifier[%qu])\n",
-	     parcel->header->tag, parcel->header->event.identifier);
+      //printf("[XXX] Network::Dispatch(tag[%u] event[%qu])\n",
+      //parcel->header->tag, parcel->header->event.identifier);
 
       //
       // first, try to  wake up a waiting slot.
@@ -159,7 +159,6 @@ namespace elle
     Status		Network::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
       Network::Scoutor	scoutor;
 
       enter();
@@ -175,7 +174,7 @@ namespace elle
 	     scoutor++)
 	  {
 	    // dump the tag.
-	    std::cout << alignment << shift << "[Tag] "
+	    std::cout << alignment << Dumpable::Shift << "[Tag] "
 		      << std::dec << scoutor->first << std::endl;
 
 	    // dump the functionoid.

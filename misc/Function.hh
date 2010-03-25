@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [thu mar 25 00:39:11 2010]
+// updated       julien quintard   [thu mar 25 02:24:03 2010]
 //
 
 #ifndef ELLE_MISC_FUNCTION_HH
@@ -21,7 +21,6 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/misc/Status.hh>
-#include <elle/misc/Routine.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -41,7 +40,8 @@ namespace elle
     ///
     template <typename... T>
     class Function:
-      public Routine
+      public Entity,
+      public Dumpable
     {
     public:
       //
@@ -58,8 +58,7 @@ namespace elle
       //
       // methods
       //
-      Status		Trigger(T*...);
-      Status		Call(T&...);
+      Status		Call(T...);
 
       //
       // interfaces

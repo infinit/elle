@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [thu mar 25 00:03:06 2010]
+// updated       julien quintard   [thu mar 25 22:54:44 2010]
 //
 
 //
@@ -162,22 +162,21 @@ namespace elle
     Status		Door::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
       std::cout << alignment << "[Door]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << shift << "[Valid] "
+      std::cout << alignment << Dumpable::Shift << "[Valid] "
 		<< this->socket->isValid() << std::endl;
 
       // dump the full socket path name.
-      std::cout << alignment << shift << "[Path] "
+      std::cout << alignment << Dumpable::Shift << "[Path] "
 		<< this->socket->fullServerName().toStdString() << std::endl;
 
       // dump the peer name.
-      std::cout << alignment << shift << "[Peer] "
+      std::cout << alignment << Dumpable::Shift << "[Peer] "
 		<< this->socket->serverName().toStdString() << std::endl;
 
       leave();
@@ -194,16 +193,20 @@ namespace elle
     /// written completely ::QLocalSocket::LocalSocketError because the
     /// QT parser is incapable of recognising the type.
     ///
-    void		Door::Error(QLocalSocket::LocalSocketError	error)
+    void		Door::Error(QLocalSocket::LocalSocketError)
     {
-      String		text(this->socket->errorString().toStdString());
-
       enter();
 
-      // trigger the callback if it has been registered.
+      // only process the error if a monitor callback has been registered.
       if (this->callback != NULL)
-	if (this->callback->Call(text) == StatusError)
-	  alert("an error occured in the callback");
+	{
+	  String		text(this->socket->errorString().toStdString());
+	  Closure<const String>	closure(*this->callback, text);
+
+	  // spawn a fiber.
+	  if (Fiber::Spawn(closure) == StatusError)
+	    alert("an error occured in the fiber");
+	}
 
       release();
     }
@@ -221,14 +224,13 @@ namespace elle
     ///
     void		Door::Fetch()
     {
-      /*
-      Entrance<Parcel*>	entrance(&Network::Dispatch);
+      Callback<Parcel*>	callback(&Network::Dispatch);
       Raw*		raw;
       Address		address;
 
       enter(instance(raw));
 
-      printf("[XXX] Door::Fetch(%u)\n", this->socket->bytesAvailable());
+      //printf("[XXX] Door::Fetch(%u)\n", this->socket->bytesAvailable());
 
       //
       // read the pending datagrams in a raw.
@@ -359,11 +361,14 @@ namespace elle
 				      parcel->header->event) == StatusError)
 	    alert("unable to create the session");
 
+	  // prepare the closure.
+	  Closure<Parcel*>	closure(callback, parcel);
+
 	  // record this packet to the network manager.
 	  //
 	  // note that a this point, the network is responsible for the
 	  // parcel and its memory.
-	  if (Fiber::Spawn(&entrance, parcel) == StatusError)
+	  if (Fiber::Spawn(closure) == StatusError)
 	    {
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().
@@ -383,7 +388,6 @@ namespace elle
 	}
 
       release();
-      */
     }
 
   }

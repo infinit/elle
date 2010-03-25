@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Neighbour.cc
 //
 // created       julien quintard   [wed mar 17 11:23:38 2010]
-// updated       julien quintard   [wed mar 17 17:26:37 2010]
+// updated       julien quintard   [thu mar 25 18:16:53 2010]
 //
 
 //
@@ -33,7 +33,7 @@ namespace elle
 					  const Address&	address,
 					  const String&		name)
     {
-      Method<>		discard(this, &Neighbour::Discard);
+      Callback<>	discard(&Neighbour::Discard, this);
 
       enter();
 
@@ -125,7 +125,6 @@ namespace elle
     Status		Neighbour::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -136,7 +135,8 @@ namespace elle
 	escape("unable to dump the address");
 
       // dump the name.
-      std::cout << alignment << shift << "[Name] " << this->name << std::endl;
+      std::cout << alignment << Dumpable::Shift
+		<< "[Name] " << this->name << std::endl;
 
       leave();
     }

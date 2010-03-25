@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed mar 24 15:04:07 2010]
+// updated       julien quintard   [thu mar 25 19:35:47 2010]
 //
 
 //
@@ -48,9 +48,9 @@ namespace elle
     ///
     Status		Node::Run()
     {
-      Method<String, Table>	handle(this, &Node::Handle);
-      Host			local;
-      Address			remote;
+      Callback<const String, const Table>	handle(&Node::Handle, this);
+      Host					local;
+      Address					remote;
 
       enter();
 
@@ -92,8 +92,8 @@ namespace elle
     ///
     /// this method handles probe packets.
     ///
-    Status		Node::Handle(String&			name,
-				     Table&			table)
+    Status		Node::Handle(const String&		name,
+				     const Table&		table)
     {
       enter();
 

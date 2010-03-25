@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sun mar 21 16:01:16 2010]
+// updated       julien quintard   [thu mar 25 20:29:13 2010]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -53,6 +53,6 @@ namespace elle
 
 // Error
 outward(::elle::TagError,
-	parameters(::elle::misc::Report));
+	parameters(const ::elle::misc::Report));
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Manifest.hh
 //
 // created       julien quintard   [tue feb 23 21:40:13 2010]
-// updated       julien quintard   [wed mar 24 14:48:36 2010]
+// updated       julien quintard   [thu mar 25 19:25:37 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_PROBE_HH
@@ -48,7 +48,7 @@ namespace elle
 //
 
 outward(::elle::test::TagProbe,
-	parameters(::elle::core::String,
-		   ::elle::test::Table));
+	parameters(const ::elle::core::String,
+		   const ::elle::test::Table));
 
 #endif

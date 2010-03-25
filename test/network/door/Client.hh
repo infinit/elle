@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed mar 17 10:37:12 2010]
+// updated       julien quintard   [thu mar 25 20:20:18 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_CLIENT_HH
@@ -54,7 +54,7 @@ namespace elle
       //
       // callbacks
       //
-      Status		Challenge(String&);
+      Status		Challenge(const String&);
 
       //
       // attributes

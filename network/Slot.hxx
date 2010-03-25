@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [tue mar 23 21:08:48 2010]
+// updated       julien quintard   [thu mar 25 22:55:29 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -59,7 +59,8 @@ namespace elle
       if (packet.Serialize(header, data) == StatusError)
 	escape("unable to serialize the message");
 
-      printf("[XXX] Slot::Send(%u)\n", packet.size);
+      //printf("[XXX] Slot::Send(tag[%u] identifier[%qu])\n",
+      //header.tag, header.event.identifier);
 
       // push the datagram into the socket.
       if (this->socket->writeDatagram((char*)packet.contents,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [sat mar 20 13:14:48 2010]
+// updated       julien quintard   [thu mar 25 17:42:14 2010]
 //
 
 //
@@ -133,7 +133,6 @@ namespace elle
     Status		Address::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      String		shift(2, ' ');
 
       enter();
 
@@ -142,7 +141,7 @@ namespace elle
       if (this->host.Dump(margin + 2) == StatusError)
 	escape("unable to dump the host");
 
-      std::cout << alignment << shift << "[Port] "
+      std::cout << alignment << Dumpable::Shift << "[Port] "
 		<< std::dec << this->port << std::endl;
 
       leave();
