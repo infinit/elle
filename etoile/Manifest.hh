@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [thu mar 25 20:21:00 2010]
+// updated       julien quintard   [sat mar 27 06:43:52 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -22,12 +22,40 @@
 
 #include <etoile/wall/Types.hh>
 
+//
+// ---------- constants -------------------------------------------------------
+//
+
 namespace etoile
 {
+
+  ///
+  /// XXX
+  ///
+  extern const Character	Component[];
+
+  ///
+  /// XXX
+  ///
+  const Natural32		Tags = 100;
+
+}
+
+//
+// ---------- range -----------------------------------------------------------
+//
+
+///
+/// XXX
+///
+range(::etoile::Component, ::etoile::Tags, ::elle::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
 //
+
+namespace etoile
+{
 
   //
   // enumerations
@@ -35,7 +63,7 @@ namespace etoile
   enum Tag
     {
       // Wall
-      TagWallIdentify = ::elle::Tags, // XXX
+      TagWallIdentify = Range<Component>::First,
       TagWallChallenge,
       TagWallAuthenticate,
       TagWallAuthenticated,
@@ -51,9 +79,7 @@ namespace etoile
       TagObjectAccessList,
       TagObjectAccessGrant,
       TagObjectAccessRevoke,
-      TagObjectAccessUpdate,
-
-      Tags = TagObjectAccessUpdate + 1
+      TagObjectAccessUpdate
     };
 
 }
@@ -96,5 +122,11 @@ Manifest(::etoile::TagObjectInformation,
 Manifest(::etoile::TagObjectDestroy,
 	 ::etoile::wall::Identifier);
 */
+
+//
+// ---------- dependencies ----------------------------------------------------
+//
+
+#include <agent/Manifest.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [thu mar 25 23:20:44 2010]
+// updated       julien quintard   [fri mar 26 13:02:21 2010]
 //
 
 //
@@ -169,19 +169,16 @@ namespace etoile
     ///
     /// this callbacks is triggered if the time frame expires.
     ///
+    /// the call is just forwarded to the Error() callback.
+    ///
     Status		Agent::Timeout()
     {
       Client*		client;
 
       enter();
 
-      // retrieve the client related to this agent's channel.
-      if (Map::Retrieve(this->channel, client) == StatusError)
-	escape("unable to retrieve the client associated with the agent");
-
-      // remove the whole client since the agent timed-out.
-      if (Client::Remove(client) == StatusError)
-	escape("unable to remove the client");
+      if (this->Error("the agent has timed out") == StatusError)
+	escape("an error occured in the Error() callback\n");
 
       leave();
     }
@@ -189,23 +186,39 @@ namespace etoile
     ///
     /// this callbacks is triggered if an error occurs on the channel.
     ///
-    Status		Agent::Error(const String&)
+    Status		Agent::Error(const String&		error)
     {
-      Client*		client;
+      Client::A::Iterator	iterator;
+      Report			report;
+      Client*			client;
 
       enter();
-
-      printf("[/XXX] Agent::Error()\n");
 
       // retrieve the client related to this agent's channel.
       if (Map::Retrieve(this->channel, client) == StatusError)
 	escape("unable to retrieve the client associated with the agent");
 
+      // record an error message.
+      report.Record(Report::TypeError,
+		    "",
+		    error);
+
+      // go through the client's applications.
+      for (iterator = client->applications.begin();
+	   iterator != client->applications.end();
+	   iterator++)
+	{
+	  Application*		application = *iterator;
+
+	  // send an error message to the application without caring
+	  // if it succeeds as we just want to inform everyone before
+	  // shutting every application related to this agent down.
+	  application->channel->Send(Inputs<TagError>(report));
+	}
+
       // remove the whole client since the agent timed-out.
       if (Client::Remove(client) == StatusError)
 	escape("unable to remove the client");
-
-      printf("[/XXX] Agent::Error()\n");
 
       leave();
     }

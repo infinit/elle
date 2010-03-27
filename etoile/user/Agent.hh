@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [thu mar 25 17:59:03 2010]
+// updated       julien quintard   [sat mar 27 11:37:53 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -22,7 +22,7 @@
 
 #include <etoile/user/Map.hh>
 
-#include <agent/Manifest.hh>
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -36,6 +36,10 @@ namespace etoile
     ///
     /// this class acts on the behalf of a user by performing cryptographic
     /// operations or, whenever unable, requesting the agent to do it.
+    ///
+    /// note that the Decrypt() and Sign() methods are virtual so
+    /// that an application using the Etoile library can overwrite these
+    /// methods, to prevent network communication with the Agent for instance.
     ///
     class Agent:
       public Dumpable
@@ -95,9 +99,9 @@ namespace etoile
       //
       template <typename... T>
       Status		Encrypt(T&...) const;
-      Status		Decrypt(const Code&,
+      virtual Status	Decrypt(const Code&,
 				Clear&) const;
-      Status		Sign(const Plain&,
+      virtual Status	Sign(const Plain&,
 			     Signature&) const;
       template <typename... T>
       Status		Verify(T&...) const;

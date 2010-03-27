@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [sun mar 21 22:05:46 2010]
+// updated       julien quintard   [sat mar 27 06:12:38 2010]
 //
 
 //
@@ -19,6 +19,15 @@
 
 namespace etoile
 {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+  ///
+  /// this value defines the component's name.
+  ///
+  const Character		Component[] = "etoile";
 
 //
 // ---------- methods ---------------------------------------------------------

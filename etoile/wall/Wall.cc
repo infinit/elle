@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [thu mar 25 21:17:37 2010]
+// updated       julien quintard   [fri mar 26 12:31:41 2010]
 //
 
 //
@@ -199,19 +199,6 @@ namespace etoile
       enter();
 
       printf("[XXX] Wall::Connect()\n");
-
-      // XXX
-      context::Directory	context;
-      hole::Address		address;
-
-      components::Directory::Load(&context, path::Path::Root);
-      //components::Directory::Add(&context, "loop", context.address);
-      //components::Directory::Commit(&context);
-
-      components::Directory::Lookup(&context, "loop", address);
-      //components::Directory::Close(context);
-
-      context.Dump();
 
       printf("[/XXX] Wall::Connect()\n");
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Guest.cc
 //
 // created       julien quintard   [wed mar 17 22:13:51 2010]
-// updated       julien quintard   [thu mar 25 18:23:04 2010]
+// updated       julien quintard   [fri mar 26 12:30:49 2010]
 //
 
 //
@@ -109,9 +109,13 @@ namespace etoile
       if (this->timer.Stop() == StatusError)
 	escape("unable to stop the timer");
 
-      // withdraw the control management.
-      if (this->channel->Withdraw() == StatusError)
-	escape("unable to withdraw the socket control");
+      // withdraw the control management. note however that if the
+      // guest's socket has been detached, the monitoring must not
+      // withdrawn since the socket is going to be used somewhere else,
+      // like in the Agent.
+      if ((this->options & Guest::OptionDetach) == 0)
+	if (this->channel->Withdraw() == StatusError)
+	  escape("unable to withdraw the socket control");
 
       leave();
     }
