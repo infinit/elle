@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [thu mar 25 20:46:47 2010]
+// updated       julien quintard   [sat mar 27 00:47:43 2010]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -20,7 +20,6 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/Manifest.hh>
 #include <agent/Manifest.hh>
 
 #include <elle/idiom/Close.hh>

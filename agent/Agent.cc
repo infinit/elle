@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu mar 25 22:54:12 2010]
+// updated       julien quintard   [sat mar 27 11:42:52 2010]
 //
 
 //
@@ -25,10 +25,15 @@ namespace agent
 //
 
   ///
+  /// this value defines the component's name.
+  ///
+  const Character	Component[] = "agent";
+
+  ///
   /// this string contains the path to the user infinit configuration
   /// directory.
   ///
-  const String		Agent::Path("/home/mycure/.infinit");
+  const String		Agent::Path = System::Path::Home + "/.infinit";
 
   ///
   /// this string represents the door's name to Etoile.
@@ -70,7 +75,11 @@ namespace agent
     Region		region;
     struct ::stat	stat;
     String		path = Agent::Path + "/keys/" + name + ".pair";
-    Natural32		fd;
+    Integer32		fd;
+    String		prompt;
+    String		passphrase;
+    SecretKey		key;
+    Cipher		cipher;
 
     enter();
 
@@ -80,7 +89,7 @@ namespace agent
     {
       // get the file status.
       if (::stat(path.c_str(), &stat) == -1)
-	escape(::strerror(errno));
+	escape("unable to access the user's key pair");
 
       // prepare the region.
       if (region.Prepare(stat.st_size) == StatusError)
@@ -101,19 +110,32 @@ namespace agent
 	  escape("unable to read the key pair file");
 	}
 
+      // close the file.
+      ::close(fd);
+
       // detach the contents from the region.
       if (region.Detach() == StatusError)
 	escape("unable to detach the contents from the region");
 
-      /// XXX \todo prompt the user for a passphrase and decrypt the content.
-
-      // prepare the archive.
+      // prepare the archive with the region.
       if (archive.Prepare(region) == StatusError)
-	escape("unable to prepare the region");
+	escape("unable to prepare the archive");
 
-      // extract the key pair.
-      if (archive.Extract(Agent::Pair) == StatusError)
-	escape("unable to extract the key pair");
+      // extract the cipher from the ciphered archive.
+      if (archive.Extract(cipher) == StatusError)
+	escape("unable to extract the cipher");
+
+      // prompt the user for the passphrase.
+      prompt = "Enter passphrase for keypair '" + path + "': ";
+      passphrase = String(::getpass(prompt.c_str()));
+
+      // create a secret key with this passphrase.
+      if (key.Create(passphrase) == StatusError)
+	escape("unable to create the secret key");
+
+      // decrypt the keypair file content with the secret key.
+      if (key.Decrypt(cipher, Agent::Pair) == StatusError)
+	escape("unable to decrypt the keypair");
     }
 
     //
@@ -236,9 +258,6 @@ namespace agent
 	    Outputs< ::etoile::TagWallAuthenticated >()) == StatusError)
 	escape("unable to authenticate to etoile");
     }
-
-    printf("OK\n");
-    Agent::Channel.Send(Inputs< ::etoile::TagWallConnect >(Agent::Phrase));
 
     leave();
   }

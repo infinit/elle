@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:34:08 2010]
-// updated       julien quintard   [thu mar 25 21:21:44 2010]
+// updated       julien quintard   [sat mar 27 06:43:55 2010]
 //
 
 #ifndef AGENT_MANIFEST_HH
@@ -19,6 +19,36 @@
 //
 
 #include <elle/Elle.hh>
+
+#include <etoile/Manifest.hh>
+
+//
+// ---------- constants -------------------------------------------------------
+//
+
+namespace agent
+{
+
+  ///
+  /// XXX
+  ///
+  extern const Character	Component[];
+
+  ///
+  /// XXX
+  ///
+  const Natural32		Tags = 2;
+
+}
+
+//
+// ---------- range -----------------------------------------------------------
+//
+
+///
+/// XXX
+///
+range(::agent::Component, ::agent::Tags, ::etoile::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -32,15 +62,10 @@ namespace agent
   //
   enum Tag
     {
-      /// XXX \todo trouver un truc plus propre pour eviter les collisions
-      TagNone = 10000,
-
-      TagDecrypt,
+      TagDecrypt = Range<Component>::First,
       TagDecrypted,
       TagSign,
       TagSigned,
-
-      Tags = TagSign + 1
     };
 
 }
@@ -48,6 +73,10 @@ namespace agent
 //
 // ---------- manifest --------------------------------------------------------
 //
+
+///
+/// below are the definitions of the Agent messages.
+///
 
 inward(::agent::TagDecrypt,
        parameters(const ::elle::cryptography::Code));
