@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [thu mar 25 03:06:55 2010]
+// updated       julien quintard   [fri mar 26 12:21:27 2010]
 //
 
 ///
@@ -48,6 +48,15 @@ namespace elle
 
   namespace network
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Door;
 
 //
 // ---------- classes ---------------------------------------------------------

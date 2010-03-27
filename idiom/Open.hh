@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [thu mar 25 20:11:08 2010]
+// updated       julien quintard   [sat mar 27 00:42:12 2010]
 //
 
 //
@@ -355,6 +355,26 @@
 //
 // ---------- network ---------------------------------------------------------
 //
+
+///
+/// this macro-function reserves a range of _capacity_ tags for the
+/// _component_ which depends upon the _dependencies_ components.
+///
+#define range(_component_, _capacity_, _dependency_...)			\
+  namespace elle							\
+  {									\
+    namespace network							\
+    {									\
+      template <>							\
+      struct Range<_component_>:					\
+        Capacity<_capacity_>						\
+      {									\
+        static const int		First =				\
+	  Dependency<_dependency_>::Last + 1;				\
+	static const int		Last = First + Size;		\
+      };								\
+    }									\
+  }
 
 ///
 /// this macro-function is used to reply to a request by sending an

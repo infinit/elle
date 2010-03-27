@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.cc
 //
 // created       julien quintard   [wed mar  3 23:26:52 2010]
-// updated       julien quintard   [tue mar 23 15:04:37 2010]
+// updated       julien quintard   [sat mar 27 06:12:33 2010]
 //
 
 //
@@ -19,6 +19,15 @@
 
 namespace elle
 {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+  ///
+  /// this value defines the component's name.
+  ///
+  const Character		Component[] = "elle";
 
 //
 // ---------- methods ---------------------------------------------------------

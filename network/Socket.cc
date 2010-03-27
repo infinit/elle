@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [thu mar 25 18:05:38 2010]
+// updated       julien quintard   [fri mar 26 12:31:13 2010]
 //
 
 //

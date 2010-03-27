@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [thu mar 25 22:54:44 2010]
+// updated       julien quintard   [fri mar 26 12:31:59 2010]
 //
 
 //
