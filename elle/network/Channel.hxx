@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hxx
 //
 // created       julien quintard   [thu mar 18 21:23:33 2010]
-// updated       julien quintard   [wed mar 24 13:11:57 2010]
+// updated       julien quintard   [fri mar 26 12:19:46 2010]
 //
 
 ///
@@ -28,6 +28,16 @@ namespace elle
 {
   namespace network
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Door;
+    class Gate;
 
 //
 // ---------- methods ---------------------------------------------------------
