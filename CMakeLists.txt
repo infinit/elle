@@ -13,6 +13,8 @@ ADD_SUBDIRECTORY(etoile)
 ADD_SUBDIRECTORY(agent)
 #ADD_SUBDIRECTORY(pig)
 #ADD_SUBDIRECTORY(hole)
+ADD_SUBDIRECTORY(applications)
 
+# to remove
 #ADD_SUBDIRECTORY(scripts/mkfs)
 #ADD_SUBDIRECTORY(scripts/ca)
