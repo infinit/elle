@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sat mar 27 00:42:12 2010]
+// updated       julien quintard   [sun mar 28 02:37:47 2010]
 //
 
 //
@@ -367,7 +367,7 @@
     {									\
       template <>							\
       struct Range<_component_>:					\
-        Capacity<_capacity_>						\
+        public Capacity<_capacity_>					\
       {									\
         static const int		First =				\
 	  Dependency<_dependency_>::Last + 1;				\

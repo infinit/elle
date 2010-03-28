@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Frame.cc
 //
 // created       julien quintard   [tue mar 23 14:22:43 2010]
-// updated       julien quintard   [thu mar 25 22:29:17 2010]
+// updated       julien quintard   [sun mar 28 21:27:52 2010]
 //
 
 //
@@ -78,7 +78,7 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Frame] " << std::hex << this << std::endl;
+      std::cout << alignment << "[Frame] " << std::endl;
 
       // dump the stack address.
       std::cout << alignment << Dumpable::Shift << "[Stack] "

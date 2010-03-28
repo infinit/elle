@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [fri mar 26 12:31:59 2010]
+// updated       julien quintard   [mon mar 29 00:06:28 2010]
 //
 
 //
@@ -111,9 +111,9 @@ namespace elle
 	escape("unable to connect the signal");
 
       if (this->connect(this->socket,
-			SIGNAL(error(QLocalSocket::LocalSocketError)),
+			SIGNAL(error(const QLocalSocket::LocalSocketError)),
 			this,
-			SLOT(Error(QLocalSocket::LocalSocketError))) ==
+			SLOT(Error(const QLocalSocket::LocalSocketError))) ==
 	  false)
 	escape("unable to connect to signal");
 
@@ -193,7 +193,7 @@ namespace elle
     /// written completely ::QLocalSocket::LocalSocketError because the
     /// QT parser is incapable of recognising the type.
     ///
-    void		Door::Error(QLocalSocket::LocalSocketError)
+    void		Door::Error(const QLocalSocket::LocalSocketError)
     {
       enter();
 

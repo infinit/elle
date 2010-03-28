@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [wed mar 24 13:14:04 2010]
+// updated       julien quintard   [mon mar 29 00:03:13 2010]
 //
 
 ///
@@ -119,7 +119,7 @@ namespace elle
       // slots
       //
     private slots:
-      void		Error(QLocalSocket::LocalSocketError);
+      void		Error(const QLocalSocket::LocalSocketError);
       void		Fetch();
     };
 
