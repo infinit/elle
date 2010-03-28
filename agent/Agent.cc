@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat mar 27 11:42:52 2010]
+// updated       julien quintard   [mon mar 29 00:06:25 2010]
 //
 
 //
@@ -54,13 +54,6 @@ namespace agent
   /// the phrase used to connect applications to Etoile.
   ///
   String		Agent::Phrase;
-
-  ///
-  /// this timer is simply used to trigger the Start() callback as
-  /// soon as the agent is initialized and ready to authentify to
-  /// Etoile.
-  ///
-  Timer			Agent::Event;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -172,20 +165,17 @@ namespace agent
     }
 
     //
-    // set the timer so that it triggers the first event as the
-    // system requires to be processing events in order to perform
-    // normally i.e wait for resources etc.
+    // trigger the Start() callback in a fiber so that it can block.
     //
     {
       Callback<>		start(&Agent::Start);
 
-      // create the timer.
-      if (Agent::Event.Create(Timer::ModeSingle, start) == StatusError)
-	escape("unable to create the event timer");
+      // create a closure.
+      Closure<>			closure(start);
 
-      // start the timer so that it triggers immediately.
-      if (Agent::Event.Start() == StatusError)
-	escape("unable to start the timer");
+      // spawn a fiber.
+      if (Fiber::Spawn(closure) == StatusError)
+	escape("an error occured in the fiber");
     }
 
     leave();

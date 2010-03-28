@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [sat mar 27 00:47:43 2010]
+// updated       julien quintard   [sat mar 27 20:09:59 2010]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -69,8 +69,6 @@ namespace agent
     static KeyPair	Pair;
     static Door		Channel;
     static String	Phrase;
-
-    static Timer	Event;
   };
 
 }
