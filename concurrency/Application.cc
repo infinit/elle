@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Application.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [wed mar 24 13:34:55 2010]
+// updated       julien quintard   [mon mar 29 00:12:06 2010]
 //
 
 //
@@ -94,19 +94,24 @@ namespace elle
       // lock in writing.
       Application::Control.Lock(ModeWrite);
       {
-	// check the status and display the report if necessary.
-	if (status == StatusError)
+	// pass a value depending on the status.
+	switch (status)
 	  {
-	    // display the report.
-	    show();
+	  case StatusOk:
+	    {
+	      // exit.
+	      Application::Core->exit(EXIT_SUCCESS);
 
-	    // exit.
-	    Application::Core->exit(EXIT_FAILURE);
-	  }
-	else
-	  {
-	    // exit.
-	    Application::Core->exit(EXIT_SUCCESS);
+	      break;
+	    }
+	  case StatusError:
+	  default:
+	    {
+	      // exit.
+	      Application::Core->exit(EXIT_FAILURE);
+
+	      break;
+	    }
 	  }
       }
       Application::Control.Unlock();
@@ -126,30 +131,9 @@ namespace elle
 	escape("unable to process events since the application has not "
 	       "been set up");
 
-      while (true)
-	{
-	  // XXX
-	  ::sleep(1);
-	  // XXX
-
-	  // process events.
-	  Application::Core->processEvents();
-
-	  // lock in reading.
-	  Application::Control.Lock(ModeRead);
-	  {
-	    // if there are no events left to process, sleep a bit in order
-	    // to prevent using 100% of the CPU.
-	    if (Application::Core->hasPendingEvents() == false)
-	      {
-		Application::Control.Unlock();
-
-		::usleep(10000);
-	      }
-	    else
-	      Application::Control.Unlock();
-	  }
-	}
+      // process the events.
+      if (Application::Core->exec() == EXIT_FAILURE)
+	escape("an error occured in the application");
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [thu mar 25 22:31:53 2010]
+// updated       julien quintard   [sun mar 28 23:48:11 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -25,6 +25,7 @@
 
 #include <elle/concurrency/Frame.hh>
 #include <elle/concurrency/Event.hh>
+#include <elle/concurrency/Resource.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -48,10 +49,32 @@ namespace elle
     /// contexts---but also to jump from one another.
     ///
     /// this way, concurrent programming techniques can be applied without
-    /// the burden of concurrency control but also without with performance
-    /// impact of threading sub-systems.
+    /// the burden of heavy concurrency control but also without the
+    /// performance impact of threading sub-systems.
     ///
-    /// XXX \todo careful this class is not thread-safe! no accords are used!
+    /// the fiber system is composed of a Fibers container that keeps
+    /// fibers waiting for an event, a resource or a child fiber to
+    /// complete its task.
+    ///
+    /// every fiber is composed of a stack frame, a low-leve context,
+    /// a link to the parent fiber, the state of the fiber---active, awaken,
+    /// suspended or completed---along with what the fiber is waiting for
+    /// and a pointer to data that can be passed between the awakening
+    /// and awaken fibers.
+    ///
+    /// note that every program is composed of at least one thread and
+    /// one fiber, in which case concurrency control is needless.
+    ///
+    /// the fiber system works as follows. the current fiber decides to
+    /// spawn a new fiber. the current fiber is put in the suspended state and
+    /// added to the Fibers container as it will wait for the child fiber
+    /// to complete.
+    /// a fiber can also explicitely wait for an event/resource in which
+    /// case it is suspended and put in the Fibers container.
+    /// once a fiber is awaken, its state is changed but the fiber is
+    /// not scheduled yet. indeed, once the current completes or is
+    /// suspended, the scheduler is launched which takes the first awaken
+    /// fiber and resumes it.
     ///
     class Fiber:
       public Dumpable
@@ -61,6 +84,7 @@ namespace elle
       // constants
       //
       static const Natural32		Size;
+      static const Natural32		Capacity;
 
       //
       // enumerations
@@ -74,22 +98,40 @@ namespace elle
 	  StateCompleted
 	};
 
+      enum Type
+	{
+	  TypeNone,
+	  TypeEvent,
+	  TypeResource,
+	  TypeFiber
+	};
+
       //
-      // types
+      // structures
       //
-      typedef std::list<Fiber*>			Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      struct F
+      {
+	typedef std::list<Fiber*>		Container;
+	typedef Container::iterator		Iterator;
+	typedef Container::const_iterator	Scoutor;
+      };
+
+      struct C
+      {
+	typedef std::list<Fiber*>		Container;
+	typedef Container::iterator		Iterator;
+	typedef Container::const_iterator	Scoutor;
+      };
 
       //
       // static attributes
       //
-      static Container		Fibers;
+      static F::Container	Fibers;
 
-      static Fiber		Application;
-      static Fiber*		Handler;
-
+      static Fiber*		Application;
       static Fiber*		Current;
+
+      static C::Container	Cache;
 
       static Void*		Trash;
 
@@ -111,14 +153,25 @@ namespace elle
       static Status	Awaken(const Event&,
 			       T* = (T*)NULL);
 
+      template <typename T = Void>
+      static Status	Wait(const Resource*,
+			     T*& = (T*&)Trash);
+      template <typename T = Void>
+      static Status	Awaken(const Resource*,
+			       T* = (T*)NULL);
+
       static Status	Schedule();
 
+      static Status	New(Fiber*&);
+      static Status	Delete(Fiber*);
+
       static Status	Add(Fiber*);
-      static Status	Locate(const Fiber*,
-			       Iterator&);
-      static Status	Locate(const Event&,
-			       Iterator&);
       static Status	Remove(Fiber*);
+
+      static Status	Locate(const Event&,
+			       F::Iterator&);
+      static Status	Locate(const Resource*,
+			       F::Iterator&);
 
       static Status	Show(const Natural32 = 0);
 
@@ -143,15 +196,22 @@ namespace elle
       //
       // attributes
       //
-      Frame*			frame;
-      ::ucontext_t		context;
+      Fiber*		link;
 
-      State			state;
-      Status			status;
+      Frame*		frame;
+      ::ucontext_t	context;
 
-      Event			event;
+      State		state;
+      Status		status;
 
-      Void*			data;
+      Type		type;
+      union
+      {
+	Event*		event;
+	const Resource*	resource;
+      };
+
+      Void*		data;
     };
 
   }

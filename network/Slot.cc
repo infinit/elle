@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [thu mar 25 22:54:47 2010]
+// updated       julien quintard   [mon mar 29 00:02:55 2010]
 //
 
 //
@@ -74,9 +74,9 @@ namespace elle
 	escape("unable to connect the signal");
 
       if (this->connect(this->socket,
-			SIGNAL(error(QAbstractSocket::SocketError)),
+			SIGNAL(error(const QAbstractSocket::SocketError)),
 			this,
-			SLOT(Error(QAbstractSocket::SocketError))) ==
+			SLOT(Error(const QAbstractSocket::SocketError))) ==
 	  false)
 	escape("unable to connect to signal");
 
@@ -135,7 +135,7 @@ namespace elle
     /// this slot is triggered whenever the socket changes state or
     /// if an error occurs.
     ///
-    void		Slot::Error(QAbstractSocket::SocketError)
+    void		Slot::Error(const QAbstractSocket::SocketError)
     {
       enter();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Mutex.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [thu mar 25 00:30:47 2010]
+// updated       julien quintard   [sun mar 28 03:13:34 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_MUTEX_HH
@@ -21,6 +21,9 @@
 #include <elle/core/Core.hh>
 
 #include <elle/misc/Status.hh>
+
+#include <elle/concurrency/Resource.hh>
+#include <elle/concurrency/Fiber.hh>
 
 #include <elle/idiom/Close.hh>
 #include <QMutex>
@@ -41,13 +44,30 @@ namespace elle
     ///
     /// this class provides a mutex functionality.
     ///
-    class Mutex
+    /// note that mutexes provide thread-fiber-safety.
+    ///
+    class Mutex:
+      public Resource
     {
     public:
+      //
+      // enumerations
+      //
+      enum State
+	{
+	  StateUnlocked,
+	  StateLocked
+	};
+
       //
       // constants
       //
       static const Natural32		Timeout = 0;
+
+      //
+      // constructors & destructors
+      //
+      Mutex();
 
       //
       // methods
@@ -59,6 +79,7 @@ namespace elle
       // attributes
       //
       ::QMutex		mutex;
+      State		state;
     };
 
   }

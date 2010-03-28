@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Mutex.cc
 //
 // created       julien quintard   [sun mar  7 17:25:49 2010]
-// updated       julien quintard   [thu mar 25 00:31:01 2010]
+// updated       julien quintard   [sun mar 28 03:13:23 2010]
 //
 
 //
@@ -30,6 +30,18 @@ namespace elle
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Mutex::Mutex():
+      state(Mutex::StateUnlocked)
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -49,6 +61,20 @@ namespace elle
       else
 	this->mutex.lock();
 
+      // then, lock the state variable if possible or block the fiber
+      // waiting for this resource.
+      while (this->state == Mutex::StateLocked)
+	{
+	  // wait for the resource.
+	  if (Fiber::Wait(this) == StatusError)
+	    escape("an error occured while waiting for the mutex resource");
+
+	}
+
+      // at this point, the fiber acquired the lock, so let's change
+      // the state.
+      this->state = Mutex::StateLocked;
+
       leave();
     }
 
@@ -61,6 +87,9 @@ namespace elle
 
       // unlock the mutex.
       this->mutex.unlock();
+
+      // unlock the state.
+      this->state = Mutex::StateUnlocked;
 
       leave();
     }

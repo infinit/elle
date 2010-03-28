@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [tue mar 23 21:08:31 2010]
+// updated       julien quintard   [mon mar 29 00:03:03 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -93,7 +93,7 @@ namespace elle
       //
       // slots
       //
-      void		Error(QAbstractSocket::SocketError);
+      void		Error(const QAbstractSocket::SocketError);
       void		Fetch();
     };
 
