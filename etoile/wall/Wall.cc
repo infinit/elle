@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [fri mar 26 12:31:41 2010]
+// updated       julien quintard   [sat mar 27 20:53:27 2010]
 //
 
 //
@@ -90,6 +90,7 @@ namespace etoile
 
       /// XXX \todo regarde si il y a deja un client sur cette socket,
       /// et verifier que l'agent n'est pas deja authentifie
+      /// et surtout que cette clef publique n'a pas deja un agent!!!
 
       // retrieve the guest.
       if (user::Guest::Retrieve((Channel*)session->socket, guest) ==
