@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.hh
 //
 // created       julien quintard   [mon feb 22 23:48:40 2010]
-// updated       julien quintard   [thu mar 25 16:15:33 2010]
+// updated       julien quintard   [wed mar 31 14:50:20 2010]
 //
 
 #ifndef ELLE_NETWORK_HEADER_HH
@@ -48,6 +48,11 @@ namespace elle
       // constants
       //
       static const String		Name;
+
+      //
+      // constructors & destructors
+      //
+      Header();
 
       //
       // methods

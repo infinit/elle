@@ -8,11 +8,17 @@
 // file          /home/mycure/infinit/elle/network/Range.hxx
 //
 // created       julien quintard   [fri mar 26 17:18:42 2010]
-// updated       julien quintard   [sat mar 27 05:59:13 2010]
+// updated       julien quintard   [wed mar 31 14:55:04 2010]
 //
 
 #ifndef ELLE_NETWORK_RANGE_HXX
 #define ELLE_NETWORK_RANGE_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/network/Tag.hh>
 
 namespace elle
 {
@@ -20,7 +26,7 @@ namespace elle
   {
 
 //
-// ---------- dependencies ----------------------------------------------------
+// ---------- templates -------------------------------------------------------
 //
 
     ///
@@ -42,9 +48,9 @@ namespace elle
     template <>
     struct Dependency<>
     {
-      static const Natural32	First = 0;
-      static const Natural32	Last = 0;
-      static const Natural32	Size = 0;
+      static const Natural32	First = TagNone;
+      static const Natural32	Last = TagNone;
+      static const Natural32	Size = TagNone;
     };
 
   }

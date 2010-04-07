@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [sun mar 28 23:49:51 2010]
+// updated       julien quintard   [tue mar 30 00:23:01 2010]
 //
 
 //
@@ -219,7 +219,6 @@ namespace elle
       	  // reset the fiber's attributes but keep the stack.
 	  fiber->link = NULL;
 	  fiber->state = Fiber::StateUnknown;
-	  fiber->status = StatusUnknown;
 	  fiber->type = Fiber::TypeNone;
 	  fiber->data = NULL;
 
@@ -423,7 +422,6 @@ namespace elle
       link(NULL),
       frame(NULL),
       state(Fiber::StateUnknown),
-      status(StatusUnknown),
       type(Fiber::TypeNone),
       data(NULL)
     {
@@ -492,10 +490,6 @@ namespace elle
       // dump the state.
       std::cout << alignment << Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
-
-      // dump the status.
-      std::cout << alignment << Dumpable::Shift << "[Status] "
-		<< this->status << std::endl;
 
       // dump the type.
       std::cout << alignment << Dumpable::Shift << "[Type] "

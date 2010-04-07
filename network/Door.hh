@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [mon mar 29 00:03:13 2010]
+// updated       julien quintard   [thu apr  1 15:41:02 2010]
 //
 
 ///
@@ -78,11 +78,14 @@ namespace elle
       //
       // methods
       //
-      Status		Create();
-      Status		Create(::QLocalSocket*);
+      Status		Create(const Socket::Mode = Socket::ModeAsynchronous);
+      Status		Create(::QLocalSocket*,
+			       const Socket::Mode);
 
       Status		Connect(const String&);
       Status		Disconnect();
+
+      Status		Read(Parcel*&);
 
       template <typename I>
       Status		Send(const I,
@@ -99,6 +102,12 @@ namespace elle
 				O);
       template <typename I>
       Status		Reply(const I);
+
+      //
+      // entrances
+      //
+      Status		Error(const String&);
+      Status		Fetch();
 
       //
       // interfaces
@@ -119,8 +128,8 @@ namespace elle
       // slots
       //
     private slots:
-      void		Error(const QLocalSocket::LocalSocketError);
-      void		Fetch();
+      void		_error(const QLocalSocket::LocalSocketError);
+      void		_fetch();
     };
 
   }

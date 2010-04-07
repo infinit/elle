@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun mar 21 14:12:40 2010]
+// updated       julien quintard   [mon mar 29 10:42:04 2010]
 //
 
 //
@@ -30,10 +30,10 @@ namespace elle
     const Natural32		Test::MaximumPackSize = 98765;
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- functions -------------------------------------------------------
 //
 
-    Status		Test::Main()
+    Status		Main()
     {
       Natural32		size;
       Archive		archive;
@@ -94,7 +94,7 @@ namespace elle
 
 int			main()
 {
-  if (elle::test::Test::Main() == elle::misc::StatusError)
+  if (elle::test::Main() == elle::misc::StatusError)
     {
       show();
 

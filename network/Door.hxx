@@ -8,11 +8,19 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [thu mar 25 22:55:39 2010]
+// updated       julien quintard   [tue apr  6 22:06:45 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
 #define ELLE_NETWORK_DOOR_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/network/Outputs.hh>
+
+#include <elle/Manifest.hh>
 
 namespace elle
 {
@@ -104,7 +112,7 @@ namespace elle
 
       // wait for the reply.
       if (this->Receive(event, outputs) == StatusError)
-	escape("unable to transmit the inputs");
+	escape("unable to receive the outputs");
 
       leave();
     }
@@ -116,12 +124,63 @@ namespace elle
     Status		Door::Receive(const Event&		event,
 				      O				outputs)
     {
-      enter();
+      Report			report;
+      Parcel*			parcel;
 
-      // ask the network to block until the message with the specified
-      // event is received.
-      if (Network::Receive(event, outputs) == StatusError)
-	escape("unable to receive the specified message");
+      enter(instance(parcel));
+
+      if (this->mode == Socket::ModeAsynchronous)
+	{
+	  // block the current fiber until the given event is received.
+	  if (Fiber::Wait(event, parcel) == StatusError)
+	    escape("an error occured while waiting for a specific event");
+	}
+      else
+	{
+	  // synchronously read data from the socket i.e block if not
+	  // available meaning that no even can be processed until
+	  // the data is received.
+
+	  // wait for the ready signal.
+	  if (this->socket->waitForReadyRead() == false)
+	    escape("an error occured while waiting for the ready signal");
+
+	  // then read the parcel.
+	  if (this->Read(parcel) != StatusTrue)
+	    escape("unable to read a complete parcel from the door");
+	}
+
+      // assign the new session.
+      if (Session::Assign(parcel->session) == StatusError)
+	escape("unable to assign the session");
+
+      // check the tag.
+      if (parcel->header->tag != outputs.tag)
+	{
+	  // test if the message received is an error, if so, append
+	  // the report to the local one.
+	  if (parcel->header->tag == TagError)
+	    {
+	      // extract the error message.
+	      if (report.Extract(*parcel->data) == StatusError)
+		escape("unable to extract the error message");
+
+	      // report the remote error.
+	      report(Report::TypeError, report);
+	    }
+
+	  escape("received a packet with an unexpected tag");
+	}
+
+      // extract the arguments.
+      if (outputs.Extract(*parcel->data) == StatusError)
+	escape("unable to extract the arguments");
+
+      // delete the parcel.
+      delete parcel;
+
+      // stop tracking the parcel since it has just been deleted.
+      waive(parcel);
 
       leave();
     }

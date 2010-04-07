@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [wed mar 24 22:22:20 2010]
+// updated       julien quintard   [wed mar 31 01:08:55 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_EVENT_HH
@@ -40,7 +40,7 @@ namespace elle
   {
 
 //
-// ---------- types -----------------------------------------------------------
+// ---------- classes ---------------------------------------------------------
 //
 
     ///

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.cc
 //
 // created       julien quintard   [tue feb 23 00:18:03 2010]
-// updated       julien quintard   [thu mar 25 17:41:50 2010]
+// updated       julien quintard   [wed mar 31 14:52:09 2010]
 //
 
 //
@@ -31,6 +31,18 @@ namespace elle
     /// include.
     ///
     const String		Header::Name = "Message";
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Header::Header():
+      tag(TagNone)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [sun mar 28 03:17:40 2010]
+// updated       julien quintard   [tue apr  6 19:48:13 2010]
 //
 
 //
@@ -80,7 +80,7 @@ namespace elle
     /// note that the input variables are not tracked for automatic
     /// deletion because the caller should already been tracking them.
     ///
-    Status		Network::Dispatch(Parcel*&		p)
+    Status		Network::Dispatch(Parcel*		p)
     {
       Network::Scoutor		scoutor;
       Parcel*			parcel;
@@ -98,8 +98,7 @@ namespace elle
       //
       {
 	// try to wake up a slot.
-	if (Fiber::Awaken(parcel->header->event,
-			  parcel) == StatusTrue)
+	if (Fiber::Awaken(parcel->header->event, parcel) == StatusTrue)
 	  {
 	    // since the awakening has been successful, stop tracking parcel.
 	    waive(parcel);
@@ -120,7 +119,14 @@ namespace elle
 	      Network::Callbacks.end())
 	    {
 	      Network::Control.Unlock();
-	      escape("unable to locate the callback");
+
+	      // unable to locate the callback, just ignore the message.
+	      delete parcel;
+
+	      // stop tracking the parcel since it has just been deleted.
+	      waive(parcel);
+
+	      leave();
 	    }
 
 	  // note that, at this point, the lock is release though the
@@ -141,7 +147,7 @@ namespace elle
 
 	// trigger the callback.
 	if (scoutor->second->Call(*parcel->data) == StatusError)
-	  escape("unable to dispatch the event");
+	  escape("an error occured while processing the event");
 
 	// delete the parcel.
 	delete parcel;

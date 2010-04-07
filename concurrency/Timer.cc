@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [thu mar 25 13:27:19 2010]
+// updated       julien quintard   [tue apr  6 18:55:54 2010]
 //
 
 //
@@ -24,6 +24,28 @@ namespace elle
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Timer::Timer():
+      timer(NULL)
+    {
+    }
+
+    ///
+    /// destructor.
+    ///
+    Timer::~Timer()
+    {
+      // delete the timer, if present.
+      if (this->timer != NULL)
+	this->timer->deleteLater();
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -31,27 +53,26 @@ namespace elle
     /// this method sets up the timer by recording the callback.
     ///
     Status		Timer::Create(const Mode		mode,
-				      Callback<>&		callback)
+				      const Callback<>&		callback)
     {
       enter();
 
       // set the mode attribute.
       this->mode = mode;
 
+      // allocate the timer.
+      this->timer = new ::QTimer;
+
       // set the timer mode.
       if (this->mode == Timer::ModeSingle)
-	this->timer.setSingleShot(true);
+	this->timer->setSingleShot(true);
 
       // set the callback.
       this->callback = callback;
 
-      // generate an event identifier related to this timer.
-      if (this->event.Generate() == StatusError)
-	escape("unable to generate the event");
-
       // connect the signal.
-      if (this->connect(&this->timer, SIGNAL(timeout()),
-			this, SLOT(Timeout())) == false)
+      if (this->connect(this->timer, SIGNAL(timeout()),
+			this, SLOT(_timeout())) == false)
 	escape("unable to connect the timeout signal");
 
       leave();
@@ -65,7 +86,7 @@ namespace elle
       enter();
 
       // start the timer.
-      this->timer.start(duration);
+      this->timer->start(duration);
 
       leave();
     }
@@ -78,7 +99,7 @@ namespace elle
       enter();
 
       // stop the timer.
-      this->timer.stop();
+      this->timer->stop();
 
       leave();
     }
@@ -91,7 +112,26 @@ namespace elle
       enter();
 
       // restart the timer.
-      this->timer.start(duration);
+      this->timer->start(duration);
+
+      leave();
+    }
+
+//
+// ---------- entrances -------------------------------------------------------
+//
+
+    ///
+    /// this callback is triggered in a new fiber so that it can
+    /// wait for events or resources.
+    ///
+    Status		Timer::Timeout()
+    {
+      enter();
+
+      // trigger the callback.
+      if (this->callback.Trigger() == StatusError)
+	escape("an error occured while spawning the fiber");
 
       leave();
     }
@@ -103,19 +143,16 @@ namespace elle
     ///
     /// this slot is triggered whenever the timer timeouts.
     ///
-    void		Timer::Timeout()
+    void		Timer::_timeout()
     {
-      Closure<>		closure(this->callback);
+      Entrance<>	entrance(&Timer::Timeout, this);
+      Closure<>		closure(entrance);
 
       enter();
 
-      // awaken the fibers waiting for this event.
-      if (Fiber::Awaken(this->event) == StatusError)
-	alert("unable to awaken the fibers");
-
-      // spawn a fiber by providing the callback's closure.
+      // trigger the entrance in a new fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("an error occured while spawning the fiber");
+	alert("unable to spawn a fiber");
 
       release();
     }

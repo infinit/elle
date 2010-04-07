@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.hh
 //
 // created       julien quintard   [tue mar 16 12:04:48 2010]
-// updated       julien quintard   [thu mar 25 16:20:12 2010]
+// updated       julien quintard   [wed mar 31 13:56:35 2010]
 //
 
 #ifndef ELLE_NETWORK_PARCEL_HH
@@ -26,6 +26,15 @@ namespace elle
 {
   namespace network
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Session;
 
 //
 // ---------- classes ---------------------------------------------------------

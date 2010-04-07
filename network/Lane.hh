@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [fri mar 26 12:21:27 2010]
+// updated       julien quintard   [tue mar 30 16:59:29 2010]
 //
 
 ///
@@ -79,13 +79,18 @@ namespace elle
       //
       // constructors & destructors
       //
-      LanePorter(Callback<Door*>&);
+      LanePorter(const Callback<Door*>&);
       ~LanePorter();
 
       //
       // methods
       //
       Status		Listen(const String&);
+
+      //
+      // callbacks
+      //
+      Status		Accept();
 
       //
       // interfaces
@@ -104,7 +109,7 @@ namespace elle
       // slots
       //
     private slots:
-      void		Accept();
+      void		_accept();
     };
 
     ///
@@ -129,7 +134,7 @@ namespace elle
       static Status	Clean();
 
       static Status	Listen(const String&,
-			       Callback<Door*>&);
+			       const Callback<Door*>&);
 
       static Status	Show(const Natural32 = 0);
 

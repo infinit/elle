@@ -5,24 +5,20 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/archive/Test.hh
+// file          /home/mycure/infinit/elle/test/fiber/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [mon mar 29 10:41:49 2010]
+// updated       julien quintard   [mon mar 29 19:18:11 2010]
 //
 
-#ifndef ELLE_TEST_ARCHIVE_TEST_HH
-#define ELLE_TEST_ARCHIVE_TEST_HH
+#ifndef ELLE_TEST_CRYPTOGRAPHY_TEST_HH
+#define ELLE_TEST_CRYPTOGRAPHY_TEST_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
-
-#include "Pack.hh"
-#include "Random.hh"
-#include "Generator.hh"
 
 #include <elle/idiom/Close.hh>
 # include <iostream>
@@ -41,10 +37,9 @@ namespace elle
     {
     public:
       //
-      // constants
+      // methods
       //
-      static const Natural32		MinimumPackSize;
-      static const Natural32		MaximumPackSize;
+      static Status	Generate(Region&);
     };
 
   }

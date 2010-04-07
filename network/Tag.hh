@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Tag.hh
 //
 // created       julien quintard   [sun nov 29 20:23:37 2009]
-// updated       julien quintard   [thu mar  4 14:51:00 2010]
+// updated       julien quintard   [wed mar 31 14:54:04 2010]
 //
 
 #ifndef ELLE_NETWORK_CODE_HH
@@ -32,7 +32,16 @@ namespace elle
     ///
     /// a tag is included in packets to distinguish their types.
     ///
-    typedef Integer32		Tag;
+    typedef Natural32		Tag;
+
+//
+// ---------- tag -------------------------------------------------------------
+//
+
+    ///
+    /// this defines that unused tag value.
+    ///
+    const Tag			TagNone = 0;
 
   }
 }

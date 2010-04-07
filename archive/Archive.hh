@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [sat mar 20 03:27:57 2010]
+// updated       julien quintard   [tue apr  6 20:50:02 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -129,7 +129,7 @@ namespace elle
 
       struct Default
       {
-	static const Natural32		Capacity;
+	static const Natural64		Capacity;
       };
 
       //
@@ -214,14 +214,14 @@ namespace elle
 
       System::Order	endianness;
 
-      Natural32		offset;
+      Natural64		offset;
 
     private:
       //
       // methods
       //
-      Status		Reserve(const Natural32);
-      Status		Align(const Natural32);
+      Status		Reserve(const Natural64);
+      Status		Align(const Natural64);
     };
 
   }

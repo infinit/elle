@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [thu mar 25 17:39:37 2010]
+// updated       julien quintard   [tue apr  6 12:54:46 2010]
 //
 
 //
@@ -51,7 +51,7 @@ namespace elle
     Report		report;
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- constructors & destructors --------------------------------------
 //
 
     ///
@@ -61,6 +61,10 @@ namespace elle
     {
       this->Flush();
     }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
 
     ///
     /// this method flushes the report.
@@ -119,11 +123,11 @@ namespace elle
 				       const String&		meta,
 				       const Report&		report)
     {
-      Report::ReverseScoutor	scoutor;
+      Report::Scoutor	scoutor;
 
       // go through the record and record every message.
-      for (scoutor = report.store.rbegin();
-	   scoutor != report.store.rend();
+      for (scoutor = report.store.begin();
+	   scoutor != report.store.end();
 	   scoutor++)
 	{
 	  Report::Entry*	entry = *scoutor;
@@ -189,9 +193,17 @@ namespace elle
 	      }
 	    }
 
-	  // display the entry.
-	  std::cout << entry->message << " ("
-		    << entry->meta << ")" << std::endl;
+	  if (entry->meta.length() != 0)
+	    {
+	      // display the entry.
+	      std::cout << entry->message << " ("
+			<< entry->meta << ")" << std::endl;
+	    }
+	  else
+	    {
+	      // display the entry without the meta.
+	      std::cout << entry->message << std::endl;
+	    }
 	}
 
       leave();
@@ -220,7 +232,7 @@ namespace elle
 	   scoutor++)
 	{
 	  // serialize the entry.
-	  if (archive.Serialize((Byte&)(*scoutor)->type,
+	  if (archive.Serialize((Natural8&)(*scoutor)->type,
 				(*scoutor)->meta,
 				(*scoutor)->message) == StatusError)
 	    escape("unable to serialize the entry");
@@ -247,7 +259,7 @@ namespace elle
       for (i = 0; i < size; i++)
 	{
 	  Report::Entry*	entry;
-	  Byte			type;
+	  Natural8		type;
 
 	  // allocate a new entry.
 	  entry = new Report::Entry;

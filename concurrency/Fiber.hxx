@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [sun mar 28 23:43:25 2010]
+// updated       julien quintard   [thu apr  1 15:47:25 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -33,8 +33,11 @@ namespace elle
     {
       enter();
 
-      // trigger the closure and store the return status.
-      Fiber::Current->status = closure->Call();
+      //printf("[XXX 0x%x] Fiber::Trigger()\n",
+      //Fiber::Current);
+
+      // trigger the closure.
+      closure->Trigger();
 
       // set the fiber state.
       Fiber::Current->state = Fiber::StateCompleted;
@@ -46,6 +49,9 @@ namespace elle
 
       // set the state of the parent's fiber as awaken.
       Fiber::Current->link->state = Fiber::StateAwaken;
+
+      //printf("[/XXX 0x%x] Fiber::Trigger()\n",
+      //Fiber::Current);
     }
 
     ///
@@ -132,7 +138,6 @@ namespace elle
 	}
       else
 	{
-	  Status	status;
 	  Fiber*	fiber;
 
 	  //printf("[XXX 0x%x] Fiber::Spawn() :: Child\n",
@@ -144,9 +149,6 @@ namespace elle
 
 	  // retrieve the link the the current's parent fiber.
 	  fiber = Fiber::Current->link;
-
-	  // retrieve the status from the fiber.
-	  status = Fiber::Current->status;
 
 	  // perform an action depending on the state of the fiber.
 	  switch (Fiber::Current->state)
@@ -179,21 +181,14 @@ namespace elle
 	  // set the parent, now current, fiber as active.
 	  Fiber::Current->state = Fiber::StateActive;
 
-	  // schedule the awaken fibers only if the status to return to
-	  // the caller is not an error. if it is, the system must inform the
-	  // caller and the awaken fibers are therefore not scheduled but will
-	  // probably be next time.
-	  if (status != StatusError)
-	    {
-	      if (Fiber::Schedule() == StatusError)
-		escape("unable to schedule the awaken fibers");
-	    }
+	  // schedule the awaken fibers.
+	  if (Fiber::Schedule() == StatusError)
+	    escape("unable to schedule the awaken fibers");
 
-	  //printf("[/XXX] Fiber::Spawn() :: %u\n", status);
+	  //printf("[/XXX] Fiber::Spawn()\n");
 	  //Fiber::Show();
 
-	  release();
-	  return (status);
+	  leave();
 	}
     }
 
@@ -211,7 +206,7 @@ namespace elle
       if (Fiber::Current == Fiber::Application)
 	escape("unable to wait while in the application fiber");
 
-      //printf("[XXX 0x%x] Fiber::Wait(event[%qu])\n",
+      //printf("[XXX 0x%x] Fiber::Wait(event[0x%qx])\n",
       //Fiber::Current, event.identifier);
 
       // set the fiber has been suspended.
@@ -238,6 +233,9 @@ namespace elle
 
       // retrieve the data.
       data = (T*)Fiber::Current->data;
+
+      // reset the data.
+      Fiber::Current->data = NULL;
 
       //printf("[/XXX 0x%x] Fiber::Wait() :: 0x%x\n",
       //Fiber::Current, data);
@@ -306,6 +304,9 @@ namespace elle
 
       enter();
 
+      //printf("[XXX 0x%x] Fiber::Awaken(event[0x%qx] data[0x%x])\n",
+      //Fiber::Current, event.identifier, data);
+
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)
 	false();
@@ -333,9 +334,6 @@ namespace elle
 	  // delete the event.
 	  delete fiber->event;
 	  fiber->event = NULL;
-
-	  //printf("[XXX 0x%x] Fiber::Awaken(event[%qu] data[0x%x])\n",
-	  //Fiber::Current, event.identifier, data);
 	}
 
       // return true if at least one fiber has been awaken.
@@ -357,6 +355,9 @@ namespace elle
       Boolean			awaken;
 
       enter();
+
+      //printf("[XXX 0x%x] Fiber::Awaken(resource[0x%x] data[0x%x])\n",
+      //Fiber::Current, resource, data);
 
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)
@@ -381,9 +382,6 @@ namespace elle
 
 	  // reset the type.
 	  fiber->type = Fiber::TypeNone;
-
-	  //printf("[XXX 0x%x] Fiber::Awaken(resource[0x%x] data[0x%x])\n",
-	  //Fiber::Current, resource, data);
 	}
 
       // return true if at least one fiber has been awaken.

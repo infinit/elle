@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [thu mar 25 19:35:47 2010]
+// updated       julien quintard   [tue mar 30 17:25:17 2010]
 //
 
 //

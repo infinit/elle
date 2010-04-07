@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [thu mar 25 17:42:07 2010]
+// updated       julien quintard   [wed mar 31 21:18:42 2010]
 //
 
 #include <elle/network/Host.hh>
@@ -131,7 +131,7 @@ namespace elle
       enter();
 
       // serialize the host and port.
-      if (archive.Serialize((Byte&)this->type,
+      if (archive.Serialize((Natural8&)this->type,
 			    host) == StatusError)
 	escape("unable to serialize the host");
 
@@ -148,7 +148,7 @@ namespace elle
       enter();
 
       // extract the host.
-      if (archive.Extract((Byte&)this->type,
+      if (archive.Extract((Natural8&)this->type,
 			  host) == StatusError)
 	escape("unable to extract the host");
 

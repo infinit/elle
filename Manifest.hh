@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sat mar 27 06:08:03 2010]
+// updated       julien quintard   [wed mar 31 19:37:56 2010]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -67,10 +67,8 @@ namespace elle
   //
   enum Tag
     {
-      TagNone = ::elle::network::Range<Component>::First,
-
-      // Error
-      TagError
+      // error
+      TagError = ::elle::network::Range<Component>::First
     };
 
 }
