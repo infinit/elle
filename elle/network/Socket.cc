@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [fri mar 26 12:31:13 2010]
+// updated       julien quintard   [wed mar 31 13:53:29 2010]
 //
 
 //
@@ -31,6 +31,7 @@ namespace elle
     ///
     Socket::Socket():
       type(Socket::TypeUnknown),
+      mode(Socket::ModeUnknown),
       callback(NULL)
     {
     }
@@ -38,8 +39,10 @@ namespace elle
     ///
     /// a constructor which specifies the type of socket.
     ///
-    Socket::Socket(const Socket::Type&				type):
+    Socket::Socket(const Socket::Type				type,
+		   const Socket::Mode				mode):
       type(type),
+      mode(mode),
       callback(NULL)
     {
     }
@@ -49,6 +52,14 @@ namespace elle
     ///
     Socket::~Socket()
     {
+      Socket::Iterator	iterator;
+
+      // go through the queue and delete every remaining parcel.
+      for (iterator = this->queue.begin();
+	   iterator != this->queue.end();
+	   iterator++)
+	delete *iterator;
+
       // release the callback.
       if (this->callback != NULL)
 	delete this->callback;
@@ -62,7 +73,8 @@ namespace elle
     /// this method registers the callback that will be triggered
     /// should an error occur on the socket.
     ///
-    Status		Socket::Monitor(Callback<const String>&	callback)
+    Status		Socket::Monitor(const
+					  Callback<const String>& callback)
     {
       enter();
 

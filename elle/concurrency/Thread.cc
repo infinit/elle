@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Thread.cc
 //
 // created       julien quintard   [tue mar  9 18:52:40 2010]
-// updated       julien quintard   [mon mar 15 23:59:45 2010]
+// updated       julien quintard   [tue mar 30 16:50:44 2010]
 //
 
 //
@@ -59,8 +59,9 @@ namespace elle
 	alert("an error occured in this thread");
 
       // process events.
-      if (Application::Process() == StatusError)
-	alert("an error occured while processing events");
+      // XXX if (Application::Process() == StatusError)
+      //alert("an error occured while processing events");
+      // process ses propres events!
 
       release();
     }

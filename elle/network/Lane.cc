@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [thu mar 25 17:41:32 2010]
+// updated       julien quintard   [tue apr  6 18:54:24 2010]
 //
 
 //
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    LanePorter::LanePorter(Callback<Door*>&			callback):
+    LanePorter::LanePorter(const Callback<Door*>&		callback):
       server(NULL),
       callback(callback)
     {
@@ -56,7 +56,7 @@ namespace elle
     {
       // if there is a server, release it.
       if (this->server != NULL)
-	delete this->server;
+	this->server->deleteLater();
     }
 
 //
@@ -83,7 +83,7 @@ namespace elle
 
       // connect the signals.
       if (this->connect(this->server, SIGNAL(newConnection()),
-			this, SLOT(Accept())) == false)
+			this, SLOT(_accept())) == false)
 	escape("unable to connect the signal");
 
       leave();
@@ -126,7 +126,7 @@ namespace elle
     /// signal would be triggered which is not want we want.
     ///
     Status		Lane::Listen(const String&		name,
-				     Callback<Door*>&		callback)
+				     const Callback<Door*>&	callback)
     {
       LanePorter*	porter;
 
@@ -222,13 +222,13 @@ namespace elle
     }
 
 //
-// ---------- slots -----------------------------------------------------------
+// ---------- callbacks -------------------------------------------------------
 //
 
     ///
-    /// this slot is triggered whenever a new conncetion is made.
+    /// this callback is triggered whenever a new conncetion is made.
     ///
-    void		LanePorter::Accept()
+    Status		LanePorter::Accept()
     {
       ::QLocalSocket*	socket;
       Door*		door;
@@ -237,24 +237,39 @@ namespace elle
 
       // retrieve the socket from the server.
       if ((socket = this->server->nextPendingConnection()) == NULL)
-	alert(this->server->errorString().toStdString().c_str());
+	escape(this->server->errorString().toStdString().c_str());
 
       // allocate a new door to this lane.
       door = new Door;
 
       // create a door with the specific socket.
-      if (door->Create(socket) == StatusError)
-	alert("unable to create the door");
+      if (door->Create(socket, Socket::ModeAsynchronous) == StatusError)
+	escape("unable to create the door");
 
-      // create a closure to trigge the callback.
-      Closure<Door*>	closure(this->callback, door);
-
-      // spawn a new fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-	alert("an error occured in the spawn fiber");
+      // trigger the callback.
+      if (this->callback.Trigger(door) == StatusError)
+	escape("an error occured in the callback");
 
       // stop tracking door as it has been handed to the callback.
       waive(door);
+
+      leave();
+    }
+
+//
+// ---------- slots -----------------------------------------------------------
+//
+
+    void		LanePorter::_accept()
+    {
+      Entrance<>	entrance(&LanePorter::Accept, this);
+      Closure<>		closure(entrance);
+
+      enter();
+
+      // spawn a fiber.
+      if (Fiber::Spawn(closure) == StatusError)
+	alert("unable to spawn a fiber");
 
       release();
     }

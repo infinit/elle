@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Entity.cc
 //
 // created       julien quintard   [sat mar 20 00:46:21 2010]
-// updated       julien quintard   [thu mar 25 00:54:12 2010]
+// updated       julien quintard   [tue apr  6 16:25:45 2010]
 //
 
 //

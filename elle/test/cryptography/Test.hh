@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [wed mar 10 21:08:53 2010]
+// updated       julien quintard   [mon mar 29 10:42:15 2010]
 //
 
 #ifndef ELLE_TEST_CRYPTOGRAPHY_TEST_HH
@@ -65,7 +65,6 @@ namespace elle
       // methods
       //
       static Status	Generate(Region&);
-      static Status	Main();
     };
 
   }

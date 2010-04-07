@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat mar 20 13:16:27 2010]
+// updated       julien quintard   [tue apr  6 21:48:18 2010]
 //
 
 //

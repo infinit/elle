@@ -1,0 +1,7 @@
+ADD_EXECUTABLE(test-fiber
+  Test.cc
+)
+
+TARGET_LINK_LIBRARIES(test-fiber elle ssl crypto dl
+				 ${QT_QTNETWORK_LIBRARIES}
+				 ${QT_QTCORE_LIBRARIES})

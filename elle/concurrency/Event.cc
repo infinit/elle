@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [tue mar 23 22:31:05 2010]
+// updated       julien quintard   [wed mar 31 01:09:07 2010]
 //
 
 //

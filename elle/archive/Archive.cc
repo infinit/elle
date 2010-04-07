@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sat mar 27 10:47:17 2010]
+// updated       julien quintard   [tue apr  6 21:57:47 2010]
 //
 
 //
@@ -38,7 +38,7 @@ namespace elle
     ///
     /// archives are initialised with this default capacity.
     ///
-    const Natural32		Archive::Default::Capacity = 64;
+    const Natural64		Archive::Default::Capacity = 64;
 
 //
 // ---------- templates -------------------------------------------------------
@@ -103,7 +103,7 @@ namespace elle
     ///
     Status		Archive::Create()
     {
-      Natural32		i;
+      Natural64		i;
 
       enter();
 
@@ -126,7 +126,7 @@ namespace elle
 	}
 
       // pack the endianness of the archive.
-      if (this->Store((Byte)System::Endianness) == StatusError)
+      if (this->Store((Natural8&)System::Endianness) == StatusError)
 	escape("unable to store the archive endianness");
 
       leave();
@@ -145,7 +145,7 @@ namespace elle
     Status		Archive::Prepare(const Region&		region)
     {
       Byte		endianness;
-      Natural32		i;
+      Natural64		i;
 
       enter();
 
@@ -343,15 +343,19 @@ namespace elle
       if (this->Load(size) == StatusError)
 	escape("unable to load the data size");
 
-      // align the offset if it is necessary.
-      if (this->Align(sizeof(Byte)) == StatusError)
-	escape("unable to align the offset");
-
       // initialize the big number.
       ::BN_init(&element);
 
-      // load directly the bignum from the buffer.
-      ::BN_bin2bn(this->contents + this->offset, size, &element);
+      // if there is data.
+      if (size > 0)
+	{
+	  // align the offset if it is necessary.
+	  if (this->Align(sizeof(Byte)) == StatusError)
+	    escape("unable to align the offset");
+
+	  // load directly the bignum from the buffer.
+	  ::BN_bin2bn(this->contents + this->offset, size, &element);
+	}
 
       // update the offset.
       this->offset += size;
@@ -372,12 +376,16 @@ namespace elle
       if (this->Load(length) == StatusError)
 	escape("unable to load the string length");
 
-      // align the offset if it is necessary.
-      if (this->Align(sizeof(char)) == StatusError)
-	escape("unable to align the offset");
+      // if there is data.
+      if (length > 0)
+	{
+	  // align the offset if it is necessary.
+	  if (this->Align(sizeof(char)) == StatusError)
+	    escape("unable to align the offset");
 
-      // assign the content to the string.
-      element.assign((char*)(this->contents + this->offset), length);
+	  // assign the content to the string.
+	  element.assign((char*)(this->contents + this->offset), length);
+	}
 
       // update the offset.
       this->offset += length;
@@ -390,7 +398,7 @@ namespace elle
     ///
     Status		Archive::Load(Region&			element)
     {
-      Natural32		size;
+      Natural64		size;
 
       enter();
 
@@ -398,14 +406,18 @@ namespace elle
       if (this->Load(size) == StatusError)
 	escape("unable to load the size");
 
-      // align the offset if it is necessary.
-      if (this->Align(sizeof(Byte)) == StatusError)
-	escape("unable to align the offset");
+      // if there is data.
+      if (size > 0)
+	{
+	  // align the offset if it is necessary.
+	  if (this->Align(sizeof(Byte)) == StatusError)
+	    escape("unable to align the offset");
 
-      // assign the data.
-      if (element.Duplicate(this->contents + this->offset,
-			    size) == StatusError)
-	escape("unable to prepare the buffer");
+	  // assign the data.
+	  if (element.Duplicate(this->contents + this->offset,
+				size) == StatusError)
+	    escape("unable to prepare the buffer");
+	}
 
       // update the offset.
       this->offset += size;
@@ -419,7 +431,7 @@ namespace elle
     Status		Archive::Load(Archive&			element)
     {
       Region		buffer;
-      Natural32		size;
+      Natural64		size;
 
       enter();
 
@@ -427,22 +439,26 @@ namespace elle
       if (this->Load(size) == StatusError)
 	escape("unable to load the archive size");
 
-      // align the offset if it is necessary.
-      if (this->Align(sizeof(Byte)) == StatusError)
-	escape("unable to align the offset");
+      // if there is data.
+      if (size > 0)
+	{
+	  // align the offset if it is necessary.
+	  if (this->Align(sizeof(Byte)) == StatusError)
+	    escape("unable to align the offset");
 
-      // assign the content to the buffer.
-      if (buffer.Duplicate(this->contents + this->offset,
-			   size) == StatusError)
-	escape("unable to assign the data to the buffer");
+	  // assign the content to the buffer.
+	  if (buffer.Duplicate(this->contents + this->offset,
+			       size) == StatusError)
+	    escape("unable to assign the data to the buffer");
 
-      // detach the data from the buffer.
-      if (buffer.Detach() == StatusError)
-	escape("unable to detach the data from the buffer");
+	  // detach the data from the buffer.
+	  if (buffer.Detach() == StatusError)
+	    escape("unable to detach the data from the buffer");
 
-      // build the given archive.
-      if (element.Prepare(buffer) == StatusError)
-	escape("unable to prepare the given archive");
+	  // build the given archive.
+	  if (element.Prepare(buffer) == StatusError)
+	    escape("unable to prepare the given archive");
+	}
 
       // update the offset.
       this->offset += size;
@@ -458,7 +474,7 @@ namespace elle
     /// this method makes sure that there is enough space for storing
     /// an element of the given type.
     ///
-    Status		Archive::Reserve(const Natural32	size)
+    Status		Archive::Reserve(const Natural64	size)
     {
       enter();
 
@@ -489,24 +505,35 @@ namespace elle
     /// as such, the Align() method could need to reserve space.
     /// so that the archive is aligned.
     ///
-    Status		Archive::Align(const Natural32		size)
+    Status		Archive::Align(const Natural64		size)
     {
       enter();
 
-      if (this->Reserve(size) == StatusError)
-	escape("unable to reserve memory for alignment");
-
+      // align depending on the mode.
       switch (this->mode)
 	{
 	case Archive::ModeSerialization:
 	  {
+	    // reserve more memory if necessary.
+	    if (this->Reserve(size) == StatusError)
+	      escape("unable to reserve memory for alignment");
+
+	    // align the size in order to serialize the next element
+	    // of _size_ bytes.
 	    this->size = (this->size + (size - 1)) & ~(size - 1);
 
 	    break;
 	  }
 	case Archive::ModeExtraction:
 	  {
+	    // align the offset so that the next element of _size_ bytes
+	    // can be extract.
 	    this->offset = (this->offset + (size - 1)) & ~(size - 1);
+
+	    // verify that the offset plus the about-to-be-extracted
+	    // element is not going to exceed the size.
+	    if ((this->offset + size) > this->size)
+	      escape("the offset has reached or exceeded the archive size");
 
 	    break;
 	  }
@@ -532,7 +559,7 @@ namespace elle
     ///
     Status		Archive::Fetch(Archive::Type&		type)
     {
-      Natural32		offset = this->offset;
+      Natural64		offset = this->offset;
       Byte		byte;
 
       enter();

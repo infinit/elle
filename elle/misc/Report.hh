@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [sun mar 21 15:50:04 2010]
+// updated       julien quintard   [tue apr  6 12:46:28 2010]
 //
 
 #ifndef ELLE_MISC_REPORT_HH
@@ -115,8 +115,6 @@ namespace elle
       typedef std::list<Entry*>			Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
-      typedef Container::reverse_iterator	ReverseIterator;
-      typedef Container::const_reverse_iterator	ReverseScoutor;
 
       //
       // constructors & destructors

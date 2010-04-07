@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [sun mar 21 15:19:38 2010]
+// updated       julien quintard   [fri apr  2 11:38:47 2010]
 //
 
 #ifndef ELLE_MISC_REGION_HH
@@ -91,24 +91,24 @@ namespace elle
       // methods
       //
       Status		Wrap(Byte*,
-			     Natural32);
+			     Natural64);
       Status		Acquire(Byte*,
-				Natural32);
+				Natural64);
 
-      Status		Prepare(const Natural32);
+      Status		Prepare(const Natural64);
       Status		Duplicate(Byte*,
-				  Natural32);
+				  Natural64);
 
-      Status		Adjust(const Natural32);
+      Status		Adjust(const Natural64);
       Status		Append(const Byte*,
-			       const Natural32);
+			       const Natural64);
 
-      Status		Read(const Natural32,
+      Status		Read(const Natural64,
 			     Byte*,
-			     const Natural32) const;
-      Status		Write(const Natural32,
+			     const Natural64) const;
+      Status		Write(const Natural64,
 			      const Byte*,
-			      const Natural32);
+			      const Natural64);
 
       Status		Detach();
 
@@ -130,8 +130,8 @@ namespace elle
       Options		options;
 
       Byte*		contents;
-      Natural32		size;
-      Natural32		capacity;
+      Natural64		size;
+      Natural64		capacity;
     };
 
   }

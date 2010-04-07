@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Routine.hh
 //
 // created       julien quintard   [wed mar 24 19:50:08 2010]
-// updated       julien quintard   [thu mar 25 15:22:21 2010]
+// updated       julien quintard   [mon mar 29 23:13:01 2010]
 //
 
 #ifndef ELLE_MISC_ROUTINE_HH

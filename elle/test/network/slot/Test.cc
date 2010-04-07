@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun mar 21 14:14:03 2010]
+// updated       julien quintard   [wed mar 31 21:38:17 2010]
 //
 
 //
@@ -23,11 +23,11 @@ namespace elle
   {
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- functions -------------------------------------------------------
 //
 
-    Status		Test::Main(int				argc,
-				   char*			argv[])
+    Status		Main(const Natural32			argc,
+			     const Character*			argv[])
     {
       Node		node;
 
@@ -46,9 +46,9 @@ namespace elle
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the Elle library");
 
-      // set up the application
-      if (Application::Setup(argc, argv) == StatusError)
-	escape("unable to set up the application");
+      // set up the program
+      if (Program::Setup(argc, argv) == StatusError)
+	escape("unable to set up the program");
 
       // set up the node
       if (node.Setup(String(argv[1]),
@@ -60,8 +60,8 @@ namespace elle
       if (node.Run() == StatusError)
 	escape("unable to start the node");
 
-      // process the events.
-      if (Application::Process() == StatusError)
+      // launch the program.
+      if (Program::Launch() == StatusError)
 	escape("an error occured during the event processing");
 
       // clean the library.
@@ -78,10 +78,10 @@ namespace elle
 // ---------- main ------------------------------------------------------------
 //
 
-int			main(int				argc,
-			     char**				argv)
+int			main(const int				argc,
+			     const char*			argv[])
 {
-  if (elle::test::Test::Main(argc, argv) == elle::misc::StatusError)
+  if (elle::test::Main(argc, argv) == elle::misc::StatusError)
     {
       show();
 

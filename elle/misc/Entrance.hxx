@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Callback.hxx
+// file          /home/mycure/infinit/elle/misc/Entrance.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [tue mar 30 17:29:24 2010]
+// updated       julien quintard   [tue mar 30 17:29:18 2010]
 //
 
-#ifndef ELLE_MISC_CALLBACK_HXX
-#define ELLE_MISC_CALLBACK_HXX
+#ifndef ELLE_MISC_ENTRANCE_HXX
+#define ELLE_MISC_ENTRANCE_HXX
 
 namespace elle
 {
@@ -27,8 +27,8 @@ namespace elle
     /// default constructor.
     ///
     template <typename... T>
-    Callback<T...>::Callback():
-      Routine::Routine(Routine::TypeCallback),
+    Entrance<T...>::Entrance():
+      Routine::Routine(Routine::TypeEntrance),
 
       scheme(Routine::SchemeUnknown)
     {
@@ -38,9 +38,8 @@ namespace elle
     /// function-based constructor.
     ///
     template <typename... T>
-    Callback<T...>::Callback(typename
-			       Function<T&...>::Handler		handler):
-      Routine::Routine(Routine::TypeCallback),
+    Entrance<T...>::Entrance(typename Function<T&...>::Handler	handler):
+      Routine::Routine(Routine::TypeEntrance),
 
       scheme(Routine::SchemeFunction),
       function(new Function<T&...>(handler))
@@ -52,11 +51,11 @@ namespace elle
     ///
     template <typename... T>
     template <typename C>
-    Callback<T...>::Callback(typename
+    Entrance<T...>::Entrance(typename
 			       Method<T&...>::
 			         template Wrap<C>::Handler	handler,
 			     C*					object):
-      Routine::Routine(Routine::TypeCallback),
+      Routine::Routine(Routine::TypeEntrance),
 
       scheme(Routine::SchemeMethod),
       method(new Method<T&...>(handler, object))
@@ -67,8 +66,8 @@ namespace elle
     /// copy constructor.
     ///
     template <typename... T>
-    Callback<T...>::Callback(const Callback&			callback):
-      scheme(callback.scheme)
+    Entrance<T...>::Entrance(const Entrance&			entrance):
+      scheme(entrance.scheme)
     {
       enter();
 
@@ -78,14 +77,18 @@ namespace elle
 	case Routine::SchemeFunction:
 	  {
 	    // clone the function.
-	    this->function = new Function<T&...>(*callback.function);
+	    if (entrance.function->Clone((Entity*&)this->function) ==
+		StatusError)
+	      alert("unable to clone the function");
 
 	    break;
 	  }
 	case Routine::SchemeMethod:
 	  {
 	    // clone the method.
-	    this->method = new Method<T&...>(*callback.method);
+	    if (entrance.method->Clone((Entity*&)this->method) ==
+		StatusError)
+	      alert("unable to clone the method");
 
 	    break;
 	  }
@@ -98,7 +101,7 @@ namespace elle
     /// destructor.
     ///
     template <typename... T>
-    Callback<T...>::~Callback()
+    Entrance<T...>::~Entrance()
     {
       // release the the content.
       switch (this->scheme)
@@ -127,23 +130,23 @@ namespace elle
     ///
     /// this macro-function call generates the entity.
     ///
-    embed(Entity, Callback<T...>, template <typename... T>);
+    embed(Entity, Entrance<T...>, template <typename... T>);
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// this method dumps the callback.
+    /// this method dumps the entrance.
     ///
     template <typename... T>
-    Status		Callback<T...>::Dump(const Natural32	margin) const
+    Status		Entrance<T...>::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Callback]" << std::endl;
+      std::cout << alignment << "[Entrance]" << std::endl;
 
       // dump the scheme.
       std::cout << alignment << Dumpable::Shift << "[Scheme] "
@@ -178,10 +181,11 @@ namespace elle
 //
 
     ///
-    /// this method calls the callback implementation.
+    /// this method calls the entrance implementation by displaying the
+    /// report should an error occur.
     ///
     template <typename... T>
-    Status		Callback<T...>::Trigger(T&...		arguments)
+    Status		Entrance<T...>::Trigger(T&...		arguments)
       const
     {
       enter();
@@ -193,7 +197,7 @@ namespace elle
 	  {
 	    // call the function.
 	    if (this->function->Call(arguments...) == StatusError)
-	      escape("unable to call the function");
+	      show();
 
 	    break;
 	  }
@@ -201,13 +205,13 @@ namespace elle
 	  {
 	    // call the method.
 	    if (this->method->Call(arguments...) == StatusError)
-	      escape("unable to call the method");
+	      show();
 
 	    break;
 	  }
 	default:
 	  {
-	    escape("invalid callback scheme");
+	    escape("invalid entrance scheme");
 	  }
 	}
 

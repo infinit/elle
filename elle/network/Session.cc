@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [thu mar 25 17:40:48 2010]
+// updated       julien quintard   [wed mar 31 14:09:40 2010]
 //
 
 //
@@ -33,7 +33,7 @@ namespace elle
     ///
     /// XXX \todo store this session in the thread local storage.
     ///
-    Session*			session = NULL;
+    Session*			session = new Session;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -80,7 +80,11 @@ namespace elle
       /// static_const en Thread a nous et on set le session network.
 
       // assign the new session as being the current one.
-      session = s;
+
+      // XXX crade, faire operator=
+      session->socket = s->socket;
+      session->address = s->address;
+      session->event = s->event;
 
       leave();
     }

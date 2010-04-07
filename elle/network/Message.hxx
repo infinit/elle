@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Message.hxx
 //
 // created       julien quintard   [thu mar  4 14:53:29 2010]
-// updated       julien quintard   [thu mar  4 14:55:16 2010]
+// updated       julien quintard   [wed mar 31 14:52:54 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HXX
@@ -31,7 +31,7 @@ namespace elle
     /// the following makes this case impossible to reach.
     ///
     template <>
-    class Message<0>
+    class Message<TagNone>
     {
     };
 

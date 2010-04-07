@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [sun mar 28 23:48:11 2010]
+// updated       julien quintard   [mon mar 29 21:03:42 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -202,7 +202,6 @@ namespace elle
       ::ucontext_t	context;
 
       State		state;
-      Status		status;
 
       Type		type;
       union

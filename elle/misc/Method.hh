@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [thu mar 25 18:09:32 2010]
+// updated       julien quintard   [mon mar 29 21:50:58 2010]
 //
 
 #ifndef ELLE_MISC_METHOD_HH

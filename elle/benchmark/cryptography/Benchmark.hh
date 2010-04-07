@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/benchmark/cryptography/Benchmark.hh
+// file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [wed aug  5 15:48:57 2009]
+// updated       julien quintard   [mon mar 29 10:42:50 2010]
 //
 
 #ifndef ELLE_BENCHMARK_ARCHIVE_TEST_HH
@@ -43,11 +43,6 @@ namespace elle
       static const Natural32		SymmetricKeyLength;
 
       static const Natural32		BlockSize;
-
-      //
-      // methods
-      //
-      static Status	Main();
     };
 
   }

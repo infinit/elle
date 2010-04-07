@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [wed mar 17 10:36:44 2010]
+// updated       julien quintard   [mon mar 29 10:41:33 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_TEST_HH
@@ -27,29 +27,6 @@
 # include <QCoreApplication>
 # include <iostream>
 #include <elle/idiom/Open.hh>
-
-namespace elle
-{
-  using namespace core;
-
-  namespace test
-  {
-
-//
-// ---------- classes ---------------------------------------------------------
-//
-
-    class Test
-    {
-    public:
-      //
-      // methods
-      //
-      static Status	Main(int, char*[]);
-    };
-
-  }
-}
 
 #endif
 

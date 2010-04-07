@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sun mar 28 02:37:47 2010]
+// updated       julien quintard   [mon mar 29 15:29:09 2010]
 //
 
 //
@@ -375,31 +375,3 @@
       };								\
     }									\
   }
-
-///
-/// this macro-function is used to reply to a request by sending an
-/// negative result, along with a report.
-///
-#define abort(_socket_, _text_)						\
-  do									\
-    {									\
-      report(elle::misc::Report::TypeError, _text_);			\
-									\
-      if ((_socket_)->Send(						\
-	    Inputs< ::elle::TagError >(::elle::misc::report)) ==	\
-	  StatusError)							\
-	escape("unable to send an error report");			\
-									\
-      leave();								\
-    } while (false)
-
-///
-/// this macro-function sends a message in order to inform the
-/// caller that every went as expected.
-///
-#define acknowledge(_socket_, _tag_)					\
-  do									\
-    {									\
-      if ((_socket_)->Reply(Inputs< _tag_ >()) == StatusError)		\
-	escape("unable to reply");					\
-    } while (false)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [fri mar 26 12:19:35 2010]
+// updated       julien quintard   [tue mar 30 19:26:10 2010]
 //
 
 #ifndef ELLE_NETWORK_CHANNEL_HH
@@ -46,7 +46,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      Channel(Socket::Type);
+      Channel(Socket::Type,
+	      Socket::Mode);
 
       //
       // methods

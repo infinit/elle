@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [thu mar 25 20:44:05 2010]
+// updated       julien quintard   [tue apr  6 18:53:47 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -22,8 +22,6 @@
 
 #include <elle/misc/Status.hh>
 #include <elle/misc/Callback.hh>
-
-#include <elle/concurrency/Event.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -61,28 +59,38 @@ namespace elle
 	};
 
       //
+      // constructors & destructors
+      //
+      Timer();
+      ~Timer();
+
+      //
       // methods
       //
       Status		Create(const Mode,
-			       Callback<>&);
+			       const Callback<>&);
       Status		Start(Natural32 = 0);
       Status		Stop();
       Status		Restart(Natural32 = 0);
 
       //
+      // entrances
+      //
+      Status		Timeout();
+
+      //
       // attributes
       //
-      ::QTimer		timer;
+      ::QTimer*		timer;
 
       Mode		mode;
-      Event		event;
       Callback<>	callback;
 
     private slots:
       //
       // slots
       //
-      void		Timeout();
+      void		_timeout();
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/misc/Closure.hxx
 //
 // created       julien quintard   [thu mar 25 11:55:10 2010]
-// updated       julien quintard   [thu mar 25 15:18:03 2010]
+// updated       julien quintard   [tue mar 30 17:03:56 2010]
 //
 
 #ifndef ELLE_MISC_CLOSURE_HXX
@@ -33,23 +33,23 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<>&					callback):
-	callback(callback)
+      Closure(Entrance<>&					entrance):
+	entrance(entrance)
       {
       }
 
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call());
+	this->entrance.Trigger();
       }
 
       //
       // attributes
       //
-      Callback<>&	callback;
+      Entrance<>&	entrance;
     };
 
     ///
@@ -62,9 +62,9 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1>&					callback,
+      Closure(Entrance<T1>&					entrance,
 	      T1&						o1):
-	callback(callback),
+	entrance(entrance),
 	o1(o1)
       {
       }
@@ -72,15 +72,15 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1));
+	this->entrance.Trigger(this->o1);
       }
 
       //
       // attributes
       //
-      Callback<T1>	callback;
+      Entrance<T1>	entrance;
 
       T1&		o1;
     };
@@ -96,10 +96,10 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2>&					callback,
+      Closure(Entrance<T1, T2>&					entrance,
 	      T1&						o1,
 	      T2&						o2):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2)
       {
@@ -108,17 +108,17 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2));
+	this->entrance.Trigger(this->o1,
+			       this->o2);
       }
 
       //
       // attributes
       //
-      Callback<T1,
-	      T2>	callback;
+      Entrance<T1,
+	      T2>	entrance;
 
       T1&		o1;
       T2&		o2;
@@ -136,11 +136,11 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2, T3>&				callback,
+      Closure(Entrance<T1, T2, T3>&				entrance,
 	      T1&						o1,
 	      T2&						o2,
 	      T3&						o3):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2),
 	o3(o3)
@@ -150,19 +150,19 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2,
-				   this->o3));
+	this->entrance.Trigger(this->o1,
+			       this->o2,
+			       this->o3);
       }
 
       //
       // attributes
       //
-      Callback<T1,
+      Entrance<T1,
 	      T2,
-	      T3>	callback;
+	      T3>	entrance;
 
       T1&		o1;
       T2&		o2;
@@ -182,12 +182,12 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2, T3, T4>&				callback,
+      Closure(Entrance<T1, T2, T3, T4>&				entrance,
 	      T1&						o1,
 	      T2&						o2,
 	      T3&						o3,
 	      T4&						o4):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2),
 	o3(o3),
@@ -198,21 +198,21 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2,
-				   this->o3,
-				   this->o4));
+	this->entrance.Trigger(this->o1,
+			       this->o2,
+			       this->o3,
+			       this->o4);
       }
 
       //
       // attributes
       //
-      Callback<T1,
+      Entrance<T1,
 	      T2,
 	      T3,
-	      T4>	callback;
+	      T4>	entrance;
 
       T1&		o1;
       T2&		o2;
@@ -234,13 +234,13 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2, T3, T4, T5>&			callback,
+      Closure(Entrance<T1, T2, T3, T4, T5>&			entrance,
 	      T1&						o1,
 	      T2&						o2,
 	      T3&						o3,
 	      T4&						o4,
 	      T5&						o5):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2),
 	o3(o3),
@@ -252,23 +252,23 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2,
-				   this->o3,
-				   this->o4,
-				   this->o5));
+	this->entrance.Trigger(this->o1,
+			       this->o2,
+			       this->o3,
+			       this->o4,
+			       this->o5);
       }
 
       //
       // attributes
       //
-      Callback<T1,
+      Entrance<T1,
 	      T2,
 	      T3,
 	      T4,
-	      T5>	callback;
+	      T5>	entrance;
 
       T1&		o1;
       T2&		o2;
@@ -292,14 +292,14 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2, T3, T4, T5, T6>&			callback,
+      Closure(Entrance<T1, T2, T3, T4, T5, T6>&			entrance,
 	      T1&						o1,
 	      T2&						o2,
 	      T3&						o3,
 	      T4&						o4,
 	      T5&						o5,
 	      T6&						o6):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2),
 	o3(o3),
@@ -312,25 +312,25 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2,
-				   this->o3,
-				   this->o4,
-				   this->o5,
-				   this->o6));
+	this->entrance.Trigger(this->o1,
+			       this->o2,
+			       this->o3,
+			       this->o4,
+			       this->o5,
+			       this->o6);
       }
 
       //
       // attributes
       //
-      Callback<T1,
+      Entrance<T1,
 	      T2,
 	      T3,
 	      T4,
 	      T5,
-	      T6>	callback;
+	      T6>	entrance;
 
       T1&		o1;
       T2&		o2;
@@ -356,7 +356,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2, T3, T4, T5, T6, T7>&		callback,
+      Closure(Entrance<T1, T2, T3, T4, T5, T6, T7>&		entrance,
 	      T1&						o1,
 	      T2&						o2,
 	      T3&						o3,
@@ -364,7 +364,7 @@ namespace elle
 	      T5&						o5,
 	      T6&						o6,
 	      T7&						o7):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2),
 	o3(o3),
@@ -378,27 +378,27 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2,
-				   this->o3,
-				   this->o4,
-				   this->o5,
-				   this->o6,
-				   this->o7));
+	this->entrance.Trigger(this->o1,
+			       this->o2,
+			       this->o3,
+			       this->o4,
+			       this->o5,
+			       this->o6,
+			       this->o7);
       }
 
       //
       // attributes
       //
-      Callback<T1,
+      Entrance<T1,
 	      T2,
 	      T3,
 	      T4,
 	      T5,
 	      T6,
-	      T7>	callback;
+	      T7>	entrance;
 
       T1&		o1;
       T2&		o2;
@@ -426,7 +426,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2, T3, T4, T5, T6, T7, T8>&		callback,
+      Closure(Entrance<T1, T2, T3, T4, T5, T6, T7, T8>&		entrance,
 	      T1&						o1,
 	      T2&						o2,
 	      T3&						o3,
@@ -435,7 +435,7 @@ namespace elle
 	      T6&						o6,
 	      T7&						o7,
 	      T8&						o8):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2),
 	o3(o3),
@@ -450,29 +450,29 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2,
-				   this->o3,
-				   this->o4,
-				   this->o5,
-				   this->o6,
-				   this->o7,
-				   this->o8));
+	this->entrance.Trigger(this->o1,
+			       this->o2,
+			       this->o3,
+			       this->o4,
+			       this->o5,
+			       this->o6,
+			       this->o7,
+			       this->o8);
       }
 
       //
       // attributes
       //
-      Callback<T1,
+      Entrance<T1,
 	      T2,
 	      T3,
 	      T4,
 	      T5,
 	      T6,
 	      T7,
-	      T8>	callback;
+	      T8>	entrance;
 
       T1&		o1;
       T2&		o2;
@@ -502,7 +502,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback<T1, T2, T3, T4, T5, T6, T7, T8, T9>&	callback,
+      Closure(Entrance<T1, T2, T3, T4, T5, T6, T7, T8, T9>&	entrance,
 	      T1&						o1,
 	      T2&						o2,
 	      T3&						o3,
@@ -512,7 +512,7 @@ namespace elle
 	      T7&						o7,
 	      T8&						o8,
 	      T9&						o9):
-	callback(callback),
+	entrance(entrance),
 	o1(o1),
 	o2(o2),
 	o3(o3),
@@ -528,23 +528,23 @@ namespace elle
       //
       // methods
       //
-      Status		Call()
+      Void		Trigger()
       {
-	return (this->callback.Call(this->o1,
-				   this->o2,
-				   this->o3,
-				   this->o4,
-				   this->o5,
-				   this->o6,
-				   this->o7,
-				   this->o8,
-				   this->o9));
+	this->entrance.Trigger(this->o1,
+			       this->o2,
+			       this->o3,
+			       this->o4,
+			       this->o5,
+			       this->o6,
+			       this->o7,
+			       this->o8,
+			       this->o9);
       }
 
       //
       // attributes
       //
-      Callback<T1,
+      Entrance<T1,
 	      T2,
 	      T3,
 	      T4,
@@ -552,7 +552,7 @@ namespace elle
 	      T6,
 	      T7,
 	      T8,
-	      T9>&	callback;
+	      T9>&	entrance;
 
       T1&		o1;
       T2&		o2;

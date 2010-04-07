@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun mar 21 14:14:14 2010]
+// updated       julien quintard   [mon mar 29 10:43:04 2010]
 //
 
 //
@@ -32,10 +32,10 @@ namespace elle
     const Natural32		Benchmark::BlockSize = 4096;
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- functions -------------------------------------------------------
 //
 
-    Status		Benchmark::Main()
+    Status		Main()
     {
       Byte		buffer[Benchmark::BlockSize];
 
@@ -314,7 +314,7 @@ namespace elle
 
 int			main()
 {
-  if (elle::benchmark::Benchmark::Main() == elle::misc::StatusError)
+  if (elle::benchmark::Main() == elle::misc::StatusError)
     {
       show();
 

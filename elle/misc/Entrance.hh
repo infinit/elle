@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Callback.hh
+// file          /home/mycure/infinit/elle/misc/Entrance.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [tue mar 30 17:28:25 2010]
+// updated       julien quintard   [tue mar 30 17:28:37 2010]
 //
 
-#ifndef ELLE_MISC_CALLBACK_HH
-#define ELLE_MISC_CALLBACK_HH
+#ifndef ELLE_MISC_ENTRANCE_HH
+#define ELLE_MISC_ENTRANCE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -33,23 +33,27 @@ namespace elle
 //
 
     ///
-    /// this class represents an callback i.e a reference-based routine.
+    /// this class represents an entrance i.e a method that is launched
+    /// in a new fiber.
+    ///
+    /// note that if such an entrance returns an error, the report is
+    /// displayed as this is interpreted as an extremely abnormal situation.
     ///
     template <typename... T>
-    class Callback:
+    class Entrance:
       public Routine
     {
     public:
       //
       // constructors & destructors
       //
-      Callback();
-      Callback(typename Function<T&...>::Handler);
+      Entrance();
+      Entrance(typename Function<T&...>::Handler);
       template <typename C>
-      Callback(typename Method<T&...>:: template Wrap<C>::Handler,
+      Entrance(typename Method<T&...>:: template Wrap<C>::Handler,
 	       C*);
-      Callback(const Callback&);
-      ~Callback();
+      Entrance(const Entrance&);
+      ~Entrance();
 
       //
       // methods
@@ -61,7 +65,7 @@ namespace elle
       //
 
       // entity
-      declare(Entity, Callback<T...>);
+      declare(Entity, Entrance<T...>);
       // XXX
 
       // dumpable
@@ -86,6 +90,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Callback.hxx>
+#include <elle/misc/Entrance.hxx>
 
 #endif
