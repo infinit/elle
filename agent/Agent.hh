@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [sat mar 27 20:09:59 2010]
+// updated       julien quintard   [tue mar 30 00:28:54 2010]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -51,6 +51,8 @@ namespace agent
     //
     static Status	Initialize(const String&);
     static Status	Clean();
+
+    static Status	Authenticate();
 
     //
     // callbacks

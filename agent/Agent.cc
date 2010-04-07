@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon mar 29 00:06:25 2010]
+// updated       julien quintard   [tue apr  6 19:00:50 2010]
 //
 
 //
@@ -168,14 +168,12 @@ namespace agent
     // trigger the Start() callback in a fiber so that it can block.
     //
     {
-      Callback<>		start(&Agent::Start);
-
-      // create a closure.
+      Entrance<>		start(&Agent::Start);
       Closure<>			closure(start);
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	escape("an error occured in the fiber");
+	escape("unable to spawn a fiber");
     }
 
     leave();
@@ -191,14 +189,10 @@ namespace agent
     leave();
   }
 
-//
-// ---------- callbacks -------------------------------------------------------
-//
-
   ///
-  /// this callback is triggered as soon as the agent has been initialized.
+  /// this method authenticate the agent to Etoile.
   ///
-  Status		Agent::Start()
+  Status		Agent::Authenticate()
   {
     enter();
 
@@ -227,6 +221,7 @@ namespace agent
     {
       Code			code;
       Digest			digest;
+
       // identify to etoile by passing the user's public key for challenging
       // along with the phrase.
       if (Agent::Channel.Call(
@@ -245,9 +240,62 @@ namespace agent
       // authenticate by sending the hash of the phrase.
       if (Agent::Channel.Call(
 	    Inputs< ::etoile::TagWallAuthenticate >(digest),
-	    Outputs< ::etoile::TagWallAuthenticated >()) == StatusError)
+	    Outputs< ::etoile::TagOk >()) == StatusError)
 	escape("unable to authenticate to etoile");
     }
+
+    //
+    // store the passphrase in the infinit configuration so that
+    // applications can connect to etoile on behalf of the agent's user.
+    //
+    {
+      String		path = Agent::Path + "/phrase";
+      Archive		archive;
+      Integer32		fd;
+
+      // create an archive.
+      if (archive.Create() == StatusError)
+	escape("unable to create an archive");
+
+      // serialize the user public key and phrase.
+      if (archive.Serialize(Agent::Pair.K, Agent::Phrase) == StatusError)
+	escape("unable to serialize the public key and phrase");
+
+      // create the file or overwrite it.
+      if ((fd = ::open(path.c_str(),
+		       O_WRONLY | O_TRUNC | O_CREAT,
+		       0600)) == -1)
+	escape(::strerror(errno));
+
+      // write the file.
+      if (::write(fd, archive.contents, archive.size) != archive.size)
+	{
+	  ::close(fd);
+
+	  escape("unable to write the phrase file");
+	}
+
+      // close the file.
+      ::close(fd);
+    }
+
+    leave();
+  }
+
+//
+// ---------- callbacks -------------------------------------------------------
+//
+
+  ///
+  /// this callback is triggered as soon as the agent has been initialized.
+  ///
+  Status		Agent::Start()
+  {
+    enter();
+
+    // authenticate the agent.
+    if (Agent::Authenticate() == StatusError)
+      Program::Exit(StatusError);
 
     leave();
   }
@@ -303,8 +351,8 @@ namespace agent
     // report the error.
     report(Report::TypeError, report);
 
-    // quit the application.
-    Application::Exit(StatusError);
+    // quit the program.
+    Program::Exit(StatusError);
 
     leave();
   }
@@ -319,8 +367,8 @@ namespace agent
     // report the error.
     report(Report::TypeError, error);
 
-    // quit the application.
-    Application::Exit(StatusError);
+    // quit the program.
+    Program::Exit(StatusError);
 
     leave();
   }
@@ -332,8 +380,8 @@ namespace agent
   ///
   /// the main function.
   ///
-  Status		Main(Natural32				argc,
-			     Character*				argv[])
+  Status		Main(const Natural32			argc,
+			     const Character*			argv[])
   {
     String		name;
 
@@ -351,16 +399,16 @@ namespace agent
     if (Elle::Initialize() == StatusError)
       escape("unable to initialize the Elle library");
 
-    // set up the application.
-    if (Application::Setup(argc, argv) == StatusError)
-      escape("unable to set up the application");
+    // set up the program.
+    if (Program::Setup(argc, argv) == StatusError)
+      escape("unable to set up the program");
 
     // initialize the agent.
     if (Agent::Initialize(name) == StatusError)
       escape("unable to initialize the agent");
 
-    // process the events.
-    if (Application::Process() == StatusError)
+    // launch the program.
+    if (Program::Launch() == StatusError)
       escape("unable to process the events");
 
     // clean the agent.
@@ -383,8 +431,8 @@ namespace agent
 ///
 /// this is the program entry point.
 ///
-int			main(int				argc,
-                             char**				argv)
+int			main(const int				argc,
+                             const char*			argv[])
 {
   agent::Main(argc, argv);
 
