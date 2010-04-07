@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/pig/system/fuse/System.hh
+// file          /home/mycure/infinit/pig/_backup_/system/fuse/System.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [mon aug  3 13:24:45 2009]
+// updated       julien quintard   [wed mar 31 20:20:45 2010]
 //
 
 #ifndef PIG_SYSTEM_FUSE_SYSTEM_HH

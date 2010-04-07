@@ -1,9 +1,11 @@
-PROJECT(pig CXX)
+PROJECT(PIG CXX)
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
-ADD_EXECUTABLE(pig
+ADD_EXECUTABLE(PIG
   PIG.cc
 )
 
-TARGET_LINK_LIBRARIES(pig pthread rt fuse elle ssl crypto)
+TARGET_LINK_LIBRARIES(PIG elle etoile pthread rt fuse ssl crypto
+		          ${QT_QTNETWORK_LIBRARIES}
+			  ${QT_QTCORE_LIBRARIES})
