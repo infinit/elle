@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:54:18 2010]
-// updated       julien quintard   [sun mar 21 18:12:05 2010]
+// updated       julien quintard   [tue apr  6 16:01:13 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_RIGHTS_HH
@@ -20,10 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/user/User.hh>
-#include <etoile/context/Context.hh>
-
-#include <etoile/components/Access.hh>
+#include <etoile/context/Object.hh>
 
 namespace etoile
 {
@@ -36,7 +33,7 @@ namespace etoile
 
     ///
     /// this class makes it easy to concentrate the current user's permissions
-    /// and access token but also to load those when the time is right
+    /// and access the token but also to load those when the time is right.
     ///
     class Rights
     {
@@ -49,5 +46,15 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/user/User.hh>
+
+#include <etoile/kernel/Token.hh>
+
+#include <etoile/components/Access.hh>
 
 #endif

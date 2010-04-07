@@ -1,8 +1,8 @@
-#include <QCoreApplication>
+#include <QKernelApplication>
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/Core.hh>
+#include <etoile/kernel/Kernel.hh>
 #include <etoile/path/Path.hh>
 #include <etoile/wall/Wall.hh>
 #include <etoile/agent/Agent.hh>
@@ -45,7 +45,7 @@
 int		main(int			argc,
 		     char**			argv)
 {
-  ::QCoreApplication	app(argc, argv);
+  ::QKernelApplication	app(argc, argv);
 
   {
     KeyPair	pair;
@@ -106,7 +106,7 @@ int		main(int			argc,
 
     elle::crypto::Cryptography::Initialize();
     etoile::configuration::Configuration::Initialize(String("/home/mycure/.infinit"));
-    etoile::core::Core::Initialize();
+    etoile::kernel::Kernel::Initialize();
     etoile::path::Path::Initialize(root);
     etoile::depot::Depot::Initialize();
     etoile::agent::Agent::Initialize(pair);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu mar 11 17:10:59 2010]
+// updated       julien quintard   [thu apr  1 02:41:25 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HXX

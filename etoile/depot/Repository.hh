@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [fri mar 19 17:07:13 2010]
+// updated       julien quintard   [fri apr  2 13:54:01 2010]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH
@@ -20,11 +20,11 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/configuration/Configuration.hh>
+#include <etoile/hole/Address.hh>
+#include <etoile/hole/Block.hh>
+#include <etoile/hole/Family.hh>
 
 #include <etoile/depot/Record.hh>
-#include <etoile/depot/Cell.hh>
-#include <etoile/depot/Unit.hh>
 #include <etoile/depot/Location.hh>
 
 #include <map>
@@ -33,8 +33,6 @@
 
 namespace etoile
 {
-  using namespace configuration;
-
   namespace depot
   {
 
@@ -43,8 +41,6 @@ namespace etoile
 //
 
     class Record;
-    class Cell;
-    class Unit;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -109,7 +105,7 @@ namespace etoile
       //
       // static attributes
       //
-      static core::Time*		Delays[hole::Families];
+      static Time*			Delays[hole::Families];
 
       static Data::Container		Container;
 
@@ -134,5 +130,16 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/configuration/Configuration.hh>
+
+#include <etoile/hole/Hole.hh>
+
+#include <etoile/depot/Cell.hh>
+#include <etoile/depot/Unit.hh>
 
 #endif

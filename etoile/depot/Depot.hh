@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [thu jan 28 14:14:15 2010]
+// updated       julien quintard   [wed mar 31 00:06:22 2010]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -20,16 +20,8 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/hole/Hole.hh>
-#include <etoile/core/Core.hh>
-
-#include <etoile/depot/Repository.hh>
-#include <etoile/depot/Record.hh>
-#include <etoile/depot/Cell.hh>
-#include <etoile/depot/Unit.hh>
-
-#include <map>
-#include <list>
+#include <etoile/hole/Address.hh>
+#include <etoile/hole/Block.hh>
 
 namespace etoile
 {
@@ -69,7 +61,7 @@ namespace etoile
 
       ///
       /// this method has been introduced because the C++ typing system
-      /// seems unable to implicitly cast an core::Object* for instance
+      /// seems unable to implicitly cast an kernel::Object* for instance
       /// to a hole::Block*& or to const-equivalents.
       ///
       template <typename T>
@@ -102,5 +94,14 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/depot/Repository.hh>
+#include <etoile/depot/Record.hh>
+#include <etoile/depot/Cell.hh>
+#include <etoile/depot/Unit.hh>
 
 #endif

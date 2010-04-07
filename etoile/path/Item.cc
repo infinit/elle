@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.cc
 //
 // created       julien quintard   [fri aug  7 21:44:49 2009]
-// updated       julien quintard   [thu mar 25 17:51:37 2010]
+// updated       julien quintard   [fri apr  2 01:32:25 2010]
 //
 
 //
@@ -39,7 +39,7 @@ namespace etoile
     ///
     /// the normal constructor.
     ///
-    Item::Item(const String&					name,
+    Item::Item(const Slice&					name,
 	       Item*						directory):
       name(name),
       directory(directory),
@@ -64,7 +64,7 @@ namespace etoile
     ///
     /// this method tries to resolve a name within the item scope.
     ///
-    Status		Item::Resolve(const String&		name,
+    Status		Item::Resolve(const Slice&		name,
 				      Item*&			item)
     {
       Item::Scoutor	scoutor;
@@ -88,7 +88,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Item::Update(const String&		name,
+    Status		Item::Update(const Slice&		name,
 				     const hole::Address&	address)
     {
       std::pair<Item::Iterator, bool>	result;

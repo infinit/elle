@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [wed mar  3 20:10:06 2010]
+// updated       julien quintard   [tue apr  6 14:38:08 2010]
 //
 
 #ifndef ETOILE_WALL_OBJECT_HH
@@ -20,7 +20,11 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/wall/Types.hh>
+#include <etoile/Manifest.hh>
+
+#include <etoile/path/Way.hh>
+
+#include <etoile/context/Identifier.hh>
 
 namespace etoile
 {
@@ -32,7 +36,10 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class provides general-purpose method for manipulating objects.
+    ///
+    /// this is very useful when the caller does not know the genre of
+    /// the object i.e file, directory or link.
     ///
     class Object
     {
@@ -40,56 +47,23 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Load(const Path&,
-			     Identifier&);
-      static Status	Create(const Path&,
-			       Identifier&);
-      static Status	Store(const Identifier&);
-
-      static Status	Lock(const Identifier&);
-      static Status	Release(const Identifier&);
-
-      static Status	Information(const Identifier&,
-				    Metadata&);
-
-      static Status	Rollback(const Identifier&,
-				 Version&);
-
-      static Status	Destroy(const Identifier&);
-
-      struct		Attribute
-      {
-	static Status	Add(const Identifier&,
-			    const Name&,
-			    const Value&);
-	static Status	Remove(const Identifier&,
-			       const Name&);
-	static Status	Update(const Identifier&,
-			       const Name&,
-			       const Value&);
-      };
-
-      struct		Access
-      {
-	static Status	List(const Identifier&);
-	static Status	Grant(const Identifier&,
-			      const Subject&,
-			      const Name&,
-			      const Permissions&);
-	static Status	Revoke(const Identifier&,
-			       const Subject&,
-			       const Name&);
-	static Status	Update(const Identifier&,
-			       const Subject&,
-			       const Name&,
-			       const Permissions&);
-	static Status	Block(const Identifier&,
-			      const Subject&,
-			      const Name&);
-      };
+      static Status	Load(const path::Way&);
+      static Status	Lock(const context::Identifier&);
+      static Status	Release(const context::Identifier&);
+      static Status	Information(const context::Identifier&);
+      static Status	Store(const context::Identifier&);
     };
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/context/Object.hh>
+#include <etoile/context/Format.hh>
+
+#include <etoile/path/Path.hh>
 
 #endif

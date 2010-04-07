@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [sun mar 21 18:11:39 2010]
+// updated       julien quintard   [tue apr  6 23:24:55 2010]
 //
 
 //
@@ -27,7 +27,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method loads the directory object identified by the given
+    /// address in the context.
     ///
     Status		Directory::Load(context::Directory*	context,
 					const hole::Address&	address)
@@ -40,113 +41,249 @@ namespace etoile
 	escape("unable to load the object");
 
       // check that the object is a directory.
-      if (context->object->meta.status.genre != core::GenreDirectory)
+      if (context->object->meta.genre != kernel::GenreDirectory)
 	escape("this object is not a directory");
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method creates a sub-directory in the given directory.
+    ///
+    Status		Directory::Create(context::Directory*	context,
+					  context::Directory*	directory,
+					  const path::Slice&	name)
+    {
+      enter();
+
+      // XXX create new directory object, Bind the object -> address,
+      // Directory::Add(directory, name, address).
+
+      leave();
+    }
+
+    ///
+    /// this method checks if the given name exists in the directory.
+    ///
+    Status		Directory::Exist(context::Directory*	context,
+					 const path::Slice&	name,
+					 Boolean&		boolean)
+    {
+      Status		status;
+
+      enter();
+
+      // determine the rights.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // check if the current user has the right the read the catalog.
+      if (!(context->rights->permissions & kernel::PermissionRead))
+	escape("unable to perform the operation without the permission");
+
+      // check the directory.
+      status = context->contents->content->Exist(name);
+
+      // return the result.
+      switch (status)
+	{
+	case StatusTrue:
+	  {
+	    boolean = true;
+
+	    break;
+	  }
+	case StatusFalse:
+	  {
+	    boolean = false;
+
+	    break;
+	  }
+	default:
+	  {
+	    escape("unknown status");
+	  }
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method returns the address corresponding to the given name.
     ///
     Status		Directory::Lookup(context::Directory*	context,
-					  const String&		name,
-					  hole::Address&	address)
+					  const path::Slice&	name,
+					  kernel::Entry*&	entry)
     {
       enter();
-
-      // open the access.
-      if (Access::Open(context) == StatusError)
-	escape("unable to open the access");
 
       // determine the rights.
       if (Rights::Determine(context) == StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context->rights->permissions & core::PermissionRead))
+      if (!(context->rights->permissions & kernel::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
-      // open the catalog.
-      if (Catalog::Open(context) == StatusError)
-	escape("unable to load the catalog");
+      // open the contents.
+      if (Contents::Open(context) == StatusError)
+	escape("unable to open the contents");
 
-      // lookup the name.
-      if (Catalog::Lookup(context, name, address) == StatusError)
-	escape("unable to find the entry");
+      // look up the entry.
+      if (context->contents->content->Lookup(name, entry) == StatusError)
+	escape("unable to find the entry in the directory");
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method returns a subset of the directory entries.
+    ///
+    Status		Directory::Consult(context::Directory*	context,
+					   const kernel::Index&	index,
+					   const kernel::Size&	size,
+					   kernel::Set&		set)
+    {
+      enter();
+
+      // determine the rights.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // check if the current user has the right the read the catalog.
+      if (!(context->rights->permissions & kernel::PermissionRead))
+	escape("unable to perform the operation without the permission");
+
+      // open the contents.
+      if (Contents::Open(context) == StatusError)
+	escape("unable to open the contents");
+
+      // consult the directory catalog.
+      if (context->contents->content->Consult(index, size, set) == StatusError)
+	escape("unable to consult the directory");
+
+      leave();
+    }
+
+    ///
+    /// this method adds a directory entry to the directory.
     ///
     Status		Directory::Add(context::Directory*	context,
-				       const String&		name,
-				       const hole::Address&	address)
+				     const path::Slice&		name,
+				     const hole::Address&	address)
     {
-      enter();
+      kernel::Entry*	entry;
 
-      // open the access.
-      if (Access::Open(context) == StatusError)
-	escape("unable to open the access");
+      enter(instance(entry));
 
       // determine the rights.
       if (Rights::Determine(context) == StatusError)
 	escape("unable to determine the rights");
 
-      // check if the current user has the right the read the catalog.
-      if (!(context->rights->permissions & core::PermissionWrite))
+      // check if the current user has the right the write the catalog.
+      if (!(context->rights->permissions & kernel::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
-      // open the catalog.
-      if (Catalog::Open(context) == StatusError)
-	escape("unable to open the catalog");
+      // open the contents.
+      if (Contents::Open(context) == StatusError)
+	escape("unable to open the contents");
 
-      // add the name.
-      if (Catalog::Add(context, name, address) == StatusError)
-	escape("unable to add the entry");
+      // allocate a new entry.
+      entry = new kernel::Entry(name, address);
+
+      // add the entry in the directory.
+      if (context->contents->content->Add(entry) == StatusError)
+	escape("unable to add the entry in the directory");
+
+      // stop tracking.
+      waive(entry);
 
       leave();
     }
 
     ///
-    /// this method first calls the sub-components to remove any
-    /// loaded information that has not changed but also to update the link
-    /// between the components and sub-components such as the object as a
-    /// reference to a potentional catalog.
+    /// this method renames an entry.
     ///
-    Status		Directory::Commit(context::Directory*	context)
+    Status		Directory::Rename(context::Directory*	context,
+					const path::Slice&	from,
+					const path::Slice&	to)
     {
+      enter();
+
+      // determine the rights.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // check if the current user has the right the write the catalog.
+      if (!(context->rights->permissions & kernel::PermissionWrite))
+	escape("unable to perform the operation without the permission");
+
+      // open the contents.
+      if (Contents::Open(context) == StatusError)
+	escape("unable to open the contents");
+
+      // rename the entry.
+      if (context->contents->content->Rename(from, to) == StatusError)
+	escape("unable to rename the directory's entry");
+
+      leave();
+    }
+
+    ///
+    /// this method removes an entry.
+    ///
+    Status		Directory::Remove(context::Directory*	context,
+					const path::Slice&	name)
+    {
+      enter();
+
+      // determine the rights.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // check if the current user has the right the write the catalog.
+      if (!(context->rights->permissions & kernel::PermissionWrite))
+	escape("unable to perform the operation without the permission");
+
+      // open the contents.
+      if (Contents::Open(context) == StatusError)
+	escape("unable to open the contents");
+
+      // remove the entry.
+      if (context->contents->content->Remove(name) == StatusError)
+	escape("unable to remove the directory's entry");
+
+      leave();
+    }
+
+    ///
+    /// this store the modifications applied onto the directory context.
+    ///
+    Status		Directory::Store(context::Directory*	context)
+    {
+      user::User*	user;
+
       enter();
 
       // close the catalog.
-      if (Catalog::Close(context) == StatusError)
-	escape("unable to close the catalog");
+      if (Contents::Close(context) == StatusError)
+	escape("unable to close the contents");
 
-      // close the access.
-      if (Access::Close(context) == StatusError)
-	escape("unable to close the access");
-
-      // seal the object.
-      if (context->object->Seal(*user::user.client->agent) == StatusError)
-	escape("unable to seal the object");
-
-      // push the context in the journal.
-      if (journal::Journal::Push(context) == StatusError)
-	escape("unable to the context");
+      // store the object.
+      if (Object::Store(context) == StatusError)
+	escape("unable to store the object");
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method removes the object along with the blocks attached to it.
     ///
-    Status		Directory::Close(context::Directory*	context)
+    Status		Directory::Destroy(context::Directory*	context)
     {
       enter();
 
-      // XXX
+      // XXX Contents::Destroy
 
       leave();
     }

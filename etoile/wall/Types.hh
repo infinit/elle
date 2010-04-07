@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Types.hh
 //
 // created       julien quintard   [fri aug 14 17:41:49 2009]
-// updated       julien quintard   [fri mar 19 23:49:05 2010]
+// updated       julien quintard   [wed mar 31 16:05:46 2010]
 //
 
 #ifndef ETOILE_WALL_TYPES_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/core/Core.hh>
+#include <etoile/kernel/Kernel.hh>
 
 namespace etoile
 {
@@ -30,23 +30,10 @@ namespace etoile
 //
 
     // XXX
-    typedef core::Permissions	Permissions;
-    typedef core::Version	Version;
-
-    typedef Natural32		Identifier;
-
+    /*
     typedef String		Name;
     typedef String		Value;
-
-    typedef String		Path;
-
-    typedef core::Subject	Subject;
-
-    class Metadata
-    {
-    public:
-      // XXX
-    };
+    */
 
   }
 }

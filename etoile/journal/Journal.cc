@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [wed mar  3 16:38:01 2010]
+// updated       julien quintard   [tue apr  6 12:13:53 2010]
 //
 
 //
@@ -23,77 +23,77 @@ namespace etoile
   {
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- static methods --------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method initializes the journal.
     ///
     Status		Journal::Initialize()
     {
       enter();
 
-      // XXX
+      // nothing to do
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method cleans the journal.
     ///
     Status		Journal::Clean()
     {
       enter();
 
-      // XXX
+      // nothing to do.
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method registers a context as being ready to be processed.
     ///
-    Status		Journal::Push(context::Context*		context)
+    Status		Journal::Record(context::Context*	context)
     {
-      Set::Container	set;
-      Set::Scoutor	scoutor;
+      Bucket::Scoutor	scoutor;
 
       enter();
 
       // XXX easy temporary version, just publish everything.
 
-      // retrieve the set of blocks to publish.
-      if (context->Register(set) == StatusError)
-	escape("unable to register the blocks to register");
-
-      // go through the blocks and publish them.
-      for (scoutor = set.begin();
-	   scoutor != set.end();
+      // go through the blocks and publish/destroy them.
+      for (scoutor = context->bucket.container.begin();
+	   scoutor != context->bucket.container.end();
 	   scoutor++)
 	{
-	  hole::Block*	block = *scoutor;
+	  Item*		item = *scoutor;
 
-	  if (hole::Hole::Put(block->address, block) == StatusError)
-	    escape("unable to publish the block through hole");
+	  switch (item->operation)
+	    {
+	    case OperationPush:
+	      {
+		if (hole::Hole::Put(item->block->address,
+				    item->block) == StatusError)
+		  escape("unable to publish the block through hole");
+
+		break;
+	      }
+	    case OperationPop:
+	      {
+		if (hole::Hole::Destroy(*item->address) == StatusError)
+		  escape("unable to destroy the block through hole");
+
+		break;
+	      }
+	    }
 	}
 
       leave();
     }
 
     ///
-    /// XXX
-    ///
-    Status		Journal::Pop(context::Context*&		context)
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    ///
-    /// XXX
+    /// this method is called by Depot whenever looking for a particular
+    /// block.
     ///
     Status		Journal::Get(const hole::Address&	address,
 				     hole::Block*&		block)

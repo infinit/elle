@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.hh
 //
 // created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [thu mar 25 20:21:32 2010]
+// updated       julien quintard   [tue apr  6 12:59:24 2010]
 //
 
 #ifndef ETOILE_WALL_WALL_HH
@@ -20,17 +20,10 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/configuration/Configuration.hh>
-#include <etoile/user/User.hh>
-#include <etoile/context/Context.hh>
-#include <etoile/components/Components.hh>
-#include <etoile/path/Path.hh>
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {
-  using namespace configuration;
-  using namespace user;
-
   namespace wall
   {
 
@@ -39,7 +32,9 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// the Wal method deal with identifying, authenticating and connecting
+    /// clients so that once authenticated/connected, an application can
+    /// issue requests.
     ///
     class Wall
     {
@@ -62,6 +57,7 @@ namespace etoile
       //
       // callbacks
       //
+      static Status	Error(const Report&);
       static Status	Connection(Door*&);
     };
 
@@ -72,12 +68,17 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-// XXX
+#include <etoile/configuration/Configuration.hh>
+#include <etoile/user/User.hh>
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
 #include <etoile/wall/Interface.hh>
 #include <etoile/wall/Types.hh>
 #include <etoile/wall/User.hh>
 #include <etoile/wall/Object.hh>
 #include <etoile/wall/Directory.hh>
-// XXX
 
 #endif

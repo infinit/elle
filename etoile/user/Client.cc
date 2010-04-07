@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.cc
 //
 // created       julien quintard   [thu mar 11 16:21:11 2010]
-// updated       julien quintard   [fri mar 26 12:39:46 2010]
+// updated       julien quintard   [thu apr  1 02:59:52 2010]
 //
 
 //
@@ -183,6 +183,33 @@ namespace etoile
     }
 
     ///
+    /// this method returns the application associated with the given channel.
+    ///
+    Status		Client::Retrieve(const Channel*		channel,
+					 Application*&		application)
+    {
+      Client::A::Scoutor	scoutor;
+
+      enter();
+
+      // look for the given application.
+      for (scoutor = this->applications.begin();
+	   scoutor != this->applications.end();
+	   scoutor++)
+	{
+	  if ((*scoutor)->channel == channel)
+	    {
+	      // set the application pointer.
+	      application = *scoutor;
+
+	      leave();
+	    }
+	}
+
+      escape("unable to locate the given channel among the applications");
+    }
+
+    ///
     /// this method adds an application.
     ///
     Status		Client::Remove(Application*		application)
@@ -228,13 +255,17 @@ namespace etoile
       if (this->agent->Dump(margin + 2) == StatusError)
 	escape("unable to dump the agent");
 
+      // dump the applications.
+      std::cout << alignment << Dumpable::Shift << "[Applications]"
+		<< std::endl;
+
       // dump each application.
       for (scoutor = this->applications.begin();
 	   scoutor != this->applications.end();
 	   scoutor++)
 	{
 	  // dump the application.
-	  if ((*scoutor)->Dump(margin + 2) == StatusError)
+	  if ((*scoutor)->Dump(margin + 4) == StatusError)
 	    escape("unable to dump the application");
 	}
 
@@ -326,6 +357,67 @@ namespace etoile
       delete client;
 
       leave();
+    }
+
+    ///
+    /// this method locates a client from a channel.
+    ///
+    Status		Client::Retrieve(const Channel*		channel,
+					 Client*&		client)
+    {
+      return (Map::Retrieve(channel, client));
+    }
+
+    ///
+    /// this method retrieves a client from a public key.
+    ///
+    Status		Client::Retrieve(const PublicKey&	K,
+					 Client*&		client)
+    {
+      Client::C::Scoutor	scoutor;
+
+      enter();
+
+      // for every client.
+      for (scoutor = Client::Clients.begin();
+	   scoutor != Client::Clients.end();
+	   scoutor++)
+	{
+	  // set the client.
+	  client = *scoutor;
+
+	  // check if the agent is handling this public key.
+	  if (client->agent->K == K)
+	    true();
+	}
+
+      false();
+    }
+
+    ///
+    /// this method retrieves a client from a phrase.
+    ///
+    Status		Client::Retrieve(const String&		phrase,
+					 Client*&		client)
+    {
+      Client::C::Scoutor	scoutor;
+
+      enter();
+
+      // for every client.
+      for (scoutor = Client::Clients.begin();
+	   scoutor != Client::Clients.end();
+	   scoutor++)
+	{
+	  // set the client.
+	  client = *scoutor;
+
+	  // check if this client uses the given phrase.
+	  if (client->phrase == phrase)
+	    true();
+	}
+
+      false();
     }
 
     ///

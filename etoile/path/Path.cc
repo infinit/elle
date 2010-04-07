@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [wed mar 17 17:44:58 2010]
+// updated       julien quintard   [tue apr  6 14:48:59 2010]
 //
 
 //
@@ -108,6 +108,7 @@ namespace etoile
 	   scoutor++)
 	{
 	  context::Directory	context;
+	  kernel::Entry*	entry;
 
 	  // load the directory referenced by address.
 	  if (components::Directory::Load(&context, address) == StatusError)
@@ -116,11 +117,14 @@ namespace etoile
 	  // look up for the name.
 	  if (components::Directory::Lookup(&context,
 					    *scoutor,
-					    address) == StatusError)
+					    entry) == StatusError)
 	    escape("unable to find one of the route's entries");
 
+	  // set the address.
+	  address = entry->address;
+
 	  // close the context.
-	  if (components::Directory::Close(&context) == StatusError)
+	  if (components::Directory::Store(&context) == StatusError)
 	    escape("unable to close the context");
 	}
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [sat mar 27 20:53:27 2010]
+// updated       julien quintard   [tue apr  6 19:03:34 2010]
 //
 
 //
@@ -29,7 +29,8 @@ namespace etoile
     ///
     /// this defines the name of the door which will be used by clients.
     ///
-    const String&		Wall::Line = Configuration::Wall::Line;
+    const String&		Wall::Line =
+      configuration::Configuration::Wall::Line;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -40,7 +41,8 @@ namespace etoile
     ///
     Status		Wall::Initialize()
     {
-      Callback<Door*>	callback(&Wall::Connection);
+      Callback<Door*>		connection(&Wall::Connection);
+      Callback<const Report>	error(&Wall::Error);
 
       enter();
 
@@ -52,8 +54,13 @@ namespace etoile
       if (Interface::Initialize() == StatusError)
 	escape("unable to initialize the interface");
 
+      // register the error callback in order to dump the error occuring
+      // in the agents for instance.
+      if (Network::Register<TagError>(error) == StatusError)
+	escape("unable to register the error message");
+
       // listen for incoming connection.
-      if (Lane::Listen(Wall::Line, callback) == StatusError)
+      if (Lane::Listen(Wall::Line, connection) == StatusError)
 	escape("unable to listen for bridge connections");
 
       leave();
@@ -73,8 +80,33 @@ namespace etoile
       leave();
     }
 
+//
+// ---------- callbacks -------------------------------------------------------
+//
+
     ///
-    /// XXX
+    /// this callback is triggered whenever an agent reports an error
+    /// as a consequence of a request received from Etoile.
+    ///
+    /// note however that this should never occur!
+    ///
+    Status		Wall::Error(const Report&		report)
+    {
+      printf("[XXX] Wall::Error\n");
+
+      // XXX only dump if agent
+      // XXX dump the agent object
+
+      // dump the report.
+      report.Dump();
+
+      enter();
+    }
+
+    ///
+    /// this method identifies the client by storing its identity as
+    /// a guest before going on to the next step: authentication through
+    /// public key challenge.
     ///
     Status		Wall::Identify(const PublicKey&		K)
     {
@@ -82,20 +114,31 @@ namespace etoile
       user::Guest*	guest;
       user::Agent*	agent;
       user::Client*	client;
+      user::User*	user;
 
       enter(instance(agent),
 	    instance(client));
 
       printf("[XXX] Wall::Identify()\n");
 
-      /// XXX \todo regarde si il y a deja un client sur cette socket,
-      /// et verifier que l'agent n'est pas deja authentifie
-      /// et surtout que cette clef publique n'a pas deja un agent!!!
-
       // retrieve the guest.
-      if (user::Guest::Retrieve((Channel*)session->socket, guest) ==
-	  StatusError)
+      if (user::Guest::Retrieve((Channel*)session->socket,
+				guest) == StatusError)
 	escape("unable to locate the sender's guest record");
+
+      // check if this socket is already associated with a client. if so
+      // that would mean that this operation is not authorised.
+      if (user::Client::Retrieve(guest->channel, client) == StatusTrue)
+	escape("this socket seems to already be associated with a client");
+
+      // check if this public key is already used. if so, that would mean
+      // that an agent is already connected and handling this user.
+      if (user::Client::Retrieve(K, client) == StatusTrue)
+	escape("this public key seems to already be handled by an agent");
+
+      // detach the channel from the guest so that it does not get lost.
+      if (guest->Detach() == StatusError)
+	escape("unable to detach the channel from the guest");
 
       // allocate a new agent.
       agent = new user::Agent;
@@ -115,9 +158,13 @@ namespace etoile
       if (client->Record(agent) == StatusError)
 	escape("unable to record the agent");
 
-      // assign the client as being the current one.
+      // assign the client as being the current user.
       if (user::User::Assign(client) == StatusError)
 	escape("unable to assign the current user");
+
+      // retrieve the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the current user");
 
       // stop tracking the agent;
       waive(agent);
@@ -129,22 +176,18 @@ namespace etoile
       // stop tracking the client.
       waive(client);
 
-      // detach the channel from the guest so that it does not get lost.
-      if (guest->Detach() == StatusError)
-	escape("unable to detach the channel from the guest");
-
       // destroy the guest.
       if (user::Guest::Remove(guest) == StatusError)
 	escape("unable to destroy the guest");
 
       // encrypts the phrase with the user's public key.
-      if (user::user.client->agent->K.Encrypt(user::user.client->phrase,
-					      code) == StatusError)
+      if (user->agent->K.Encrypt(user->client->phrase,
+				 code) == StatusError)
 	escape("unable to encrypt the phrase");
 
       // send the challenge to the agent.
-      if (user::user.client->agent->channel->Reply(
-	    Inputs<TagWallChallenge>(code)) == StatusError)
+      if (user->agent->channel->Reply(
+            Inputs<TagWallChallenge>(code)) == StatusError)
 	escape("unable to send the challenge to the agent");
 
       printf("[/XXX] Wall::Identify()\n");
@@ -153,39 +196,46 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method receives the digest of the challenge, computes the
+    /// hash of the randomly generated challenge and compares it with
+    /// the received digest.
     ///
     Status		Wall::Authenticate(const Digest&	digest)
     {
+      user::User*	user;
       Digest		d;
 
       enter();
 
       printf("[XXX] Wall::Authenticate()\n");
 
-      /// XXX \todo regarde si il y a deja un client sur cette socket,
-      /// et verifier que l'agent n'est pas deja authentifie
-
       // load the current user.
-      if (user::User::Assign() == StatusError)
+      if (user::User::Instance(user) == StatusError)
 	escape("unable to load the user");
 
+      // check if the user is an agent.
+      if (user->type != user::User::TypeAgent)
+	escape("non-agents cannot authenticate");
+
+      // check if the agent is not already authenticated.
+      if (user->agent->state == user::Agent::StateAuthenticated)
+	escape("this agent seems to be authenticated already");
+
       // compute the phrase digest.
-      if (OneWay::Hash(user::user.client->phrase, d) == StatusError)
-	escape("unable to compute the phrase's digest");
+      if (OneWay::Hash(user->client->phrase, d) == StatusError)
+	escape("unable to hash the phrase");
 
       // compare the received digest with the phrase's one.
       if (digest != d)
-	abort(user::user.client->agent->channel,
-	      "the digest does not correspond to the encrypted phrase");
+	escape("the digest does not correspond to the encrypted phrase");
 
       // set the agent as authenticated.
-      if (user::user.client->agent->Authenticate() == StatusError)
+      if (user->agent->Authenticate() == StatusError)
 	escape("unable to set the agent as authenticated");
 
       // acknowledge the authentication.
-      acknowledge(user::user.client->agent->channel,
-		  TagWallAuthenticated);
+      if (user->agent->channel->Reply(Inputs<TagOk>()) == StatusError)
+	escape("unable to acknowledge the authentication");
 
       printf("[/XXX] Wall::Authenticate()\n");
 
@@ -193,13 +243,73 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method receives the phrase originally used as a challenge
+    /// for the agent. if it matches the agent phrase, the sender is
+    /// considered as a valid application and will therefore be allowed
+    /// to issue requests on behalf of the agent.
     ///
     Status		Wall::Connect(const String&		phrase)
     {
-      enter();
+      user::Application*	application;
+      user::Client*		client;
+      user::Guest*		guest;
+      user::User*		user;
+
+      enter(instance(application));
 
       printf("[XXX] Wall::Connect()\n");
+
+      // retrieve the guest.
+      if (user::Guest::Retrieve((Channel*)session->socket,
+				guest) == StatusError)
+	escape("unable to locate the sender's guest record");
+
+      // check if this socket is already associated with a client. if so
+      // that would mean that this operation is not authorised.
+      if (user::Client::Retrieve(guest->channel, client) == StatusTrue)
+	escape("this socket seems to already be associated with a client");
+
+      // locate the client, that makes use of the given phrase.
+      if (user::Client::Retrieve(phrase, client) != StatusTrue)
+	escape("unable to locate the agent making use of the given phrase");
+
+      // check if the agent is authenticated.
+      if (client->agent->state != user::Agent::StateAuthenticated)
+	escape("this agent seems not to be authenticated");
+
+      // detach the channel from the guest so that it does not get lost.
+      if (guest->Detach() == StatusError)
+	escape("unable to detach the channel from the guest");
+
+      // allocate a new application.
+      application = new user::Application;
+
+      // create a new application
+      if (application->Create(guest->channel) == StatusError)
+	escape("unable to create the application");
+
+      // register the application.
+      if (client->Add(application) == StatusError)
+	escape("unable to add the application");
+
+      // waive the tracking.
+      waive(application);
+
+      // destroy the guest.
+      if (user::Guest::Remove(guest) == StatusError)
+	escape("unable to destroy the guest");
+
+      // assign the client as being the current user.
+      if (user::User::Assign(client) == StatusError)
+	escape("unable to assign the current user");
+
+      // retrieve the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the current user");
+
+      // acknowledge the connection.
+      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+	escape("unable to acknowledge the connection");
 
       printf("[/XXX] Wall::Connect()\n");
 
@@ -216,7 +326,7 @@ namespace etoile
     ///
     Status		Wall::Connection(Door*&			door)
     {
-      Guest*		guest;
+      user::Guest*	guest;
 
       enter(instance(guest));
 

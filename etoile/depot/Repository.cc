@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [thu mar 25 17:50:39 2010]
+// updated       julien quintard   [fri apr  2 13:54:13 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// the expiration delays for blocks depending on their family.
     ///
-    core::Time*				Repository::Delays[hole::Families];
+    Time*				Repository::Delays[hole::Families];
 
     ///
     /// the data container.
@@ -41,17 +41,17 @@ namespace etoile
     ///
     Natural64				Repository::Cache::Size = 0;
     Natural64&				Repository::Cache::Capacity =
-      Configuration::Cache::Capacity;
+      configuration::Configuration::Cache::Capacity;
     Repository::Access::Container	Repository::Cache::Queue;
 
     ///
     /// the reserve attributes: size, capacity and LRU list.
     ///
     String&				Repository::Reserve::Path =
-      Configuration::Reserve::Path;
+      configuration::Configuration::Reserve::Path;
     Natural64				Repository::Reserve::Size = 0;
     Natural64&				Repository::Reserve::Capacity =
-      Configuration::Reserve::Capacity;
+      configuration::Configuration::Reserve::Capacity;
     Repository::Access::Container	Repository::Reserve::Queue;
 
 //
@@ -69,7 +69,7 @@ namespace etoile
       Repository::Delays[hole::FamilyContentHashBlock] = NULL;
 
       // set the public key blocks delay.
-      Repository::Delays[hole::FamilyPublicKeyBlock] = new core::Time;
+      Repository::Delays[hole::FamilyPublicKeyBlock] = new Time;
       Repository::Delays[hole::FamilyPublicKeyBlock]->minute = 5;
 
       leave();
@@ -210,7 +210,7 @@ namespace etoile
 	      //
 
 	      // update the cell.
-	      if (record->data.cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -223,17 +223,17 @@ namespace etoile
 	      //
 
 	      // destroy the unit.
-	      if (record->data.unit->Destroy() == StatusError)
+	      if (record->unit->Destroy() == StatusError)
 		escape("unable to destroy the unit");
 
 	      // release the unit.
-	      delete record->data.unit;
+	      delete record->unit;
 
 	      // allocate a new cell.
-	      record->data.cell = new Cell;
+	      record->cell = new Cell;
 
 	      // create a cell.
-	      if (record->data.cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -246,10 +246,10 @@ namespace etoile
 	      //
 
 	      // allocate a cell.
-	      record->data.cell = new Cell;
+	      record->cell = new Cell;
 
 	      // create the cell.
-	      if (record->data.cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -312,7 +312,7 @@ namespace etoile
 	      //
 
 	      // get the block's data from the cell.
-	      if (record->data.cell->Get(block) == StatusError)
+	      if (record->cell->Get(block) == StatusError)
 		escape("unable to get the block's data");
 
 	      // remove the access stamp.
@@ -342,21 +342,21 @@ namespace etoile
 		escape("unable to evict enough data");
 
 	      // get the block's data from the unit.
-	      if (record->data.unit->Get(block) == StatusError)
+	      if (record->unit->Get(block) == StatusError)
 		escape("unable to get the block's data");
 
 	      // destroy the unit.
-	      if (record->data.unit->Destroy() == StatusError)
+	      if (record->unit->Destroy() == StatusError)
 		escape("unable to destroy the unit");
 
 	      // release the unit.
-	      delete record->data.unit;
+	      delete record->unit;
 
 	      // allocate a new cell.
-	      record->data.cell = new Cell;
+	      record->cell = new Cell;
 
 	      // create a cell.
-	      if (record->data.cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -504,7 +504,7 @@ namespace etoile
 		enter(instance(unit));
 
 		// retrieve the block.
-		if (record->data.cell->Get(block) == StatusError)
+		if (record->cell->Get(block) == StatusError)
 		  escape("unable to retrieve the block from the cell");
 
 		// new unit.
@@ -515,14 +515,14 @@ namespace etoile
 		  escape("unable to set the unit");
 
 		// destroy the cell.
-		if (record->data.cell->Destroy() == StatusError)
+		if (record->cell->Destroy() == StatusError)
 		  escape("unable to destroy the cell");
 
 		// release the cell.
-		delete record->data.cell;
+		delete record->cell;
 
 		// attach the unit.
-		record->data.unit = unit;
+		record->unit = unit;
 
 		// stop tracking the unit.
 		waive(unit);

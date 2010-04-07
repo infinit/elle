@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hh
 //
 // created       julien quintard   [fri aug 14 22:36:10 2009]
-// updated       julien quintard   [sun mar 21 16:45:57 2010]
+// updated       julien quintard   [tue apr  6 14:48:07 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HH
@@ -20,15 +20,18 @@
 
 #include <elle/Elle.hh>
 
-///
-/// this file is directly included to avoid pre-processing issues.
-///
-#include <etoile/journal/Set.hh>
+#include <etoile/user/Client.hh>
+
+#include <etoile/context/Identifier.hh>
+#include <etoile/context/Format.hh>
+
+#include <etoile/journal/Bucket.hh>
 
 namespace etoile
 {
   ///
-  /// XXX
+  /// this namespace contains classes for manipulating contexts i.e
+  /// state related to a sequence of operations.
   ///
   namespace context
   {
@@ -38,31 +41,65 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// a context keeps the state required by operations to sequentially
+    /// execute.
+    ///
+    /// every context is identified by an identifier which is used by
+    /// applications. however, in order to prevent attacks, the client,
+    /// hence the user, is also associated with the context.
+    ///
+    /// this way, anoter used cannot attack the identifiers through
+    /// brute force while the proper user can very well pass the identifiers
+    /// between its processes, thus benefiting from improved performance.
     ///
     class Context:
       public Dumpable
     {
     public:
       //
-      // interface
+      // types
       //
+      typedef std::pair<user::Client*, Context*>	Value;
+      typedef std::map<const Identifier, Value>		Container;
+      typedef Container::iterator			Iterator;
+      typedef Container::const_iterator			Scoutor;
 
-      ///
-      /// this method is called by the journal in order for the specific
-      /// context to register its blocks in the journal container.
-      ///
-      /// note that the register methods should always make sure that
-      /// immutable blocks arrive first in the set so that the system
-      /// publishes the data blocks before publishing the updated object.
-      /// indeed, otherwise, the object would be updated, pointing to
-      /// inexisting data blocks i.e not published yet.
-      ///
-      virtual Status	Register(journal::Set::Container&) = 0;
+      //
+      // static methods
+      //
+      static Status	Add(const Identifier&,
+			    Context*);
+      template <typename T>
+      static Status	Retrieve(const Identifier&,
+				 T*&);
+      static Status	Remove(const Identifier&);
+
+      //
+      // static attributes
+      //
+      static Container		Contexts;
+
+      //
+      // constructors & destructors
+      //
+      Context(const Format&);
+
+      //
+      // attributes
+      //
+      Format		format;
+
+      journal::Bucket	bucket;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/context/Context.hxx>
 
 //
 // ---------- includes --------------------------------------------------------
@@ -71,5 +108,7 @@ namespace etoile
 #include <etoile/context/Object.hh>
 #include <etoile/context/Directory.hh>
 #include <etoile/context/Rights.hh>
+
+#include <etoile/user/User.hh>
 
 #endif

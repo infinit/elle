@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [thu mar 25 20:21:26 2010]
+// updated       julien quintard   [tue apr  6 16:16:12 2010]
 //
 
 //
@@ -55,23 +55,74 @@ namespace etoile
 			parameters(const String));
 
       // object
-      /*
       InterfaceRegister(::etoile::TagObjectLoad,
 			Object::Load,
-			const Path, Identifier);
-      InterfaceRegister(::etoile::TagObjectCreate,
-			Object::Create,
-			const Path, Identifier);
-      InterfaceRegister(::etoile::TagObjectStore,
-			Object::Store,
-			const Identifier);
+			parameters(const path::Way));
       InterfaceRegister(::etoile::TagObjectInformation,
 			Object::Information,
-			const Identifier, Metadata);
-      InterfaceRegister(::etoile::TagObjectDestroy,
-			Object::Destroy,
-			const Identifier);
-      */
+			parameters(const context::Identifier));
+      InterfaceRegister(::etoile::TagObjectStore,
+			Object::Store,
+			parameters(const context::Identifier));
+
+      // directory
+      InterfaceRegister(::etoile::TagDirectoryLoad,
+			Directory::Load,
+			parameters(const path::Way));
+      InterfaceRegister(::etoile::TagDirectoryExist,
+			Directory::Exist,
+			parameters(const context::Identifier,
+				   const path::Slice));
+      InterfaceRegister(::etoile::TagDirectoryLookup,
+			Directory::Lookup,
+			parameters(const context::Identifier,
+				   const path::Slice));
+      InterfaceRegister(::etoile::TagDirectoryConsult,
+			Directory::Consult,
+			parameters(const context::Identifier,
+				   const kernel::Index,
+				   const kernel::Size));
+      InterfaceRegister(::etoile::TagDirectoryRename,
+			Directory::Rename,
+			parameters(const context::Identifier,
+				   const path::Slice,
+				   const path::Slice));
+      InterfaceRegister(::etoile::TagDirectoryStore,
+			Directory::Store,
+			parameters(const context::Identifier));
+
+      // access
+      InterfaceRegister(::etoile::TagAccessExist,
+			Access::Exist,
+			parameters(const context::Identifier,
+				   const kernel::Subject));
+      InterfaceRegister(::etoile::TagAccessLookup,
+			Access::Lookup,
+			parameters(const context::Identifier,
+				   const kernel::Subject));
+      InterfaceRegister(::etoile::TagAccessConsult,
+			Access::Consult,
+			parameters(const context::Identifier,
+				   const kernel::Index,
+				   const kernel::Size));
+      InterfaceRegister(::etoile::TagAccessGrant,
+			Access::Grant,
+			parameters(const context::Identifier,
+				   const kernel::Subject,
+				   const kernel::Permissions));
+      InterfaceRegister(::etoile::TagAccessUpdate,
+			Access::Update,
+			parameters(const context::Identifier,
+				   const kernel::Subject,
+				   const kernel::Permissions));
+      InterfaceRegister(::etoile::TagAccessBlock,
+			Access::Block,
+			parameters(const context::Identifier,
+				   const kernel::Subject));
+      InterfaceRegister(::etoile::TagAccessRevoke,
+			Access::Revoke,
+			parameters(const context::Identifier,
+				   const kernel::Subject));
 
       leave();
     }

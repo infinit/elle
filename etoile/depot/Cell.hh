@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [thu jan 28 15:06:47 2010]
+// updated       julien quintard   [wed mar 31 00:05:35 2010]
 //
 
 #ifndef ETOILE_DEPOT_CELL_HH
@@ -20,9 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/hole/Hole.hh>
-
-#include <etoile/depot/Repository.hh>
+#include <etoile/hole/Block.hh>
 
 namespace etoile
 {
@@ -65,5 +63,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/depot/Repository.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [fri aug 14 18:58:55 2009]
+// updated       julien quintard   [tue apr  6 14:43:43 2010]
 //
 
 #ifndef ETOILE_WALL_DIRECTORY_HH
@@ -20,8 +20,14 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/wall/Types.hh>
-#include <etoile/wall/Object.hh>
+#include <etoile/path/Way.hh>
+
+#include <etoile/context/Identifier.hh>
+
+#include <etoile/kernel/Offset.hh>
+#include <etoile/kernel/Size.hh>
+
+#include <etoile/components/Directory.hh>
 
 namespace etoile
 {
@@ -33,37 +39,44 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class provides an interface for manipulating directories.
     ///
-    class Directory:
-      public Object
+    class Directory
     {
     public:
       //
       // static methods
       //
-      static Status	Load(const Path&,
-			     Identifier&);
-      static Status	Create(const Path&,
-			       Identifier&);
-      static Status	Store(const Identifier&);
-
-      static Status	Destroy(const Identifier&);
-
-      struct		Access
-      {
-	static Status	Grant(const Identifier&,
-			      const Subject&,
-			      const Name&,
-			      const Permissions&);
-	static Status	Update(const Identifier&,
-			       const Subject&,
-			       const Name&,
-			       const Permissions&);
-      };
+      static Status	Load(const path::Way&);
+      static Status	Create(const context::Identifier&,
+			       const path::Slice&);
+      static Status	Lock(const context::Identifier&);
+      static Status	Release(const context::Identifier&);
+      static Status	Exist(const context::Identifier&,
+			      const path::Slice&);
+      static Status	Lookup(const context::Identifier&,
+			       const path::Slice&);
+      static Status	Consult(const context::Identifier&,
+				const kernel::Index&,
+				const kernel::Size&);
+      static Status	Rename(const context::Identifier&,
+			       const path::Slice&,
+			       const path::Slice&);
+      static Status	Store(const context::Identifier&);
     };
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/context/Directory.hh>
+#include <etoile/context/Format.hh>
+
+#include <etoile/user/User.hh>
+
+#include <etoile/path/Path.hh>
 
 #endif

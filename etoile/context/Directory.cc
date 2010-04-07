@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [sun mar 21 17:05:51 2010]
+// updated       julien quintard   [tue apr  6 23:09:26 2010]
 //
 
 //
@@ -30,17 +30,10 @@ namespace etoile
     /// the constructor
     ///
     Directory::Directory():
-      catalog(NULL)
-    {
-    }
+      Object::Object(FormatDirectory),
 
-    ///
-    /// the copy constructor.
-    ///
-    Directory::Directory(const Directory&			context)
+      contents(NULL)
     {
-      // XXX \todo XXX
-      printf("NOT IMPLEMENTED YET\n");
     }
 
     ///
@@ -48,31 +41,9 @@ namespace etoile
     ///
     Directory::~Directory()
     {
-      // release the catalog.
-      if (this->catalog != NULL)
-	delete this->catalog;
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    Status		Directory::Register(journal::Set::Container&	set)
-    {
-      enter();
-
-      // call the object register method.
-      if (Object::Register(set) == StatusError)
-	escape("unable to register the object context");
-
-      // if there is catalog.
-      if (this->catalog != NULL)
-	set.push_front(this->catalog);
-
-      leave();
+      // release the contents.
+      if (this->contents != NULL)
+	delete this->contents;
     }
 
 //
@@ -80,7 +51,7 @@ namespace etoile
 //
 
     ///
-    /// this method dumps the catalog along the the inherited object context.
+    /// this method dumps the contents along the the inherited object context.
     ///
     Status		Directory::Dump(const Natural32		margin) const
     {
@@ -94,10 +65,10 @@ namespace etoile
       if (Object::Dump(margin + 2) == StatusError)
 	escape("unable to dump the inherited object");
 
-      // dump the catalog.
-      if (this->catalog != NULL)
-	if (this->catalog->Dump(margin + 4) == StatusError)
-	  escape("unable to dump the catalog");
+      // dump the contents.
+      if (this->contents != NULL)
+	if (this->contents->Dump(margin + 4) == StatusError)
+	  escape("unable to dump the contents");
 
       leave();
     }

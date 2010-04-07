@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [sat jan 30 03:22:27 2010]
+// updated       julien quintard   [fri apr  2 01:32:15 2010]
 //
 
 #ifndef ETOILE_PATH_ITEM_HH
@@ -20,10 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/path/Route.hh>
-#include <etoile/path/Venue.hh>
+#include <etoile/path/Slice.hh>
 
-#include <etoile/hole/Hole.hh>
+#include <etoile/hole/Address.hh>
 
 #include <map>
 #include <utility>
@@ -54,8 +53,8 @@ namespace etoile
       //
       // types
       //
-      typedef std::map<String, Item*>		Container;
-      typedef std::pair<String, Item*>		Value;
+      typedef std::map<Slice, Item*>		Container;
+      typedef std::pair<Slice, Item*>		Value;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
@@ -63,16 +62,16 @@ namespace etoile
       // constructors & destructors
       //
       Item();
-      Item(const String&,
+      Item(const Slice&,
 	   Item*);
       ~Item();
 
       //
       // methods
       //
-      Status		Resolve(const String&,
+      Status		Resolve(const Slice&,
 				Item*&);
-      Status		Update(const String&,
+      Status		Update(const Slice&,
 			       const hole::Address&);
       Status		Destroy();
 
@@ -86,7 +85,7 @@ namespace etoile
       //
       // attributes
       //
-      String		name;
+      Slice		name;
       hole::Address	address;
 
       Item*		directory;

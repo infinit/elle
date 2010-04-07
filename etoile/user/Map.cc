@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Map.cc
 //
 // created       julien quintard   [fri mar 19 13:37:42 2010]
-// updated       julien quintard   [thu mar 25 17:58:49 2010]
+// updated       julien quintard   [mon mar 29 15:07:34 2010]
 //
 
 //
@@ -70,7 +70,7 @@ namespace etoile
     ///
     /// this method adds a mapping.
     ///
-    Status		Map::Add(Channel*			channel,
+    Status		Map::Add(const Channel*			channel,
 				 Client*			client)
     {
       std::pair<Map::Iterator, Boolean>		result;
@@ -90,7 +90,7 @@ namespace etoile
     ///
     /// this method retrieves a client from its associated channel.
     ///
-    Status		Map::Retrieve(Channel*			channel,
+    Status		Map::Retrieve(const Channel*		channel,
 				      Client*&			client)
     {
       Map::Iterator	iterator;
@@ -102,18 +102,18 @@ namespace etoile
 
       // check the result.
       if (iterator == Map::Mappings.end())
-	escape("unable to locate the given channel");
+	false();
 
       // set the client.
       client = iterator->second;
 
-      leave();
+      true();
     }
 
     ///
     /// this method removes a mapping.
     ///
-    Status		Map::Remove(Channel*			channel)
+    Status		Map::Remove(const Channel*		channel)
     {
       enter();
 

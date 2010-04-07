@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [wed mar  3 16:22:33 2010]
+// updated       julien quintard   [wed mar 31 15:20:25 2010]
 //
 
 //
@@ -51,8 +51,8 @@ namespace etoile
       enter();
 
       // update in the repository.
-      if (Repository::Put(address, block) == StatusError)
-	escape("unable to put the block in the repository");
+      //if (Repository::Put(address, block) == StatusError)
+      //escape("unable to put the block in the repository");
 
       leave();
     }
@@ -69,8 +69,8 @@ namespace etoile
       // XXX
 
       // look in the repository.
-      if (Repository::Get(address, block) == StatusTrue)
-	leave();
+      //if (Repository::Get(address, block) == StatusTrue)
+      //leave();
 
       // finally, look in the hole.
       if (hole::Hole::Get(address, block) == StatusTrue)

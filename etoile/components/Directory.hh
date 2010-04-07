@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [sun mar 21 18:12:11 2010]
+// updated       julien quintard   [tue apr  6 14:46:58 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -20,15 +20,13 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/Core.hh>
-#include <etoile/context/Context.hh>
-#include <etoile/hole/Hole.hh>
-#include <etoile/journal/Journal.hh>
-#include <etoile/user/User.hh>
-
 #include <etoile/components/Object.hh>
-#include <etoile/components/Catalog.hh>
-#include <etoile/components/Rights.hh>
+
+#include <etoile/context/Directory.hh>
+
+#include <etoile/hole/Address.hh>
+
+#include <etoile/kernel/Catalog.hh>
 
 namespace etoile
 {
@@ -40,7 +38,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class provides functionalities for managing directories.
     ///
     class Directory:
       public Object
@@ -51,33 +49,43 @@ namespace etoile
       //
       static Status	Load(context::Directory*,
 			     const hole::Address&);
-      static Status	Create(context::Directory*);
-
-      static Status	Consult(context::Directory*,
-				std::list<String>&,
-				const Natural64 = core::Catalog::Index::First,
-				const Natural64 = core::Catalog::Index::Last);
+      static Status	Create(context::Directory*,
+			       context::Directory*,
+			       const path::Slice&);
+      static Status	Exist(context::Directory*,
+			      const path::Slice&,
+			      Boolean&);
       static Status	Lookup(context::Directory*,
-			       const String&,
-			       hole::Address&);
+			       const path::Slice&,
+			       kernel::Entry*&);
+      static Status	Consult(context::Directory*,
+				const kernel::Index&,
+				const kernel::Size&,
+				kernel::Set&);
       static Status	Add(context::Directory*,
-			    const String&,
+			    const path::Slice&,
 			    const hole::Address&);
-      static Status	Remove(context::Directory*,
-			       const String&);
-      static Status	Update(context::Directory*,
-			       const String&,
-			       const hole::Address&);
       static Status	Rename(context::Directory*,
-			       const String&,
-			       const String&);
-
-      static Status	Commit(context::Directory*);
-      static Status	Close(context::Directory*);
+			       const path::Slice&,
+			       const path::Slice&);
+      static Status	Remove(context::Directory*,
+			       const path::Slice&);
+      static Status	Store(context::Directory*);
       static Status	Destroy(context::Directory*);
     };
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/journal/Journal.hh>
+
+#include <etoile/user/User.hh>
+
+#include <etoile/components/Rights.hh>
+#include <etoile/components/Contents.hh>
 
 #endif

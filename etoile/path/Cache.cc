@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [fri mar 19 17:07:04 2010]
+// updated       julien quintard   [wed mar 31 00:34:48 2010]
 //
 
 //
@@ -44,7 +44,7 @@ namespace etoile
     /// the cache.
     ///
     Natural32&			Cache::Capacity =
-      Configuration::Path::Capacity;
+      configuration::Configuration::Path::Capacity;
 
     ///
     /// this variable holds the number of items currently cached.

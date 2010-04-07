@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu mar 25 17:51:17 2010]
+// updated       julien quintard   [tue apr  6 16:28:00 2010]
 //
 
 //
@@ -120,12 +120,12 @@ namespace etoile
 	{
 	  // transform the family into an hexadicemal sequence.
 	  stream << std::nouppercase << std::hex
-		 << (elle::core::Natural32)this->family;
+		 << (Natural32)this->family;
 
 	  // transform the digest data into an hexadecimal string.
 	  for (i = 0; i < this->digest->region.size; i++)
 	    stream << std::nouppercase << std::hex
-		   << (elle::core::Natural32)this->digest->region.contents[i];
+		   << (Natural32)this->digest->region.contents[i];
 
 	  // inject the string in the given argument.
 	  string = stream.str();
@@ -217,7 +217,7 @@ namespace etoile
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
-	  if (archive.Serialize((Byte&)this->family,
+	  if (archive.Serialize((Natural8&)this->family,
 				*this->digest) == StatusError)
 	    escape("unable to serialize the digest");
 	}
@@ -256,7 +256,7 @@ namespace etoile
 	  this->digest = new Digest;
 
 	  // extract the internal digest.
-	  if (archive.Extract((Byte&)this->family,
+	  if (archive.Extract((Natural8&)this->family,
 			      *this->digest) == StatusError)
 	    escape("unable to extract the digest");
 	}
@@ -271,7 +271,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	operator<(const etoile::hole::Address&	lhs,
+    elle::core::Boolean	operator<(const etoile::hole::Address&	lhs,
 				  const etoile::hole::Address&	rhs)
     {
       enter();

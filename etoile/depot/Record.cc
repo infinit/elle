@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [thu mar 25 18:21:52 2010]
+// updated       julien quintard   [fri apr  2 13:55:40 2010]
 //
 
 //
@@ -139,22 +139,22 @@ namespace etoile
 	  case LocationCache:
 	    {
 	      // destroy the cell.
-	      if (this->data.cell->Destroy() == StatusError)
+	      if (this->cell->Destroy() == StatusError)
 		escape("unable to destroy the cell");
 
 	      // release the cell.
-	      delete this->data.cell;
+	      delete this->cell;
 
 	      break;
 	    }
 	  case LocationReserve:
 	    {
 	      // destroy the unit.
-	      if (this->data.unit->Destroy() == StatusError)
+	      if (this->unit->Destroy() == StatusError)
 		escape("unable to destroy the unit");
 
 	      // release the unit.
-	      delete this->data.unit;
+	      delete this->unit;
 
 	      break;
 	    }
@@ -193,14 +193,14 @@ namespace etoile
 	{
 	case LocationCache:
 	  {
-	    if (this->data.cell->Dump(margin + 2) == StatusError)
+	    if (this->cell->Dump(margin + 2) == StatusError)
 	      escape("unable to dump the cell");
 
 	    break;
 	  }
 	case LocationReserve:
 	  {
-	    if (this->data.unit->Dump(margin + 2) == StatusError)
+	    if (this->unit->Dump(margin + 2) == StatusError)
 	      escape("unable to dump the unit");
 
 	    break;

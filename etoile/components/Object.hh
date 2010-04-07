@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [sun mar 21 17:42:34 2010]
+// updated       julien quintard   [tue apr  6 13:19:31 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/Core.hh>
-#include <etoile/depot/Depot.hh>
-#include <etoile/context/Context.hh>
+#include <etoile/context/Object.hh>
+
+#include <etoile/hole/Address.hh>
 
 namespace etoile
 {
@@ -34,7 +34,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class provides basic functionalities for handling objects.
     ///
     class Object
     {
@@ -44,9 +44,26 @@ namespace etoile
       //
       static Status	Load(context::Object*,
 			     const hole::Address&);
+      static Status	Information(context::Object*,
+				    wall::State&);
+      static Status	Store(context::Object*);
     };
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/user/User.hh>
+
+#include <etoile/depot/Depot.hh>
+
+#include <etoile/components/Access.hh>
+
+#include <etoile/journal/Journal.hh>
+
+#include <etoile/wall/State.hh>
 
 #endif

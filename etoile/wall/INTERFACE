@@ -1,108 +1,95 @@
-Components
-----------
+1) DEFINIR INTERFACE
+2) DEFINIR COMPONENTS
 
-File
-Directory
-Link
-User
-Group
-
-Community
-System
-
-Journal
-Depot
-Hole
+-------------------------------------------------------------------------------
 
 Object
 ------
 
-Object.Load(...)
-Object.Create(...)
-Object.Lock(...) -> XXX though with quorums there is always a lock!!! can be
-                        useful locally though + good for rename for example
-                        since we need to lock two directories to avoid
-                        race conditions.
-Object.Release(...)
-Object.Information(...)
-Object.Rollback(...) # Refresh()?
-Object.Attributes.List(...)
-Object.Attributes.Add(...)
-Object.Attributes.Remove(...)
-Object.Attributes.Update(...)
-Object.Access.List(...)
-Object.Access.Grant(...)
-Object.Access.Revoke(...)
-Object.Access.Block(...)
-Object.Destroy(...)
-Object.Done(...)
+Object.Load()
+  - load object
+  - store in context
+  - return id
+Object.Create()
+  - create object
+  - store in context
+  - return id
+Object.Lock()
+Object.Release()
+Object.Information()
+  - build stat
+  - return stat
+Object.Destroy()
+  - load object
+  - destroy it
+  - return
+Object.Close()
+  - destroy context
+  - return
+Object.Commit()
+  - seal object
+  - push modifications
+  - return
 
-File: Object
+File
 ----
 
-File.Load(path, &id)
-File.Lock(path, &id) // load + lock et on release pour un Close/Commit
-File.Create(...)
-File.Read(...)
-File.Write(...)
-File.Access.List(...)
-File.Access.Grant(...)
-File.Access.Revoke(...)
-File.Access.Block(...)
-File.Size(...)
-File.Destroy(...)
-File.Store(...)
+File.Read()
+File.Write()
 
-Directory: Object
+Directory
 ---------
 
-Directory.Load(path, &id)
-Directory.Create(...)
-Directory.Consult(...)
-Directory.Lookup(...)
-Directory.Add(...)
-Directory.Remove(...)
-Directory.Update(...)
-Directory.Rename(...)
-Directory.Access.List(...)
-Directory.Access.Grant(...)
-Directory.Access.Revoke(...)
-Directory.Access.Block(...)
-Directory.Destroy(...)
-Directory.Store(...)
+Directory.Exist()
+  - lookup name
+  - return true if found
+Directory.Consult()
+  - fetch the entries
+  - return them
+Directory.Lookup()
+  - lookup name
+  - return address
+Directory.Add()
+  - verify that the entry does not exist
+  - add the entry
+  - return
+Directory.Remove()
+  - remove the entry
+  - return
+Directory.Update()
+  - find the entry
+  - update the address
+  - return
+Directory.Rename()
+  - find the entry
+  - rename it
+  - return
 
-Link: Object
+Link
 ----
 
-Link.Load(path, &id)
-Link.Create(...)
-Link.Resolve(...)
-Link.Bind(...)
-Link.Access.List(...)
-Link.Access.Grant(...)
-Link.Access.Revoke(...)
-Link.Access.Block(...)
-Link.Destroy(...)
-Link.Store(...)
+Link.Bind()
+Link.Resolve()
 
+------------------------------------------------------------------------------
 User
 ----
 
 User.Load(name, &id)
-...
-User.Store(...)
+
+User.Store()
 
 Group
 -----
 
 Group.Load(name, &id)
-...
+
 Group.Store(id)
 
 Community
 ---------
 
-Community.Request(...) -> change an object
+Community.Request() -> change an object
 
 System
 ------
@@ -112,7 +99,7 @@ System.Information()
 
 System.Authenticate()
 
---
+-------------------------------------------------------------------------------
 
 XXX ca devrait etre simple de ramener une ancienne version.
 XXX ca devrait etre simple de modifier une ancienne version pour quelle

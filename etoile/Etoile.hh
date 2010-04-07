@@ -52,7 +52,7 @@ namespace etoile
 #include <etoile/components/Components.hh>
 #include <etoile/configuration/Configuration.hh>
 #include <etoile/context/Context.hh>
-#include <etoile/core/Core.hh>
+#include <etoile/kernel/Kernel.hh>
 #include <etoile/depot/Depot.hh>
 #include <etoile/hole/Hole.hh>
 #include <etoile/journal/Journal.hh>
@@ -64,7 +64,7 @@ using namespace etoile;
 using namespace etoile::components;
 using namespace etoile::configuration;
 using namespace etoile::context;
-using namespace etoile::core;
+using namespace etoile::kernel;
 using namespace etoile::depot;
 using namespace etoile::hole;
 using namespace etoile::journal;

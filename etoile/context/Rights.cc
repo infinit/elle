@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.cc
 //
 // created       julien quintard   [sun mar 21 16:55:17 2010]
-// updated       julien quintard   [thu mar 25 17:42:59 2010]
+// updated       julien quintard   [mon apr  5 10:47:16 2010]
 //
 
 //
@@ -21,6 +21,18 @@ namespace etoile
 {
   namespace context
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Rights::Rights():
+      role(kernel::RoleUnknown)
+    {
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -36,6 +48,10 @@ namespace etoile
       enter();
 
       std::cout << alignment << "[Rights]" << std::endl;
+
+      // dump the role.
+      std::cout << alignment << Dumpable::Shift << "[Role] "
+		<< this->role << std::endl;
 
       // dump the permissions.
       std::cout << alignment << Dumpable::Shift << "[Permissions] "

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [sun mar 21 18:17:38 2010]
+// updated       julien quintard   [tue apr  6 16:06:21 2010]
 //
 
 //
@@ -27,12 +27,12 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method determines the rights the current user has over the
+    /// given object.
     ///
     Status		Rights::Determine(context::Object*	context)
     {
-      Digest		fingerprint;
-      Code		token;
+      user::User*	user;
 
       enter();
 
@@ -40,34 +40,122 @@ namespace etoile
       if (context->rights != NULL)
 	leave();
 
+      // load the current user;
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the current user");
+
       // allocate the structure.
       context->rights = new context::Rights;
 
-      // open the access.
-      if (Access::Open(context) == StatusError)
-	escape("unable to open the access");
+      // determine the rights according to the subject.
+      if (user->client->agent->K == context->object->owner.K)
+	{
+	  //
+	  // if the user is the object's owner, retrieve the user's
+	  // permissions, token etc. from the object's meta section.
+	  //
 
-      // get the permissions and token of the given subject i.e
-      // the current user.
-      if (Access::Retrieve(context,
-			   user::user.client->subject,
-			   context->rights->permissions,
-			   token) == StatusError)
-	escape("unable to retrieve the permissions and token");
+	  // set the role.
+	  context->rights->role = kernel::RoleOwner;
 
-      // decrypt the token by calling the agent.
-      if (user::user.client->agent->Decrypt(token,
-					    context->rights->key) ==
-	  StatusError)
-	escape("unable to decrypt the token");
+	  // set the permissions.
+	  context->rights->permissions =
+	    context->object->meta.owner.permissions;
 
-      // compute a fingerprint of the key.
-      if (OneWay::Hash(context->rights->key, fingerprint) == StatusError)
-	escape("unable to compute a fingerprint of the key");
+	  // also copy the token.
+	  context->rights->token =
+	    context->object->meta.owner.token;
 
-      // verify the key's validity according to the public fingerprint.
-      if (context->object->data.fingerprint != fingerprint)
-	escape("the key granted to the user differs from the fingerprint");
+	  // if a token is present, decrypt it.
+	  if (context->rights->token != kernel::Token::Null)
+	    {
+	      Digest		fingerprint;
+
+	      // decrypt the token.
+	      if (user->client->agent->Decrypt(
+		    context->rights->token,
+		    context->rights->key) == StatusError)
+		escape("unable to decrypt the token");
+
+	      // compute a fingerprint of the key.
+	      if (OneWay::Hash(context->rights->key,
+			       fingerprint) == StatusError)
+		escape("unable to compute a fingerprint of the key");
+
+	      // verify the key's validity according to the public fingerprint.
+	      if (context->object->data.fingerprint != fingerprint)
+		escape("the key granted to the user differs from "
+		       "the fingerprint");
+	    }
+	}
+      else
+	{
+	  //
+	  // if the user is not the owner, open the access block and
+	  // retrieve the permissions, token etc. from the access record
+	  // associated with the subject.
+	  //
+
+	  // open the access.
+	  if (Access::Open(context) == StatusError)
+	    escape("unable to open the access");
+
+	  // test if the user is present in the access block.
+	  if (context->access->Exist(user->client->subject) == StatusTrue)
+	    {
+	      kernel::Record*	record;
+
+	      // retrieve the complete access record.
+	      if (context->access->Lookup(user->client->subject,
+					  record) == StatusError)
+		escape("unable to retrieve the access record");
+
+	      // set the role.
+	      context->rights->role = kernel::RoleDelegate;
+
+	      // set the permissions
+	      context->rights->permissions = record->permissions;
+
+	      // also copy the token.
+	      context->rights->token = record->token;
+
+	      // decrypt the token and verify the key, if present.
+	      if (context->rights->token != kernel::Token::Null)
+		{
+		  Digest	fingerprint;
+
+		  // decrypt the token.
+		  if (user->client->agent->Decrypt(
+                        context->rights->token,
+		        context->rights->key) == StatusError)
+		    escape("unable to decrypt the token");
+
+		  // compute a fingerprint of the key.
+		  if (OneWay::Hash(context->rights->key,
+				   fingerprint) == StatusError)
+		    escape("unable to compute a fingerprint of the key");
+
+		  // verify the key's validity according to the
+		  // public fingerprint.
+		  if (context->object->data.fingerprint != fingerprint)
+		    escape("the key granted to the user differs from "
+			   "the fingerprint");
+		}
+	    }
+	  else
+	    {
+	      //
+	      // if the user is not present in the access block, she is
+	      // at best, a vassal but it is her job to prove it by providing
+	      // a voucher.
+	      //
+
+	      // therefore, at this point, the user is considered as having no
+	      // right over the object.
+	      context->rights->role = kernel::RoleUnknown;
+	      context->rights->permissions = kernel::PermissionNone;
+	    }
+	}
 
       leave();
     }

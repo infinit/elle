@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Directory.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [sun mar 21 16:58:38 2010]
+// updated       julien quintard   [tue apr  6 23:09:21 2010]
 //
 
 #ifndef ETOILE_CONTEXT_DIRECTORY_HH
@@ -20,6 +20,11 @@
 
 #include <etoile/context/Object.hh>
 
+#include <etoile/kernel/Contents.hh>
+#include <etoile/kernel/Catalog.hh>
+
+#include <etoile/journal/Bucket.hh>
+
 namespace etoile
 {
   namespace context
@@ -30,22 +35,23 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this context represents a directory object as it embeds
+    /// a catalog contents along with inherited object-related stuff.
     ///
     class Directory:
       public Object
     {
     public:
       //
-      // constructors & destructors
-      Directory();
-      Directory(const Directory&);
-      ~Directory();
+      // types
+      //
+      typedef kernel::Catalog		Content;
 
       //
-      // methods
+      // constructors & destructors
       //
-      Status		Register(journal::Set::Container&);
+      Directory();
+      ~Directory();
 
       //
       // interfaces
@@ -57,10 +63,16 @@ namespace etoile
       //
       // attributes
       //
-      core::Contents<core::Catalog>*	catalog;
+      kernel::Contents<Content>*	contents;
     };
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/context/Format.hh>
 
 #endif

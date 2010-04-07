@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [fri mar 19 17:06:14 2010]
+// updated       julien quintard   [wed apr  7 00:52:15 2010]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH
@@ -20,18 +20,15 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/configuration/Configuration.hh>
-
 #include <etoile/path/Item.hh>
 #include <etoile/path/Route.hh>
 #include <etoile/path/Venue.hh>
+#include <etoile/path/Slice.hh>
 
 #include <list>
 
 namespace etoile
 {
-  using namespace configuration;
-
   namespace path
   {
 
@@ -49,6 +46,7 @@ namespace etoile
     ///
     /// noteworthy is that, since this cache is used for paths and that paths
     /// follow a pattern where /music/meshuggah is a subset of /music, the
+
     /// data structure for storing the paths is hierachical.
     ///
     /// indeed, the Item class keeps a directory name such as 'meshuggah' along
@@ -75,7 +73,7 @@ namespace etoile
       //
       // types
       //
-      typedef std::list<String>		Container;
+      typedef std::list<Slice>		Container;
       typedef Container::iterator	Iterator;
       typedef Container::const_iterator	Scoutor;
 
@@ -104,5 +102,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/configuration/Configuration.hh>
 
 #endif

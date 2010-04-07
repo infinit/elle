@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [sun mar 21 16:58:19 2010]
+// updated       julien quintard   [tue apr  6 23:09:45 2010]
 //
 
 //
@@ -29,9 +29,9 @@ namespace etoile
     ///
     /// the constructor.
     ///
-    /// note that this constructor does *not* initialize the contents.
-    ///
     Object::Object():
+      Context::Context(FormatObject),
+
       object(NULL),
       access(NULL),
       rights(NULL),
@@ -40,12 +40,16 @@ namespace etoile
     }
 
     ///
-    /// the copy constructor.
+    /// the type-specific constructor.
     ///
-    Object::Object(const Object&				context)
+    Object::Object(const Format&				format):
+      Context::Context(format),
+
+      object(NULL),
+      access(NULL),
+      rights(NULL),
+      author(NULL)
     {
-      // XXX \todo XXX
-      printf("NOT IMPLEMENTED YET\n");
     }
 
     ///
@@ -71,28 +75,6 @@ namespace etoile
     }
 
 //
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    Status		Object::Register(journal::Set::Container&	set)
-    {
-      enter();
-
-      // if there is an object.
-      if (this->object != NULL)
-	set.push_front(this->object);
-
-      // if there is an access.
-      if (this->access != NULL)
-	set.push_front(this->access);
-
-      leave();
-    }
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -107,6 +89,10 @@ namespace etoile
 
       // dump the parent context.
       std::cout << alignment << "[Object]" << std::endl;
+
+      // dump the route.
+      if (this->route.Dump(margin + 2) == StatusError)
+	escape("unable to dump the route");
 
       // dump the address.
       if (this->address.Dump(margin + 2) == StatusError)

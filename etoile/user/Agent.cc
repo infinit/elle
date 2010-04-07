@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [fri mar 26 13:02:21 2010]
+// updated       julien quintard   [tue apr  6 19:00:44 2010]
 //
 
 //
@@ -32,7 +32,7 @@ namespace etoile
     ///
     /// this value is in milli-seconds.
     ///
-    const Natural32		Agent::Expiration = 20000; // XXX -0
+    const Natural32		Agent::Expiration = 2000; // XXX -0
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -134,6 +134,10 @@ namespace etoile
     {
       enter();
 
+      // check if the user is authenticated.
+      if (this->state != Agent::StateAuthenticated)
+	escape("the agent seems not to have been authenticated");
+
       // send a request to the agent.
       if (this->channel->Call(
             Inputs< ::agent::TagDecrypt >(code),
@@ -152,6 +156,10 @@ namespace etoile
       const
     {
       enter();
+
+      // check if the user is authenticated.
+      if (this->state != Agent::StateAuthenticated)
+	escape("the agent seems not to have been authenticated");
 
       // send a request to the agent.
       if (this->channel->Call(
@@ -177,6 +185,7 @@ namespace etoile
 
       enter();
 
+      // forward the call.
       if (this->Error("the agent has timed out") == StatusError)
 	escape("an error occured in the Error() callback\n");
 
@@ -195,13 +204,13 @@ namespace etoile
       enter();
 
       // retrieve the client related to this agent's channel.
-      if (Map::Retrieve(this->channel, client) == StatusError)
+      if (Client::Retrieve(this->channel, client) != StatusTrue)
 	escape("unable to retrieve the client associated with the agent");
 
       // record an error message.
       report.Record(Report::TypeError,
 		    "",
-		    error);
+		    "the agent has been disconnected");
 
       // go through the client's applications.
       for (iterator = client->applications.begin();
@@ -236,7 +245,7 @@ namespace etoile
 
       enter();
 
-      std::cout << alignment << "[Agent]" << std::endl;
+      std::cout << alignment << "[Agent] " << std::hex << this << std::endl;
 
       // dump the state.
       std::cout << alignment << Dumpable::Shift << "[State] "

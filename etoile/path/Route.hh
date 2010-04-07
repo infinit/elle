@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [sat jan 30 02:10:25 2010]
+// updated       julien quintard   [wed apr  7 00:49:07 2010]
 //
 
 #ifndef ETOILE_PATH_ROUTE_HH
@@ -19,6 +19,9 @@
 //
 
 #include <elle/Elle.hh>
+
+#include <etoile/path/Slice.hh>
+#include <etoile/path/Way.hh>
 
 #include <vector>
 
@@ -41,14 +44,14 @@ namespace etoile
       //
       // types
       //
-      typedef std::vector<String>	Container;
+      typedef std::vector<Slice>	Container;
       typedef Container::iterator	Iterator;
       typedef Container::const_iterator	Scoutor;
 
       //
       // methods
       //
-      Status		Create(const String&);
+      Status		Create(const Way&);
 
       //
       // interfaces

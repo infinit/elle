@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hh
 //
 // created       julien quintard   [thu mar 11 17:09:50 2010]
-// updated       julien quintard   [thu mar 25 18:00:09 2010]
+// updated       julien quintard   [tue mar 30 01:20:36 2010]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HH
@@ -38,20 +38,6 @@ namespace etoile
     {
     public:
       //
-      // constants
-      //
-      static const Natural32		Expiration;
-
-      //
-      // enumerations
-      //
-      enum State
-	{
-	  StateUnconnected,
-	  StateConnected
-	};
-
-      //
       // constructors & destructors
       //
       Application();
@@ -79,8 +65,6 @@ namespace etoile
       //
       // attributes
       //
-      State		state;
-      Timer		timer;
       Channel*		channel;
     };
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [wed mar  3 16:37:30 2010]
+// updated       julien quintard   [wed mar 31 15:36:24 2010]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [sun mar 21 16:49:08 2010]
+// updated       julien quintard   [tue apr  6 23:09:40 2010]
 //
 
 //
@@ -28,12 +28,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/core/Core.hh>
-#include <etoile/hole/Hole.hh>
+#include <etoile/kernel/Object.hh>
+#include <etoile/kernel/Access.hh>
+#include <etoile/kernel/Author.hh>
+#include <etoile/kernel/Genre.hh>
+
+#include <etoile/hole/Address.hh>
+
+#include <etoile/path/Route.hh>
 
 #include <etoile/context/Rights.hh>
-
-#include <list>
+#include <etoile/context/Format.hh>
 
 namespace etoile
 {
@@ -45,10 +50,11 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class represents an object context and is therefore used
+    /// to perform sequential operations on objects.
     ///
-    /// when the object is loaded or created, the permissions on the
-    /// object for the subject are recorded in the permissions field.
+    /// note that when the object is loaded or created, the rights the
+    /// subject has over the object are computed.
     ///
     class Object:
       public Context
@@ -58,32 +64,27 @@ namespace etoile
       // constructors & destructors
       //
       Object();
-      Object(const Object&);
+      Object(const Format&);
       ~Object();
-
-      //
-      // methods
-      //
-      Status		Register(journal::Set::Container&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status			Dump(const Natural32 = 0) const;
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      // XXX path::Route	route;
+      path::Route		route;
       hole::Address		address;
 
-      core::Object*		object;
-      core::Access*		access;
+      kernel::Object*		object;
+      kernel::Access*		access;
 
       Rights*			rights;
-      core::Author*		author;
+      kernel::Author*		author;
     };
 
   }

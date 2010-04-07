@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [wed mar  3 16:05:35 2010]
+// updated       julien quintard   [tue apr  6 22:47:28 2010]
 //
 
 //
@@ -27,7 +27,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method opens i.e load, the access block if present or
+    /// creates an empty new one otherwise.
     ///
     Status		Access::Open(context::Object*		context)
     {
@@ -37,7 +38,7 @@ namespace etoile
       if (context->access != NULL)
 	leave();
 
-      // check if there exists an access. if so, load the block.
+      // check if there exists an access block. if so, load the block.
       if (context->object->meta.access != hole::Address::Null)
 	{
 	  // load the block.
@@ -48,18 +49,491 @@ namespace etoile
       else
 	{
 	  // otherwise create a new access.
-	  context->access = new core::Access;
+	  context->access = new kernel::Access;
 	}
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method adds a record to the access block, granting access
+    /// to the given subject.
+    ///
+    Status		Access::Grant(context::Object*		context,
+				      const kernel::Subject&	subject,
+				      const kernel::Permissions& permissions)
+    {
+      user::User*	user;
+      kernel::Record*	record;
+
+      enter(instance(record));
+
+      // determine the rights over the object.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // verify that the user can modify the accesses.
+      if (context->rights->role != kernel::RoleOwner)
+	escape("the object's owner only can modify the accesses");
+
+      // look in the access object.
+      if (context->access->Exist(subject) == StatusTrue)
+	escape("this subject already exist in the access block");
+
+      // update the access block or object according to the subject.
+      if ((subject.type == kernel::Subject::TypeUser) &&
+	  (*subject.user == context->object->owner.K))
+	{
+	  //
+	  // in this case, the subject represents the object's owner.
+	  //
+
+	  // update the permissions.
+	  if (context->object->Administrate(
+                context->object->meta.attributes,
+		context->object->meta.access,
+		permissions,
+		context->object->meta.owner.token) == StatusError)
+	    escape("unable to update the object's meta section");
+	}
+      else
+	{
+	  //
+	  // otherwise, the subject is a delegate being a user or a group.
+	  //
+
+	  // open the access.
+	  if (Access::Open(context) == StatusError)
+	    escape("unable to open the access");
+
+	  // allocate a new record.
+	  record = new kernel::Record;
+
+	  // create the new record.
+	  if (record->Update(subject,
+			     permissions,
+			     context->rights->key) == StatusError)
+	    escape("unable to create the new record");
+
+	  // add the record to the access object.
+	  if (context->access->Add(record) == StatusError)
+	    escape("unable to add the new record");
+
+	  // stop tracking record.
+	  waive(record);
+	}
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the subject is the user.
+      if (user->client->subject == subject)
+	{
+	  // update the context rights.
+	  context->rights->permissions = permissions;
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method tests if the given subject is present in the access
+    /// block.
+    ///
+    Status		Access::Exist(context::Object*		context,
+				      const kernel::Subject&	subject,
+				      Boolean&			boolean)
+    {
+      Status		status;
+
+      enter();
+
+      // open the access.
+      if (Access::Open(context) == StatusError)
+	escape("unable to open the access");
+
+      // look in the access object.
+      status = context->access->Exist(subject);
+
+      // return the result.
+      switch (status)
+	{
+	case StatusTrue:
+	  {
+	    boolean = true;
+
+	    break;
+	  }
+	case StatusFalse:
+	  {
+	    boolean = false;
+
+	    break;
+	  }
+	default:
+	  {
+	    escape("unknown status");
+	  }
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method looks for the given subject in the access block and
+    /// return the associated permissions.
+    ///
+    Status		Access::Lookup(context::Object*		context,
+				       const kernel::Subject&	subject,
+				       kernel::Record&		record)
+    {
+      user::User*	user;
+
+      enter();
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // try to make the best of this call.
+      if (user->client->subject == subject)
+	{
+	  //
+	  // indeed, if the target subject is the current user, determine
+	  // the user's right so that this is not to be done later.
+	  //
+
+	  // determine the user's rights on the object.
+	  if (Rights::Determine(context) == StatusError)
+	    escape("unable to determine the user's rights");
+
+	  // set the record attributes from the user's rights.
+	  record.subject = subject;
+	  record.permissions = context->rights->permissions;
+	  record.token = context->rights->token;
+	}
+      else
+	{
+	  //
+	  // otherwise, proceed normally.
+	  //
+
+	  // perform the lookup according to the subject.
+	  if ((subject.type == kernel::Subject::TypeUser) &&
+	      (*subject.user == context->object->owner.K))
+	    {
+	      //
+	      // if the target subject is the object owner, the access
+	      // permissions etc. must be retrieved from the object
+	      // meta section.
+	      //
+
+	      // set the record attributes.
+	      record.subject = subject;
+	      record.permissions = context->object->meta.owner.permissions;
+	      record.token = context->object->meta.owner.token;
+	    }
+	  else
+	    {
+	      //
+	      // if we are dealing with a delegate, open the access block
+	      // in look in it.
+	      //
+	      kernel::Record*	r;
+
+	      // open the access.
+	      if (Access::Open(context) == StatusError)
+		escape("unable to open the access");
+
+	      // lookup in the access object.
+	      if (context->access->Lookup(subject, r) == StatusError)
+		escape("unable to lookup in the access object");
+
+	      // copy the record.
+	      record = *r;
+	    }
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method returns a subset---i.e a range---of the access block.
+    ///
+    Status		Access::Consult(context::Object*	context,
+					const kernel::Index&	index,
+					const kernel::Size&	size,
+					kernel::Range&		range)
+    {
+      enter();
+
+      // open the access.
+      if (Access::Open(context) == StatusError)
+	escape("unable to open the access");
+
+      // if the index starts with 0, including the owner by creating
+      // a record for her.
+      if (index == 0)
+	{
+	  kernel::Record*	record;
+	  kernel::Subject	subject;
+
+	  enter(instance(record));
+
+	  // create a subject for the owner.
+	  if (subject.Create(context->object->owner.K) == StatusError)
+	    escape("unable to create the owner subject");
+
+	  // create the record.
+	  record = new kernel::Record(subject,
+				      context->object->meta.owner.permissions,
+				      context->object->meta.owner.token);
+
+	  // add the record to the range.
+	  if (range.Add(record) == StatusError)
+	    escape("unable to add the owner record");
+
+	  // waive.
+	  waive(record);
+
+	  // consult the access object by taking care of consulting one
+	  // record less.
+	  if (context->access->Consult(index, size - 1, range) == StatusError)
+	    escape("unable to consult the access object");
+	}
+      else
+	{
+	  // consult the access object by taking care of starting the
+	  // consultation one index before.
+	  if (context->access->Consult(index -1 , size, range) == StatusError)
+	    escape("unable to consult the access object");
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method updates an existing record with the given permissions.
+    ///
+    Status		Access::Update(context::Object*		context,
+				       const kernel::Subject&	subject,
+				       const kernel::Permissions& permissions)
+    {
+      user::User*	user;
+
+      enter();
+
+      // determine the rights over the object.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // verify that the user can modify the accesses.
+      if (context->rights->role != kernel::RoleOwner)
+	escape("the object's owner only can modify the accesses");
+
+      // update the access block or object according to the subject.
+      if ((subject.type == kernel::Subject::TypeUser) &&
+	  (*subject.user == context->object->owner.K))
+	{
+	  //
+	  // in this case, the subject represents the object's owner.
+	  //
+
+	  // update the permissions.
+	  if (context->object->Administrate(
+                context->object->meta.attributes,
+		context->object->meta.access,
+		permissions,
+		context->object->meta.owner.token) == StatusError)
+	    escape("unable to update the object's meta section");
+	}
+      else
+	{
+	  //
+	  // otherwise, the subject is a delegate being a user or a group.
+	  //
+	  kernel::Record*	record;
+
+	  // open the access.
+	  if (Access::Open(context) == StatusError)
+	    escape("unable to open the access");
+
+	  // retrieve the record associated with the given subject.
+	  if (context->access->Lookup(subject, record) == StatusTrue)
+	    escape("unable to retrive the subject's access record");
+
+	  // update the record.
+	  if (record->Update(subject,
+			     permissions,
+			     context->rights->key) == StatusError)
+	    escape("unable to update the subject's record");
+	}
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the subject is the user.
+      if (user->client->subject == subject)
+	{
+	  // update the context rights.
+	  context->rights->permissions = permissions;
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method blocks a subject by recording it in a black list.
+    ///
+    Status		Access::Block(context::Object*		context,
+				      const kernel::Subject&	subject)
+    {
+      user::User*	user;
+
+      enter();
+
+      // determine the rights over the object.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // verify that the user can modify the accesses.
+      if (context->rights->role != kernel::RoleOwner)
+	escape("the object's owner only can modify the accesses");
+
+      // XXX record in black list.
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the subject is the user.
+      if (user->client->subject == subject)
+	{
+	  // update the context rights.
+	  context->rights->permissions = kernel::PermissionNone;
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method revokes a subject's access by updating the access
+    /// block.
+    ///
+    Status		Access::Revoke(context::Object*		context,
+				       const kernel::Subject&	subject)
+    {
+      user::User*	user;
+
+      enter();
+
+      // determine the rights over the object.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // verify that the user can modify the accesses.
+      if (context->rights->role != kernel::RoleOwner)
+	escape("the object's owner only can modify the accesses");
+
+      // update the access block or object according to the subject.
+      if ((subject.type == kernel::Subject::TypeUser) &&
+	  (*subject.user == context->object->owner.K))
+	{
+	  //
+	  // in this case, the subject represents the object's owner.
+	  //
+
+	  // update the permissions.
+	  if (context->object->Administrate(
+                context->object->meta.attributes,
+		context->object->meta.access,
+		kernel::PermissionNone,
+		context->object->meta.owner.token) == StatusError)
+	    escape("unable to update the object's meta section");
+	}
+      else
+	{
+	  //
+	  // otherwise, the subject is a delegate being a user or a group.
+	  //
+	  kernel::Record*	record;
+
+	  // open the access.
+	  if (Access::Open(context) == StatusError)
+	    escape("unable to open the access");
+
+	  // remove the record associated with the given subject.
+	  if (context->access->Remove(subject) == StatusTrue)
+	    escape("unable to remove the subject's access record");
+	}
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the subject is the user.
+      if (user->client->subject == subject)
+	{
+	  // update the context rights.
+	  context->rights->permissions = kernel::PermissionNone;
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method is called whenever an object's content has been modified,
+    /// leading to the generation of a new key.
+    ///
+    /// this key must then be distributed to every subject authorised to
+    /// access the object in reading, under the form of a token.
+    ///
+    Status		Access::Upgrade(context::Object*	context,
+					const SecretKey&	key)
+    {
+      enter();
+
+      // open the access.
+      if (Access::Open(context) == StatusError)
+	escape("unable to open the access");
+
+      // upgrate the access block records.
+      if (context->access->Upgrade(key) == StatusError)
+	escape("unable to upgrade the access records");
+
+      // then, update the object's owner token.
+      //
+      // noteworthy is that the owner's token is always computed even though
+      // she may not have the permission to read. this is required if the
+      // owner wants to grant herself back or anyone else the permission
+      // to read.
+      if (context->object->meta.owner.token.Update(
+            key,
+	    context->object->owner.K) == StatusError)
+	escape("unable to update the owner's token");
+
+      // finally, update the object's meta section though the
+      // access address and owner permissions remain unchanged.
+      if (context->object->Administrate(
+	    context->object->meta.attributes,
+            context->object->meta.access,
+	    context->object->meta.owner.permissions,
+	    context->object->meta.owner.token) == StatusError)
+	escape("unable to update the object's meta section");
+
+      leave();
+    }
+
+    ///
+    /// this method closes the access. either the access has been modified
+    /// and therefore modifications eed to be published or not, in which
+    /// case nothing is done.
     ///
     Status		Access::Close(context::Object*		context)
     {
-      core::Offset	size;
+      kernel::Size	size;
 
       enter();
 
@@ -67,13 +541,8 @@ namespace etoile
       if (context->access == NULL)
 	leave();
 
-      // retrieve the access's size.
-      if (context->access->Size(size) == StatusError)
-	escape("unable to retrieve the access's size");
-
-      // if the access has not changed, or if the access is empty,
-      // delete it.
-      if ((size == 0) || (context->access->state == StateClean))
+      // if the access has not changed.
+      if (context->access->state == kernel::StateClean)
 	{
 	  // release the access's memory.
 	  delete context->access;
@@ -84,167 +553,61 @@ namespace etoile
 	  leave();
 	}
 
-      // bind the access as, since the block has changed, its address
-      // is going to be different.
-      if (context->access->Bind() == StatusError)
-	escape("unable to bind the access");
+      // retrieve the access's size.
+      if (context->access->Capacity(size) == StatusError)
+	escape("unable to retrieve the access's size");
 
-      // finally, update the object's meta section with the new address.
-      if (context->object->Administrate(context->access->address,
-					context->object->meta.owner.permissions,
-					context->object->meta.owner.token) ==
-	  StatusError)
-	escape("unable to update the object's meta section");
-					
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    Status		Access::Retrieve(context::Object*	context,
-					 const core::Subject&	subject,
-					 core::Permissions&	permissions,
-					 Code&			token)
-    {
-      enter();
-
-      // test if the subject is the object's owner.
-      if ((subject.type == core::Subject::TypeUser) &&
-	  (*subject.identifier.user == context->object->owner.K))
+      //
+      // at this point, this access block is known to have been modified.
+      //
+      // modify the object according to the content of the access block.
+      //
+      if (size == 0)
 	{
-	  // return the permissions.
-	  permissions = context->object->meta.owner.permissions;
+	  //
+	  // if access became empty after record removals, the
+	  // object should no longer point to any access block while
+	  // the old block should be deleted.
+	  //
 
-	  // along with the token.
-	  token = context->object->meta.owner.token;
+	  // record the access block as needed to be removed.
+	  if (context->bucket.Record(
+		&context->object->meta.access) == StatusError)
+	    escape("unable to record the access block in the bucket");
+
+	  // update the object's meta section with the null address.
+	  if (context->object->Administrate(
+		context->object->meta.attributes,
+		hole::Address::Null,
+		context->object->meta.owner.permissions,
+		context->object->meta.owner.token) == StatusError)
+	    escape("unable to update the object's meta section");
 	}
       else
 	{
-	  // XXX delegate or vassal
-	  printf("XXX[NOT IMPLEMENTED YET]\n");
+	  //
+	  // otherwise, compute the address of the new access block and
+	  // update the object accordingly.
+	  //
+
+	  // bind the access as, since the block has changed, its address
+	  // is going to be different.
+	  if (context->access->Bind() == StatusError)
+	    escape("unable to bind the access");
+
+	  // register the block as needed to be published.
+	  if (context->bucket.Record(
+		context->access) == StatusError)
+	    escape("unable to record the access block in the bucket");
+
+	  // finally, update the object's meta section with the new address.
+	  if (context->object->Administrate(
+		context->object->meta.attributes,
+   	        context->access->address,
+		context->object->meta.owner.permissions,
+		context->object->meta.owner.token) == StatusError)
+	    escape("unable to update the object's meta section");
 	}
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    Status		Access::Upgrade(context::Object*	context,
-					const SecretKey&	key)
-    {
-      enter();
-
-      //
-      // first, go through all the access entries and upgrade the key.
-      //
-      {
-	core::Access::Iterator	iterator;
-
-	// for each subject in the access block.
-	for (iterator = context->access->entries.begin();
-	     iterator != context->access->entries.end();
-	     iterator++)
-	  {
-	    core::Access::Entry*	entry = *iterator;
-
-	    // check if the subject has the proper permissions.
-	    if (!(entry->permissions & core::PermissionRead))
-	      continue;
-
-	    // depending on the subject's type.
-	    switch (entry->subject.type)
-	      {
-	      case core::Subject::TypeUser:
-		{
-		  //
-		  // if the subject is a user, encrypt the key with the
-		  // user's public key so that she will be the only one
-		  // capable of decrypting it.
-		  //
-
-		  PublicKey*	K;
-		  Code		token;
-
-		  // retrieve the public key.
-		  K = entry->subject.identifier.user;
-
-		  // encrypt the secret key.
-		  if (K->Encrypt(key, token) == StatusError)
-		    escape("unable to encrypt the key with the "
-			   "user's public key");
-
-		  // assign the token to the access' entry.
-		  entry->token = token;
-
-		  break;
-		}
-	      case core::Subject::TypeGroup:
-		{
-		  //
-		  // if the subject is a group, the key is made available
-		  // to the group's owner. this is especially useful in
-		  // order to increase the number of delegates available to
-		  // respond to vassal's requests.
-		  //
-
-		  PublicKey*		K;
-		  hole::Address*	address;
-		  Code			token;
-
-		  // retrieve the group's block address.
-		  // XXX
-
-		  // retrieve the owner's public key.
-		  // XXX
-
-		  // encrypt the secret key.
-		  // XXX
-
-		  // assign the token to the entry.
-		  // XXX
-
-		  break;
-		}
-	      case core::Subject::TypeUnknown:
-		{
-		  escape("the access block contains unknown entries");
-		}
-	      }
-
-	    // set the access block as being dirty.
-	    context->access->state = core::StateDirty;
-	  }
-      }
-
-      //
-      // then, update the object's owner, assuming she has the proper
-      // permissions and modify the object.
-      //
-      // at this point, do not worry for the access block's address as
-      // the new address will be computed once the access is closed and
-      // the object will be updated accordingly. the code below just updates
-      // the token.
-      //
-      {
-	Code		token;
-
-	// check if the owner has the proper permissions.
-	if (context->object->meta.owner.permissions & core::PermissionRead)
-	  {
-	    // encrypt the secret key with the owner's public key.
-	    if (context->object->owner.K.Encrypt(key, token) == StatusError)
-	      escape("unable to encrypt the key with the owner's public key");
-
-	    // finally, update the object's meta section though the
-	    // access address and owner permissions remain unchanged.
-	    if (context->object->Administrate(context->object->meta.access,
-					      context->object->meta.owner.permissions,
-					      token) == StatusError)
-	      escape("unable to update the object's meta section");
-	  }
-      }
 
       leave();
     }

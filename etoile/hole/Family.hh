@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Family.hh
 //
 // created       julien quintard   [fri dec 18 13:40:40 2009]
-// updated       julien quintard   [fri dec 18 13:41:15 2009]
+// updated       julien quintard   [wed mar 31 21:33:30 2010]
 //
 
 #ifndef ETOILE_HOLE_FAMILY_HH
@@ -28,7 +28,8 @@ namespace etoile
     ///
     enum Family
       {
-	FamilyUnknown,
+	FamilyUnknown = 0,
+
 	FamilyContentHashBlock,
 	FamilyPublicKeyBlock,
 

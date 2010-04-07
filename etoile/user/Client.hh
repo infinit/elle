@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.hh
 //
 // created       julien quintard   [thu mar  4 11:56:54 2010]
-// updated       julien quintard   [fri mar 26 12:39:51 2010]
+// updated       julien quintard   [wed mar 31 02:53:43 2010]
 //
 
 #ifndef ETOILE_USER_CLIENT_HH
@@ -20,8 +20,9 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/Subject.hh>
+#include <etoile/kernel/Subject.hh>
 
+#include <etoile/user/Agent.hh>
 #include <etoile/user/Application.hh>
 
 #include <elle/idiom/Close.hh>
@@ -88,6 +89,13 @@ namespace etoile
 				       C::Iterator&);
       static Status		Remove(Client*);
 
+      static Status		Retrieve(const Channel*,
+					 Client*&);
+      static Status		Retrieve(const PublicKey&,
+					 Client*&);
+      static Status		Retrieve(const String&,
+					 Client*&);
+
       static Status		Show(const Natural32 = 0);
 
       //
@@ -112,6 +120,8 @@ namespace etoile
       Status			Add(Application*);
       Status			Locate(Application*,
 				       A::Iterator&);
+      Status			Retrieve(const Channel*,
+					 Application*&);
       Status			Remove(Application*);
 
       //
@@ -129,7 +139,7 @@ namespace etoile
       Agent*			agent;
       A::Container		applications;
 
-      core::Subject		subject;
+      kernel::Subject		subject;
     };
 
   }
@@ -139,7 +149,6 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/user/Agent.hh>
 #include <etoile/user/Map.hh>
 
 #endif

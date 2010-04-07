@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [sat mar 27 11:37:53 2010]
+// updated       julien quintard   [thu apr  1 03:21:45 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -20,14 +20,21 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/user/Map.hh>
-
 #include <etoile/Manifest.hh>
 
 namespace etoile
 {
   namespace user
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Client;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -254,5 +261,11 @@ namespace etoile
 //
 
 #include <etoile/user/Agent.hxx>
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/user/Client.hh>
 
 #endif

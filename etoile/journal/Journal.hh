@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.hh
 //
 // created       julien quintard   [sat jan 30 15:18:59 2010]
-// updated       julien quintard   [sat jan 30 17:28:54 2010]
+// updated       julien quintard   [tue apr  6 12:12:24 2010]
 //
 
 #ifndef ETOILE_JOURNAL_JOURNAL_HH
@@ -20,16 +20,15 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/hole/Hole.hh>
-#include <etoile/context/Context.hh>
+#include <etoile/hole/Block.hh>
 
-#include <list>
+#include <etoile/context/Context.hh>
 
 namespace etoile
 {
-
   ///
-  /// XXX
+  /// the journal namespace contains classes which are used for buffering
+  /// the modifications, hence acting as a cache at the same time.
   ///
   namespace journal
   {
@@ -39,7 +38,9 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class receives blocks to publish or destroy from the
+    /// components classes while responding to the depot looking for
+    /// a particular block.
     ///
     class Journal
     {
@@ -50,8 +51,7 @@ namespace etoile
       static Status	Initialize();
       static Status	Clean();
 
-      static Status	Push(context::Context*);
-      static Status	Pop(context::Context*&);
+      static Status	Record(context::Context*);
 
       static Status	Get(const hole::Address&,
 			    hole::Block*&);
@@ -64,6 +64,9 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/journal/Set.hh>
+#include <etoile/journal/Bucket.hh>
+#include <etoile/journal/Operation.hh>
+
+#include <etoile/hole/Hole.hh>
 
 #endif

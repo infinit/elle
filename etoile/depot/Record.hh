@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.hh
 //
 // created       julien quintard   [thu dec  3 03:07:53 2009]
-// updated       julien quintard   [wed mar 17 22:25:21 2010]
+// updated       julien quintard   [fri apr  2 13:55:20 2010]
 //
 
 #ifndef ETOILE_DEPOT_RECORD_HH
@@ -20,18 +20,14 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/core/Core.hh>
-#include <etoile/hole/Hole.hh>
+#include <etoile/hole/Address.hh>
 
 #include <etoile/depot/Cell.hh>
 #include <etoile/depot/Unit.hh>
-#include <etoile/depot/Repository.hh>
 #include <etoile/depot/Location.hh>
 
 namespace etoile
 {
-  using namespace core;
-
   namespace depot
   {
 
@@ -70,7 +66,7 @@ namespace etoile
       {
 	Cell*		cell;
 	Unit*		unit;
-      }			data;
+      };
 
       Timer*		timer;
 
@@ -94,5 +90,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/depot/Repository.hh>
 
 #endif
