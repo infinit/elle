@@ -1,0 +1,9 @@
+PROJECT(Network CXX)
+
+ADD_EXECUTABLE(8network
+  Network.cc
+)
+
+TARGET_LINK_LIBRARIES(8network elle etoile crypto ssl dl
+		               ${QT_QTNETWORK_LIBRARIES}
+			       ${QT_QTCORE_LIBRARIES})
