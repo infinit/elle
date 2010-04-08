@@ -131,7 +131,7 @@ class VisualToolkit(Toolkit):
 
     def compile(self, cfg, src, obj):
         includes = ''.join(map(lambda i: ' /I %s /I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.include_path() + list(self.includes)))
-        return 'cl.exe /MT /TP /nologo /DWIN32 %s /EHsc%s /Fo%s /c %s' % (' '.join(self.flags), includes, obj, src)
+        return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc%s /Fo%s /c %s' % (' '.join(self.flags), concatenate(cfg.flags), includes, obj, src)
 
     def archive(self, cfg, objs, lib):
         return 'lib /nologo /MT %s /OUT:%s' % (' '.join(map(str, objs)), lib)
