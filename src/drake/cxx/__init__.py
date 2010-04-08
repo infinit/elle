@@ -41,6 +41,11 @@ class GccToolkit(Toolkit):
     platform = x86
     os = linux
 
+    def __init__(self, compiler = 'g++'):
+
+        Toolkit.__init__(self)
+        self.cxx = compiler
+
     def object_extension(self):
 
         return 'o'
@@ -49,7 +54,7 @@ class GccToolkit(Toolkit):
 
         system_includes = ''.join(map(lambda i: ' -I %s' % shell_escape(i), cfg.system_include_path()))
         local_includes  = ''.join(map(lambda i: ' -I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.local_include_path()))
-        return 'g++%s%s%s -c %s -o %s' % (concatenate(cfg.flags), system_includes, local_includes, src, obj)
+        return '%s%s%s%s -c %s -o %s' % (self.cxx, concatenate(cfg.flags), system_includes, local_includes, src, obj)
 
 
     def archive(self, cfg, objs, lib):
@@ -59,8 +64,9 @@ class GccToolkit(Toolkit):
 
     def link(self, cfg, objs, exe):
 
-        return 'g++ %s%s%s %s -o %s' % \
-               (concatenate(cfg.flags),
+        return '%s %s%s%s %s -o %s' % \
+               (self.cxx,
+                concatenate(cfg.flags),
                 concatenate(cfg.lib_paths, '-L '),
                 concatenate(cfg.libs, '-l'),
                 concatenate(objs),
