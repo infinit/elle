@@ -67,7 +67,7 @@ class GccToolkit(Toolkit):
         return '%s %s%s%s %s -o %s' % \
                (self.cxx,
                 concatenate(cfg.flags),
-                concatenate(cfg.lib_paths, '-L '),
+                concatenate(cfg.lib_paths, '-L'),
                 concatenate(cfg.libs, '-l'),
                 concatenate(objs),
                 exe)
