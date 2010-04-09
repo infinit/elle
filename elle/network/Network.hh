@@ -20,8 +20,8 @@
 
 #include <elle/archive/Archive.hh>
 
-#include <elle/misc/Status.hh>
-#include <elle/misc/Callback.hh>
+#include <elle/miscellaneous/Status.hh>
+#include <elle/miscellaneous/Callback.hh>
 
 #include <elle/concurrency/Fiber.hh>
 #include <elle/concurrency/Accord.hh>

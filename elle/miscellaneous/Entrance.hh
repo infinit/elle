@@ -5,27 +5,27 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Entrance.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Entrance.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
 // updated       julien quintard   [tue mar 30 17:28:37 2010]
 //
 
-#ifndef ELLE_MISC_ENTRANCE_HH
-#define ELLE_MISC_ENTRANCE_HH
+#ifndef ELLE_MISCELLANEOUS_ENTRANCE_HH
+#define ELLE_MISCELLANEOUS_ENTRANCE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Status.hh>
-#include <elle/misc/Routine.hh>
-#include <elle/misc/Function.hh>
-#include <elle/misc/Method.hh>
+#include <elle/miscellaneous/Status.hh>
+#include <elle/miscellaneous/Routine.hh>
+#include <elle/miscellaneous/Function.hh>
+#include <elle/miscellaneous/Method.hh>
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //
@@ -90,6 +90,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Entrance.hxx>
+#include <elle/miscellaneous/Entrance.hxx>
 
 #endif

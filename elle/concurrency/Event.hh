@@ -22,7 +22,7 @@
 #include <elle/archive/Archive.hh>
 #include <elle/io/IO.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rand.h>
@@ -32,7 +32,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace archive;
   using namespace io;
 

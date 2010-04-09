@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Routine.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Routine.hh
 //
 // created       julien quintard   [wed mar 24 19:50:08 2010]
 // updated       julien quintard   [mon mar 29 23:13:01 2010]
 //
 
-#ifndef ELLE_MISC_ROUTINE_HH
-#define ELLE_MISC_ROUTINE_HH
+#ifndef ELLE_MISCELLANEOUS_ROUTINE_HH
+#define ELLE_MISCELLANEOUS_ROUTINE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 #include <elle/core/Entity.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/io/Dumpable.hh>
 
@@ -29,7 +29,7 @@ namespace elle
   using namespace core;
   using namespace io;
 
-  namespace misc
+  namespace miscellaneous
   {
 
 //

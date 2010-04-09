@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [tue apr  6 19:48:13 2010]
+// updated       julien quintard   [fri apr  9 01:15:53 2010]
 //
 
 //
@@ -53,6 +53,10 @@ namespace elle
 
       // XXX bridge
 
+      // initialize the session.
+      if (Session::Initialize() == StatusError)
+	escape("unable to initialize the session");
+
       leave();
     }
 
@@ -62,6 +66,10 @@ namespace elle
     Status		Network::Clean()
     {
       enter();
+
+      // clean the session.
+      if (Session::Clean() == StatusError)
+	escape("unable to clean the session");
 
       // clean the lane
       if (Lane::Clean() == StatusError)
@@ -90,8 +98,8 @@ namespace elle
       // retrieve the argument and takes over the tracking.
       parcel = p;
 
-      //printf("[XXX] Network::Dispatch(tag[%u] event[%qu])\n",
-      //parcel->header->tag, parcel->header->event.identifier);
+      printf("[XXX] Network::Dispatch(tag[%u] event[%qu])\n",
+	     parcel->header->tag, parcel->header->event.identifier);
 
       //
       // first, try to  wake up a waiting slot.
@@ -148,6 +156,10 @@ namespace elle
 	// trigger the callback.
 	if (scoutor->second->Call(*parcel->data) == StatusError)
 	  escape("an error occured while processing the event");
+
+	// clear the session.
+	if (Session::Clear() == StatusError)
+	  escape("unable to clear the session");
 
 	// delete the parcel.
 	delete parcel;

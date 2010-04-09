@@ -20,8 +20,8 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Status.hh>
-#include <elle/misc/Callback.hh>
+#include <elle/miscellaneous/Status.hh>
+#include <elle/miscellaneous/Callback.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -30,7 +30,7 @@
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace concurrency
   {

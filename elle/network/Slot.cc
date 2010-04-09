@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [tue apr  6 18:52:51 2010]
+// updated       julien quintard   [thu apr  8 11:54:43 2010]
 //
 
 //
@@ -306,13 +306,24 @@ namespace elle
 	  // parcel and its memory.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
+	      Report*	report;
+	      Session*	session;
+
+	      // retrieve the report.
+	      if (Report::Instance(report) == StatusError)
+		escape("unable to retrieve the report");
+
+	      // retrieve the session.
+	      if (Session::Instance(session) == StatusError)
+		escape("unable to retrieve the session");
+
 	      // since an error occured, transmit it to the sender
 	      if (this->Send(session->address,
-			     Inputs<TagError>(report)) == StatusError)
+			     Inputs<TagError>(*report)) == StatusError)
 		escape("unable to send an error report");
 
 	      // flush the report since it has been sent to the sender.
-	      report.Flush();
+	      report->Flush();
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().

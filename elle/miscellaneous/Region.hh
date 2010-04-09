@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/misc/Region.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
 // updated       julien quintard   [fri apr  2 11:38:47 2010]
 //
 
-#ifndef ELLE_MISC_REGION_HH
-#define ELLE_MISC_REGION_HH
+#ifndef ELLE_MISCELLANEOUS_REGION_HH
+#define ELLE_MISCELLANEOUS_REGION_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -23,8 +23,8 @@
 
 #include <elle/io/Dumpable.hh>
 
-#include <elle/misc/Byte.hh>
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Byte.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <iostream>
@@ -35,9 +35,9 @@ namespace elle
 {
   using namespace io;
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
-  namespace misc
+  namespace miscellaneous
   {
 
 //
@@ -144,7 +144,7 @@ namespace elle
 namespace std
 {
   std::ostream&		operator<<(std::ostream&,
-				   const elle::misc::Region&);
+				   const elle::miscellaneous::Region&);
 }
 
 #endif

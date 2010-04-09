@@ -5,18 +5,18 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Entrance.hxx
+// file          /home/mycure/infinit/elle/miscellaneous/Entrance.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
 // updated       julien quintard   [tue mar 30 17:29:18 2010]
 //
 
-#ifndef ELLE_MISC_ENTRANCE_HXX
-#define ELLE_MISC_ENTRANCE_HXX
+#ifndef ELLE_MISCELLANEOUS_ENTRANCE_HXX
+#define ELLE_MISCELLANEOUS_ENTRANCE_HXX
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //

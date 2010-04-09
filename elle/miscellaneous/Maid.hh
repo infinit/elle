@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Maid.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Maid.hh
 //
 // created       julien quintard   [sun feb 28 09:00:00 2010]
 // updated       julien quintard   [sat mar 20 02:46:12 2010]
 //
 
-#ifndef ELLE_MISC_MAID_HH
-#define ELLE_MISC_MAID_HH
+#ifndef ELLE_MISCELLANEOUS_MAID_HH
+#define ELLE_MISCELLANEOUS_MAID_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -31,7 +31,7 @@ namespace elle
 {
   using namespace core;
 
-  namespace misc
+  namespace miscellaneous
   {
 
 //
@@ -403,6 +403,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Maid.hxx>
+#include <elle/miscellaneous/Maid.hxx>
 
 #endif

@@ -27,7 +27,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace archive;
 
   namespace test

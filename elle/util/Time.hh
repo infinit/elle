@@ -110,7 +110,7 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
+#include <elle/miscellaneous/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 #endif

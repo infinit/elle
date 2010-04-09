@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [mon mar 29 15:29:09 2010]
+// updated       julien quintard   [thu apr  8 12:03:27 2010]
 //
 
 //
@@ -60,13 +60,16 @@
 #define report(_type_, _text_)						\
   do									\
     {									\
-      std::ostringstream	_message_;				\
+      elle::miscellaneous::Report*	_report_;			\
+      std::ostringstream		_message_;			\
 									\
       _message_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;\
 									\
       elle::core::String	_header_(_message_.str());		\
 									\
-      elle::misc::report.Record(_type_, _header_, _text_);		\
+      if (elle::miscellaneous::Report::Instance(_report_) !=		\
+	  elle::miscellaneous::StatusError)				\
+        _report_->Record(_type_, _header_, _text_);			\
     } while (false)
 
 ///
@@ -78,7 +81,7 @@
     {									\
       release();							\
 									\
-      return (elle::misc::StatusOk);					\
+      return (elle::miscellaneous::StatusOk);				\
     } while (false)
 
 ///
@@ -89,7 +92,7 @@
     {									\
       release();							\
 									\
-      return (elle::misc::StatusTrue);					\
+      return (elle::miscellaneous::StatusTrue);				\
     } while (false)
 
 ///
@@ -100,14 +103,14 @@
     {									\
       release();							\
 									\
-      return (elle::misc::StatusFalse);					\
+      return (elle::miscellaneous::StatusFalse);			\
     } while (false)
 
 ///
 /// this macro-function reports a warning.
 ///
 #define warn(_text_)							\
-  report(elle::misc::Report::TypeWarning, _text_)
+  report(elle::miscellaneous::Report::TypeWarning, _text_)
 
 ///
 /// this macro-function indicates that an error occured
@@ -116,11 +119,11 @@
 #define escape(_text_)							\
   do									\
     {									\
-      report(elle::misc::Report::TypeError, _text_);			\
+      report(elle::miscellaneous::Report::TypeError, _text_);		\
 									\
       release();							\
 									\
-      return (elle::misc::StatusError);					\
+      return (elle::miscellaneous::StatusError);			\
     } while (false)
 
 ///
@@ -130,11 +133,11 @@
 #define flee(_text_)							\
   do									\
     {									\
-      report(elle::misc::Report::TypeError, _text_);			\
+      report(elle::miscellaneous::Report::TypeError, _text_);		\
 									\
       release();							\
 									\
-      return (elle::misc::StatusFalse);					\
+      return (elle::miscellaneous::StatusFalse);			\
     } while (false)							\
 
 ///
@@ -146,7 +149,7 @@
 #define yield(_text_, _return_)						\
   do									\
     {									\
-      report(elle::misc::Report::TypeError, _text_);			\
+      report(elle::miscellaneous::Report::TypeError, _text_);		\
 									\
       release();							\
       									\
@@ -162,7 +165,7 @@
 #define alert(_text_)							\
   do									\
     {									\
-      report(elle::misc::Report::TypeError, _text_);			\
+      report(elle::miscellaneous::Report::TypeError, _text_);		\
 									\
       show();								\
 									\
@@ -178,7 +181,7 @@
 #define fail(_text_)							\
   do									\
     {									\
-      report(elle::misc::Report::TypeFailure, _text_);			\
+      report(elle::miscellaneous::Report::TypeFailure, _text_);		\
 									\
       show();								\
 									\
@@ -191,9 +194,14 @@
 #define show()								\
   do									\
     {									\
-      ::elle::misc::report.Dump();					\
+      elle::miscellaneous::Report*	_report_;			\
 									\
-      ::elle::misc::report.Flush();					\
+      if (elle::miscellaneous::Report::Instance(_report_) !=		\
+	  elle::miscellaneous::StatusError)				\
+	{								\
+          _report_->Dump();						\
+	  _report_->Flush();						\
+	}								\
     } while (false)
 
 ///
@@ -203,12 +211,19 @@
 #define expose()							\
   do									\
     {									\
-      if (elle::misc::report.store.empty() == false)			\
-        {								\
-          show();							\
+      elle::miscellaneous::Report*	_report_;			\
 									\
-	  ::exit(EXIT_FAILURE);						\
-        }								\
+      if (elle::miscellaneous::Report::Instance(_report_) !=		\
+	  elle::miscellaneous::StatusError)				\
+	{								\
+	  if (_report_->store.empty() == false)				\
+	    {								\
+	      _report_->Dump();						\
+	      _report_->Flush();					\
+									\
+	      ::exit(EXIT_FAILURE);					\
+	    }								\
+	}								\
     } while (false)
 
 ///
@@ -217,7 +232,11 @@
 #define purge()								\
   do									\
     {									\
-      elle::misc::report.Flush();					\
+      elle::miscellaneous::Report*	_report_;			\
+									\
+      if (elle::miscellaneous::Report::Instance(_report_) !=		\
+	  elle::miscellaneous::StatusError)				\
+	_report_->Flush();						\
     } while (false)
 
 //

@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Method.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
 // updated       julien quintard   [mon mar 29 21:50:58 2010]
 //
 
-#ifndef ELLE_MISC_METHOD_HH
-#define ELLE_MISC_METHOD_HH
+#ifndef ELLE_MISCELLANEOUS_METHOD_HH
+#define ELLE_MISCELLANEOUS_METHOD_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,13 +22,13 @@
 
 #include <elle/io/Dumpable.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
     ///
@@ -140,6 +140,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Method.hxx>
+#include <elle/miscellaneous/Method.hxx>
 
 #endif

@@ -20,8 +20,8 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Status.hh>
-#include <elle/misc/Region.hh>
+#include <elle/miscellaneous/Status.hh>
+#include <elle/miscellaneous/Region.hh>
 
 #include <elle/system/System.hh>
 
@@ -33,7 +33,7 @@ namespace elle
 {
   using namespace io;
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace system;
 
   ///

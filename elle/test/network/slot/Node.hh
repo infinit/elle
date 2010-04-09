@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [thu mar 25 19:28:51 2010]
+// updated       julien quintard   [thu apr  8 15:09:57 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_NODE_HH
@@ -19,7 +19,7 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+#include <elle/miscellaneous/Miscellaneous.hh>
 #include <elle/network/Network.hh>
 
 #include <elle/test/network/slot/Table.hh>
@@ -28,7 +28,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace network;
 
   namespace test

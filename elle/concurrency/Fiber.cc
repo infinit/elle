@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [tue mar 30 00:23:01 2010]
+// updated       julien quintard   [thu apr  8 23:08:27 2010]
 //
 
 //
@@ -20,7 +20,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace concurrency
   {
@@ -72,6 +72,12 @@ namespace elle
     ///
     Void*			Fiber::Trash = NULL;
 
+    ///
+    /// this container holds the callbacks to trigger whenever the state
+    /// of a fiber is to be initialized, saved, restored or cleaned.
+    ///
+    Fiber::P::Container		Fiber::Phases;
+
 //
 // ---------- static methods --------------------------------------------------
 //
@@ -86,6 +92,9 @@ namespace elle
       // allocate the application fiber but do not create it since
       // this application has no need for a stack.
       Fiber::Application = new Fiber;
+
+      // allocate an environment.
+      Fiber::Application->environment = new Environment;
 
       // set the application as being running.
       Fiber::Application->state = Fiber::StateActive;
@@ -104,6 +113,43 @@ namespace elle
       enter();
 
       // XXX clean toutes les fibers de events/resources
+
+      leave();
+    }
+
+    ///
+    /// this method registers a callback to be trigger should a fiber
+    /// need to be saved or restored, depending on the given phase.
+    ///
+    Status		Fiber::Register(const Callback<const Phase,
+					               Fiber*>	callback)
+    {
+      enter();
+
+      // store in the container.
+      Fiber::Phases.push_back(callback);
+
+      leave();
+    }
+
+    ///
+    /// this method triggers the callbacks associated with the phase.
+    ///
+    Status		Fiber::Trigger(const Phase&		phase)
+    {
+      Fiber::P::Scoutor	scoutor;
+
+      enter();
+
+      // go through the appropriate container.
+      for (scoutor = Fiber::Phases.begin();
+	   scoutor != Fiber::Phases.end();
+	   scoutor++)
+	{
+	  // trigger the callback, passing the current fiber.
+	  if (scoutor->Trigger(phase, Fiber::Current) == StatusError)
+	    escape("an error occured in the callback");
+	}
 
       leave();
     }
@@ -141,9 +187,6 @@ namespace elle
 	      if (Fiber::Remove(fiber) == StatusError)
 		escape("unable to remove the fiber");
 
-	      // set as active.
-	      fiber->state = Fiber::StateActive;
-
 	      // set the current fiber as suspended.
 	      Fiber::Current->state = Fiber::StateSuspended;
 
@@ -152,6 +195,13 @@ namespace elle
 
 	      // switch the current fiber.
 	      Fiber::Current = fiber;
+
+	      // set as active.
+	      Fiber::Current->state = Fiber::StateActive;
+
+	      // restore the environment.
+	      if (Fiber::Trigger(PhaseRestore) == StatusError)
+		escape("unable to restore the environment");
 
 	      // set the context of the suspended fiber.
 	      if (::setcontext(&Fiber::Current->context) == -1)
@@ -199,6 +249,9 @@ namespace elle
 	    escape("unable to create the fiber");
 	}
 
+      // allocate an environment.
+      fiber->environment = new Environment;
+
       leave();
     }
 
@@ -212,6 +265,9 @@ namespace elle
       //printf("[XXX 0x%x] Fiber::Delete(0x%x)\n",
       //Fiber::Current, fiber);
 
+      // delete the environment.
+      delete fiber->environment;
+
       // do not delete the fiber and store in the cache if the cache
       // is empty.
       if (Fiber::Cache.size() == Fiber::Capacity)
@@ -220,6 +276,7 @@ namespace elle
 	  fiber->link = NULL;
 	  fiber->state = Fiber::StateUnknown;
 	  fiber->type = Fiber::TypeNone;
+	  fiber->environment = NULL;
 	  fiber->data = NULL;
 
 	  // store it in the cache.
@@ -423,6 +480,7 @@ namespace elle
       frame(NULL),
       state(Fiber::StateUnknown),
       type(Fiber::TypeNone),
+      environment(NULL),
       data(NULL)
     {
     }
@@ -514,6 +572,10 @@ namespace elle
 	    break;
 	  }
 	}
+
+      // dump the environment.
+      if (this->environment->Dump(margin + 2) == StatusError)
+	escape("unable to dump the environment");
 
       // dump the data value.
       std::cout << alignment << Dumpable::Shift << "[Data] "

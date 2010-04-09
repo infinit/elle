@@ -5,24 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Closure.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Closure.hh
 //
 // created       julien quintard   [thu mar 25 03:25:25 2010]
 // updated       julien quintard   [mon mar 29 23:10:43 2010]
 //
 
-#ifndef ELLE_MISC_CLOSURE_HH
-#define ELLE_MISC_CLOSURE_HH
+#ifndef ELLE_MISCELLANEOUS_CLOSURE_HH
+#define ELLE_MISCELLANEOUS_CLOSURE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Entrance.hh>
+#include <elle/miscellaneous/Entrance.hh>
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //
@@ -44,6 +44,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Closure.hxx>
+#include <elle/miscellaneous/Closure.hxx>
 
 #endif

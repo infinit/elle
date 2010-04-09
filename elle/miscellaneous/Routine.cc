@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Routine.cc
+// file          /home/mycure/infinit/elle/miscellaneous/Routine.cc
 //
 // created       julien quintard   [wed mar 24 21:12:54 2010]
 // updated       julien quintard   [thu mar 25 17:39:23 2010]
@@ -15,17 +15,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Routine.hh>
+#include <elle/miscellaneous/Routine.hh>
 
 ///
 /// these includes were placed here for avoiding pre-processing conflicts.
 ///
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
+#include <elle/miscellaneous/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //

@@ -20,7 +20,7 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/concurrency/Resource.hh>
 #include <elle/concurrency/Fiber.hh>
@@ -32,7 +32,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace concurrency
   {

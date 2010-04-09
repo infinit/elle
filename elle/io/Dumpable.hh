@@ -21,12 +21,12 @@
 #include <elle/core/Natural.hh>
 #include <elle/core/String.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace io
   {

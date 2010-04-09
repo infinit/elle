@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [tue apr  6 22:06:45 2010]
+// updated       julien quintard   [fri apr  9 02:11:17 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -120,15 +120,21 @@ namespace elle
     ///
     /// XXX
     ///
+    /// note that the session is never assigned when receive is used
+    /// to manually receive messages. it is therefore the caller's
+    /// responsability to keep information regarding who it is communicating
+    /// with and using which socket.
+    ///
     template <typename O>
     Status		Door::Receive(const Event&		event,
 				      O				outputs)
     {
-      Report			report;
-      Parcel*			parcel;
+      Report		report;
+      Parcel*		parcel;
 
       enter(instance(parcel));
 
+      // process the call depending on the mode.
       if (this->mode == Socket::ModeAsynchronous)
 	{
 	  // block the current fiber until the given event is received.
@@ -149,10 +155,6 @@ namespace elle
 	  if (this->Read(parcel) != StatusTrue)
 	    escape("unable to read a complete parcel from the door");
 	}
-
-      // assign the new session.
-      if (Session::Assign(parcel->session) == StatusError)
-	escape("unable to assign the session");
 
       // check the tag.
       if (parcel->header->tag != outputs.tag)
@@ -191,7 +193,13 @@ namespace elle
     template <typename I>
     Status		Door::Reply(const I			inputs)
     {
+      Session*		session;
+
       enter();
+
+      // retrieve the current session.
+      if (Session::Instance(session) == StatusError)
+	escape("unable to retrieve the session instance");
 
       // transmit a message as a response by using the event of
       // the received message i.e the current session.

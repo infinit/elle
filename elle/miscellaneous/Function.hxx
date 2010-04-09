@@ -5,25 +5,25 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Function.hxx
+// file          /home/mycure/infinit/elle/miscellaneous/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
 // updated       julien quintard   [mon mar 29 21:51:10 2010]
 //
 
-#ifndef ELLE_MISC_FUNCTION_HXX
-#define ELLE_MISC_FNUCTION_HXX
+#ifndef ELLE_MISCELLANEOUS_FUNCTION_HXX
+#define ELLE_MISCELLANEOUS_FNUCTION_HXX
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
+#include <elle/miscellaneous/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //

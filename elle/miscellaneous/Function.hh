@@ -5,14 +5,14 @@
 //
 // license       misc
 //
-// file          /home/mycure/infinit/elle/misc/Function.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
 // updated       julien quintard   [tue mar 30 17:29:04 2010]
 //
 
-#ifndef ELLE_MISC_FUNCTION_HH
-#define ELLE_MISC_FUNCTION_HH
+#ifndef ELLE_MISCELLANEOUS_FUNCTION_HH
+#define ELLE_MISCELLANEOUS_FUNCTION_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 #include <elle/core/Natural.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -28,7 +28,7 @@ namespace elle
 {
   using namespace core;
 
-  namespace misc
+  namespace miscellaneous
   {
 
 //
@@ -84,6 +84,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/misc/Function.hxx>
+#include <elle/miscellaneous/Function.hxx>
 
 #endif

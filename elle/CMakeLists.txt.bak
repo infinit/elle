@@ -15,8 +15,8 @@ ADD_LIBRARY(elle
   cryptography/SecretKey.cc
   cryptography/Signature.cc
   io/IO.cc
-  misc/Region.cc
-  misc/Report.cc
+  miscellaneous/Region.cc
+  miscellaneous/Report.cc
   system/System.cc
 )
 
@@ -83,11 +83,11 @@ INSTALL(FILES
   DESTINATION ${INFINIT_INCLUDEDIR}/elle/io)
 
 INSTALL(FILES
-  misc/Byte.hh
-  misc/Misc.hh
-  misc/Region.hh
-  misc/Report.hh
-  misc/Status.hh
+  miscellaneous/Byte.hh
+  miscellaneous/Misc.hh
+  miscellaneous/Region.hh
+  miscellaneous/Report.hh
+  miscellaneous/Status.hh
   DESTINATION ${INFINIT_INCLUDEDIR}/elle/misc)
 
 INSTALL(FILES

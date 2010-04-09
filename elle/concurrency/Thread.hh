@@ -20,7 +20,7 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/concurrency/Program.hh>
 

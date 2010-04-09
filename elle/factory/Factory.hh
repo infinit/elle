@@ -21,7 +21,7 @@
 #include <elle/core/Core.hh>
 #include <elle/concurrency/Concurrency.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
@@ -30,7 +30,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace concurrency;
 
   ///

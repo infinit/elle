@@ -21,11 +21,11 @@
 #include <elle/core/Boolean.hh>
 #include <elle/core/Natural.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace core
   {

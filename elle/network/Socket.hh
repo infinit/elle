@@ -22,8 +22,8 @@
 #include <elle/io/IO.hh>
 #include <elle/concurrency/Concurrency.hh>
 
-#include <elle/misc/Status.hh>
-#include <elle/misc/Callback.hh>
+#include <elle/miscellaneous/Status.hh>
+#include <elle/miscellaneous/Callback.hh>
 
 #include <elle/network/Parcel.hh>
 
