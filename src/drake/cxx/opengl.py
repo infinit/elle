@@ -31,7 +31,10 @@ class OpenGL:
                 self.cfg = Config()
                 self.cfg.add_system_include_path('%s/include' % self.prefix)
                 self.cfg.lib_path('%s/lib' % self.prefix)
-                self.cfg.lib('GL')
+                if platform.system() == 'Windows':
+                    self.cfg.lib('opengl32')
+                else:
+                    self.cfg.lib('GL')
 
                 return
 
