@@ -24,7 +24,7 @@
 #include <map>
 
 using namespace elle::core;
-using namespace elle::misc;
+using namespace elle::miscellaneous;
 using namespace elle::crypto;
 
 using namespace etoile::core;

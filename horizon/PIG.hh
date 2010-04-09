@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [wed apr  7 00:23:54 2010]
+// updated       julien quintard   [thu apr  8 20:59:14 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -140,6 +140,19 @@ namespace pig
   do									\
     {									\
       show();								\
+									\
+      return (-(_errno_));						\
+    } while (false)
+
+#define ignore(_errno_)							\
+  do									\
+    {									\
+      Report*	_report_;						\
+									\
+      if (Report::Instance(_report_) == StatusError)			\
+	return (-(_errno_));						\
+									\
+      _report_->Flush();						\
 									\
       return (-(_errno_));						\
     } while (false)

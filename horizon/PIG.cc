@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [wed apr  7 01:04:30 2010]
+// updated       julien quintard   [wed apr  7 22:39:31 2010]
 //
 
 //
@@ -25,7 +25,8 @@ namespace pig
 //
 
   ///
-  /// XXX
+  /// this structure contains the function pointers to the FUSE implementation
+  /// routines.
   ///
   static struct fuse_operations	operations;
 
@@ -91,7 +92,7 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagObjectLoad>(way),
 	  Outputs<TagIdentifier>(identifier)) == StatusError)
-      error(ENOENT);
+      ignore(ENOENT);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
@@ -288,13 +289,29 @@ namespace pig
   int			PIG::Mkdir(const char*			path,
 				   mode_t			mode)
   {
-    etoile::path::Slice	name;
-    etoile::path::Way	way(path, name);
+    etoile::path::Way		way(path);
+    etoile::context::Identifier	identifier;
 
-    printf("HERE\n");
-    way.Dump();
-    std::cout << name << std::endl;
-    printf("/HERE\n");
+    printf("[XXX] %s(%s, 0%o)\n",
+	   __FUNCTION__,
+	   path, mode);
+
+    // create the directory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryCreate>(way),
+	  Outputs<TagIdentifier>(identifier)) == StatusError)
+      error(ENOENT);
+
+    // XXX permissions
+    // XXX attributes
+
+    // store the directory.
+    /*
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryStore>(identifier),
+	  Outputs<TagOk>()) == StatusError)
+      error(ENOENT);
+    */
 
     return (0);
   }
