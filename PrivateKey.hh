@@ -24,7 +24,7 @@
 
 #include <elle/archive/Archive.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Code.hh>
@@ -47,7 +47,7 @@ namespace elle
 {
   using namespace io;
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace archive;
 
   namespace cryptography

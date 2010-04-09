@@ -21,7 +21,7 @@ namespace elle
 {
   using namespace io;
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace archive;
 
   namespace cryptography

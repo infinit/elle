@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/Clear.hh>
@@ -41,7 +41,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   ///
   /// this namespace contains everything necessary for performing

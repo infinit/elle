@@ -19,7 +19,7 @@
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace cryptography
   {

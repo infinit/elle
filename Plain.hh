@@ -18,11 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Region.hh>
+#include <elle/miscellaneous/Region.hh>
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace cryptography
   {
