@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue apr  6 19:00:50 2010]
+// updated       julien quintard   [fri apr  9 01:16:01 2010]
 //
 
 //
