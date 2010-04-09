@@ -19,7 +19,7 @@
 #include <hole/Key.hh>
 
 using namespace elle;
-using namespace elle::misc;
+using namespace elle::miscellaneous;
 using namespace hole;
 
 
