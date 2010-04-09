@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue apr  6 16:38:03 2010]
+// updated       julien quintard   [wed apr  7 19:24:14 2010]
 //
 
 //
@@ -120,14 +120,13 @@ namespace application
     //
     {
       Agent			agent(initial);
-      etoile::kernel::Access	access;
 
       // create directory object.
       if (directory.Create(GenreDirectory, agent.pair.K) == StatusError)
 	escape("unable to create the object directory");
 
       // seal the data and meta data.
-      if (directory.Seal(agent, access) == StatusError)
+      if (directory.Seal(agent) == StatusError)
 	escape("unable to seal the object");
 
       // compute the address.
