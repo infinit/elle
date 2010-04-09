@@ -23,7 +23,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace test
   {

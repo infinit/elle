@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [tue mar 30 16:59:29 2010]
+// updated       julien quintard   [thu apr  8 14:57:54 2010]
 //
 
 ///
@@ -30,7 +30,7 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+#include <elle/miscellaneous/Miscellaneous.hh>
 #include <elle/concurrency/Concurrency.hh>
 
 #include <elle/network/Door.hh>
@@ -43,7 +43,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace concurrency;
 
   namespace network

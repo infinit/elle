@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [fri apr  2 13:26:50 2010]
+// updated       julien quintard   [thu apr  8 15:09:11 2010]
 //
 
 #ifndef ELLE_ELLE_HH
@@ -20,7 +20,7 @@
 
 #include <elle/core/Character.hh>
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 ///
 /// the main elle namespace
@@ -28,7 +28,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -59,7 +59,7 @@ namespace elle
 
 #include <elle/io/IO.hh>
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+#include <elle/miscellaneous/Miscellaneous.hh>
 #include <elle/archive/Archive.hh>
 #include <elle/factory/Factory.hh>
 #include <elle/cryptography/Cryptography.hh>
@@ -77,7 +77,7 @@ namespace elle
 using namespace elle;
 using namespace elle::io;
 using namespace elle::core;
-using namespace elle::misc;
+using namespace elle::miscellaneous;
 using namespace elle::archive;
 using namespace elle::factory;
 using namespace elle::cryptography;

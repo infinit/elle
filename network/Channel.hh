@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [tue mar 30 19:26:10 2010]
+// updated       julien quintard   [thu apr  8 14:57:41 2010]
 //
 
 #ifndef ELLE_NETWORK_CHANNEL_HH
@@ -18,14 +18,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Misc.hh>
+#include <elle/miscellaneous/Miscellaneous.hh>
 #include <elle/concurrency/Concurrency.hh>
 
 #include <elle/network/Socket.hh>
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
   using namespace concurrency;
 
   namespace network

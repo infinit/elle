@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Maid.cc
+// file          /home/mycure/infinit/elle/miscellaneous/Maid.cc
 //
 // created       julien quintard   [sat mar 20 00:10:35 2010]
 // updated       julien quintard   [sat mar 20 15:28:56 2010]
@@ -15,18 +15,18 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Maid.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 ///
 /// these includes are placed here to prevent pre-processing conflicts.
 ///
 #include <elle/core/String.hh>
 
-#include <elle/misc/Report.hh>
+#include <elle/miscellaneous/Report.hh>
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //

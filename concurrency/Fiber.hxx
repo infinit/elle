@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [thu apr  1 15:47:25 2010]
+// updated       julien quintard   [fri apr  9 02:12:09 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -29,11 +29,11 @@ namespace elle
     /// and jumping back.
     ///
     template <typename... T>
-    Void		Fiber::Trigger(Closure<T...>*		closure)
+    Void		Fiber::Launch(Closure<T...>*		closure)
     {
       enter();
 
-      //printf("[XXX 0x%x] Fiber::Trigger()\n",
+      //printf("[XXX 0x%x] Fiber::Launch()\n",
       //Fiber::Current);
 
       // trigger the closure.
@@ -50,7 +50,7 @@ namespace elle
       // set the state of the parent's fiber as awaken.
       Fiber::Current->link->state = Fiber::StateAwaken;
 
-      //printf("[/XXX 0x%x] Fiber::Trigger()\n",
+      //printf("[/XXX 0x%x] Fiber::Launch()\n",
       //Fiber::Current);
     }
 
@@ -77,18 +77,23 @@ namespace elle
       // some might say.
       if (Fiber::Current->state == Fiber::StateActive)
 	{
-	  // declare a trigger function pointer in order to bypass the type
+	  // declare a launch function pointer in order to bypass the type
 	  // checking system through casts.
-	  Void		(*trigger)(Closure<T...>*) = &Fiber::Trigger;
+	  Void		(*launch)(Closure<T...>*) = &Fiber::Launch;
 	  Fiber*	fiber;
 
-	  //printf("[XXX] Fiber::Spawn() :: Parent\n");
+	  //printf("[XXX 0x%x] Fiber::Spawn() :: Parent\n",
+	  //Fiber::Current);
 
 	  // set the current fiber as suspended.
 	  Fiber::Current->state = Fiber::StateSuspended;
 
 	  // the current fiber is waiting for its child fiber to complete.
 	  Fiber::Current->type = Fiber::TypeFiber;
+
+	  // save the environment.
+	  if (Fiber::Trigger(PhaseSave) == StatusError)
+	    escape("unable to save the environment");
 
 	  // add the current fiber to the container.
 	  if (Fiber::Add(Fiber::Current) == StatusError)
@@ -98,12 +103,12 @@ namespace elle
 	  if (Fiber::New(fiber) == StatusError)
 	    escape("unable to allocate a new fiber");
 
+	  // set the parent fiber.
+	  fiber->link = Fiber::Current;
+
 	  // get the context in order to create a new one.
 	  if (::getcontext(&fiber->context) == -1)
 	    escape("unable to get the context");
-
-	  // set the parent fiber.
-	  fiber->link = Fiber::Current;
 
 	  // modify the context manually so that, once completed, the
 	  // execution comes back to the parent fiber i.e the current fiber.
@@ -112,10 +117,10 @@ namespace elle
 	  fiber->context.uc_stack.ss_size = fiber->frame->size;
 	  fiber->context.uc_flags = 0;
 
-	  // create a context for the new fiber, with the Fiber::Trigger
+	  // create a context for the new fiber, with the Fiber::Launch
 	  // as entry point.
 	  ::makecontext(&fiber->context,
-			(void (*)())trigger,
+			(void (*)())launch,
 			1,
 			&closure);
 
@@ -124,6 +129,10 @@ namespace elle
 
 	  // set the new fiber as the current one.
 	  Fiber::Current = fiber;
+
+	  // initialize the environment.
+	  if (Fiber::Trigger(PhaseInitialize) == StatusError)
+	    escape("unable to initialize the environment");
 
 	  // set the new context.
 	  if (::setcontext(&Fiber::Current->context) == -1)
@@ -155,6 +164,10 @@ namespace elle
 	    {
 	    case Fiber::StateCompleted:
 	      {
+		// clean the environment.
+		if (Fiber::Trigger(PhaseClean) == StatusError)
+		  escape("unable to initialize the environment");
+
 		// if the fiber has completed, delete it.
 		if (Fiber::Delete(Fiber::Current) == StatusError)
 		  escape("unable to delete the fiber");
@@ -164,6 +177,7 @@ namespace elle
 	    case Fiber::StateSuspended:
 	      {
 		// do not delete this fiber as it will be resumed later.
+
 		break;
 	      }
 	    case Fiber::StateActive:
@@ -181,9 +195,17 @@ namespace elle
 	  // set the parent, now current, fiber as active.
 	  Fiber::Current->state = Fiber::StateActive;
 
-	  // schedule the awaken fibers.
-	  if (Fiber::Schedule() == StatusError)
-	    escape("unable to schedule the awaken fibers");
+	  // schedule the awaken fibers, only if we are in the application
+	  // fiber i.e the root fiber.
+	  if (Fiber::Current == Fiber::Application)
+	    {
+	      if (Fiber::Schedule() == StatusError)
+		escape("unable to schedule the awaken fibers");
+	    }
+
+	  // restore the environment.
+	  if (Fiber::Trigger(PhaseRestore) == StatusError)
+	    escape("unable to restore the environment");
 
 	  //printf("[/XXX] Fiber::Spawn()\n");
 	  //Fiber::Show();
@@ -218,12 +240,17 @@ namespace elle
       // set the event.
       Fiber::Current->event = new Event(event);
 
+      // save the environment.
+      if (Fiber::Trigger(PhaseSave) == StatusError)
+	escape("unable to save the environment");
+
       // add the current fiber to the container.
       if (Fiber::Add(Fiber::Current) == StatusError)
 	escape("unable to add the fiber to the container");
 
-      // set the state of the parent's fiber as awaken.
-      Fiber::Current->link->state = Fiber::StateAwaken;
+      // set the state of the application's fiber as awaken as we
+      // are about to come back to it.
+      Fiber::Application->state = Fiber::StateAwaken;
 
       // switch to the application's context and save the current one
       // in order to carry on at this point when woken up.
@@ -269,12 +296,17 @@ namespace elle
       // set the event.
       Fiber::Current->resource = resource;
 
+      // save the environment.
+      if (Fiber::Trigger(PhaseSave) == StatusError)
+	escape("unable to save the environment");
+
       // add the current fiber to the container.
       if (Fiber::Add(Fiber::Current) == StatusError)
 	escape("unable to add the fiber to the container");
 
-      // set the state of the parent's fiber as awaken.
-      Fiber::Current->link->state = Fiber::StateAwaken;
+      // set the state of the application's fiber as awaken as we
+      // are about to come back to it.
+      Fiber::Application->state = Fiber::StateAwaken;
 
       // switch to the application's context and save the current one
       // in order to carry on at this point when woken up.

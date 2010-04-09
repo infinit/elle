@@ -248,7 +248,7 @@ namespace elle
 
 int			main()
 {
-  if (elle::test::Main() == elle::misc::StatusError)
+  if (elle::test::Main() == elle::miscellaneous::StatusError)
     {
       show();
 

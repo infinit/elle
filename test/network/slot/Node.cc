@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [tue mar 30 17:25:17 2010]
+// updated       julien quintard   [thu apr  8 15:10:52 2010]
 //
 
 //
@@ -95,7 +95,13 @@ namespace elle
     Status		Node::Handle(const String&		name,
 				     const Table&		table)
     {
+      Session*		session;
+
       enter();
+
+      // retrieve the current session.
+      if (Session::Instance(session) == StatusError)
+	escape("unable to retrieve the instance of the current session");
 
       // simply add the sender to the table.
       if (this->table.Update(session->address, name) == StatusError)

@@ -21,7 +21,7 @@
 #include <elle/core/Natural.hh>
 #include <elle/core/Character.hh>
 
-#include <elle/misc/Report.hh>
+#include <elle/miscellaneous/Report.hh>
 
 #include <elle/network/Tag.hh>
 
@@ -84,6 +84,6 @@ namespace elle
 
 // Error
 outward(::elle::TagError,
-	parameters(const ::elle::misc::Report));
+	parameters(const ::elle::miscellaneous::Report));
 
 #endif

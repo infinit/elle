@@ -15,10 +15,11 @@ ADD_LIBRARY(elle
 
   io/Dumpable.cc
 
-  misc/Region.cc
-  misc/Maid.cc
-  misc/Report.cc
-  misc/Routine.cc
+  miscellaneous/Miscellaneous.cc
+  miscellaneous/Region.cc
+  miscellaneous/Maid.cc
+  miscellaneous/Report.cc
+  miscellaneous/Routine.cc
 
   archive/Archive.cc
   archive/Archivable.cc
@@ -60,6 +61,7 @@ ADD_LIBRARY(elle
   concurrency/Timer.cc
   concurrency/Frame.cc
   concurrency/Fiber.cc
+  concurrency/Environment.cc
 
   util/Time.cc
 

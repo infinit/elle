@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [mon mar 29 21:03:42 2010]
+// updated       julien quintard   [thu apr  8 23:31:11 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -20,12 +20,15 @@
 
 #include <elle/core/Core.hh>
 
-#include <elle/misc/Status.hh>
-#include <elle/misc/Closure.hh>
+#include <elle/miscellaneous/Status.hh>
+#include <elle/miscellaneous/Callback.hh>
+#include <elle/miscellaneous/Closure.hh>
 
 #include <elle/concurrency/Frame.hh>
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Resource.hh>
+#include <elle/concurrency/Environment.hh>
+#include <elle/concurrency/Phase.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -35,7 +38,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace concurrency
   {
@@ -123,6 +126,13 @@ namespace elle
 	typedef Container::const_iterator	Scoutor;
       };
 
+      struct P
+      {
+	typedef std::vector< Callback<const Phase, Fiber*> >	Container;
+	typedef Container::iterator				Iterator;
+	typedef Container::const_iterator			Scoutor;
+      };
+
       //
       // static attributes
       //
@@ -135,6 +145,8 @@ namespace elle
 
       static Void*		Trash;
 
+      static P::Container	Phases;
+
       //
       // static methods
       //
@@ -144,7 +156,7 @@ namespace elle
       template <typename... T>
       static Status	Spawn(Closure<T...>&);
       template <typename... T>
-      static Void	Trigger(Closure<T...>*);
+      static Void	Launch(Closure<T...>*);
 
       template <typename T = Void>
       static Status	Wait(const Event&,
@@ -159,6 +171,9 @@ namespace elle
       template <typename T = Void>
       static Status	Awaken(const Resource*,
 			       T* = (T*)NULL);
+
+      static Status	Register(const Callback<const Phase, Fiber*>);
+      static Status	Trigger(const Phase&);
 
       static Status	Schedule();
 
@@ -210,9 +225,10 @@ namespace elle
 	const Resource*	resource;
       };
 
+      Environment*	environment;
+
       Void*		data;
     };
-
   }
 }
 

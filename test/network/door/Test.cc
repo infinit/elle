@@ -20,7 +20,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace test
   {
@@ -99,7 +99,7 @@ namespace elle
 int			main(const int				argc,
 			     const char*			argv[])
 {
-  if (elle::test::Main(argc, argv) == elle::misc::StatusError)
+  if (elle::test::Main(argc, argv) == elle::miscellaneous::StatusError)
     {
       show();
 

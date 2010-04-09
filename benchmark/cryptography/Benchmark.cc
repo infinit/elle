@@ -314,7 +314,7 @@ namespace elle
 
 int			main()
 {
-  if (elle::benchmark::Main() == elle::misc::StatusError)
+  if (elle::benchmark::Main() == elle::miscellaneous::StatusError)
     {
       show();
 

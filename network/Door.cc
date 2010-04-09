@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [tue apr  6 19:48:07 2010]
+// updated       julien quintard   [fri apr  9 00:30:57 2010]
 //
 
 //
@@ -175,7 +175,7 @@ namespace elle
     {
       Address		address;
 
-      //printf("[XXX] Door::Read(%u)\n", this->socket->bytesAvailable());
+      printf("[XXX] Door::Read(%u)\n", this->socket->bytesAvailable());
 
       enter();
 
@@ -438,12 +438,18 @@ namespace elle
 	  // parcel and its memory.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
+	      Report*	report;
+
+	      // retrieve the report.
+	      if (Report::Instance(report) == StatusError)
+		escape("unable to retrieve the report");
+
 	      // since an error occured, transmit it to the sender
-	      if (this->Send(Inputs<TagError>(report)) == StatusError)
+	      if (this->Send(Inputs<TagError>(*report)) == StatusError)
 		escape("unable to send an error report");
 
 	      // flush the report since it has been sent to the sender.
-	      report.Flush();
+	      report->Flush();
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().

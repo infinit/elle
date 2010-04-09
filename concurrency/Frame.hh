@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Frame.hh
 //
 // created       julien quintard   [tue mar 23 14:19:59 2010]
-// updated       julien quintard   [tue mar 23 17:17:05 2010]
+// updated       julien quintard   [thu apr  8 14:59:09 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FRAME_HH
@@ -18,13 +18,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+#include <elle/core/Natural.hh>
+
+#include <elle/miscellaneous/Byte.hh>
+
+#include <elle/io/Dumpable.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
+  using namespace io;
 
   namespace concurrency
   {
@@ -67,5 +71,12 @@ namespace elle
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/miscellaneous/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 #endif

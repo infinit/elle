@@ -5,50 +5,145 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/misc/Report.cc
+// file          /home/mycure/infinit/elle/miscellaneous/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [tue apr  6 12:54:46 2010]
+// updated       julien quintard   [thu apr  8 22:07:29 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Report.hh>
+#include <elle/miscellaneous/Report.hh>
 
 ///
 /// these includes are placed here in order to prevent pre-processing
 /// conflicts.
 ///
 #include <elle/archive/Archive.hh>
+#include <elle/concurrency/Fiber.hh>
 
 namespace elle
 {
   using namespace core;
 
-  namespace misc
+  namespace miscellaneous
   {
 
 //
-// ---------- globals ---------------------------------------------------------
+// ---------- definitions -----------------------------------------------------
 //
 
     ///
-    /// this global variable represent the report of the current thread.
+    /// this global variable represent the report of the current thread/fiber.
     ///
-    /// it can be dump through something like:
+    Report*		Report::Current = NULL;
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
     ///
-    ///   std::cerr << report << std::endl;
+    /// this method initializes the report by allocating a default
+    /// report object.
     ///
-    /// the report is set as a global variable so that it is accessible from
-    /// everywhere.
+    Status		Report::Initialize()
+    {
+      Callback<const Phase, Fiber*>	govern(&Report::Govern);
+
+      enter();
+
+      // allocate the report for the initial thread/fiber.
+      Report::Current = new Report;
+
+      // register the govern callback to the fiber system.
+      if (Fiber::Register(govern) == StatusError)
+	escape("unable to register the govern callback");
+
+      leave();
+    }
+
     ///
-    /// \todo
-    ///   in order to make the elle library reentrant, report variables would
-    ///   need to be set as per-thread.
+    /// this method cleans the report system.
     ///
-    Report		report;
+    Status		Report::Clean()
+    {
+      enter();
+
+      // delete the report.
+      delete Report::Current;
+
+      leave();
+    }
+
+    ///
+    /// this method returns the current instance of the report.
+    ///
+    Status		Report::Instance(Report*&		report)
+    {
+      enter();
+
+      // return the report.
+      report = Report::Current;
+
+      leave();
+    }
+
+    ///
+    /// this method initializes, saves, restores and cleans the report for
+    /// the given fiber, in other words govern the fiber's environment.
+    ///
+    Status		Report::Govern(const Phase&		phase,
+				       Fiber*&			fiber)
+    {
+      enter();
+
+      // perform an operation depending on the phase.
+      switch (phase)
+	{
+	case PhaseInitialize:
+	  {
+	    // allocate a new report and install it.
+	    Report::Current = new Report;
+
+	    break;
+	  }
+	case PhaseSave:
+	  {
+	    // save the report in the fiber's environment.
+	    if (fiber->environment->Store("report",
+					  Report::Current) == StatusError)
+	      escape("unable to store the report in the environment");
+
+	    // set the pointer to NULL, for safety purposes.
+	    Report::Current = NULL;
+
+	    break;
+	  }
+	case PhaseRestore:
+	  {
+	    // load the report from the environment.
+	    if (fiber->environment->Load("report",
+					 Report::Current) == StatusError)
+	      escape("unable to load the report from the environment");
+
+	    break;
+	  }
+	case PhaseClean:
+	  {
+	    // delete the report.
+	    delete Report::Current;
+
+	    // reinitialize the report to NULL, for safety purposes.
+	    Report::Current = NULL;
+
+	    break;
+	  }
+	}
+
+      leave();
+    }
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -71,14 +166,18 @@ namespace elle
     ///
     Void		Report::Flush()
     {
+      // go through all the remaining items.
       while (this->store.empty() == false)
 	{
 	  Report::Entry*	entry;
 
+	  // retrieve the front item.
 	  entry = this->store.front();
 
+	  // delete the item.
 	  delete entry;
 
+	  // remove it.
 	  this->store.pop_front();
 	}
     }
@@ -126,8 +225,8 @@ namespace elle
       Report::Scoutor	scoutor;
 
       // go through the record and record every message.
-      for (scoutor = report.store.begin();
-	   scoutor != report.store.end();
+      for (scoutor = this->store.begin();
+	   scoutor != this->store.end();
 	   scoutor++)
 	{
 	  Report::Entry*	entry = *scoutor;
@@ -171,17 +270,17 @@ namespace elle
 	  // display the error type.
 	  switch (entry->type)
 	    {
-	    case elle::misc::Report::TypeWarning:
+	    case elle::miscellaneous::Report::TypeWarning:
 	      {
 		std::cout << alignment << Dumpable::Shift << "[Warning] ";
 		break;
 	      }
-	    case elle::misc::Report::TypeError:
+	    case elle::miscellaneous::Report::TypeError:
 	      {
 		std::cout << alignment << Dumpable::Shift << "[Error] ";
 		break;
 	      }
-	    case elle::misc::Report::TypeFailure:
+	    case elle::miscellaneous::Report::TypeFailure:
 	      {
 		std::cout << alignment << Dumpable::Shift << "[Failure] ";
 		break;

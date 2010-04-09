@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.hh
 //
 // created       julien quintard   [fri oct 16 04:10:36 2009]
-// updated       julien quintard   [sat mar 20 03:54:45 2010]
+// updated       julien quintard   [thu apr  8 14:56:04 2010]
 //
 
 #ifndef ELLE_NETWORK_HOST_HH
@@ -19,7 +19,7 @@
 //
 
 #include <elle/core/Core.hh>
-#include <elle/misc/Misc.hh>
+#include <elle/miscellaneous/Miscellaneous.hh>
 #include <elle/archive/Archive.hh>
 #include <elle/io/IO.hh>
 
@@ -48,9 +48,9 @@ namespace elle
     {
     public:
       //
-      // globals
+      // constants
       //
-      static Host		Null;
+      static const Host		Null;
 
       //
       // enumerations

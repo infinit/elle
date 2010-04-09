@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.cc
 //
 // created       julien quintard   [wed feb 18 15:40:40 2009]
-// updated       julien quintard   [sat aug  8 21:44:30 2009]
+// updated       julien quintard   [wed apr  7 22:42:17 2010]
 //
 
 //
@@ -23,7 +23,7 @@ namespace elle
   {
 
 //
-// ---------- definitions -----------------------------------------------------
+// ---------- globals ---------------------------------------------------------
 //
 
     ///

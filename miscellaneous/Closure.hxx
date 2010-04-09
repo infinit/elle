@@ -5,18 +5,18 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Closure.hxx
+// file          /home/mycure/infinit/elle/miscellaneous/Closure.hxx
 //
 // created       julien quintard   [thu mar 25 11:55:10 2010]
 // updated       julien quintard   [tue mar 30 17:03:56 2010]
 //
 
-#ifndef ELLE_MISC_CLOSURE_HXX
-#define ELLE_MISC_CLOSURE_HXX
+#ifndef ELLE_MISCELLANEOUS_CLOSURE_HXX
+#define ELLE_MISCELLANEOUS_CLOSURE_HXX
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //

@@ -22,14 +22,14 @@
 ///
 #include <elle/archive/Archive.hh>
 
-#include <elle/misc/Maid.hh>
-#include <elle/misc/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
+#include <elle/miscellaneous/Report.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace archive
   {

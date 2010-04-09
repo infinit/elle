@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Concurrency.hh
 //
 // created       julien quintard   [sun mar  7 17:14:02 2010]
-// updated       julien quintard   [wed mar 31 21:14:49 2010]
+// updated       julien quintard   [thu apr  8 20:18:00 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CONCURRENCY_HH
@@ -18,11 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
 
   ///
   /// this namespace contains functionalities for concurrency purposes.
@@ -64,5 +64,7 @@ namespace elle
 #include <elle/concurrency/Timer.hh>
 #include <elle/concurrency/Fiber.hh>
 #include <elle/concurrency/Event.hh>
+#include <elle/concurrency/Phase.hh>
+#include <elle/concurrency/Environment.hh>
 
 #endif

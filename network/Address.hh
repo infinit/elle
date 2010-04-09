@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [sat mar 20 03:54:03 2010]
+// updated       julien quintard   [wed apr  7 22:40:08 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -44,7 +44,7 @@ namespace elle
     {
     public:
       //
-      // globals
+      // constants
       //
       static const Address		Null;
 

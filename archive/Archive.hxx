@@ -18,13 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
+#include <elle/miscellaneous/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace archive
   {

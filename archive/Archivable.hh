@@ -18,11 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Status.hh>
+#include <elle/miscellaneous/Status.hh>
 
 namespace elle
 {
-  using namespace misc;
+  using namespace miscellaneous;
 
   namespace archive
   {

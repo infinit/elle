@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.hh
 //
 // created       julien quintard   [wed feb 18 15:20:44 2009]
-// updated       julien quintard   [wed mar 10 20:38:49 2010]
+// updated       julien quintard   [wed apr  7 22:42:23 2010]
 //
 
 #ifndef ELLE_CORE_NULL_HH
@@ -40,7 +40,7 @@ namespace elle
       };
 
 //
-// ---------- declarations ----------------------------------------------------
+// ---------- externs ---------------------------------------------------------
 //
 
     extern Null			none;

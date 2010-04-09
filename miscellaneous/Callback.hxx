@@ -5,18 +5,18 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/misc/Callback.hxx
+// file          /home/mycure/infinit/elle/miscellaneous/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
 // updated       julien quintard   [tue mar 30 17:29:24 2010]
 //
 
-#ifndef ELLE_MISC_CALLBACK_HXX
-#define ELLE_MISC_CALLBACK_HXX
+#ifndef ELLE_MISCELLANEOUS_CALLBACK_HXX
+#define ELLE_MISCELLANEOUS_CALLBACK_HXX
 
 namespace elle
 {
-  namespace misc
+  namespace miscellaneous
   {
 
 //

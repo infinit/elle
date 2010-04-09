@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/misc/Report.hh
+// file          /home/mycure/infinit/elle/miscellaneous/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [tue apr  6 12:46:28 2010]
+// updated       julien quintard   [thu apr  8 20:18:54 2010]
 //
 
-#ifndef ELLE_MISC_REPORT_HH
-#define ELLE_MISC_REPORT_HH
+#ifndef ELLE_MISCELLANEOUS_REPORT_HH
+#define ELLE_MISCELLANEOUS_REPORT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -24,6 +24,8 @@
 #include <elle/archive/Archivable.hh>
 
 #include <elle/io/Dumpable.hh>
+
+#include <elle/concurrency/Phase.hh>
 
 #include <elle/idiom/Close.hh>
 # include <sstream>
@@ -38,10 +40,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace archive;
-  using namespace io;
-
   namespace archive
   {
 
@@ -55,7 +53,25 @@ namespace elle
     class Archive;
   }
 
-  namespace misc
+  namespace concurrency
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Fiber;
+  }
+
+  using namespace core;
+  using namespace archive;
+  using namespace io;
+  using namespace concurrency;
+
+  namespace miscellaneous
   {
 
 //
@@ -117,6 +133,22 @@ namespace elle
       typedef Container::const_iterator		Scoutor;
 
       //
+      // static methods
+      //
+      static Status	Initialize();
+      static Status	Clean();
+
+      static Status	Instance(Report*&);
+
+      static Status	Govern(const Phase&,
+			       Fiber*&);
+
+      //
+      // static attributes
+      //
+      static Report*	Current;
+
+      //
       // constructors & destructors
       //
       ~Report();
@@ -151,12 +183,6 @@ namespace elle
       //
       Container		store;
     };
-
-//
-// ---------- externs ---------------------------------------------------------
-//
-
-    extern Report	report;
 
   }
 }

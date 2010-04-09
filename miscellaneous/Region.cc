@@ -5,31 +5,31 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/misc/Region.cc
+// file          /home/mycure/infinit/elle/miscellaneous/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [fri apr  2 11:43:31 2010]
+// updated       julien quintard   [wed apr  7 05:11:49 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/misc/Region.hh>
+#include <elle/miscellaneous/Region.hh>
 
 ///
 /// these includes are placed here in order to prevent pre-processing
 /// conflicts.
 ///
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
+#include <elle/miscellaneous/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace misc;
+  using namespace miscellaneous;
 
-  namespace misc
+  namespace miscellaneous
   {
 
 //
@@ -425,7 +425,7 @@ namespace std
   /// this operator renders a region.
   ///
   std::ostream&		operator<<(std::ostream&		stream,
-				   const elle::misc::Region&	element)
+				   const elle::miscellaneous::Region&	element)
   {
     elle::core::Natural64	i;
 

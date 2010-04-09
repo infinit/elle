@@ -21,8 +21,8 @@
 /// these includes are placed here in order to prevent pre-processing
 /// conflicts.
 ///
-#include <elle/misc/Report.hh>
-#include <elle/misc/Maid.hh>
+#include <elle/miscellaneous/Report.hh>
+#include <elle/miscellaneous/Maid.hh>
 
 #include <elle/idiom/Open.hh>
 
