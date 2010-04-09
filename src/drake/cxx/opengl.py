@@ -17,13 +17,14 @@ class OpenGL:
             if platform.system() == 'Darwin':
                 test_framework += [prefix]
 
+        searched_file = 'glext.h'
         for path in test:
 
             p = Path(path)
             if not p.absolute:
                 p = srctree() / p
 
-            if (p / 'include/GL/gl.hh').exists():
+            if (p / 'include/GL' / searched_file).exists():
 
                 self.prefix = path
 
@@ -41,7 +42,7 @@ class OpenGL:
                 if not p.absolute:
                     p = srctree() / p
 
-                if (p / 'Headers/gl.h').exists():
+                if (p / 'Headers' / searched_file).exists():
 
                     self.prefix = p
                     self.cfg = Config()
@@ -51,7 +52,7 @@ class OpenGL:
 
                     return
 
-        raise Exception('unable to find gl.h in %s' % ', '.join(test + test_framework))
+        raise Exception('unable to find %s in %s' % (searched_file, ', '.join(test + test_framework)))
 
     def config(self):
 
