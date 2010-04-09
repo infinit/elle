@@ -27,6 +27,7 @@ class Path:
             self.path = path
         elif path.__class__ == Path:
             self.path = clone(path.path)
+            self.absolute = path.absolute
         else:
             assert path
             if platform.system() == 'Windows':
