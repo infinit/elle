@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue apr  6 21:48:22 2010]
+// updated       julien quintard   [wed apr  7 19:36:50 2010]
 //
 
 //
@@ -43,13 +43,9 @@ namespace etoile
     {
       enter();
 
-      printf("[XXX] Token::Update() BROKEN\n");
-
       // encrypt the given secret key with the given public key.
-      /* XXX[je comprends pas comment ca peut etre un Plain???]
-      if (K.Encrypt(key, *this->code) == StatusError)
+      if (K.Encrypt(key, *this) == StatusError)
 	escape("unable to encrypt the key");
-      */
 
       leave();
     }

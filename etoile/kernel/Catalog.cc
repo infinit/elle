@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [tue apr  6 23:25:08 2010]
+// updated       julien quintard   [wed apr  7 20:56:36 2010]
 //
 
 //
@@ -36,6 +36,9 @@ namespace etoile
       // add the entry in the set.
       if (this->set.Add(entry) == StatusError)
 	escape("unable to add the entry in the set");
+
+      // set the object as dirty.
+      this->state = StateDirty;
 
       leave();
     }
@@ -125,6 +128,9 @@ namespace etoile
       if (this->set.Remove(name) == StatusError)
 	escape("unable to remove the entry");
 
+      // set the object as dirty.
+      this->state = StateDirty;
+
       leave();
     }
 
@@ -144,6 +150,9 @@ namespace etoile
 
       // modify the name.
       entry->name = to;
+
+      // set the object as dirty.
+      this->state = StateDirty;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [tue apr  6 16:17:58 2010]
+// updated       julien quintard   [wed apr  7 17:24:09 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -92,6 +92,7 @@ namespace etoile
 
       // directory
       TagDirectoryLoad,
+      TagDirectoryCreate,
       TagDirectoryExist,
       TagDirectoryLookup,
       TagDirectoryEntry,
@@ -154,6 +155,8 @@ inward(::etoile::TagObjectStore,
 // directory
 inward(::etoile::TagDirectoryLoad,
        parameters(const ::etoile::path::Way));
+inward(::etoile::TagDirectoryCreate,
+       parameters(const ::etoile::path::Way));
 inward(::etoile::TagDirectoryExist,
        parameters(const ::etoile::context::Identifier,
 		  const ::etoile::path::Slice));
@@ -174,7 +177,7 @@ inward(::etoile::TagDirectoryRename,
 		  const ::etoile::path::Slice));
 inward(::etoile::TagDirectoryStore,
        parameters(const ::etoile::context::Identifier));
-// XXX + create/lock/release
+// XXX + lock/release
 
 // access
 inward(::etoile::TagAccessExist,

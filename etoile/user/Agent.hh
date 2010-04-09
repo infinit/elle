@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [thu apr  1 03:21:45 2010]
+// updated       julien quintard   [fri apr  9 01:40:39 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -267,5 +267,6 @@ namespace etoile
 //
 
 #include <etoile/user/Client.hh>
+#include <etoile/user/User.hh>
 
 #endif

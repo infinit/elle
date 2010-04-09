@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [tue apr  6 23:26:41 2010]
+// updated       julien quintard   [wed apr  7 21:34:00 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -140,6 +140,12 @@ namespace etoile
 		  0,
 		  fingerprint) == StatusError)
 	      escape("unable to update the object's data section");
+
+	    // release the contents's memory.
+	    delete context->contents;
+
+	    // reset the pointer.
+	    context->contents = NULL;
 	  }
 	else
 	  {
@@ -166,8 +172,7 @@ namespace etoile
 	      escape("unable to bind the contents");
 
 	    // record the contents so that it is published.
-	    if (context->bucket.Record(
-		  context->contents) == StatusError)
+	    if (context->bucket.Record(context->contents) == StatusError)
 	      escape("unable to record the contents block in the bucket");
 
 	    // update the object data section.
@@ -177,21 +182,24 @@ namespace etoile
 		  size,
 		  fingerprint) == StatusError)
 	      escape("unable to update the object data section");
+
+	    // set the contents as clean.
+	    context->contents->content->state = kernel::StateClean;
+
+	    //
+	    // finally, since the data has been re-encrypted, the key must be
+	    // distributed to the users having been granted the read
+	    // permission.
+	    //
+
+	    // open the access.
+	    if (Access::Open(context) == StatusError)
+	      escape("unable to open the access");
+
+	    // upgrade the access entries with the new key.
+	    if (Access::Upgrade(context, key) == StatusError)
+	      escape("unable to upgrade the accesses");
 	  }
-      }
-
-      //
-      // finally, since the data has been re-encrypted, the key must be
-      // distributed to the users having been granted the read permission.
-      //
-      {
-	// open the access.
-	if (Access::Open(context) == StatusError)
-	  escape("unable to open the access");
-
-	// upgrade the access entries with the new key.
-	if (Access::Upgrade(context, key) == StatusError)
-	  escape("unable to upgrade the accesses");
       }
 
       leave();

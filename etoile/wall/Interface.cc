@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [tue apr  6 16:16:12 2010]
+// updated       julien quintard   [wed apr  7 17:24:21 2010]
 //
 
 //
@@ -68,6 +68,9 @@ namespace etoile
       // directory
       InterfaceRegister(::etoile::TagDirectoryLoad,
 			Directory::Load,
+			parameters(const path::Way));
+      InterfaceRegister(::etoile::TagDirectoryCreate,
+			Directory::Create,
 			parameters(const path::Way));
       InterfaceRegister(::etoile::TagDirectoryExist,
 			Directory::Exist,

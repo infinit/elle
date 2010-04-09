@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [tue apr  6 19:03:34 2010]
+// updated       julien quintard   [fri apr  9 01:16:10 2010]
 //
 
 //
@@ -92,6 +92,8 @@ namespace etoile
     ///
     Status		Wall::Error(const Report&		report)
     {
+      enter();
+
       printf("[XXX] Wall::Error\n");
 
       // XXX only dump if agent
@@ -100,7 +102,7 @@ namespace etoile
       // dump the report.
       report.Dump();
 
-      enter();
+      leave();
     }
 
     ///
@@ -110,16 +112,21 @@ namespace etoile
     ///
     Status		Wall::Identify(const PublicKey&		K)
     {
+      Session*		session;
       Code		code;
       user::Guest*	guest;
       user::Agent*	agent;
       user::Client*	client;
-      user::User*	user;
+      user::Client*	c;
 
       enter(instance(agent),
 	    instance(client));
 
       printf("[XXX] Wall::Identify()\n");
+
+      // retrieve the session.
+      if (Session::Instance(session) == StatusError)
+	escape("unable to retrieve the instance of the session");
 
       // retrieve the guest.
       if (user::Guest::Retrieve((Channel*)session->socket,
@@ -158,20 +165,16 @@ namespace etoile
       if (client->Record(agent) == StatusError)
 	escape("unable to record the agent");
 
-      // assign the client as being the current user.
-      if (user::User::Assign(client) == StatusError)
-	escape("unable to assign the current user");
-
-      // retrieve the current user.
-      if (user::User::Instance(user) == StatusError)
-	escape("unable to load the current user");
-
       // stop tracking the agent;
       waive(agent);
 
       // register the client.
       if (user::Client::Add(client) == StatusError)
 	escape("unable to add the client");
+
+      // assign the client to the variable in order not to lose track
+      // of it.
+      c = client;
 
       // stop tracking the client.
       waive(client);
@@ -181,16 +184,14 @@ namespace etoile
 	escape("unable to destroy the guest");
 
       // encrypts the phrase with the user's public key.
-      if (user->agent->K.Encrypt(user->client->phrase,
-				 code) == StatusError)
+      if (c->agent->K.Encrypt(c->phrase,
+			      code) == StatusError)
 	escape("unable to encrypt the phrase");
 
       // send the challenge to the agent.
-      if (user->agent->channel->Reply(
+      if (c->agent->channel->Reply(
             Inputs<TagWallChallenge>(code)) == StatusError)
 	escape("unable to send the challenge to the agent");
-
-      printf("[/XXX] Wall::Identify()\n");
 
       leave();
     }
@@ -237,8 +238,6 @@ namespace etoile
       if (user->agent->channel->Reply(Inputs<TagOk>()) == StatusError)
 	escape("unable to acknowledge the authentication");
 
-      printf("[/XXX] Wall::Authenticate()\n");
-
       leave();
     }
 
@@ -250,14 +249,20 @@ namespace etoile
     ///
     Status		Wall::Connect(const String&		phrase)
     {
+      Session*			session;
       user::Application*	application;
       user::Client*		client;
       user::Guest*		guest;
       user::User*		user;
+      user::Application*	a;
 
       enter(instance(application));
 
       printf("[XXX] Wall::Connect()\n");
+
+      // retrieve the session.
+      if (Session::Instance(session) == StatusError)
+	escape("unable to retrieve the instance of the session");
 
       // retrieve the guest.
       if (user::Guest::Retrieve((Channel*)session->socket,
@@ -292,6 +297,10 @@ namespace etoile
       if (client->Add(application) == StatusError)
 	escape("unable to add the application");
 
+      // keep an eye on the application by copying its reference to
+      // the user variable
+      a = application;
+
       // waive the tracking.
       waive(application);
 
@@ -299,19 +308,9 @@ namespace etoile
       if (user::Guest::Remove(guest) == StatusError)
 	escape("unable to destroy the guest");
 
-      // assign the client as being the current user.
-      if (user::User::Assign(client) == StatusError)
-	escape("unable to assign the current user");
-
-      // retrieve the current user.
-      if (user::User::Instance(user) == StatusError)
-	escape("unable to load the current user");
-
       // acknowledge the connection.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (a->channel->Reply(Inputs<TagOk>()) == StatusError)
 	escape("unable to acknowledge the connection");
-
-      printf("[/XXX] Wall::Connect()\n");
 
       leave();
     }

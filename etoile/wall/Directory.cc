@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [tue apr  6 23:22:41 2010]
+// updated       julien quintard   [wed apr  7 20:46:12 2010]
 //
 
 //
@@ -27,7 +27,7 @@ namespace etoile
 //
 
     ///
-    /// this method loads the object and creates a new context.
+    /// this method loads the directory and creates a new context.
     ///
     Status		Directory::Load(const
 					  path::Way&		way)
@@ -55,9 +55,9 @@ namespace etoile
       if (context->route.Create(way) == StatusError)
 	escape("unable to create a route");
 
-      // resolve the route in an object address.
+      // resolve the route in a directory address.
       if (path::Path::Resolve(context->route, context->address) == StatusError)
-	escape("unable to resolve the given route into an object's address");
+	escape("unable to resolve the given route into an directory address");
 
       // load the directory in the given context.
       if (components::Directory::Load(context,
@@ -87,15 +87,76 @@ namespace etoile
     /// this method creates a subdirector in the given directory.
     ///
     Status		Directory::Create(const
-					    context::Identifier& identifier,
-					  const
-					    path::Slice&	path)
+					    path::Way&		way)
     {
-      enter();
+      path::Slice		name;
+      path::Way			path(way, name);
+      context::Directory*	directory;
+      context::Directory*	subdirectory;
+      context::Identifier	identifier;
+      user::User*		user;
+
+      enter(instance(directory),
+	    instance(subdirectory));
 
       printf("[XXX] Directory::Create()\n");
 
-      // XXX
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the user is an application..
+      if (user->type != user::User::TypeApplication)
+	escape("non-applications cannot authenticate");
+
+      // allocate a new context.
+      directory = new context::Directory;
+
+      // create a route from the path way.
+      if (directory->route.Create(path) == StatusError)
+	escape("unable to create a route");
+
+      // resolve the route in a directory address.
+      if (path::Path::Resolve(directory->route,
+			      directory->address) == StatusError)
+	escape("unable to resolve the given route into an directory address");
+
+      // load the parent directory in the context.
+      if (components::Directory::Load(directory,
+				      directory->address) == StatusError)
+	escape("unable to load the directory in the given context");
+
+      // allocate the subdirectory context.
+      subdirectory = new context::Directory;
+
+      // request the directory component to create the subdirectory.
+      if (components::Directory::Create(directory,
+					name,
+					subdirectory) == StatusError)
+	escape("unable to create the subdirectory");
+
+      // store the parent directory.
+      if (components::Directory::Store(directory) == StatusError)
+	escape("unable to store the parent directory");
+
+      // waive the parent context.
+      waive(directory);
+
+      // generate an identifier.
+      if (identifier.Generate() == StatusError)
+	escape("unable to generate an identifier");
+
+      // store the context in the container.
+      if (context::Context::Add(identifier, subdirectory) == StatusError)
+	escape("unable to store the context");
+
+      // waive the child context.
+      waive(subdirectory);
+
+      // return the context identifier to the caller.
+      if (user->application->channel->Reply(
+	    Inputs<TagIdentifier>(identifier)) == StatusError)
+	escape("unable to reply to the application");
 
       leave();
     }
@@ -164,7 +225,7 @@ namespace etoile
 
       // retrieve the context.
       if (context::Context::Retrieve(identifier, context) == StatusError)
-	escape("unable to retrieve the object context");
+	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
       if ((context->format & context::FormatDirectory) !=
@@ -211,7 +272,7 @@ namespace etoile
 
       // retrieve the context.
       if (context::Context::Retrieve(identifier, context) == StatusError)
-	escape("unable to retrieve the object context");
+	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
       if ((context->format & context::FormatDirectory) !=
@@ -261,7 +322,7 @@ namespace etoile
 
       // retrieve the context.
       if (context::Context::Retrieve(identifier, context) == StatusError)
-	escape("unable to retrieve the object context");
+	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
       if ((context->format & context::FormatDirectory) !=
@@ -310,7 +371,7 @@ namespace etoile
 
       // retrieve the context.
       if (context::Context::Retrieve(identifier, context) == StatusError)
-	escape("unable to retrieve the object context");
+	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
       if ((context->format & context::FormatDirectory) !=
@@ -354,7 +415,7 @@ namespace etoile
 
       // retrieve the context.
       if (context::Context::Retrieve(identifier, context) == StatusError)
-	escape("unable to retrieve the object context");
+	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
       if ((context->format & context::FormatDirectory) !=

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [tue apr  6 14:48:59 2010]
+// updated       julien quintard   [wed apr  7 05:20:17 2010]
 //
 
 //
@@ -109,10 +109,20 @@ namespace etoile
 	{
 	  context::Directory	context;
 	  kernel::Entry*	entry;
+	  Boolean		boolean;
 
 	  // load the directory referenced by address.
 	  if (components::Directory::Load(&context, address) == StatusError)
 	    escape("unable to load one of the route's directories");
+
+	  // check if the entry exist
+	  if (components::Directory::Exist(&context,
+					   *scoutor,
+					   boolean) == StatusError)
+	    escape("unable to check if the name exist");
+
+	  if (boolean == false)
+	    escape("the path does not seem to exist");
 
 	  // look up for the name.
 	  if (components::Directory::Lookup(&context,

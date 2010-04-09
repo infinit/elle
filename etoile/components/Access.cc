@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [tue apr  6 22:47:28 2010]
+// updated       julien quintard   [wed apr  7 21:32:38 2010]
 //
 
 //
@@ -495,10 +495,6 @@ namespace etoile
     {
       enter();
 
-      // open the access.
-      if (Access::Open(context) == StatusError)
-	escape("unable to open the access");
-
       // upgrate the access block records.
       if (context->access->Upgrade(key) == StatusError)
 	escape("unable to upgrade the access records");
@@ -582,6 +578,12 @@ namespace etoile
 		context->object->meta.owner.permissions,
 		context->object->meta.owner.token) == StatusError)
 	    escape("unable to update the object's meta section");
+
+	  // release the context access object.
+	  delete context->access;
+
+	  // reset the pointer.
+	  context->access = NULL;
 	}
       else
 	{
@@ -607,6 +609,9 @@ namespace etoile
 		context->object->meta.owner.permissions,
 		context->object->meta.owner.token) == StatusError)
 	    escape("unable to update the object's meta section");
+
+	  // set the state as clean.
+	  context->access->state = kernel::StateClean;
 	}
 
       leave();

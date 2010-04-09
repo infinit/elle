@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [tue apr  6 13:19:15 2010]
+// updated       julien quintard   [fri apr  9 11:25:26 2010]
 //
 
 //
@@ -65,9 +65,10 @@ namespace etoile
     ///
     Status		Object::Store(context::Object*		context)
     {
+      user::User*	user;
+
       enter();
 
-      /* XXX
       // load the current user.
       if (user::User::Instance(user) == StatusError)
 	escape("unable to load the current user");
@@ -81,7 +82,8 @@ namespace etoile
 	  (context->object->meta.state != kernel::StateClean))
 	{
 	  // seal the object.
-	  if (context->object->Seal(*user->client->agent) == StatusError)
+	  if (context->object->Seal(*user->client->agent,
+				    context->access) == StatusError)
 	    escape("unable to seal the object");
 
 	  // record the object in the bucket.
@@ -93,7 +95,6 @@ namespace etoile
       // record the context in the journal.
       if (journal::Journal::Record(context) == StatusError)
 	escape("unable to the context");
-      */
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Set.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [tue apr  6 15:44:26 2010]
+// updated       julien quintard   [wed apr  7 20:55:47 2010]
 //
 
 //

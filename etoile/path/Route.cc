@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [wed apr  7 00:58:05 2010]
+// updated       julien quintard   [wed apr  7 19:00:55 2010]
 //
 
 //
@@ -60,6 +60,27 @@ namespace etoile
 
       leave();
     }
+
+    ///
+    /// this method creates a route by appending a name to an existing route.
+    ///
+    Status		Route::Create(const Route&		route,
+				      const Slice&		name)
+    {
+      enter();
+
+      // copy the elements.
+      this->elements = route.elements;
+
+      // add the name.
+      this->elements.push_back(name);
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
 
     ///
     /// this method dumps a route.

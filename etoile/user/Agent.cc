@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [tue apr  6 19:00:44 2010]
+// updated       julien quintard   [fri apr  9 02:11:28 2010]
 //
 
 //
@@ -155,7 +155,13 @@ namespace etoile
 				    Signature&			signature)
       const
     {
+      User*		user;
+
       enter();
+
+      // retrieve the user.
+      if (User::Instance(user) == StatusError)
+	escape("unable to retrieve the instance of the current user");
 
       // check if the user is authenticated.
       if (this->state != Agent::StateAuthenticated)

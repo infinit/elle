@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [mon apr  5 22:59:40 2010]
+// updated       julien quintard   [fri apr  9 02:32:55 2010]
 //
 
 //
@@ -226,7 +226,7 @@ namespace etoile
     /// this method seals the data and meta data by signing them.
     ///
     Status		Object::Seal(const user::Agent&		agent,
-				     const Access&		access)
+				     const Access*		access)
     {
       enter();
 
@@ -256,6 +256,7 @@ namespace etoile
       // re-sign the meta data if required.
       if (this->meta.state == StateDirty)
 	{
+
 	  // increase the meta version.
 	  this->meta.version += 1;
 
@@ -272,12 +273,16 @@ namespace etoile
 	      // access records is computed which is then included in
 	      // the meta signature.
 	      //
-
 	      Digest	fingerprint;
+
+	      // test if there is an access block.
+	      if (access == NULL)
+		escape("the Seal() method must take the object's "
+		       "access block");
 
 	      // compute the fingerprint of the access (subject, permissions)
 	      // tuples.
-	      if (access.Fingerprint(fingerprint) == StatusError)
+	      if (access->Fingerprint(fingerprint) == StatusError)
 		escape("unable to compute the access block fingerprint");
 
 	      // sign the meta data, making sure to include the access
@@ -328,7 +333,7 @@ namespace etoile
     /// the data signature.
     ///
     Status		Object::Validate(const hole::Address&	address,
-					 const Access&		access)
+					 const Access*		access)
       const
     {
       const PublicKey*	author;
@@ -356,9 +361,13 @@ namespace etoile
 	  {
 	    Digest	fingerprint;
 
+	    // test if there is an access block.
+	    if (access == NULL)
+	      escape("the Seal() method must take the object's access block");
+
 	    // compute the fingerprint of the access (subject, permissions)
 	    // tuples.
-	    if (access.Fingerprint(fingerprint) == StatusError)
+	    if (access->Fingerprint(fingerprint) == StatusError)
 	      escape("unable to compute the access block fingerprint");
 
 	    // verify the meta part, including the access fingerprint.
@@ -477,7 +486,7 @@ namespace etoile
 
       std::cout << alignment << Dumpable::Shift << Dumpable::Shift
 		<< Dumpable::Shift << "[Permissions] "
-		<< this->meta.owner.permissions << std::endl;
+		<< (Natural32)this->meta.owner.permissions << std::endl;
 
       if (this->meta.owner.token.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta owner's token");
@@ -494,8 +503,6 @@ namespace etoile
       if (this->meta.stamp.Dump(margin + 8) == StatusError)
 	escape("unable to dump the meta stamp");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		<< "[Attributes]" << std::endl;
       if (this->meta.attributes.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta attributess");
 

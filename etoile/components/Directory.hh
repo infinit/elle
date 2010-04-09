@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [tue apr  6 14:46:58 2010]
+// updated       julien quintard   [wed apr  7 18:30:17 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -50,8 +50,8 @@ namespace etoile
       static Status	Load(context::Directory*,
 			     const hole::Address&);
       static Status	Create(context::Directory*,
-			       context::Directory*,
-			       const path::Slice&);
+			       const path::Slice&,
+			       context::Directory*);
       static Status	Exist(context::Directory*,
 			      const path::Slice&,
 			      Boolean&);

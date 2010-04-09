@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [wed apr  7 01:01:33 2010]
+// updated       julien quintard   [wed apr  7 18:34:10 2010]
 //
 
 //
@@ -53,19 +53,19 @@ namespace etoile
     /// this constructor creates a way but returns the last element of the path
     /// in _name_.
     ///
-    Way::Way(const String&					path,
-	     String&						name):
-      path(path, 0, path.find_last_of(System::Path::Separator))
+    Way::Way(const Way&						way,
+	     Slice&						name):
+      path(way.path, 0, way.path.find_last_of(System::Path::Separator))
     {
       Length	start;
       Length	end;
 
       // compute the offsets.
-      end = path.find_last_of(System::Path::Separator);
-      start = path.find_first_not_of(System::Path::Separator, end);
+      end = way.path.find_last_of(System::Path::Separator);
+      start = way.path.find_first_not_of(System::Path::Separator, end);
 
       // compute name.
-      name.assign(path.substr(start, name.npos));
+      name.assign(way.path.substr(start, name.npos));
     }
 
 //

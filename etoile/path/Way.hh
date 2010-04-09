@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.hh
 //
 // created       julien quintard   [tue mar 30 23:31:29 2010]
-// updated       julien quintard   [wed apr  7 00:53:13 2010]
+// updated       julien quintard   [wed apr  7 18:34:26 2010]
 //
 
 #ifndef ETOILE_PATH_WAY_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <etoile/path/Length.hh>
+#include <etoile/path/Slice.hh>
 
 namespace etoile
 {
@@ -45,8 +46,8 @@ namespace etoile
       Way();
       Way(const Way&);
       Way(const String&);
-      Way(const String&,
-	  String&);
+      Way(const Way&,
+	  Slice&);
 
       //
       // methods

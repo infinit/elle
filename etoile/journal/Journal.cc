@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [tue apr  6 12:13:53 2010]
+// updated       julien quintard   [fri apr  9 11:25:31 2010]
 //
 
 //
@@ -99,6 +99,8 @@ namespace etoile
 				     hole::Block*&		block)
     {
       enter();
+
+      printf("[XXX] Journal::Get() NYI\n");
 
       // XXX
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [wed mar 31 15:36:24 2010]
+// updated       julien quintard   [wed apr  7 19:22:54 2010]
 //
 
 //
@@ -153,8 +153,10 @@ namespace etoile
 	escape("unable to bind the block");
 
       // verify the block's validity.
-      if (block->Validate(address) != StatusTrue)
-	escape("unable to validate the retrieved block");
+      //if (block->Validate(address) != StatusTrue)
+      //escape("unable to validate the retrieved block");
+      // XXX probleme ici c'est que si c'est un object il faut faire
+      // Validate(address, access) avec access etant le block d'access :(
 
       true();
     }

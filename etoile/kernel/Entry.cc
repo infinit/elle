@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Entry.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [fri apr  2 13:51:03 2010]
+// updated       julien quintard   [wed apr  7 19:49:12 2010]
 //
 
 //
@@ -63,7 +63,7 @@ namespace etoile
 		<< this->name << std::endl;
 
       // dump the address.
-      if (this->address.Dump(margin + 4) == StatusError)
+      if (this->address.Dump(margin + 2) == StatusError)
 	escape("unable to dump the token");
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [tue apr  6 14:43:43 2010]
+// updated       julien quintard   [wed apr  7 17:23:58 2010]
 //
 
 #ifndef ETOILE_WALL_DIRECTORY_HH
@@ -48,8 +48,7 @@ namespace etoile
       // static methods
       //
       static Status	Load(const path::Way&);
-      static Status	Create(const context::Identifier&,
-			       const path::Slice&);
+      static Status	Create(const path::Way&);
       static Status	Lock(const context::Identifier&);
       static Status	Release(const context::Identifier&);
       static Status	Exist(const context::Identifier&,
@@ -63,6 +62,7 @@ namespace etoile
 			       const path::Slice&,
 			       const path::Slice&);
       static Status	Store(const context::Identifier&);
+      static Status	Destroy(const context::Identifier&); // XXX
     };
 
   }

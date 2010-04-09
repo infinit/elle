@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.hh
 //
 // created       julien quintard   [thu mar 11 16:05:28 2010]
-// updated       julien quintard   [thu apr  1 03:09:02 2010]
+// updated       julien quintard   [thu apr  8 20:27:47 2010]
 //
 
 #ifndef ETOILE_USER_USER_HH
@@ -48,6 +48,7 @@ namespace etoile
     ///
     /// XXX expliquer tout le bordel
     ///
+    ///
     class User:
       public Dumpable
     {
@@ -70,7 +71,8 @@ namespace etoile
 
       static Status	Instance(User*&);
 
-      static Status	Assign(Client*);
+      static Status	Govern(const Phase&,
+			       Fiber*&);
 
       //
       // static attribute
@@ -83,6 +85,11 @@ namespace etoile
       User();
 
       //
+      // methods
+      //
+      Status		Create(Client*);
+
+      //
       // interfaces
       //
 
@@ -92,7 +99,7 @@ namespace etoile
       //
       // attributes
       //
-      Socket*		socket;
+      Session*		session;
 
       Client*		client;
 

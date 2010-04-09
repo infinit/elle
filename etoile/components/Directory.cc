@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [tue apr  6 23:24:55 2010]
+// updated       julien quintard   [wed apr  7 20:56:42 2010]
 //
 
 //
@@ -50,14 +50,42 @@ namespace etoile
     ///
     /// this method creates a sub-directory in the given directory.
     ///
-    Status		Directory::Create(context::Directory*	context,
-					  context::Directory*	directory,
-					  const path::Slice&	name)
+    Status		Directory::Create(context::Directory*	directory,
+					  const path::Slice&	name,
+					  context::Directory*	subdirectory)
     {
+      user::User*	user;
+
       enter();
 
-      // XXX create new directory object, Bind the object -> address,
-      // Directory::Add(directory, name, address).
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // set the context route based on the parent directory route.
+      if (subdirectory->route.Create(directory->route, name) == StatusError)
+	escape("unable to set the subdirectory route");
+
+      // allocate a new directory object.
+      subdirectory->object = new kernel::Object;
+
+      // create the subdirectory.
+      if (subdirectory->object->Create(kernel::GenreDirectory,
+				       user->client->agent->K) == StatusError)
+	escape("unable to create the subdirectory object");
+
+      // bind the object.
+      if (subdirectory->object->Bind() == StatusError)
+	escape("unable to bind the object");
+
+      // set the address.
+      subdirectory->address = subdirectory->object->address;
+
+      // add the tuple (name, address) to the parent directory.
+      if (Directory::Add(directory,
+			 name,
+			 subdirectory->address) == StatusError)
+	escape("unable to add the entry to the parent directory");
 
       leave();
     }
@@ -80,6 +108,10 @@ namespace etoile
       // check if the current user has the right the read the catalog.
       if (!(context->rights->permissions & kernel::PermissionRead))
 	escape("unable to perform the operation without the permission");
+
+      // open the contents.
+      if (Contents::Open(context) == StatusError)
+	escape("unable to open the contents");
 
       // check the directory.
       status = context->contents->content->Exist(name);
@@ -169,8 +201,8 @@ namespace etoile
     /// this method adds a directory entry to the directory.
     ///
     Status		Directory::Add(context::Directory*	context,
-				     const path::Slice&		name,
-				     const hole::Address&	address)
+				       const path::Slice&	name,
+				       const hole::Address&	address)
     {
       kernel::Entry*	entry;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [mon apr  5 23:01:38 2010]
+// updated       julien quintard   [wed apr  7 19:27:25 2010]
 //
 
 //
@@ -161,7 +161,7 @@ namespace etoile
       std::cout << alignment << "[Author]" << std::endl;
 
       std::cout << alignment << Dumpable::Shift << "[Role] "
-		<< this->role << std::endl;
+		<< (Natural32)this->role << std::endl;
 
       if (this->proof != NULL)
 	{

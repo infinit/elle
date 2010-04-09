@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.cc
 //
 // created       julien quintard   [thu mar  4 12:39:12 2010]
-// updated       julien quintard   [thu apr  1 03:15:46 2010]
+// updated       julien quintard   [fri apr  9 02:11:42 2010]
 //
 
 //
@@ -23,7 +23,7 @@ namespace etoile
   {
 
 //
-// ---------- definitions -----------------------------------------------------
+// ---------- globals ---------------------------------------------------------
 //
 
     ///
@@ -39,10 +39,58 @@ namespace etoile
     /// default constructor.
     ///
     User::User():
-      socket(NULL),
+      session(NULL),
       client(NULL),
       type(User::TypeUnknown)
     {
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method creates a user based on the given client.
+    ///
+    Status		User::Create(Client*			client)
+    {
+      Session*		session;
+
+      enter();
+
+      // retrieve the session.
+      if (Session::Instance(session) == StatusError)
+	escape("unable to retrieve the session");
+
+      // set the client.
+      this->client = client;
+
+      // assign the type and agent/application pointers.
+      if (session->socket == this->client->agent->channel)
+	{
+	  // set the type.
+	  this->type = User::TypeAgent;
+
+	  // set the agent.
+	  this->agent = this->client->agent;
+	}
+      else
+	{
+	  // set the type.
+	  this->type = User::TypeApplication;
+
+	  // set the application.
+	  if (this->client->Retrieve(
+                static_cast<Channel*>(session->socket),
+		this->application) == StatusError)
+	    escape("unable to retrieve the application belonging "
+		   "to the client");
+	}
+
+      // set the session;
+      this->session = session;
+
+      leave();
     }
 
 //
@@ -60,9 +108,9 @@ namespace etoile
 
       std::cout << alignment << "[User] " << std::hex << this << std::endl;
 
-      // dump the socket.
-      std::cout << alignment << Dumpable::Shift << "[Socket] "
-		<< std::hex << this->socket << std::endl;
+      // dump the session.
+      if (this->session->Dump(margin + 2) == StatusError)
+	escape("unable to dump the session");
 
       // dump the client.
       std::cout << alignment << Dumpable::Shift << "[Client] "
@@ -103,10 +151,9 @@ namespace etoile
     ///
     Status		User::Initialize()
     {
-      enter();
+      Callback<const Phase, Fiber*>	govern(&User::Govern);
 
-      // allocate the user.
-      User::Current = new User;
+      enter();
 
       // initialize the client.
       if (Client::Initialize() == StatusError)
@@ -119,6 +166,10 @@ namespace etoile
       // initialize the guest.
       if (Guest::Initialize() == StatusError)
 	escape("unable to initialize the guest");
+
+      // register the callback to the fiber system.
+      if (Fiber::Register(govern) == StatusError)
+	escape("unable to register the govern callback");
 
       leave();
     }
@@ -143,9 +194,6 @@ namespace etoile
       if (Client::Clean() == StatusError)
 	escape("unable to clean the client");
 
-      // release the user.
-      delete User::Current;
-
       leave();
     }
 
@@ -155,11 +203,17 @@ namespace etoile
     ///
     Status		User::Instance(User*&			user)
     {
+      Session*		session;
+
       enter();
+
+      // retrieve the session.
+      if (Session::Instance(session) == StatusError)
+	escape("unable to retrieve the session");
 
       // if the currently loaded user does not corresponds to the
       // session, load it.
-      if (User::Current->socket != session->socket)
+      if (User::Current->session != session)
 	{
 	  Client*	client;
 
@@ -173,7 +227,7 @@ namespace etoile
 	    escape("unablt to retrive the client from the session's socket");
 
 	  // create the user.
-	  if (User::Current->Assign(client) == StatusError)
+	  if (User::Current->Create(client) == StatusError)
 	    escape("unable to assign the user");
 	}
       else
@@ -188,39 +242,56 @@ namespace etoile
     }
 
     ///
-    /// this method creates a user based on the given client.
+    /// this method initializes, saves, restores and cleans the user
+    /// associated with the current fiber.
     ///
-    Status		User::Assign(Client*			client)
+    Status		User::Govern(const Phase&		phase,
+				     Fiber*&			fiber)
     {
       enter();
 
-      // set the client.
-      User::Current->client = client;
-
-      // assign the type and agent/application pointers.
-      if (session->socket == User::Current->client->agent->channel)
+      // perform an operation depending on the phase.
+      switch (phase)
 	{
-	  // set the type.
-	  User::Current->type = User::TypeAgent;
+	case PhaseInitialize:
+	  {
+	    // allocate a new user.
+	    User::Current = new User;
 
-	  // set the agent.
-	  User::Current->agent = User::Current->client->agent;
+	    break;
+	  }
+	case PhaseSave:
+	  {
+	    // save the user in the fiber's environment.
+	    if (fiber->environment->Store("user",
+					  User::Current) == StatusError)
+	      escape("unable to store the user in the environment");
+
+	    // set the pointer to NULL, for safety purposes.
+	    User::Current = NULL;
+
+	    break;
+	  }
+	case PhaseRestore:
+	  {
+	    // restore the user from the fiber's environment.
+	    if (fiber->environment->Load("user",
+					 User::Current) == StatusError)
+	      escape("unable to load the user from the environment");
+
+	    break;
+	  }
+	case PhaseClean:
+	  {
+	    // delete the user.
+	    delete User::Current;
+
+	    // for safety purposes, reset the pointer to NULL.
+	    User::Current = NULL;
+
+	    break;
+	  }
 	}
-      else
-	{
-	  // set the type.
-	  User::Current->type = User::TypeApplication;
-
-	  // set the application.
-	  if (User::Current->client->Retrieve(
-                static_cast<Channel*>(session->socket),
-		User::Current->application) == StatusError)
-	    escape("unable to retrieve the application belonging "
-		   "to the client");
-	}
-
-      // set the socket.
-      User::Current->socket = session->socket;
 
       leave();
     }

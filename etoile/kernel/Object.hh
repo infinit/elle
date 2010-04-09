@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [mon apr  5 22:59:50 2010]
+// updated       julien quintard   [wed apr  7 19:14:10 2010]
 //
 
 #ifndef ETOILE_KERNEL_OBJECT_HH
@@ -90,10 +90,10 @@ namespace etoile
 				     const Token&);
 
       Status		Seal(const user::Agent&,
-			     const Access&);
+			     const Access* = NULL);
 
       Status		Validate(const hole::Address&,
-				 const Access&) const;
+				 const Access* = NULL) const;
 
       //
       // interfaces
