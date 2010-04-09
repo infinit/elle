@@ -189,7 +189,9 @@ class Config:
 
     def add_system_include_path(self, path):
 
-        path = srctree() / prefix() / Path(path)
+        path = Path(path)
+        if not path.absolute:
+            path = srctree() / prefix() / path
         self._system_includes[path] = None
         self._includes[path] = None
 
