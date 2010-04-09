@@ -64,9 +64,10 @@ class GccToolkit(Toolkit):
 
     def link(self, cfg, objs, exe):
 
-        return '%s %s%s%s %s -o %s' % \
+        return '%s %s%s%s%s %s -o %s' % \
                (self.cxx,
                 concatenate(cfg.flags),
+                concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
                 concatenate(cfg.libs, '-l'),
                 concatenate(objs),
@@ -168,6 +169,7 @@ class Config:
             self.lib_paths = {}
             self.libs = {}
             self.flags = []
+            self._framework = {}
         else:
             self._includes = clone(model._includes)
             self._local_includes = clone(model._local_includes)
@@ -175,10 +177,19 @@ class Config:
             self.lib_paths = clone(model.lib_paths)
             self.libs = clone(model.libs)
             self.flags = clone(model.flags)
+            self._framework = clone(model._framework)
 
     def flag(self, f):
 
         self.flags.append(f)
+
+    def framework_add(self, name):
+
+        self._framework[name] = None
+
+    def frameworks(self):
+
+        return self._framework.keys()
 
     def add_local_include_path(self, path):
 
@@ -230,6 +241,7 @@ class Config:
         res._local_includes.update(rhs._local_includes)
         res._system_includes.update(rhs._system_includes)
         res._includes.update(rhs._includes)
+        res._framework.update(rhs._framework)
         res.lib_paths.update(rhs.lib_paths)
         res.libs.update(rhs.libs)
         res.flags += rhs.flags
