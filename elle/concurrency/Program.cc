@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [wed mar 31 21:34:44 2010]
+// updated       julien quintard   [fri apr  9 16:03:25 2010]
 //
 
 //
@@ -65,10 +65,10 @@ namespace elle
     ///
     /// this method sets up the program for startup.
     ///
-    Status		Program::Setup(const Natural32	argc,
-					   const Character*	argv[],
-					   Callback<>*		prolog,
-					   Callback<>*		epilog)
+    Status		Program::Setup(const Natural32		argc,
+				       const Character*		argv[],
+				       Callback<>*		prolog,
+				       Callback<>*		epilog)
     {
       enter();
 
@@ -90,7 +90,7 @@ namespace elle
     ///
     /// this method stops the program.
     ///
-    Status		Program::Exit(Status		status)
+    Status		Program::Exit(Status			status)
     {
       enter();
 

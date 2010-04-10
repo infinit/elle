@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/test/cryptography/Test.cc
+// file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon mar 29 10:42:37 2010]
+// updated       julien quintard   [fri apr  9 16:05:13 2010]
 //
 
 //
@@ -22,219 +22,200 @@ namespace elle
   namespace test
   {
 
+/* XXX
+
+    F1 -> wait ResourceA -> awaken ResourceB
+    F2 -> wait ResourceB -> awaken ResourceC
+    F3 -> spawn F4 -> awaken ResourceA
+       -> wait ResourceC
+
+    F1, F2, F3, F4, F3, F1, F2, F3
+
+*/
+
 //
 // ---------- definitions -----------------------------------------------------
 //
 
-    const Natural32		Test::MinimumTestsNumber = 1;
-    const Natural32		Test::MaximumTestsNumber = 3456;
+    Resource		Test::ResourceA;
+    Resource		Test::ResourceB;
+    Resource		Test::ResourceC;
 
-    const Natural32		Test::MinimumRegionSize = 1;
-    const Natural32		Test::MaximumRegionSize = 12345;
-
-    const Natural32		Test::MinimumKeyLength = 1024;
-    const Natural32		Test::MaximumKeyLength = 2048;
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    Status		Test::Generate(Region&			region)
-    {
-      Natural32		size = Random::Generate(Test::MinimumRegionSize,
-						Test::MaximumRegionSize);
-      Byte*		buffer;
-      Natural32		i;
-
-      enter(slab(buffer, ::free));
-
-      // allocate a buffer.
-      if ((buffer = (Byte*)::malloc(size)) == NULL)
-	escape("unable to allocate memory");
-
-      // randomize the buffer contents.
-      for (i = 0; i < size; i++)
-	*(buffer + i) = Random::Generate(elle::core::Type<Character>::Minimum,
-					 elle::core::Type<Character>::Maximum);
-
-      // assign the buffer to the region.
-      if (region.Acquire(buffer, size) == StatusError)
-	escape("unable to assign the buffer to the region");
-
-      // since included in the region.
-      waive(buffer);
-
-      leave();
-    }
+    Timer		Test::Timer1;
+    Timer		Test::Timer2;
+    Timer		Test::Timer3;
 
 //
 // ---------- functions -------------------------------------------------------
 //
 
-    Status		Main()
+    ///
+    /// this function, invoked through in a fiber by Fiber3, simply awakens
+    /// fibers waiting for ResourceA.
+    ///
+    Status		Fiber4()
     {
-      Natural32		number;
-      KeyPair*		kp;
-      SecretKey*	sk;
-      Natural32		i;
+      enter();
 
-      enter(instance(kp),
-	    instance(sk));
+      printf("[Fiber4] Start\n");
 
-      // init the library.
+      printf("[Fiber4] Awaken(ResourceA)\n");
+
+      // awaken ResourceA.
+      if (Fiber::Awaken(&Test::ResourceA) == StatusError)
+	escape("unable to awaken the fiber");
+
+      printf("[Fiber4] /Awaken(ResourceA)\n");
+
+      printf("[Fiber4] End\n");
+
+      leave();
+    }
+
+    ///
+    /// finally, this function, also launched in a fiber, performs the
+    /// following steps: spawn a new fiber, launching Fiber4, and
+    /// and wait for the ResourceC.
+    ///
+    Status		Fiber3()
+    {
+      Entrance<>	fiber4(&Fiber4);
+      Closure<>		closure(fiber4);
+
+      enter();
+
+      printf("[Fiber3] Start\n");
+
+      printf("[Fiber3] Spawn(Fiber4)\n");
+
+      // spawn a new fiber.
+      if (Fiber::Spawn(closure) == StatusError)
+	escape("unable to spawn the fiber");
+
+      printf("[Fiber3] /Spawn(Fiber4)\n");
+
+      printf("[Fiber3] Wait(ResourceC)\n");
+
+      // wait ResourceC.
+      if (Fiber::Wait(&Test::ResourceC) == StatusError)
+	escape("unable to wait for the resource");
+
+      printf("[Fiber3] /Wait(ResourceC)\n");
+
+      printf("[Fiber3] End\n");
+
+      leave();
+    }
+
+    ///
+    /// this function is launched in a fiber and performs the following steps:
+    /// wait for the ResourceB, then awaken fibers waiting for the
+    /// ResourceC.
+    ///
+    Status		Fiber2()
+    {
+      enter();
+
+      printf("[Fiber2] Start\n");
+
+      printf("[Fiber2] Wait(ResourceB)\n");
+
+      // wait for ResourceB.
+      if (Fiber::Wait(&Test::ResourceB) == StatusError)
+	escape("unable to wait for the resource");
+
+      printf("[Fiber2] /Wait(ResourceB)\n");
+
+      printf("[Fiber2] Awaken(ResourceC)\n");
+
+      // awaken ResourceC.
+      if (Fiber::Awaken(&Test::ResourceC) == StatusError)
+	escape("unable to awaken the resource");
+
+      printf("[Fiber2] /Awaken(ResourceC)\n");
+
+      printf("[Fiber2] End\n");
+
+      leave();
+    }
+
+    ///
+    /// this function is launched in a fiber and performs the following steps:
+    /// wait for the ResourceA, then awaken fibers waiting for the
+    /// ResourceB.
+    ///
+    Status		Fiber1()
+    {
+      enter();
+
+      printf("[Fiber1] Start\n");
+
+      printf("[Fiber1] Wait(ResourceA)\n");
+
+      // wait for ResourceA.
+      if (Fiber::Wait(&Test::ResourceA) == StatusError)
+	escape("unable to wait for the resource");
+
+      printf("[Fiber1] /Wait(ResourceA)\n");
+
+      printf("[Fiber1] Awaken(ResourceB)\n");
+
+      // awaken ResourceB.
+      if (Fiber::Awaken(&Test::ResourceB) == StatusError)
+	escape("unable to awaken the resource");
+
+      printf("[Fiber1] /Awaken(ResourceB)\n");
+
+      printf("[Fiber1] End\n");
+
+      leave();
+    }
+
+    ///
+    /// the main function.
+    ///
+    Status		Main(const Natural32			argc,
+			     const Character*			argv[])
+    {
+      Callback<>	fiber1(&Fiber1);
+      Callback<>	fiber2(&Fiber2);
+      Callback<>	fiber3(&Fiber3);
+
+      enter();
+
+      // initialize the library.
       if (Elle::Initialize() == StatusError)
-	escape("unable to initialize the Elle library");
+	escape("unable to initialize the library");
 
-      // allocate an initialize key pair.
-      kp = new KeyPair;
+      // setup the program.
+      if (Program::Setup(argc, argv) == StatusError)
+	escape("unable to set up the program");
 
-      // generate a key pair
-      if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
-					Test::MaximumKeyLength)) == StatusError)
-	escape("unable to generate the initial key pair");
+      // create and start the timer1, launching the fiber1.
+      if (Test::Timer1.Create(Timer::ModeSingle, fiber1) == StatusError)
+	escape("unable to create the timer");
 
-      // allocate a secret key.
-      sk = new SecretKey;
+      Test::Timer1.Start(100);
 
-      // generate the secret key.
-      if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
-                                        Test::MaximumKeyLength)) == StatusError)
-	escape("unable to generate the initial secret key");
+      // create and start the timer2, launching the fiber2.
+      if (Test::Timer2.Create(Timer::ModeSingle, fiber2) == StatusError)
+	escape("unable to create the timer");
 
-      // compute the number of tests.
-      number = Random::Generate(Test::MinimumTestsNumber,
-				Test::MaximumTestsNumber);
+      Test::Timer2.Start(1000);
 
-      // for every test.
-      for (i = 0; i < number; i++)
-	{
-	  Byte		type = Random::Generate(Test::TypeKeys,
-						Test::TypeCipher);
+      // create and start the timer3, launching the fiber3.
+      if (Test::Timer3.Create(Timer::ModeSingle, fiber3) == StatusError)
+	escape("unable to create the timer");
 
-	  // according to the type of test: generating new keys,
-	  // encrypting/decrypting, signing/verifying or
-	  // cipher/de-ciphering...
-	  switch (type)
-	    {
-	    case Test::TypeKeys:
-	      {
-		// delete the current keys.
-		delete kp;
-		delete sk;
+      Test::Timer3.Start(10000);
 
-		// allocate the new keys
-		kp = new KeyPair;
-		sk = new SecretKey;
-
-		// generate the new keys.
-		if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
-						  Test::MaximumKeyLength)) == StatusError)
-		  escape("unable to generate a new key pair");
-
-		if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
-						  Test::MaximumKeyLength)) == StatusError)
-		  escape("unable to generate a secret key");
-
-		break;
-	      }
-	    case Test::TypeEncryption:
-	      {
-		PublicKey	K;
-		PrivateKey	k;
-		Plain		plain;
-		Code		code;
-		Clear		clear;
-
-		// test the key assignment.
-		K = kp->K;
-		k = kp->k;
-
-		// generate an input.
-		if (Test::Generate(plain) == StatusError)
-		  escape("unable to generate a plain");
-
-		// encrypt the input.
-		if (K.Encrypt(plain, code) == StatusError)
-		  escape("unable to encrypt the plain");
-
-		// decrypt it.
-		if (k.Decrypt(code, clear) == StatusError)
-		  escape("unable to decrypt the code");
-
-		// compare the input and output.
-		if (plain != clear)
-		  escape("the clear differs from the plain");
-
-		break;
-	      }
-	    case Test::TypeSignature:
-	      {
-		PublicKey	K;
-		PrivateKey	k;
-		Plain		plain;
-		Signature	signature;
-
-		// test the key assignment.
-		K = kp->K;
-		k = kp->k;
-
-		// generate an input.
-		if (Test::Generate(plain) == StatusError)
-		  escape("unable to generate a plain");
-
-		// sign the plain.
-		if (k.Sign(plain, signature) == StatusError)
-		  escape("unable to sign the plain");
-
-		// verify the signature.
-		if (K.Verify(signature, plain) != StatusTrue)
-		  escape("unable to verify the signature or "
-			 "the signature differs from the plain");
-
-		break;
-	      }
-	    case Test::TypeCipher:
-	      {
-		SecretKey	s;
-		Plain		plain;
-		Cipher		cipher;
-		Clear		clear;
-
-		// test the key assignment.
-		s = *sk;
-
-		// generate a plain.
-		if (Test::Generate(plain) == StatusError)
-		  escape("unable to generate a plain");
-
-		// cipher the plain.
-		if (s.Encrypt(plain, cipher) == StatusError)
-		  escape("unable to cipher the plain");
-
-		// decypher the code.
-		if (s.Decrypt(cipher, clear) == StatusError)
-		  escape("unable to cipher the code");
-
-		// compare the clear with the initial plain.
-		if (plain != clear)
-		  escape("the clear differs from the plain");
-
-		break;
-	      }
-	    }
-	}
-
-      // stop tracking.
-      waive(kp);
-      waive(sk);
-
-      // delete the current keys.
-      delete kp;
-      delete sk;
+      // launch the program.
+      if (Program::Launch() == StatusError)
+	escape("an error occured in the program");
 
       // clean the library.
       if (Elle::Clean() == StatusError)
-	escape("unable to clean the Elle library");
+	escape("unable to clean the library");
 
       leave();
     }
@@ -246,9 +227,10 @@ namespace elle
 // ---------- main ------------------------------------------------------------
 //
 
-int			main()
+int			main(const int				argc,
+			     const char*			argv[])
 {
-  if (elle::test::Main() == elle::miscellaneous::StatusError)
+  if (elle::test::Main(argc, argv) == elle::miscellaneous::StatusError)
     {
       show();
 
