@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat mar 20 13:16:45 2010]
+// updated       julien quintard   [fri apr 16 15:01:20 2010]
 //
 
 //
@@ -25,6 +25,15 @@ namespace elle
 
   namespace cryptography
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines a null digest.
+    ///
+    const Digest		Digest::Null;
 
 //
 // ---------- entity ----------------------------------------------------------
