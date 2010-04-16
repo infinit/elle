@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [wed apr  7 17:24:21 2010]
+// updated       julien quintard   [fri apr 16 11:53:02 2010]
 //
 
 //
@@ -71,11 +71,12 @@ namespace etoile
 			parameters(const path::Way));
       InterfaceRegister(::etoile::TagDirectoryCreate,
 			Directory::Create,
-			parameters(const path::Way));
-      InterfaceRegister(::etoile::TagDirectoryExist,
-			Directory::Exist,
+			parameters());
+      InterfaceRegister(::etoile::TagDirectoryAdd,
+			Directory::Add,
 			parameters(const context::Identifier,
-				   const path::Slice));
+				   const path::Slice,
+				   const context::Identifier));
       InterfaceRegister(::etoile::TagDirectoryLookup,
 			Directory::Lookup,
 			parameters(const context::Identifier,
@@ -90,15 +91,18 @@ namespace etoile
 			parameters(const context::Identifier,
 				   const path::Slice,
 				   const path::Slice));
+      InterfaceRegister(::etoile::TagDirectoryRemove,
+			Directory::Remove,
+			parameters(const context::Identifier,
+				   const path::Slice));
       InterfaceRegister(::etoile::TagDirectoryStore,
 			Directory::Store,
 			parameters(const context::Identifier));
+      InterfaceRegister(::etoile::TagDirectoryDestroy,
+			Directory::Destroy,
+			parameters(const context::Identifier));
 
       // access
-      InterfaceRegister(::etoile::TagAccessExist,
-			Access::Exist,
-			parameters(const context::Identifier,
-				   const kernel::Subject));
       InterfaceRegister(::etoile::TagAccessLookup,
 			Access::Lookup,
 			parameters(const context::Identifier,
@@ -126,6 +130,31 @@ namespace etoile
 			Access::Revoke,
 			parameters(const context::Identifier,
 				   const kernel::Subject));
+
+      // attributes
+      InterfaceRegister(::etoile::TagAttributesAdd,
+			Attributes::Add,
+			parameters(const context::Identifier,
+				   const String,
+				   const String));
+      InterfaceRegister(::etoile::TagAttributesLookup,
+			Attributes::Lookup,
+			parameters(const context::Identifier,
+				   const String));
+      InterfaceRegister(::etoile::TagAttributesConsult,
+			Attributes::Consult,
+			parameters(const context::Identifier,
+				   const kernel::Index,
+				   const kernel::Size));
+      InterfaceRegister(::etoile::TagAttributesUpdate,
+			Attributes::Update,
+			parameters(const context::Identifier,
+				   const String,
+				   const String));
+      InterfaceRegister(::etoile::TagAttributesRemove,
+			Attributes::Remove,
+			parameters(const context::Identifier,
+				   const String));
 
       leave();
     }

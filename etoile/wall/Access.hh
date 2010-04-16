@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [tue apr  6 14:38:14 2010]
+// updated       julien quintard   [thu apr 15 13:44:21 2010]
 //
 
 #ifndef ETOILE_WALL_ACCESS_HH
@@ -46,8 +46,6 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Exist(const context::Identifier&,
-			      const kernel::Subject&);
       static Status	Lookup(const context::Identifier&,
 			       const kernel::Subject&);
       static Status	Consult(const context::Identifier&,

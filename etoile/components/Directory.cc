@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [wed apr  7 20:56:42 2010]
+// updated       julien quintard   [fri apr 16 13:43:51 2010]
 //
 
 //
@@ -48,11 +48,9 @@ namespace etoile
     }
 
     ///
-    /// this method creates a sub-directory in the given directory.
+    /// this method creates a directory object.
     ///
-    Status		Directory::Create(context::Directory*	directory,
-					  const path::Slice&	name,
-					  context::Directory*	subdirectory)
+    Status		Directory::Create(context::Directory*	context)
     {
       user::User*	user;
 
@@ -62,80 +60,56 @@ namespace etoile
       if (user::User::Instance(user) == StatusError)
 	escape("unable to load the user");
 
-      // set the context route based on the parent directory route.
-      if (subdirectory->route.Create(directory->route, name) == StatusError)
-	escape("unable to set the subdirectory route");
-
       // allocate a new directory object.
-      subdirectory->object = new kernel::Object;
+      context->object = new kernel::Object;
 
-      // create the subdirectory.
-      if (subdirectory->object->Create(kernel::GenreDirectory,
-				       user->client->agent->K) == StatusError)
-	escape("unable to create the subdirectory object");
+      // create the irectory.
+      if (context->object->Create(kernel::GenreDirectory,
+				  user->client->agent->K) == StatusError)
+	escape("unable to create the directory object");
 
       // bind the object.
-      if (subdirectory->object->Bind() == StatusError)
+      if (context->object->Bind() == StatusError)
 	escape("unable to bind the object");
 
       // set the address.
-      subdirectory->address = subdirectory->object->address;
-
-      // add the tuple (name, address) to the parent directory.
-      if (Directory::Add(directory,
-			 name,
-			 subdirectory->address) == StatusError)
-	escape("unable to add the entry to the parent directory");
+      context->address = context->object->address;
 
       leave();
     }
 
     ///
-    /// this method checks if the given name exists in the directory.
+    /// this method adds a directory entry to the directory.
     ///
-    Status		Directory::Exist(context::Directory*	context,
-					 const path::Slice&	name,
-					 Boolean&		boolean)
+    Status		Directory::Add(context::Directory*	directory,
+				       const path::Slice&	name,
+				       context::Directory*	subdirectory)
     {
-      Status		status;
+      kernel::Entry*	entry;
 
-      enter();
+      enter(instance(entry));
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(directory) == StatusError)
 	escape("unable to determine the rights");
 
-      // check if the current user has the right the read the catalog.
-      if (!(context->rights->permissions & kernel::PermissionRead))
+      // check if the current user has the right the write the catalog.
+      if (!(directory->rights->record.permissions & kernel::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(directory) == StatusError)
 	escape("unable to open the contents");
 
-      // check the directory.
-      status = context->contents->content->Exist(name);
+      // allocate a new entry.
+      entry = new kernel::Entry(name, subdirectory->object->address);
 
-      // return the result.
-      switch (status)
-	{
-	case StatusTrue:
-	  {
-	    boolean = true;
+      // add the entry in the directory.
+      if (directory->contents->content->Add(entry) == StatusError)
+	escape("unable to add the entry in the directory");
 
-	    break;
-	  }
-	case StatusFalse:
-	  {
-	    boolean = false;
-
-	    break;
-	  }
-	default:
-	  {
-	    escape("unknown status");
-	  }
-	}
+      // stop tracking.
+      waive(entry);
 
       leave();
     }
@@ -149,17 +123,24 @@ namespace etoile
     {
       enter();
 
+      // initialize the entry to NULL.
+      entry = NULL;
+
       // determine the rights.
       if (Rights::Determine(context) == StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context->rights->permissions & kernel::PermissionRead))
+      if (!(context->rights->record.permissions & kernel::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
       if (Contents::Open(context) == StatusError)
 	escape("unable to open the contents");
+
+      // check that the entry exists.
+      if (context->contents->content->Exist(name) == StatusFalse)
+	leave();
 
       // look up the entry.
       if (context->contents->content->Lookup(name, entry) == StatusError)
@@ -183,7 +164,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context->rights->permissions & kernel::PermissionRead))
+      if (!(context->rights->record.permissions & kernel::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -193,42 +174,6 @@ namespace etoile
       // consult the directory catalog.
       if (context->contents->content->Consult(index, size, set) == StatusError)
 	escape("unable to consult the directory");
-
-      leave();
-    }
-
-    ///
-    /// this method adds a directory entry to the directory.
-    ///
-    Status		Directory::Add(context::Directory*	context,
-				       const path::Slice&	name,
-				       const hole::Address&	address)
-    {
-      kernel::Entry*	entry;
-
-      enter(instance(entry));
-
-      // determine the rights.
-      if (Rights::Determine(context) == StatusError)
-	escape("unable to determine the rights");
-
-      // check if the current user has the right the write the catalog.
-      if (!(context->rights->permissions & kernel::PermissionWrite))
-	escape("unable to perform the operation without the permission");
-
-      // open the contents.
-      if (Contents::Open(context) == StatusError)
-	escape("unable to open the contents");
-
-      // allocate a new entry.
-      entry = new kernel::Entry(name, address);
-
-      // add the entry in the directory.
-      if (context->contents->content->Add(entry) == StatusError)
-	escape("unable to add the entry in the directory");
-
-      // stop tracking.
-      waive(entry);
 
       leave();
     }
@@ -247,7 +192,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if (!(context->rights->permissions & kernel::PermissionWrite))
+      if (!(context->rights->record.permissions & kernel::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -265,7 +210,7 @@ namespace etoile
     /// this method removes an entry.
     ///
     Status		Directory::Remove(context::Directory*	context,
-					const path::Slice&	name)
+					  const path::Slice&	name)
     {
       enter();
 
@@ -274,7 +219,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if (!(context->rights->permissions & kernel::PermissionWrite))
+      if (!(context->rights->record.permissions & kernel::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -311,11 +256,32 @@ namespace etoile
     ///
     /// this method removes the object along with the blocks attached to it.
     ///
+    /// note that, in theory, the directory object could be destroy although
+    /// it contains references to sub-entries. it is therefore the
+    /// responsability of the caller to destroy the entries.
+    ///
     Status		Directory::Destroy(context::Directory*	context)
     {
+      user::User*	user;
+      kernel::Size	size;
+
       enter();
 
-      // XXX Contents::Destroy
+      // determine the rights.
+      if (Rights::Determine(context) == StatusError)
+	escape("unable to determine the rights");
+
+      // check if the current user is the object owner.
+      if (context->rights->role != kernel::RoleOwner)
+	escape("unable to destroy a not-owned object");
+
+      // destroy the contents.
+      if (Contents::Destroy(context) == StatusError)
+	escape("unable to destroy the contents");
+
+      // destroy the object.
+      if (Object::Destroy(context) == StatusError)
+	escape("unable to destroy the object");
 
       leave();
     }

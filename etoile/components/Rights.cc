@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [tue apr  6 16:06:21 2010]
+// updated       julien quintard   [fri apr 16 14:37:23 2010]
 //
 
 //
@@ -58,22 +58,17 @@ namespace etoile
 	  // set the role.
 	  context->rights->role = kernel::RoleOwner;
 
-	  // set the permissions.
-	  context->rights->permissions =
-	    context->object->meta.owner.permissions;
-
-	  // also copy the token.
-	  context->rights->token =
-	    context->object->meta.owner.token;
+	  // set the record.
+	  context->rights->record = context->object->meta.owner.record;
 
 	  // if a token is present, decrypt it.
-	  if (context->rights->token != kernel::Token::Null)
+	  if (context->rights->record.token != kernel::Token::Null)
 	    {
 	      Digest		fingerprint;
 
 	      // decrypt the token.
 	      if (user->client->agent->Decrypt(
-		    context->rights->token,
+		    *context->rights->record.token.code,
 		    context->rights->key) == StatusError)
 		escape("unable to decrypt the token");
 
@@ -84,8 +79,13 @@ namespace etoile
 
 	      // verify the key's validity according to the public fingerprint.
 	      if (context->object->data.fingerprint != fingerprint)
-		escape("the key granted to the user differs from "
-		       "the fingerprint");
+		{
+		  printf("[XXX] this should never happen: tell the user "
+			 "that the author is probably malicious\n");
+
+		  escape("the key granted to the user differs from "
+			 "the fingerprint");
+		}
 	    }
 	}
       else
@@ -113,20 +113,17 @@ namespace etoile
 	      // set the role.
 	      context->rights->role = kernel::RoleDelegate;
 
-	      // set the permissions
-	      context->rights->permissions = record->permissions;
-
-	      // also copy the token.
-	      context->rights->token = record->token;
+	      // set the record.
+	      context->rights->record = *record;
 
 	      // decrypt the token and verify the key, if present.
-	      if (context->rights->token != kernel::Token::Null)
+	      if (context->rights->record.token != kernel::Token::Null)
 		{
 		  Digest	fingerprint;
 
 		  // decrypt the token.
 		  if (user->client->agent->Decrypt(
-                        context->rights->token,
+                        *context->rights->record.token.code,
 		        context->rights->key) == StatusError)
 		    escape("unable to decrypt the token");
 
@@ -153,9 +150,24 @@ namespace etoile
 	      // therefore, at this point, the user is considered as having no
 	      // right over the object.
 	      context->rights->role = kernel::RoleUnknown;
-	      context->rights->permissions = kernel::PermissionNone;
+	      context->rights->record.permissions = kernel::PermissionNone;
 	    }
 	}
+
+      leave();
+    }
+
+    ///
+    /// this method updates the user's permissions.
+    ///
+    Status		Rights::Update(context::Object*		context,
+				       const
+				         kernel::Permissions&	permissions)
+    {
+      enter();
+
+      // reset the permissions.
+      context->rights->record.permissions = permissions;
 
       leave();
     }

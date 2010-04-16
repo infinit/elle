@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [tue apr  6 13:27:30 2010]
+// updated       julien quintard   [wed apr 14 14:57:10 2010]
 //
 
 #ifndef ETOILE_KERNEL_CATALOG_HH
@@ -50,6 +50,11 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
+      //
+      // constructors & destructors
+      //
+      Catalog();
+
       //
       // methods
       //

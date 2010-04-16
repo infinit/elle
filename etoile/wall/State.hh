@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/State.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [tue apr  6 12:26:55 2010]
+// updated       julien quintard   [thu apr 15 13:54:12 2010]
 //
 
 #ifndef ETOILE_WALL_STATE_HH
@@ -52,9 +52,15 @@ namespace etoile
     /// this class describes an object's meta data.
     ///
     class State:
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
+      //
+      // constants
+      //
+      static const State		Null;
+
       //
       // method
       //
@@ -63,6 +69,10 @@ namespace etoile
       //
       // interfaces
       //
+
+      // entity
+      declare(Entity, State);
+      Boolean		operator==(const State&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -88,7 +98,7 @@ namespace etoile
       {
 	PublicKey	owner;
 	PublicKey	author;
-      }			Ks;
+      }			keys;
 
       struct
       {

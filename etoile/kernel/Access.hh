@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [tue apr  6 13:27:48 2010]
+// updated       julien quintard   [fri apr 16 14:38:46 2010]
 //
 
 #ifndef ETOILE_KERNEL_ACCESS_HH
@@ -49,6 +49,11 @@ namespace etoile
       public ContentHashBlock
     {
     public:
+      //
+      // constructors & destructors
+      //
+      Access();
+
       //
       // methods
       //

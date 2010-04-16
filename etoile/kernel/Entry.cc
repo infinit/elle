@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Entry.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [wed apr  7 19:49:12 2010]
+// updated       julien quintard   [thu apr 15 15:24:37 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace kernel
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines an unexisting entry.
+    ///
+    const Entry			Entry::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -42,6 +51,34 @@ namespace etoile
       address(address)
     {
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this operator compares two objects.
+    ///
+    Boolean		Entry::operator==(const Entry&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the attributes.
+      if ((this->name != element.name) ||
+	  (this->address != element.address))
+	false();
+
+      true();
+    }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Entry);
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Bucket.hh
 //
 // created       julien quintard   [sat jan 30 16:26:50 2010]
-// updated       julien quintard   [tue apr  6 11:49:45 2010]
+// updated       julien quintard   [fri apr 16 14:15:47 2010]
 //
 
 #ifndef ETOILE_JOURNAL_BUCKET_HH
@@ -38,7 +38,8 @@ namespace etoile
     /// the bucket is used to collect the objects, hence blocks, that must
     /// be published or destroyed.
     ///
-    struct Bucket
+    struct Bucket:
+      public Dumpable
     {
     public:
       //
@@ -49,10 +50,20 @@ namespace etoile
       typedef Container::const_iterator		Scoutor;
 
       //
+      // constructors & destructors
+      //
+      ~Bucket();
+
+      //
       // methods
       //
-      Status		Record(hole::Block*);
-      Status		Record(hole::Address*);
+      Status		Push(const hole::Address&,
+			     hole::Block*);
+      Status		Destroy(const hole::Address&);
+
+      //
+      // interfaces
+      //
 
       //
       // attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [wed apr  7 20:56:36 2010]
+// updated       julien quintard   [thu apr 15 16:38:46 2010]
 //
 
 //
@@ -21,6 +21,18 @@ namespace etoile
 {
   namespace kernel
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Catalog::Catalog():
+      state(StateClean)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

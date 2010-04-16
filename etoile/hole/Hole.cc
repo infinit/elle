@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [wed apr  7 19:22:54 2010]
+// updated       julien quintard   [fri apr 16 14:08:35 2010]
 //
 
 //
@@ -54,6 +54,8 @@ namespace etoile
       {
 	char		path[4096];
 	int		fd;
+
+	printf("[XXX] Hole::Put(%s)\n", identity.c_str());
 
 	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
 
@@ -107,6 +109,8 @@ namespace etoile
 	char		path[4096];
 	struct stat	stat;
 	int		fd;
+
+	printf("[XXX] Hole::Get(%s)\n", identity.c_str());
 
 	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
 
@@ -168,11 +172,27 @@ namespace etoile
     ///   data, whose should challenge our clients, proving that we are
     ///   the owner.
     ///
-    Status		Hole::Destroy(const Address&		address)
+    Status		Hole::Erase(const Address&		address)
     {
+      String		identity;
+
       enter();
 
-      // XXX
+      // identify the address.
+      if (address.Identify(identity) == StatusError)
+        escape("unable to identify the address");
+
+      // XXX[temporary hack for local storage]
+      {
+	char		path[4096];
+
+	printf("[XXX] Hole::Destroy(%s)\n", identity.c_str());
+	address.Dump();
+
+	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
+
+	::unlink(path);
+      }
 
       leave();
     }

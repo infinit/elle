@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/components/Access.hh
+// file          /home/mycure/infinit/etoile/components/Attributes.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [fri apr 16 11:23:16 2010]
+// updated       julien quintard   [thu apr 15 18:54:26 2010]
 //
 
-#ifndef ETOILE_COMPONENTS_ACCESS_HH
-#define ETOILE_COMPONENTS_ACCESS_HH
+#ifndef ETOILE_COMPONENTS_ATTRIBUTES_HH
+#define ETOILE_COMPONENTS_ATTRIBUTES_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -36,37 +36,29 @@ namespace etoile
 //
 
     ///
-    /// this class provides functionalities for manipulating the access
-    /// blocks.
+    /// this class provides functionalities for manipulating the attributes.
     ///
-    class Access
+    class Attributes
     {
     public:
       //
       // static methods
       //
-      static Status	Open(context::Object*);
-      static Status	Grant(context::Object*,
-			      const kernel::Subject&,
-			      const kernel::Permissions&);
+      static Status	Add(context::Object*,
+			    const String&,
+			    const String&);
       static Status	Lookup(context::Object*,
-			       const kernel::Subject&,
-			       kernel::Record*&);
+			       const String&,
+			       kernel::Trait*&);
       static Status	Consult(context::Object*,
 				const kernel::Index&,
 				const kernel::Size&,
-				kernel::Range&);
+				kernel::Collection&);
       static Status	Update(context::Object*,
-			       const kernel::Subject&,
-			       const kernel::Permissions&);
-      static Status	Block(context::Object*,
-			      const kernel::Subject&);
-      static Status	Revoke(context::Object*,
-			       const kernel::Subject&);
-      static Status	Upgrade(context::Object*,
-				const SecretKey&);
-      static Status	Destroy(context::Object*);
-      static Status	Close(context::Object*);
+			       const String&,
+			       const String&);
+      static Status	Remove(context::Object*,
+			       const String&);
     };
 
   }

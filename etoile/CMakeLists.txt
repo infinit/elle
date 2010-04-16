@@ -23,6 +23,7 @@ ADD_LIBRARY(etoile
   kernel/Range.cc
   kernel/Attributes.cc
   kernel/Trait.cc
+  kernel/Collection.cc
 
   hole/Hole.cc
   hole/Address.cc
@@ -52,6 +53,7 @@ ADD_LIBRARY(etoile
   components/Access.cc
   components/Rights.cc
   components/Author.cc
+  components/Attributes.cc
 
   journal/Journal.cc
   journal/Bucket.cc
@@ -71,6 +73,7 @@ ADD_LIBRARY(etoile
   wall/Access.cc
   wall/Directory.cc
   wall/State.cc
+  wall/Attributes.cc
 )
 
 ADD_EXECUTABLE(Etoile

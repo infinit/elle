@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [tue apr  6 23:09:40 2010]
+// updated       julien quintard   [fri apr 16 09:26:05 2010]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Token.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [sun apr  4 18:31:52 2010]
+// updated       julien quintard   [wed apr 14 12:07:47 2010]
 //
 
 #ifndef ETOILE_KERNEL_TOKEN_HH
@@ -35,13 +35,21 @@ namespace etoile
     /// use this key, it is encrypted with the user's public key.
     ///
     class Token:
-      public Code
+      public Entity,
+      public Dumpable, public Archivable
     {
     public:
       //
       // constants
       //
       static const Token		Null;
+
+      //
+      // constructors & destructors
+      //
+      Token();
+      Token(const Token&);
+      ~Token();
 
       //
       // methods
@@ -63,6 +71,11 @@ namespace etoile
       // archivable
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
+
+      //
+      // attributes
+      //
+      Code*		code;
     };
 
   }

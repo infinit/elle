@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [wed apr  7 01:04:04 2010]
+// updated       julien quintard   [thu apr 15 11:13:41 2010]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -74,6 +74,7 @@ namespace etoile
 #include <etoile/path/Length.hh>
 
 #include <etoile/context/Directory.hh>
+#include <etoile/context/Context.hh>
 
 #include <etoile/components/Directory.hh>
 

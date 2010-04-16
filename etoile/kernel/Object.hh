@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [wed apr  7 19:14:10 2010]
+// updated       julien quintard   [thu apr 15 14:05:39 2010]
 //
 
 #ifndef ETOILE_KERNEL_OBJECT_HH
@@ -59,6 +59,9 @@ namespace etoile
 
     ///
     /// XXX
+    ///
+    /// XXX owner.subject et meta.owner.record ne sont pas serializes mais
+    /// sont ici juste pour simplifier le processus de gestion des access
     ///
     class Object:
       public PublicKeyBlock
@@ -119,6 +122,8 @@ namespace etoile
 	PublicKey	K;
 
 	Signature	signature;
+
+	Subject		subject;
       }			owner;
 
       Author		author;
@@ -129,6 +134,8 @@ namespace etoile
 	{
 	  Permissions	permissions;
 	  Token		token;
+
+	  Record	record;
 	}		owner;
 
 	Genre		genre;

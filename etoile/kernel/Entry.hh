@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Entry.hh
 //
 // created       julien quintard   [fri apr  2 00:03:02 2010]
-// updated       julien quintard   [fri apr  2 13:50:47 2010]
+// updated       julien quintard   [thu apr 15 15:24:12 2010]
 //
 
 #ifndef ETOILE_KERNEL_ENTRY_HH
@@ -38,9 +38,15 @@ namespace etoile
     /// composed of a name and its object's corresponding address.
     ///
     class Entry:
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
+      //
+      // constants
+      //
+      static const Entry		Null;
+
       //
       // constructors & destructors
       //
@@ -51,6 +57,10 @@ namespace etoile
       //
       // interfaces
       //
+
+      // entity
+      declare(Entity, Entry);
+      Boolean		operator==(const Entry&) const;
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

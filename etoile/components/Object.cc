@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [fri apr  9 11:25:26 2010]
+// updated       julien quintard   [fri apr 16 14:29:31 2010]
 //
 
 //
@@ -87,10 +87,36 @@ namespace etoile
 	    escape("unable to seal the object");
 
 	  // record the object in the bucket.
-	  if (context->bucket.Record(
+	  if (context->bucket.Push(
+		context->object->address,
 		context->object) == StatusError)
 	    escape("unable to record the object block in the bucket");
 	}
+
+      // record the context in the journal.
+      if (journal::Journal::Record(context) == StatusError)
+	escape("unable to the context");
+
+      leave();
+    }
+
+    ///
+    /// this method destroys the object.
+    ///
+    Status		Object::Destroy(context::Object*	context)
+    {
+      user::User*	user;
+
+      enter();
+
+      // destroy the access.
+      if (Access::Destroy(context) == StatusError)
+	escape("unable to destroy the access");
+
+      // record the object in the bucket.
+      if (context->bucket.Destroy(
+	    context->object->address) == StatusError)
+	escape("unable to record the object block in the bucket");
 
       // record the context in the journal.
       if (journal::Journal::Record(context) == StatusError)

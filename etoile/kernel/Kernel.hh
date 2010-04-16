@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Kernel.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [fri apr  2 11:47:19 2010]
+// updated       julien quintard   [thu apr 15 16:28:07 2010]
 //
 
 #ifndef ETOILE_KERNEL_KERNEL_HH
@@ -72,6 +72,7 @@ namespace etoile
 #include <etoile/kernel/State.hh>
 #include <etoile/kernel/Offset.hh>
 #include <etoile/kernel/Access.hh>
+#include <etoile/kernel/Collection.hh>
 // XXX
 
 #endif

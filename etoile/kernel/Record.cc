@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [tue apr  6 21:50:38 2010]
+// updated       julien quintard   [thu apr 15 15:25:25 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace kernel
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines an unexisting record.
+    ///
+    const Record		Record::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -65,7 +74,7 @@ namespace etoile
       this->permissions = permissions;
 
       // then, if the subject has the read permission, create a token.
-      if (this->permissions & PermissionRead)
+      if ((this->permissions & PermissionRead) != 0)
 	{
 	  // create the token with the public key of the user or the
 	  // group owner, depending on the subject.
@@ -94,9 +103,64 @@ namespace etoile
 	      }
 	    }
 	}
+      else
+	{
+	  // reinitialize the token.
+	  this->token = Token::Null;
+	}
 
       leave();
     }
+
+    ///
+    /// this method creates/updates a record with a ready-to-be-used token.
+    ///
+    Status		Record::Update(const Subject&		subject,
+				       const Permissions&	permissions,
+				       const Token&		token)
+    {
+      enter();
+
+      // set the subject.
+      this->subject = subject;
+
+      // set the permissions.
+      this->permissions = permissions;
+
+      // set the token.
+      this->token = token;
+
+      leave();
+    }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this operator compares two objects.
+    ///
+    Boolean		Record::operator==(const Record&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the attributes.
+      if ((this->subject != element.subject) ||
+	  (this->permissions != element.permissions) ||
+	  (this->token != element.token))
+	false();
+
+      true();
+    }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Record);
 
 //
 // ---------- dumpable --------------------------------------------------------

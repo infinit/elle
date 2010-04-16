@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [wed apr  7 21:34:00 2010]
+// updated       julien quintard   [fri apr 16 15:05:45 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -51,7 +51,8 @@ namespace etoile
 	    escape("unable to determine the user's rights");
 
 	  // verify that the user has the read permission.
-	  if ((context->rights->permissions & kernel::PermissionRead) == 0)
+	  if ((context->rights->record.permissions &
+	       kernel::PermissionRead) == 0)
 	    escape("the user does not have the right to read the contents");
 
 	  // decrypt the contents i.e the contents.
@@ -66,6 +67,57 @@ namespace etoile
 	  // create the contents.
 	  if (context->contents->Create() == StatusError)
 	    escape("unable to create the contents");
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method destroys the contents.
+    ///
+    template <typename T>
+    Status		Contents::Destroy(T*			context)
+    {
+      enter();
+
+      // if the block is present.
+      if (context->object->data.contents != hole::Address::Null)
+	{
+	  // forge the author which will be attached to the modified object.
+	  if (Author::Forge(context) == StatusError)
+	    escape("unable to forge an author");
+
+	  // record the block as needed to be removed.
+	  if (context->bucket.Destroy(
+	        context->object->data.contents) == StatusError)
+	    escape("unable to record the block in the bucket");
+
+	  // update the object's data section with the null address.
+	  if (context->object->Update(
+	        *context->author,
+		hole::Address::Null,
+		0,
+		Digest::Null) == StatusError)
+	    escape("unable to update the object's data section");
+
+	  // release the contents's memory.
+	  delete context->contents;
+
+	  // reset the pointer.
+	  context->contents = NULL;
+
+	  //
+	  // finally, since the data has changed (is now empty), the tokens
+	  // must be reinitialized to null.
+	  //
+
+	  // open the access.
+	  if (Access::Open(context) == StatusError)
+	    escape("unable to open the access");
+
+	  // upgrade the access entries with a null key.
+	  if (Access::Upgrade(context, SecretKey::Null) == StatusError)
+	    escape("unable to upgrade the accesses");
 	}
 
       leave();
@@ -126,26 +178,10 @@ namespace etoile
 	    // object should no longer point to any contents block while
 	    // the old block should be deleted.
 	    //
-	    Digest	fingerprint;
 
-	    // record the contents so that it is removed.
-	    if (context->bucket.Record(
-		  &context->object->data.contents) == StatusError)
-	      escape("unable to record the contents block in the bucket");
-
-	    // update the object's data section with the null address.
-	    if (context->object->Update(
-		  *context->author,
-		  hole::Address::Null,
-		  0,
-		  fingerprint) == StatusError)
-	      escape("unable to update the object's data section");
-
-	    // release the contents's memory.
-	    delete context->contents;
-
-	    // reset the pointer.
-	    context->contents = NULL;
+	    // destroy the contents block and update the object accordingly.
+	    if (Contents::Destroy(context) == StatusError)
+	      escape("unable to destroy the contents");
 	  }
 	else
 	  {
@@ -154,6 +190,15 @@ namespace etoile
 	    // the object must be updated accordingly.
 	    //
 	    Digest	fingerprint;
+
+	    // delete the previous data block, should one exist.
+	    if (context->object->data.contents != hole::Address::Null)
+	      {
+		// record the contents so that it is destroyed.
+		if (context->bucket.Destroy(
+		      context->object->data.contents) == StatusError)
+		  escape("unable to record the contents block in the bucket");
+	      }
 
 	    // generate a secret key.
 	    if (key.Generate() == StatusError)
@@ -171,8 +216,13 @@ namespace etoile
 	    if (context->contents->Bind() == StatusError)
 	      escape("unable to bind the contents");
 
+	    // set the contents as clean.
+	    context->contents->content->state = kernel::StateClean;
+
 	    // record the contents so that it is published.
-	    if (context->bucket.Record(context->contents) == StatusError)
+	    if (context->bucket.Push(
+		  context->contents->address,
+		  context->contents) == StatusError)
 	      escape("unable to record the contents block in the bucket");
 
 	    // update the object data section.
@@ -182,9 +232,6 @@ namespace etoile
 		  size,
 		  fingerprint) == StatusError)
 	      escape("unable to update the object data section");
-
-	    // set the contents as clean.
-	    context->contents->content->state = kernel::StateClean;
 
 	    //
 	    // finally, since the data has been re-encrypted, the key must be

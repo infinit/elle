@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [fri apr  2 11:53:30 2010]
+// updated       julien quintard   [wed apr 14 12:14:58 2010]
 //
 
 //
@@ -204,13 +204,13 @@ namespace etoile
 
       if (type == Archive::TypeNull)
 	{
-	  // nothing to do, keep the digest to NULL.
+	  // nothing to do, keep the voucher to NULL.
 	  if (archive.Extract(none) == StatusError)
 	    escape("unable to extract null");
 	}
       else
 	{
-	  // allocate a digest.
+	  // allocate a voucher.
 	  this->voucher = new Voucher;
 
 	  // extract the voucher.

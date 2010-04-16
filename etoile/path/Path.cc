@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [wed apr  7 05:20:17 2010]
+// updated       julien quintard   [fri apr 16 08:58:18 2010]
 //
 
 //
@@ -82,6 +82,9 @@ namespace etoile
 
       enter();
 
+      //printf("[XXX] Path::Resolve()\n");
+      //route.Dump();
+
       // first ask the cache to resolve as much as it can.
       if (Cache::Resolve(route, venue) == StatusError)
 	escape("unable to resolve part of the route through the cache");
@@ -107,22 +110,27 @@ namespace etoile
 	   scoutor != route.elements.end();
 	   scoutor++)
 	{
+	  //
+	  // note here that all operations are performed on a local context.
+	  //
+	  // this context is not exported because no application needs to
+	  // access it. therefore it is not allocated nor added to the context
+	  // container.
+	  //
+	  // additionally, as a consequence, it must not be "delete"d. once
+	  // the context is stored, it ends up in the journal which distinguish
+	  // local from external contexts through their identifiers. indeed,
+	  // external contexts have proper identifiers and have been allocated,
+	  // hence need deletion, while local contexts are allocated on the
+	  // stack, hence need no deletion and use the identifier Null.
+	  //
+
 	  context::Directory	context;
 	  kernel::Entry*	entry;
-	  Boolean		boolean;
 
 	  // load the directory referenced by address.
 	  if (components::Directory::Load(&context, address) == StatusError)
 	    escape("unable to load one of the route's directories");
-
-	  // check if the entry exist
-	  if (components::Directory::Exist(&context,
-					   *scoutor,
-					   boolean) == StatusError)
-	    escape("unable to check if the name exist");
-
-	  if (boolean == false)
-	    escape("the path does not seem to exist");
 
 	  // look up for the name.
 	  if (components::Directory::Lookup(&context,
@@ -130,8 +138,16 @@ namespace etoile
 					    entry) == StatusError)
 	    escape("unable to find one of the route's entries");
 
+	  // check the result.
+	  if (entry == NULL)
+	    escape("unable to locate the target path");
+
 	  // set the address.
 	  address = entry->address;
+
+	  // record the address in the venue.
+	  if (venue.Record(address) == StatusError)
+	    escape("unable to record the venue address");
 
 	  // close the context.
 	  if (components::Directory::Store(&context) == StatusError)
@@ -144,6 +160,9 @@ namespace etoile
 
       // return the target address.
       address = venue.elements[venue.elements.size() - 1];
+
+      //printf("[XXX] /Path::Resolve()\n");
+      //address.Dump();
 
       leave();
     }

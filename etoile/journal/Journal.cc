@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [fri apr  9 11:25:31 2010]
+// updated       julien quintard   [fri apr 16 14:32:47 2010]
 //
 
 //
@@ -59,7 +59,24 @@ namespace etoile
 
       enter();
 
+      // first, remove the context from the container so that no application
+      // can use it anymore. this only applies to external contexts i.e
+      // contexts with valid identifiers.
+      if (context->identifier != context::Identifier::Null)
+	{
+	  // remove the context.
+	  if (context::Context::Remove(context) == StatusError)
+	    escape("unable to remove the context");
+	}
+
       // XXX easy temporary version, just publish everything.
+
+      // XXX
+      if (context->bucket.container.empty() == false)
+      {
+	context->Dump();
+      }
+      // XXX
 
       // go through the blocks and publish/destroy them.
       for (scoutor = context->bucket.container.begin();
@@ -72,20 +89,27 @@ namespace etoile
 	    {
 	    case OperationPush:
 	      {
-		if (hole::Hole::Put(item->block->address,
+		if (hole::Hole::Put(item->address,
 				    item->block) == StatusError)
 		  escape("unable to publish the block through hole");
 
 		break;
 	      }
-	    case OperationPop:
+	    case OperationDestroy:
 	      {
-		if (hole::Hole::Destroy(*item->address) == StatusError)
-		  escape("unable to destroy the block through hole");
+		if (hole::Hole::Erase(item->address) == StatusError)
+		  escape("unable to erase the block through hole");
 
 		break;
 	      }
 	    }
+	}
+
+      // finally, delete external contexts i.e contexts with valid identifiers.
+      if (context->identifier != context::Identifier::Null)
+	{
+	  // delete it.
+	  delete context;
 	}
 
       leave();

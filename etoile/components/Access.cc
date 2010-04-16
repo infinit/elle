@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [wed apr  7 21:32:38 2010]
+// updated       julien quintard   [fri apr 16 15:08:10 2010]
 //
 
 //
@@ -81,8 +81,7 @@ namespace etoile
 	escape("this subject already exist in the access block");
 
       // update the access block or object according to the subject.
-      if ((subject.type == kernel::Subject::TypeUser) &&
-	  (*subject.user == context->object->owner.K))
+      if (subject == context->object->owner.subject)
 	{
 	  //
 	  // in this case, the subject represents the object's owner.
@@ -131,50 +130,8 @@ namespace etoile
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  context->rights->permissions = permissions;
-	}
-
-      leave();
-    }
-
-    ///
-    /// this method tests if the given subject is present in the access
-    /// block.
-    ///
-    Status		Access::Exist(context::Object*		context,
-				      const kernel::Subject&	subject,
-				      Boolean&			boolean)
-    {
-      Status		status;
-
-      enter();
-
-      // open the access.
-      if (Access::Open(context) == StatusError)
-	escape("unable to open the access");
-
-      // look in the access object.
-      status = context->access->Exist(subject);
-
-      // return the result.
-      switch (status)
-	{
-	case StatusTrue:
-	  {
-	    boolean = true;
-
-	    break;
-	  }
-	case StatusFalse:
-	  {
-	    boolean = false;
-
-	    break;
-	  }
-	default:
-	  {
-	    escape("unknown status");
-	  }
+	  if (Rights::Update(context, permissions) == StatusError)
+	    escape("unable to update the rights' permissions");
 	}
 
       leave();
@@ -186,11 +143,14 @@ namespace etoile
     ///
     Status		Access::Lookup(context::Object*		context,
 				       const kernel::Subject&	subject,
-				       kernel::Record&		record)
+				       kernel::Record*&		record)
     {
       user::User*	user;
 
       enter();
+
+      // initialize the record to NULL.
+      record = NULL;
 
       // load the current user.
       if (user::User::Instance(user) == StatusError)
@@ -209,9 +169,7 @@ namespace etoile
 	    escape("unable to determine the user's rights");
 
 	  // set the record attributes from the user's rights.
-	  record.subject = subject;
-	  record.permissions = context->rights->permissions;
-	  record.token = context->rights->token;
+	  record = &context->rights->record;
 	}
       else
 	{
@@ -220,8 +178,7 @@ namespace etoile
 	  //
 
 	  // perform the lookup according to the subject.
-	  if ((subject.type == kernel::Subject::TypeUser) &&
-	      (*subject.user == context->object->owner.K))
+	  if (subject == context->object->owner.subject)
 	    {
 	      //
 	      // if the target subject is the object owner, the access
@@ -229,10 +186,8 @@ namespace etoile
 	      // meta section.
 	      //
 
-	      // set the record attributes.
-	      record.subject = subject;
-	      record.permissions = context->object->meta.owner.permissions;
-	      record.token = context->object->meta.owner.token;
+	      // return the owner access record.
+	      record = &context->object->meta.owner.record;
 	    }
 	  else
 	    {
@@ -240,18 +195,18 @@ namespace etoile
 	      // if we are dealing with a delegate, open the access block
 	      // in look in it.
 	      //
-	      kernel::Record*	r;
 
 	      // open the access.
 	      if (Access::Open(context) == StatusError)
 		escape("unable to open the access");
 
-	      // lookup in the access object.
-	      if (context->access->Lookup(subject, r) == StatusError)
-		escape("unable to lookup in the access object");
+	      // check if the record exists.
+	      if (context->access->Exist(subject) == StatusFalse)
+		leave();
 
-	      // copy the record.
-	      record = *r;
+	      // lookup in the access object.
+	      if (context->access->Lookup(subject, record) == StatusError)
+		escape("unable to lookup in the access object");
 	    }
 	}
 
@@ -333,8 +288,7 @@ namespace etoile
 	escape("the object's owner only can modify the accesses");
 
       // update the access block or object according to the subject.
-      if ((subject.type == kernel::Subject::TypeUser) &&
-	  (*subject.user == context->object->owner.K))
+      if (subject == context->object->owner.subject)
 	{
 	  //
 	  // in this case, the subject represents the object's owner.
@@ -378,7 +332,8 @@ namespace etoile
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  context->rights->permissions = permissions;
+	  if (Rights::Update(context, permissions) == StatusError)
+	    escape("unable to update the rigths' permissions");
 	}
 
       leave();
@@ -412,7 +367,8 @@ namespace etoile
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  context->rights->permissions = kernel::PermissionNone;
+	  if (Rights::Update(context, kernel::PermissionNone) == StatusError)
+	    escape("unable to update the rights' permissions");
 	}
 
       leave();
@@ -438,8 +394,7 @@ namespace etoile
 	escape("the object's owner only can modify the accesses");
 
       // update the access block or object according to the subject.
-      if ((subject.type == kernel::Subject::TypeUser) &&
-	  (*subject.user == context->object->owner.K))
+      if (subject == context->object->owner.subject)
 	{
 	  //
 	  // in this case, the subject represents the object's owner.
@@ -477,7 +432,8 @@ namespace etoile
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  context->rights->permissions = kernel::PermissionNone;
+	  if (Rights::Update(context, kernel::PermissionNone) == StatusError)
+	    escape("unable to update the rights' permissions");
 	}
 
       leave();
@@ -518,6 +474,50 @@ namespace etoile
 	    context->object->meta.owner.permissions,
 	    context->object->meta.owner.token) == StatusError)
 	escape("unable to update the object's meta section");
+
+      // update the rights' token/key if the user has the permission to
+      // read the contents.
+      if (context->rights->record.permissions & kernel::PermissionRead)
+	{
+	  // XXX for now, just disable the token so that an error occurs.
+	  SecretKey k;
+
+	  context->rights->record.token = kernel::Token::Null;
+	  context->rights->key = k;
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method destroys the access block.
+    ///
+    Status		Access::Destroy(context::Object*	context)
+    {
+      enter();
+
+      // if the block is present.
+      if (context->object->meta.access != hole::Address::Null)
+	{
+	  // record the block as needed to be removed.
+	  if (context->bucket.Destroy(
+	        context->object->meta.access) == StatusError)
+	    escape("unable to record the block in the bucket");
+
+	  // update the object's meta section with the null address.
+	  if (context->object->Administrate(
+		context->object->meta.attributes,
+		hole::Address::Null,
+		context->object->meta.owner.permissions,
+		context->object->meta.owner.token) == StatusError)
+	    escape("unable to update the object's meta section");
+
+	  // release the context access object.
+	  delete context->access;
+
+	  // reset the pointer.
+	  context->access = NULL;
+	}
 
       leave();
     }
@@ -566,24 +566,9 @@ namespace etoile
 	  // the old block should be deleted.
 	  //
 
-	  // record the access block as needed to be removed.
-	  if (context->bucket.Record(
-		&context->object->meta.access) == StatusError)
-	    escape("unable to record the access block in the bucket");
-
-	  // update the object's meta section with the null address.
-	  if (context->object->Administrate(
-		context->object->meta.attributes,
-		hole::Address::Null,
-		context->object->meta.owner.permissions,
-		context->object->meta.owner.token) == StatusError)
-	    escape("unable to update the object's meta section");
-
-	  // release the context access object.
-	  delete context->access;
-
-	  // reset the pointer.
-	  context->access = NULL;
+	  // destroy the access block and update the object accordingly.
+	  if (Access::Destroy(context) == StatusError)
+	    escape("unable to destroy the access block");
 	}
       else
 	{
@@ -592,15 +577,28 @@ namespace etoile
 	  // update the object accordingly.
 	  //
 
+	  // delete the previous access block, should one exist.
+	  if (context->object->meta.access != hole::Address::Null)
+	    {
+	      // record the access so that it is destroyed.
+	      if (context->bucket.Destroy(
+		    context->object->meta.access) == StatusError)
+		  escape("unable to record the access block in the bucket");
+	      }
+
 	  // bind the access as, since the block has changed, its address
 	  // is going to be different.
 	  if (context->access->Bind() == StatusError)
 	    escape("unable to bind the access");
 
 	  // register the block as needed to be published.
-	  if (context->bucket.Record(
+	  if (context->bucket.Push(
+		context->access->address,
 		context->access) == StatusError)
 	    escape("unable to record the access block in the bucket");
+
+	  // set the state as clean.
+	  context->access->state = kernel::StateClean;
 
 	  // finally, update the object's meta section with the new address.
 	  if (context->object->Administrate(
@@ -609,9 +607,6 @@ namespace etoile
 		context->object->meta.owner.permissions,
 		context->object->meta.owner.token) == StatusError)
 	    escape("unable to update the object's meta section");
-
-	  // set the state as clean.
-	  context->access->state = kernel::StateClean;
 	}
 
       leave();

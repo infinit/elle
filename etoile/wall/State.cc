@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/State.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [tue apr  6 12:26:37 2010]
+// updated       julien quintard   [thu apr 15 13:54:26 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace wall
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines a empty, unused hence null state.
+    ///
+    const State			State::Null;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -44,14 +53,14 @@ namespace etoile
       this->size = object.data.size;
 
       // set the owner.
-      this->Ks.owner = object.owner.K;
+      this->keys.owner = object.owner.K;
 
       // set the author depending on the mode.
       switch (object.author.role)
 	{
 	case kernel::RoleOwner:
 	  {
-	    this->Ks.author = object.owner.K;
+	    this->keys.author = object.owner.K;
 
 	    break;
 	  }
@@ -63,11 +72,45 @@ namespace etoile
 	}
 
       // set the versions.
-      this->versions.data = object.data.version;
       this->versions.meta = object.meta.version;
+      this->versions.data = object.data.version;
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this operator compares two objects.
+    ///
+    Boolean		State::operator==(const State&		element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the attributes.
+      if ((this->genre != element.genre) ||
+	  (this->stamps.creation != element.stamps.creation) ||
+	  (this->stamps.modification != element.stamps.modification) ||
+	  (this->size != element.size) ||
+	  (this->keys.owner != element.keys.owner) ||
+	  (this->keys.author != element.keys.author) ||
+	  (this->versions.meta != element.versions.meta) ||
+	  (this->versions.data != element.versions.data))
+	false();
+
+      true();
+    }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, State);
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -117,20 +160,20 @@ namespace etoile
       // dump the public keys.
       //
       {
-	std::cout << alignment << Dumpable::Shift << "[Ks]" << std::endl;
+	std::cout << alignment << Dumpable::Shift << "[Keys]" << std::endl;
 
 	// dump the owner public key.
 	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
 		  << "[Owner]" << std::endl;
 
-	if (this->Ks.owner.Dump(margin + 6) == StatusError)
+	if (this->keys.owner.Dump(margin + 6) == StatusError)
 	  escape("unable to dump the owner public key");
 
 	// dump the author public key.
 	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
 		  << "[Author]" << std::endl;
 
-	if (this->Ks.author.Dump(margin + 6) == StatusError)
+	if (this->keys.author.Dump(margin + 6) == StatusError)
 	  escape("unable to dump the author public key");
       }
 
@@ -140,13 +183,13 @@ namespace etoile
       {
 	std::cout << alignment << Dumpable::Shift << "[Versions]" << std::endl;
 
-	// dump the data version.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		  << "[Data] " << std::dec << this->versions.data << std::endl;
-
 	// dump the meta version.
 	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
 		  << "[Meta] " << std::dec << this->versions.meta << std::endl;
+
+	// dump the data version.
+	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		  << "[Data] " << std::dec << this->versions.data << std::endl;
       }
 
       leave();
@@ -168,10 +211,10 @@ namespace etoile
 			    this->stamps.creation,
 			    this->stamps.modification,
 			    this->size,
-			    this->Ks.owner,
-			    this->Ks.author,
-			    this->versions.data,
-			    this->versions.meta) == StatusError)
+			    this->keys.owner,
+			    this->keys.author,
+			    this->versions.meta,
+			    this->versions.data) == StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -189,10 +232,10 @@ namespace etoile
 			  this->stamps.creation,
 			  this->stamps.modification,
 			  this->size,
-			  this->Ks.owner,
-			  this->Ks.author,
-			  this->versions.data,
-			  this->versions.meta) == StatusError)
+			  this->keys.owner,
+			  this->keys.author,
+			  this->versions.meta,
+			  this->versions.data) == StatusError)
 	escape("unable to extract the attributes");
 
       leave();

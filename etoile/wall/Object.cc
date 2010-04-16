@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [wed apr  7 00:38:13 2010]
+// updated       julien quintard   [fri apr 16 09:29:02 2010]
 //
 
 //
@@ -34,10 +34,9 @@ namespace etoile
 				       path::Way&		way)
     {
       context::Object*		context;
-      context::Identifier	identifier;
       user::User*		user;
 
-      enter(instance(context));
+      enter();
 
       printf("[XXX] Object::Load()\n");
 
@@ -52,6 +51,10 @@ namespace etoile
       // allocate a new context.
       context = new context::Object;
 
+      // add the context.
+      if (context::Context::Add(context) == StatusError)
+	escape("unable to add a context");
+
       // create a route from the given way.
       if (context->route.Create(way) == StatusError)
 	escape("unable to create a route");
@@ -64,20 +67,9 @@ namespace etoile
       if (components::Object::Load(context, context->address) == StatusError)
 	escape("unable to load the object in the given context");
 
-      // generate an identifier.
-      if (identifier.Generate() == StatusError)
-	escape("unable to generate an identifier");
-
-      // store the context in the container.
-      if (context::Context::Add(identifier, context) == StatusError)
-	escape("unable to store the context");
-
-      // waive the context.
-      waive(context);
-
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
-            Inputs<TagIdentifier>(identifier)) == StatusError)
+            Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
 
       leave();

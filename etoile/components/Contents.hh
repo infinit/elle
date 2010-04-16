@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hh
 //
 // created       julien quintard   [mon apr  5 15:14:23 2010]
-// updated       julien quintard   [mon apr  5 15:17:40 2010]
+// updated       julien quintard   [fri apr 16 11:23:04 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HH
@@ -34,6 +34,8 @@ namespace etoile
       //
       template <typename T>
       static Status	Open(T*);
+      template <typename T>
+      static Status	Destroy(T*);
       template <typename T>
       static Status	Close(T*);
     };

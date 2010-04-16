@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/kernel/Set.hh
+// file          /home/mycure/infinit/etoile/kernel/Collection.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [thu apr 15 16:26:28 2010]
+// updated       julien quintard   [thu apr 15 16:27:36 2010]
 //
 
-#ifndef ETOILE_KERNEL_SET_HH
-#define ETOILE_KERNEL_SET_HH
+#ifndef ETOILE_KERNEL_COLLECTION_HH
+#define ETOILE_KERNEL_COLLECTION_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,10 +20,8 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/kernel/Entry.hh>
+#include <etoile/kernel/Trait.hh>
 #include <etoile/kernel/Size.hh>
-
-#include <etoile/path/Slice.hh>
 
 #include <list>
 
@@ -37,32 +35,32 @@ namespace etoile
 //
 
     ///
-    /// this class represents a subset of access control list.
+    /// this class represents a subcollection of access control list.
     ///
-    class Set:
+    class Collection:
       public Dumpable, public Archivable
     {
     public:
-      typedef std::list<Entry*>			Container;
+      typedef std::list<Trait*>			Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
       //
       // constructors & destructors
       //
-      ~Set();
+      ~Collection();
 
       //
       // methods
       //
-      Status		Add(Entry*);
-      Status		Exist(const path::Slice&);
-      Status		Lookup(const path::Slice&,
-			       Entry*&);
-      Status		Remove(const path::Slice&);
+      Status		Add(Trait*);
+      Status		Exist(const String&);
+      Status		Lookup(const String&,
+			       Trait*&);
+      Status		Remove(const String&);
       Status		Capacity(Size&) const;
 
-      Status		Locate(const path::Slice&,
+      Status		Locate(const String&,
 			       Iterator* = NULL);
 
       //

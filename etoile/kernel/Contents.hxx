@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [mon apr  5 15:12:33 2010]
+// updated       julien quintard   [wed apr 14 22:15:08 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HXX
@@ -63,13 +63,13 @@ namespace etoile
 
       enter();
 
-      // if the block is already encrypted, return.
-      if (this->cipher != NULL)
-	leave();
-
       // if there is no block, this operation cannot be performed.
       if (this->content == NULL)
 	escape("unable to encrypt a non-existing block");
+
+      // if the block already exist, delete it.
+      if (this->cipher != NULL)
+	delete this->cipher;
 
       // allocate a new cipher.
       this->cipher = new Cipher;
@@ -101,13 +101,13 @@ namespace etoile
 
       enter();
 
-      // if the block is already decrypted, leave.
-      if (this->content != NULL)
-	leave();
-
       // if there is no cipher, this operation cannot be performed.
       if (this->cipher == NULL)
 	escape("unable to decrypt a non-existing cipher");
+
+      // if the block already exist, delete it.
+      if (this->content != NULL)
+	delete this->content;
 
       // allocate a new block.
       this->content = new T;

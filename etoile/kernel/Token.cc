@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed apr  7 19:36:50 2010]
+// updated       julien quintard   [fri apr 16 14:57:32 2010]
 //
 
 //
@@ -32,6 +32,43 @@ namespace etoile
     const Token			Token::Null;
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor
+    ///
+    Token::Token():
+      code(NULL)
+    {
+    }
+
+    ///
+    /// copy constructor.
+    ///
+    Token::Token(const Token&					token)
+    {
+      // copy the code, if present.
+      if (token.code != NULL)
+	{
+	  // duplicate the code.
+	  this->code = new Code(*token.code);
+	}
+      else
+	this->code = NULL;
+    }
+
+    ///
+    /// destructor.
+    ///
+    Token::~Token()
+    {
+      // release the code.
+      if (this->code != NULL)
+	delete this->code;
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -43,9 +80,24 @@ namespace etoile
     {
       enter();
 
-      // encrypt the given secret key with the given public key.
-      if (K.Encrypt(key, *this) == StatusError)
-	escape("unable to encrypt the key");
+      // delete the previous code.
+      if (this->code != NULL)
+	delete this->code;
+
+      // if the secret key is null, reinitialize to the default null token.
+      if (key == SecretKey::Null)
+	{
+	  this->code = NULL;
+	}
+      else
+	{
+	  // allocate a new code.
+	  this->code = new Code;
+
+	  // encrypt the given secret key with the given public key.
+	  if (K.Encrypt(key, *this->code) == StatusError)
+	    escape("unable to encrypt the key");
+	}
 
       leave();
     }
@@ -59,7 +111,25 @@ namespace etoile
     ///
     Boolean		Token::operator==(const Token&		element) const
     {
-      return (Code::operator==(element));
+      enter();
+
+      // check if the objects are the same.
+      if (this == &element)
+	true();
+
+      // compare the code.
+      if ((this->code == NULL) || (element.code == NULL))
+	{
+	  if (this->code != element.code)
+	    false();
+	}
+      else
+	{
+	  if (*this->code != *element.code)
+	    false();
+	}
+
+      true();
     }
 
     ///
@@ -82,9 +152,17 @@ namespace etoile
 
       std::cout << alignment << "[Token]" << std::endl;
 
-      // dump the parent class.
-      if (Code::Dump(margin + 2) == StatusError)
-	escape("unable to dump the parent Code class");
+      // dump the code.
+      if (this->code != NULL)
+	{
+	  if (this->code->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the parent Code class");
+	}
+      else
+	{
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Code] " << none << std::endl;
+	}
 
       leave();
     }
@@ -98,7 +176,22 @@ namespace etoile
     ///
     Status		Token::Serialize(Archive&	archive) const
     {
-      return (Code::Serialize(archive));
+      enter();
+
+      // serialize the code.
+      if (this->code != NULL)
+	{
+	  if (archive.Serialize(*this->code) == StatusError)
+	    escape("unable to serialize the code");
+	}
+      else
+	{
+	  // serialize 'none'.
+	  if (archive.Serialize(none) == StatusError)
+	    escape("unable to serialize 'none'");
+	}
+
+      leave();
     }
 
     ///
@@ -106,7 +199,31 @@ namespace etoile
     ///
     Status		Token::Extract(Archive&	archive)
     {
-      return (Code::Extract(archive));
+      Archive::Type	type;
+
+      enter();
+
+      // fetch the next element's type.
+      if (archive.Fetch(type) == StatusError)
+	escape("unable to fetch the next element's type");
+
+      if (type == Archive::TypeNull)
+	{
+	  // nothing to do, keep the code to NULL.
+	  if (archive.Extract(none) == StatusError)
+	    escape("unable to extract null");
+	}
+      else
+	{
+	  // allocate a code.
+	  this->code = new Code;
+
+	  // extract the code.
+	  if (archive.Extract(*this->code) == StatusError)
+	    escape("unable to extract the code");
+	}
+
+      leave();
     }
 
   }

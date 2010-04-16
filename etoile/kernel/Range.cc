@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [mon apr  5 23:11:07 2010]
+// updated       julien quintard   [thu apr 15 16:31:44 2010]
 //
 
 //
@@ -111,6 +111,9 @@ namespace etoile
       // locate the record.
       if (this->Locate(subject, &iterator) == false)
 	escape("this subject does not seem to be present in this range");
+
+      // delete the record.
+      delete *iterator;
 
       // erase the record.
       this->container.erase(iterator);

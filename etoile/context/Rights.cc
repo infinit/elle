@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.cc
 //
 // created       julien quintard   [sun mar 21 16:55:17 2010]
-// updated       julien quintard   [wed apr  7 19:29:01 2010]
+// updated       julien quintard   [thu apr 15 14:55:39 2010]
 //
 
 //
@@ -53,9 +53,9 @@ namespace etoile
       std::cout << alignment << Dumpable::Shift << "[Role] "
 		<< (Natural32)this->role << std::endl;
 
-      // dump the permissions.
-      std::cout << alignment << Dumpable::Shift << "[Permissions] "
-		<< (Natural32)this->permissions << std::endl;
+      // dump the record.
+      if (this->record.Dump(margin + 2) == StatusError)
+	escape("unable to dump the record");
 
       // dump the secret key.
       if (this->key.Dump(margin + 2) == StatusError)

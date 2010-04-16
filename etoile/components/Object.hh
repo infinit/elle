@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [tue apr  6 13:19:31 2010]
+// updated       julien quintard   [thu apr 15 20:53:38 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -47,6 +47,7 @@ namespace etoile
       static Status	Information(context::Object*,
 				    wall::State&);
       static Status	Store(context::Object*);
+      static Status	Destroy(context::Object*);
     };
 
   }

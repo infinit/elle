@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hh
 //
 // created       julien quintard   [fri aug 14 22:36:10 2009]
-// updated       julien quintard   [tue apr  6 14:48:07 2010]
+// updated       julien quintard   [fri apr 16 09:37:50 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HH
@@ -67,12 +67,13 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Add(const Identifier&,
-			    Context*);
+      template <typename T>
+      static Status	Add(T*);
       template <typename T>
       static Status	Retrieve(const Identifier&,
 				 T*&);
-      static Status	Remove(const Identifier&);
+      template <typename T>
+      static Status	Remove(T*);
 
       //
       // static attributes
@@ -85,9 +86,15 @@ namespace etoile
       Context(const Format&);
 
       //
+      // methods
+      //
+      Status		Identify(const Identifier&);
+
+      //
       // attributes
       //
       Format		format;
+      Identifier	identifier;
 
       journal::Bucket	bucket;
     };

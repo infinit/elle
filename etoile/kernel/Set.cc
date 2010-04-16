@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Set.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [wed apr  7 20:55:47 2010]
+// updated       julien quintard   [thu apr 15 16:31:27 2010]
 //
 
 //
@@ -111,6 +111,9 @@ namespace etoile
       // locate the entry.
       if (this->Locate(name, &iterator) == false)
 	escape("this name does not seem to be present in this set");
+
+      // delete the entry.
+      delete *iterator;
 
       // erase the entry.
       this->container.erase(iterator);

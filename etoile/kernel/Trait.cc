@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Trait.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [tue apr  6 16:34:27 2010]
+// updated       julien quintard   [thu apr 15 15:26:00 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace kernel
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines an unexisting trait.
+    ///
+    const Trait			Trait::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -59,7 +68,8 @@ namespace etoile
 	true();
 
       // compare the name and value.
-      if ((this->name != element.name) || (this->value != element.value))
+      if ((this->name != element.name) ||
+	  (this->value != element.value))
 	false();
 
       true();

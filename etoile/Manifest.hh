@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [wed apr  7 17:24:09 2010]
+// updated       julien quintard   [fri apr 16 11:52:53 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -76,7 +76,6 @@ namespace etoile
       // etoile
       TagOk = Range<Component>::First,
       TagIdentifier,
-      TagBoolean,
 
       // wall
       TagWallIdentify,
@@ -93,16 +92,17 @@ namespace etoile
       // directory
       TagDirectoryLoad,
       TagDirectoryCreate,
-      TagDirectoryExist,
+      TagDirectoryAdd,
       TagDirectoryLookup,
       TagDirectoryEntry,
       TagDirectoryConsult,
       TagDirectorySet,
       TagDirectoryRename,
+      TagDirectoryRemove,
       TagDirectoryStore,
+      TagDirectoryDestroy,
 
       // access
-      TagAccessExist,
       TagAccessLookup,
       TagAccessRecord,
       TagAccessConsult,
@@ -111,6 +111,15 @@ namespace etoile
       TagAccessUpdate,
       TagAccessBlock,
       TagAccessRevoke,
+
+      // attributes
+      TagAttributesAdd,
+      TagAttributesLookup,
+      TagAttributesTrait,
+      TagAttributesConsult,
+      TagAttributesCollection,
+      TagAttributesUpdate,
+      TagAttributesRemove,
     };
 
 }
@@ -128,8 +137,6 @@ outward(::etoile::TagOk,
 	parameters());
 outward(::etoile::TagIdentifier,
 	parameters(const ::etoile::context::Identifier));
-outward(::etoile::TagBoolean,
-	parameters(const ::elle::core::Boolean));
 
 // wall
 inward(::etoile::TagWallIdentify,
@@ -156,10 +163,11 @@ inward(::etoile::TagObjectStore,
 inward(::etoile::TagDirectoryLoad,
        parameters(const ::etoile::path::Way));
 inward(::etoile::TagDirectoryCreate,
-       parameters(const ::etoile::path::Way));
-inward(::etoile::TagDirectoryExist,
+       parameters());
+inward(::etoile::TagDirectoryAdd,
        parameters(const ::etoile::context::Identifier,
-		  const ::etoile::path::Slice));
+		  const ::etoile::path::Slice,
+		  const ::etoile::context::Identifier));
 inward(::etoile::TagDirectoryLookup,
        parameters(const ::etoile::context::Identifier,
 		  const ::etoile::path::Slice));
@@ -175,14 +183,16 @@ inward(::etoile::TagDirectoryRename,
        parameters(const ::etoile::context::Identifier,
 		  const ::etoile::path::Slice,
 		  const ::etoile::path::Slice));
+inward(::etoile::TagDirectoryRemove,
+       parameters(const ::etoile::context::Identifier,
+		  const ::etoile::path::Slice));
 inward(::etoile::TagDirectoryStore,
+       parameters(const ::etoile::context::Identifier));
+inward(::etoile::TagDirectoryDestroy,
        parameters(const ::etoile::context::Identifier));
 // XXX + lock/release
 
 // access
-inward(::etoile::TagAccessExist,
-       parameters(const ::etoile::context::Identifier,
-		  const ::etoile::kernel::Subject));
 inward(::etoile::TagAccessLookup,
        parameters(const ::etoile::context::Identifier,
 		  const ::etoile::kernel::Subject));
@@ -208,6 +218,30 @@ inward(::etoile::TagAccessBlock,
 inward(::etoile::TagAccessRevoke,
        parameters(const ::etoile::context::Identifier,
 		  const ::etoile::kernel::Subject));
+
+// attributes
+inward(::etoile::TagAttributesAdd,
+       parameters(const ::etoile::context::Identifier,
+		  const ::elle::core::String,
+		  const ::elle::core::String));
+inward(::etoile::TagAttributesLookup,
+       parameters(const ::etoile::context::Identifier,
+		  const ::elle::core::String));
+outward(::etoile::TagAttributesTrait,
+	parameters(const ::etoile::kernel::Trait));
+inward(::etoile::TagAttributesConsult,
+       parameters(const ::etoile::context::Identifier,
+		  const ::etoile::kernel::Index,
+		  const ::etoile::kernel::Size));
+outward(::etoile::TagAttributesCollection,
+	parameters(const ::etoile::kernel::Collection));
+inward(::etoile::TagAttributesUpdate,
+       parameters(const ::etoile::context::Identifier,
+		  const ::elle::core::String,
+		  const ::elle::core::String));
+inward(::etoile::TagAttributesRemove,
+       parameters(const ::etoile::context::Identifier,
+		  const ::elle::core::String));
 
 //
 // ---------- dependencies ----------------------------------------------------

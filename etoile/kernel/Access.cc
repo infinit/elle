@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [wed apr  7 19:30:58 2010]
+// updated       julien quintard   [fri apr 16 14:39:56 2010]
 //
 
 //
@@ -21,6 +21,18 @@ namespace etoile
 {
   namespace kernel
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Access::Access():
+      state(StateClean)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

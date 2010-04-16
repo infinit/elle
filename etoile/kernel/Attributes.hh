@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [tue apr  6 16:33:02 2010]
+// updated       julien quintard   [thu apr 15 18:56:25 2010]
 //
 
 #ifndef ETOILE_KERNEL_ATTRIBUTES_HH
@@ -23,6 +23,7 @@
 #include <etoile/kernel/Trait.hh>
 #include <etoile/kernel/Index.hh>
 #include <etoile/kernel/Size.hh>
+#include <etoile/kernel/Collection.hh>
 
 #include <list>
 
@@ -45,33 +46,19 @@ namespace etoile
     {
     public:
       //
-      // types
-      //
-      typedef std::list<Trait*>			Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
-
-      //
-      // constructors & destructors
-      //
-      ~Attributes();
-
-      //
       // methods
       //
       Status		Add(Trait*);
       Status		Exist(const String&);
       Status		Lookup(const String&,
 			       Trait*&);
-      /*
       Status		Consult(const Index&,
 				const Size&,
-				T&) const; // XXX */
+				Collection&) const;
+      Status		Update(const String&,
+			       const String&); // XXX
       Status		Remove(const String&);
       Status		Capacity(Size&) const;
-
-      Status		Locate(const String&,
-			       Iterator* = NULL);
 
       //
       // interfaces
@@ -79,7 +66,7 @@ namespace etoile
 
       // entity
       declare(Entity, Attributes);
-      Boolean		operator==(const Attributes&) const;
+      // XXX
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -91,7 +78,7 @@ namespace etoile
       //
       // attributes
       //
-      Container		container;
+      Collection	collection;
     };
 
   }

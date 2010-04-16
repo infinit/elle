@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [fri apr  9 02:32:55 2010]
+// updated       julien quintard   [fri apr 16 14:40:49 2010]
 //
 
 //
@@ -39,7 +39,7 @@ namespace etoile
     /// this method initializes the object.
     ///
     Object::Object():
-      PublicKeyBlock()
+      PublicKeyBlock::PublicKeyBlock()
     {
       this->meta.state = StateClean;
       this->meta.owner.permissions = PermissionNone;
@@ -96,6 +96,12 @@ namespace etoile
 	if (pair.k.Sign(this->owner.K, this->owner.signature) == StatusError)
 	  escape("unable to sign the owner public key with the PKB "
 		 "private key");
+
+	// create a subject corresponding to the user. note that this
+	// subject will never be serialized hence is not really part of
+	// the object but is used to ease the process of access control.
+	if (this->owner.subject.Create(this->owner.K) == StatusError)
+	  escape("unable to create the owner subject");
       }
 
       // (iii)
@@ -218,6 +224,15 @@ namespace etoile
 
       // mark the section as dirty.
       this->meta.state = StateDirty;
+
+      // re-compute the owner's access record. just like this->owner.subject,
+      // this attribute is not mandatory but has been introduced in order
+      // to simplify access control management.
+      if (this->meta.owner.record.Update(this->owner.subject,
+					 this->meta.owner.permissions,
+					 this->meta.owner.token) ==
+	  StatusError)
+	escape("unable to create the owner access record");
 
       leave();
     }
@@ -492,18 +507,14 @@ namespace etoile
 	escape("unable to dump the meta owner's token");
 
       std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		<< "[Status] " << std::endl;
+		<< "[Genre] " << (Natural32)this->meta.genre << std::endl;
 
       std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		<< Dumpable::Shift << "[Genre] "
-		<< this->meta.genre << std::endl;
-
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		<< Dumpable::Shift << "[Stamp] " << std::endl;
-      if (this->meta.stamp.Dump(margin + 8) == StatusError)
+		<< "[Stamp] " << std::endl;
+      if (this->meta.stamp.Dump(margin + 6) == StatusError)
 	escape("unable to dump the meta stamp");
 
-      if (this->meta.attributes.Dump(margin + 6) == StatusError)
+      if (this->meta.attributes.Dump(margin + 4) == StatusError)
 	escape("unable to dump the meta attributess");
 
       std::cout << alignment << Dumpable::Shift << Dumpable::Shift
@@ -649,6 +660,17 @@ namespace etoile
 			  this->data.version,
 			  this->data.signature) == StatusError)
 	escape("unable to extract the data part");
+
+      // compute the owner subject.
+      if (this->owner.subject.Create(this->owner.K) == StatusError)
+	escape("unable to create the owner subject");
+
+      // compute the owner record.
+      if (this->meta.owner.record.Update(this->owner.subject,
+					 this->meta.owner.permissions,
+					 this->meta.owner.token) ==
+	  StatusError)
+	escape("unable to create the owner access record");
 
       leave();
     }

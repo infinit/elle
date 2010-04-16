@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Item.cc
 //
 // created       julien quintard   [mon apr  5 21:26:41 2010]
-// updated       julien quintard   [tue apr  6 11:44:56 2010]
+// updated       julien quintard   [fri apr 16 14:33:24 2010]
 //
 
 //
@@ -27,20 +27,23 @@ namespace etoile
 //
 
     ///
-    /// push constructor.
+    /// constructor.
     ///
-    Item::Item(hole::Address*					address):
-      operation(OperationPop),
-      address(address)
+    Item::Item(const hole::Address&				address,
+	       hole::Block*					block):
+      operation(OperationPush),
+      address(address),
+      block(block)
     {
     }
 
     ///
-    /// default constructor.
+    /// constructor.
     ///
-    Item::Item(hole::Block*					block):
-      operation(OperationPush),
-      block(block)
+    Item::Item(const hole::Address&				address):
+      operation(OperationDestroy),
+      address(address),
+      block(NULL)
     {
     }
 
@@ -63,6 +66,11 @@ namespace etoile
       std::cout << alignment << Dumpable::Shift << "[Operation] "
 		<< this->operation << std::endl;
 
+      // dump the address.
+      if (this->address.Dump(margin + 2) == StatusError)
+	escape("unable to dump the address");
+
+      // display operation-specific information.
       switch (this->operation)
 	{
 	case OperationPush:
@@ -73,11 +81,9 @@ namespace etoile
 
 	    break;
 	  }
-	case OperationPop:
+	case OperationDestroy:
 	  {
-	    // dump the address pointer.
-	    std::cout << alignment << Dumpable::Shift << "[Address] "
-		      << std::hex << this->address << std::endl;
+	    // nothing more.
 
 	    break;
 	  }

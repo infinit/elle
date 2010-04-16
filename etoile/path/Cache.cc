@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [wed mar 31 00:34:48 2010]
+// updated       julien quintard   [wed apr 14 12:58:09 2010]
 //
 
 //
@@ -137,7 +137,8 @@ namespace etoile
 	    break;
 
 	  // add the address to the venue.
-	  venue.elements.push_back(item->address);
+	  if (venue.Record(item->address) == StatusError)
+	    escape("unable to record the venue address");
 	}
 
       leave();
