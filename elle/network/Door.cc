@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [fri apr  9 00:30:57 2010]
+// updated       julien quintard   [wed apr 14 16:52:06 2010]
 //
 
 //
@@ -175,7 +175,7 @@ namespace elle
     {
       Address		address;
 
-      printf("[XXX] Door::Read(%u)\n", this->socket->bytesAvailable());
+      //printf("[XXX] Door::Read(%u)\n", this->socket->bytesAvailable());
 
       enter();
 

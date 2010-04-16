@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/miscellaneous/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [thu apr  8 22:07:29 2010]
+// updated       julien quintard   [wed apr 14 11:50:40 2010]
 //
 
 //
@@ -192,7 +192,7 @@ namespace elle
       String		message(text);
 
       // record the message.
-      Report::Record(type, meta, message);
+      this->Record(type, meta, message);
     }
 
     ///
@@ -225,8 +225,8 @@ namespace elle
       Report::Scoutor	scoutor;
 
       // go through the record and record every message.
-      for (scoutor = this->store.begin();
-	   scoutor != this->store.end();
+      for (scoutor = report.store.begin();
+	   scoutor != report.store.end();
 	   scoutor++)
 	{
 	  Report::Entry*	entry = *scoutor;
@@ -237,11 +237,11 @@ namespace elle
 	  message.append(entry->message);
 
 	  // record the message.
-	  Report::Record(entry->type, entry->meta, message);
+	  this->Record(entry->type, entry->meta, message);
 	}
 
       // create a headline message of the given type.
-      Report::Record(type, meta, "Report");
+      this->Record(type, meta, "Report");
     }
 
 //
@@ -270,17 +270,17 @@ namespace elle
 	  // display the error type.
 	  switch (entry->type)
 	    {
-	    case elle::miscellaneous::Report::TypeWarning:
+	    case Report::TypeWarning:
 	      {
 		std::cout << alignment << Dumpable::Shift << "[Warning] ";
 		break;
 	      }
-	    case elle::miscellaneous::Report::TypeError:
+	    case Report::TypeError:
 	      {
 		std::cout << alignment << Dumpable::Shift << "[Error] ";
 		break;
 	      }
-	    case elle::miscellaneous::Report::TypeFailure:
+	    case Report::TypeFailure:
 	      {
 		std::cout << alignment << Dumpable::Shift << "[Failure] ";
 		break;

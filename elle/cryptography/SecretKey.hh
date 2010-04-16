@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [wed mar 24 22:19:31 2010]
+// updated       julien quintard   [fri apr 16 14:53:41 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
@@ -77,6 +77,8 @@ namespace elle
 	static const ::EVP_MD*		Digest;
       };
 
+      static const SecretKey		Null;
+
       //
       // methods
       //
@@ -117,7 +119,7 @@ namespace elle
       //
       // attributes
       //
-      Region		key;
+      Region		region;
 
       //
       // forward methods
