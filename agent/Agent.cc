@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri apr  9 01:16:01 2010]
+// updated       julien quintard   [thu apr 15 13:41:51 2010]
 //
 
 //
@@ -27,33 +27,33 @@ namespace agent
   ///
   /// this value defines the component's name.
   ///
-  const Character	Component[] = "agent";
+  const Character		Component[] = "agent";
 
   ///
   /// this string contains the path to the user infinit configuration
   /// directory.
   ///
-  const String		Agent::Path = System::Path::Home + "/.infinit";
+  const String			Agent::Path = System::Path::Home + "/.infinit";
 
   ///
   /// this string represents the door's name to Etoile.
   ///
-  const String		Agent::Line("etoile");
+  const String			Agent::Line("etoile");
 
   ///
   /// the agent key pair though only the private key will be needed.
   ///
-  KeyPair		Agent::Pair;
+  KeyPair			Agent::Pair;
 
   ///
   /// the door to Etoile.
   ///
-  Door			Agent::Channel;
+  Door				Agent::Channel;
 
   ///
   /// the phrase used to connect applications to Etoile.
   ///
-  String		Agent::Phrase;
+  String			Agent::Phrase;
 
 //
 // ---------- methods ---------------------------------------------------------
