@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [wed apr  7 22:39:31 2010]
+// updated       julien quintard   [fri apr 16 16:28:07 2010]
 //
 
 //
@@ -62,9 +62,14 @@ namespace pig
   String			PIG::Phrase;
 
   ///
+  /// the subject representing the current user.
+  ///
+  ::etoile::kernel::Subject	PIG::Subject;
+
+  ///
   /// this defines the number of directories entries fetched from Etoile.
   ///
-  const etoile::kernel::Size	PIG::Frame = 32;
+  const ::etoile::kernel::Size	PIG::Frame = 32;
 
 //
 // ---------- callbacks -------------------------------------------------------
@@ -77,9 +82,10 @@ namespace pig
   int			PIG::Getattr(const char*		path,
 				     struct stat*		stat)
   {
-    etoile::context::Identifier		identifier;
-    etoile::wall::State			state;
-    etoile::path::Way			way(path);
+    ::etoile::context::Identifier	identifier;
+    ::etoile::wall::State		state;
+    ::etoile::path::Way			way(path);
+    ::etoile::kernel::Record		record;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -88,20 +94,36 @@ namespace pig
     // clear the stat structure.
     ::memset(stat, 0x0, sizeof(struct stat));
 
+    // XXX un moyen de tester si l'objet exist?
+
     // load the object.
     if (PIG::Channel.Call(
 	  Inputs<TagObjectLoad>(way),
 	  Outputs<TagIdentifier>(identifier)) == StatusError)
-      ignore(ENOENT);
+      error(ENOENT);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
 	  Inputs<TagObjectInformation>(identifier),
 	  Outputs<TagObjectState>(state)) == StatusError)
-      error(ENOENT);
+      error(EINTR);
+
+    // XXX ici ne pas chopper les perms du user mais les perms du proprio!
+    // donc utiliser le mapping pour recuperer sa clef etc.
+
+    // retrieve the user's permissions on the object.
+    if (PIG::Channel.Call(
+	  Inputs<TagAccessLookup>(identifier, PIG::Subject),
+	  Outputs<TagAccessRecord>(record)) == StatusError)
+      error(EINTR);
+
+    // check the record.
+    if (record == kernel::Record::Null)
+      error(EACCES);
 
     // set the uid/gid
     /// XXX \todo use a mapping configuration file.
+    /// XXX mapping pour user et group getgid() et ne pas mettre de perms.
     stat->st_uid = getuid();
     stat->st_gid = getgid();
 
@@ -112,37 +134,100 @@ namespace pig
     stat->st_atime = time(NULL);
 
     if (state.stamps.creation.Convert(stat->st_ctime) == StatusError)
-      error(ENOENT);
+      error(EINTR);
 
     if (state.stamps.modification.Convert(stat->st_mtime) == StatusError)
-      error(ENOENT);
+      error(EINTR);
 
     // set the mode and permissions.
-    /// \todo XXX set properly the permissions according to the user's
-    ///       access permissions + the EXEC bit with the attributes.
     switch (state.genre)
       {
-      case etoile::kernel::GenreDirectory:
+      case ::etoile::kernel::GenreDirectory:
 	{
-	  stat->st_mode = S_IFDIR | 0700;
+	  // set the object as being a directory.
+	  stat->st_mode = S_IFDIR;
+
+	  // if the user has the read permission, allow her to access
+	  // and read the directory.
+	  if ((record.permissions & ::etoile::kernel::PermissionRead) != 0)
+	    stat->st_mode |= S_IRUSR | S_IXUSR;
+
+	  // if the user has the write permission, allow her to modify
+	  // the directory content.
+	  if ((record.permissions & ::etoile::kernel::PermissionWrite) != 0)
+	    stat->st_mode |= S_IWUSR;
 
 	  break;
 	}
-      case etoile::kernel::GenreFile:
+      case ::etoile::kernel::GenreFile:
 	{
-	  stat->st_mode = S_IFREG | 0700;
+	  ::etoile::kernel::Trait	trait;
+
+	  stat->st_mode = S_IFREG;
+
+	  // if the user has the read permission, allow her to read
+	  // the file.
+	  if ((record.permissions & ::etoile::kernel::PermissionRead) != 0)
+	    stat->st_mode |= S_IRUSR;
+
+	  // if the user has the write permission, allow her to modify
+	  // the file content.
+	  if ((record.permissions & ::etoile::kernel::PermissionWrite) != 0)
+	    stat->st_mode |= S_IWUSR;
+
+	  /*
+	  // retrieve the attribute.
+	  if (PIG::Channel.Call(
+	        Inputs<TagAttributesLookup>(identifier, "posix::exec"),
+		Outputs<TagAttributesTrait>(trait)) == StatusError)
+	    error(ENOENT);
+
+	  // check the trait.
+	  if ((trait != ::etoile::kernel::Trait::Null) &&
+	      (trait->value == "true"))
+	    {
+	      // active the exec bit.
+	      stat->st_mode |= S_IXUSR;
+	    }
+	  */
 
 	  break;
 	}
-      case etoile::kernel::GenreLink:
+      case ::etoile::kernel::GenreLink:
 	{
-	  stat->st_mode = S_IFLNK | 0700;
+	  stat->st_mode = S_IFLNK;
+
+	  // if the user has the read permission, allow her to read
+	  // the file.
+	  if ((record.permissions & ::etoile::kernel::PermissionRead) != 0)
+	    stat->st_mode |= S_IRUSR;
+
+	  // if the user has the write permission, allow her to modify
+	  // the file content.
+	  if ((record.permissions & ::etoile::kernel::PermissionWrite) != 0)
+	    stat->st_mode |= S_IWUSR;
+
+	  /*
+	  // retrieve the attribute.
+	  if (PIG::Channel.Call(
+	        Inputs<TagAttributesLookup>(identifier, "posix::exec"),
+		Outputs<TagAttributesTrait>(trait)) == StatusError)
+	    error(ENOENT);
+
+	  // check the trait.
+	  if ((trait != ::etoile::kernel::Trait::Null) &&
+	      (trait->value == "true"))
+	    {
+	      // active the exec bit.
+	      stat->st_mode |= S_IXUSR;
+	    }
+	  */
 
 	  break;
 	}
       default:
 	{
-	  error(ENOENT);
+	  error(EINTR);
 	}
       }
 
@@ -150,7 +235,7 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagObjectStore>(identifier),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(EINTR);
 
     return (0);
   }
@@ -161,10 +246,9 @@ namespace pig
   int			PIG::Opendir(const char*		path,
 				     struct fuse_file_info*	info)
   {
-    etoile::context::Identifier		identifier;
-    etoile::path::Way			way(path);
-    etoile::kernel::Subject		subject;
-    etoile::kernel::Record		record;
+    ::etoile::context::Identifier	identifier;
+    ::etoile::path::Way			way(path);
+    ::etoile::kernel::Record		record;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -176,23 +260,26 @@ namespace pig
 	  Outputs<TagIdentifier>(identifier)) == StatusError)
       error(ENOENT);
 
-    // create a subject.
-    if (subject.Create(PIG::K) == StatusError)
-      error(ENOENT);
+    // XXX est-ce necessaire de checker, si ca se trouve c'est deja fait
+    // par FUSE
 
     // retrieve the user's permissions on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessLookup>(identifier, subject),
+	  Inputs<TagAccessLookup>(identifier, PIG::Subject),
 	  Outputs<TagAccessRecord>(record)) == StatusError)
-      error(ENOENT);
+      error(EINTR);
+
+    // check the record.
+    if (record == kernel::Record::Null)
+      error(EACCES);
 
     // check if the user has the right to read the directory.
-    if ((record.permissions & etoile::kernel::PermissionRead) == 0)
-      error(ENOENT);
+    if ((record.permissions & ::etoile::kernel::PermissionRead) == 0)
+      error(EACCES);
 
     // duplicate the identifier and save it in the info structure's file
     // handle.
-    info->fh = (uint64_t)new etoile::context::Identifier(identifier);
+    info->fh = (uint64_t)new ::etoile::context::Identifier(identifier);
 
     return (0);
   }
@@ -206,9 +293,10 @@ namespace pig
 				     off_t			offset,
 				     struct fuse_file_info*	info)
   {
-    etoile::path::Way			way(path);
-    etoile::context::Identifier*	identifier;
-    etoile::wall::State			state;
+    ::etoile::path::Way			way(path);
+    ::etoile::context::Identifier*	identifier;
+    ::etoile::wall::State		state;
+    off_t				next;
 
     printf("[XXX] %s(%s, 0x%x, 0x%x, %u, 0x%x)\n",
 	   __FUNCTION__,
@@ -216,7 +304,7 @@ namespace pig
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (::etoile::context::Identifier*)info->fh;
 
     /// XXX \todo these . and .. entries are UNIX-specific
     // fill the . and .. entries.
@@ -225,18 +313,29 @@ namespace pig
     if (offset <= 1)
       filler(buffer, "..", NULL, 2);
 
+    // adjust the offset since Etoile starts with zero while in POSIX
+    // terms, zero and one are used for . and ..
+    if (offset > 2)
+      offset -= 2;
+
+    // compute the offset of the next entry.
+    if (offset < 2)
+      next = 3;
+    else
+      next = offset + 1;
+
     while (true)
       {
-	etoile::kernel::Set::Scoutor	scoutor;
-	etoile::kernel::Set		set;
+	::etoile::kernel::Set::Scoutor	scoutor;
+	::etoile::kernel::Set		set;
 
 	// read the directory entries.
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryConsult>(*identifier,
-					  offset - 2,
+					  offset,
 					  PIG::Frame),
 	      Outputs<TagDirectorySet>(set)) == StatusError)
-	  error(ENOENT);
+	  error(EINTR);
 
 	// add the entries by using the filler() function.
 	for (scoutor = set.container.begin();
@@ -245,9 +344,16 @@ namespace pig
 	  {
 	    ::etoile::kernel::Entry*	entry = *scoutor;
 
+	    printf("[XXX] filling %s (%qd)\n",
+		   entry->name.c_str(),
+		   next);
+
 	    // fill the buffer with filler().
-	    if (filler(buffer, entry->name.c_str(), NULL, offset++) == 1)
+	    if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
 	      return (0);
+
+	    // compute the offset of the next entry.
+	    next++;
 	  }
 
 	if (set.container.size() < PIG::Frame)
@@ -263,7 +369,7 @@ namespace pig
   int			PIG::Releasedir(const char*		path,
 					struct fuse_file_info*	info)
   {
-    etoile::context::Identifier*	identifier;
+    ::etoile::context::Identifier*	identifier;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -271,14 +377,20 @@ namespace pig
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (::etoile::context::Identifier*)info->fh;
 
     // store the context back.
     // store the object.
     if (PIG::Channel.Call(
 	  Inputs<TagObjectStore>(*identifier),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(EINTR);
+
+    // delete the identifier.
+    delete identifier;
+
+    // reset the file handle, just to make sure it is not used anymore.
+    info->fh = 0;
 
     return (0);
   }
@@ -289,40 +401,208 @@ namespace pig
   int			PIG::Mkdir(const char*			path,
 				   mode_t			mode)
   {
-    etoile::path::Way		way(path);
-    etoile::context::Identifier	identifier;
+    ::etoile::path::Slice		name;
+    ::etoile::path::Way			way(::etoile::path::Way(path), name);
+    ::etoile::context::Identifier	directory;
+    ::etoile::context::Identifier	subdirectory;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
 	   path, mode);
 
-    // create the directory.
+    // XXX check perms?
+
+    // load the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryCreate>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  Inputs<TagDirectoryLoad>(way),
+	  Outputs<TagIdentifier>(directory)) == StatusError)
       error(ENOENT);
 
-    // XXX permissions
-    // XXX attributes
+    // create the subdirectory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryCreate>(),
+	  Outputs<TagIdentifier>(subdirectory)) == StatusError)
+      error(EINTR);
+
+    // XXX set permissions
+
+    // add the subdirectory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryAdd>(directory, name, subdirectory),
+	  Outputs<TagOk>()) == StatusError)
+      error(EINTR);
+
+    // store the subdirectory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryStore>(subdirectory),
+	  Outputs<TagOk>()) == StatusError)
+      error(EINTR);
 
     // store the directory.
-    /*
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(identifier),
+	  Inputs<TagDirectoryStore>(directory),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
-    */
+      error(EINTR);
 
     return (0);
   }
 
   ///
   /// this method removes a directory.
+  ///
   int			PIG::Rmdir(const char*			path)
   {
+    ::etoile::path::Slice		name;
+    ::etoile::path::Way			child(path);
+    ::etoile::path::Way			parent(child, name);
+    ::etoile::context::Identifier	directory;
+    ::etoile::context::Identifier	subdirectory;
+
+    printf("[XXX] %s(%s)\n",
+	   __FUNCTION__,
+	   path);
+
+    // check perms?
+
+    // load the directory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryLoad>(parent),
+	  Outputs<TagIdentifier>(directory)) == StatusError)
+      error(ENOENT);
+
+    // load the subdirectory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryLoad>(child),
+	  Outputs<TagIdentifier>(subdirectory)) == StatusError)
+      error(ENOENT);
+
+    // remove the entry.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryRemove>(directory, name),
+	  Outputs<TagOk>()) == StatusError)
+      error(EINTR);
+
+    // store the directory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryStore>(directory),
+	  Outputs<TagOk>()) == StatusError)
+      error(EINTR);
+
+    // destroy the subdirectory.
+    if (PIG::Channel.Call(
+	  Inputs<TagDirectoryDestroy>(subdirectory),
+	  Outputs<TagOk>()) == StatusError)
+      error(EINTR);
 
     return (0);
   }
+
+  ///
+  /// this method checks if the current user has the permission to access
+  /// the object _path_ for the operations _mask_.
+  ///
+  int			PIG::Access(const char*			path,
+				    int				mask)
+  {
+    ::etoile::context::Identifier	identifier;
+    ::etoile::wall::State		state;
+    ::etoile::path::Way			way(path);
+    ::etoile::kernel::Record		record;
+
+    printf("[XXX] %s(%s, 0%o)\n",
+	   __FUNCTION__,
+	   path, mask);
+
+    // load the object.
+    if (PIG::Channel.Call(
+	  Inputs<TagObjectLoad>(way),
+	  Outputs<TagIdentifier>(identifier)) == StatusError)
+      error(ENOENT);
+
+    // retrieve information on the object.
+    if (PIG::Channel.Call(
+	  Inputs<TagObjectInformation>(identifier),
+	  Outputs<TagObjectState>(state)) == StatusError)
+      error(EINTR);
+
+    // retrieve the user's permissions on the object.
+    if (PIG::Channel.Call(
+	  Inputs<TagAccessLookup>(identifier, PIG::Subject),
+	  Outputs<TagAccessRecord>(record)) == StatusError)
+      error(ENOENT);
+
+    // check the record.
+    if (record == kernel::Record::Null)
+      error(EACCES);
+
+    // check if the permissions match the mask for execution.
+    if ((mask & X_OK) != 0)
+      {
+	if ((state.genre == ::etoile::kernel::GenreDirectory) &&
+	    ((record.permissions & ::etoile::kernel::PermissionRead) == 0))
+	  error(EACCES);
+
+	// XXX /* attribute X pas present */ retrieve attribute!
+      }
+
+    // check if the permissions match the mask for reading.
+    if ((mask & R_OK) != 0)
+      {
+	if ((record.permissions & ::etoile::kernel::PermissionRead) == 0)
+	  error(EACCES);
+      }
+
+    // check if the permissions match the mask for writing.
+    if ((mask & W_OK) != 0)
+      {
+	if ((record.permissions & ::etoile::kernel::PermissionWrite) == 0)
+	  error(EACCES);
+      }
+
+    return (0);
+  }
+
+  /*
+  int			Interface::setxattr(const char*		path,
+					    const char*		name,
+					    const char*		value,
+					    size_t		size,
+					    int			flags)
+    {
+      printf("[XXX] %s(...)\n",
+	     __FUNCTION__);
+
+      // XXX
+
+      return (0);
+    }
+
+    int			Interface::chmod(const char*		path,
+					 mode_t			mode)
+    {
+      printf("[XXX] %s(%s, 0x%x)\n",
+	     __FUNCTION__,
+	     path, mode);
+
+      // XXX
+
+      return (0);
+    }
+
+    int			Interface::chown(const char*		path,
+					 uid_t			uid,
+					 gid_t			gid)
+    {
+      printf("[XXX] %s(%s, %u, %u)\n",
+	     __PRETTY_FUNCTION__,
+	     path, uid, gid);
+
+      // XXX
+
+      return (0);
+    }
+
+  */
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -391,6 +671,15 @@ namespace pig
     }
 
     //
+    // create a subject representing the current user.
+    //
+    {
+      // create the subject.
+      if (PIG::Subject.Create(PIG::K) == StatusError)
+	escape("unable to create the user's subject");
+    }
+
+    //
     // connect the application to etoile.
     //
     {
@@ -415,6 +704,9 @@ namespace pig
     //
     {
       // set the operations.
+
+      // operations.statfs: not supported
+
       operations.getattr = PIG::Getattr;
 
       operations.opendir = PIG::Opendir;
@@ -423,22 +715,35 @@ namespace pig
       operations.mkdir = PIG::Mkdir;
       operations.rmdir = PIG::Rmdir;
 
+      operations.access = PIG::Access;
       /*
-	operations.setxattr = PIG::setxattr;
-	operations.chmod = PIG::chmod;
-	operations.chown = PIG::chown;
-	operations.access = PIG::access;
-	operations.utimens = PIG::utimens;
-	operations.mknod = PIG::mknod;
+      operations.chmod = PIG::Chmod;
+      operations.chown = PIG::Chown;
+      operations.setxattr = PIG::Setxattr;
+      operations.getxattr = PIG::Getxattr;
+      operations.listxattr = PIG::Listxattr;
+      operations.removexattr = PIG::Removexattr;
+      */
+      /*
+
+	operations.utimens = PIG::utimens; // not permitted
+
+	operations.mknod = PIG::mknod; // use create() instead
+
+	// file
 	operations.open = PIG::open;
 	operations.read = PIG::read;
 	operations.write = PIG::write;
 	operations.truncate = PIG::truncate;
 	operations.release = PIG::release;
 	operations.unlink = PIG::unlink;
-	operations.rename = PIG::rename;
+
+	// link
 	operations.readlink = PIG::readlink;
 	operations.symlink = PIG::symlink;
+
+	// objects
+	operations.rename = PIG::rename;
       */
     }
 

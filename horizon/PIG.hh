@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [thu apr  8 20:59:14 2010]
+// updated       julien quintard   [fri apr 16 15:48:56 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -51,7 +51,7 @@ namespace pig
     static const String			Path;
     static const String			Line;
 
-    static const etoile::kernel::Size	Frame;
+    static const ::etoile::kernel::Size	Frame;
 
     //
     // callbacks
@@ -72,19 +72,19 @@ namespace pig
 			      mode_t);
     static int		Rmdir(const char*);
 
-    static int		Setxattr(const char*,
-				 const char*,
-				 const char*,
-				 size_t,
-				 int);
+    static int		Access(const char*,
+			       int);
     static int		Chmod(const char*,
 			      mode_t);
     static int		Chown(const char*,
 			      uid_t,
 			      gid_t);
+    static int		Setxattr(const char*,
+				 const char*,
+				 const char*,
+				 size_t,
+				 int);
 
-    static int		Access(const char*,
-			       int);
     static int		Utimens(const char*,
 				const struct timespec[2]);
 
@@ -126,10 +126,12 @@ namespace pig
     //
     // static attributes
     //
-    static Door			Channel;
+    static Door				Channel;
 
-    static PublicKey		K;
-    static String		Phrase;
+    static PublicKey			K;
+    static String			Phrase;
+
+    static ::etoile::kernel::Subject	Subject;
   };
 
 //
