@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [fri apr  9 01:15:53 2010]
+// updated       julien quintard   [wed apr 14 16:52:02 2010]
 //
 
 //
@@ -98,8 +98,8 @@ namespace elle
       // retrieve the argument and takes over the tracking.
       parcel = p;
 
-      printf("[XXX] Network::Dispatch(tag[%u] event[%qu])\n",
-	     parcel->header->tag, parcel->header->event.identifier);
+      //printf("[XXX] Network::Dispatch(tag[%u] event[%qu])\n",
+      //parcel->header->tag, parcel->header->event.identifier);
 
       //
       // first, try to  wake up a waiting slot.

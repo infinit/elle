@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [sat mar 27 10:55:00 2010]
+// updated       julien quintard   [fri apr 16 14:55:22 2010]
 //
 
 //
@@ -45,12 +45,19 @@ namespace elle
     ///
     /// this is the encryption algorithm used by the SecretKey class.
     ///
-    const ::EVP_CIPHER*		SecretKey::Algorithms::Cipher = ::EVP_aes_256_cbc();
+    const ::EVP_CIPHER*		SecretKey::Algorithms::Cipher =
+      ::EVP_aes_256_cbc();
 
     ///
     /// this is the hash algorithm used by the encryption process.
     ///
-    const ::EVP_MD*		SecretKey::Algorithms::Digest = ::EVP_md5();
+    const ::EVP_MD*		SecretKey::Algorithms::Digest =
+      ::EVP_md5();
+
+    ///
+    /// this defines a null secret key.
+    ///
+    const SecretKey		SecretKey::Null;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -64,8 +71,8 @@ namespace elle
       enter();
 
       // assign the password to the internal key object.
-      if (this->key.Duplicate((Byte*)password.c_str(),
-			      password.length()) == StatusError)
+      if (this->region.Duplicate((Byte*)password.c_str(),
+				 password.length()) == StatusError)
 	escape("unable to assign the given password to the key");
 
       leave();
@@ -94,14 +101,14 @@ namespace elle
       size = length / 8;
 
       // prepare the password.
-      if (this->key.Prepare(size) == StatusError)
+      if (this->region.Prepare(size) == StatusError)
 	escape("unable to prepare the key");
 
       // generate the key.
-      ::RAND_pseudo_bytes((unsigned char*)this->key.contents, size);
+      ::RAND_pseudo_bytes((unsigned char*)this->region.contents, size);
 
       // manually update the size.
-      this->key.size = size;
+      this->region.size = size;
 
       leave();
     }
@@ -129,8 +136,8 @@ namespace elle
       if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
 			   SecretKey::Algorithms::Digest,
 			   (unsigned char*)salt,
-			   (unsigned char*)this->key.contents,
-			   this->key.size,
+			   (unsigned char*)this->region.contents,
+			   this->region.size,
 			   1,
 			   (unsigned char*)key,
 			   (unsigned char*)iv) != sizeof(key))
@@ -231,8 +238,8 @@ namespace elle
       if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
 			   SecretKey::Algorithms::Digest,
 			   salt,
-			   this->key.contents,
-			   this->key.size,
+			   this->region.contents,
+			   this->region.size,
 			   1,
 			   key,
 			   iv) != sizeof(key))
@@ -311,7 +318,7 @@ namespace elle
 	true();
 
       // compare the internal region.
-      if (this->key != element.key)
+      if (this->region != element.region)
 	false();
 
       true();
@@ -335,10 +342,19 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[SecretKey]" << std::endl;
+      // display the key depending on its value.
+      if (*this == SecretKey::Null)
+	{
+	  std::cout << alignment << "[SecretKey] Null" << std::endl;
+	}
+      else
+	{
+	  std::cout << alignment << "[SecretKey]" << std::endl;
 
-      if (this->key.Dump(margin + 2) == StatusError)
-	escape("unable to dump the secret key");
+	  // dump the region.
+	  if (this->region.Dump(margin + 2) == StatusError)
+	    escape("unable to dump the secret key");
+	}
 
       leave();
     }
@@ -355,7 +371,7 @@ namespace elle
       enter();
 
       // serialize the internal key.
-      if (archive.Serialize(this->key) == StatusError)
+      if (archive.Serialize(this->region) == StatusError)
 	escape("unable to serialize the internal key");
 
       leave();
@@ -369,7 +385,7 @@ namespace elle
       enter();
 
       // extract the key.
-      if (archive.Extract(this->key) == StatusError)
+      if (archive.Extract(this->region) == StatusError)
 	escape("unable to extract the internal key");
 
       leave();
