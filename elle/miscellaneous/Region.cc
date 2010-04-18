@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/miscellaneous/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [wed apr  7 05:11:49 2010]
+// updated       julien quintard   [sun apr 18 14:58:51 2010]
 //
 
 //
@@ -23,11 +23,13 @@
 ///
 #include <elle/miscellaneous/Report.hh>
 #include <elle/miscellaneous/Maid.hh>
+#include <elle/util/Base64.hh>
 
 namespace elle
 {
   using namespace core;
   using namespace miscellaneous;
+  using namespace util;
 
   namespace miscellaneous
   {
@@ -368,7 +370,9 @@ namespace elle
     ///
     Status		Region::Dump(const Natural32		margin) const
     {
+      Natural32		space = 80 - margin - Dumpable::Shift.length();
       String		alignment(margin, ' ');
+      String		string;
       Natural32		i;
 
       enter();
@@ -382,30 +386,21 @@ namespace elle
 		<< "capacity(" << std::dec << this->capacity << ")"
 		<< std::endl;
 
-      for (i = 0; i < this->size; i++)
+      // encode the region contents in base64.
+      if (Base64::Encode(*this, string) == StatusError)
+	escape("unable to encode the region's contents in base64");
+
+      // display the base64 string.
+      for (i = 0; i < (string.length() / space); i++)
 	{
-	  if (i == 0)
-	    std::cout << alignment << Dumpable::Shift
-		      << std::nouppercase << std::hex
-		      << (Natural32)this->contents[i];
-	  else
-	    std::cout << std::hex << std::nouppercase
-		      << (Natural32)this->contents[i];
+	  std::cout << alignment << Dumpable::Shift
+		    << string.substr(i * space, space) << std::endl;
+	}
 
-	  if (((i + 1) % 20) == 0)
-	    {
-	      std::cout << std::endl;
-
-	      if ((i + 1) < this->size)
-		std::cout << alignment << Dumpable::Shift;
-	    }
-	  else
-	    {
-	      if ((i + 1) < this->size)
-		std::cout << " ";
-	      else
-		std::cout << std::endl;
-	    }
+      if ((string.length() % space) != 0)
+	{
+	  std::cout << alignment << Dumpable::Shift
+		    << string.substr(i * space) << std::endl;
 	}
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [sat mar 20 13:11:48 2010]
+// updated       julien quintard   [sun apr 18 12:42:00 2010]
 //
 
 //
@@ -40,6 +40,11 @@ namespace elle
     /// the default value for the key generation context.
     ///
     ::EVP_PKEY_CTX*		KeyPair::Contexts::Generate = NULL;
+
+    ///
+    /// this defines a null key pair.
+    ///
+    const KeyPair		KeyPair::Null;
 
 //
 // ---------- methods ---------------------------------------------------------

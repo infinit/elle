@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [wed mar 31 23:37:19 2010]
+// updated       julien quintard   [sun apr 18 10:55:24 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
