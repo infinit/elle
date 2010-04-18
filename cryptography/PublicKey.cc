@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [thu mar 25 17:38:36 2010]
+// updated       julien quintard   [sun apr 18 15:47:06 2010]
 //
 
 //
@@ -26,6 +26,15 @@ namespace elle
 
   namespace cryptography
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines a null public key.
+    ///
+    const PublicKey		PublicKey::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -239,14 +248,14 @@ namespace elle
 	  escape("unable to serialize the asymetrically-encrypted secret key "
 		 "and the symetrically-encrypted data");
 
-	// detach the data from the archive so that the data can be
-	// returned into the code without any copy.
-	if (archive.Detach() == StatusError)
-	  escape("unable to detach the data from the archive");
-
 	// wrap and return into the code.
 	if (code.region.Acquire(archive.contents, archive.size) == StatusError)
 	  escape("unable to wrap and return the archive's contents");
+
+	// detach the data from the archive so that the data is not
+	// released twice.
+	if (archive.Detach() == StatusError)
+	  escape("unable to detach the data from the archive");
       }
 
       leave();
@@ -297,10 +306,22 @@ namespace elle
       if (this == &element)
 	true();
 
-      // compare the internal numbers.
-      if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
-	  (::BN_cmp(this->key->pkey.rsa->e, element.key->pkey.rsa->e) != 0))
-	false();
+      // if one of the key is null....
+      if ((this->key == NULL) || (element.key == NULL))
+	{
+	  // compare the addresses.
+	  if (this->key != element.key)
+	    false();
+	}
+      else
+	{
+	  // compare the internal numbers.
+	  if ((::BN_cmp(this->key->pkey.rsa->n,
+			element.key->pkey.rsa->n) != 0) ||
+	      (::BN_cmp(this->key->pkey.rsa->e,
+			element.key->pkey.rsa->e) != 0))
+	    false();
+	}
 
       true();
     }

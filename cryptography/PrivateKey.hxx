@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu mar 11 16:40:31 2010]
+// updated       julien quintard   [sun apr 18 15:48:51 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
@@ -63,8 +63,8 @@ namespace elle
 
       // detach the data so that not both the clear and archive
       // release the data.
-      if (archive.Detach() == StatusError)
-	escape("unable to detach the archive's data");
+      if (clear.Detach() == StatusError)
+	escape("unable to detach the clear's data");
 
       // extract the item.
       if (archive.Extract(parameter) == StatusError)
@@ -94,8 +94,8 @@ namespace elle
       if (archive.Prepare(clear) == StatusError)
 	escape("unable to prepare the archive");
 
-      if (archive.Detach() == StatusError)
-	escape("unable to detach the archive's data");
+      if (clear.Detach() == StatusError)
+	escape("unable to detach the clear's data");
 
       if (archive.Extract(parameter, parameters...) == StatusError)
 	escape("unable to extract the items");

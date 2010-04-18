@@ -64,6 +64,7 @@ ADD_LIBRARY(elle
   concurrency/Environment.cc
 
   util/Time.cc
+  util/Base64.cc
 
   Elle.cc
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat mar 20 13:17:57 2010]
+// updated       julien quintard   [sun apr 18 12:43:45 2010]
 //
 
 //
@@ -25,6 +25,15 @@ namespace elle
 
   namespace cryptography
   {
+
+//
+// ---------- constants -------------------------------------------------------
+//
+
+    ///
+    /// this defines a null signature.
+    ///
+    const Signature		Signature::Null;
 
 //
 // ---------- entity ----------------------------------------------------------

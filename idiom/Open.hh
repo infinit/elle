@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [thu apr  8 12:03:27 2010]
+// updated       julien quintard   [sun apr 18 14:38:56 2010]
 //
 
 //
@@ -162,7 +162,7 @@
 /// XXX \todo this one should directly print on stderr or later
 ///     forward the message to a log application.
 ///
-#define alert(_text_)							\
+#define alert(_text_, _return_...)					\
   do									\
     {									\
       report(elle::miscellaneous::Report::TypeError, _text_);		\
@@ -171,7 +171,7 @@
 									\
       release();							\
 									\
-      return;								\
+      return _return_;							\
     } while (false)
 
 ///

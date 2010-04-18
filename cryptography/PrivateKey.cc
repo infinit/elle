@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [thu apr  1 15:47:33 2010]
+// updated       julien quintard   [sun apr 18 15:46:11 2010]
 //
 
 //
@@ -26,6 +26,15 @@ namespace elle
 
   namespace cryptography
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines a null private key.
+    ///
+    const PrivateKey		PrivateKey::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -233,14 +242,14 @@ namespace elle
 	// set the region size.
 	clear.size = size;
 
+	// prepare the archive.
+	if (archive.Prepare(clear) == StatusError)
+	  escape("unable to prepare the archive");
+
 	// detach the data from the region so that the data
 	// is not release twice by both 'region' and 'archive'.
 	if (clear.Detach() == StatusError)
 	  escape("unable to detach the data from the region");
-
-	// prepare the archive.
-	if (archive.Prepare(clear) == StatusError)
-	  escape("unable to prepare the archive");
 
 	// extract the secret key.
 	if (archive.Extract(secret) == StatusError)
@@ -314,12 +323,26 @@ namespace elle
       if (this == &element)
 	true();
 
-      // compare the internal numbers.
-      if ((::BN_cmp(this->key->pkey.rsa->n, element.key->pkey.rsa->n) != 0) ||
-	  (::BN_cmp(this->key->pkey.rsa->d, element.key->pkey.rsa->d) != 0) ||
-	  (::BN_cmp(this->key->pkey.rsa->p, element.key->pkey.rsa->p) != 0) ||
-	  (::BN_cmp(this->key->pkey.rsa->q, element.key->pkey.rsa->q) != 0))
-	false();
+      // if one of the key is null....
+      if ((this->key == NULL) || (element.key == NULL))
+	{
+	  // compare the addresses.
+	  if (this->key != element.key)
+	    false();
+	}
+      else
+	{
+	  // compare the internal numbers.
+	  if ((::BN_cmp(this->key->pkey.rsa->n,
+			element.key->pkey.rsa->n) != 0) ||
+	      (::BN_cmp(this->key->pkey.rsa->d,
+			element.key->pkey.rsa->d) != 0) ||
+	      (::BN_cmp(this->key->pkey.rsa->p,
+			element.key->pkey.rsa->p) != 0) ||
+	      (::BN_cmp(this->key->pkey.rsa->q,
+			element.key->pkey.rsa->q) != 0))
+	    false();
+	}
 
       true();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [tue apr  6 21:57:47 2010]
+// updated       julien quintard   [sun apr 18 15:45:35 2010]
 //
 
 //
@@ -451,13 +451,13 @@ namespace elle
 			       size) == StatusError)
 	    escape("unable to assign the data to the buffer");
 
-	  // detach the data from the buffer.
-	  if (buffer.Detach() == StatusError)
-	    escape("unable to detach the data from the buffer");
-
 	  // build the given archive.
 	  if (element.Prepare(buffer) == StatusError)
 	    escape("unable to prepare the given archive");
+
+	  // detach the data from the buffer.
+	  if (buffer.Detach() == StatusError)
+	    escape("unable to detach the data from the buffer");
 	}
 
       // update the offset.
