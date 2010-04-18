@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sat mar 20 13:16:09 2010]
+// updated       julien quintard   [sun apr 18 12:38:17 2010]
 //
 
 //
@@ -25,6 +25,15 @@ namespace elle
 
   namespace cryptography
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines a null cipher.
+    ///
+    const Cipher		Cipher::Null;
 
 //
 // ---------- entity ----------------------------------------------------------

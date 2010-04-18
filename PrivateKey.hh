@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [wed mar 24 22:19:44 2010]
+// updated       julien quintard   [sun apr 18 12:36:48 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -65,6 +65,11 @@ namespace elle
       public Dumpable, public Archivable
     {
     public:
+      //
+      // constants
+      //
+      static const PrivateKey		Null;
+
       //
       // constructors & destructors
       //
