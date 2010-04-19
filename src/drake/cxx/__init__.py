@@ -141,8 +141,10 @@ class VisualToolkit(Toolkit):
 
         # /ENTRY:main
         # /SUBSYSTEM:CONSOLE
-        return 'cl.exe /nologo /MT %s /link /OUT:%s /SUBSYSTEM:WINDOWS %s %s opengl32.lib' % \
-               (' '.join(map(str, objs)), exe,
+        return 'cl.exe /nologo /MT %s %s /link /OUT:%s /SUBSYSTEM:WINDOWS %s %s opengl32.lib' % \
+               (' '.join(cfg.flags),
+                ' '.join(map(str, objs)),
+                exe,
                 ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.lib_paths)),
                 ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
 
