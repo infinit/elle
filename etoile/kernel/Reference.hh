@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Reference.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [wed apr  7 00:54:00 2010]
+// updated       julien quintard   [tue apr 20 06:29:10 2010]
 //
 
 #ifndef ETOILE_KERNEL_REFERENCE_HH
@@ -23,6 +23,7 @@
 #include <etoile/kernel/State.hh>
 #include <etoile/kernel/Offset.hh>
 #include <etoile/kernel/Size.hh>
+#include <etoile/kernel/State.hh>
 
 #include <etoile/path/Way.hh>
 
@@ -43,6 +44,11 @@ namespace etoile
       public Dumpable, public Archivable
     {
     public:
+      //
+      // constructors & destructors
+      //
+      Reference();
+
       //
       // methods
       //
@@ -69,6 +75,8 @@ namespace etoile
       //
       // attributes
       //
+      State		state;
+
       path::Way		target;
     };
 

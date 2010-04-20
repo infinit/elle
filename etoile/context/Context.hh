@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hh
 //
 // created       julien quintard   [fri aug 14 22:36:10 2009]
-// updated       julien quintard   [fri apr 16 09:37:50 2010]
+// updated       julien quintard   [tue apr 20 07:43:50 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HH
@@ -114,6 +114,7 @@ namespace etoile
 
 #include <etoile/context/Object.hh>
 #include <etoile/context/Directory.hh>
+#include <etoile/context/Link.hh>
 #include <etoile/context/Rights.hh>
 
 #include <etoile/user/User.hh>

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [fri apr 16 09:29:02 2010]
+// updated       julien quintard   [tue apr 20 08:55:14 2010]
 //
 
 //
@@ -174,9 +174,8 @@ namespace etoile
       if (context::Context::Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the object context");
 
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
+      // check if the context is exactly an object.
+      if (context->format != context::FormatObject)
 	escape("unable to store non-object contexts");
 
       // store the context.

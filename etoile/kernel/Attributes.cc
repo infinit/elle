@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [thu apr 15 16:40:11 2010]
+// updated       julien quintard   [tue apr 20 06:44:57 2010]
 //
 
 //
@@ -33,22 +33,22 @@ namespace etoile
     {
       enter();
 
-      // add the trait in the collection.
-      if (this->collection.Add(trait) == StatusError)
-	escape("unable to add the trait in the collection");
+      // add the trait in the range.
+      if (this->range.Add(trait) == StatusError)
+	escape("unable to add the trait in the range");
 
       leave();
     }
 
     ///
-    /// this method returns true if the name exists in the attributes.
+    /// this method tests if the given name exists.
     ///
     Status		Attributes::Exist(const String&		name)
     {
       enter();
 
-      // look in the collection.
-      if (this->collection.Exist(name) != StatusTrue)
+      // test.
+      if (this->range.Exist(name) == false)
 	false();
 
       true();
@@ -62,8 +62,8 @@ namespace etoile
     {
       enter();
 
-      // look in the collection.
-      if (this->collection.Lookup(name, trait) == StatusError)
+      // look in the range.
+      if (this->range.Lookup(name, trait) == StatusError)
 	escape("unable to retrieve the trait");
 
       leave();
@@ -75,17 +75,21 @@ namespace etoile
     ///
     Status		Attributes::Consult(const Index&	index,
 					    const Size&		size,
-					    Collection&		collection)
+					    Range<Trait>&	range)
       const
     {
-      Collection::Scoutor	scoutor;
+      Range<Trait>::Scoutor	scoutor;
       Index			i;
 
       enter();
 
+      // first detach the data from the range.
+      if (range.Detach() == StatusError)
+	escape("unable to detach the data from the range");
+
       // go through the attributes entries.
-      for (scoutor = this->collection.container.begin(), i = 0;
-	   scoutor != this->collection.container.end();
+      for (scoutor = this->range.container.begin(), i = 0;
+	   scoutor != this->range.container.end();
 	   scoutor++, i++)
 	{
 	  Trait*	trait = *scoutor;
@@ -93,23 +97,31 @@ namespace etoile
 	  // if this trait lies in the selected set [index, index + size[
 	  if ((i >= index) && (i < (index + size)))
 	    {
-	      Trait*	t;
-
-	      enter(instance(t));
-
-	      // allocate a new trait.
-	      t = new Trait(*trait);
-
-	      // add the new trait to the collection.
-	      if (collection.Add(t) == StatusError)
-		escape("unable to add the name to the container");
-
-	      // waive.
-	      waive(t);
-
-	      release();
+	      // add the trait to the range.
+	      if (range.Add(trait) == StatusError)
+		escape("unable to add the trait to the range");
 	    }
 	}
+
+      leave();
+    }
+
+    ///
+    /// this method updates an existing trait's value.
+    ///
+    Status		Attributes::Update(const String&	name,
+					   const String&	value)
+    {
+      Range<Trait>::Iterator	iterator;
+
+      enter();
+
+      // locate the trait.
+      if (this->range.Locate(name, &iterator) == false)
+	escape("unable to locate the named trait");
+
+      // update the value.
+      (*iterator)->value = value;
 
       leave();
     }
@@ -121,8 +133,8 @@ namespace etoile
     {
       enter();
 
-      // remove the trait from the collection.
-      if (this->collection.Remove(name) == StatusError)
+      // remove the trait from the range.
+      if (this->range.Remove(name) == StatusError)
 	escape("unable to remove the trait");
 
       leave();
@@ -135,9 +147,9 @@ namespace etoile
     {
       enter();
 
-      // look at the size of the collection.
-      if (this->collection.Capacity(size) == StatusError)
-	escape("unable to retrieve the collection size");
+      // look at the size of the range.
+      if (this->range.Capacity(size) == StatusError)
+	escape("unable to retrieve the range size");
 
       leave();
     }
@@ -161,15 +173,15 @@ namespace etoile
     Status		Attributes::Dump(Natural32		margin) const
     {
       String			alignment(margin, ' ');
-      Collection::Scoutor	scoutor;
+      Range<Trait>::Scoutor	scoutor;
 
       enter();
 
       std::cout << alignment << "[Attributes]" << std::endl;
 
-      // dump the collection.
-      if (this->collection.Dump(margin + 2) == StatusError)
-	escape("unable to dump the collection");
+      // dump the range.
+      if (this->range.Dump(margin + 2) == StatusError)
+	escape("unable to dump the range");
 
       leave();
     }
@@ -185,9 +197,9 @@ namespace etoile
     {
       enter();
 
-      // serialize the collection.
-      if (archive.Serialize(this->collection) == StatusError)
-	escape("unable to serialize the collection");
+      // serialize the range.
+      if (archive.Serialize(this->range) == StatusError)
+	escape("unable to serialize the range");
 
       leave();
     }
@@ -199,9 +211,9 @@ namespace etoile
     {
       enter();
 
-      // extract the collection.
-      if (archive.Extract(this->collection) == StatusError)
-	escape("unable to extract the collection");
+      // extract the range.
+      if (archive.Extract(this->range) == StatusError)
+	escape("unable to extract the range");
 
       leave();
     }

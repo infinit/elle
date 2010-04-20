@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.cc
 //
 // created       julien quintard   [thu mar 11 17:09:58 2010]
-// updated       julien quintard   [thu apr  1 02:55:05 2010]
+// updated       julien quintard   [tue apr 20 20:09:22 2010]
 //
 
 //
@@ -93,6 +93,8 @@ namespace etoile
       Client*		client;
 
       enter();
+
+      printf("[XXX] Application:Error()\n");
 
       // retrieve the client related to this application's channel.
       if (Client::Retrieve(this->channel, client) != StatusTrue)

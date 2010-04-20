@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu apr 15 13:46:01 2010]
+// updated       julien quintard   [sun apr 18 16:25:17 2010]
 //
 
 //
@@ -111,25 +111,25 @@ namespace etoile
     ///
     Status		Address::Identify(String&		string) const
     {
-      Natural32			i;
-      std::ostringstream	stream;
+      Archive		archive;
 
       enter();
 
-      if (this->digest != NULL)
-	{
-	  // transform the family into an hexadicemal sequence.
-	  stream << std::nouppercase << std::hex
-		 << (Natural32)this->family;
+      // check the address.
+      if (this->digest == NULL)
+	escape("unable to identify a null address");
 
-	  // transform the digest data into an hexadecimal string.
-	  for (i = 0; i < this->digest->region.size; i++)
-	    stream << std::nouppercase << std::hex
-		   << (Natural32)this->digest->region.contents[i];
+      // create the archive.
+      if (archive.Create() == StatusError)
+	escape("unable to create the archive");
 
-	  // inject the string in the given argument.
-	  string = stream.str();
-	}
+      // serialize the address.
+      if (archive.Serialize(*this) == StatusError)
+	escape("unable to serialize the address");
+
+      // encode in base64.
+      if (Base64::Encode(archive, string) == StatusError)
+	escape("unable to encode the archive in base64");
 
       leave();      
     }

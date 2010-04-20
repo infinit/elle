@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed apr  7 00:54:52 2010]
+// updated       julien quintard   [tue apr 20 10:29:49 2010]
 //
 
 //
@@ -23,6 +23,18 @@ namespace etoile
   {
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Reference::Reference():
+      state(StateClean)
+    {
+    }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -35,6 +47,9 @@ namespace etoile
 
       // set the target.
       this->target = target;
+
+      // set the reference as dirty.
+      this->state = StateDirty;
 
       leave();
     }
@@ -94,6 +109,10 @@ namespace etoile
       enter();
 
       std::cout << alignment << "[Reference] " << std::endl;
+
+      // dump the state.
+      std::cout << alignment << Dumpable::Shift << "[State] "
+		<< this->state << std::endl;
 
       // dump the target.
       if (this->target.Dump(margin + 2) == StatusError)

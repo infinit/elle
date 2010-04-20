@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [fri apr 16 13:43:51 2010]
+// updated       julien quintard   [tue apr 20 07:56:41 2010]
 //
 
 //
@@ -25,27 +25,6 @@ namespace etoile
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-    ///
-    /// this method loads the directory object identified by the given
-    /// address in the context.
-    ///
-    Status		Directory::Load(context::Directory*	context,
-					const hole::Address&	address)
-					
-    {
-      enter();
-
-      // load the object.
-      if (Object::Load(context, address) == StatusError)
-	escape("unable to load the object");
-
-      // check that the object is a directory.
-      if (context->object->meta.genre != kernel::GenreDirectory)
-	escape("this object is not a directory");
-
-      leave();
-    }
 
     ///
     /// this method creates a directory object.
@@ -74,6 +53,27 @@ namespace etoile
 
       // set the address.
       context->address = context->object->address;
+
+      leave();
+    }
+
+    ///
+    /// this method loads the directory object identified by the given
+    /// address in the context.
+    ///
+    Status		Directory::Load(context::Directory*	context,
+					const hole::Address&	address)
+					
+    {
+      enter();
+
+      // load the object.
+      if (Object::Load(context, address) == StatusError)
+	escape("unable to load the object");
+
+      // check that the object is a directory.
+      if (context->object->meta.genre != kernel::GenreDirectory)
+	escape("this object is not a directory");
 
       leave();
     }
@@ -123,9 +123,6 @@ namespace etoile
     {
       enter();
 
-      // initialize the entry to NULL.
-      entry = NULL;
-
       // determine the rights.
       if (Rights::Determine(context) == StatusError)
 	escape("unable to determine the rights");
@@ -137,10 +134,6 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == StatusError)
 	escape("unable to open the contents");
-
-      // check that the entry exists.
-      if (context->contents->content->Exist(name) == StatusFalse)
-	leave();
 
       // look up the entry.
       if (context->contents->content->Lookup(name, entry) == StatusError)
@@ -155,7 +148,7 @@ namespace etoile
     Status		Directory::Consult(context::Directory*	context,
 					   const kernel::Index&	index,
 					   const kernel::Size&	size,
-					   kernel::Set&		set)
+					   kernel::Range<kernel::Entry>& range)
     {
       enter();
 
@@ -172,7 +165,9 @@ namespace etoile
 	escape("unable to open the contents");
 
       // consult the directory catalog.
-      if (context->contents->content->Consult(index, size, set) == StatusError)
+      if (context->contents->content->Consult(index,
+					      size,
+					      range) == StatusError)
 	escape("unable to consult the directory");
 
       leave();

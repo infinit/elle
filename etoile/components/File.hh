@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/components/Directory.hh
+// file          /home/mycure/infinit/etoile/components/File.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [tue apr 20 07:54:54 2010]
+// updated       julien quintard   [tue apr 20 10:32:33 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -22,7 +22,7 @@
 
 #include <etoile/components/Object.hh>
 
-#include <etoile/context/Directory.hh>
+#include <etoile/context/File.hh>
 
 #include <etoile/hole/Address.hh>
 
@@ -40,33 +40,27 @@ namespace etoile
     ///
     /// this class provides functionalities for managing directories.
     ///
-    class Directory:
+    class File:
       public Object
     {
     public:
       //
       // static methods
       //
-      static Status	Create(context::Directory*);
-      static Status	Load(context::Directory*,
+      static Status	Create(context::File*);
+      static Status	Load(context::File*,
 			     const hole::Address&);
-      static Status	Add(context::Directory*,
-			    const path::Slice&,
-			    context::Directory*);
-      static Status	Lookup(context::Directory*,
-			       const path::Slice&,
-			       kernel::Entry*&);
-      static Status	Consult(context::Directory*,
-				const kernel::Index&,
-				const kernel::Size&,
-				kernel::Range<kernel::Entry>&);
-      static Status	Rename(context::Directory*,
-			       const path::Slice&,
-			       const path::Slice&);
-      static Status	Remove(context::Directory*,
-			       const path::Slice&);
-      static Status	Store(context::Directory*);
-      static Status	Destroy(context::Directory*);
+      static Status	Write(context::File*,
+			      const kernel::Offset&,
+			      const Region&);
+      static Status	Read(context::File*,
+			     const kernel::Offset&,
+			     const kernel::Size&,
+			     Region&);
+      static Status	Adjust(context::File*,
+			       const kernel::Size&);
+      static Status	Store(context::File*);
+      static Status	Destroy(context::File*);
     };
 
   }

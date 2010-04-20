@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Components.hh
 //
 // created       julien quintard   [fri aug 14 18:56:29 2009]
-// updated       julien quintard   [tue apr  6 12:28:59 2010]
+// updated       julien quintard   [tue apr 20 07:54:29 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_COMPONENTS_HH
@@ -36,13 +36,12 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-// XXX
 #include <etoile/components/Object.hh>
 #include <etoile/components/Directory.hh>
+#include <etoile/components/Link.hh>
 #include <etoile/components/Contents.hh>
 #include <etoile/components/Author.hh>
 #include <etoile/components/Access.hh>
 #include <etoile/components/Rights.hh>
-// XXX
 
 #endif

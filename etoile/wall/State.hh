@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/State.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [thu apr 15 13:54:12 2010]
+// updated       julien quintard   [sun apr 18 19:12:28 2010]
 //
 
 #ifndef ETOILE_WALL_STATE_HH
@@ -23,6 +23,7 @@
 #include <etoile/kernel/Genre.hh>
 #include <etoile/kernel/Offset.hh>
 #include <etoile/kernel/Version.hh>
+#include <etoile/kernel/Permissions.hh>
 
 namespace etoile
 {
@@ -84,27 +85,32 @@ namespace etoile
       //
       // attributes
       //
-      kernel::Genre	genre;
+      kernel::Genre		genre;
 
       struct
       {
-	Time		creation;
-	Time		modification;
-      }			stamps;
+	Time			creation;
+	Time			modification;
+      }				stamps;
 
-      kernel::Offset	size;
-
-      struct
-      {
-	PublicKey	owner;
-	PublicKey	author;
-      }			keys;
+      kernel::Offset		size;
 
       struct
       {
-	kernel::Version	data;
-	kernel::Version	meta;
-      }			versions;
+	PublicKey		owner;
+	PublicKey		author;
+      }				keys;
+
+      struct
+      {
+	kernel::Permissions	owner;
+      }				permissions;
+
+      struct
+      {
+	kernel::Version		data;
+	kernel::Version		meta;
+      }				versions;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [fri apr  9 02:11:28 2010]
+// updated       julien quintard   [tue apr 20 20:08:45 2010]
 //
 
 //
@@ -32,7 +32,7 @@ namespace etoile
     ///
     /// this value is in milli-seconds.
     ///
-    const Natural32		Agent::Expiration = 2000; // XXX -0
+    const Natural32		Agent::Expiration = 2000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -140,8 +140,8 @@ namespace etoile
 
       // send a request to the agent.
       if (this->channel->Call(
-            Inputs< ::agent::TagDecrypt >(code),
-	    Outputs< ::agent::TagDecrypted >(clear)) == StatusError)
+            Inputs<agent::TagDecrypt>(code),
+	    Outputs<agent::TagDecrypted>(clear)) == StatusError)
 	escape("unable to call the agent for decrypting a code");
 
       leave();
@@ -169,8 +169,8 @@ namespace etoile
 
       // send a request to the agent.
       if (this->channel->Call(
-            Inputs< ::agent::TagSign >(plain),
-	    Outputs< ::agent::TagSigned >(signature)) == StatusError)
+            Inputs<agent::TagSign>(plain),
+	    Outputs<agent::TagSigned>(signature)) == StatusError)
 	escape("unable to call the agent for performing a signature");
 
       leave();

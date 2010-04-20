@@ -5,14 +5,14 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/context/Directory.hh
+// file          /home/mycure/infinit/etoile/context/File.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [tue apr 20 10:31:21 2010]
+// updated       julien quintard   [tue apr 20 10:31:11 2010]
 //
 
-#ifndef ETOILE_CONTEXT_DIRECTORY_HH
-#define ETOILE_CONTEXT_DIRECTORY_HH
+#ifndef ETOILE_CONTEXT_FILE_HH
+#define ETOILE_CONTEXT_FILE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -33,23 +33,23 @@ namespace etoile
 //
 
     ///
-    /// this context represents a directory object as it embeds
-    /// a catalog contents along with inherited object-related stuff.
+    /// this context represents a file object as it embeds
+    /// a reference along with inherited object-related stuff.
     ///
-    class Directory:
+    class File:
       public Object
     {
     public:
       //
       // types
       //
-      typedef kernel::Catalog		Content;
+      typedef kernel::Data		Content;
 
       //
       // constructors & destructors
       //
-      Directory();
-      ~Directory();
+      File();
+      ~File();
 
       //
       // interfaces

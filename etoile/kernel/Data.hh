@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [fri apr  2 11:28:30 2010]
+// updated       julien quintard   [tue apr 20 10:22:04 2010]
 //
 
 #ifndef ETOILE_KERNEL_DATA_HH
@@ -41,17 +41,21 @@ namespace etoile
     {
     public:
       //
+      // constructors & destructors
+      //
+      Data();
+
+      //
       // methods
       //
-      Status		Read(const Offset&,
-			     Byte*,
-			     Size&) const;
       Status		Write(const Offset&,
-			      const Byte*,
-			      const Size&);
+			      const Region&);
+      Status		Read(const Offset&,
+			     const Size&,
+			     Region&) const;
       Status		Adjust(const Size&);
 
-      Status		Capacity(Offset&) const;
+      Status		Capacity(Size&) const;
 
       //
       // interfaces
@@ -71,6 +75,8 @@ namespace etoile
       //
       // attributes
       //
+      State		state;
+
       Region		region;
     };
 

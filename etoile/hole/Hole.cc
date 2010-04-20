@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [fri apr 16 14:08:35 2010]
+// updated       julien quintard   [sun apr 18 15:54:00 2010]
 //
 
 //
@@ -132,13 +132,13 @@ namespace etoile
 	  escape("unable to close the file");
       }
 
-      // detach the data from the region to prevent multiple resources release.
-      if (region.Detach() == StatusError)
-        escape("unable to detach the region");
-
       // prepare the archive.
       if (archive.Prepare(region) == StatusError)
         escape("unable to prepare the archive");
+
+      // detach the data from the region to prevent multiple resources release.
+      if (region.Detach() == StatusError)
+        escape("unable to detach the region");
 
       // extract the component identifier.
       if (archive.Extract(identifier) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [fri apr 16 11:53:02 2010]
+// updated       julien quintard   [tue apr 20 10:07:09 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this array contains the interface callbacks.
     ///
-    Routine*		Interface::Callbacks[::etoile::Tags];
+    Routine*		Interface::Callbacks[etoile::Tags];
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -44,115 +44,157 @@ namespace etoile
       enter();
 
       // user
-      InterfaceRegister(::etoile::TagWallIdentify,
+      InterfaceRegister(etoile::TagWallIdentify,
 			Wall::Identify,
 			parameters(const PublicKey));
-      InterfaceRegister(::etoile::TagWallAuthenticate,
+      InterfaceRegister(etoile::TagWallAuthenticate,
 			Wall::Authenticate,
 			parameters(const Digest));
-      InterfaceRegister(::etoile::TagWallConnect,
+      InterfaceRegister(etoile::TagWallConnect,
 			Wall::Connect,
 			parameters(const String));
 
       // object
-      InterfaceRegister(::etoile::TagObjectLoad,
+      InterfaceRegister(etoile::TagObjectLoad,
 			Object::Load,
 			parameters(const path::Way));
-      InterfaceRegister(::etoile::TagObjectInformation,
+      InterfaceRegister(etoile::TagObjectInformation,
 			Object::Information,
 			parameters(const context::Identifier));
-      InterfaceRegister(::etoile::TagObjectStore,
+      InterfaceRegister(etoile::TagObjectStore,
 			Object::Store,
 			parameters(const context::Identifier));
 
       // directory
-      InterfaceRegister(::etoile::TagDirectoryLoad,
-			Directory::Load,
-			parameters(const path::Way));
-      InterfaceRegister(::etoile::TagDirectoryCreate,
+      InterfaceRegister(etoile::TagDirectoryCreate,
 			Directory::Create,
 			parameters());
-      InterfaceRegister(::etoile::TagDirectoryAdd,
+      InterfaceRegister(etoile::TagDirectoryLoad,
+			Directory::Load,
+			parameters(const path::Way));
+      InterfaceRegister(etoile::TagDirectoryAdd,
 			Directory::Add,
 			parameters(const context::Identifier,
 				   const path::Slice,
 				   const context::Identifier));
-      InterfaceRegister(::etoile::TagDirectoryLookup,
+      InterfaceRegister(etoile::TagDirectoryLookup,
 			Directory::Lookup,
 			parameters(const context::Identifier,
 				   const path::Slice));
-      InterfaceRegister(::etoile::TagDirectoryConsult,
+      InterfaceRegister(etoile::TagDirectoryConsult,
 			Directory::Consult,
 			parameters(const context::Identifier,
 				   const kernel::Index,
 				   const kernel::Size));
-      InterfaceRegister(::etoile::TagDirectoryRename,
+      InterfaceRegister(etoile::TagDirectoryRename,
 			Directory::Rename,
 			parameters(const context::Identifier,
 				   const path::Slice,
 				   const path::Slice));
-      InterfaceRegister(::etoile::TagDirectoryRemove,
+      InterfaceRegister(etoile::TagDirectoryRemove,
 			Directory::Remove,
 			parameters(const context::Identifier,
 				   const path::Slice));
-      InterfaceRegister(::etoile::TagDirectoryStore,
+      InterfaceRegister(etoile::TagDirectoryStore,
 			Directory::Store,
 			parameters(const context::Identifier));
-      InterfaceRegister(::etoile::TagDirectoryDestroy,
+      InterfaceRegister(etoile::TagDirectoryDestroy,
 			Directory::Destroy,
 			parameters(const context::Identifier));
 
+      // file
+      InterfaceRegister(etoile::TagFileCreate,
+			File::Create,
+			parameters());
+      InterfaceRegister(etoile::TagFileLoad,
+			File::Load,
+			parameters(const path::Way));
+      InterfaceRegister(etoile::TagFileWrite,
+			File::Write,
+			parameters(const context::Identifier,
+				   const kernel::Offset,
+				   const Region));
+      InterfaceRegister(etoile::TagFileRead,
+			File::Read,
+			parameters(const context::Identifier,
+				   const kernel::Offset,
+				   const kernel::Size));
+      InterfaceRegister(etoile::TagFileAdjust,
+			File::Adjust,
+			parameters(const context::Identifier,
+				   const kernel::Size));
+      InterfaceRegister(etoile::TagFileStore,
+			File::Store,
+			parameters(const context::Identifier));
+      InterfaceRegister(etoile::TagFileDestroy,
+			File::Destroy,
+			parameters(const context::Identifier));
+
+      // link
+      InterfaceRegister(etoile::TagLinkCreate,
+			Link::Create,
+			parameters());
+      InterfaceRegister(etoile::TagLinkLoad,
+			Link::Load,
+			parameters(const path::Way));
+      InterfaceRegister(etoile::TagLinkBind,
+			Link::Bind,
+			parameters(const context::Identifier,
+				   const path::Way));
+      InterfaceRegister(etoile::TagLinkResolve,
+			Link::Resolve,
+			parameters(const context::Identifier));
+      InterfaceRegister(etoile::TagLinkStore,
+			Link::Store,
+			parameters(const context::Identifier));
+      InterfaceRegister(etoile::TagLinkDestroy,
+			Link::Destroy,
+			parameters(const context::Identifier));
+
       // access
-      InterfaceRegister(::etoile::TagAccessLookup,
+      InterfaceRegister(etoile::TagAccessLookup,
 			Access::Lookup,
 			parameters(const context::Identifier,
 				   const kernel::Subject));
-      InterfaceRegister(::etoile::TagAccessConsult,
+      InterfaceRegister(etoile::TagAccessConsult,
 			Access::Consult,
 			parameters(const context::Identifier,
 				   const kernel::Index,
 				   const kernel::Size));
-      InterfaceRegister(::etoile::TagAccessGrant,
+      InterfaceRegister(etoile::TagAccessGrant,
 			Access::Grant,
 			parameters(const context::Identifier,
 				   const kernel::Subject,
 				   const kernel::Permissions));
-      InterfaceRegister(::etoile::TagAccessUpdate,
+      InterfaceRegister(etoile::TagAccessUpdate,
 			Access::Update,
 			parameters(const context::Identifier,
 				   const kernel::Subject,
 				   const kernel::Permissions));
-      InterfaceRegister(::etoile::TagAccessBlock,
+      InterfaceRegister(etoile::TagAccessBlock,
 			Access::Block,
 			parameters(const context::Identifier,
 				   const kernel::Subject));
-      InterfaceRegister(::etoile::TagAccessRevoke,
+      InterfaceRegister(etoile::TagAccessRevoke,
 			Access::Revoke,
 			parameters(const context::Identifier,
 				   const kernel::Subject));
 
       // attributes
-      InterfaceRegister(::etoile::TagAttributesAdd,
-			Attributes::Add,
+      InterfaceRegister(etoile::TagAttributesSet,
+			Attributes::Set,
 			parameters(const context::Identifier,
 				   const String,
 				   const String));
-      InterfaceRegister(::etoile::TagAttributesLookup,
-			Attributes::Lookup,
+      InterfaceRegister(etoile::TagAttributesGet,
+			Attributes::Get,
 			parameters(const context::Identifier,
 				   const String));
-      InterfaceRegister(::etoile::TagAttributesConsult,
-			Attributes::Consult,
-			parameters(const context::Identifier,
-				   const kernel::Index,
-				   const kernel::Size));
-      InterfaceRegister(::etoile::TagAttributesUpdate,
-			Attributes::Update,
-			parameters(const context::Identifier,
-				   const String,
-				   const String));
-      InterfaceRegister(::etoile::TagAttributesRemove,
-			Attributes::Remove,
+      InterfaceRegister(etoile::TagAttributesFetch,
+			Attributes::Fetch,
+			parameters(const context::Identifier));
+      InterfaceRegister(etoile::TagAttributesOmit,
+			Attributes::Omit,
 			parameters(const context::Identifier,
 				   const String));
 
@@ -169,7 +211,7 @@ namespace etoile
       enter();
 
       // delete the callbacks.
-      for (i = TagNone; i < ::etoile::Tags; i++)
+      for (i = TagNone; i < etoile::Tags; i++)
 	delete Interface::Callbacks[i];
 
       leave();

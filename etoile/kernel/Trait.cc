@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Trait.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [thu apr 15 15:26:00 2010]
+// updated       julien quintard   [mon apr 19 13:52:45 2010]
 //
 
 //
@@ -138,6 +138,18 @@ namespace etoile
 	escape("unable to extract the trait");
 
       leave();
+    }
+
+//
+// ---------- rangeable -------------------------------------------------------
+//
+
+    ///
+    /// this method returns the symbol of a trait i.e the name.
+    ///
+    String&		Trait::Symbol()
+    {
+      return (this->name);
     }
 
   }

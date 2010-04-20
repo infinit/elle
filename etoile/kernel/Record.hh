@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.hh
 //
 // created       julien quintard   [thu apr  1 19:48:42 2010]
-// updated       julien quintard   [thu apr 15 15:24:55 2010]
+// updated       julien quintard   [tue apr 20 06:29:53 2010]
 //
 
 #ifndef ETOILE_KERNEL_RECORD_HH
@@ -49,6 +49,11 @@ namespace etoile
       static const Record		Null;
 
       //
+      // types
+      //
+      typedef Subject			S;
+
+      //
       // constructors & destructors
       //
       Record();
@@ -80,6 +85,9 @@ namespace etoile
       // archivable
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
+
+      // rangeable
+      Subject&		Symbol();
 
       //
       // attributes

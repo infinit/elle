@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [thu apr 15 16:38:46 2010]
+// updated       julien quintard   [tue apr 20 08:08:40 2010]
 //
 
 //
@@ -45,25 +45,25 @@ namespace etoile
     {
       enter();
 
-      // add the entry in the set.
-      if (this->set.Add(entry) == StatusError)
-	escape("unable to add the entry in the set");
+      // add the entry in the range.
+      if (this->range.Add(entry) == StatusError)
+	escape("unable to add the entry in the range");
 
-      // set the object as dirty.
+      // range the object as dirty.
       this->state = StateDirty;
 
       leave();
     }
 
     ///
-    /// this method returns true if the name exists in the catalog.
+    /// this method tests if the given name exists.
     ///
     Status		Catalog::Exist(const path::Slice&	name)
     {
       enter();
 
-      // look in the set.
-      if (this->set.Exist(name) != StatusTrue)
+      // test.
+      if (this->range.Exist(name) == false)
 	false();
 
       true();
@@ -77,52 +77,44 @@ namespace etoile
     {
       enter();
 
-      // look in the set.
-      if (this->set.Lookup(name, entry) == StatusError)
+      // look in the range.
+      if (this->range.Lookup(name, entry) == StatusError)
 	escape("unable to retrieve the entry");
 
       leave();
     }
 
     ///
-    /// this method returns a subset of the catalog delimited by the given
+    /// this method returns a subrange of the catalog delimited by the given
     /// index and size.
     ///
     Status		Catalog::Consult(const Index&		index,
 					 const Size&		size,
-					 Set&			set)
+					 Range<Entry>&		range)
       const
     {
-      Set::Scoutor	scoutor;
-      Index		i;
+      Range<Entry>::Scoutor	scoutor;
+      Index			i;
 
       enter();
 
+      // first detach the data from the range.
+      if (range.Detach() == StatusError)
+	escape("unable to detach the data from the range");
+
       // go through the catalog entries.
-      for (scoutor = this->set.container.begin(), i = 0;
-	   scoutor != this->set.container.end();
+      for (scoutor = this->range.container.begin(), i = 0;
+	   scoutor != this->range.container.end();
 	   scoutor++, i++)
 	{
 	  Entry*	entry = *scoutor;
 
-	  // if this entry lies in the selected set [index, index + size[
+	  // if this entry lies in the selected range [index, index + size[
 	  if ((i >= index) && (i < (index + size)))
 	    {
-	      Entry*	e;
-
-	      enter(instance(e));
-
-	      // allocate a new entry.
-	      e = new Entry(*entry);
-
-	      // add the new entry to the set.
-	      if (set.Add(e) == StatusError)
-		escape("unable to add the name to the container");
-
-	      // waive.
-	      waive(e);
-
-	      release();
+	      // add the entry to the range.
+	      if (range.Add(entry) == StatusError)
+		escape("unable to add the entry to the range");
 	    }
 	}
 
@@ -136,11 +128,11 @@ namespace etoile
     {
       enter();
 
-      // remove the entry from the set.
-      if (this->set.Remove(name) == StatusError)
+      // remove the entry from the range.
+      if (this->range.Remove(name) == StatusError)
 	escape("unable to remove the entry");
 
-      // set the object as dirty.
+      // range the object as dirty.
       this->state = StateDirty;
 
       leave();
@@ -156,14 +148,14 @@ namespace etoile
 
       enter();
 
-      // look in the set.
-      if (this->set.Lookup(from, entry) == StatusError)
+      // look in the range.
+      if (this->range.Lookup(from, entry) == StatusError)
 	escape("unable to retrieve the entry");
 
       // modify the name.
       entry->name = to;
 
-      // set the object as dirty.
+      // range the object as dirty.
       this->state = StateDirty;
 
       leave();
@@ -176,9 +168,9 @@ namespace etoile
     {
       enter();
 
-      // look at the size of the set.
-      if (this->set.Capacity(size) == StatusError)
-	escape("unable to retrieve the set size");
+      // look at the size of the range.
+      if (this->range.Capacity(size) == StatusError)
+	escape("unable to retrieve the range size");
 
       leave();
     }
@@ -211,9 +203,9 @@ namespace etoile
       std::cout << alignment << Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
-      // dump the set.
-      if (this->set.Dump(margin + 2) == StatusError)
-	escape("unable to dump the set");
+      // dump the range.
+      if (this->range.Dump(margin + 2) == StatusError)
+	escape("unable to dump the range");
 
       leave();
     }
@@ -229,9 +221,9 @@ namespace etoile
     {
       enter();
 
-      // serialize the set.
-      if (archive.Serialize(this->set) == StatusError)
-	escape("unable to serialize the set");
+      // serialize the range.
+      if (archive.Serialize(this->range) == StatusError)
+	escape("unable to serialize the range");
 
       leave();
     }
@@ -243,9 +235,9 @@ namespace etoile
     {
       enter();
 
-      // extract the set.
-      if (archive.Extract(this->set) == StatusError)
-	escape("unable to extract the set");
+      // extract the range.
+      if (archive.Extract(this->range) == StatusError)
+	escape("unable to extract the range");
 
       leave();
     }

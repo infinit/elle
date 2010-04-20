@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/State.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [thu apr 15 13:54:26 2010]
+// updated       julien quintard   [sun apr 18 19:18:06 2010]
 //
 
 //
@@ -71,6 +71,9 @@ namespace etoile
 	  }
 	}
 
+      // set the permissions.
+      this->permissions.owner = object.meta.owner.permissions;
+
       // set the versions.
       this->versions.meta = object.meta.version;
       this->versions.data = object.data.version;
@@ -100,6 +103,7 @@ namespace etoile
 	  (this->size != element.size) ||
 	  (this->keys.owner != element.keys.owner) ||
 	  (this->keys.author != element.keys.author) ||
+	  (this->permissions.owner != element.permissions.owner) ||
 	  (this->versions.meta != element.versions.meta) ||
 	  (this->versions.data != element.versions.data))
 	false();
@@ -178,6 +182,18 @@ namespace etoile
       }
 
       //
+      // dump the permissions.
+      //
+      {
+	std::cout << alignment << Dumpable::Shift
+		  << "[Permissions]" << std::endl;
+
+	// dump the owner permissions.
+	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		  << "[Owner] " << this->permissions.owner << std::endl;
+      }
+
+      //
       // dump the versions.
       //
       {
@@ -213,6 +229,7 @@ namespace etoile
 			    this->size,
 			    this->keys.owner,
 			    this->keys.author,
+			    this->permissions.owner,
 			    this->versions.meta,
 			    this->versions.data) == StatusError)
 	escape("unable to serialize the attributes");
@@ -234,6 +251,7 @@ namespace etoile
 			  this->size,
 			  this->keys.owner,
 			  this->keys.author,
+			  this->permissions.owner,
 			  this->versions.meta,
 			  this->versions.data) == StatusError)
 	escape("unable to extract the attributes");

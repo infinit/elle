@@ -4,7 +4,6 @@ ADD_LIBRARY(etoile
   configuration/Configuration.cc
 
   kernel/Kernel.cc
-  kernel/Access.cc
   kernel/Object.cc
   kernel/PublicKeyBlock.cc
   kernel/ContentHashBlock.cc
@@ -15,15 +14,13 @@ ADD_LIBRARY(etoile
   kernel/Catalog.cc
   kernel/Reference.cc
   kernel/Data.cc
+  kernel/Access.cc
+  kernel/Attributes.cc
+  kernel/Entry.cc
+  kernel/Record.cc
+  kernel/Trait.cc
   kernel/Subject.cc
   kernel/Author.cc
-  kernel/Record.cc
-  kernel/Entry.cc
-  kernel/Set.cc
-  kernel/Range.cc
-  kernel/Attributes.cc
-  kernel/Trait.cc
-  kernel/Collection.cc
 
   hole/Hole.cc
   hole/Address.cc
@@ -42,14 +39,18 @@ ADD_LIBRARY(etoile
   path/Venue.cc
   path/Way.cc
 
+  context/Context.cc
   context/Object.cc
   context/Directory.cc
+  context/File.cc
+  context/Link.cc
   context/Rights.cc
   context/Identifier.cc
-  context/Context.cc
 
   components/Object.cc
   components/Directory.cc
+  components/File.cc
+  components/Link.cc
   components/Access.cc
   components/Rights.cc
   components/Author.cc
@@ -72,6 +73,8 @@ ADD_LIBRARY(etoile
   wall/Object.cc
   wall/Access.cc
   wall/Directory.cc
+  wall/File.cc
+  wall/Link.cc
   wall/State.cc
   wall/Attributes.cc
 )

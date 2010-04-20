@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Entry.hh
 //
 // created       julien quintard   [fri apr  2 00:03:02 2010]
-// updated       julien quintard   [thu apr 15 15:24:12 2010]
+// updated       julien quintard   [tue apr 20 06:30:01 2010]
 //
 
 #ifndef ETOILE_KERNEL_ENTRY_HH
@@ -48,6 +48,11 @@ namespace etoile
       static const Entry		Null;
 
       //
+      // types
+      //
+      typedef path::Slice		S;
+
+      //
       // constructors & destructors
       //
       Entry();
@@ -68,6 +73,9 @@ namespace etoile
       // archivable
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
+
+      // rangeable
+      path::Slice&	Symbol();
 
       //
       // attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [mon apr  5 23:05:50 2010]
+// updated       julien quintard   [tue apr 20 06:45:38 2010]
 //
 
 #ifndef ETOILE_KERNEL_RANGE_HH
@@ -37,35 +37,63 @@ namespace etoile
 //
 
     ///
-    /// this class represents a subset of directory i.e catalog entries.
+    /// this class represents a subset of something: more precisely a
+    /// collection of things belonging to something else.
     ///
+    /// a range must be parameterised with a type providing two things:
+    ///  1) a type T::S which defines the key type used to differenciate
+    ///     items.
+    ///  2) a Symbol() method which must returns a T::S&, this method
+    ///     being used to retrieve the key value of a given item.
+    ///
+    template <typename T>
     class Range:
       public Dumpable, public Archivable
     {
     public:
-      typedef std::list<Record*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      //
+      // constants
+      //
+      static const T*			Trash;
+
+      //
+      // enumerations
+      //
+      enum Options
+	{
+	  OptionNone = 0,
+
+	  OptionDetach
+	};
+
+      //
+      // types
+      //
+      typedef typename T::S				S;
+
+      typedef std::list<T*>				Container;
+      typedef typename Container::iterator		Iterator;
+      typedef typename Container::const_iterator	Scoutor;
 
       //
       // constructors & destructors
       //
+      Range();
       ~Range();
 
       //
       // methods
       //
-      Status		Add(Record*);
-      Status		Exist(const Subject&);
-      Status		Lookup(const Subject&,
-			       Record*&);
-      Status		Remove(const Subject&);
+      Status		Add(T*);
+      Status		Exist(const S&);
+      Status		Lookup(const S&,
+			       T*& = Trash);
+      Status		Remove(const S&);
       Status		Capacity(Size&) const;
-
-      Status		Locate(const Subject&,
-			       Index&);
-      Status		Locate(const Subject&,
+      Status		Locate(const S&,
 			       Iterator* = NULL);
+
+      Status		Detach();
 
       //
       // interfaces
@@ -81,11 +109,19 @@ namespace etoile
       //
       // attributes
       //
+      Options		options;
+
       Container		container;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/kernel/Range.hxx>
 
 //
 // ---------- includes --------------------------------------------------------

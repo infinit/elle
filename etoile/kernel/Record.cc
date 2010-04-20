@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [thu apr 15 15:25:25 2010]
+// updated       julien quintard   [mon apr 19 13:53:47 2010]
 //
 
 //
@@ -227,6 +227,18 @@ namespace etoile
 	escape("unable to extract the record");
 
       leave();
+    }
+
+//
+// ---------- rangeable -------------------------------------------------------
+//
+
+    ///
+    /// this method returns the symbol of a record i.e the subject.
+    ///
+    Subject&		Record::Symbol()
+    {
+      return (this->subject);
     }
 
   }

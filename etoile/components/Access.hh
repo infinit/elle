@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [fri apr 16 11:23:16 2010]
+// updated       julien quintard   [mon apr 19 14:33:27 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ACCESS_HH
@@ -55,7 +55,7 @@ namespace etoile
       static Status	Consult(context::Object*,
 				const kernel::Index&,
 				const kernel::Size&,
-				kernel::Range&);
+				kernel::Range<kernel::Record>&);
       static Status	Update(context::Object*,
 			       const kernel::Subject&,
 			       const kernel::Permissions&);

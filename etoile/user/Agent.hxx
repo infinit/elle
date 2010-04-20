@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu apr  1 02:41:25 2010]
+// updated       julien quintard   [sun apr 18 15:54:43 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HXX
@@ -71,8 +71,8 @@ namespace etoile
 
       // detach the data so that not both the clear and archive
       // release the data.
-      if (archive.Detach() == StatusError)
-	escape("unable to detach the archive's data");
+      if (clear.Detach() == StatusError)
+	escape("unable to detach the clear's data");
 
       // extract the item.
       if (archive.Extract(parameter) == StatusError)
@@ -102,8 +102,8 @@ namespace etoile
       if (archive.Prepare(clear) == StatusError)
 	escape("unable to prepare the archive");
 
-      if (archive.Detach() == StatusError)
-	escape("unable to detach the archive's data");
+      if (clear.Detach() == StatusError)
+	escape("unable to detach the clear's data");
 
       if (archive.Extract(parameter, parameters...) == StatusError)
 	escape("unable to extract the items");

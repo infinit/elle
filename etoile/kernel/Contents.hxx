@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [wed apr 14 22:15:08 2010]
+// updated       julien quintard   [sun apr 18 15:54:12 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HXX
@@ -116,13 +116,13 @@ namespace etoile
       if (key.Decrypt(*this->cipher, clear) == StatusError)
 	escape("unable to decrypt the cipher");
 
-      // detach the 'clear' region as it will be taken over by the archive.
-      if (clear.Detach() == StatusError)
-	escape("unable to detach the region from the clear");
-
       // prepare the archive with the clear, which is basically a region.
       if (archive.Prepare(clear) == StatusError)
 	escape("unable to prepare the archive");
+
+      // detach the 'clear' region as it will be taken over by the archive.
+      if (clear.Detach() == StatusError)
+	escape("unable to detach the region from the clear");
 
       // extract the block.
       if (archive.Extract(*this->content) == StatusError)

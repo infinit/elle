@@ -5,17 +5,17 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/etoile/context/Directory.cc
+// file          /home/mycure/infinit/etoile/context/File.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [tue apr 20 10:32:17 2010]
+// updated       julien quintard   [tue apr 20 10:31:58 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/context/Directory.hh>
+#include <etoile/context/File.hh>
 
 namespace etoile
 {
@@ -29,8 +29,8 @@ namespace etoile
     ///
     /// the constructor
     ///
-    Directory::Directory():
-      Object::Object(FormatDirectory),
+    File::File():
+      Object::Object(FormatFile),
 
       contents(NULL)
     {
@@ -39,7 +39,7 @@ namespace etoile
     ///
     /// the destructor
     ///
-    Directory::~Directory()
+    File::~File()
     {
       // release the contents.
       if (this->contents != NULL)
@@ -53,13 +53,13 @@ namespace etoile
     ///
     /// this method dumps the contents along the the inherited object context.
     ///
-    Status		Directory::Dump(const Natural32		margin) const
+    Status		File::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Context] Directory" << std::endl;
+      std::cout << alignment << "[Context] File" << std::endl;
 
       // dump the inherited object.
       if (Object::Dump(margin + 2) == StatusError)

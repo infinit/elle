@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [fri apr  2 11:43:59 2010]
+// updated       julien quintard   [tue apr 20 21:30:58 2010]
 //
 
 //
@@ -23,53 +23,82 @@ namespace etoile
   {
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- constructors & destructors --------------------------------------
 //
 
     ///
-    /// this method returns a segment of the data object.
+    /// default constructor.
     ///
-    Status		Data::Read(const Offset&		offset,
-				   Byte*			buffer,
-				   Size&			size) const
+    Data::Data():
+      state(StateClean)
     {
-      enter();
-
-      // check the offset.
-      if (offset > this->region.size)
-	escape("the offset is out of bound");
-
-      // set size to the maximum between the request size and the available
-      // size.
-      size = (this->region.size - offset) < size ?
-	(this->region.size - offset) : size;
-
-      // read the data from the region.
-      if (this->region.Read(offset, buffer, size) == StatusError)
-	escape("unable to read the data");
-
-      leave();
     }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
 
     ///
     /// this method updates a segment of the data object.
     ///
     Status		Data::Write(const Offset&		offset,
-				    const Byte*			buffer,
-				    const Size&			size)
+				    const Region&		region)
     {
       enter();
 
-      // check if the region needs expanding.
-      if ((offset + size) > region.size)
+      // expand if necessary.
+      if ((offset + region.size) > this->region.capacity)
 	{
-	  if (this->region.Adjust(offset + size) == StatusError)
+	  // adjust the region capacity.
+	  if (this->region.Adjust(offset + region.size) == StatusError)
 	    escape("unable to expand the region");
 	}
 
       // write the data.
-      if (this->region.Write(offset, buffer, size) == StatusError)
+      if (this->region.Write(offset,
+			     region.contents,
+			     region.size) == StatusError)
 	escape("unable to write the data");
+
+      // set the data as dirty.
+      this->state = StateDirty;
+
+      leave();
+    }
+
+    ///
+    /// this method returns a region of the data object.
+    ///
+    Status		Data::Read(const Offset&		offset,
+				   const Size&			size,
+				   Region&			region) const
+    {
+      Size		length;
+
+      enter();
+
+      // check the operation's validity.
+      if (offset > this->region.size)
+	escape("the offset is out of bound");
+
+      // set size to the maximum between the request size and the available
+      // size.
+      length = (this->region.size - offset) < size ?
+	(this->region.size - offset) :
+	size;
+
+      // prepare the output region.
+      if (region.Prepare(length) == StatusError)
+	escape("unable to prepare the output region");
+
+      // set the current size.
+      region.size = length;
+
+      // read the data from the region.
+      if (this->region.Read(offset,
+			    region.contents,
+			    region.size) == StatusError)
+	escape("unable to read the data");
 
       leave();
     }
@@ -88,6 +117,9 @@ namespace etoile
 
       // then, manually set the region size.
       this->region.size = size;
+
+      // set the data as dirty.
+      this->state = StateDirty;
 
       leave();
     }
@@ -128,6 +160,10 @@ namespace etoile
       enter();
 
       std::cout << alignment << "[Data]" << std::endl;
+
+      // dump the state.
+      std::cout << alignment << Dumpable::Shift << "[State] "
+		<< this->state << std::endl;
 
       // dump the region attribute.
       if (this->region.Dump(margin + 2) == StatusError)

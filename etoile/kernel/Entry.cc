@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Entry.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [thu apr 15 15:24:37 2010]
+// updated       julien quintard   [mon apr 19 13:52:23 2010]
 //
 
 //
@@ -138,6 +138,18 @@ namespace etoile
 	escape("unable to extract the entry");
 
       leave();
+    }
+
+//
+// ---------- rangeable -------------------------------------------------------
+//
+
+    ///
+    /// this method returns the symbol of an entry i.e the name.
+    ///
+    path::Slice&	Entry::Symbol()
+    {
+      return (this->name);
     }
 
   }

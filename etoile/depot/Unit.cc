@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [thu mar 25 17:50:47 2010]
+// updated       julien quintard   [sun apr 18 15:53:46 2010]
 //
 
 //
@@ -125,13 +125,13 @@ namespace etoile
       // close the file.
       ::close(fd);
 
-      // detach the data from the region to prevent multiple resources release.
-      if (region.Detach() == StatusError)
-        escape("unable to detach the region");
-
       // prepare the archive.
       if (archive.Prepare(region) == StatusError)
         escape("unable to prepare the archive");
+
+      // detach the data from the region to prevent multiple resources release.
+      if (region.Detach() == StatusError)
+        escape("unable to detach the region");
 
       // extract the component identifier.
       if (archive.Extract(identifier) == StatusError)

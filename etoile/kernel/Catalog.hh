@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [wed apr 14 14:57:10 2010]
+// updated       julien quintard   [mon apr 19 14:35:47 2010]
 //
 
 #ifndef ETOILE_KERNEL_CATALOG_HH
@@ -22,11 +22,10 @@
 
 #include <etoile/kernel/State.hh>
 #include <etoile/kernel/Offset.hh>
-#include <etoile/kernel/Set.hh>
+#include <etoile/kernel/Range.hh>
+#include <etoile/kernel/Entry.hh>
 
 #include <etoile/path/Slice.hh>
-
-#include <list>
 
 namespace etoile
 {
@@ -64,10 +63,10 @@ namespace etoile
 			       Entry*&);
       Status		Consult(const Index&,
 				const Size&,
-				Set&) const;
-      Status		Remove(const path::Slice&);
+				Range<Entry>&) const;
       Status		Rename(const path::Slice&,
 			       const path::Slice&);
+      Status		Remove(const path::Slice&);
       Status		Capacity(Offset&) const;
 
       //
@@ -90,7 +89,7 @@ namespace etoile
       //
       State		state;
 
-      Set		set;
+      Range<Entry>	range;
     };
 
   }

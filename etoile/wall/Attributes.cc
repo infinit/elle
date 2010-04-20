@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [thu apr 15 19:08:38 2010]
+// updated       julien quintard   [mon apr 19 14:46:24 2010]
 //
 
 //
@@ -27,9 +27,9 @@ namespace etoile
 //
 
     ///
-    /// this method adds a trait to the object's attributes.
+    /// this method sets a trait to the object's attributes.
     ///
-    Status		Attributes::Add(const
+    Status		Attributes::Set(const
 				          context::Identifier&	identifier,
 					const String&		name,
 					const String&		value)
@@ -39,7 +39,7 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Attributes::Add()\n");
+      printf("[XXX] Attributes::Set()\n");
 
       // load the current user.
       if (user::User::Instance(user) == StatusError)
@@ -59,10 +59,10 @@ namespace etoile
 	escape("unable to test non-objects");
 
       // request the components.
-      if (components::Attributes::Add(context,
+      if (components::Attributes::Set(context,
 				      name,
 				      value) == StatusError)
-	escape("unable to add the attribute");
+	escape("unable to set the attribute");
 
       // answer the caller.
       if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
@@ -75,9 +75,9 @@ namespace etoile
     /// this method returns the caller the trait associated with
     /// the given name.
     ///
-    Status		Attributes::Lookup(const
-					     context::Identifier& identifier,
-					   const String&	name)
+    Status		Attributes::Get(const
+					  context::Identifier&	identifier,
+					const String&		name)
     {
       context::Object*	context;
       user::User*	user;
@@ -85,7 +85,7 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Attributes::Lookup()\n");
+      printf("[XXX] Attributes::Get()\n");
 
       // load the current user.
       if (user::User::Instance(user) == StatusError)
@@ -105,7 +105,7 @@ namespace etoile
 	escape("unable to test non-objects");
 
       // request the components.
-      if (components::Attributes::Lookup(context, name, trait) == StatusError)
+      if (components::Attributes::Get(context, name, trait) == StatusError)
 	escape("unable to retrieve the trait");
 
       // answer the caller, depending on the result.
@@ -129,22 +129,18 @@ namespace etoile
     }
 
     ///
-    /// this method returns a subset of the attributes list.
+    /// this method returns the attributes list.
     ///
-    Status		Attributes::Consult(const
-					      context::Identifier& identifier,
-					    const
-					      kernel::Index&	index,
-					    const
-					      kernel::Size&	size)
+    Status		Attributes::Fetch(const
+					    context::Identifier& identifier)
     {
-      context::Object*		context;
-      user::User*		user;
-      kernel::Collection	collection;
+      context::Object*			context;
+      user::User*			user;
+      kernel::Range<kernel::Trait>	range;
 
       enter();
 
-      printf("[XXX] Attributes::Consult()\n");
+      printf("[XXX] Attributes::Fetch()\n");
 
       // load the current user.
       if (user::User::Instance(user) == StatusError)
@@ -164,60 +160,13 @@ namespace etoile
 	escape("unable to test non-objects");
 
       // request the components.
-      if (components::Attributes::Consult(context,
-					  index,
-					  size,
-					  collection) == StatusError)
-	escape("unable to consult the attributes list");
+      if (components::Attributes::Fetch(context,
+					range) == StatusError)
+	escape("unable to fetch the attributes list");
 
       // answer the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagAttributesCollection>(collection)) == StatusError)
-	escape("unable to reply to the application");
-
-      leave();
-    }
-
-    ///
-    /// this method updates an existing trait with a new value.
-    ///
-    Status		Attributes::Update(const
-					     context::Identifier& identifier,
-					   const String&	name,
-					   const String&	value)
-    {
-      context::Object*	context;
-      user::User*	user;
-
-      enter();
-
-      printf("[XXX] Attributes::Update()\n");
-
-      // load the current user.
-      if (user::User::Instance(user) == StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to test non-objects");
-
-      // request the components.
-      if (components::Attributes::Update(context,
-					 name,
-					 value) == StatusError)
-	escape("unable to update the attribute");
-
-      // answer the caller.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+	    Inputs<TagAttributesRange>(range)) == StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -226,16 +175,16 @@ namespace etoile
     ///
     /// this method removes the attribute from the list.
     ///
-    Status		Attributes::Remove(const
-					     context::Identifier& identifier,
-					   const String&	name)
+    Status		Attributes::Omit(const
+					   context::Identifier&	identifier,
+					 const String&		name)
     {
       context::Object*	context;
       user::User*	user;
 
       enter();
 
-      printf("[XXX] Attributes::Remove()\n");
+      printf("[XXX] Attributes::Omit()\n");
 
       // load the current user.
       if (user::User::Instance(user) == StatusError)
@@ -255,8 +204,8 @@ namespace etoile
 	escape("unable to test non-objects");
 
       // request the components.
-      if (components::Attributes::Remove(context,
-					 name) == StatusError)
+      if (components::Attributes::Omit(context,
+				       name) == StatusError)
 	escape("unable to remove the attribute");
 
       // answer the caller.

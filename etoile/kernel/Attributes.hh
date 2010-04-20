@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [thu apr 15 18:56:25 2010]
+// updated       julien quintard   [mon apr 19 14:37:15 2010]
 //
 
 #ifndef ETOILE_KERNEL_ATTRIBUTES_HH
@@ -23,9 +23,7 @@
 #include <etoile/kernel/Trait.hh>
 #include <etoile/kernel/Index.hh>
 #include <etoile/kernel/Size.hh>
-#include <etoile/kernel/Collection.hh>
-
-#include <list>
+#include <etoile/kernel/Range.hh>
 
 namespace etoile
 {
@@ -54,9 +52,9 @@ namespace etoile
 			       Trait*&);
       Status		Consult(const Index&,
 				const Size&,
-				Collection&) const;
+				Range<Trait>&) const;
       Status		Update(const String&,
-			       const String&); // XXX
+			       const String&);
       Status		Remove(const String&);
       Status		Capacity(Size&) const;
 
@@ -78,7 +76,7 @@ namespace etoile
       //
       // attributes
       //
-      Collection	collection;
+      Range<Trait>	range;
     };
 
   }

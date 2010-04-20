@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [fri apr 16 14:39:56 2010]
+// updated       julien quintard   [tue apr 20 06:44:05 2010]
 //
 
 //
@@ -56,14 +56,14 @@ namespace etoile
     }
 
     ///
-    /// this method returns true if the subject exists in the access
-    /// block.
+    /// this method tests if the given subject exists.
+    ///
     Status		Access::Exist(const Subject&		subject)
     {
       enter();
 
-      // look in the range.
-      if (this->range.Exist(subject) != StatusTrue)
+      // test.
+      if (this->range.Exist(subject) == false)
 	false();
 
       true();
@@ -90,13 +90,18 @@ namespace etoile
     ///
     Status		Access::Consult(const Index&		index,
 					const Size&		size,
-					Range&			range) const
+					Range<Record>&		range) const
     {
-      Range::Scoutor	scoutor;
-      Index		i;
+      Range<Record>::Scoutor	scoutor;
+      Index			i;
 
       enter();
 
+      // first detach the data from the range.
+      if (range.Detach() == StatusError)
+	escape("unable to detach the data from the range");
+
+      // go through the records.
       for (scoutor = this->range.container.begin(), i = 0;
 	   scoutor != this->range.container.end();
 	   scoutor++, i++)
@@ -106,23 +111,9 @@ namespace etoile
 	  // if this record lies in the selected range [index, index + size[
 	  if ((i >= index) && (i < (index + size)))
 	    {
-	      Record*	r;
-
-	      enter(instance(r));
-
-	      // duplicate the record.
-	      r = new Record(record->subject,
-			     record->permissions,
-			     record->token);
-
-	      // add the new record to the return range.
-	      if (range.Add(r) == StatusError)
+	      // add the record to the range.
+	      if (range.Add(record) == StatusError)
 		escape("unable to add the record to the given range");
-
-	      // stop tracking _r_.
-	      waive(r);
-
-	      release();
 	    }
 	}
 
@@ -130,30 +121,12 @@ namespace etoile
     }
 
     ///
-    /// this method removes the given record.
-    ///
-    Status		Access::Remove(const Subject&		subject)
-    {
-      enter();
-
-      // remove the record from the range.
-      if (this->range.Remove(subject) == StatusError)
-	escape("unable to remove the record");
-
-      // set the object as dirty.
-      this->state = StateDirty;
-
-      leave();
-    }
-
-
-    ///
     /// this method updates the records with the given secret key by
     /// encrypted the given key with every subject's public key.
     ///
     Status		Access::Upgrade(const SecretKey&	key)
     {
-      Range::Iterator	iterator;
+      Range<Record>::Iterator	iterator;
 
       enter();
 
@@ -230,6 +203,23 @@ namespace etoile
     }
 
     ///
+    /// this method removes the given record.
+    ///
+    Status		Access::Remove(const Subject&		subject)
+    {
+      enter();
+
+      // remove the record from the range.
+      if (this->range.Remove(subject) == StatusError)
+	escape("unable to remove the record");
+
+      // set the object as dirty.
+      this->state = StateDirty;
+
+      leave();
+    }
+
+    ///
     /// this method returns the size of the access control list.
     ///
     Status		Access::Capacity(Size&			size) const
@@ -249,11 +239,21 @@ namespace etoile
     Status		Access::Locate(const Subject&		subject,
 				       Index&			index)
     {
+      Range<Record>::Scoutor	scoutor;
+
       enter();
 
-      // look in the range.
-      if (this->range.Locate(subject, index) != StatusTrue)
-	escape("unable to locate the given subject");
+      // go through the range and serialize every tuple (subject, permissions).
+      for (scoutor = this->range.container.begin(), index = 0;
+	   scoutor != this->range.container.end();
+	   scoutor++, index++)
+	{
+	  Record*	record = *scoutor;
+
+	  // if found, stop.
+	  if (record->subject == subject)
+	    break;
+	}
 
       leave();
     }
@@ -266,8 +266,8 @@ namespace etoile
     ///
     Status		Access::Fingerprint(Digest&		digest) const
     {
-      Range::Scoutor	scoutor;
-      Archive		archive;
+      Range<Record>::Scoutor	scoutor;
+      Archive			archive;
 
       enter();
 

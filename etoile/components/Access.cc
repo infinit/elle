@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [fri apr 16 15:08:10 2010]
+// updated       julien quintard   [mon apr 19 19:36:24 2010]
 //
 
 //
@@ -149,9 +149,6 @@ namespace etoile
 
       enter();
 
-      // initialize the record to NULL.
-      record = NULL;
-
       // load the current user.
       if (user::User::Instance(user) == StatusError)
 	escape("unable to load the user");
@@ -200,10 +197,6 @@ namespace etoile
 	      if (Access::Open(context) == StatusError)
 		escape("unable to open the access");
 
-	      // check if the record exists.
-	      if (context->access->Exist(subject) == StatusFalse)
-		leave();
-
 	      // lookup in the access object.
 	      if (context->access->Lookup(subject, record) == StatusError)
 		escape("unable to lookup in the access object");
@@ -219,7 +212,7 @@ namespace etoile
     Status		Access::Consult(context::Object*	context,
 					const kernel::Index&	index,
 					const kernel::Size&	size,
-					kernel::Range&		range)
+					kernel::Range<kernel::Record>&	range)
     {
       enter();
 
@@ -261,7 +254,7 @@ namespace etoile
 	{
 	  // consult the access object by taking care of starting the
 	  // consultation one index before.
-	  if (context->access->Consult(index -1 , size, range) == StatusError)
+	  if (context->access->Consult(index - 1 , size, range) == StatusError)
 	    escape("unable to consult the access object");
 	}
 

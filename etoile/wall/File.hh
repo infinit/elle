@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [sat apr  3 23:33:32 2010]
+// updated       julien quintard   [tue apr 20 10:06:19 2010]
 //
 
 #ifndef ETOILE_WALL_FILE_HH
@@ -39,7 +39,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class provides functionalities for managing file objects.
     ///
     class File
     {
@@ -47,20 +47,20 @@ namespace etoile
       //
       // static methods
       //
+      static Status	Create();
       static Status	Load(const path::Way&);
       static Status	Lock(const context::Identifier&);
       static Status	Release(const context::Identifier&);
-      static Status	Create(const context::Identifier&,
-			       const path::Slice&,
-			       const context::Identifier&);
+      static Status	Write(const context::Identifier&,
+			      const kernel::Offset&,
+			      const Region&);
       static Status	Read(const context::Identifier&,
 			     const kernel::Offset&,
 			     const kernel::Size&);
-      static Status	Write(const context::Identifier&,
-			      const kernel::Offset&,
-			      const Region&,
-			      const kernel::Size&);
+      static Status	Adjust(const context::Identifier&,
+			       const kernel::Size&);
       static Status	Store(const context::Identifier&);
+      static Status	Destroy(const context::Identifier&);
     };
 
   }
@@ -70,8 +70,11 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/context/File.hh>
+#include <etoile/context/Directory.hh>
+#include <etoile/context/Format.hh>
 
 #include <etoile/user/User.hh>
+
+#include <etoile/path/Path.hh>
 
 #endif

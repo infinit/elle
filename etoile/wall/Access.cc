@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [thu apr 15 18:37:04 2010]
+// updated       julien quintard   [mon apr 19 14:46:51 2010]
 //
 
 //
@@ -93,9 +93,9 @@ namespace etoile
 					const
 					  kernel::Size&		size)
     {
-      context::Object*	context;
-      user::User*	user;
-      kernel::Range	range;
+      context::Object*			context;
+      user::User*			user;
+      kernel::Range<kernel::Record>	range;
 
       enter();
 

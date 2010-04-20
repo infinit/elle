@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [fri apr 16 11:52:38 2010]
+// updated       julien quintard   [tue apr 20 09:40:32 2010]
 //
 
 //
@@ -25,6 +25,45 @@ namespace etoile
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates an new, though orphan, directory object.
+    ///
+    Status		Directory::Create()
+    {
+      context::Directory*	context;
+      user::User*		user;
+
+      enter();
+
+      printf("[XXX] Directory::Create()\n");
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the user is an application..
+      if (user->type != user::User::TypeApplication)
+	escape("non-applications cannot authenticate");
+
+      // allocate a new context.
+      context = new context::Directory;
+
+      // add the context.
+      if (context::Context::Add(context) == StatusError)
+	escape("unable to add the context");
+
+      // create a new directory.
+      if (components::Directory::Create(context) == StatusError)
+	escape("unable to create the directory");
+
+      // return the context identifier to the caller.
+      if (user->application->channel->Reply(
+	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
+	escape("unable to reply to the application");
+
+      leave();
+    }
 
     ///
     /// this method loads the directory and creates a new context.
@@ -66,45 +105,6 @@ namespace etoile
       if (components::Directory::Load(context,
 				      context->address) == StatusError)
 	escape("unable to load the directory in the given context");
-
-      // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
-	escape("unable to reply to the application");
-
-      leave();
-    }
-
-    ///
-    /// this method creates an new, though orphan, directory object.
-    ///
-    Status		Directory::Create()
-    {
-      context::Directory*	context;
-      user::User*		user;
-
-      enter();
-
-      printf("[XXX] Directory::Create()\n");
-
-      // load the current user.
-      if (user::User::Instance(user) == StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // allocate a new context.
-      context = new context::Directory;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add the context");
-
-      // create a new directory.
-      if (components::Directory::Create(context) == StatusError)
-	escape("unable to create the directory");
 
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
@@ -265,9 +265,9 @@ namespace etoile
 					   const
 					     kernel::Offset&	size)
     {
-      context::Directory*	context;
-      user::User*		user;
-      kernel::Set		set;
+      context::Directory*		context;
+      user::User*			user;
+      kernel::Range<kernel::Entry>	range;
 
       enter();
 
@@ -294,12 +294,12 @@ namespace etoile
       if (components::Directory::Consult(context,
 					 offset,
 					 size,
-					 set) == StatusError)
+					 range) == StatusError)
 	escape("unable to consult the directory");
 
       // return the set to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagDirectorySet>(set)) == StatusError)
+	    Inputs<TagDirectoryRange>(range)) == StatusError)
 	escape("unable to reply to the application");
 
       leave();

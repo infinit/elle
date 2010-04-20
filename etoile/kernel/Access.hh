@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [fri apr 16 14:38:46 2010]
+// updated       julien quintard   [mon apr 19 14:34:52 2010]
 //
 
 #ifndef ETOILE_KERNEL_ACCESS_HH
@@ -26,8 +26,6 @@
 #include <etoile/kernel/Size.hh>
 #include <etoile/kernel/Range.hh>
 #include <etoile/kernel/Subject.hh>
-
-#include <list>
 
 namespace etoile
 {
@@ -63,9 +61,9 @@ namespace etoile
 			       Record*&);
       Status		Consult(const Index&,
 				const Size&,
-				Range&) const;
-      Status		Remove(const Subject&);
+				Range<Record>&) const;
       Status		Upgrade(const SecretKey&);
+      Status		Remove(const Subject&);
       Status		Capacity(Size&) const;
       Status		Locate(const Subject&,
 			       Index&);
@@ -91,7 +89,7 @@ namespace etoile
       //
       State		state;
 
-      Range		range;
+      Range<Record>	range;
     };
 
   }

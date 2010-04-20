@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Attributes.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [thu apr 15 18:54:26 2010]
+// updated       julien quintard   [mon apr 19 14:41:09 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ATTRIBUTES_HH
@@ -44,21 +44,16 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Add(context::Object*,
+      static Status	Set(context::Object*,
 			    const String&,
 			    const String&);
-      static Status	Lookup(context::Object*,
-			       const String&,
-			       kernel::Trait*&);
-      static Status	Consult(context::Object*,
-				const kernel::Index&,
-				const kernel::Size&,
-				kernel::Collection&);
-      static Status	Update(context::Object*,
-			       const String&,
-			       const String&);
-      static Status	Remove(context::Object*,
-			       const String&);
+      static Status	Get(context::Object*,
+			    const String&,
+			    kernel::Trait*&);
+      static Status	Fetch(context::Object*,
+			      kernel::Range<kernel::Trait>&);
+      static Status	Omit(context::Object*,
+			     const String&);
     };
 
   }
