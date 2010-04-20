@@ -412,7 +412,11 @@ class Builder:
         for path in self.srcs:
             self.srcs[path].build()
         for path in self.dynsrc:
-            self.dynsrc[path].build()
+            try:
+                self.dynsrc[path].build()
+            except Exception, e:
+                debug('  Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
+                execute = True
 
         # If any target is missing, we must rebuild.
         if not execute:
