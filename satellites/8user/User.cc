@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat mar 27 09:57:01 2010]
+// updated       julien quintard   [mon apr 19 15:34:48 2010]
 //
 
 //
@@ -53,6 +53,7 @@ namespace application
     SecretKey		key;
     Cipher		cipher;
     KeyPair		pair;
+    String		string;
 
     enter();
 
@@ -100,6 +101,13 @@ namespace application
 
     // close the file.
     ::close(fd);
+
+    // encode the user's public key in base64.
+    if (Base64::Encode(pair.K, string) == StatusError)
+      escape("unable to encode the public key");
+
+    // display the tuple user (name, identifier).
+    std::cout << name << " " << string << std::endl;
 
     leave();
   }

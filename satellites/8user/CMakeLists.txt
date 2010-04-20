@@ -1,4 +1,4 @@
-PROJECT(User CXX)
+PROJECT(8user CXX)
 
 ADD_EXECUTABLE(8user
   User.cc

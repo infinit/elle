@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [sat mar 27 11:36:32 2010]
+// updated       julien quintard   [sun apr 18 20:01:15 2010]
 //
 
 #ifndef NETWORK_NETWORK_HH
@@ -38,7 +38,7 @@ namespace application
   /// pair.
   ///
   class Agent:
-    public ::etoile::user::Agent
+    public etoile::user::Agent
   {
   public:
     //

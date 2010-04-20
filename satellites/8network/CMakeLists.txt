@@ -1,4 +1,4 @@
-PROJECT(Network CXX)
+PROJECT(8network CXX)
 
 ADD_EXECUTABLE(8network
   Network.cc
