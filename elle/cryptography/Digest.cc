@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/cryptography/Digest.cc
+// file          /home/mycure/infinit/libraries/elle/cryptography/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [fri apr 16 15:01:20 2010]
+// updated       julien quintard   [mon apr 19 19:43:31 2010]
 //
 
 //
@@ -75,10 +75,19 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Digest]" << std::endl;
+      // display depending on the value.
+      if (*this == Digest::Null)
+	{
+	  std::cout << alignment << "[Digest] Null" << std::endl;
+	}
+      else
+	{
+	  std::cout << alignment << "[Digest]" << std::endl;
 
-      if (this->region.Dump(margin + 2) == StatusError)
-	escape("unable to dump the region");
+	  // dump the region.
+	  if (this->region.Dump(margin + 2) == StatusError)
+	    escape("unable to dump the region");
+	}
 
       leave();
     }

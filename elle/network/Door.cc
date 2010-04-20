@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Door.cc
+// file          /home/mycure/infinit/libraries/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun apr 18 15:51:52 2010]
+// updated       julien quintard   [tue apr 20 21:30:16 2010]
 //
 
 //
@@ -288,6 +288,7 @@ namespace elle
 	  // prepare the packet based on the frame.
 	  if (packet.Prepare(frame) == StatusError)
 	    escape("unable to prepare the packet");
+
 
 	  // detach the frame from the packet so that the region is
 	  // not released once the packet is destroyed. indeed, since the
