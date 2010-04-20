@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [fri apr 16 15:48:56 2010]
+// updated       julien quintard   [tue apr 20 19:43:40 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -25,11 +25,14 @@
 //
 
 #include <elle/Elle.hh>
-
 #include <etoile/Etoile.hh>
+#include <map/Map.hh>
 
 #include <elle/idiom/Close.hh>
 # include <fuse.h>
+# include <sys/types.h>
+# include <pwd.h>
+# include <attr/xattr.h>
 #include <elle/idiom/Open.hh>
 
 namespace pig
@@ -51,14 +54,22 @@ namespace pig
     static const String			Path;
     static const String			Line;
 
-    static const ::etoile::kernel::Size	Frame;
+    static const etoile::kernel::Size	Frame;
 
     //
     // callbacks
     //
+
+    // general purpose
     static int		Getattr(const char*,
 				struct stat*);
+    static int		Fgetattr(const char*,
+				 struct stat*,
+				 struct fuse_file_info*);
+    static int		Utimens(const char*,
+				const struct timespec[2]);
 
+    // directory
     static int		Opendir(const char*,
 				struct fuse_file_info*);
     static int		Readdir(const char*,
@@ -72,6 +83,7 @@ namespace pig
 			      mode_t);
     static int		Rmdir(const char*);
 
+    // access
     static int		Access(const char*,
 			       int);
     static int		Chmod(const char*,
@@ -79,43 +91,72 @@ namespace pig
     static int		Chown(const char*,
 			      uid_t,
 			      gid_t);
+
+    // attribute
     static int		Setxattr(const char*,
 				 const char*,
 				 const char*,
 				 size_t,
 				 int);
+    static int		Getxattr(const char*,
+				 const char*,
+				 char*,
+				 size_t);
+    static int		Listxattr(const char*,
+				  char*,
+				  size_t);
+    static int		Removexattr(const char*,
+				    const char*);
 
-    static int		Utimens(const char*,
-				const struct timespec[2]);
+    // lock
+    static int		Lock(const char*,
+			     struct fuse_file_info*,
+			     int,
+			     struct flock*);
 
-    static int		Mknod(const char*,
-			      mode_t,
-			      dev_t);
+    // link
+    static int		Symlink(const char*,
+				const char*);
+    static int		Readlink(const char*,
+				 char*,
+				 size_t);
+
+    // file
+    static int		Create(const char*,
+			       mode_t,
+			       struct fuse_file_info*);
     static int		Open(const char*,
-			     struct fuse_file_info*);
-    static int		Read(const char*,
-			     char*,
-			     size_t,
-			     off_t,
 			     struct fuse_file_info*);
     static int		Write(const char*,
 			      const char*,
 			      size_t,
 			      off_t,
 			      struct fuse_file_info*);
+    static int		Read(const char*,
+			     char*,
+			     size_t,
+			     off_t,
+			     struct fuse_file_info*);
     static int		Truncate(const char*,
 				 off_t);
+    static int		Ftruncate(const char*,
+				  off_t,
+				  struct fuse_file_info*);
     static int		Release(const char*,
 				struct fuse_file_info*);
-    static int		Unlink(const char*);
+
+    // objects
     static int		Rename(const char*,
 			       const char*);
+    static int		Unlink(const char*);
 
-    static int		Symlink(const char*,
-				const char*);
-    static int		Readlink(const char*,
-				 char*,
-				 size_t);
+    // sync
+    static int		Fsync(const char*,
+			      int,
+			      struct fuse_file_info*);
+    static int		Fsyncdir(const char*,
+				 int,
+				 struct fuse_file_info*);
 
     //
     // static methods
@@ -126,12 +167,24 @@ namespace pig
     //
     // static attributes
     //
-    static Door				Channel;
+    static Door					Channel;
 
-    static PublicKey			K;
-    static String			Phrase;
+    static PublicKey				K;
+    static String				Phrase;
 
-    static ::etoile::kernel::Subject	Subject;
+    static etoile::kernel::Subject		Subject;
+
+    struct					Somebody
+    {
+      static uid_t				UID;
+      static gid_t				GID;
+    };
+
+    struct					Maps
+    {
+      static map::Map<PublicKey>		Users;
+      static map::Map<etoile::hole::Address>	Groups;
+    };
   };
 
 //
