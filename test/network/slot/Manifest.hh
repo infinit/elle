@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/slot/Manifest.hh
+// file          /home/mycure/infi...aries/elle/test/network/slot/Manifest.hh
 //
 // created       julien quintard   [tue feb 23 21:40:13 2010]
-// updated       julien quintard   [thu mar 25 19:25:37 2010]
+// updated       julien quintard   [sun apr 18 20:06:02 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_PROBE_HH
@@ -47,8 +47,8 @@ namespace elle
 // ---------- definitions -----------------------------------------------------
 //
 
-outward(::elle::test::TagProbe,
-	parameters(const ::elle::core::String,
-		   const ::elle::test::Table));
+outward(elle::test::TagProbe,
+	parameters(const elle::core::String,
+		   const elle::test::Table));
 
 #endif

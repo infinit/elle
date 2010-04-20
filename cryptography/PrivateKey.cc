@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
+// file          /home/mycure/infi...ibraries/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [sun apr 18 15:46:11 2010]
+// updated       julien quintard   [mon apr 19 19:46:24 2010]
 //
 
 //
@@ -365,15 +365,25 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[PrivateKey]" << std::endl;
-      std::cout << alignment << Dumpable::Shift << "[n] "
-		<< *this->key->pkey.rsa->n << std::endl;
-      std::cout << alignment << Dumpable::Shift << "[d] "
-		<< *this->key->pkey.rsa->d << std::endl;
-      std::cout << alignment << Dumpable::Shift << "[p] "
-		<< *this->key->pkey.rsa->p << std::endl;
-      std::cout << alignment << Dumpable::Shift << "[q] "
-		<< *this->key->pkey.rsa->q << std::endl;
+      // display depending on the value.
+      if (*this == PrivateKey::Null)
+	{
+	  std::cout << alignment << "[PrivateKey] Null" << std::endl;
+	}
+      else
+	{
+	  std::cout << alignment << "[PrivateKey]" << std::endl;
+
+	  // dump the attributes.
+	  std::cout << alignment << Dumpable::Shift << "[n] "
+		    << *this->key->pkey.rsa->n << std::endl;
+	  std::cout << alignment << Dumpable::Shift << "[d] "
+		    << *this->key->pkey.rsa->d << std::endl;
+	  std::cout << alignment << Dumpable::Shift << "[p] "
+		    << *this->key->pkey.rsa->p << std::endl;
+	  std::cout << alignment << Dumpable::Shift << "[q] "
+		    << *this->key->pkey.rsa->q << std::endl;
+	}
 
       leave();
     }

@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/Manifest.hh
+// file          /home/mycure/infinit/libraries/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [wed mar 31 19:37:56 2010]
+// updated       julien quintard   [sun apr 18 20:05:37 2010]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -53,7 +53,7 @@ namespace elle
 ///
 /// XXX
 ///
-range(::elle::Component, ::elle::Tags);
+range(elle::Component, elle::Tags);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -68,7 +68,7 @@ namespace elle
   enum Tag
     {
       // error
-      TagError = ::elle::network::Range<Component>::First
+      TagError = elle::network::Range<Component>::First
     };
 
 }
@@ -83,7 +83,7 @@ namespace elle
 ///
 
 // Error
-outward(::elle::TagError,
-	parameters(const ::elle::miscellaneous::Report));
+outward(elle::TagError,
+	parameters(const elle::miscellaneous::Report));
 
 #endif

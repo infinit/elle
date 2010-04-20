@@ -5,10 +5,10 @@
 //
 // license       infinit (c)
 //
-// file          /home/mycure/infinit/elle/cryptography/Cipher.cc
+// file          /home/mycure/infinit/libraries/elle/cryptography/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [sun apr 18 12:38:17 2010]
+// updated       julien quintard   [mon apr 19 19:40:44 2010]
 //
 
 //
@@ -75,10 +75,19 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Cipher]" << std::endl;
+      // display the cipher depending on its value.
+      if (*this == Cipher::Null)
+	{
+	  std::cout << alignment << "[Cipher] Null" << std::endl;
+	}
+      else
+	{
+	  std::cout << alignment << "[Cipher]" << std::endl;
 
-      if (this->region.Dump(margin + 2) == StatusError)
-	escape("unable to dump the region");
+	  // dump the region.
+	  if (this->region.Dump(margin + 2) == StatusError)
+	    escape("unable to dump the region");
+	}
 
       leave();
     }

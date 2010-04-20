@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Door.hxx
+// file          /home/mycure/infinit/libraries/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [wed apr 14 11:51:15 2010]
+// updated       julien quintard   [tue apr 20 21:39:16 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -147,13 +147,32 @@ namespace elle
 	  // available meaning that no even can be processed until
 	  // the data is received.
 
-	  // wait for the ready signal.
-	  if (this->socket->waitForReadyRead() == false)
-	    escape("an error occured while waiting for the ready signal");
+	  // until a complete parcel has been received.
+	  while (true)
+	    {
+	      Status	status;
 
-	  // then read the parcel.
-	  if (this->Read(parcel) != StatusTrue)
-	    escape("unable to read a complete parcel from the door");
+	      // wait for the ready signal.
+	      if (this->socket->waitForReadyRead() == false)
+		escape("an error occured while waiting for the ready signal");
+
+	      // try to read the parcel.
+	      switch (this->Read(parcel))
+		{
+		case StatusFalse:
+		  {
+		    // since the parcel is not complete, keep waiting...
+		    continue;
+		  }
+		case StatusError:
+		  {
+		    escape("unable to read a complete parcel from the door");
+		  }
+		};
+
+	      // at this point, we should have a complete parcel.
+	      break;
+	    }
 	}
 
       // check the tag.
