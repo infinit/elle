@@ -42,7 +42,7 @@ help:
 
 pull:
 	git pull
-	for i in elle etoile agent pig applications hole; \
+	for i in libraries etoile agent pig applications hole; \
 do \
   if [[ -d $$i ]] ; then \
     (cd $$i && git pull) \
