@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu apr 15 13:41:51 2010]
+// updated       julien quintard   [sun apr 18 20:03:06 2010]
 //
 
 //
@@ -225,8 +225,8 @@ namespace agent
       // identify to etoile by passing the user's public key for challenging
       // along with the phrase.
       if (Agent::Channel.Call(
-	    Inputs< ::etoile::TagWallIdentify >(Agent::Pair.K),
-	    Outputs< ::etoile::TagWallChallenge >(code)) == StatusError)
+	    Inputs<etoile::TagWallIdentify>(Agent::Pair.K),
+	    Outputs<etoile::TagWallChallenge>(code)) == StatusError)
 	escape("unable to identify to etoile");
 
       // decrypt the code with the private key.
@@ -239,27 +239,23 @@ namespace agent
 
       // authenticate by sending the hash of the phrase.
       if (Agent::Channel.Call(
-	    Inputs< ::etoile::TagWallAuthenticate >(digest),
-	    Outputs< ::etoile::TagOk >()) == StatusError)
+	    Inputs<etoile::TagWallAuthenticate>(digest),
+	    Outputs<etoile::TagOk>()) == StatusError)
 	escape("unable to authenticate to etoile");
     }
 
     //
-    // store the passphrase in the infinit configuration so that
-    // applications can connect to etoile on behalf of the agent's user.
+    // store the user's public key so that applications can know on
+    // behalf of who they are working.
     //
     {
-      String		path = Agent::Path + "/phrase";
-      Archive		archive;
+      String		path = Agent::Path + "/public.b64";
+      String		string;
       Integer32		fd;
 
-      // create an archive.
-      if (archive.Create() == StatusError)
-	escape("unable to create an archive");
-
-      // serialize the user public key and phrase.
-      if (archive.Serialize(Agent::Pair.K, Agent::Phrase) == StatusError)
-	escape("unable to serialize the public key and phrase");
+      // encode the public key in base64.
+      if (Base64::Encode(Agent::Pair.K, string) == StatusError)
+	escape("unable to encode the public key");
 
       // create the file or overwrite it.
       if ((fd = ::open(path.c_str(),
@@ -268,7 +264,38 @@ namespace agent
 	escape(::strerror(errno));
 
       // write the file.
-      if (::write(fd, archive.contents, archive.size) != archive.size)
+      if (::write(fd, string.c_str(), string.length()) != string.length())
+	{
+	  ::close(fd);
+
+	  escape("unable to write the public key file");
+	}
+
+      // close the file.
+      ::close(fd);
+    }
+
+    //
+    // store the passphrase in the infinit configuration so that
+    // applications can connect to etoile on behalf of the agent's user.
+    //
+    {
+      String		path = Agent::Path + "/phrase.b64";
+      String		string;
+      Integer32		fd;
+
+      // encode the phrase in base64.
+      if (Base64::Encode(Agent::Phrase, string) == StatusError)
+	escape("unable to encode the phrase");
+
+      // create the file or overwrite it.
+      if ((fd = ::open(path.c_str(),
+		       O_WRONLY | O_TRUNC | O_CREAT,
+		       0600)) == -1)
+	escape(::strerror(errno));
+
+      // write the file.
+      if (::write(fd, string.c_str(), string.length()) != string.length())
 	{
 	  ::close(fd);
 

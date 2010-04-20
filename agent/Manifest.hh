@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:34:08 2010]
-// updated       julien quintard   [sat mar 27 06:43:55 2010]
+// updated       julien quintard   [sun apr 18 20:03:39 2010]
 //
 
 #ifndef AGENT_MANIFEST_HH
@@ -48,7 +48,7 @@ namespace agent
 ///
 /// XXX
 ///
-range(::agent::Component, ::agent::Tags, ::etoile::Component);
+range(agent::Component, agent::Tags, etoile::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -78,14 +78,14 @@ namespace agent
 /// below are the definitions of the Agent messages.
 ///
 
-inward(::agent::TagDecrypt,
-       parameters(const ::elle::cryptography::Code));
-outward(::agent::TagDecrypted,
-        parameters(const ::elle::cryptography::Clear));
+inward(agent::TagDecrypt,
+       parameters(const elle::cryptography::Code));
+outward(agent::TagDecrypted,
+        parameters(const elle::cryptography::Clear));
 
-inward(::agent::TagSign,
-       parameters(const ::elle::cryptography::Plain));
-outward(::agent::TagSigned,
-        parameters(const ::elle::cryptography::Signature));
+inward(agent::TagSign,
+       parameters(const elle::cryptography::Plain));
+outward(agent::TagSigned,
+        parameters(const elle::cryptography::Signature));
 
 #endif
