@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sun apr 18 20:03:06 2010]
+// updated       julien quintard   [thu apr 22 23:48:56 2010]
 //
 
 //
@@ -138,9 +138,8 @@ namespace agent
       // dump the name.
       std::cout << "[Name] " << name << std::endl;
 
-      // dump the public key.
-      if (Agent::Pair.K.Dump() == StatusError)
-	escape("unable to dump the user's public key");
+      // display the key pair.
+      std::cout << "[Pair] " << Agent::Pair << std::endl;
     }
 
     //
@@ -185,6 +184,8 @@ namespace agent
   Status		Agent::Clean()
   {
     enter();
+
+    // nothing to do.
 
     leave();
   }
@@ -322,7 +323,12 @@ namespace agent
 
     // authenticate the agent.
     if (Agent::Authenticate() == StatusError)
-      Program::Exit(StatusError);
+      {
+	// exit the program.
+	Program::Exit(StatusOk);
+
+	escape("unable to authenticate to etoile");
+      }
 
     leave();
   }
@@ -378,8 +384,11 @@ namespace agent
     // report the error.
     report(Report::TypeError, report);
 
+    // display the errors.
+    show();
+
     // quit the program.
-    Program::Exit(StatusError);
+    Program::Exit(StatusOk);
 
     leave();
   }
@@ -394,8 +403,11 @@ namespace agent
     // report the error.
     report(Report::TypeError, error);
 
+    // display the errors.
+    show();
+
     // quit the program.
-    Program::Exit(StatusError);
+    Program::Exit(StatusOk);
 
     leave();
   }
