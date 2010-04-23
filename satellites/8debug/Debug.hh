@@ -1,18 +1,18 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       8network
+// project       8debug
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8network/Network.hh
+// file          /home/mycure/infinit/applications/8debug/Debug.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [thu apr 22 22:20:20 2010]
+// updated       julien quintard   [thu apr 22 17:34:29 2010]
 //
 
-#ifndef NETWORK_NETWORK_HH
-#define NETWORK_NETWORK_HH
+#ifndef DEBUG_DEBUG_HH
+#define DEBUG_DEBUG_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -33,20 +33,32 @@ namespace application
 //
 
   ///
-  /// this class implements the 8network application.
+  /// this class implements the 8debug application.
   ///
-  class Network
+  class Debug
   {
   public:
     //
-    // constants
+    // enumerations
     //
-    static const String			Path;
+    enum Operation
+      {
+	OperationUnknown = 0,
+
+	OperationResolve,
+	OperationDump
+      };
 
     //
     // static methods
     //
-    static Status	New(const String&);
+    static Status	Initialize(const Natural32,
+				   const Character**);
+    static Status	Clean();
+
+    static Status	Dump(const etoile::hole::Address&,
+			     const KeyPair&,
+			     const etoile::kernel::Token&);
   };
 
 }

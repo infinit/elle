@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8access/Access.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon apr 19 09:38:53 2010]
+// updated       julien quintard   [thu apr 22 12:38:12 2010]
 //
 
 //
@@ -420,54 +420,26 @@ namespace application
 	  case 'k':
 	    {
 	      String		string;
-	      Region		region;
-	      Archive		archive;
 
 	      // save the argument in a string.
 	      string.assign(optarg);
 
 	      // decode the base64 string.
-	      if (Base64::Decode(string, region) == StatusError)
+	      if (Base64::Decode(string, K) == StatusError)
 		escape("unable to decode the key argument");
-
-	      // detach the region so that it does not get freed twice.
-	      if (region.Detach() == StatusError)
-		escape("unable to detach the region");
-
-	      // prepare the archive.
-	      if (archive.Prepare(region) == StatusError)
-		escape("unable to prepare the archive");
-
-	      // extract the public key.
-	      if (archive.Extract(K) == StatusError)
-		escape("unable to extract the public key");
 
 	      break;
 	    }
 	  case 'i':
 	    {
 	      String		string;
-	      Region		region;
-	      Archive		archive;
 
 	      // save the argument in a string.
 	      string.assign(optarg);
 
 	      // decode the base64 string.
-	      if (Base64::Decode(string, region) == StatusError)
-		escape("unable to decode the key argument");
-
-	      // detach the region so that it does not get freed twice.
-	      if (region.Detach() == StatusError)
-		escape("unable to detach the region");
-
-	      // prepare the archive.
-	      if (archive.Prepare(region) == StatusError)
-		escape("unable to prepare the archive");
-
-	      // extract the address.
-	      if (archive.Extract(address) == StatusError)
-		escape("unable to extract the address");
+	      if (Base64::Decode(string, address) == StatusError)
+		escape("unable to decode the address argument");
 
 	      break;
 	    }

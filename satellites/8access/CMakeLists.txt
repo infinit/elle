@@ -1,4 +1,4 @@
-PROJECT(8Access CXX)
+PROJECT(8access CXX)
 
 ADD_EXECUTABLE(8access
   Access.cc

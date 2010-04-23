@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [wed apr  7 19:24:14 2010]
+// updated       julien quintard   [thu apr 22 22:21:10 2010]
 //
 
 //
@@ -119,10 +119,14 @@ namespace application
     // create a directory.
     //
     {
-      Agent			agent(initial);
+      etoile::user::Agent	agent;
+
+      // create the agent.
+      if (agent.Create(initial) == StatusError)
+	escape("unable to create the agent");
 
       // create directory object.
-      if (directory.Create(GenreDirectory, agent.pair.K) == StatusError)
+      if (directory.Create(GenreDirectory, agent.K) == StatusError)
 	escape("unable to create the object directory");
 
       // seal the data and meta data.
