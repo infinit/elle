@@ -3,7 +3,7 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.hh
 //

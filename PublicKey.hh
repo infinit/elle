@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
+// file          /home/mycure/infi...libraries/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [sun apr 18 12:36:08 2010]
+// updated       julien quintard   [thu apr 22 14:23:22 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
@@ -85,9 +85,6 @@ namespace elle
       Status		Verify(const Signature&,
 			       const Plain&) const;
 
-      template <typename T>
-      Status		Verify(const Signature&,
-			       const T&) const;
       template <typename T,
 		typename... TT>
       Status		Verify(const Signature&,

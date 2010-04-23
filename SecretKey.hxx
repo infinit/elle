@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/SecretKey.hxx
+// file          /home/mycure/infi...ibraries/elle/cryptography/SecretKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun apr 18 15:48:26 2010]
+// updated       julien quintard   [thu apr 22 14:32:47 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
@@ -306,9 +306,11 @@ namespace elle
     /// this method decrypts the given Cipher before extracting the
     /// object from the Clear.
     ///
-    template <typename T>
+    template <typename T,
+	      typename... TT>
     Status		SecretKey::Decrypt(const Cipher&	cipher,
-					   T&			parameter)
+					   T&			parameter,
+					   TT&...		parameters)
       const
     {
       Archive		archive;
@@ -330,38 +332,8 @@ namespace elle
 	escape("unable to detach the clear's data");
 
       // extract the object.
-      if (archive.Extract(parameter) == StatusError)
-	escape("unable to extract the object");
-
-      leave();
-    }
-
-    ///
-    /// this method decrypts a set of items.
-    ///
-    template <typename T,
-	      typename... TT>
-    Status		SecretKey::Decrypt(const Cipher&	cipher,
-					   T&			parameter,
-					   TT&...		parameters)
-      const
-    {
-      Archive		archive;
-      Clear		clear;
-
-      enter();
-
-      if (this->Decrypt(cipher, clear) == StatusError)
-	escape("unable to decrypt the cipher");
-
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
-      if (clear.Detach() == StatusError)
-	escape("unable to detach the clear's data");
-
       if (archive.Extract(parameter, parameters...) == StatusError)
-	escape("unable to extract the objects");
+	escape("unable to extract the object");
 
       leave();
     }

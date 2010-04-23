@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/libraries/elle/cryptography/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon apr 19 19:40:44 2010]
+// updated       julien quintard   [thu apr 22 23:42:05 2010]
 //
 
 //
@@ -78,15 +78,11 @@ namespace elle
       // display the cipher depending on its value.
       if (*this == Cipher::Null)
 	{
-	  std::cout << alignment << "[Cipher] Null" << std::endl;
+	  std::cout << alignment << "[Cipher] " << none << std::endl;
 	}
       else
 	{
-	  std::cout << alignment << "[Cipher]" << std::endl;
-
-	  // dump the region.
-	  if (this->region.Dump(margin + 2) == StatusError)
-	    escape("unable to dump the region");
+	  std::cout << alignment << "[Cipher] " << *this << std::endl;
 	}
 
       leave();

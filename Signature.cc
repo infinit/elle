@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infi...libraries/elle/cryptography/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon apr 19 19:47:24 2010]
+// updated       julien quintard   [thu apr 22 23:39:12 2010]
 //
 
 //
@@ -78,15 +78,11 @@ namespace elle
       // display depending on the value.
       if (*this == Signature::Null)
 	{
-	  std::cout << alignment << "[Signature] Null" << std::endl;
+	  std::cout << alignment << "[Signature] " << none << std::endl;
 	}
       else
 	{
-	  std::cout << alignment << "[Signature]" << std::endl;
-
-	  // dump the region.
-	  if (this->region.Dump(margin + 2) == StatusError)
-	    escape("unable to dump the region");
+	  std::cout << alignment << "[Signature] " << *this << std::endl;
 	}
 
       leave();
