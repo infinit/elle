@@ -3,12 +3,12 @@
 //
 // project       il
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
+// file          /home/mycure/infi...libraries/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [fri apr 16 14:55:22 2010]
+// updated       julien quintard   [thu apr 22 23:41:33 2010]
 //
 
 //
@@ -345,15 +345,11 @@ namespace elle
       // display the key depending on its value.
       if (*this == SecretKey::Null)
 	{
-	  std::cout << alignment << "[SecretKey] Null" << std::endl;
+	  std::cout << alignment << "[SecretKey] " << none << std::endl;
 	}
       else
 	{
-	  std::cout << alignment << "[SecretKey]" << std::endl;
-
-	  // dump the region.
-	  if (this->region.Dump(margin + 2) == StatusError)
-	    escape("unable to dump the secret key");
+	  std::cout << alignment << "[SecretKey] " << *this << std::endl;
 	}
 
       leave();

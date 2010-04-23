@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Base64.cc
+// file          /home/mycure/infinit/libraries/elle/util/Base64.cc
 //
 // created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [sun apr 18 16:55:18 2010]
+// updated       julien quintard   [thu apr 22 14:15:20 2010]
 //
 
 //

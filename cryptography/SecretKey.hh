@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
+// file          /home/mycure/infi...libraries/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [sun apr 18 15:31:01 2010]
+// updated       julien quintard   [thu apr 22 14:32:18 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
@@ -92,9 +92,6 @@ namespace elle
       Status		Decrypt(const Cipher&,
 				Clear&) const;
 
-      template <typename T>
-      Status		Decrypt(const Cipher&,
-				T&) const;
       template <typename T,
 		typename... TT>
       Status		Decrypt(const Cipher&,

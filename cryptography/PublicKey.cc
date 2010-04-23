@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infi...libraries/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [mon apr 19 19:46:46 2010]
+// updated       julien quintard   [thu apr 22 23:42:27 2010]
 //
 
 //
@@ -252,8 +252,8 @@ namespace elle
 	if (code.region.Acquire(archive.contents, archive.size) == StatusError)
 	  escape("unable to wrap and return the archive's contents");
 
-	// detach the data from the archive so that the data is not
-	// released twice.
+	// detach the data from the archive so that the data does not get
+	// released.
 	if (archive.Detach() == StatusError)
 	  escape("unable to detach the data from the archive");
       }
@@ -347,17 +347,11 @@ namespace elle
       // display depending on the value.
       if (*this == PublicKey::Null)
 	{
-	  std::cout << alignment << "[PublicKey] Null" << std::endl;
+	  std::cout << alignment << "[PublicKey] " << none << std::endl;
 	}
       else
 	{
-	  std::cout << alignment << "[PublicKey]" << std::endl;
-
-	  // dump the attributes.
-	  std::cout << alignment << Dumpable::Shift << "[n] "
-		    << *this->key->pkey.rsa->n << std::endl;
-	  std::cout << alignment << Dumpable::Shift << "[e] "
-		    << *this->key->pkey.rsa->e << std::endl;
+	  std::cout << alignment << "[PublicKey] " << *this << std::endl;
 	}
 
       leave();

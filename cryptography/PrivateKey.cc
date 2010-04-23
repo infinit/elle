@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infi...ibraries/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [mon apr 19 19:46:24 2010]
+// updated       julien quintard   [thu apr 22 23:41:27 2010]
 //
 
 //
@@ -216,7 +216,7 @@ namespace elle
       // (ii)
       {
 	Archive		archive;
-	Region		clear;
+	Region		region;
 	size_t		size;
 
 	// compute the size of the decrypted portion to come.
@@ -228,28 +228,28 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// allocate the required memory for the region object.
-	if (clear.Prepare(size) == StatusError)
+	if (region.Prepare(size) == StatusError)
 	  escape("unable to allocate the required memory");
 
 	// perform the decrypt operation.
 	if (::EVP_PKEY_decrypt(this->contexts.decrypt,
-			       (unsigned char*)clear.contents,
+			       (unsigned char*)region.contents,
 			       &size,
 			       (const unsigned char*)key.region.contents,
 			       key.region.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// set the region size.
-	clear.size = size;
-
-	// prepare the archive.
-	if (archive.Prepare(clear) == StatusError)
-	  escape("unable to prepare the archive");
+	region.size = size;
 
 	// detach the data from the region so that the data
 	// is not release twice by both 'region' and 'archive'.
-	if (clear.Detach() == StatusError)
+	if (region.Detach() == StatusError)
 	  escape("unable to detach the data from the region");
+
+	// prepare the archive.
+	if (archive.Prepare(region) == StatusError)
+	  escape("unable to prepare the archive");
 
 	// extract the secret key.
 	if (archive.Extract(secret) == StatusError)
@@ -368,21 +368,11 @@ namespace elle
       // display depending on the value.
       if (*this == PrivateKey::Null)
 	{
-	  std::cout << alignment << "[PrivateKey] Null" << std::endl;
+	  std::cout << alignment << "[PrivateKey] " << none << std::endl;
 	}
       else
 	{
-	  std::cout << alignment << "[PrivateKey]" << std::endl;
-
-	  // dump the attributes.
-	  std::cout << alignment << Dumpable::Shift << "[n] "
-		    << *this->key->pkey.rsa->n << std::endl;
-	  std::cout << alignment << Dumpable::Shift << "[d] "
-		    << *this->key->pkey.rsa->d << std::endl;
-	  std::cout << alignment << Dumpable::Shift << "[p] "
-		    << *this->key->pkey.rsa->p << std::endl;
-	  std::cout << alignment << Dumpable::Shift << "[q] "
-		    << *this->key->pkey.rsa->q << std::endl;
+	  std::cout << alignment << "[PrivateKey] " << *this << std::endl;
 	}
 
       leave();

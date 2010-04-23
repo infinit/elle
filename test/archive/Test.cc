@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/test/archive/Test.cc
+// file          /home/mycure/infinit/libraries/elle/test/archive/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun apr 18 15:52:28 2010]
+// updated       julien quintard   [thu apr 22 14:42:35 2010]
 //
 
 //
@@ -67,12 +67,12 @@ namespace elle
       if (archive != ar)
 	escape("the two archives should be detected as identical");
 
+      // detach the memory.
+      ar.Detach();
+
       // prepare the archive to be extracted.
       if (a.Prepare(ar) == StatusError)
 	escape("unable to prepare the extraction archive");
-
-      // detach the memory.
-      ar.Detach();
 
       // verify the archive.
       if (Pack::Verify(a) == StatusError)

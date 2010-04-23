@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PublicKey.hxx
+// file          /home/mycure/infi...ibraries/elle/cryptography/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu mar 11 16:46:48 2010]
+// updated       julien quintard   [thu apr 22 14:25:58 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
@@ -310,33 +310,6 @@ namespace elle
     /// this method verifies an object by serializing it before performing
     /// the verification process.
     ///
-    template <typename T>
-    Status		PublicKey::Verify(const Signature&	signature,
-					  const T&		parameter)
-      const
-    {
-      Archive		archive;
-
-      enter();
-
-      // create the archive.
-      if (archive.Create() == StatusError)
-	flee("unable to create the archive");
-
-      // serialize the object.
-      if (archive.Serialize(parameter) == StatusError)
-	flee("unable to serialize the object");
-
-      // call the Verify() method.
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the object's archive");
-
-      true();
-    }
-
-    ///
-    /// this method verifies a set of items.
-    ///
     template <typename T,
 	      typename... TT>
     Status		PublicKey::Verify(const Signature&	signature,
@@ -348,14 +321,17 @@ namespace elle
 
       enter();
 
+      // create the archive.
       if (archive.Create() == StatusError)
 	flee("unable to create the archive");
 
+      // serialize the object.
       if (archive.Serialize(parameter, parameters...) == StatusError)
-	flee("unable to serialize the objects");
+	flee("unable to serialize the object");
 
+      // call the Verify() method.
       if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the objects' archive");
+	flee("unable to verify the signature against the object's archive");
 
       true();
     }

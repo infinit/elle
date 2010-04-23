@@ -3,12 +3,12 @@
 //
 // project       il
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/archive/Archive.cc
+// file          /home/mycure/infinit/libraries/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sun apr 18 15:45:35 2010]
+// updated       julien quintard   [thu apr 22 14:16:07 2010]
 //
 
 //
@@ -451,13 +451,13 @@ namespace elle
 			       size) == StatusError)
 	    escape("unable to assign the data to the buffer");
 
-	  // build the given archive.
-	  if (element.Prepare(buffer) == StatusError)
-	    escape("unable to prepare the given archive");
-
 	  // detach the data from the buffer.
 	  if (buffer.Detach() == StatusError)
 	    escape("unable to detach the data from the buffer");
+
+	  // build the given archive.
+	  if (element.Prepare(buffer) == StatusError)
+	    escape("unable to prepare the given archive");
 	}
 
       // update the offset.
@@ -590,13 +590,13 @@ namespace elle
 
       enter();
 
-      // wrap the archive's content so that the data is not lost.
-      if (chunk.Wrap(this->contents, this->size) == StatusError)
-	escape("unable to wrap the archive's content");
-
       // detach the data from the archive so that nothing is freed.
       if (this->Detach() == StatusError)
 	escape("unable to detach the archive's data");
+
+      // wrap the archive's content so that the data is not lost.
+      if (chunk.Wrap(this->contents, this->size) == StatusError)
+	escape("unable to wrap the archive's content");
 
       // recycle the archive.
       if (this->Recycle<Archive>() == StatusError)
@@ -895,13 +895,13 @@ namespace elle
 
       enter();
 
-      // wrap the archive's content so that the data is not lost.
-      if (chunk.Wrap(this->contents, this->size) == StatusError)
-	escape("unable to wrap the archive's content");
-
       // detach the data from the archive so that nothing is freed.
       if (this->Detach() == StatusError)
 	escape("unable to detach the archive's data");
+
+      // wrap the archive's content so that the data is not lost.
+      if (chunk.Wrap(this->contents, this->size) == StatusError)
+	escape("unable to wrap the archive's content");
 
       // recycle the archive.
       if (this->Recycle<Archive>() == StatusError)

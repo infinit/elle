@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Base64.hh
+// file          /home/mycure/infinit/libraries/elle/util/Base64.hh
 //
 // created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [sun apr 18 15:56:57 2010]
+// updated       julien quintard   [thu apr 22 14:22:10 2010]
 //
 
 #ifndef ELLE_UTIL_BASE64_HH
@@ -88,9 +88,6 @@ namespace elle
       static Status	Decode(const String&,
 			       Region&);
 
-      template <typename T>
-      static Status	Decode(const String&,
-			       T&);
       template <typename T,
 		typename... TT>
       static Status	Decode(const String&,

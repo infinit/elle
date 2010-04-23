@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PrivateKey.hxx
+// file          /home/mycure/infi...braries/elle/cryptography/PrivateKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun apr 18 15:48:51 2010]
+// updated       julien quintard   [thu apr 22 14:26:22 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
@@ -43,9 +43,11 @@ namespace elle
     /// this method decrypts a code and returns a pretty newly created
     /// object.
     ///
-    template <typename T>
+    template <typename T,
+	      typename... TT>
     Status		PrivateKey::Decrypt(const Code&		code,
-					    T&			parameter)
+					    T&			parameter,
+					    TT&...		parameters)
       const
     {
       Archive		archive;
@@ -67,36 +69,6 @@ namespace elle
 	escape("unable to detach the clear's data");
 
       // extract the item.
-      if (archive.Extract(parameter) == StatusError)
-	escape("unable to extract the items");
-
-      leave();
-    }
-
-    ///
-    /// this method decrypts a set of items.
-    ///
-    template <typename T,
-	      typename... TT>
-    Status		PrivateKey::Decrypt(const Code&		code,
-					    T&			parameter,
-					    TT&...		parameters)
-      const
-    {
-      Archive		archive;
-      Clear		clear;
-
-      enter();
-
-      if (this->Decrypt(code, clear) == StatusError)
-	escape("unable to decrypt the code");
-
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
-      if (clear.Detach() == StatusError)
-	escape("unable to detach the clear's data");
-
       if (archive.Extract(parameter, parameters...) == StatusError)
 	escape("unable to extract the items");
 

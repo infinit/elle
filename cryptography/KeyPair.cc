@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/libraries/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [mon apr 19 19:45:39 2010]
+// updated       julien quintard   [thu apr 22 23:40:54 2010]
 //
 
 //
@@ -172,7 +172,7 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[KeyPair]" << std::endl;
+      std::cout << alignment << "[KeyPair] " << *this << std::endl;
 
       if (this->K.Dump(margin + 2) == StatusError)
 	escape("unable to dump the public key");

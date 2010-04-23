@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Slot.cc
+// file          /home/mycure/infinit/libraries/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sun apr 18 15:52:11 2010]
+// updated       julien quintard   [thu apr 22 14:49:23 2010]
 //
 
 //
@@ -204,7 +204,7 @@ namespace elle
 	// not released once the packet is destroyed. indeed, since the frame
 	// is a chunk, it must not be freed.
 	if (packet.Detach() == StatusError)
-	  escape("unable to detach the frame");
+	  escape("unable to detach the data from the packet");
 
 	// allocate the parcel.
 	parcel = new Parcel;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/libraries/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [tue apr 20 21:30:16 2010]
+// updated       julien quintard   [thu apr 22 14:49:12 2010]
 //
 
 //
@@ -289,12 +289,11 @@ namespace elle
 	  if (packet.Prepare(frame) == StatusError)
 	    escape("unable to prepare the packet");
 
-
 	  // detach the frame from the packet so that the region is
 	  // not released once the packet is destroyed. indeed, since the
 	  // frame is a chunk, it must not be freed.
 	  if (packet.Detach() == StatusError)
-	    escape("unable to detach the frame");
+	    escape("unable to detach the data from the packet");
 
 	  // allocate the parcel.
 	  parcel = new Parcel;
