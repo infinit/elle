@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Environment.cc
+// file          /home/mycure/infi...ibraries/elle/concurrency/Environment.cc
 //
 // created       julien quintard   [thu apr  8 15:47:45 2010]
-// updated       julien quintard   [thu apr  8 15:55:24 2010]
+// updated       julien quintard   [thu apr 22 15:36:28 2010]
 //
 
 //
@@ -36,7 +36,8 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Environment]" << std::endl;
+      std::cout << alignment << "[Environment] "
+		<< this->container.size() << std::endl;
 
       // go through the container.
       for (scoutor = this->container.begin();

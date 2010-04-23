@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/miscellaneous/Entrance.hxx
+// file          /home/mycure/infi...ibraries/elle/miscellaneous/Entrance.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [tue mar 30 17:29:18 2010]
+// updated       julien quintard   [thu apr 22 15:21:39 2010]
 //
 
 #ifndef ELLE_MISCELLANEOUS_ENTRANCE_HXX

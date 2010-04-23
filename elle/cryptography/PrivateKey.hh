@@ -3,12 +3,12 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
+// file          /home/mycure/infi...ibraries/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [sun apr 18 12:36:48 2010]
+// updated       julien quintard   [thu apr 22 14:23:29 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -95,9 +95,6 @@ namespace elle
       Status		Sign(const Plain&,
 			     Signature&) const;
 
-      template <typename T>
-      Status		Decrypt(const Code&,
-				T&) const;
       template <typename T,
 		typename... TT>
       Status		Decrypt(const Code&,

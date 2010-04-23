@@ -3,7 +3,7 @@
 //
 // project       elle
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.cc
 //

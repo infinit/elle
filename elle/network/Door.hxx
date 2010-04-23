@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/libraries/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [tue apr 20 21:39:16 2010]
+// updated       julien quintard   [thu apr 22 22:41:08 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX

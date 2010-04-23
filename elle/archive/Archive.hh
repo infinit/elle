@@ -3,7 +3,7 @@
 //
 // project       il
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/elle/archive/Archive.hh
 //

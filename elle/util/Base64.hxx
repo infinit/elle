@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Base64.hxx
+// file          /home/mycure/infinit/libraries/elle/util/Base64.hxx
 //
 // created       julien quintard   [sun apr 18 15:34:47 2010]
-// updated       julien quintard   [sun apr 18 15:57:16 2010]
+// updated       julien quintard   [thu apr 22 14:51:46 2010]
 //
 
 #ifndef ELLE_UTIL_BASE64_HXX
@@ -310,37 +310,6 @@ namespace elle
     /// this method decodes the given string before extracting the
     /// object.
     ///
-    template <typename T>
-    Status		Base64::Decode(const String&		string,
-				       T&			parameter)
-    {
-      Archive		archive;
-      Region		region;
-
-      enter();
-
-      // decode the string.
-      if (Base64::Decode(string, region) == StatusError)
-	escape("unable to decode the string");
-
-      // wrap the region into an archive.
-      if (archive.Prepare(region) == StatusError)
-	escape("unable to prepare the archive");
-
-      // detach the region.
-      if (region.Detach() == StatusError)
-	escape("unable to detach the region's data");
-
-      // extract the object.
-      if (archive.Extract(parameter) == StatusError)
-	escape("unable to extract the object");
-
-      leave();
-    }
-
-    ///
-    /// this method decrypts a set of items.
-    ///
     template <typename T,
 	      typename... TT>
     Status		Base64::Decode(const String&		string,
@@ -352,17 +321,21 @@ namespace elle
 
       enter();
 
+      // decode the string.
       if (Base64::Decode(string, region) == StatusError)
 	escape("unable to decode the string");
 
-      if (archive.Prepare(region) == StatusError)
-	escape("unable to prepare the archive");
-
+      // detach the region.
       if (region.Detach() == StatusError)
 	escape("unable to detach the region's data");
 
+      // wrap the region into an archive.
+      if (archive.Prepare(region) == StatusError)
+	escape("unable to prepare the archive");
+
+      // extract the object.
       if (archive.Extract(parameter, parameters...) == StatusError)
-	escape("unable to extract the objects");
+	escape("unable to extract the object");
 
       leave();
     }
