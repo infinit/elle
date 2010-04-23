@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/wall/File.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [tue apr 20 10:06:19 2010]
+// updated       julien quintard   [thu apr 22 11:06:05 2010]
 //
 
 #ifndef ETOILE_WALL_FILE_HH
@@ -59,6 +59,7 @@ namespace etoile
 			     const kernel::Size&);
       static Status	Adjust(const context::Identifier&,
 			       const kernel::Size&);
+      static Status	Discard(const context::Identifier&);
       static Status	Store(const context::Identifier&);
       static Status	Destroy(const context::Identifier&);
     };

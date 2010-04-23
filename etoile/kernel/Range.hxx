@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [tue apr 20 06:48:25 2010]
+// updated       julien quintard   [fri apr 23 11:22:56 2010]
 //
 
 namespace etoile
@@ -46,7 +46,7 @@ namespace etoile
 	  this->container.pop_front();
 
 	  // delete the item, if necessary.
-	  if ((this->options & Range<T>::OptionDetach) != 0)
+	  if ((this->options & Range<T>::OptionDetach) == 0)
 	    delete item;
 	}
     }

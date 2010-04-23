@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [fri apr  9 01:40:39 2010]
+// updated       julien quintard   [thu apr 22 22:45:37 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -48,6 +48,9 @@ namespace etoile
     /// that an application using the Etoile library can overwrite these
     /// methods, to prevent network communication with the Agent for instance.
     ///
+    /// XXX deux type (internal, external) pour debug notamment mais aussi
+    /// pour les perfs ou pour initializer des choses.
+    ///
     class Agent:
       public Dumpable
     {
@@ -60,11 +63,73 @@ namespace etoile
       //
       // enumerations
       //
+      enum Type
+	{
+	  TypeUnknown,
+
+	  TypeLocal,
+	  TypeRemote
+	};
+
       enum State
 	{
 	  StateUnauthenticated,
 	  StateAuthenticated
 	};
+
+      //
+      // class
+      //
+
+      ///
+      /// the local class only contains the private key for
+      /// performing sensitive operations.
+      ///
+      class Local:
+	public Dumpable
+      {
+      public:
+	//
+	// attributes
+	//
+	PrivateKey	k;
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
+      };
+
+      ///
+      /// the remote class contains everything for communicating
+      /// with an external agent process.
+      ///
+      struct Remote:
+	public Dumpable
+      {
+      public:
+	//
+	// constructors & destructors
+	//
+	Remote();
+	~Remote();
+
+	//
+	// attributes
+	//
+	State		state;
+	Timer		timer;
+	Channel*	channel;
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
+      };
 
       //
       // constructors & destructors
@@ -75,8 +140,10 @@ namespace etoile
       //
       // methods
       //
+      Status		Create(const KeyPair&);
       Status		Create(const PublicKey&,
 			       Channel*);
+
       Status		Authenticate();
       Status		Destroy();
 
@@ -96,19 +163,24 @@ namespace etoile
       //
       // attributes
       //
-      State		state;
-      Timer		timer;
+      Type		type;
+
       PublicKey		K;
-      Channel*		channel;
+
+      union
+      {
+	Local*		local;
+	Remote*		remote;
+      };
 
       //
       // template methods
       //
       template <typename... T>
       Status		Encrypt(T&...) const;
-      virtual Status	Decrypt(const Code&,
+      Status		Decrypt(const Code&,
 				Clear&) const;
-      virtual Status	Sign(const Plain&,
+      Status		Sign(const Plain&,
 			     Signature&) const;
       template <typename... T>
       Status		Verify(T&...) const;
@@ -118,9 +190,6 @@ namespace etoile
       //
 
       // decrypt
-      template <typename T>
-      Status		Decrypt(const Code&,
-				T&) const;
       template <typename T,
 		typename... TT>
       Status		Decrypt(const Code&,

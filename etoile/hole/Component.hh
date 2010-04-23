@@ -3,20 +3,20 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
-// file          /home/mycure/infinit/etoile/kernel/Component.hh
+// file          /home/mycure/infinit/etoile/hole/Component.hh
 //
 // created       julien quintard   [fri aug 14 23:11:50 2009]
-// updated       julien quintard   [fri apr  2 02:43:29 2010]
+// updated       julien quintard   [thu apr 22 17:21:51 2010]
 //
 
-#ifndef ETOILE_KERNEL_COMPONENT_HH
-#define ETOILE_KERNEL_COMPONENT_HH
+#ifndef ETOILE_HOLE_COMPONENT_HH
+#define ETOILE_HOLE_COMPONENT_HH
 
 namespace etoile
 {
-  namespace kernel
+  namespace hole
   {
 
 //
@@ -29,13 +29,15 @@ namespace etoile
     ///
     enum Component
       {
-	ComponentUnknown = 0x0,
-	ComponentObject = 0x1,
-	ComponentData = 0x2,
-	ComponentCatalog = 0x4,
-	ComponentReference = 0x8,
-	ComponentUser = 0x10,
-	ComponentGroup = 0x20
+	ComponentUnknown = 0x00,
+
+	ComponentObject = 0x01,
+	ComponentData = 0x02,
+	ComponentCatalog = 0x04,
+	ComponentReference = 0x08,
+	ComponentAccess = 0x10,
+	ComponentUser = 0x20,
+	ComponentGroup = 0x40
       };
 
   }

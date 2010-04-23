@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [mon apr 19 14:46:24 2010]
+// updated       julien quintard   [fri apr 23 11:13:09 2010]
 //
 
 //
@@ -50,7 +50,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -96,7 +96,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -151,7 +151,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -195,7 +195,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.

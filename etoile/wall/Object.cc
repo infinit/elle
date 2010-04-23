@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [tue apr 20 08:55:14 2010]
+// updated       julien quintard   [fri apr 23 11:13:04 2010]
 //
 
 //
@@ -36,7 +36,7 @@ namespace etoile
       context::Object*		context;
       user::User*		user;
 
-      enter();
+      enter(instance(context));
 
       printf("[XXX] Object::Load()\n");
 
@@ -48,12 +48,9 @@ namespace etoile
       if (user->type != user::User::TypeApplication)
 	escape("non-applications cannot authenticate");
 
-      // allocate a new context.
-      context = new context::Object;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add a context");
+      // create a new context.
+      if (context::Context::New(context) == StatusError)
+	escape("unable to allocate a new context");
 
       // create a route from the given way.
       if (context->route.Create(way) == StatusError)
@@ -71,6 +68,13 @@ namespace etoile
       if (user->application->channel->Reply(
             Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
+
+      // export the context.
+      if (context::Context::Export(context) == StatusError)
+	escape("unable to export the context");
+
+      // waive to tracking.
+      waive(context);
 
       leave();
     }
@@ -128,7 +132,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -143,6 +147,47 @@ namespace etoile
       // return the state to the caller.
       if (user->application->channel->Reply(
 	    Inputs<TagObjectState>(state)) == StatusError)
+	escape("unable to reply to the application");
+
+      leave();
+    }
+
+    ///
+    /// this method discards the modifications.
+    ///
+    Status		Object::Discard(const
+				          context::Identifier&	identifier)
+    {
+      context::Object*		context;
+      user::User*		user;
+
+      enter();
+
+      printf("[XXX] Object::Discard()\n");
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the user is an application..
+      if (user->type != user::User::TypeApplication)
+	escape("non-applications cannot authenticate");
+
+      // retrieve the context.
+      if (user->application->Retrieve(identifier, context) == StatusError)
+	escape("unable to retrieve the object context");
+
+      // check if the context is exactly an object.
+      if ((context->format & context::FormatObject) !=
+	  context::FormatObject)
+	escape("unable to discard non-object contexts");
+
+      // discard the context.
+      if (components::Object::Discard(context) == StatusError)
+	escape("unable to discard the object's modifications");
+
+      // reply to the application.
+      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -171,7 +216,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is exactly an object.

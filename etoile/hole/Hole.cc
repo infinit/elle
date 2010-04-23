@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [sun apr 18 15:54:00 2010]
+// updated       julien quintard   [fri apr 23 13:14:06 2010]
 //
 
 //
@@ -37,7 +37,60 @@ namespace etoile
       String		identity;
 
       enter();
+      /*
+      // verify the block's validity, depending on the block component.
+      switch (block->component)
+	{
+	case ComponentData:
+	case ComponentCatalog:
+	case ComponentReference:
+	case ComponentAccess:
+	  {
+	    // validate the block.
+	    if (block->Validate(address) != StatusTrue)
+	      escape("unable to validate the retrieved block");
 
+	    break;
+	  }
+	case ComponentObject:
+	  {
+	    const kernel::Object*	object =
+	      static_cast<const kernel::Object*>(block);
+	    kernel::Access*		access;
+
+	    // retrieve the access block, if present.
+	    if (object->meta.access != Address::Null)
+	      {
+		if (Hole::Get(object->meta.access,
+			      (Block*&)access) != StatusTrue)
+		  escape("unable to retrieve the access block");
+	      }
+	    else
+	      access = NULL;
+
+	    // validate the block the normal way.
+	    if (object->Validate(address, access) != StatusTrue)
+	      escape("unable to validate the retrieved block");
+
+	    // XXX[debug] retrieve the data block just to make sure it exists.
+	    if (object->data.contents != Address::Null)
+	      {
+		Block*			b;
+
+		if (Hole::Get(object->data.contents, b) != StatusTrue)
+		  escape("unable to retrieve the data block");
+
+		delete b;
+	      }
+
+	    // XXX[delete the temporary stuff]
+	    if (access != NULL)
+	      delete access;
+
+	    break;
+	  }
+	}
+      */
       // first, turns the address into a string.
       if (address.Identify(identity) == StatusError)
 	escape("unable to identify the address");
@@ -132,13 +185,13 @@ namespace etoile
 	  escape("unable to close the file");
       }
 
-      // prepare the archive.
-      if (archive.Prepare(region) == StatusError)
-        escape("unable to prepare the archive");
-
       // detach the data from the region to prevent multiple resources release.
       if (region.Detach() == StatusError)
         escape("unable to detach the region");
+
+      // prepare the archive.
+      if (archive.Prepare(region) == StatusError)
+        escape("unable to prepare the archive");
 
       // extract the component identifier.
       if (archive.Extract(identifier) == StatusError)
@@ -155,13 +208,59 @@ namespace etoile
       // bind so that the internal address is computed.
       if (block->Bind() == StatusError)
 	escape("unable to bind the block");
+      /*
+      // verify the block's validity, depending on the block component.
+      switch (block->component)
+	{
+	case ComponentData:
+	case ComponentCatalog:
+	case ComponentReference:
+	case ComponentAccess:
+	  {
+	    // validate the block.
+	    if (block->Validate(address) != StatusTrue)
+	      escape("unable to validate the retrieved block");
 
-      // verify the block's validity.
-      //if (block->Validate(address) != StatusTrue)
-      //escape("unable to validate the retrieved block");
-      // XXX probleme ici c'est que si c'est un object il faut faire
-      // Validate(address, access) avec access etant le block d'access :(
+	    break;
+	  }
+	case ComponentObject:
+	  {
+	    kernel::Object*	object = static_cast<kernel::Object*>(block);
+	    kernel::Access*	access;
 
+	    // retrieve the access block, if present.
+	    if (object->meta.access != Address::Null)
+	      {
+		if (Hole::Get(object->meta.access,
+			      (Block*&)access) != StatusTrue)
+		  escape("unable to retrieve the access block");
+	      }
+	    else
+	      access = NULL;
+
+	    // validate the block the normal way.
+	    if (object->Validate(address, access) != StatusTrue)
+	      escape("unable to validate the retrieved block");
+
+	    // XXX[debug] retrieve the data block just to make sure it exists.
+	    if (object->data.contents != Address::Null)
+	      {
+		Block*			b;
+
+		if (Hole::Get(object->data.contents, b) != StatusTrue)
+		  escape("unable to retrieve the data block");
+
+		delete b;
+	      }
+
+	    // XXX[delete the temporary stuff]
+	    if (access != NULL)
+	      delete access;
+
+	    break;
+	  }
+	}
+      */
       true();
     }
 

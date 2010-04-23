@@ -8,11 +8,21 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [sun apr 18 15:54:12 2010]
+// updated       julien quintard   [thu apr 22 17:30:50 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HXX
 #define ETOILE_KERNEL_CONTENTS_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/hole/Component.hh>
+
+#include <etoile/kernel/Data.hh>
+#include <etoile/kernel/Catalog.hh>
+#include <etoile/kernel/Reference.hh>
 
 namespace etoile
 {
@@ -28,6 +38,8 @@ namespace etoile
     ///
     template <typename T>
     Contents<T>::Contents():
+      ContentHashBlock::ContentHashBlock(hole::ComponentUnknown),
+
       cipher(NULL),
       content(NULL)
     {

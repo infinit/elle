@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/context/Context.hh
 //
 // created       julien quintard   [fri aug 14 22:36:10 2009]
-// updated       julien quintard   [tue apr 20 07:43:50 2010]
+// updated       julien quintard   [thu apr 22 12:59:59 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HH
@@ -20,8 +20,6 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/user/Client.hh>
-
 #include <etoile/context/Identifier.hh>
 #include <etoile/context/Format.hh>
 
@@ -29,6 +27,20 @@
 
 namespace etoile
 {
+  namespace user
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Application;
+
+  }
+
   ///
   /// this namespace contains classes for manipulating contexts i.e
   /// state related to a sequence of operations.
@@ -44,41 +56,31 @@ namespace etoile
     /// a context keeps the state required by operations to sequentially
     /// execute.
     ///
-    /// every context is identified by an identifier which is used by
-    /// applications. however, in order to prevent attacks, the client,
-    /// hence the user, is also associated with the context.
-    ///
-    /// this way, anoter used cannot attack the identifiers through
-    /// brute force while the proper user can very well pass the identifiers
-    /// between its processes, thus benefiting from improved performance.
-    ///
     class Context:
       public Dumpable
     {
     public:
       //
-      // types
+      // enumerations
       //
-      typedef std::pair<user::Client*, Context*>	Value;
-      typedef std::map<const Identifier, Value>		Container;
-      typedef Container::iterator			Iterator;
-      typedef Container::const_iterator			Scoutor;
+      enum Type
+	{
+	  TypeInternal,
+	  TypeExternal
+	};
 
       //
       // static methods
       //
       template <typename T>
-      static Status	Add(T*);
+      static Status	New(T*&);
       template <typename T>
-      static Status	Retrieve(const Identifier&,
-				 T*&);
-      template <typename T>
-      static Status	Remove(T*);
+      static Status	Delete(T*);
 
-      //
-      // static attributes
-      //
-      static Container		Contexts;
+      template <typename T>
+      static Status	Export(T*);
+      template <typename T>
+      static Status	Import(T*);
 
       //
       // constructors & destructors
@@ -88,19 +90,38 @@ namespace etoile
       //
       // methods
       //
-      Status		Identify(const Identifier&);
+      Status		Create();
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      Format		format;
-      Identifier	identifier;
+      Format			format;
 
-      journal::Bucket	bucket;
+      Type			type;
+
+      user::Application*	application;
+      Fiber*			fiber;
+
+      Identifier		identifier;
+
+      journal::Bucket		bucket;
     };
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/user/Application.hh>
 
 //
 // ---------- templates -------------------------------------------------------

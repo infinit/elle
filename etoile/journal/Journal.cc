@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [fri apr 16 14:32:47 2010]
+// updated       julien quintard   [fri apr 23 00:38:35 2010]
 //
 
 //
@@ -59,25 +59,17 @@ namespace etoile
 
       enter();
 
-      // first, remove the context from the container so that no application
-      // can use it anymore. this only applies to external contexts i.e
-      // contexts with valid identifiers.
-      if (context->identifier != context::Identifier::Null)
-	{
-	  // remove the context.
-	  if (context::Context::Remove(context) == StatusError)
-	    escape("unable to remove the context");
-	}
+      // first, remove the exportation so that the application cannot
+      // use this context anymore.
+      if (context::Context::Import(context) == StatusError)
+	escape("unable to import the context");
+
+      // XXX
+      printf("[XXX] Journal::Record()\n");
+      if (dynamic_cast<context::Object*>(context) != NULL)
+	dynamic_cast<context::Object*>(context)->route.Dump();
 
       // XXX easy temporary version, just publish everything.
-
-      // XXX
-      if (context->bucket.container.empty() == false)
-      {
-	context->Dump();
-      }
-      // XXX
-
       // go through the blocks and publish/destroy them.
       for (scoutor = context->bucket.container.begin();
 	   scoutor != context->bucket.container.end();
@@ -105,12 +97,12 @@ namespace etoile
 	    }
 	}
 
-      // finally, delete external contexts i.e contexts with valid identifiers.
-      if (context->identifier != context::Identifier::Null)
-	{
-	  // delete it.
-	  delete context;
-	}
+      // XXX
+      printf("[/XXX] Journal::Record()\n");
+
+      // finally, delete the context.
+      if (context::Context::Delete(context) == StatusError)
+	escape("unable to delete the context");
 
       leave();
     }

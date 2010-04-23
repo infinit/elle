@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [fri apr 16 14:57:32 2010]
+// updated       julien quintard   [thu apr 22 23:43:51 2010]
 //
 
 //
@@ -16,6 +16,11 @@
 //
 
 #include <etoile/kernel/Token.hh>
+
+///
+/// these includes are placed here to prevent pre-processing conflicts.
+///
+#include <etoile/user/Agent.hh>
 
 namespace etoile
 {
@@ -102,6 +107,25 @@ namespace etoile
       leave();
     }
 
+    ///
+    /// this method extracts the secret key from the token.
+    ///
+    Status		Token::Extract(const user::Agent&	agent,
+				       SecretKey&		key) const
+    {
+      enter();
+
+      // check the code.
+      if (this->code == NULL)
+	escape("unable to retrieve the key out of a null token");
+
+      // decrypt the code.
+      if (agent.Decrypt(*this->code, key) == StatusError)
+	escape("unable to decrypt the token's content");
+
+      leave();
+    }
+
 //
 // ---------- entity ----------------------------------------------------------
 //
@@ -150,7 +174,7 @@ namespace etoile
 
       enter();
 
-      std::cout << alignment << "[Token]" << std::endl;
+      std::cout << alignment << "[Token] " << std::endl;
 
       // dump the code.
       if (this->code != NULL)

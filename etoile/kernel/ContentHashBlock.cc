@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [wed mar  3 16:12:11 2010]
+// updated       julien quintard   [thu apr 22 17:14:26 2010]
 //
 
 //
@@ -30,8 +30,8 @@ namespace etoile
     /// this constructor takes a family and kind and set the underlying
     /// block properties.
     ///
-    ContentHashBlock::ContentHashBlock():
-      hole::Block(hole::FamilyContentHashBlock)
+    ContentHashBlock::ContentHashBlock(const hole::Component&	component):
+      hole::Block(hole::FamilyContentHashBlock, component)
     {
     }
 

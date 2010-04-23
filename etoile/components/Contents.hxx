@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [fri apr 16 15:05:45 2010]
+// updated       julien quintard   [fri apr 23 11:22:26 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX

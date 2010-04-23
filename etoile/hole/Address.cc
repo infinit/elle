@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sun apr 18 16:25:17 2010]
+// updated       julien quintard   [thu apr 22 15:00:02 2010]
 //
 
 //
@@ -184,7 +184,7 @@ namespace etoile
 
       enter();
 
-      std::cout << alignment << "[Address]" << std::endl;
+      std::cout << alignment << "[Address] " << *this << std::endl;
 
       if (this->digest != NULL)
 	{

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [fri apr 16 14:37:23 2010]
+// updated       julien quintard   [thu apr 22 23:15:49 2010]
 //
 
 //
@@ -66,11 +66,11 @@ namespace etoile
 	    {
 	      Digest		fingerprint;
 
-	      // decrypt the token.
-	      if (user->client->agent->Decrypt(
-		    *context->rights->record.token.code,
+	      // extract the secret key from the token.
+	      if (context->rights->record.token.Extract(
+                    *user->client->agent,
 		    context->rights->key) == StatusError)
-		escape("unable to decrypt the token");
+		escape("unable to extract the secret key from the token");
 
 	      // compute a fingerprint of the key.
 	      if (OneWay::Hash(context->rights->key,
@@ -121,11 +121,11 @@ namespace etoile
 		{
 		  Digest	fingerprint;
 
-		  // decrypt the token.
-		  if (user->client->agent->Decrypt(
-                        *context->rights->record.token.code,
+		  // extract the secret key from the token.
+		  if (context->rights->record.token.Extract(
+                        *user->client->agent,
 		        context->rights->key) == StatusError)
-		    escape("unable to decrypt the token");
+		    escape("unable to extract the secret key from the token");
 
 		  // compute a fingerprint of the key.
 		  if (OneWay::Hash(context->rights->key,

@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [tue apr 20 21:30:47 2010]
+// updated       julien quintard   [thu apr 22 11:07:08 2010]
 //
 
 //
@@ -34,7 +34,7 @@ namespace etoile
       context::File*	context;
       user::User*	user;
 
-      enter();
+      enter(instance(context));
 
       printf("[XXX] File::Create()\n");
 
@@ -47,11 +47,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // allocate a new context.
-      context = new context::File;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add the context");
+      if (context::Context::New(context) == StatusError)
+	escape("unable to allocate a new context");
 
       // create a new file.
       if (components::File::Create(context) == StatusError)
@@ -61,6 +58,13 @@ namespace etoile
       if (user->application->channel->Reply(
 	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
+
+      // export the context.
+      if (context::Context::Export(context) == StatusError)
+	escape("unable to export the context");
+
+      // waive.
+      waive(context);
 
       leave();
     }
@@ -73,7 +77,7 @@ namespace etoile
       context::File*	context;
       user::User*	user;
 
-      enter();
+      enter(instance(context));
 
       printf("[XXX] File::Load()\n");
 
@@ -86,11 +90,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // allocate a new context.
-      context = new context::File;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add the context");
+      if (context::Context::New(context) == StatusError)
+	escape("unable to allocate a new context");
 
       // create a route from the given way.
       if (context->route.Create(way) == StatusError)
@@ -109,6 +110,13 @@ namespace etoile
       if (user->application->channel->Reply(
 	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
+
+      // export the context.
+      if (context::Context::Export(context) == StatusError)
+	escape("unable to export the context");
+
+      // waive.
+      waive(context);
 
       leave();
     }
@@ -171,7 +179,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -215,7 +223,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the file context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the context");
 
       // request the file component.
@@ -252,7 +260,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -265,6 +273,46 @@ namespace etoile
 	escape("unable to adjust the file size");
 
       // return the set to the caller.
+      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+	escape("unable to reply to the application");
+
+      leave();
+    }
+
+    ///
+    /// this method discards the file's modifications.
+    ///
+    Status		File::Discard(const context::Identifier& identifier)
+    {
+      context::File*	context;
+      user::User*	user;
+
+      enter();
+
+      printf("[XXX] File::Discard()\n");
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the user is an application..
+      if (user->type != user::User::TypeApplication)
+	escape("non-applications cannot authenticate");
+
+      // retrieve the context.
+      if (user->application->Retrieve(identifier, context) == StatusError)
+	escape("unable to retrieve the file context");
+
+      // check if the context is file.
+      if ((context->format & context::FormatFile) !=
+	  context::FormatFile)
+	escape("unable to store a non-file object");
+
+      // discard the context.
+      if (components::File::Discard(context) == StatusError)
+	escape("unable to discard the file's modifications");
+
+      // reply to the application.
       if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
 	escape("unable to reply to the application");
 
@@ -293,7 +341,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -333,7 +381,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.

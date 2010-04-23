@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [fri apr 16 14:40:49 2010]
+// updated       julien quintard   [thu apr 22 17:15:58 2010]
 //
 
 //
@@ -39,7 +39,7 @@ namespace etoile
     /// this method initializes the object.
     ///
     Object::Object():
-      PublicKeyBlock::PublicKeyBlock()
+      PublicKeyBlock::PublicKeyBlock(hole::ComponentObject)
     {
       this->meta.state = StateClean;
       this->meta.owner.permissions = PermissionNone;

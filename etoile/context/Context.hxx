@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hxx
 //
 // created       julien quintard   [sun apr  4 12:50:13 2010]
-// updated       julien quintard   [fri apr 16 11:27:00 2010]
+// updated       julien quintard   [wed apr 21 23:13:23 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HXX
@@ -30,116 +30,73 @@ namespace etoile
 //
 
     ///
-    /// this method adds the context to the container, making it usable
-    /// by external applications.
+    /// this method generates a new context.
     ///
     template <typename T>
-    Status		Context::Add(T*				context)
+    Status		Context::New(T*&			context)
     {
-      std::pair<Context::Iterator, Boolean>	result;
-      user::User*				user;
-      Identifier				identifier;
-
       enter();
 
-      // load the current user.
-      if (user::User::Instance(user) == StatusError)
-	escape("unable to load the user");
+      // first, allocate a new context.
+      context = new T;
 
-      // generate an identifier.
-      if (identifier.Generate() == StatusError)
-	escape("unable to generate an identifier");
-
-      // identify the context.
-      if (context->Identify(identifier) == StatusError)
-	escape("unable to identify the context");
-
-      // insert the context in the container.
-      result = Context::Contexts.insert(
-		 std::pair<const Identifier,
-		           Context::Value>(identifier,
-					   Context::Value(user->client,
-							  context)));
-
-      // check the result.
-      if (result.second == false)
-	escape("unable to insert the context in the container");
+      // then, create the context.
+      if (context->Create() == StatusError)
+	escape("unable to create the context");
 
       leave();
     }
 
     ///
-    /// this method retrieves a recorded context.
-    ///
-    /// this method has been templated so that the caller does not have
-    /// to cast a subclass context into Context*&. although this is not
-    /// strictly required, it makes using contexts a bit easier.
+    /// this method deletes a context.
     ///
     template <typename T>
-    Status		Context::Retrieve(const Identifier&	identifier,
-					  T*&			context)
+    Status		Context::Delete(T*			context)
     {
-      Context::Scoutor	scoutor;
-      Context::Value	value;
-      user::User*	user;
-
       enter();
 
-      // load the current user.
-      if (user::User::Instance(user) == StatusError)
-	escape("unable to load the user");
-
-      // find the entry.
-      if ((scoutor = Context::Contexts.find(identifier)) ==
-	  Context::Contexts.end())
-	escape("unable to locate the context associated with the "
-	       "given identifier");
-
-      // retrieve the value.
-      value = scoutor->second;
-
-      // check if the context is related to the current user.
-      if (value.first != user->client)
-	escape("the user is trying to access a context that she does not own");
-
-      // return the context.
-      context = (T*)value.second;
+      // delete the context.
+      delete context;
 
       leave();
     }
 
     ///
-    /// this method removes a recorded context.
+    /// this method exports a context by storing it in the
+    /// appropriate container.
     ///
     template <typename T>
-    Status		Context::Remove(T*			context)
+    Status		Context::Export(T*			context)
     {
-      Context::Iterator	iterator;
-      Context::Value	value;
-      user::User*	user;
-
       enter();
 
-      // load the current user.
-      if (user::User::Instance(user) == StatusError)
-	escape("unable to load the user");
+      // mark the context as being exported.
+      context->type = Context::TypeExternal;
 
-      // find the entry.
-      if ((iterator = Context::Contexts.find(context->identifier)) ==
-	  Context::Contexts.end())
-	escape("unable to locate the context associated with the "
-	       "given identifier");
+      // store the context in the application.
+      if (context->application->Add(context->identifier,
+				    context) == StatusError)
+	escape("unable to add the context");
 
-      // retrieve the value.
-      value = iterator->second;
+      leave();
+    }
 
-      // check if the context is related to the current user.
-      if (value.first != user->client)
-	escape("the user is trying to remove a context that she "
-	       "does not own");
+    ///
+    /// this method removes the context from the exported list, if
+    /// necessary.
+    ///
+    template <typename T>
+    Status		Context::Import(T*			context)
+    {
+      enter();
 
-      // erase the entry.
-      Context::Contexts.erase(iterator);
+      // if the context is internal, skip.
+      if (context->type == Context::TypeInternal)
+	leave();
+
+      // otherwise, remove the context from the application's container.
+      if (context->application->Remove(context->identifier) == StatusError)
+	escape("unable to remove the context");
 
       leave();
     }

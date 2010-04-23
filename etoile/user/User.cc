@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.cc
 //
 // created       julien quintard   [thu mar  4 12:39:12 2010]
-// updated       julien quintard   [fri apr  9 02:11:42 2010]
+// updated       julien quintard   [thu apr 22 21:55:19 2010]
 //
 
 //
@@ -66,7 +66,7 @@ namespace etoile
       this->client = client;
 
       // assign the type and agent/application pointers.
-      if (session->socket == this->client->agent->channel)
+      if (session->socket == this->client->agent->remote->channel)
 	{
 	  // set the type.
 	  this->type = User::TypeAgent;

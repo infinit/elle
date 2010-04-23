@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [tue apr 20 10:06:49 2010]
+// updated       julien quintard   [thu apr 22 11:02:53 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -89,6 +89,7 @@ namespace etoile
       TagObjectLoad,
       TagObjectInformation,
       TagObjectState,
+      TagObjectDiscard,
       TagObjectStore,
 
       // directory
@@ -101,6 +102,7 @@ namespace etoile
       TagDirectoryRange,
       TagDirectoryRename,
       TagDirectoryRemove,
+      TagDirectoryDiscard,
       TagDirectoryStore,
       TagDirectoryDestroy,
 
@@ -111,6 +113,7 @@ namespace etoile
       TagFileRead,
       TagFileRegion,
       TagFileAdjust,
+      TagFileDiscard,
       TagFileStore,
       TagFileDestroy,
 
@@ -120,6 +123,7 @@ namespace etoile
       TagLinkBind,
       TagLinkResolve,
       TagLinkWay,
+      TagLinkDiscard,
       TagLinkStore,
       TagLinkDestroy,
 
@@ -175,6 +179,8 @@ inward(etoile::TagObjectInformation,
        parameters(const etoile::context::Identifier));
 outward(etoile::TagObjectState,
 	parameters(const etoile::wall::State));
+inward(etoile::TagObjectDiscard,
+       parameters(const etoile::context::Identifier));
 inward(etoile::TagObjectStore,
        parameters(const etoile::context::Identifier));
 // XXX + lock/release
@@ -206,6 +212,8 @@ inward(etoile::TagDirectoryRename,
 inward(etoile::TagDirectoryRemove,
        parameters(const etoile::context::Identifier,
 		  const etoile::path::Slice));
+inward(etoile::TagDirectoryDiscard,
+       parameters(const etoile::context::Identifier));
 inward(etoile::TagDirectoryStore,
        parameters(const etoile::context::Identifier));
 inward(etoile::TagDirectoryDestroy,
@@ -230,6 +238,8 @@ outward(etoile::TagFileRegion,
 inward(etoile::TagFileAdjust,
        parameters(const etoile::context::Identifier,
 		  const etoile::kernel::Size));
+inward(etoile::TagFileDiscard,
+       parameters(const etoile::context::Identifier));
 inward(etoile::TagFileStore,
        parameters(const etoile::context::Identifier));
 inward(etoile::TagFileDestroy,
@@ -248,6 +258,8 @@ inward(etoile::TagLinkResolve,
        parameters(const etoile::context::Identifier));
 outward(etoile::TagLinkWay,
 	parameters(const etoile::path::Way));
+inward(etoile::TagLinkDiscard,
+       parameters(const etoile::context::Identifier));
 inward(etoile::TagLinkStore,
        parameters(const etoile::context::Identifier));
 inward(etoile::TagLinkDestroy,

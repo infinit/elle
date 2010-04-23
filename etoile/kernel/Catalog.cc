@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Catalog.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [tue apr 20 08:08:40 2010]
+// updated       julien quintard   [fri apr 23 15:44:44 2010]
 //
 
 //

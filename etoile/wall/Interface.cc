@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [tue apr 20 10:07:09 2010]
+// updated       julien quintard   [thu apr 22 11:03:39 2010]
 //
 
 //
@@ -61,6 +61,9 @@ namespace etoile
       InterfaceRegister(etoile::TagObjectInformation,
 			Object::Information,
 			parameters(const context::Identifier));
+      InterfaceRegister(etoile::TagObjectDiscard,
+			Object::Discard,
+			parameters(const context::Identifier));
       InterfaceRegister(etoile::TagObjectStore,
 			Object::Store,
 			parameters(const context::Identifier));
@@ -95,6 +98,9 @@ namespace etoile
 			Directory::Remove,
 			parameters(const context::Identifier,
 				   const path::Slice));
+      InterfaceRegister(etoile::TagDirectoryDiscard,
+			Directory::Discard,
+			parameters(const context::Identifier));
       InterfaceRegister(etoile::TagDirectoryStore,
 			Directory::Store,
 			parameters(const context::Identifier));
@@ -123,6 +129,9 @@ namespace etoile
 			File::Adjust,
 			parameters(const context::Identifier,
 				   const kernel::Size));
+      InterfaceRegister(etoile::TagFileDiscard,
+			File::Discard,
+			parameters(const context::Identifier));
       InterfaceRegister(etoile::TagFileStore,
 			File::Store,
 			parameters(const context::Identifier));
@@ -143,6 +152,9 @@ namespace etoile
 				   const path::Way));
       InterfaceRegister(etoile::TagLinkResolve,
 			Link::Resolve,
+			parameters(const context::Identifier));
+      InterfaceRegister(etoile::TagLinkDiscard,
+			Link::Discard,
 			parameters(const context::Identifier));
       InterfaceRegister(etoile::TagLinkStore,
 			Link::Store,

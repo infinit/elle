@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Contents.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat mar 20 04:10:07 2010]
+// updated       julien quintard   [thu apr 22 17:25:37 2010]
 //
 
 //
@@ -45,6 +45,42 @@ namespace etoile
     template <>
     const String		Contents<Reference>::Name =
       "Contents[Reference]";
+
+    ///
+    /// data-specific constructor.
+    ///
+    template <>
+    Contents<Data>::Contents():
+      ContentHashBlock::ContentHashBlock(hole::ComponentData),
+
+      cipher(NULL),
+      content(NULL)
+    {
+    }
+
+    ///
+    /// catalog-specific constructor.
+    ///
+    template <>
+    Contents<Catalog>::Contents():
+      ContentHashBlock::ContentHashBlock(hole::ComponentCatalog),
+
+      cipher(NULL),
+      content(NULL)
+    {
+    }
+
+    ///
+    /// reference-specific constructor.
+    ///
+    template <>
+    Contents<Reference>::Contents():
+      ContentHashBlock::ContentHashBlock(hole::ComponentReference),
+
+      cipher(NULL),
+      content(NULL)
+    {
+    }
 
   }
 }

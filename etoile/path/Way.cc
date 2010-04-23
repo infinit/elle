@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [wed apr  7 18:34:10 2010]
+// updated       julien quintard   [thu apr 22 12:29:26 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace path
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines a null way.
+    ///
+    const Way			Way::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------

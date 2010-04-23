@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [fri apr  2 02:44:45 2010]
+// updated       julien quintard   [thu apr 22 17:14:53 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTHASHBLOCK_HH
@@ -48,7 +48,7 @@ namespace etoile
       //
       // constructors & destructors
       //
-      ContentHashBlock();
+      ContentHashBlock(const hole::Component&);
 
       //
       // methods
@@ -70,5 +70,12 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/hole/Family.hh>
+#include <etoile/hole/Component.hh>
 
 #endif

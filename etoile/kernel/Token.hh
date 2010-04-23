@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Token.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [wed apr 14 12:07:47 2010]
+// updated       julien quintard   [thu apr 22 23:17:42 2010]
 //
 
 #ifndef ETOILE_KERNEL_TOKEN_HH
@@ -22,6 +22,20 @@
 
 namespace etoile
 {
+  namespace user
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Agent;
+
+  }
+
   namespace kernel
   {
 
@@ -56,6 +70,8 @@ namespace etoile
       //
       Status		Update(const SecretKey&,
 			       const PublicKey&);
+      Status		Extract(const user::Agent&,
+				SecretKey&) const;
 
       //
       // interfaces

@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [tue apr 20 07:56:41 2010]
+// updated       julien quintard   [thu apr 22 11:09:21 2010]
 //
 
 //
@@ -244,6 +244,20 @@ namespace etoile
       // store the object.
       if (Object::Store(context) == StatusError)
 	escape("unable to store the object");
+
+      leave();
+    }
+
+    ///
+    /// this method discards the modifications applied onto the context.
+    ///
+    Status		Directory::Discard(context::Directory*	context)
+    {
+      enter();
+
+      // discard the object's modifications.
+      if (Object::Discard(context) == StatusError)
+	escape("unable to discard the object modifications");
 
       leave();
     }

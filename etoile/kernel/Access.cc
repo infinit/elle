@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [tue apr 20 06:44:05 2010]
+// updated       julien quintard   [thu apr 22 23:12:32 2010]
 //
 
 //
@@ -30,6 +30,8 @@ namespace etoile
     /// default constructor.
     ///
     Access::Access():
+      ContentHashBlock(hole::ComponentAccess),
+
       state(StateClean)
     {
     }

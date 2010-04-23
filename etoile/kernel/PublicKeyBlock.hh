@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [fri apr  2 11:57:32 2010]
+// updated       julien quintard   [thu apr 22 17:15:10 2010]
 //
 
 #ifndef ETOILE_KERNEL_PUBLICKEYBLOCK_HH
@@ -48,7 +48,7 @@ namespace etoile
       //
       // constructors & destructors
       //
-      PublicKeyBlock();
+      PublicKeyBlock(const hole::Component&);
 
       //
       // methods
@@ -77,5 +77,12 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/hole/Family.hh>
+#include <etoile/hole/Component.hh>
 
 #endif

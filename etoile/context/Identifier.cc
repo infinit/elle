@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Identifier.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [wed mar 31 15:37:41 2010]
+// updated       julien quintard   [fri apr 23 10:15:38 2010]
 //
 
 //
@@ -138,7 +138,8 @@ namespace etoile
 
       enter();
 
-      std::cout << alignment << "[Identifier] " << this->value << std::endl;
+      std::cout << alignment << "[Identifier] "
+		<< std::dec << this->value << std::endl;
 
       leave();
     }

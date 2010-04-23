@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [fri apr 16 08:58:18 2010]
+// updated       julien quintard   [fri apr 23 01:44:00 2010]
 //
 
 //
@@ -86,8 +86,8 @@ namespace etoile
       //route.Dump();
 
       // first ask the cache to resolve as much as it can.
-      if (Cache::Resolve(route, venue) == StatusError)
-	escape("unable to resolve part of the route through the cache");
+      //if (Cache::Resolve(route, venue) == StatusError)
+      //escape("unable to resolve part of the route through the cache");
 
       // if the cache did not resolve anything.
       if (venue == Venue::Null)
@@ -125,15 +125,19 @@ namespace etoile
 	  // stack, hence need no deletion and use the identifier Null.
 	  //
 
-	  context::Directory	context;
+	  context::Directory*	context;
 	  kernel::Entry*	entry;
 
+	  // allocate a new context.
+	  if (context::Context::New(context) == StatusError)
+	    escape("unable to allocate a new context");
+
 	  // load the directory referenced by address.
-	  if (components::Directory::Load(&context, address) == StatusError)
+	  if (components::Directory::Load(context, address) == StatusError)
 	    escape("unable to load one of the route's directories");
 
 	  // look up for the name.
-	  if (components::Directory::Lookup(&context,
+	  if (components::Directory::Lookup(context,
 					    *scoutor,
 					    entry) == StatusError)
 	    escape("unable to find one of the route's entries");
@@ -150,7 +154,7 @@ namespace etoile
 	    escape("unable to record the venue address");
 
 	  // close the context.
-	  if (components::Directory::Store(&context) == StatusError)
+	  if (components::Directory::Discard(context) == StatusError)
 	    escape("unable to close the context");
 	}
 

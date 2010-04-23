@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [tue apr 20 06:44:57 2010]
+// updated       julien quintard   [thu apr 22 21:49:27 2010]
 //
 
 //

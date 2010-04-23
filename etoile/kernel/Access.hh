@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [mon apr 19 14:34:52 2010]
+// updated       julien quintard   [thu apr 22 21:48:02 2010]
 //
 
 #ifndef ETOILE_KERNEL_ACCESS_HH
@@ -26,6 +26,7 @@
 #include <etoile/kernel/Size.hh>
 #include <etoile/kernel/Range.hh>
 #include <etoile/kernel/Subject.hh>
+#include <etoile/kernel/Record.hh>
 
 namespace etoile
 {
@@ -100,5 +101,6 @@ namespace etoile
 //
 
 #include <etoile/hole/Address.hh>
+#include <etoile/hole/Component.hh>
 
 #endif

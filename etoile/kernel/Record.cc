@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [mon apr 19 13:53:47 2010]
+// updated       julien quintard   [thu apr 22 23:13:09 2010]
 //
 
 //

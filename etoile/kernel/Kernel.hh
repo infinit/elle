@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Kernel.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [mon apr 19 14:25:06 2010]
+// updated       julien quintard   [thu apr 22 17:11:18 2010]
 //
 
 #ifndef ETOILE_KERNEL_KERNEL_HH
@@ -68,7 +68,6 @@ namespace etoile
 #include <etoile/kernel/Genre.hh>
 #include <etoile/kernel/Version.hh>
 #include <etoile/kernel/Subject.hh>
-#include <etoile/kernel/Component.hh>
 #include <etoile/kernel/State.hh>
 #include <etoile/kernel/Offset.hh>
 #include <etoile/kernel/Permissions.hh>

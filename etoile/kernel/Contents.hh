@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [mon apr  5 15:12:24 2010]
+// updated       julien quintard   [thu apr 22 17:19:48 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HH
@@ -99,13 +99,5 @@ namespace etoile
 //
 
 #include <etoile/kernel/Contents.hxx>
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/kernel/Data.hh>
-#include <etoile/kernel/Catalog.hh>
-#include <etoile/kernel/Reference.hh>
 
 #endif

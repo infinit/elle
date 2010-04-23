@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/components/File.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [tue apr 20 20:25:17 2010]
+// updated       julien quintard   [thu apr 22 11:10:01 2010]
 //
 
 //
@@ -165,9 +165,23 @@ namespace etoile
     }
 
     ///
+    /// this method discards the modifications applied onto the context.
+    ///
+    Status		File::Discard(context::File*		context)
+    {
+      enter();
+
+      // discard the object's modifications.
+      if (Object::Discard(context) == StatusError)
+	escape("unable to discard the object modifications");
+
+      leave();
+    }
+
+    ///
     /// this store the modifications applied onto the file context.
     ///
-    Status		File::Store(context::File*	context)
+    Status		File::Store(context::File*		context)
     {
       user::User*	user;
 
@@ -187,7 +201,7 @@ namespace etoile
     ///
     /// this method removes the object along with the blocks attached to it.
     ///
-    Status		File::Destroy(context::File*	context)
+    Status		File::Destroy(context::File*		context)
     {
       user::User*	user;
       kernel::Size	size;

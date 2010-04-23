@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [tue apr 20 09:40:32 2010]
+// updated       julien quintard   [fri apr 23 11:13:00 2010]
 //
 
 //
@@ -34,7 +34,7 @@ namespace etoile
       context::Directory*	context;
       user::User*		user;
 
-      enter();
+      enter(instance(context));
 
       printf("[XXX] Directory::Create()\n");
 
@@ -46,12 +46,9 @@ namespace etoile
       if (user->type != user::User::TypeApplication)
 	escape("non-applications cannot authenticate");
 
-      // allocate a new context.
-      context = new context::Directory;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add the context");
+      // create a new context.
+      if (context::Context::New(context) == StatusError)
+	escape("unable to allocate a new context");
 
       // create a new directory.
       if (components::Directory::Create(context) == StatusError)
@@ -61,6 +58,13 @@ namespace etoile
       if (user->application->channel->Reply(
 	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
+
+      // export the context.
+      if (context::Context::Export(context) == StatusError)
+	escape("unable to export the context");
+
+      // waive.
+      waive(context);
 
       leave();
     }
@@ -74,7 +78,7 @@ namespace etoile
       context::Directory*	context;
       user::User*		user;
 
-      enter();
+      enter(instance(context));
 
       printf("[XXX] Directory::Load()\n");
 
@@ -86,12 +90,9 @@ namespace etoile
       if (user->type != user::User::TypeApplication)
 	escape("non-applications cannot authenticate");
 
-      // allocate a new context.
-      context = new context::Directory;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add the context");
+      // create a new context.
+      if (context::Context::New(context) == StatusError)
+	escape("unable to allocate a new context");
 
       // create a route from the given way.
       if (context->route.Create(way) == StatusError)
@@ -110,6 +111,13 @@ namespace etoile
       if (user->application->channel->Reply(
 	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
+
+      // export the context.
+      if (context::Context::Export(context) == StatusError)
+	escape("unable to export the context");
+
+      // waive.
+      waive(context);
 
       leave();
     }
@@ -140,11 +148,11 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the directory context.
-      if (context::Context::Retrieve(parent, directory) == StatusError)
+      if (user->application->Retrieve(parent, directory) == StatusError)
 	escape("unable to retrieve the context");
 
       // retrieve the subdirectory context.
-      if (context::Context::Retrieve(child, subdirectory) == StatusError)
+      if (user->application->Retrieve(child, subdirectory) == StatusError)
 	escape("unable to retrieve the context");
 
       // request the directory component to add the entry.
@@ -221,7 +229,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -282,7 +290,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -331,7 +339,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -375,7 +383,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the directory context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the context");
 
       // request the directory component to remove the entry.
@@ -386,6 +394,47 @@ namespace etoile
       // reply to the caller.
       if (user->application->channel->Reply(
 	    Inputs<TagOk>()) == StatusError)
+	escape("unable to reply to the application");
+
+      leave();
+    }
+
+    ///
+    /// this method discards the directory's modifications.
+    ///
+    Status		Directory::Discard(const
+					     context::Identifier& identifier)
+    {
+      context::Directory*	context;
+      user::User*		user;
+
+      enter();
+
+      printf("[XXX] Directory::Discard()\n");
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the user is an application..
+      if (user->type != user::User::TypeApplication)
+	escape("non-applications cannot authenticate");
+
+      // retrieve the context.
+      if (user->application->Retrieve(identifier, context) == StatusError)
+	escape("unable to retrieve the directory context");
+
+      // check if the context is directory.
+      if ((context->format & context::FormatDirectory) !=
+	  context::FormatDirectory)
+	escape("unable to store a non-directory object");
+
+      // discard the context.
+      if (components::Directory::Discard(context) == StatusError)
+	escape("unable to discard the directory's modifications");
+
+      // reply to the application.
+      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -414,7 +463,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -455,7 +504,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.

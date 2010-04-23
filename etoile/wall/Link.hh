@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/wall/Link.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [tue apr 20 08:15:54 2010]
+// updated       julien quintard   [thu apr 22 11:08:18 2010]
 //
 
 #ifndef ETOILE_WALL_LINK_HH
@@ -54,6 +54,7 @@ namespace etoile
       static Status	Bind(const context::Identifier&,
 			     const path::Way&);
       static Status	Resolve(const context::Identifier&);
+      static Status	Discard(const context::Identifier&);
       static Status	Store(const context::Identifier&);
       static Status	Destroy(const context::Identifier&);
     };

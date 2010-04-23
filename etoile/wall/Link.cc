@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/wall/Link.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [tue apr 20 08:15:15 2010]
+// updated       julien quintard   [thu apr 22 11:09:07 2010]
 //
 
 //
@@ -34,7 +34,7 @@ namespace etoile
       context::Link*	context;
       user::User*	user;
 
-      enter();
+      enter(instance(context));
 
       printf("[XXX] Link::Create()\n");
 
@@ -47,11 +47,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // allocate a new context.
-      context = new context::Link;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add the context");
+      if (context::Context::New(context) == StatusError)
+	escape("unable to allocate a new context");
 
       // create a new link.
       if (components::Link::Create(context) == StatusError)
@@ -61,6 +58,13 @@ namespace etoile
       if (user->application->channel->Reply(
 	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
+
+      // export the context.
+      if (context::Context::Export(context) == StatusError)
+	escape("unable to export the context");
+
+      // waive.
+      waive(context);
 
       leave();
     }
@@ -73,7 +77,7 @@ namespace etoile
       context::Link*	context;
       user::User*	user;
 
-      enter();
+      enter(instance(context));
 
       printf("[XXX] Link::Load()\n");
 
@@ -86,11 +90,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // allocate a new context.
-      context = new context::Link;
-
-      // add the context.
-      if (context::Context::Add(context) == StatusError)
-	escape("unable to add the context");
+      if (context::Context::New(context) == StatusError)
+	escape("unable to allocate a new context");
 
       // create a route from the given way.
       if (context->route.Create(way) == StatusError)
@@ -109,6 +110,13 @@ namespace etoile
       if (user->application->channel->Reply(
 	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
 	escape("unable to reply to the application");
+
+      // export the context.
+      if (context::Context::Export(context) == StatusError)
+	escape("unable to export the context");
+
+      // waive.
+      waive(context);
 
       leave();
     }
@@ -168,7 +176,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the link context");
 
       // check if the context is link.
@@ -210,7 +218,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the link context");
 
       // check if the context is link.
@@ -225,6 +233,46 @@ namespace etoile
       // return the way to the caller.
       if (user->application->channel->Reply(
 	    Inputs<TagLinkWay>(way)) == StatusError)
+	escape("unable to reply to the application");
+
+      leave();
+    }
+
+    ///
+    /// this method discards the link's modifications.
+    ///
+    Status		Link::Discard(const context::Identifier& identifier)
+    {
+      context::Link*	context;
+      user::User*	user;
+
+      enter();
+
+      printf("[XXX] Link::Discard()\n");
+
+      // load the current user.
+      if (user::User::Instance(user) == StatusError)
+	escape("unable to load the user");
+
+      // check if the user is an application..
+      if (user->type != user::User::TypeApplication)
+	escape("non-applications cannot authenticate");
+
+      // retrieve the context.
+      if (user->application->Retrieve(identifier, context) == StatusError)
+	escape("unable to retrieve the link context");
+
+      // check if the context is link.
+      if ((context->format & context::FormatLink) !=
+	  context::FormatLink)
+	escape("unable to store a non-link object");
+
+      // discard the context.
+      if (components::Link::Discard(context) == StatusError)
+	escape("unable to discard the link's modifications");
+
+      // reply to the application.
+      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -252,7 +300,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the link context");
 
       // check if the context is link.
@@ -292,7 +340,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (context::Context::Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == StatusError)
 	escape("unable to retrieve the link context");
 
       // check if the context is link.

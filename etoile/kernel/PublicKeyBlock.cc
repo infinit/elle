@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [thu mar 25 17:48:21 2010]
+// updated       julien quintard   [thu apr 22 17:15:31 2010]
 //
 
 //
@@ -29,8 +29,8 @@ namespace etoile
     ///
     /// this constructor set the family and kind of the underlying block.
     ///
-    PublicKeyBlock::PublicKeyBlock():
-      hole::Block(hole::FamilyPublicKeyBlock)
+    PublicKeyBlock::PublicKeyBlock(const hole::Component&	component):
+      hole::Block(hole::FamilyPublicKeyBlock, component)
     {
     }
 

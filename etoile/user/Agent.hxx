@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/user/Agent.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun apr 18 15:54:43 2010]
+// updated       julien quintard   [thu apr 22 14:53:02 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HXX
@@ -51,39 +51,6 @@ namespace etoile
     /// this method decrypts a code and returns a pretty newly created
     /// object.
     ///
-    template <typename T>
-    Status		Agent::Decrypt(const Code&		code,
-				       T&			parameter)
-      const
-    {
-      Archive		archive;
-      Clear		clear;
-
-      enter();
-
-      // decrypt the code.
-      if (this->Decrypt(code, clear) == StatusError)
-	escape("unable to decrypt the code");
-
-      // wrap the clear into an archive.
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
-      // detach the data so that not both the clear and archive
-      // release the data.
-      if (clear.Detach() == StatusError)
-	escape("unable to detach the clear's data");
-
-      // extract the item.
-      if (archive.Extract(parameter) == StatusError)
-	escape("unable to extract the items");
-
-      leave();
-    }
-
-    ///
-    /// this method decrypts a set of items.
-    ///
     template <typename T,
 	      typename... TT>
     Status		Agent::Decrypt(const Code&		code,
@@ -96,15 +63,20 @@ namespace etoile
 
       enter();
 
+      // decrypt the code.
       if (this->Decrypt(code, clear) == StatusError)
 	escape("unable to decrypt the code");
 
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
+      // detach the data so that not both the clear and archive
+      // release the data.
       if (clear.Detach() == StatusError)
 	escape("unable to detach the clear's data");
 
+      // wrap the clear into an archive.
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      // extract the item.
       if (archive.Extract(parameter, parameters...) == StatusError)
 	escape("unable to extract the items");
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hh
 //
 // created       julien quintard   [thu mar 11 17:09:50 2010]
-// updated       julien quintard   [tue mar 30 01:20:36 2010]
+// updated       julien quintard   [wed apr 21 23:26:53 2010]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HH
@@ -20,8 +20,24 @@
 
 #include <elle/Elle.hh>
 
+#include <etoile/context/Identifier.hh>
+
 namespace etoile
 {
+  namespace context
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    class Context;
+
+  }
+
   namespace user
   {
 
@@ -38,6 +54,14 @@ namespace etoile
     {
     public:
       //
+      // types
+      //
+      typedef std::map<const context::Identifier,
+		       context::Context*>		Container;
+      typedef Container::iterator			Iterator;
+      typedef Container::const_iterator			Scoutor;
+
+      //
       // constructors & destructors
       //
       Application();
@@ -48,6 +72,14 @@ namespace etoile
       //
       Status		Create(Channel*);
       Status		Destroy();
+
+      template <typename T>
+      Status		Add(const context::Identifier&,
+			    T*);
+      template <typename T>
+      Status		Retrieve(const context::Identifier&,
+				 T*&);
+      Status		Remove(const context::Identifier&);
 
       //
       // callbacks
@@ -66,10 +98,24 @@ namespace etoile
       // attributes
       //
       Channel*		channel;
+
+      Container		contexts;
     };
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/context/Context.hh>
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/user/Application.hxx>
 
 //
 // ---------- includes --------------------------------------------------------

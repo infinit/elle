@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [mon apr 19 14:37:15 2010]
+// updated       julien quintard   [thu apr 22 21:49:22 2010]
 //
 
 #ifndef ETOILE_KERNEL_ATTRIBUTES_HH

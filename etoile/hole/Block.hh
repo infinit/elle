@@ -3,12 +3,12 @@
 //
 // project       infinit
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [sat jan 30 22:16:28 2010]
+// updated       julien quintard   [thu apr 22 17:12:34 2010]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -22,6 +22,7 @@
 
 #include <etoile/hole/Address.hh>
 #include <etoile/hole/Family.hh>
+#include <etoile/hole/Component.hh>
 
 namespace etoile
 {
@@ -46,7 +47,8 @@ namespace etoile
       // constructors & destructors
       //
       Block();
-      Block(const Family);
+      Block(const Family&,
+	    const Component&);
 
       //
       // methods
@@ -84,6 +86,7 @@ namespace etoile
       // attributes
       //
       Family		family;
+      Component		component;
 
       ///
       /// note that this address is never serialized.

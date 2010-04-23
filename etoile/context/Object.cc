@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [thu apr 15 11:35:09 2010]
+// updated       julien quintard   [thu apr 22 13:03:58 2010]
 //
 
 //
@@ -87,8 +87,11 @@ namespace etoile
 
       enter();
 
-      // dump the parent context.
       std::cout << alignment << "[Object]" << std::endl;
+
+      // dump the parent context.
+      if (Context::Dump(margin + 2) == StatusError)
+	escape("unable to dump the parent context");
 
       // dump the route.
       if (this->route.Dump(margin + 2) == StatusError)

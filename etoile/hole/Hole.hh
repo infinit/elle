@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/hole/Hole.hh
 //
 // created       julien quintard   [sun aug  9 16:44:42 2009]
-// updated       julien quintard   [fri apr 16 14:08:29 2010]
+// updated       julien quintard   [fri apr 23 00:46:33 2010]
 //
 
 #ifndef ETOILE_HOLE_HOLE_HH
@@ -56,5 +56,9 @@ namespace etoile
 //
 
 #include <etoile/hole/Family.hh>
+#include <etoile/hole/Component.hh>
+
+#include <etoile/kernel/Object.hh>
+#include <etoile/kernel/Access.hh>
 
 #endif

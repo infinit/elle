@@ -77,10 +77,12 @@ ADD_LIBRARY(etoile
   wall/Link.cc
   wall/State.cc
   wall/Attributes.cc
+
+  Etoile.cc
 )
 
 ADD_EXECUTABLE(Etoile
-  Etoile.cc
+  etoile.cc
 )
 
 TARGET_LINK_LIBRARIES(etoile elle)

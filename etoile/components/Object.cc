@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [fri apr 16 14:29:31 2010]
+// updated       julien quintard   [fri apr 23 10:35:38 2010]
 //
 
 //
@@ -96,6 +96,25 @@ namespace etoile
       // record the context in the journal.
       if (journal::Journal::Record(context) == StatusError)
 	escape("unable to the context");
+
+      leave();
+    }
+
+    ///
+    /// this method discards the modifications.
+    ///
+    Status		Object::Discard(context::Object*	context)
+    {
+      enter();
+
+      // import the context so that it no longer is usable by the
+      // application.
+      if (context::Context::Import(context) == StatusError)
+	escape("unable to import the context");
+
+      // delete the context.
+      if (context::Context::Delete(context) == StatusError)
+	escape("unable to delete the context");
 
       leave();
     }

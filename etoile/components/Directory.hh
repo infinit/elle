@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [tue apr 20 07:54:54 2010]
+// updated       julien quintard   [wed apr 21 23:25:40 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -66,6 +66,7 @@ namespace etoile
       static Status	Remove(context::Directory*,
 			       const path::Slice&);
       static Status	Store(context::Directory*);
+      static Status	Discard(context::Directory*);
       static Status	Destroy(context::Directory*);
     };
 

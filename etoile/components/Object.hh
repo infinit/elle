@@ -3,12 +3,12 @@
 //
 // project       etoile
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [thu apr 15 20:53:38 2010]
+// updated       julien quintard   [wed apr 21 23:25:09 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -47,6 +47,7 @@ namespace etoile
       static Status	Information(context::Object*,
 				    wall::State&);
       static Status	Store(context::Object*);
+      static Status	Discard(context::Object*);
       static Status	Destroy(context::Object*);
     };
 
@@ -64,6 +65,8 @@ namespace etoile
 #include <etoile/components/Access.hh>
 
 #include <etoile/journal/Journal.hh>
+
+#include <etoile/context/Context.hh>
 
 #include <etoile/wall/State.hh>
 
