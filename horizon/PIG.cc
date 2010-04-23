@@ -3,12 +3,12 @@
 //
 // project       pig
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [tue apr 20 21:47:33 2010]
+// updated       julien quintard   [fri apr 23 19:18:09 2010]
 //
 
 //
@@ -123,7 +123,7 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagObjectLoad>(way),
 	  Outputs<TagIdentifier>(identifier)) == StatusError)
-      error(ENOENT);
+      skip(ENOENT);
 
     // set the identifier in the fuse_file_info structure.
     info.fh = (uint64_t)&identifier;
@@ -131,9 +131,9 @@ namespace pig
     // call the Fgetattr() method.
     result = PIG::Fgetattr(path, stat, &info);
 
-    // store the object.
+    // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
+	  Inputs<TagObjectDiscard>(identifier),
 	  Outputs<TagOk>()) == StatusError)
       error(EINTR);
 
@@ -258,21 +258,18 @@ namespace pig
 	       etoile::kernel::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
-	  /*
 	  // retrieve the attribute.
 	  if (PIG::Channel.Call(
-	        Inputs<TagAttributesLookup>(identifier, "posix::exec"),
+		Inputs<TagAttributesGet>(*identifier, "posix::exec"),
 		Outputs<TagAttributesTrait>(trait)) == StatusError)
 	    error(ENOENT);
 
 	  // check the trait.
-	  if ((trait != etoile::kernel::Trait::Null) &&
-	      (trait->value == "true"))
+	  if (trait.value == "true")
 	    {
 	      // active the exec bit.
 	      stat->st_mode |= S_IXUSR;
 	    }
-	  */
 
 	  break;
 	}
@@ -347,15 +344,15 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagAccessLookup>(identifier, PIG::Subject),
 	  Outputs<TagAccessRecord>(record)) == StatusError)
-      error(EINTR);
+      error(EINTR, identifier);
 
     // check the record.
     if (record == etoile::kernel::Record::Null)
-      error(EACCES);
+      error(EACCES, identifier);
 
     // check if the user has the right to read the directory.
     if ((record.permissions & etoile::kernel::PermissionRead) == 0)
-      error(EACCES);
+      error(EACCES, identifier);
 
     // duplicate the identifier and save it in the info structure's file
     // handle.
@@ -412,7 +409,7 @@ namespace pig
 	// read the directory entries.
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryConsult>(*identifier,
-					  etoile::kernel::Offset(offset),
+					  (etoile::kernel::Offset)offset,
 					  PIG::Frame),
 	      Outputs<TagDirectoryRange>(range)) == StatusError)
 	  error(EINTR);
@@ -430,6 +427,9 @@ namespace pig
 
 	    // compute the offset of the next entry.
 	    next++;
+
+	    // increment the offset as well.
+	    offset++;
 	  }
 
 	if (range.container.size() < PIG::Frame)
@@ -455,10 +455,9 @@ namespace pig
     // filled by Opendir().
     identifier = (etoile::context::Identifier*)info->fh;
 
-    // store the context back.
-    // store the object.
+    // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(*identifier),
+	  Inputs<TagDirectoryDiscard>(*identifier),
 	  Outputs<TagOk>()) == StatusError)
       error(EINTR);
 
@@ -497,7 +496,7 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryCreate>(),
 	  Outputs<TagIdentifier>(subdirectory)) == StatusError)
-      error(EINTR);
+      error(EINTR, directory);
 
     // compute the permissions.
     if ((mode & S_IRUSR) != 0)
@@ -510,19 +509,19 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagAccessUpdate>(subdirectory, PIG::Subject, permissions),
 	  Outputs<TagOk>()) == StatusError)
-      error(EINTR);
+      error(EINTR, subdirectory, directory);
 
     // add the subdirectory.
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryAdd>(directory, name, subdirectory),
 	  Outputs<TagOk>()) == StatusError)
-      error(EINTR);
+      error(EINTR, subdirectory, directory);
 
     // store the subdirectory.
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryStore>(subdirectory),
 	  Outputs<TagOk>()) == StatusError)
-      error(EINTR);
+      error(EINTR, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
@@ -558,19 +557,19 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryLoad>(child),
 	  Outputs<TagIdentifier>(subdirectory)) == StatusError)
-      error(ENOENT);
+      error(ENOENT, directory);
 
     // remove the entry.
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryRemove>(directory, name),
 	  Outputs<TagOk>()) == StatusError)
-      error(EACCES);
+      error(EACCES, subdirectory, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryStore>(directory),
 	  Outputs<TagOk>()) == StatusError)
-      error(EINTR);
+      error(EINTR, subdirectory);
 
     // destroy the subdirectory.
     if (PIG::Channel.Call(
@@ -607,47 +606,86 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagObjectInformation>(identifier),
 	  Outputs<TagObjectState>(state)) == StatusError)
-      error(EINTR);
+      error(EINTR, identifier);
 
     // retrieve the user's permissions on the object.
     if (PIG::Channel.Call(
 	  Inputs<TagAccessLookup>(identifier, PIG::Subject),
 	  Outputs<TagAccessRecord>(record)) == StatusError)
-      error(ENOENT);
-
-    // store the object.
-    if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
-	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(ENOENT, identifier);
 
     // check the record.
     if (record == etoile::kernel::Record::Null)
-      error(EACCES);
+      error(EACCES, identifier);
 
     // check if the permissions match the mask for execution.
     if ((mask & X_OK) != 0)
       {
-	if ((state.genre == etoile::kernel::GenreDirectory) &&
-	    ((record.permissions & etoile::kernel::PermissionRead) == 0))
-	  error(EACCES);
+	switch (state.genre)
+	  {
+	  case etoile::kernel::GenreDirectory:
+	    {
+	      // check if the user has the read permission meaning the
+	      // exec bit
+	      if ((record.permissions & etoile::kernel::PermissionRead) == 0)
+		error(EACCES, identifier);
 
-	// XXX /* attribute X pas present */ retrieve attribute!
+	      break;
+	    }
+	  case etoile::kernel::GenreFile:
+	    {
+	      etoile::kernel::Trait	trait;
+
+	      // get the posix::exec attribute
+	      if (PIG::Channel.Call(
+		    Inputs<TagAttributesGet>(identifier, "posix::exec"),
+		    Outputs<TagAttributesTrait>(trait)) == StatusError)
+		error(ENOENT, identifier);
+
+	      // check the trait.
+	      if (trait.value != "true")
+		error(EACCES, identifier);
+
+	      break;
+	    }
+	  case etoile::kernel::GenreLink:
+	    {
+	      etoile::kernel::Trait	trait;
+
+	      // get the posix::exec attribute
+	      if (PIG::Channel.Call(
+		    Inputs<TagAttributesGet>(identifier, "posix::exec"),
+		    Outputs<TagAttributesTrait>(trait)) == StatusError)
+		error(ENOENT, identifier);
+
+	      // check the trait.
+	      if (trait.value != "true")
+		error(EACCES, identifier);
+
+	      break;
+	    }
+	  }
       }
 
     // check if the permissions match the mask for reading.
     if ((mask & R_OK) != 0)
       {
 	if ((record.permissions & etoile::kernel::PermissionRead) == 0)
-	  error(EACCES);
+	  error(EACCES, identifier);
       }
 
     // check if the permissions match the mask for writing.
     if ((mask & W_OK) != 0)
       {
 	if ((record.permissions & etoile::kernel::PermissionWrite) == 0)
-	  error(EACCES);
+	  error(EACCES, identifier);
       }
+
+    // discard the object.
+    if (PIG::Channel.Call(
+	  Inputs<TagObjectDiscard>(identifier),
+	  Outputs<TagOk>()) == StatusError)
+      error(ENOENT);
 
     return (0);
   }
@@ -661,6 +699,7 @@ namespace pig
     etoile::context::Identifier	identifier;
     etoile::path::Way		way(path);
     etoile::kernel::Permissions	permissions;
+    etoile::wall::State		state;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -693,9 +732,7 @@ namespace pig
     if ((mode & S_IWUSR) != 0)
       permissions |= etoile::kernel::PermissionWrite;
 
-    // XXX EXEC
-
-    // load the object.
+   // load the object.
     if (PIG::Channel.Call(
 	  Inputs<TagObjectLoad>(way),
 	  Outputs<TagIdentifier>(identifier)) == StatusError)
@@ -708,7 +745,35 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagAccessUpdate>(identifier, PIG::Subject, permissions),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(ENOENT, identifier);
+
+    // retrieve information on the object.
+    if (PIG::Channel.Call(
+	  Inputs<TagObjectInformation>(identifier),
+	  Outputs<TagObjectState>(state)) == StatusError)
+      error(EINTR, identifier);
+
+    // set the posix::exec attribute if necessary i.e depending on the
+    // file genre.
+    switch (state.genre)
+      {
+      case etoile::kernel::GenreFile:
+	{
+	  // set the posix::exec attribute
+	  if (PIG::Channel.Call(
+		Inputs<TagAttributesSet>(identifier, "posix::exec", "true"),
+		Outputs<TagOk>()) == StatusError)
+	    error(EACCES, identifier);
+
+	  break;
+	}
+      case etoile::kernel::GenreDirectory:
+      case etoile::kernel::GenreLink:
+	{
+	  // nothing to do for the other genres.
+	  break;
+	}
+      }
 
     // store the object.
     if (PIG::Channel.Call(
@@ -785,7 +850,7 @@ namespace pig
 				   String(name),
 				   String(value, size)),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(ENOENT, identifier);
 
     // store the object.
     if (PIG::Channel.Call(
@@ -823,11 +888,11 @@ namespace pig
 	  Inputs<TagAttributesGet>(identifier,
 				   String(name)),
 	  Outputs<TagAttributesTrait>(trait)) == StatusError)
-      error(ENOENT);
+      error(ENOENT, identifier);
 
-    // store the object.
+    // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
+	  Inputs<TagObjectDiscard>(identifier),
 	  Outputs<TagOk>()) == StatusError)
       error(ENOENT);
 
@@ -878,11 +943,11 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagAttributesFetch>(identifier),
 	  Outputs<TagAttributesRange>(range)) == StatusError)
-      error(ENOENT);
+      error(ENOENT, identifier);
 
-    // store the object.
+    // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
+	  Inputs<TagObjectDiscard>(identifier),
 	  Outputs<TagOk>()) == StatusError)
       error(ENOENT);
 
@@ -947,7 +1012,7 @@ namespace pig
 	  Inputs<TagAttributesOmit>(identifier,
 				    String(name)),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(ENOENT, identifier);
 
     // store the object.
     if (PIG::Channel.Call(
@@ -991,35 +1056,35 @@ namespace pig
 	   __FUNCTION__,
 	   target, source);
 
-    // create a link
-    if (PIG::Channel.Call(
-	  Inputs<TagLinkCreate>(),
-	  Outputs<TagIdentifier>(link)) == StatusError)
-      error(ENOENT);
-
-    // bind the link.
-    if (PIG::Channel.Call(
-	  Inputs<TagLinkBind>(link, to),
-	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
-
     // load the directory.
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryLoad>(from),
 	  Outputs<TagIdentifier>(directory)) == StatusError)
       error(ENOENT);
 
+    // create a link
+    if (PIG::Channel.Call(
+	  Inputs<TagLinkCreate>(),
+	  Outputs<TagIdentifier>(link)) == StatusError)
+      error(ENOENT, directory);
+
+    // bind the link.
+    if (PIG::Channel.Call(
+	  Inputs<TagLinkBind>(link, to),
+	  Outputs<TagOk>()) == StatusError)
+      error(ENOENT, link, directory);
+
     // add an entry for the link.
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryAdd>(directory, name, link),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(ENOENT, link, directory);
 
     // store the link.
     if (PIG::Channel.Call(
 	  Inputs<TagLinkStore>(link),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(ENOENT, directory);
 
     // store the modified directory.
     if (PIG::Channel.Call(
@@ -1055,11 +1120,11 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagLinkResolve>(identifier),
 	  Outputs<TagLinkWay>(target)) == StatusError)
-      error(ENOENT);
+      error(ENOENT, identifier);
 
-    // store the link.
+    // discard the link.
     if (PIG::Channel.Call(
-	  Inputs<TagLinkStore>(identifier),
+	  Inputs<TagLinkDiscard>(identifier),
 	  Outputs<TagOk>()) == StatusError)
       error(ENOENT);
 
@@ -1100,7 +1165,7 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagFileCreate>(),
 	  Outputs<TagIdentifier>(file)) == StatusError)
-      error(EINTR);
+      error(EINTR, directory);
 
     // compute the permissions.
     if ((mode & S_IRUSR) != 0)
@@ -1113,13 +1178,23 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagAccessUpdate>(file, PIG::Subject, permissions),
 	  Outputs<TagOk>()) == StatusError)
-      error(EINTR);
+      error(EINTR, file, directory);
+
+    // if the file has the exec bit, add the posix::exec attribute.
+    if ((mode & S_IXUSR) != 0)
+      {
+	// set the posix::exec attribute
+	if (PIG::Channel.Call(
+	      Inputs<TagAttributesSet>(file, "posix::exec", "true"),
+	      Outputs<TagOk>()) == StatusError)
+	  error(EACCES, file, directory);
+      }
 
     // add the file to the directory.
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryAdd>(directory, name, file),
 	  Outputs<TagOk>()) == StatusError)
-      error(EINTR);
+      error(EINTR, file, directory);
 
     // store the file, ensuring the file system consistency.
     //
@@ -1131,7 +1206,7 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagFileStore>(file),
 	  Outputs<TagOk>()) == StatusError)
-      error(EINTR);
+      error(EINTR, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
@@ -1205,7 +1280,7 @@ namespace pig
 			       (etoile::kernel::Offset)offset,
 			       region),
 	  Outputs<TagOk>()) == StatusError)
-      error(ENOENT);
+      error(EACCES);
 
     return (size);
   }
@@ -1235,7 +1310,7 @@ namespace pig
 			      (etoile::kernel::Offset)offset,
 			      (etoile::kernel::Size)size),
 	  Outputs<TagFileRegion>(region)) == StatusError)
-      error(ENOENT);
+      error(EACCES);
 
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
@@ -1345,10 +1420,18 @@ namespace pig
     etoile::path::Way		from(etoile::path::Way(source), f);
     etoile::path::Slice		t;
     etoile::path::Way		to(etoile::path::Way(target), t);
+    etoile::context::Identifier	object;
 
     printf("[XXX] %s(%s, %s)\n",
 	   __FUNCTION__,
 	   source, target);
+
+    // call the Unlink() method in order to remove, if present, the
+    // target.
+    PIG::Unlink(target);
+
+    // ignore the result, hence remove the errors message.
+    purge();
 
     // if the source and target directories are identical.
     if (from == to)
@@ -1369,7 +1452,7 @@ namespace pig
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryRename>(directory, f, t),
 	      Outputs<TagOk>()) == StatusError)
-	  error(ENOENT);
+	  error(ENOENT, directory);
 
 	// store the directory.
 	if (PIG::Channel.Call(
@@ -1401,37 +1484,37 @@ namespace pig
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryLoad>(to),
 	      Outputs<TagIdentifier>(directory)) == StatusError)
-	  error(ENOENT);
+	  error(ENOENT, object);
 
 	// add an entry.
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryAdd>(directory, t, object),
 	      Outputs<TagOk>()) == StatusError)
-	  error(EACCES);
+	  error(EACCES, directory, object);
 
 	// store the _to_ directory.
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryStore>(directory),
 	      Outputs<TagOk>()) == StatusError)
-	  error(ENOENT);
+	  error(ENOENT, object);
 
 	// load the _from_ directory.
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryLoad>(from),
 	      Outputs<TagIdentifier>(directory)) == StatusError)
-	  error(ENOENT);
+	  error(ENOENT, object);
 
 	// remove the entry.
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryRemove>(directory, f),
 	      Outputs<TagOk>()) == StatusError)
-	  error(EACCES);
+	  error(EACCES, directory, object);
 
 	// store the _from_ directory.
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryStore>(directory),
 	      Outputs<TagOk>()) == StatusError)
-	  error(ENOENT);
+	  error(ENOENT, object);
 
 	// store the object.
 	if (PIG::Channel.Call(
@@ -1469,11 +1552,11 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagObjectInformation>(identifier),
 	  Outputs<TagObjectState>(state)) == StatusError)
-      error(EINTR);
+      error(EINTR, identifier);
 
-    // store the object, as no longer needed.
+    // discard the object, as no longer needed.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
+	  Inputs<TagObjectDiscard>(identifier),
 	  Outputs<TagOk>()) == StatusError)
       error(ENOENT);
 
@@ -1487,24 +1570,24 @@ namespace pig
     if (PIG::Channel.Call(
 	  Inputs<TagDirectoryRemove>(directory, name),
 	  Outputs<TagOk>()) == StatusError)
-      error(EACCES);
+      error(EACCES, directory);
 
     // remove the object according to its type: file or link.
     switch (state.genre)
       {
       case etoile::kernel::GenreFile:
 	{
-	  // load the file.
+	  // load the object.
 	  if (PIG::Channel.Call(
 	        Inputs<TagFileLoad>(child),
 		Outputs<TagIdentifier>(identifier)) == StatusError)
-	    error(ENOENT);
+	    error(ENOENT, directory);
 
 	  // destroy the file.
 	  if (PIG::Channel.Call(
 	        Inputs<TagFileDestroy>(identifier),
 		Outputs<TagOk>()) == StatusError)
-	    error(EINTR);
+	    error(EINTR, directory);
 
 	  break;
 	}
@@ -1514,13 +1597,13 @@ namespace pig
 	  if (PIG::Channel.Call(
 	        Inputs<TagLinkLoad>(child),
 		Outputs<TagIdentifier>(identifier)) == StatusError)
-	    error(ENOENT);
+	    error(ENOENT, directory);
 
 	  // destroy the link.
 	  if (PIG::Channel.Call(
 	        Inputs<TagLinkDestroy>(identifier),
 		Outputs<TagOk>()) == StatusError)
-	    error(EINTR);
+	    error(EINTR, directory);
 
 	  break;
 	}

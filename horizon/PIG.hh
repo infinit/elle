@@ -3,12 +3,12 @@
 //
 // project       pig
 //
-// license       infinit (c)
+// license       infinit
 //
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [tue apr 20 19:43:40 2010]
+// updated       julien quintard   [fri apr 23 01:26:52 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -165,6 +165,39 @@ namespace pig
     static Status	Clean();
 
     //
+    // template methods
+    //
+
+    ///
+    /// this method releases no identifier.
+    ///
+    static Void		Release()
+    {
+      // nothing to do
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename T>
+    static Void		Release(T&		identifier)
+    {
+      PIG::Channel.Call(Inputs<TagObjectDiscard>(identifier),
+			Outputs<TagOk>());
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename T, typename... TT>
+    static Void		Release(T&		identifier,
+				TT&...		identifiers)
+    {
+      Release(identifier);
+      Release(identifiers...);
+    }
+
+    //
     // static attributes
     //
     static Door					Channel;
@@ -191,23 +224,24 @@ namespace pig
 // ---------- macro-functions -------------------------------------------------
 //
 
-#define error(_errno_)							\
+#define error(_errno_, _identifiers_...)				\
   do									\
     {									\
       show();								\
 									\
+      PIG::Release(_identifiers_);					\
+									\
+      purge();								\
+									\
       return (-(_errno_));						\
     } while (false)
 
-#define ignore(_errno_)							\
+#define skip(_errno_, _identifiers_...)					\
   do									\
     {									\
-      Report*	_report_;						\
+      PIG::Release(_identifiers_);					\
 									\
-      if (Report::Instance(_report_) == StatusError)			\
-	return (-(_errno_));						\
-									\
-      _report_->Flush();						\
+      purge();								\
 									\
       return (-(_errno_));						\
     } while (false)
