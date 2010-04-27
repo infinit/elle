@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [fri apr 23 01:26:52 2010]
+// updated       julien quintard   [tue apr 27 18:10:20 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -205,7 +205,7 @@ namespace pig
     static PublicKey				K;
     static String				Phrase;
 
-    static etoile::kernel::Subject		Subject;
+    static etoile::kernel::Subject*		Subject;
 
     struct					Somebody
     {

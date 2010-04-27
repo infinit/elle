@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [fri apr 23 19:18:09 2010]
+// updated       julien quintard   [tue apr 27 21:06:28 2010]
 //
 
 //
@@ -65,7 +65,7 @@ namespace pig
   ///
   /// the subject representing the current user.
   ///
-  etoile::kernel::Subject		PIG::Subject;
+  etoile::kernel::Subject*		PIG::Subject;
 
   ///
   /// this defines the number of directories entries fetched from Etoile.
@@ -342,7 +342,7 @@ namespace pig
 
     // retrieve the user's permissions on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessLookup>(identifier, PIG::Subject),
+	  Inputs<TagAccessLookup>(identifier, *PIG::Subject),
 	  Outputs<TagAccessRecord>(record)) == StatusError)
       error(EINTR, identifier);
 
@@ -383,23 +383,22 @@ namespace pig
     // filled by Opendir().
     identifier = (etoile::context::Identifier*)info->fh;
 
-    /// XXX \todo these . and .. entries are UNIX-specific
     // fill the . and .. entries.
     if (offset == 0)
       filler(buffer, ".", NULL, 1);
     if (offset <= 1)
       filler(buffer, "..", NULL, 2);
 
-    // adjust the offset since Etoile starts with zero while in POSIX
-    // terms, zero and one are used for . and ..
-    if (offset > 2)
-      offset -= 2;
-
     // compute the offset of the next entry.
     if (offset < 2)
       next = 3;
     else
       next = offset + 1;
+
+    // adjust the offset since Etoile starts with zero while in POSIX
+    // terms, zero and one are used for . and ..
+    if (offset > 2)
+      offset -= 2;
 
     while (true)
       {
@@ -507,7 +506,7 @@ namespace pig
 
     // set the owner permissions.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessUpdate>(subdirectory, PIG::Subject, permissions),
+	  Inputs<TagAccessUpdate>(subdirectory, *PIG::Subject, permissions),
 	  Outputs<TagOk>()) == StatusError)
       error(EINTR, subdirectory, directory);
 
@@ -610,7 +609,7 @@ namespace pig
 
     // retrieve the user's permissions on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessLookup>(identifier, PIG::Subject),
+	  Inputs<TagAccessLookup>(identifier, *PIG::Subject),
 	  Outputs<TagAccessRecord>(record)) == StatusError)
       error(ENOENT, identifier);
 
@@ -743,7 +742,7 @@ namespace pig
     // note that the method assumes that the caller is the object's owner!
     // if not, an error will occur anyway, so why bother checking.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessUpdate>(identifier, PIG::Subject, permissions),
+	  Inputs<TagAccessUpdate>(identifier, *PIG::Subject, permissions),
 	  Outputs<TagOk>()) == StatusError)
       error(ENOENT, identifier);
 
@@ -1176,7 +1175,7 @@ namespace pig
 
     // set the owner permissions.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessUpdate>(file, PIG::Subject, permissions),
+	  Inputs<TagAccessUpdate>(file, *PIG::Subject, permissions),
 	  Outputs<TagOk>()) == StatusError)
       error(EINTR, file, directory);
 
@@ -1757,8 +1756,11 @@ namespace pig
     // create a subject representing the current user.
     //
     {
+      // allocate a new subject.
+      PIG::Subject = new etoile::kernel::Subject;
+
       // create the subject.
-      if (PIG::Subject.Create(PIG::K) == StatusError)
+      if (PIG::Subject->Create(PIG::K) == StatusError)
 	escape("unable to create the user's subject");
     }
 
@@ -1869,6 +1871,10 @@ namespace pig
   Status		PIG::Clean()
   {
     enter();
+
+    // delete the subject.
+    if (PIG::Subject != NULL)
+      delete PIG::Subject;
 
     // clean the Elle library.
     if (Elle::Clean() == StatusError)
