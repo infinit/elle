@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.cc
 //
 // created       julien quintard   [thu mar  4 12:39:12 2010]
-// updated       julien quintard   [thu apr 22 21:55:19 2010]
+// updated       julien quintard   [tue apr 27 18:06:06 2010]
 //
 
 //
@@ -155,13 +155,13 @@ namespace etoile
 
       enter();
 
-      // initialize the client.
-      if (Client::Initialize() == StatusError)
-	escape("unable to initialize the client");
-
       // initialize the map.
       if (Map::Initialize() == StatusError)
 	escape("unable to initialize the map");
+
+      // initialize the client.
+      if (Client::Initialize() == StatusError)
+	escape("unable to initialize the client");
 
       // initialize the guest.
       if (Guest::Initialize() == StatusError)
@@ -186,13 +186,13 @@ namespace etoile
       if (Guest::Clean() == StatusError)
 	escape("unable to clean the guest");
 
-      // clean the map.
-      if (Map::Clean() == StatusError)
-	escape("unable to clean the map");
-
       // clean the client.
       if (Client::Clean() == StatusError)
 	escape("unable to clean the client");
+
+      // clean the map.
+      if (Map::Clean() == StatusError)
+	escape("unable to clean the map");
 
       leave();
     }

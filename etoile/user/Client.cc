@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.cc
 //
 // created       julien quintard   [thu mar 11 16:21:11 2010]
-// updated       julien quintard   [thu apr 22 21:56:03 2010]
+// updated       julien quintard   [tue apr 27 18:08:06 2010]
 //
 
 //
@@ -297,7 +297,13 @@ namespace etoile
 
       // remove every remaining client.
       while (Client::Clients.empty() == false)
-	Client::Remove(Client::Clients.front());
+	{
+	  Client*	client = Client::Clients.front();
+
+	  // remove the client.
+	  if (Client::Remove(client) == StatusError)
+	    escape("unable to remove the client");
+	}
 
       leave();
     }

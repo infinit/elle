@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [thu apr 15 11:13:41 2010]
+// updated       julien quintard   [tue apr 27 16:06:39 2010]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -55,7 +55,7 @@ namespace etoile
       //
       // static attributes
       //
-      static hole::Address	Root;
+      static hole::Address*		Root;
     };
 
   }

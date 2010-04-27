@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.hh
 //
 // created       julien quintard   [thu dec  3 03:07:53 2009]
-// updated       julien quintard   [fri apr  2 13:55:20 2010]
+// updated       julien quintard   [mon apr 26 18:36:59 2010]
 //
 
 #ifndef ETOILE_DEPOT_RECORD_HH
@@ -47,6 +47,7 @@ namespace etoile
     /// memory cache or in its unit form i.e in the reserve.
     ///
     class Record:
+      public Meta,
       public Dumpable
     {
     public:

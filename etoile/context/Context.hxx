@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hxx
 //
 // created       julien quintard   [sun apr  4 12:50:13 2010]
-// updated       julien quintard   [wed apr 21 23:13:23 2010]
+// updated       julien quintard   [tue apr 27 21:06:40 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HXX

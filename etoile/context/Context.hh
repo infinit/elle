@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hh
 //
 // created       julien quintard   [fri aug 14 22:36:10 2009]
-// updated       julien quintard   [thu apr 22 12:59:59 2010]
+// updated       julien quintard   [mon apr 26 18:34:38 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HH
@@ -57,6 +57,7 @@ namespace etoile
     /// execute.
     ///
     class Context:
+      public Meta,
       public Dumpable
     {
     public:

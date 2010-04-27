@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [thu apr 22 22:45:37 2010]
+// updated       julien quintard   [mon apr 26 18:54:28 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -52,6 +52,7 @@ namespace etoile
     /// pour les perfs ou pour initializer des choses.
     ///
     class Agent:
+      public Meta,
       public Dumpable
     {
     public:
@@ -86,6 +87,7 @@ namespace etoile
       /// performing sensitive operations.
       ///
       class Local:
+	public Meta,
 	public Dumpable
       {
       public:
@@ -107,6 +109,7 @@ namespace etoile
       /// with an external agent process.
       ///
       struct Remote:
+	public Meta,
 	public Dumpable
       {
       public:

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Guest.hh
 //
 // created       julien quintard   [wed mar 17 21:49:41 2010]
-// updated       julien quintard   [wed mar 31 00:18:07 2010]
+// updated       julien quintard   [mon apr 26 18:54:59 2010]
 //
 
 #ifndef ETOILE_USER_GUEST_HH
@@ -36,6 +36,7 @@ namespace etoile
     /// within a time frame.
     ///
     class Guest:
+      public Meta,
       public Dumpable
     {
     public:

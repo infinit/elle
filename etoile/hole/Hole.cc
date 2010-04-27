@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [fri apr 23 13:14:06 2010]
+// updated       julien quintard   [mon apr 26 11:24:45 2010]
 //
 
 //
@@ -286,7 +286,6 @@ namespace etoile
 	char		path[4096];
 
 	printf("[XXX] Hole::Destroy(%s)\n", identity.c_str());
-	address.Dump();
 
 	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
 

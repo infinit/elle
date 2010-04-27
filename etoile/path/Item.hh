@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [fri apr  2 01:32:15 2010]
+// updated       julien quintard   [mon apr 26 18:47:38 2010]
 //
 
 #ifndef ETOILE_PATH_ITEM_HH
@@ -47,6 +47,7 @@ namespace etoile
     /// benefit.
     ///
     struct Item:
+      public Meta,
       public Dumpable
     {
     public:

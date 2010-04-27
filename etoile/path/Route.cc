@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [wed apr  7 19:00:55 2010]
+// updated       julien quintard   [mon apr 26 19:18:51 2010]
 //
 
 //
@@ -77,6 +77,43 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this operator compares two objects.
+    ///
+    Boolean		Route::operator==(const Route&		element) const
+    {
+      Route::Scoutor	s;
+      Route::Scoutor	t;
+
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the size.
+      if (this->elements.size() != element.elements.size())
+	false();
+
+      // for every element.
+      for (s = this->elements.begin(), t = element.elements.begin();
+	   s != this->elements.end();
+	   s++, t++)
+	if (*s != *t)
+	  false();
+
+      true();
+    }
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Route);
 
 //
 // ---------- dumpable --------------------------------------------------------

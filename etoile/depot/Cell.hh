@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [wed mar 31 00:05:35 2010]
+// updated       julien quintard   [mon apr 26 18:35:47 2010]
 //
 
 #ifndef ETOILE_DEPOT_CELL_HH
@@ -35,6 +35,7 @@ namespace etoile
     /// this class holds a block in its memory form/
     ///
     class Cell:
+      public Meta,
       public Dumpable
     {
     public:

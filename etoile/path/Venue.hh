@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.hh
 //
 // created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [wed apr 14 12:54:55 2010]
+// updated       julien quintard   [mon apr 26 18:49:23 2010]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH
@@ -47,7 +47,7 @@ namespace etoile
       //
       // constants
       //
-      static const Venue	Null;
+      static const Venue		Null;
 
       //
       // types

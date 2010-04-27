@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:59:43 2010]
-// updated       julien quintard   [thu apr 15 15:07:26 2010]
+// updated       julien quintard   [mon apr 26 18:35:25 2010]
 //
 
 #ifndef ETOILE_CONTEXT_RIGHTS_HH
@@ -37,6 +37,7 @@ namespace etoile
     /// object and its contents.
     ///
     class Rights:
+      public Meta,
       public Dumpable
     {
     public:

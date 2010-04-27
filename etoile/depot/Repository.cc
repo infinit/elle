@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [fri apr  2 13:54:13 2010]
+// updated       julien quintard   [tue apr 27 15:52:18 2010]
 //
 
 //
@@ -106,6 +106,9 @@ namespace etoile
       // remove all the access elements.
       Repository::Cache::Queue.clear();
       Repository::Reserve::Queue.clear();
+
+      // delete the delay for the public key block family.
+      delete Repository::Delays[hole::FamilyPublicKeyBlock];
 
       leave();
     }

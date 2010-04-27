@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.hh
 //
 // created       julien quintard   [thu mar 11 16:05:28 2010]
-// updated       julien quintard   [thu apr  8 20:27:47 2010]
+// updated       julien quintard   [mon apr 26 19:23:34 2010]
 //
 
 #ifndef ETOILE_USER_USER_HH
@@ -50,6 +50,7 @@ namespace etoile
     ///
     ///
     class User:
+      public Meta,
       public Dumpable
     {
     public:

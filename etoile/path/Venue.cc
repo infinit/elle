@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [wed apr 14 12:55:52 2010]
+// updated       julien quintard   [mon apr 26 18:49:36 2010]
 //
 
 //

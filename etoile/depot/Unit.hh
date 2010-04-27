@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [wed mar 31 00:08:59 2010]
+// updated       julien quintard   [mon apr 26 18:37:20 2010]
 //
 
 #ifndef ETOILE_DEPOT_UNIT_HH
@@ -36,6 +36,7 @@ namespace etoile
     /// slower storage medium that main memory such as a hard disk.
     ///
     class Unit:
+      public Meta,
       public Dumpable
     {
     public:

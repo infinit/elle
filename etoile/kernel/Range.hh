@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [tue apr 20 06:45:38 2010]
+// updated       julien quintard   [mon apr 26 18:42:07 2010]
 //
 
 #ifndef ETOILE_KERNEL_RANGE_HH
@@ -48,6 +48,7 @@ namespace etoile
     ///
     template <typename T>
     class Range:
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
@@ -79,6 +80,7 @@ namespace etoile
       // constructors & destructors
       //
       Range();
+      Range(const Range<T>&);
       ~Range();
 
       //
@@ -98,6 +100,10 @@ namespace etoile
       //
       // interfaces
       //
+
+      // entity
+      declare(Entity, Range<T>);
+      // XXX operator==
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

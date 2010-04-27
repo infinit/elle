@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [fri apr 23 01:44:00 2010]
+// updated       julien quintard   [tue apr 27 21:05:32 2010]
 //
 
 //
@@ -29,7 +29,7 @@ namespace etoile
     ///
     /// this variable contains the address of the root directory object.
     ///
-    hole::Address	Path::Root;
+    hole::Address*		Path::Root = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -43,7 +43,7 @@ namespace etoile
       enter();
 
       // initialize the root address.
-      Path::Root = address;
+      Path::Root = new hole::Address(address);
 
       // initialize the cache.
       if (Cache::Initialize() == StatusError)
@@ -62,6 +62,9 @@ namespace etoile
       // clean the cache.
       if (Cache::Clean() == StatusError)
 	escape("unable to clean the cache");
+
+      // delete the root address.
+      delete Path::Root;
 
       leave();
     }
@@ -93,7 +96,7 @@ namespace etoile
       if (venue == Venue::Null)
 	{
 	  // start with the root directory.
-	  address = Path::Root;
+	  address = *Path::Root;
 	}
       else
 	{
@@ -142,9 +145,15 @@ namespace etoile
 					    entry) == StatusError)
 	    escape("unable to find one of the route's entries");
 
-	  // check the result.
+	  // if there is no such entry, abort.
 	  if (entry == NULL)
-	    escape("unable to locate the target path");
+	    {
+	      // close the context.
+	      if (components::Directory::Discard(context) == StatusError)
+		escape("unable to close the context");
+
+	      escape("unable to locate the target path");
+	    }
 
 	  // set the address.
 	  address = entry->address;
@@ -159,8 +168,8 @@ namespace etoile
 	}
 
       // update the resolved path to the cache.
-      if (Cache::Update(route, venue) == StatusError)
-	escape("unable to update the cache");
+      //if (Cache::Update(route, venue) == StatusError)
+      //escape("unable to update the cache");
 
       // return the target address.
       address = venue.elements[venue.elements.size() - 1];

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.hh
 //
 // created       julien quintard   [tue mar 30 23:31:29 2010]
-// updated       julien quintard   [thu apr 22 12:28:53 2010]
+// updated       julien quintard   [mon apr 26 18:50:20 2010]
 //
 
 #ifndef ETOILE_PATH_WAY_HH
@@ -43,7 +43,7 @@ namespace etoile
       //
       // constants
       //
-      static const Way		Null;
+      static const Way			Null;
 
       //
       // constructors & destructors

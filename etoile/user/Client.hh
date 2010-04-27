@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.hh
 //
 // created       julien quintard   [thu mar  4 11:56:54 2010]
-// updated       julien quintard   [wed mar 31 02:53:43 2010]
+// updated       julien quintard   [mon apr 26 18:54:49 2010]
 //
 
 #ifndef ETOILE_USER_CLIENT_HH
@@ -52,6 +52,7 @@ namespace etoile
     /// this class handles clients from connections to authentications etc.
     ///
     class Client:
+      public Meta,
       public Dumpable
     {
     public:

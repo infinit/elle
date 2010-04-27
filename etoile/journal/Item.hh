@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Item.hh
 //
 // created       julien quintard   [mon apr  5 21:15:34 2010]
-// updated       julien quintard   [fri apr 16 14:33:29 2010]
+// updated       julien quintard   [mon apr 26 18:39:00 2010]
 //
 
 #ifndef ETOILE_JOURNAL_ITEM_HH
@@ -37,6 +37,7 @@ namespace etoile
     /// this class represents a block in the journal.
     ///
     class Item:
+      public Meta,
       public Dumpable
     {
     public:

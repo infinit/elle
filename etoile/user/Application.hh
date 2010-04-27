@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hh
 //
 // created       julien quintard   [thu mar 11 17:09:50 2010]
-// updated       julien quintard   [wed apr 21 23:26:53 2010]
+// updated       julien quintard   [mon apr 26 18:54:41 2010]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HH
@@ -50,6 +50,7 @@ namespace etoile
     /// and requesting operations.
     ///
     class Application:
+      public Meta,
       public Dumpable
     {
     public:

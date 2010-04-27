@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [fri apr 23 11:22:56 2010]
+// updated       julien quintard   [mon apr 26 19:22:52 2010]
 //
 
 namespace etoile
@@ -27,6 +27,52 @@ namespace etoile
     Range<T>::Range():
       options(Range<T>::OptionNone)
     {
+    }
+
+    ///
+    /// copy constructor.
+    ///
+    template <typename T>
+    Range<T>::Range(const Range<T>&				element):
+      options(element.options)
+    {
+      Range<T>::Scoutor		scoutor;
+
+      enter();
+ 
+      // go through the container.
+      for (scoutor = element.container.begin();
+	   scoutor != element.container.end();
+	   scoutor++)
+	{
+	  T*			item;
+
+	  // copy the item depending on the options.
+	  switch (this->options)
+	    {
+	    case Range<T>::OptionNone:
+	      {
+		// in this case, the data must be duplicated.
+		item = new T(**scoutor);
+
+		break;
+	      }
+	    case Range<T>::OptionDetach:
+	      {
+		// in this case, the memory is not handled by this instance,
+		// hence just copy the pointer.
+		item = *scoutor;
+
+		break;
+	      }
+	    }
+
+	  // add the item to the container.
+	  if (this->Add(item) == StatusError)
+	    alert("unable to add the item to the container");
+	}
+
+      release();
     }
 
     ///
@@ -200,6 +246,15 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Range<T>, template <typename T>);
 
 //
 // ---------- dumpable --------------------------------------------------------
