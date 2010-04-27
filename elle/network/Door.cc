@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/libraries/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [thu apr 22 14:49:12 2010]
+// updated       julien quintard   [mon apr 26 01:08:36 2010]
 //
 
 //
@@ -37,7 +37,7 @@ namespace elle
     ///
     /// this value defines the maximum capacity of a buffered packed, in bytes.
     ///
-    const Natural32		Door::Capacity = 524288;
+    const Natural64		Door::Capacity = 524288;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -127,7 +127,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method connects the door.
     ///
     Status		Door::Connect(const String&		name)
     {
@@ -175,8 +175,6 @@ namespace elle
     {
       Address		address;
 
-      //printf("[XXX] Door::Read(%u)\n", this->socket->bytesAvailable());
-
       enter();
 
       //
@@ -205,8 +203,12 @@ namespace elle
 
 		true();
 	      }
+	    else
+	      {
+		// otherwise, there is no pending parcel at the moment.
 
-	    false();
+		false();
+	      }
 	  }
 
 	// allocate a new raw.
@@ -232,6 +234,9 @@ namespace elle
 	  {
 	    // assign the raw since there was no previous buffer.
 	    this->buffer = raw;
+
+	    // initialize the offset.
+	    this->offset = 0;
 
 	    // stop tracking raw.
 	    waive(raw);
@@ -360,6 +365,19 @@ namespace elle
 	  release();
 	}
 
+      // if there is no more data in the buffer, delete it in order to avoid
+      // copying data whenever a new packet is received. indeed, if there
+      // is no buffer, the packet becomes the buffer, hence simplifying the
+      // process.
+      if (this->offset == this->buffer->size)
+	{
+	  // delete the buffer.
+	  delete this->buffer;
+
+	  // reinitialize the pointer to NULL.
+	  this->buffer = NULL;
+	}
+
       // finally, take the oldest parcel and return it.
       parcel = this->queue.front();
 
@@ -374,7 +392,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method dumps the door state.
     ///
     Status		Door::Dump(const Natural32		margin) const
     {

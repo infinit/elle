@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/miscellaneous/Report.hh
+// file          /home/mycure/infinit/libraries/elle/miscellaneous/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [thu apr  8 20:18:54 2010]
+// updated       julien quintard   [mon apr 26 19:02:31 2010]
 //
 
 #ifndef ELLE_MISCELLANEOUS_REPORT_HH
@@ -20,6 +20,7 @@
 
 #include <elle/core/String.hh>
 #include <elle/core/Void.hh>
+#include <elle/core/Entity.hh>
 
 #include <elle/archive/Archivable.hh>
 
@@ -90,6 +91,7 @@ namespace elle
     /// \todo add a date to the messages and remove the indentation
     ///
     class Report:
+      public Entity,
       public Dumpable, public Archivable
     {
     public:
@@ -151,6 +153,8 @@ namespace elle
       //
       // constructors & destructors
       //
+      Report();
+      Report(const Report&);
       ~Report();
 
       //
@@ -170,6 +174,10 @@ namespace elle
       //
       // interfaces
       //
+
+      // entity
+      declare(Entity, Report);
+      // XXX operator==
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

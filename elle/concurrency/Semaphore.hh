@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Semaphore.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Semaphore.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [thu mar 25 00:31:19 2010]
+// updated       julien quintard   [mon apr 26 19:12:01 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_SEMAPHORE_HH
@@ -41,7 +41,8 @@ namespace elle
     ///
     /// this class provides a semaphore functionality.
     ///
-    class Semaphore
+    class Semaphore:
+      public Meta
     {
     public:
       //

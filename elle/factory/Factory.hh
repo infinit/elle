@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/factory/Factory.hh
+// file          /home/mycure/infinit/libraries/elle/factory/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [wed mar 24 22:20:44 2010]
+// updated       julien quintard   [tue apr 27 13:35:38 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HH
@@ -57,9 +57,17 @@ namespace elle
       ///
       /// this class is the base class for factory functionoids.
       ///
-      class Functionoid
+      class Functionoid:
+	public Meta
       {
       public:
+	//
+	// constructors & destructors
+	//
+	virtual ~Functionoid()
+	{
+	}
+
 	//
 	// methods
 	//

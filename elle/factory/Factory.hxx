@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/factory/Factory.hxx
+// file          /home/mycure/infinit/libraries/elle/factory/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [tue mar  9 12:04:19 2010]
+// updated       julien quintard   [tue apr 27 13:33:52 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HXX

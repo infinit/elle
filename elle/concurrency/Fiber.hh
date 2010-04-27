@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Fiber.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [thu apr  8 23:31:11 2010]
+// updated       julien quintard   [tue apr 27 13:18:43 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Meta.hh>
 
 #include <elle/miscellaneous/Status.hh>
 #include <elle/miscellaneous/Callback.hh>
@@ -80,6 +80,7 @@ namespace elle
     /// fiber and resumes it.
     ///
     class Fiber:
+      public Meta,
       public Dumpable
     {
     public:
@@ -128,7 +129,7 @@ namespace elle
 
       struct P
       {
-	typedef std::vector< Callback<const Phase, Fiber*> >	Container;
+	typedef std::vector< Callback<const Phase, Fiber*>* >	Container;
 	typedef Container::iterator				Iterator;
 	typedef Container::const_iterator			Scoutor;
       };

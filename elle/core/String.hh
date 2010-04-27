@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/String.hh
+// file          /home/mycure/infinit/libraries/elle/core/String.hh
 //
 // created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [wed mar 10 20:39:22 2010]
+// updated       julien quintard   [mon apr 26 15:56:28 2010]
 //
 
 #ifndef ELLE_CORE_STRING_HH
@@ -34,7 +34,7 @@ namespace elle
     ///
     /// this type wraps C++ strings.
     ///
-    typedef std::string	String;
+    typedef std::string		String;
 
   }
 }

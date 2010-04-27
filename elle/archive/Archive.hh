@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/archive/Archive.hh
+// file          /home/mycure/infinit/libraries/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [tue apr  6 20:50:02 2010]
+// updated       julien quintard   [mon apr 26 15:44:04 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -157,6 +157,15 @@ namespace elle
 		typename... TT>
       Status		Extract(T&,
 				TT&...);
+
+      template <typename T>
+      Status		Update(const Natural64&,
+			       const T&);
+      template <typename T,
+		typename... TT>
+      Status		Update(const Natural64&,
+			       const T&,
+			       const TT&...);
 
       template <typename T>
       Status		Store(const T&);

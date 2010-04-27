@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Program.cc
+// file          /home/mycure/infinit/libraries/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [fri apr  9 16:03:25 2010]
+// updated       julien quintard   [tue apr 27 11:54:28 2010]
 //
 
 //
@@ -84,22 +84,24 @@ namespace elle
       program->prolog = prolog;
       program->epilog = epilog;
 
+      // set the signal handlers.
+      ::signal(SIGABRT, &Program::Signal);
+      ::signal(SIGTERM, &Program::Signal);
+      ::signal(SIGINT, &Program::Signal);
+
       leave();
     }
 
     ///
     /// this method stops the program.
     ///
-    Status		Program::Exit(Status			status)
+    Status		Program::Exit()
     {
       enter();
 
       // lock in writing.
       program->accord.Lock(ModeWrite);
       {
-	// set the status.
-	program->status = status;
-
 	// set the exit state.
 	program->state = Program::StateStopped;
       }
@@ -128,12 +130,7 @@ namespace elle
 	  {
 	    // check if the program must be stopped.
 	    if (program->state == Program::StateStopped)
-	      {
-		// release the objects.
-		release();
-
-		return (program->status);
-	      }
+	      break;
 	  }
 	  program->accord.Unlock();
 
@@ -174,6 +171,15 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method is triggered whenever a POSIX signal is received.
+    ///
+    Void		Program::Signal(int)
+    {
+      // stop the program.
+      Program::Exit();
+    }
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -184,7 +190,6 @@ namespace elle
     Program::Program():
       core(NULL),
       state(Program::StateUnknown),
-      status(StatusUnknown),
       prolog(NULL),
       epilog(NULL)
     {

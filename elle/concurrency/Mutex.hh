@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Mutex.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Mutex.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [sun mar 28 03:13:34 2010]
+// updated       julien quintard   [mon apr 26 15:48:16 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_MUTEX_HH
@@ -45,6 +45,9 @@ namespace elle
     /// this class provides a mutex functionality.
     ///
     /// note that mutexes provide thread-fiber-safety.
+    ///
+    /// \todo XXX the other concurrency control classes such as condition
+    /// semaphore etc. should inherit from Resource
     ///
     class Mutex:
       public Resource

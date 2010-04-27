@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/miscellaneous/Report.cc
+// file          /home/mycure/infinit/libraries/elle/miscellaneous/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [wed apr 14 11:50:40 2010]
+// updated       julien quintard   [tue apr 27 13:20:42 2010]
 //
 
 //
@@ -150,6 +150,34 @@ namespace elle
 //
 
     ///
+    /// default constructor.
+    ///
+    Report::Report()
+    {
+    }
+
+    ///
+    /// copy constructor.
+    ///
+    Report::Report(const Report&				report)
+    {
+      Report::Scoutor	scoutor;
+
+      enter();
+
+      // go through the container.
+      for (scoutor = report.store.begin();
+	   scoutor != report.store.end();
+	   scoutor++)
+	{
+	  Report::Entry*	entry = *scoutor;
+
+	  // record the entry in this report.
+	  this->Record(entry->type, entry->meta, entry->message);
+	}
+    }
+
+    ///
     /// this destructor deletes the stack.
     ///
     Report::~Report()
@@ -243,6 +271,15 @@ namespace elle
       // create a headline message of the given type.
       this->Record(type, meta, "Report");
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Report);
 
 //
 // ---------- dumpable --------------------------------------------------------

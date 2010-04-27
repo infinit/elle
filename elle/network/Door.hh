@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Door.hh
+// file          /home/mycure/infinit/libraries/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [thu apr  1 15:41:02 2010]
+// updated       julien quintard   [mon apr 26 18:22:34 2010]
 //
 
 ///
@@ -58,6 +58,7 @@ namespace elle
     ///
     class Door:
       public ::QObject,
+
       public Channel
     {
       Q_OBJECT;
@@ -67,7 +68,7 @@ namespace elle
       // constants
       //
       static const Natural32		Timeout;
-      static const Natural32		Capacity;
+      static const Natural64		Capacity;
 
       //
       // constructors & destructors
@@ -122,7 +123,7 @@ namespace elle
       ::QLocalSocket*	socket;
 
       Region*		buffer;
-      Natural32		offset;
+      Natural64		offset;
 
       //
       // slots

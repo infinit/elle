@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Slot.hh
+// file          /home/mycure/infinit/libraries/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [wed mar 31 13:41:38 2010]
+// updated       julien quintard   [mon apr 26 18:31:31 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -52,6 +52,7 @@ namespace elle
     ///
     class Slot:
       public ::QObject,
+
       public Socket
     {
       Q_OBJECT;

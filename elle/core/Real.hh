@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Real.hh
+// file          /home/mycure/infinit/libraries/elle/core/Real.hh
 //
 // created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [fri feb  6 20:56:20 2009]
+// updated       julien quintard   [mon apr 26 15:56:38 2010]
 //
 
 #ifndef ELLE_CORE_REAL_HH
@@ -26,7 +26,7 @@ namespace elle
     ///
     /// this type wraps the C double type.
     ///
-    typedef double	Real;
+    typedef double		Real;
 
   }
 }

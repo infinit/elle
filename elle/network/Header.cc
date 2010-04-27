@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Header.cc
+// file          /home/mycure/infinit/libraries/elle/network/Header.cc
 //
 // created       julien quintard   [tue feb 23 00:18:03 2010]
-// updated       julien quintard   [wed mar 31 14:52:09 2010]
+// updated       julien quintard   [mon apr 26 18:23:34 2010]
 //
 
 //
@@ -40,7 +40,8 @@ namespace elle
     /// default constructor.
     ///
     Header::Header():
-      tag(TagNone)
+      tag(TagNone),
+      size(0)
     {
     }
 
@@ -64,6 +65,15 @@ namespace elle
 
       leave();
     }
+
+//
+// ---------- entity ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the entity.
+    ///
+    embed(Entity, Header);
 
 //
 // ---------- dumpable --------------------------------------------------------

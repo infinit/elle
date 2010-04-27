@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Entity.hh
+// file          /home/mycure/infinit/libraries/elle/core/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [thu mar 25 00:53:50 2010]
+// updated       julien quintard   [mon apr 26 18:59:42 2010]
 //
 
 #ifndef ELLE_CORE_ENTITY_HH
@@ -20,6 +20,7 @@
 
 #include <elle/core/Boolean.hh>
 #include <elle/core/Natural.hh>
+#include <elle/core/Meta.hh>
 
 #include <elle/miscellaneous/Status.hh>
 
@@ -101,7 +102,11 @@ namespace elle
     /// this interface must be implemented by every 'entity' ... in the
     /// elle library terms.
     ///
-    class Entity
+    /// an entity is an object which can be copied through assignment,
+    /// which can be recycled but also compared.
+    ///
+    class Entity:
+      public Meta
     {
     public:
       //

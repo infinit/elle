@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Parcel.cc
+// file          /home/mycure/infinit/libraries/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [thu mar 25 16:22:17 2010]
+// updated       julien quintard   [sun apr 25 16:48:43 2010]
 //
 
 //
@@ -93,8 +93,12 @@ namespace elle
 
       // dump the data.
       if (this->data != NULL)
-	if (this->data->Dump(margin + 2) == StatusError)
-	  escape("unable to dump the data");
+	{
+	  std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
+
+	  if (this->data->Dump(margin + 4) == StatusError)
+	    escape("unable to dump the data");
+	}
 
       leave();
     }

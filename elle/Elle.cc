@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/Elle.cc
+// file          /home/mycure/infinit/libraries/elle/Elle.cc
 //
 // created       julien quintard   [wed mar  3 23:26:52 2010]
-// updated       julien quintard   [thu apr  8 15:09:28 2010]
+// updated       julien quintard   [tue apr 27 13:26:26 2010]
 //
 
 //
@@ -39,6 +39,10 @@ namespace elle
   Status		Elle::Initialize()
   {
     enter();
+
+    // initialize the core module.
+    if (Core::Initialize() == StatusError)
+      escape("unable to initialize the core module");
 
     // initialize the system module.
     if (System::Initialize() == StatusError)
@@ -97,6 +101,10 @@ namespace elle
     // clean the system module.
     if (System::Clean() == StatusError)
       escape("unable to clean the system module");
+
+    // clean the core module.
+    if (Core::Clean() == StatusError)
+      escape("unable to clean the core module");
 
     leave();
   }

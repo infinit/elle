@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Message.hh
+// file          /home/mycure/infinit/libraries/elle/network/Message.hh
 //
 // created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [thu mar  4 14:53:24 2010]
+// updated       julien quintard   [mon apr 26 19:08:22 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH
@@ -17,6 +17,8 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <elle/core/Meta.hh>
 
 #include <elle/io/IO.hh>
 
@@ -52,7 +54,8 @@ namespace elle
     /// is why messages are split into two different logic parts.
     ///
     template <const Tag G>
-    class Message
+    class Message:
+      public Meta
     {
       // nothing
     };

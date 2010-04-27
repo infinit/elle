@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Network.hh
+// file          /home/mycure/infinit/libraries/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [sun apr 18 10:55:24 2010]
+// updated       julien quintard   [tue apr 27 17:03:22 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -17,6 +17,8 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <elle/core/Meta.hh>
 
 #include <elle/archive/Archive.hh>
 
@@ -75,9 +77,17 @@ namespace elle
       /// network event.
       ///
       class Functionoid:
+	public Meta,
 	public Dumpable
       {
       public:
+	//
+	// constructors & destructors
+	//
+	virtual ~Functionoid()
+	{
+	}
+
 	//
 	// methods
 	//

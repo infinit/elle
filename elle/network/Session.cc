@@ -5,10 +5,10 @@
 //
 // license       network
 //
-// file          /home/mycure/infinit/elle/network/Session.cc
+// file          /home/mycure/infinit/libraries/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [fri apr  9 02:09:56 2010]
+// updated       julien quintard   [mon apr 26 19:23:52 2010]
 //
 
 //

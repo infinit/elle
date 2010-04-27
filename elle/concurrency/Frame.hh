@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Frame.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Frame.hh
 //
 // created       julien quintard   [tue mar 23 14:19:59 2010]
-// updated       julien quintard   [thu apr  8 14:59:09 2010]
+// updated       julien quintard   [mon apr 26 19:04:59 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FRAME_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/core/Natural.hh>
+#include <elle/core/Meta.hh>
 
 #include <elle/miscellaneous/Byte.hh>
 
@@ -41,6 +42,7 @@ namespace elle
     /// this class represents a frame i.e a system stack.
     ///
     class Frame:
+      public Meta,
       public Dumpable
     {
     public:
