@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Environment.hh
+// file          /home/mycure/infi...ibraries/elle/concurrency/Environment.hh
 //
 // created       julien quintard   [thu apr  8 14:13:51 2010]
-// updated       julien quintard   [thu apr  8 15:53:27 2010]
+// updated       julien quintard   [mon apr 26 19:07:54 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ENVIRONMENT_HH
@@ -20,6 +20,7 @@
 
 #include <elle/core/String.hh>
 #include <elle/core/Void.hh>
+#include <elle/core/Meta.hh>
 
 #include <elle/miscellaneous/Status.hh>
 
@@ -49,6 +50,7 @@ namespace elle
     /// are made.
     ///
     class Environment:
+      public Meta,
       public Dumpable
     {
     public:

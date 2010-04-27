@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Parameters.hxx
+// file          /home/mycure/infinit/libraries/elle/network/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [thu mar 25 19:28:03 2010]
+// updated       julien quintard   [mon apr 26 18:30:03 2010]
 //
 
 #ifndef ELLE_NETWORK_PARAMETERS_HXX
@@ -27,7 +27,8 @@ namespace elle
     /// zero parameter.
     ///
     template <>
-    class Parameters<>
+    class Parameters<>:
+      public Meta
     {
     public:
       //
@@ -55,7 +56,8 @@ namespace elle
     /// one parameter.
     ///
     template <typename T1>
-    class Parameters<const T1>
+    class Parameters<const T1>:
+      public Meta
     {
     public:
       //
@@ -102,7 +104,8 @@ namespace elle
     template <typename T1,
 	      typename T2>
     class Parameters<const T1,
-		     const T2>
+		     const T2>:
+      public Meta
     {
     public:
       //
@@ -154,7 +157,8 @@ namespace elle
 	      typename T3>
     class Parameters<const T1,
 		     const T2,
-		     const T3>
+		     const T3>:
+      public Meta
     {
     public:
       //
@@ -211,7 +215,8 @@ namespace elle
     class Parameters<const T1,
 		     const T2,
 		     const T3,
-		     const T4>
+		     const T4>:
+      public Meta
     {
     public:
       //
@@ -273,7 +278,8 @@ namespace elle
 		     const T2,
 		     const T3,
 		     const T4,
-		     const T5>
+		     const T5>:
+      public Meta
     {
     public:
       //
@@ -340,7 +346,8 @@ namespace elle
 		     const T3,
 		     const T4,
 		     const T5,
-		     const T6>
+		     const T6>:
+      public Meta
     {
     public:
       //
@@ -414,7 +421,8 @@ namespace elle
 		     const T4,
 		     const T5,
 		     const T6,
-		     const T7>
+		     const T7>:
+      public Meta
     {
     public:
       //
@@ -493,7 +501,8 @@ namespace elle
 		     const T5,
 		     const T6,
 		     const T7,
-		     const T8>
+		     const T8>:
+      public Meta
     {
     public:
       //
@@ -577,7 +586,8 @@ namespace elle
 		     const T6,
 		     const T7,
 		     const T8,
-		     const T9>
+		     const T9>:
+      public Meta
     {
     public:
       //

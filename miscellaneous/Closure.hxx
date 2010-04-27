@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/miscellaneous/Closure.hxx
+// file          /home/mycure/infi...libraries/elle/miscellaneous/Closure.hxx
 //
 // created       julien quintard   [thu mar 25 11:55:10 2010]
-// updated       julien quintard   [tue mar 30 17:03:56 2010]
+// updated       julien quintard   [mon apr 26 16:10:14 2010]
 //
 
 #ifndef ELLE_MISCELLANEOUS_CLOSURE_HXX
@@ -27,7 +27,8 @@ namespace elle
     /// zero-parameter closure.
     ///
     template <>
-    class Closure<>
+    class Closure<>:
+      public Meta
     {
     public:
       //
@@ -56,7 +57,8 @@ namespace elle
     /// one-parameter closure.
     ///
     template <typename T1>
-    class Closure<T1>
+    class Closure<T1>:
+      public Meta
     {
     public:
       //
@@ -90,7 +92,8 @@ namespace elle
     ///
     template <typename T1,
 	      typename T2>
-    class Closure<T1, T2>
+    class Closure<T1, T2>:
+      public Meta
     {
     public:
       //
@@ -130,7 +133,8 @@ namespace elle
     template <typename T1,
 	      typename T2,
 	      typename T3>
-    class Closure<T1, T2, T3>
+    class Closure<T1, T2, T3>:
+      public Meta
     {
     public:
       //
@@ -176,7 +180,8 @@ namespace elle
 	      typename T2,
 	      typename T3,
 	      typename T4>
-    class Closure<T1, T2, T3, T4>
+    class Closure<T1, T2, T3, T4>:
+      public Meta
     {
     public:
       //
@@ -228,7 +233,8 @@ namespace elle
 	      typename T3,
 	      typename T4,
 	      typename T5>
-    class Closure<T1, T2, T3, T4, T5>
+    class Closure<T1, T2, T3, T4, T5>:
+      public Meta
     {
     public:
       //
@@ -286,7 +292,8 @@ namespace elle
 	      typename T4,
 	      typename T5,
 	      typename T6>
-    class Closure<T1, T2, T3, T4, T5, T6>
+    class Closure<T1, T2, T3, T4, T5, T6>:
+      public Meta
     {
     public:
       //
@@ -350,7 +357,8 @@ namespace elle
 	      typename T5,
 	      typename T6,
 	      typename T7>
-    class Closure<T1, T2, T3, T4, T5, T6, T7>
+    class Closure<T1, T2, T3, T4, T5, T6, T7>:
+      public Meta
     {
     public:
       //
@@ -420,7 +428,8 @@ namespace elle
 	      typename T6,
 	      typename T7,
 	      typename T8>
-    class Closure<T1, T2, T3, T4, T5, T6, T7, T8>
+    class Closure<T1, T2, T3, T4, T5, T6, T7, T8>:
+      public Meta
     {
     public:
       //
@@ -496,7 +505,8 @@ namespace elle
 	      typename T7,
 	      typename T8,
 	      typename T9>
-    class Closure<T1, T2, T3, T4, T5, T6, T7, T8, T9>
+    class Closure<T1, T2, T3, T4, T5, T6, T7, T8, T9>:
+      public Meta
     {
     public:
       //

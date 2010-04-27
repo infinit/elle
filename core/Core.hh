@@ -5,17 +5,25 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Core.hh
+// file          /home/mycure/infinit/libraries/elle/core/Core.hh
 //
 // created       julien quintard   [fri jan 30 16:14:39 2009]
-// updated       julien quintard   [sat mar 20 02:41:04 2010]
+// updated       julien quintard   [tue apr 27 12:12:18 2010]
 //
 
 #ifndef ELLE_CORE_CORE_HH
 #define ELLE_CORE_CORE_HH
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/miscellaneous/Status.hh>
+
 namespace elle
 {
+  using namespace miscellaneous;
+
   ///
   /// this namespace contains everything related to the core components
   /// such as basic types.
@@ -24,25 +32,20 @@ namespace elle
   {
 
 //
-// ---------- core -----------------------------------------------------------
+// ---------- classes ---------------------------------------------------------
 //
 
     ///
-    /// this class provides two methods for enabling the programmer to
-    /// retrieve capacity properties according to a variable instead
-    /// of a type.
+    /// this class provides methods for managing the core module.
     ///
-    class Variable
+    class Core
     {
     public:
       //
-      // methods
+      // static methods
       //
-      template <typename T>
-      static T		Minimum(const T&);
-
-      template <typename T>
-      static T		Maximum(const T&);
+      static Status	Initialize();
+      static Status	Clean();
     };
 
   }
@@ -62,11 +65,6 @@ namespace elle
 #include <elle/core/Entity.hh>
 #include <elle/core/Real.hh>
 #include <elle/core/String.hh>
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <elle/core/Core.hxx>
+#include <elle/core/Type.hh>
 
 #endif

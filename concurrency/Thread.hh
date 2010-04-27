@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Thread.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Thread.hh
 //
 // created       julien quintard   [tue mar  9 18:42:07 2010]
-// updated       julien quintard   [wed mar 31 21:34:55 2010]
+// updated       julien quintard   [mon apr 26 19:06:53 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_THREAD_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Meta.hh>
 
 #include <elle/miscellaneous/Status.hh>
 
@@ -41,7 +41,9 @@ namespace elle
     /// XXX
     ///
     class Thread:
-      public ::QThread
+      public ::QThread,
+
+      public Meta
     {
     public:
       //

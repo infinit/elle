@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Timer.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [tue apr  6 18:53:47 2010]
+// updated       julien quintard   [mon apr 26 19:06:41 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Meta.hh>
 
 #include <elle/miscellaneous/Status.hh>
 #include <elle/miscellaneous/Callback.hh>
@@ -44,7 +44,9 @@ namespace elle
     /// trigger an event.
     ///
     class Timer:
-      public ::QObject
+      public ::QObject,
+
+      public Meta
     {
       Q_OBJECT;
 

@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Arguments.hxx
+// file          /home/mycure/infinit/libraries/elle/network/Arguments.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [thu mar 25 20:10:37 2010]
+// updated       julien quintard   [mon apr 26 18:22:14 2010]
 //
 
 #ifndef ELLE_NETWORK_ARGUMENTS_HXX
@@ -33,6 +33,7 @@ namespace elle
     ///
     template <const Tag G>
     class Arguments<G>:
+      public Meta,
       public Archivable
     {
     public:
@@ -84,7 +85,8 @@ namespace elle
     template <const Tag G,
 	      typename T1>
     class Arguments<G,
-		    T1>
+		    T1>:
+      public Meta
     {
     public:
       //
@@ -141,7 +143,8 @@ namespace elle
 	      typename T1,
 	      typename T2>
     class Arguments<G,
-		    T1, T2>
+		    T1, T2>:
+      public Meta
     {
     public:
       //
@@ -204,7 +207,8 @@ namespace elle
 	      typename T2,
 	      typename T3>
     class Arguments<G,
-		    T1, T2, T3>
+		    T1, T2, T3>:
+      public Meta
     {
     public:
       //
@@ -273,7 +277,8 @@ namespace elle
 	      typename T3,
 	      typename T4>
     class Arguments<G,
-		    T1, T2, T3, T4>
+		    T1, T2, T3, T4>:
+      public Meta
     {
     public:
       //
@@ -348,7 +353,8 @@ namespace elle
 	      typename T4,
 	      typename T5>
     class Arguments<G,
-		    T1, T2, T3, T4, T5>
+		    T1, T2, T3, T4, T5>:
+      public Meta
     {
     public:
       //
@@ -429,7 +435,8 @@ namespace elle
 	      typename T5,
 	      typename T6>
     class Arguments<G,
-		    T1, T2, T3, T4, T5, T6>
+		    T1, T2, T3, T4, T5, T6>:
+      public Meta
     {
     public:
       //
@@ -516,7 +523,8 @@ namespace elle
 	      typename T6,
 	      typename T7>
     class Arguments<G,
-		    T1, T2, T3, T4, T5, T6, T7>
+		    T1, T2, T3, T4, T5, T6, T7>:
+      public Meta
     {
     public:
       //
@@ -609,7 +617,8 @@ namespace elle
 	      typename T7,
 	      typename T8>
     class Arguments<G,
-		    T1, T2, T3, T4, T5, T6, T7, T8>
+		    T1, T2, T3, T4, T5, T6, T7, T8>:
+      public Meta
     {
     public:
       //
@@ -708,7 +717,8 @@ namespace elle
 	      typename T8,
 	      typename T9>
     class Arguments<G,
-		    T1, T2, T3, T4, T5, T6, T7, T8, T9>
+		    T1, T2, T3, T4, T5, T6, T7, T8, T9>:
+      public Meta
     {
     public:
       //

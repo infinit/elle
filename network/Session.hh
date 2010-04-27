@@ -5,10 +5,10 @@
 //
 // license       network
 //
-// file          /home/mycure/infinit/elle/network/Session.hh
+// file          /home/mycure/infinit/libraries/elle/network/Session.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [fri apr  9 00:36:57 2010]
+// updated       julien quintard   [mon apr 26 19:23:47 2010]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH
@@ -54,6 +54,7 @@ namespace elle
     /// socket and sender's address for instance.
     ///
     class Session:
+      public Meta,
       public Dumpable
     {
     public:

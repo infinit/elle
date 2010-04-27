@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Program.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [wed mar 31 21:34:36 2010]
+// updated       julien quintard   [mon apr 26 19:07:09 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Meta.hh>
 
 #include <elle/miscellaneous/Status.hh>
 #include <elle/miscellaneous/Callback.hh>
@@ -28,6 +28,7 @@
 #include <elle/idiom/Close.hh>
 # include <QCoreApplication>
 # include <list>
+# include <signal.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -40,9 +41,10 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this class represents the running program.
     ///
-    class Program
+    class Program:
+      public Meta
     {
     public:
       //
@@ -66,7 +68,8 @@ namespace elle
 				      Callback<>* = NULL,
 				      Callback<>* = NULL);
       static Status		Launch();
-      static Status		Exit(Status);
+      static Void		Signal(int);
+      static Status		Exit();
 
       //
       // constructors & destructors
@@ -85,7 +88,6 @@ namespace elle
       ::QCoreApplication*	core;
 
       State			state;
-      Status			status;
 
       Callback<>*		prolog;
       Callback<>*		epilog;

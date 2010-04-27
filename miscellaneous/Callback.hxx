@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/miscellaneous/Callback.hxx
+// file          /home/mycure/infi...ibraries/elle/miscellaneous/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [tue mar 30 17:29:24 2010]
+// updated       julien quintard   [tue apr 27 13:17:42 2010]
 //
 
 #ifndef ELLE_MISCELLANEOUS_CALLBACK_HXX

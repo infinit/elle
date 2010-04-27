@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Fiber.cc
+// file          /home/mycure/infinit/libraries/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [thu apr  8 23:08:27 2010]
+// updated       julien quintard   [tue apr 27 15:54:43 2010]
 //
 
 //
@@ -112,7 +112,79 @@ namespace elle
     {
       enter();
 
-      // XXX clean toutes les fibers de events/resources
+      //
+      // first, clean the phases callbacks.
+      //
+      {
+	Fiber::P::Scoutor	scoutor;
+
+	// go through the phases.
+	for (scoutor = Fiber::Phases.begin();
+	     scoutor != Fiber::Phases.end();
+	     scoutor++)
+	  {
+	    Callback<const Phase, Fiber*>*	callback = *scoutor;
+
+	    // delete the callback.
+	    delete callback;
+	  }
+      }
+
+      //
+      // then, clean the cached fibers.
+      //
+      {
+	Fiber::C::Scoutor	scoutor;
+
+	// go through the cache.
+	for (scoutor = Fiber::Cache.begin();
+	     scoutor != Fiber::Cache.end();
+	     scoutor++)
+	  {
+	    Fiber*	fiber = *scoutor;
+
+	    // delete the fiber's environment.
+	    if (fiber->environment != NULL)
+	      delete fiber->environment;
+
+	    // delete the cached fiber.
+	    delete fiber;
+	  }
+      }
+
+      //
+      // finally, delete all the fibers waiting for something.
+      //
+      {
+	Fiber::F::Scoutor	scoutor;
+
+	// then go through the blocked fibers container.
+	for (scoutor = Fiber::Fibers.begin();
+	     scoutor != Fiber::Fibers.end();
+	     scoutor++)
+	  {
+	    Fiber*	fiber = *scoutor;
+
+	    // delete the fiber's environment.
+	    if (fiber->environment != NULL)
+	      delete fiber->environment;
+
+	    // delete the waiting fiber.
+	    delete fiber;
+	  }
+      }
+
+      //
+      // delete also the application.
+      //
+      {
+	// delete the application's environment.
+	if (Fiber::Application->environment != NULL)
+	  delete Fiber::Application->environment;
+
+	// delete the application fiber.
+	delete Fiber::Application;
+      }
 
       leave();
     }
@@ -127,7 +199,7 @@ namespace elle
       enter();
 
       // store in the container.
-      Fiber::Phases.push_back(callback);
+      Fiber::Phases.push_back(new Callback<const Phase, Fiber*>(callback));
 
       leave();
     }
@@ -147,7 +219,7 @@ namespace elle
 	   scoutor++)
 	{
 	  // trigger the callback, passing the current fiber.
-	  if (scoutor->Trigger(phase, Fiber::Current) == StatusError)
+	  if ((*scoutor)->Trigger(phase, Fiber::Current) == StatusError)
 	    escape("an error occured in the callback");
 	}
 

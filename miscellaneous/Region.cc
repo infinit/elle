@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/libraries/elle/miscellaneous/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [thu apr 22 23:30:54 2010]
+// updated       julien quintard   [mon apr 26 21:53:57 2010]
 //
 
 //
@@ -390,9 +390,6 @@ namespace elle
       if (Base64::Encode(*this, string) == StatusError)
 	escape("unable to encode the region's contents in base64");
 
-      std::cout << string << std::endl;
-
-      /* XXX
       // display the base64 string.
       for (i = 0; i < (string.length() / space); i++)
 	{
@@ -405,7 +402,6 @@ namespace elle
 	  std::cout << alignment << Dumpable::Shift
 		    << string.substr(i * space) << std::endl;
 	}
-      */
 
       leave();
     }

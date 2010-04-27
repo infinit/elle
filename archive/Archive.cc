@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/libraries/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [thu apr 22 14:16:07 2010]
+// updated       julien quintard   [mon apr 26 23:17:05 2010]
 //
 
 //
@@ -174,6 +174,7 @@ namespace elle
       if (this->Load(endianness) == StatusError)
 	escape("unable to load the archive endianness");
 
+      // set the endianness.
       this->endianness = (System::Order)endianness;
 
       leave();
@@ -476,6 +477,8 @@ namespace elle
     ///
     Status		Archive::Reserve(const Natural64	size)
     {
+      Natural64		capacity;
+
       enter();
 
       // check the mode as this method makes sense only in the
@@ -483,12 +486,18 @@ namespace elle
       if (this->mode != Archive::ModeSerialization)
 	leave();
 
+      // save the capacity.
+      capacity = this->capacity;
+
       // expand the internal buffer.
       if (this->Adjust(this->size + size) == StatusError)
 	escape("unable to expand the archive");
 
-      // set the new memory to zero.
-      ::memset(this->contents + this->size, 0x0, this->capacity - this->size);
+      // set the new memory to zero, only if the capacity has changed.
+      if (this->capacity != capacity)
+	::memset(this->contents + this->size,
+		 0x0,
+		 this->capacity - this->size);
 
       leave();
     }
@@ -652,10 +661,10 @@ namespace elle
 
       std::cout << alignment
 		<< "[Archive] "
-		<< "mode(" << archive.mode << ") "
-		<< "offset(" << archive.offset << ") "
-		<< "size(" << archive.size << ") "
-		<< "capacity(" << archive.capacity << ")"
+		<< "mode(" << std::dec << (Natural8)archive.mode << ") "
+		<< "offset(" << std::dec << archive.offset << ") "
+		<< "size(" << std::dec << archive.size << ") "
+		<< "capacity(" << std::dec << archive.capacity << ")"
 		<< std::endl;
 
       // rewind the archive.
@@ -679,7 +688,7 @@ namespace elle
 		if (archive.Extract(none) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(none, margin + 2) == StatusError)
+		if (Print(none, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -691,7 +700,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -703,7 +712,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -715,7 +724,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -727,7 +736,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -739,7 +748,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -751,7 +760,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -763,7 +772,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -775,7 +784,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -787,7 +796,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -799,7 +808,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -811,7 +820,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -823,7 +832,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		::BN_clear_free(&value);
@@ -837,7 +846,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -849,7 +858,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Show(value, margin + 2) == StatusError)
+		if (Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;

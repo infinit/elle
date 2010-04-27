@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/factory/Factory.cc
+// file          /home/mycure/infinit/libraries/elle/factory/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [thu mar 25 17:38:50 2010]
+// updated       julien quintard   [tue apr 27 13:36:03 2010]
 //
 
 //
@@ -49,6 +49,8 @@ namespace elle
     {
       enter();
 
+      // nothing to do.
+
       leave();
     }
 
@@ -57,9 +59,20 @@ namespace elle
     ///
     Status		Factory::Clean()
     {
+      Factory::Scoutor	scoutor;
+
       enter();
 
-      /// XXX \todo remove the types.
+      // go through the functionoid.
+      for (scoutor = Factory::Map.begin();
+	   scoutor != Factory::Map.end();
+	   scoutor++)
+	{
+	  Factory::Functionoid*		functionoid = scoutor->second;
+
+	  // delete the functionoid.
+	  delete functionoid;
+	}
 
       leave();
     }

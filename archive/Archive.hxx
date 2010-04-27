@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/archive/Archive.hxx
+// file          /home/mycure/infinit/libraries/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [tue apr  6 21:57:52 2010]
+// updated       julien quintard   [mon apr 26 23:16:53 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -154,6 +154,16 @@ namespace elle
     }
 
     ///
+    /// this method extract a compound type.
+    ///
+    template <typename T>
+    inline Status	Archive::Behaviour<T, true>::Extract(Archive& archive,
+							     Archivable& element)
+    {
+      return (element.Extract(archive));
+    }
+
+    ///
     /// this method serialize a compound type.
     ///
     /// note that such objects must inherits the Archivable interface,
@@ -164,16 +174,6 @@ namespace elle
 							       const Archivable& element)
     {
       return (element.Serialize(archive));
-    }
-
-    ///
-    /// this method extract a compound type.
-    ///
-    template <typename T>
-    inline Status	Archive::Behaviour<T, true>::Extract(Archive& archive,
-							     Archivable& element)
-    {
-      return (element.Extract(archive));
     }
 
 //
@@ -253,6 +253,84 @@ namespace elle
     }
 
 //
+// ---------- update ----------------------------------------------------------
+//
+
+    ///
+    /// this method updates a single of item.
+    ///
+    template <typename T>
+    Status		Archive::Update(const Natural64&	offset,
+					const T&		parameter)
+    {
+      Natural64		size;
+
+      enter();
+
+      // serialization mode only.
+      if (this->mode != Archive::ModeSerialization)
+	escape("unable to update while not in serialization mode");
+
+      // first save the size in order to restore the archive properly later.
+      size = this->size;
+
+      // set the size at provided so that serializing can start again
+      // from there.
+      this->size = offset;
+
+      // update the item.
+      if (this->Serialize(parameter) == StatusError)
+	escape("unable to update the item");
+
+      // return an error of the new size exceeded the old one.
+      if (this->size > size)
+	escape("the new size exceeded the previous one");
+
+      // restore the size.
+      this->size = size;
+
+      leave();
+    }
+
+    ///
+    /// this method updates a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
+    Status		Archive::Update(const Natural64&	offset,
+					const T&		parameter,
+					const TT&...		parameters)
+    {
+      Natural64		size;
+
+      enter();
+
+      // serialization mode only.
+      if (this->mode != Archive::ModeSerialization)
+	escape("unable to update while not in serialization mode");
+
+      // first save the size in order to restore the archive properly later.
+      size = this->size;
+
+      // set the size at provided so that serializing can start again
+      // from there.
+      this->size = offset;
+
+      // update the first item.
+      if (this->Serialize(parameter, parameters...) == StatusError)
+	escape("unable to update the items");
+
+      // return an error of the new size exceeded the old one.
+      if (this->size > size)
+	escape("the new size exceeded the previous one");
+
+      // restore the size.
+      this->size = size;
+
+      leave();
+    }
+
+//
 // ---------- store -----------------------------------------------------------
 //
 
@@ -323,7 +401,7 @@ namespace elle
     }
 
 //
-// ---------- show ------------------------------------------------------------
+// ---------- print -----------------------------------------------------------
 //
 
     ///
@@ -331,8 +409,8 @@ namespace elle
     /// archive.
     ///
     template <typename T>
-    inline Status	Show(const T&				element,
-			     const Natural32			margin)
+    inline Status	Print(const T&				element,
+			      const Natural32			margin)
     {
       String		alignment(margin, ' ');
 
@@ -345,12 +423,12 @@ namespace elle
     }
 
     ///
-    /// this method specifically shows a Natural8 since, by default, it
+    /// this method specifically prints a Natural8 since, by default, it
     /// is considered as a 'char'.
     ///
     template <>
-    inline Status	Show(const Natural8&			element,
-			     const Natural32			margin)
+    inline Status	Print(const Natural8&			element,
+			      const Natural32			margin)
     {
       String		alignment(margin, ' ');
 

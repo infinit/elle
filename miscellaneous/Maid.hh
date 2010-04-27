@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/miscellaneous/Maid.hh
+// file          /home/mycure/infinit/libraries/elle/miscellaneous/Maid.hh
 //
 // created       julien quintard   [sun feb 28 09:00:00 2010]
-// updated       julien quintard   [sat mar 20 02:46:12 2010]
+// updated       julien quintard   [tue apr 27 20:57:20 2010]
 //
 
 #ifndef ELLE_MISCELLANEOUS_MAID_HH

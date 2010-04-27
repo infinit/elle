@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/idiom/Open.hh
+// file          /home/mycure/infinit/libraries/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sun apr 18 14:38:56 2010]
+// updated       julien quintard   [mon apr 26 18:28:35 2010]
 //
 
 //
@@ -334,7 +334,8 @@
     namespace network							\
     {									\
       template <>							\
-      class Message< _tag_ >						\
+      class Message< _tag_ >:						\
+        public Meta							\
       {									\
       public:								\
         typedef Parameters< _parameters_ >	P;			\
@@ -356,7 +357,8 @@
     namespace network							\
     {									\
       template <>							\
-      class Message< _tag_ >						\
+      class Message< _tag_ >:						\
+        public Meta							\
       {									\
       public:								\
         typedef Parameters< _parameters_ >	P;			\

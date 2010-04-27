@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Core.hxx
+// file          /home/mycure/infinit/libraries/elle/core/Type.hxx
 //
 // created       julien quintard   [fri jan 30 16:29:55 2009]
-// updated       julien quintard   [wed mar 10 20:39:01 2010]
+// updated       julien quintard   [mon apr 26 15:55:20 2010]
 //
 
-#ifndef ELLE_CORE_CORE_HXX
-#define ELLE_CORE_CORE_HXX
+#ifndef ELLE_CORE_TYPE_HXX
+#define ELLE_CORE_TYPE_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -53,7 +53,7 @@ namespace elle
     /// this template-generated links a type to its limits, therefore
     /// enables code to access limits from the type.
     ///
-#define CoreDeclare(_type_, _minimum_, _maximum_)			\
+#define TypeDeclare(_type_, _minimum_, _maximum_)			\
   template <>								\
   class Type<_type_>:							\
     public Limits<_type_, _minimum_, _maximum_>	\
@@ -62,19 +62,19 @@ namespace elle
 
     ///
     /// these macro-function calls define the limits of the following basic
-    /// core: boolean, character, integer, natural, real.
+    /// type: boolean, character, integer, natural, real.
     ///
-    CoreDeclare(Null, Nil, Nil);
-    CoreDeclare(Boolean, false, true);
-    CoreDeclare(Character, 0, CHAR_MAX);
-    CoreDeclare(Integer8, CHAR_MIN, CHAR_MAX);
-    CoreDeclare(Integer16, SHRT_MIN, SHRT_MAX);
-    CoreDeclare(Integer32, INT_MIN, INT_MAX);
-    CoreDeclare(Integer64, LLONG_MIN, LLONG_MAX);
-    CoreDeclare(Natural8, 0, UCHAR_MAX);
-    CoreDeclare(Natural16, 0, USHRT_MAX);
-    CoreDeclare(Natural32, 0, UINT_MAX);
-    CoreDeclare(Natural64, 0, ULLONG_MAX);
+    TypeDeclare(Null, Nil, Nil);
+    TypeDeclare(Boolean, false, true);
+    TypeDeclare(Character, 0, CHAR_MAX);
+    TypeDeclare(Integer8, CHAR_MIN, CHAR_MAX);
+    TypeDeclare(Integer16, SHRT_MIN, SHRT_MAX);
+    TypeDeclare(Integer32, INT_MIN, INT_MAX);
+    TypeDeclare(Integer64, LLONG_MIN, LLONG_MAX);
+    TypeDeclare(Natural8, 0, UCHAR_MAX);
+    TypeDeclare(Natural16, 0, USHRT_MAX);
+    TypeDeclare(Natural32, 0, UINT_MAX);
+    TypeDeclare(Natural64, 0, ULLONG_MAX);
 
 //
 // ---------- variable --------------------------------------------------------
@@ -87,7 +87,7 @@ namespace elle
     template <typename T>
     T			Variable::Minimum(const T&)
     {
-      return Type<T>::Minimum;
+      return (Type<T>::Minimum);
     }
 
     ///
@@ -97,7 +97,7 @@ namespace elle
     template <typename T>
     T			Variable::Maximum(const T&)
     {
-      return Type<T>::Maximum;
+      return (Type<T>::Maximum);
     }
 
   }

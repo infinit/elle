@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Slot.hxx
+// file          /home/mycure/infinit/libraries/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [thu mar 25 22:55:29 2010]
+// updated       julien quintard   [mon apr 26 01:10:28 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -36,31 +36,47 @@ namespace elle
       Packet		packet;
       Header		header;
       Data		data;
+      Natural64		offset;
+      Natural64		point;
 
       enter();
 
-      // create the data.
+      // create an data for the inputs.
       if (data.Create() == StatusError)
 	escape("unable to create the data");
 
-      // serialize the inputs
+      // serialize the inputs.
       if (inputs.Serialize(data) == StatusError)
 	escape("unable to serialize the inputs");
-
-      // create the header.
-      if (header.Create(event, inputs.tag, data.size) == StatusError)
-	escape("unable to create the header");
 
       // prepare the packet.
       if (packet.Create() == StatusError)
 	escape("unable to create the packet");
 
-      // serialize the message i.e the header followed by the parameters.
-      if (packet.Serialize(header, data) == StatusError)
-	escape("unable to serialize the message");
+      // retrieve the offset---i.e size attribute---of the packet at this
+      // time so that it can be used later to update parts of the archive,
+      // especially the header.
+      offset = packet.size;
 
-      //printf("[XXX] Slot::Send(tag[%u] identifier[%qu])\n",
-      //header.tag, header.event.identifier);
+      // serialize the the header though, at this point, it has not
+      // been created.
+      if (packet.Serialize(header) == StatusError)
+	escape("unable to serialize the header");
+
+      // save the offset just following the header's serialization.
+      point = packet.size;
+
+      // serialize the the data.
+      if (packet.Serialize(data) == StatusError)
+	escape("unable to serialize the data");
+
+      // create the header now that we know that final archive's size.
+      if (header.Create(event, inputs.tag, packet.size - point) == StatusError)
+	escape("unable to create the header");
+
+      // update the header.
+      if (packet.Update(offset, header) == StatusError)
+	escape("unable to update the header");
 
       // push the datagram into the socket.
       if (this->socket->writeDatagram((char*)packet.contents,

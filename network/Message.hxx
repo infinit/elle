@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Message.hxx
+// file          /home/mycure/infinit/libraries/elle/network/Message.hxx
 //
 // created       julien quintard   [thu mar  4 14:53:29 2010]
-// updated       julien quintard   [wed mar 31 14:52:54 2010]
+// updated       julien quintard   [mon apr 26 18:27:56 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HXX
@@ -31,7 +31,8 @@ namespace elle
     /// the following makes this case impossible to reach.
     ///
     template <>
-    class Message<TagNone>
+    class Message<TagNone>:
+      public Meta
     {
     };
 

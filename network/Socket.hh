@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Socket.hh
+// file          /home/mycure/infinit/libraries/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [wed mar 31 13:57:28 2010]
+// updated       julien quintard   [mon apr 26 18:31:42 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -56,6 +56,7 @@ namespace elle
     /// locally to a bridge.
     ///
     class Socket:
+      public Meta,
       public Dumpable
     {
     public:

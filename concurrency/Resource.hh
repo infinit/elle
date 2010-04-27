@@ -5,17 +5,25 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Resource.hh
+// file          /home/mycure/infinit/libraries/elle/concurrency/Resource.hh
 //
 // created       julien quintard   [sun mar 28 00:28:32 2010]
-// updated       julien quintard   [sun mar 28 03:15:57 2010]
+// updated       julien quintard   [mon apr 26 19:04:20 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_RESOURCE_HH
 #define ELLE_CONCURRENCY_RESOURCE_HH
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/core/Meta.hh>
+
 namespace elle
 {
+  using namespace core;
+
   namespace concurrency
   {
 
@@ -42,7 +50,8 @@ namespace elle
     /// simply because given an address space, every object has a unique
     /// memory address.
     ///
-    class Resource
+    class Resource:
+      public Meta
     {
     };
 

@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Lane.hh
+// file          /home/mycure/infinit/libraries/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [thu apr  8 14:57:54 2010]
+// updated       julien quintard   [mon apr 26 19:08:53 2010]
 //
 
 ///
@@ -71,6 +71,8 @@ namespace elle
     ///
     class LanePorter:
       ::QObject,
+
+      public Meta,
       public Dumpable
     {
       Q_OBJECT;

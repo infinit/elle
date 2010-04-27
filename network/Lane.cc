@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Lane.cc
+// file          /home/mycure/infinit/libraries/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [tue apr  6 18:54:24 2010]
+// updated       julien quintard   [tue apr 27 17:10:34 2010]
 //
 
 //
@@ -100,6 +100,8 @@ namespace elle
     {
       enter();
 
+      // nothing to do.
+
       leave();
     }
 
@@ -108,9 +110,20 @@ namespace elle
     ///
     Status		Lane::Clean()
     {
+      Lane::Scoutor	scoutor;
+
       enter();
 
-      /// XXX \todo remove all the porters
+      // go through the porters.
+      for (scoutor = Lane::Porters.begin();
+	   scoutor != Lane::Porters.end();
+	   scoutor++)
+	{
+	  LanePorter*	porter = *scoutor;
+
+	  // delete the porter.
+	  delete porter;
+	}
 
       leave();
     }

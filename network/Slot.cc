@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/libraries/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [thu apr 22 14:49:23 2010]
+// updated       julien quintard   [mon apr 26 01:09:33 2010]
 //
 
 //
@@ -52,7 +52,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method creates a slot and connects the default signals.
     ///
     Status		Slot::Create()
     {
@@ -84,7 +84,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method creates a slot with a specific port.
     ///
     Status		Slot::Create(const Port			port)
     {
@@ -250,7 +250,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method dumps the slot's state.
     ///
     Status		Slot::Dump(const Natural32		margin) const
     {

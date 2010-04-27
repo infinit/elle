@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Network.cc
+// file          /home/mycure/infinit/libraries/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [wed apr 14 16:52:02 2010]
+// updated       julien quintard   [tue apr 27 17:07:19 2010]
 //
 
 //
@@ -65,6 +65,8 @@ namespace elle
     ///
     Status		Network::Clean()
     {
+      Network::Scoutor	scoutor;
+
       enter();
 
       // clean the session.
@@ -77,7 +79,16 @@ namespace elle
 
       // XXX bridge
 
-      /// XXX \todo clean the callbacks and receivers.
+      // go through the callbacks.
+      for (scoutor = Network::Callbacks.begin();
+	   scoutor != Network::Callbacks.end();
+	   scoutor++)
+	{
+	  Network::Functionoid*		functionoid = scoutor->second;
+
+	  // delete the functionoid.
+	  delete functionoid;
+	}
 
       leave();
     }

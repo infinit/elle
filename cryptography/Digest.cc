@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/libraries/elle/cryptography/Digest.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu apr 22 23:41:19 2010]
+// updated       julien quintard   [sun apr 25 19:03:49 2010]
 //
 
 //
