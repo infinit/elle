@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu apr 22 23:48:56 2010]
+// updated       julien quintard   [tue apr 27 17:27:23 2010]
 //
 
 //
@@ -48,7 +48,7 @@ namespace agent
   ///
   /// the door to Etoile.
   ///
-  Door				Agent::Channel;
+  Door*				Agent::Channel = NULL;
 
   ///
   /// the phrase used to connect applications to Etoile.
@@ -185,7 +185,9 @@ namespace agent
   {
     enter();
 
-    // nothing to do.
+    // delete the channel, if present.
+    if (Agent::Channel != NULL)
+      delete Agent::Channel;
 
     leave();
   }
@@ -203,16 +205,19 @@ namespace agent
     {
       Callback<const String>	error(&Agent::Error);
 
+      // allocate a door.
+      Agent::Channel = new Door;
+
       // create the door.
-      if (Agent::Channel.Create() == StatusError)
+      if (Agent::Channel->Create() == StatusError)
 	escape("unable to create the door");
 
       // monitor the socket.
-      if (Agent::Channel.Monitor(error) == StatusError)
+      if (Agent::Channel->Monitor(error) == StatusError)
 	escape("unable to create the door");
 
       // connect the door.
-      if (Agent::Channel.Connect(Agent::Line) == StatusError)
+      if (Agent::Channel->Connect(Agent::Line) == StatusError)
 	escape("unable to connect to Etoile");
     }
 
@@ -225,7 +230,7 @@ namespace agent
 
       // identify to etoile by passing the user's public key for challenging
       // along with the phrase.
-      if (Agent::Channel.Call(
+      if (Agent::Channel->Call(
 	    Inputs<etoile::TagWallIdentify>(Agent::Pair.K),
 	    Outputs<etoile::TagWallChallenge>(code)) == StatusError)
 	escape("unable to identify to etoile");
@@ -239,7 +244,7 @@ namespace agent
 	escape("unable to hash the phrase");
 
       // authenticate by sending the hash of the phrase.
-      if (Agent::Channel.Call(
+      if (Agent::Channel->Call(
 	    Inputs<etoile::TagWallAuthenticate>(digest),
 	    Outputs<etoile::TagOk>()) == StatusError)
 	escape("unable to authenticate to etoile");
@@ -325,7 +330,7 @@ namespace agent
     if (Agent::Authenticate() == StatusError)
       {
 	// exit the program.
-	Program::Exit(StatusOk);
+	Program::Exit();
 
 	escape("unable to authenticate to etoile");
       }
@@ -348,7 +353,7 @@ namespace agent
       escape("unable to perform the decryption");
 
     // reply to the caller.
-    if (Agent::Channel.Reply(Inputs<TagDecrypted>(clear)) == StatusError)
+    if (Agent::Channel->Reply(Inputs<TagDecrypted>(clear)) == StatusError)
       escape("unable to reply to the caller");
 
     leave();
@@ -368,7 +373,7 @@ namespace agent
       escape("unable to perform the signature");
 
     // reply to the caller.
-    if (Agent::Channel.Reply(Inputs<TagSigned>(signature)) == StatusError)
+    if (Agent::Channel->Reply(Inputs<TagSigned>(signature)) == StatusError)
       escape("unable to reply to the caller");
 
     leave();
@@ -388,7 +393,7 @@ namespace agent
     show();
 
     // quit the program.
-    Program::Exit(StatusOk);
+    Program::Exit();
 
     leave();
   }
@@ -407,7 +412,7 @@ namespace agent
     show();
 
     // quit the program.
-    Program::Exit(StatusOk);
+    Program::Exit();
 
     leave();
   }
