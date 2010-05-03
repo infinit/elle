@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [tue apr 27 18:10:20 2010]
+// updated       julien quintard   [wed apr 28 16:40:33 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -51,10 +51,9 @@ namespace pig
     //
     // constants
     //
-    static const String			Path;
     static const String			Line;
 
-    static const etoile::kernel::Size	Frame;
+    static const etoile::kernel::Size	Range;
 
     //
     // callbacks
@@ -177,7 +176,8 @@ namespace pig
     }
 
     ///
-    /// XXX
+    /// this method discard modifications applied onto the given identified
+    /// context.
     ///
     template <typename T>
     static Void		Release(T&		identifier)
@@ -187,7 +187,7 @@ namespace pig
     }
 
     ///
-    /// XXX
+    /// this method releases a set of contexts.
     ///
     template <typename T, typename... TT>
     static Void		Release(T&		identifier,

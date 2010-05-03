@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [tue apr 27 21:06:28 2010]
+// updated       julien quintard   [fri apr 30 12:16:05 2010]
 //
 
 //
@@ -33,13 +33,6 @@ namespace pig
 //
 // ---------- definitions -----------------------------------------------------
 //
-
-  ///
-  /// this string contains the path to the user infinit configuration
-  /// directory.
-  ///
-  const String				PIG::Path =
-    System::Path::Home + "/.infinit";
 
   ///
   /// this string represents the door's name to Etoile.
@@ -70,7 +63,7 @@ namespace pig
   ///
   /// this defines the number of directories entries fetched from Etoile.
   ///
-  const etoile::kernel::Size		PIG::Frame = 32;
+  const etoile::kernel::Size		PIG::Range = 32;
 
   ///
   /// this variable contains the UID of the 'somebody' user, user which
@@ -409,7 +402,7 @@ namespace pig
 	if (PIG::Channel.Call(
 	      Inputs<TagDirectoryConsult>(*identifier,
 					  (etoile::kernel::Offset)offset,
-					  PIG::Frame),
+					  PIG::Range),
 	      Outputs<TagDirectoryRange>(range)) == StatusError)
 	  error(EINTR);
 
@@ -431,7 +424,7 @@ namespace pig
 	    offset++;
 	  }
 
-	if (range.container.size() < PIG::Frame)
+	if (range.container.size() < PIG::Range)
 	  break;
       }
 
@@ -1653,6 +1646,17 @@ namespace pig
     return (0);
   }
 
+  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  int			Flush(const char*			path,
+			      struct fuse_file_info*		info)
+  {
+    printf("[XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, info);
+
+    return (EINTR);
+  }
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -1664,17 +1668,26 @@ namespace pig
   {
     enter();
 
-    // initialize the Elle library.
+    //
+    // initialize the Elle library and Infinit.
+    //
     {
+      // initialize Elle.
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the Elle library");
+
+      // initialize Infinit.
+      if (infinit::Infinit::Initialize() == StatusError)
+	escape("unable to initialize Infinit");
     }
 
     //
     // read the public key from the file.
     //
     {
-      String		path = PIG::Path + "/public.b64";
+      String		path =
+	infinit::Infinit::Path::Home + System::Path::Separator +
+	"identity.b64";
       Region		region;
       struct ::stat	stat;
       Integer32		fd;
@@ -1715,7 +1728,9 @@ namespace pig
     // read the phrase from the file.
     //
     {
-      String		path = PIG::Path + "/phrase.b64";
+      String		path =
+	infinit::Infinit::Path::Home + System::Path::Separator +
+	"phrase.b64";
       Region		region;
       struct ::stat	stat;
       Integer32		fd;
@@ -1804,8 +1819,12 @@ namespace pig
     // user/group identifiers into local identifiers.
     //
     {
-      String		users = PIG::Path + "/access/users.map";
-      String		groups = PIG::Path + "/access/groups.map";
+      String		users =
+	infinit::Infinit::Path::Access + System::Path::Separator +
+	"users.map";
+      String		groups =
+	infinit::Infinit::Path::Access + System::Path::Separator +
+	"groups.map";
 
       // load the users map.
       if (map::Map<PublicKey>::Load(users, PIG::Maps::Users) == StatusError)
@@ -1860,6 +1879,9 @@ namespace pig
       // operations.flush: not supported
       operations.fsync = PIG::Fsync;
       operations.fsyncdir = PIG::Fsyncdir;
+
+      // XXX
+      operations.flush = Flush;
     }
 
     leave();
@@ -1875,6 +1897,10 @@ namespace pig
     // delete the subject.
     if (PIG::Subject != NULL)
       delete PIG::Subject;
+
+    // clean Infinit.
+    if (infinit::Infinit::Clean() == StatusError)
+      escape("unable to clean Infinit");
 
     // clean the Elle library.
     if (Elle::Clean() == StatusError)

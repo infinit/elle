@@ -6,6 +6,6 @@ ADD_EXECUTABLE(PIG
   PIG.cc
 )
 
-TARGET_LINK_LIBRARIES(PIG elle etoile pthread rt fuse ssl crypto
+TARGET_LINK_LIBRARIES(PIG elle infinit etoile pthread rt fuse ssl crypto
 		          ${QT_QTNETWORK_LIBRARIES}
 			  ${QT_QTCORE_LIBRARIES})
