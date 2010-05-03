@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Lane.hh
+// file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [mon apr 26 19:08:53 2010]
+// updated       julien quintard   [mon may  3 21:22:35 2010]
 //
 
 ///
@@ -29,9 +29,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/miscellaneous/Miscellaneous.hh>
-#include <elle/concurrency/Concurrency.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
+
+#include <elle/concurrency/Accord.hh>
+#include <elle/concurrency/Callback.hh>
 
 #include <elle/network/Door.hh>
 
@@ -43,7 +48,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
   using namespace concurrency;
 
   namespace network
@@ -54,7 +59,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// the Door class needs to be forward declared to prevent conflicts.
     ///
     class Door;
 
@@ -72,8 +77,7 @@ namespace elle
     class LanePorter:
       ::QObject,
 
-      public Meta,
-      public Dumpable
+      public Entity
     {
       Q_OBJECT;
 

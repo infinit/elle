@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Random.hh
 //
 // created       julien quintard   [thu jan 29 11:52:52 2009]
-// updated       julien quintard   [thu feb 12 17:10:49 2009]
+// updated       julien quintard   [sun may  2 21:55:14 2010]
 //
 
 #ifndef ELLE_TEST_ARCHIVE_RANDOM_HH
@@ -18,13 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
+#include <elle/Elle.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-
   namespace test
   {
 

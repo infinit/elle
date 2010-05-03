@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Network.hh
+// file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [tue apr 27 17:03:22 2010]
+// updated       julien quintard   [mon may  3 21:22:27 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -18,24 +18,16 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
+#include <elle/core/Natural.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
 
 #include <elle/archive/Archive.hh>
 
-#include <elle/miscellaneous/Status.hh>
-#include <elle/miscellaneous/Callback.hh>
-
-#include <elle/concurrency/Fiber.hh>
 #include <elle/concurrency/Accord.hh>
 
-#include <elle/network/Host.hh>
-#include <elle/network/Socket.hh>
 #include <elle/network/Tag.hh>
-#include <elle/network/Raw.hh>
-#include <elle/network/Packet.hh>
-#include <elle/network/Parameters.hh>
-#include <elle/network/Data.hh>
-#include <elle/network/Session.hh>
 #include <elle/network/Parcel.hh>
 #include <elle/network/Message.hh>
 
@@ -44,6 +36,7 @@
 namespace elle
 {
   using namespace core;
+  using namespace radix;
   using namespace archive;
   using namespace concurrency;
 
@@ -77,8 +70,7 @@ namespace elle
       /// network event.
       ///
       class Functionoid:
-	public Meta,
-	public Dumpable
+	public Entity
       {
       public:
 	//
@@ -145,15 +137,26 @@ namespace elle
 //
 
 #include <elle/network/Address.hh>
-#include <elle/network/Port.hh>
-#include <elle/network/Slot.hh>
-#include <elle/network/Channel.hh>
-#include <elle/network/Lane.hh>
-#include <elle/network/Door.hh>
-#include <elle/network/Parameters.hh>
 #include <elle/network/Arguments.hh>
+#include <elle/network/Bridge.hh>
+#include <elle/network/Data.hh>
+#include <elle/network/Door.hh>
+#include <elle/network/Gate.hh>
+#include <elle/network/Header.hh>
+#include <elle/network/Host.hh>
 #include <elle/network/Inputs.hh>
+#include <elle/network/Lane.hh>
+#include <elle/network/Message.hh>
 #include <elle/network/Outputs.hh>
+#include <elle/network/Packet.hh>
+#include <elle/network/Parameters.hh>
+#include <elle/network/Parcel.hh>
+#include <elle/network/Port.hh>
 #include <elle/network/Range.hh>
+#include <elle/network/Raw.hh>
+#include <elle/network/Session.hh>
+#include <elle/network/Slot.hh>
+#include <elle/network/Socket.hh>
+#include <elle/network/Tag.hh>
 
 #endif

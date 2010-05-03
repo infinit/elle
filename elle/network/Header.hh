@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Header.hh
+// file          /home/mycure/infinit/elle/network/Header.hh
 //
 // created       julien quintard   [mon feb 22 23:48:40 2010]
-// updated       julien quintard   [mon apr 26 18:23:15 2010]
+// updated       julien quintard   [mon may  3 22:34:08 2010]
 //
 
 #ifndef ELLE_NETWORK_HEADER_HH
@@ -18,8 +18,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
+
 #include <elle/archive/Archive.hh>
-#include <elle/concurrency/Concurrency.hh>
+
+#include <elle/concurrency/Event.hh>
 
 #include <elle/network/Tag.hh>
 
@@ -27,6 +34,8 @@
 
 namespace elle
 {
+  using namespace core;
+  using namespace radix;
   using namespace archive;
   using namespace concurrency;
 
@@ -41,8 +50,7 @@ namespace elle
     /// XXX
     ///
     class Header:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -66,9 +74,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, Header);
-      // XXX operator==
+      // object
+      declare(Header, _());
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

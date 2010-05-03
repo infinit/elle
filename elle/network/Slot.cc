@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Slot.cc
+// file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [mon apr 26 01:09:33 2010]
+// updated       julien quintard   [sun may  2 21:12:52 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/network/Slot.hh>
+#include <elle/network/Raw.hh>
+#include <elle/network/Inputs.hh>
+#include <elle/network/Network.hh>
 
 namespace elle
 {
@@ -152,8 +155,12 @@ namespace elle
 
 		true();
 	      }
+	    else
+	      {
+		// otherwise, there is no pending parcel at the moment.
 
-	    false();
+		false();
+	      }
 	  }
 
 	// retrieve the size of the pending packet.

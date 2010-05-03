@@ -5,14 +5,21 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/factory/Factory.hxx
+// file          /home/mycure/infinit/elle/factory/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [tue apr 27 13:33:52 2010]
+// updated       julien quintard   [sun may  2 18:22:30 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HXX
 #define ELLE_FACTORY_FACTORY_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -36,12 +43,12 @@ namespace elle
     /// this method allocates a new object of the type of the functionoid.
     ///
     template <typename T>
-    Status		Factory::Generator<T>::Allocate(Entity*& entity) const
+    Status		Factory::Generator<T>::Allocate(Meta*&	meta) const
     {
       enter();
 
       // allocate the object.
-      entity = new T;
+      meta = new T;
 
       leave();
     }
@@ -115,7 +122,7 @@ namespace elle
 	  }
 
 	// allocate an object of the type handled by the generator.
-	if (scoutor->second->Allocate((Entity*&)object) == StatusError)
+	if (scoutor->second->Allocate((Meta*&)object) == StatusError)
 	  {
 	    Factory::Control.Unlock();
 	    escape("unable to allocate the object");

@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/util/Settings.hh
+// file          /home/mycure/infinit/elle/util/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [mon apr 26 19:05:29 2010]
+// updated       julien quintard   [mon may  3 22:36:41 2010]
 //
 
 #ifndef ELLE_UTIL_SETTINGS_HH
@@ -19,11 +19,11 @@
 //
 
 #include <elle/core/String.hh>
-#include <elle/core/Meta.hh>
+#include <elle/core/Natural.hh>
 
-#include <elle/miscellaneous/Status.hh>
-
-#include <elle/io/Dumpable.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
+#include <elle/radix/Entity.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -33,8 +33,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
-  using namespace io;
+  using namespace radix;
 
   namespace util
   {
@@ -48,8 +47,7 @@ namespace elle
     /// configuration files.
     ///
     class Settings:
-      public Meta,
-      public Dumpable
+      public Object<FormatBase64, FormatCustom>
     {
     public:
       //
@@ -60,8 +58,7 @@ namespace elle
       /// this class represents an assignment.
       ///
       class Assignment:
-	public Meta,
-	public Dumpable
+	public Entity
       {
       public:
 	//
@@ -88,8 +85,7 @@ namespace elle
       /// this class represents a section.
       ///
       class Section:
-	public Meta,
-	public Dumpable
+	public Entity
       {
       public:
 	//
@@ -146,11 +142,6 @@ namespace elle
 			     String&,
 			     const String& = "\n\t ");
 
-      static Status	Load(const String&,
-			     Settings&);
-      static Status	Store(const Settings&,
-			      const String&);
-
       //
       // constructors & destructors
       //
@@ -178,8 +169,15 @@ namespace elle
       // interfaces
       //
 
+      // object
+      declare(Settings, _(FormatBase64, FormatCustom));
+
       // dumpable
       Status		Dump(const Natural32 = 0) const;
+
+      // fileable
+      Status		Load(const String&);
+      Status		Store(const String&) const;
 
       //
       // attributes
@@ -189,12 +187,5 @@ namespace elle
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
 
 #endif

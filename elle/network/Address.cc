@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [thu mar 25 17:42:14 2010]
+// updated       julien quintard   [mon may  3 22:50:49 2010]
 //
 
 //
@@ -16,6 +16,11 @@
 //
 
 #include <elle/network/Address.hh>
+
+#include <elle/core/String.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -62,7 +67,7 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -85,9 +90,9 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Address);
+    embed(Address, _(), _());
 
 //
 // ---------- archivable ------------------------------------------------------

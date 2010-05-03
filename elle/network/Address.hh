@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [wed apr  7 22:40:08 2010]
+// updated       julien quintard   [mon may  3 22:34:00 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -18,7 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Boolean.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
+
 #include <elle/archive/Archive.hh>
 
 #include <elle/network/Host.hh>
@@ -28,6 +33,10 @@
 
 namespace elle
 {
+  using namespace core;
+  using namespace radix;
+  using namespace archive;
+
   namespace network
   {
 
@@ -39,8 +48,7 @@ namespace elle
     /// this class represents an address i.e a host and port.
     ///
     class Address:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -63,8 +71,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, Address);
+      // object
+      declare(Address, _());
       Boolean		operator==(const Address&) const;
 
       // archivable

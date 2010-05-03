@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Slot.hh
+// file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [mon apr 26 18:31:31 2010]
+// updated       julien quintard   [mon may  3 21:22:53 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -18,19 +18,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/concurrency/Concurrency.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
+
+#include <elle/standalone/Region.hh>
+
+#include <elle/radix/Status.hh>
+
+#include <elle/concurrency/Event.hh>
 
 #include <elle/network/Socket.hh>
-#include <elle/network/Port.hh>
-#include <elle/network/Address.hh>
-#include <elle/network/Message.hh>
-#include <elle/network/Network.hh>
-#include <elle/network/Data.hh>
-#include <elle/network/Raw.hh>
-#include <elle/network/Packet.hh>
-
-#include <elle/Manifest.hh>
+#include <elle/network/Parcel.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -39,6 +37,11 @@
 
 namespace elle
 {
+  using namespace core;
+  using namespace standalone;
+  using namespace radix;
+  using namespace concurrency;
+
   namespace network
   {
 
@@ -118,4 +121,3 @@ namespace elle
 #include <elle/network/Slot.hxx>
 
 #endif
-

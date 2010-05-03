@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...ibraries/elle/concurrency/Environment.hh
+// file          /home/mycure/infinit/elle/concurrency/Environment.hh
 //
 // created       julien quintard   [thu apr  8 14:13:51 2010]
-// updated       julien quintard   [mon apr 26 19:07:54 2010]
+// updated       julien quintard   [mon may  3 21:12:28 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ENVIRONMENT_HH
@@ -18,13 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/core/Natural.hh>
 #include <elle/core/String.hh>
 #include <elle/core/Void.hh>
-#include <elle/core/Meta.hh>
 
-#include <elle/miscellaneous/Status.hh>
-
-#include <elle/io/Dumpable.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Meta.hh>
+#include <elle/radix/Entity.hh>
 
 #include <elle/idiom/Close.hh>
 # include <vector>
@@ -32,7 +32,8 @@
 
 namespace elle
 {
-  using namespace io;
+  using namespace core;
+  using namespace radix;
 
   namespace concurrency
   {
@@ -50,14 +51,13 @@ namespace elle
     /// are made.
     ///
     class Environment:
-      public Meta,
-      public Dumpable
+      public Entity
     {
     public:
       //
       // types
       //
-      typedef std::pair<String, Void*>		Value;
+      typedef std::pair<String, Meta*>		Value;
       typedef std::vector<Value>		Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon mar 29 10:43:04 2010]
+// updated       julien quintard   [mon may  3 21:26:48 2010]
 //
 
 //
@@ -314,7 +314,7 @@ namespace elle
 
 int			main()
 {
-  if (elle::benchmark::Main() == elle::miscellaneous::StatusError)
+  if (elle::benchmark::Main() == elle::radix::StatusError)
     {
       show();
 

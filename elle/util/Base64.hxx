@@ -5,21 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/util/Base64.hxx
+// file          /home/mycure/infinit/elle/util/Base64.hxx
 //
 // created       julien quintard   [sun apr 18 15:34:47 2010]
-// updated       julien quintard   [thu apr 22 14:51:46 2010]
+// updated       julien quintard   [sun may  2 21:16:02 2010]
 //
 
 #ifndef ELLE_UTIL_BASE64_HXX
 #define ELLE_UTIL_BASE64_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
-
   namespace util
   {
 

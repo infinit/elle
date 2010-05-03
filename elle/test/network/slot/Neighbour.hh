@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Neighbour.hh
 //
 // created       julien quintard   [wed mar 17 11:22:38 2010]
-// updated       julien quintard   [wed mar 17 17:25:56 2010]
+// updated       julien quintard   [sun may  2 22:58:28 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_NEIGHBOUR_HH
@@ -36,7 +36,7 @@ namespace elle
 //
 
     class Neighbour:
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //

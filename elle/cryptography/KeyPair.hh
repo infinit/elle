@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [sun apr 18 12:41:36 2010]
+// updated       julien quintard   [mon may  3 22:32:13 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
@@ -18,34 +18,22 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/io/IO.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Boolean.hh>
 
-#include <elle/core/Core.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
 
 #include <elle/archive/Archive.hh>
 
-#include <elle/miscellaneous/Status.hh>
-
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/PrivateKey.hh>
-#include <elle/cryptography/Plain.hh>
-#include <elle/cryptography/Code.hh>
-#include <elle/cryptography/Clear.hh>
-#include <elle/cryptography/Signature.hh>
-
-#include <elle/idiom/Close.hh>
-# include <openssl/engine.h>
-# include <openssl/err.h>
-# include <openssl/evp.h>
-# include <fcntl.h>
-#include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace io;
   using namespace core;
-  using namespace miscellaneous;
   using namespace archive;
+  using namespace io;
 
   namespace cryptography
   {
@@ -62,8 +50,7 @@ namespace elle
     /// noted with a lower-case 'k'.
     ///
     class KeyPair:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<FormatBase64, FormatCustom>
     {
     public:
       //
@@ -92,8 +79,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, KeyPair);
+      // object
+      declare(KeyPair, _(FormatBase64, FormatCustom));
       Boolean		operator==(const KeyPair&) const;
 
       // dumpable
@@ -102,6 +89,12 @@ namespace elle
       // archivable
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
+
+      // fileable
+      Status		Load(const String&,
+			     const String&);
+      Status		Store(const String&,
+			      const String&) const;
 
       //
       // attributes

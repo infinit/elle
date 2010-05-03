@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/test/archive/Test.cc
+// file          /home/mycure/infinit/elle/test/archive/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [tue apr 27 13:27:10 2010]
+// updated       julien quintard   [mon may  3 21:25:46 2010]
 //
 
 //
@@ -94,7 +94,7 @@ namespace elle
 
 int			main()
 {
-  if (elle::test::Main() == elle::miscellaneous::StatusError)
+  if (elle::test::Main() == elle::radix::StatusError)
     {
       show();
 

@@ -8,14 +8,8 @@
 // file          /home/mycure/infinit/elle/network/Channel.hxx
 //
 // created       julien quintard   [thu mar 18 21:23:33 2010]
-// updated       julien quintard   [fri mar 26 12:19:46 2010]
+// updated       julien quintard   [sun may  2 19:48:06 2010]
 //
-
-///
-/// XXX
-///
-#include <elle/network/Door.hh>
-#include <elle/network/Gate.hh>
 
 #ifndef ELLE_NETWORK_CHANNEL_HXX
 #define ELLE_NETWORK_CHANNEL_HXX
@@ -23,6 +17,12 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <elle/network/Door.hh>
+#include <elle/network/Gate.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -34,7 +34,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// these classes need to be forward declared.
     ///
     class Door;
     class Gate;

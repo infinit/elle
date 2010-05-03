@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archivable.hh
 //
 // created       julien quintard   [tue jan 27 01:08:40 2009]
-// updated       julien quintard   [sun apr 18 16:30:01 2010]
+// updated       julien quintard   [mon may  3 21:00:26 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVABLE_HH
@@ -18,7 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/Status.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
+
+#include <elle/radix/Status.hh>
 
 #include <elle/idiom/Close.hh>
 # include <ostream>
@@ -26,7 +29,8 @@
 
 namespace elle
 {
-  using namespace miscellaneous;
+  using namespace core;
+  using namespace radix;
 
   namespace archive
   {
@@ -36,7 +40,7 @@ namespace elle
 //
 
     ///
-    /// this forward declares the Archive type.
+    /// this forward declares the Archive class.
     ///
     class Archive;
 
@@ -56,13 +60,6 @@ namespace elle
       virtual Status	Serialize(Archive&) const;
       virtual Status	Extract(Archive&);
     };
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    std::ostream&	operator<<(std::ostream&,
-				   const Archivable&);
 
   }
 }

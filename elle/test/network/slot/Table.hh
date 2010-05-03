@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.hh
 //
 // created       julien quintard   [wed mar 17 13:07:53 2010]
-// updated       julien quintard   [wed mar 17 17:25:09 2010]
+// updated       julien quintard   [sun may  2 22:58:20 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_TABLE_HH
@@ -41,7 +41,7 @@ namespace elle
 //
 
     class Table:
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //

@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Parcel.hh
+// file          /home/mycure/infinit/elle/network/Parcel.hh
 //
 // created       julien quintard   [tue mar 16 12:04:48 2010]
-// updated       julien quintard   [mon apr 26 19:08:07 2010]
+// updated       julien quintard   [mon may  3 21:20:52 2010]
 //
 
 #ifndef ELLE_NETWORK_PARCEL_HH
@@ -18,14 +18,18 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
+#include <elle/core/Natural.hh>
 
-#include <elle/network/Session.hh>
-#include <elle/network/Header.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
+
 #include <elle/network/Data.hh>
 
 namespace elle
 {
+  using namespace core;
+  using namespace radix;
+
   namespace network
   {
 
@@ -34,9 +38,10 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// these classes need to be forward declared to avoid conflicts.
     ///
     class Session;
+    class Header;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -46,8 +51,7 @@ namespace elle
     /// this class is just a wrapper for packets freshly received.
     ///
     class Parcel:
-      public Meta,
-      public Dumpable
+      public Entity
     {
     public:
       //
@@ -76,5 +80,12 @@ namespace elle
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/network/Session.hh>
+#include <elle/network/Header.hh>
 
 #endif

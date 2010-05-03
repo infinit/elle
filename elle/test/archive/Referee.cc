@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Referee.cc
 //
 // created       julien quintard   [wed jan 28 12:32:31 2009]
-// updated       julien quintard   [wed mar  3 11:06:24 2010]
+// updated       julien quintard   [sun may  2 21:55:02 2010]
 //
 
 //
@@ -19,10 +19,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
-
   namespace test
   {
 

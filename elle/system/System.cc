@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/system/System.cc
 //
 // created       julien quintard   [mon jan 26 20:23:52 2009]
-// updated       julien quintard   [wed mar 24 22:14:56 2010]
+// updated       julien quintard   [sun may  2 12:31:33 2010]
 //
 
 //
@@ -17,12 +17,13 @@
 
 #include <elle/system/System.hh>
 
-///
-/// these includes are placed here in order to prevent
-/// pre-processing conflicts.
-///
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Close.hh>
+# include <QSysInfo>
+# include <QDir>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -41,14 +42,10 @@ namespace elle
     ///
     /// these variables defines some path-related constants.
     ///
-    Character			System::Path::Separator =
-      ::QDir::separator().toAscii();
-    String			System::Path::Root =
-      ::QDir::root().canonicalPath().toStdString();
-    String			System::Path::Current =
-      ::QDir::current().canonicalPath().toStdString();
-    String			System::Path::Home =
-      ::QDir::home().canonicalPath().toStdString();
+    Character			System::Path::Separator;
+    String			System::Path::Root;
+    String			System::Path::Current;
+    String			System::Path::Home;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -60,6 +57,22 @@ namespace elle
     Status		System::Initialize()
     {
       enter();
+
+      //
+      // set the static definitions.
+      //
+
+      System::Path::Separator =
+	::QDir::separator().toAscii();
+
+      System::Path::Root =
+	::QDir::root().canonicalPath().toStdString();
+
+      System::Path::Current =
+	::QDir::current().canonicalPath().toStdString();
+
+      System::Path::Home =
+	::QDir::home().canonicalPath().toStdString();
 
       // define the endianness.
       switch (::QSysInfo::ByteOrder)

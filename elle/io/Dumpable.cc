@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.cc
 //
 // created       julien quintard   [sat mar 20 00:43:22 2010]
-// updated       julien quintard   [thu mar 25 17:36:47 2010]
+// updated       julien quintard   [sun may  2 11:51:13 2010]
 //
 
 //
@@ -17,17 +17,15 @@
 
 #include <elle/io/Dumpable.hh>
 
-///
-/// these includes are placed here in order to prevent pre-processing
-/// conflicts.
-///
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
+  using namespace standalone;
+
   namespace io
   {
 

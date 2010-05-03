@@ -5,20 +5,25 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...ibraries/elle/cryptography/SecretKey.hxx
+// file          /home/mycure/infinit/elle/cryptography/SecretKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu apr 22 14:32:47 2010]
+// updated       julien quintard   [sun may  2 18:47:01 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
 #define ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
+  using namespace standalone;
 
   namespace cryptography
   {

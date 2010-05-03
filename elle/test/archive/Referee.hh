@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Referee.hh
 //
 // created       julien quintard   [tue jan 27 16:56:46 2009]
-// updated       julien quintard   [wed mar  3 11:05:44 2010]
+// updated       julien quintard   [sun may  2 21:54:58 2010]
 //
 
 #ifndef ELLE_TEST_ARCHIVE_REFEREE_HH
@@ -18,16 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/archive/Archive.hh>
+#include <elle/Elle.hh>
 
 #include <list>
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
-
   namespace test
   {
 

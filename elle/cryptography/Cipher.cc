@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/cryptography/Cipher.cc
+// file          /home/mycure/infinit/elle/cryptography/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu apr 22 23:42:05 2010]
+// updated       julien quintard   [mon may  3 22:50:06 2010]
 //
 
 //
@@ -17,10 +17,13 @@
 
 #include <elle/cryptography/Cipher.hh>
 
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace standalone;
   using namespace archive;
 
   namespace cryptography
@@ -36,7 +39,7 @@ namespace elle
     const Cipher		Cipher::Null;
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -58,9 +61,9 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Cipher);
+    embed(Cipher, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------

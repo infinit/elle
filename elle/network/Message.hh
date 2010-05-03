@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Message.hh
+// file          /home/mycure/infinit/elle/network/Message.hh
 //
 // created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [mon apr 26 19:08:22 2010]
+// updated       julien quintard   [sun may  2 19:59:59 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH
@@ -18,21 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
-
-#include <elle/io/IO.hh>
-
-#include <elle/archive/Archive.hh>
-
 #include <elle/network/Tag.hh>
-#include <elle/network/Header.hh>
-#include <elle/network/Parameters.hh>
 
 namespace elle
 {
-  using namespace io;
-  using namespace archive;
-
   namespace network
   {
 
@@ -55,7 +44,7 @@ namespace elle
     ///
     template <const Tag G>
     class Message:
-      public Meta
+      public Entity
     {
       // nothing
     };

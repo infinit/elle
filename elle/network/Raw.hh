@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Raw.hh
 //
 // created       julien quintard   [mon feb 22 11:21:39 2010]
-// updated       julien quintard   [thu apr  8 14:57:26 2010]
+// updated       julien quintard   [sun may  2 20:33:48 2010]
 //
 
 #ifndef ELLE_NETWORK_RAW_HH
@@ -18,10 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/Region.hh>
+#include <elle/standalone/Region.hh>
 
 namespace elle
 {
+  using namespace standalone;
+
   namespace network
   {
 

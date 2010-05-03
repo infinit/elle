@@ -8,10 +8,17 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [wed mar 31 21:18:42 2010]
+// updated       julien quintard   [mon may  3 22:50:39 2010]
+//
+
+//
+// ---------- includes --------------------------------------------------------
 //
 
 #include <elle/network/Host.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -90,7 +97,7 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -113,9 +120,9 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Host);
+    embed(Host, _(), _());
 
 //
 // ---------- archivable ------------------------------------------------------

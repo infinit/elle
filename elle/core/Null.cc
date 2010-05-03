@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.cc
 //
 // created       julien quintard   [wed feb 18 15:40:40 2009]
-// updated       julien quintard   [wed apr  7 22:42:17 2010]
+// updated       julien quintard   [fri apr 30 17:10:02 2010]
 //
 
 //
@@ -52,4 +52,5 @@ namespace std
 
     return (stream);
   }
+
 }

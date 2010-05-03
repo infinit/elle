@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Natural.hh
 //
 // created       julien quintard   [thu nov 29 20:13:16 2007]
-// updated       julien quintard   [wed mar 10 20:40:19 2010]
+// updated       julien quintard   [fri apr 30 17:10:22 2010]
 //
 
 #ifndef ELLE_CORE_NATURAL_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/idiom/Close.hh>
+# include <ostream>
 # include <inttypes.h>
 #include <elle/idiom/Open.hh>
 
@@ -40,6 +41,18 @@ namespace elle
     typedef uint64_t	Natural64;
 
   }
+}
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+namespace std
+{
+
+  std::ostream&		operator<<(std::ostream&,
+				   const elle::core::Natural8&);
+
 }
 
 #endif

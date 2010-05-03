@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/util/Base64.cc
+// file          /home/mycure/infinit/elle/util/Base64.cc
 //
 // created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [thu apr 22 14:15:20 2010]
+// updated       julien quintard   [sun may  2 21:18:22 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/util/Base64.hh>
+
+#include <elle/core/Character.hh>
+#include <elle/core/Byte.hh>
 
 namespace elle
 {
@@ -68,8 +71,8 @@ namespace elle
     Status		Base64::Encode(const Region&		region,
 				       String&			string)
     {
-      Character		array3[3];
-      Character		array4[4];
+      Byte		in[3];
+      Character		out[4];
       Natural32		i;
       Natural32		j;
       Natural32		k;
@@ -78,19 +81,19 @@ namespace elle
 
       for (i = 0, j = 0; i < region.size; i++)
 	{
-	  array3[j++] = (Character)region.contents[i];
+	  in[j++] = (Character)region.contents[i];
 
 	  if (j == 3)
 	    {
-	      array4[0] = (array3[0] & 0xfc) >> 2;
-	      array4[1] = ((array3[0] & 0x03) << 4) +
-		((array3[1] & 0xf0) >> 4);
-	      array4[2] = ((array3[1] & 0x0f) << 2) +
-		((array3[2] & 0xc0) >> 6);
-	      array4[3] = array3[2] & 0x3f;
+	      out[0] = (in[0] & 0xfc) >> 2;
+	      out[1] = ((in[0] & 0x03) << 4) |
+		((in[1] & 0xf0) >> 4);
+	      out[2] = ((in[1] & 0x0f) << 2) |
+		((in[2] & 0xc0) >> 6);
+	      out[3] = in[2] & 0x3f;
 
 	      for (j = 0; j < 4; j++)
-		string += Base64::Alphabet[array4[j]];
+		string += Base64::Alphabet[out[j]];
 
 	      j = 0;
 	    }
@@ -99,17 +102,17 @@ namespace elle
       if (j != 0)
 	{
 	  for (k = j; k < 3; k++)
-	    array3[k] = '\0';
+	    in[k] = '\0';
 
-	  array4[0] = (array3[0] & 0xfc) >> 2;
-	  array4[1] = ((array3[0] & 0x03) << 4) +
-	    ((array3[1] & 0xf0) >> 4);
-	  array4[2] = ((array3[1] & 0x0f) << 2) +
-	    ((array3[2] & 0xc0) >> 6);
-	  array4[3] = array3[2] & 0x3f;
+	  out[0] = (in[0] & 0xfc) >> 2;
+	  out[1] = ((in[0] & 0x03) << 4) |
+	    ((in[1] & 0xf0) >> 4);
+	  out[2] = ((in[1] & 0x0f) << 2) |
+	    ((in[2] & 0xc0) >> 6);
+	  out[3] = in[2] & 0x3f;
 
 	  for (k = 0; k < (j + 1); k++)
-	    string += Base64::Alphabet[array4[k]];
+	    string += Base64::Alphabet[out[k]];
 
 	  for (; j < 3; j++)
 	    string += '=';
@@ -124,8 +127,8 @@ namespace elle
     Status		Base64::Decode(const String&		string,
 				       Region&			region)
     {
-      Character		array3[3];
-      Character		array4[4];
+      Byte		out[3];
+      Character		in[4];
       Natural32		i;
       Natural32		j;
       Natural32		k;
@@ -140,22 +143,22 @@ namespace elle
 
       for (i = 0, j = 0; (i < string.length()) && (string[i] != '='); i++)
 	{
-	  array4[j++] = string[i];
+	  in[j++] = string[i];
 
 	  if (j == 4)
 	    {
 	      for (j = 0; j < 4; j++)
-		array4[j] = Base64::Alphabet.find(array4[j]);
+		in[j] = Base64::Alphabet.find(in[j]);
 
-	      array3[0] = (array4[0] << 2) +
-		((array4[1] & 0x30) >> 4);
-	      array3[1] = ((array4[1] & 0xf) << 4) +
-		((array4[2] & 0x3c) >> 2);
-	      array3[2] = ((array4[2] & 0x3) << 6) +
-		array4[3];
+	      out[0] = (in[0] << 2) |
+		((in[1] & 0x30) >> 4);
+	      out[1] = ((in[1] & 0xf) << 4) |
+		((in[2] & 0x3c) >> 2);
+	      out[2] = ((in[2] & 0x3) << 6) |
+		in[3];
 
 	      for (j = 0; j < 3; j++)
-		region.contents[region.size++] = (Byte)array3[j];
+		region.contents[region.size++] = (Byte)out[j];
 
 	      j = 0;
 	    }
@@ -164,19 +167,20 @@ namespace elle
       if (j != 0)
 	{
 	  for (k = j; k < 4; k++)
-	    array4[k] = '\0';
+	    in[k] = '\0';
 
 	  for (k = 0; k < 4; k++)
-	    array4[k] = Base64::Alphabet.find(array4[k]);
+	    in[k] = Base64::Alphabet.find(in[k]);
 
-	  array3[0] = (array4[0] << 2) +
-	    ((array4[1] & 0x30) >> 4);
-	  array3[1] = ((array4[1] & 0xf) << 4) +
-	    ((array4[2] & 0x3c) >> 2);
-	  array3[2] = ((array4[2] & 0x3) << 6) + array4[3];
+	  out[0] = (in[0] << 2) |
+	    ((in[1] & 0x30) >> 4);
+	  out[1] = ((in[1] & 0xf) << 4) |
+	    ((in[2] & 0x3c) >> 2);
+	  out[2] = ((in[2] & 0x3) << 6) |
+	    in[3];
 
 	  for (k = 0; k < (j - 1); k++)
-	    region.contents[region.size++] = (Byte)array3[k];
+	    region.contents[region.size++] = (Byte)out[k];
 	}
 
       leave();

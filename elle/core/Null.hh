@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.hh
 //
 // created       julien quintard   [wed feb 18 15:20:44 2009]
-// updated       julien quintard   [wed apr  7 22:42:23 2010]
+// updated       julien quintard   [fri apr 30 17:10:29 2010]
 //
 
 #ifndef ELLE_CORE_NULL_HH
@@ -54,8 +54,10 @@ namespace elle
 
 namespace std
 {
-  std::ostream&		operator<<(std::ostream&,
+
+    std::ostream&	operator<<(std::ostream&,
 				   const elle::core::Null&);
+
 }
 
 #endif

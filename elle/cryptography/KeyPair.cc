@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/cryptography/KeyPair.cc
+// file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [thu apr 22 23:40:54 2010]
+// updated       julien quintard   [mon may  3 22:43:41 2010]
 //
 
 //
@@ -16,13 +16,22 @@
 //
 
 #include <elle/cryptography/KeyPair.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/SecretKey.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Close.hh>
+# include <openssl/engine.h>
+# include <openssl/err.h>
+# include <openssl/evp.h>
+# include <fcntl.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
-  using namespace io;
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
+  using namespace standalone;
 
   namespace cryptography
   {
@@ -133,7 +142,7 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -157,7 +166,7 @@ namespace elle
     ///
     /// this macro-function call generates the entity.
     ///
-    embed(Entity, KeyPair);
+    embed(KeyPair, _(FormatBase64, FormatCustom), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -173,12 +182,6 @@ namespace elle
       enter();
 
       std::cout << alignment << "[KeyPair] " << *this << std::endl;
-
-      if (this->K.Dump(margin + 2) == StatusError)
-	escape("unable to dump the public key");
-
-      if (this->k.Dump(margin + 2) == StatusError)
-	escape("unable to dump the public key");
 
       leave();
     }
@@ -211,6 +214,113 @@ namespace elle
       // extract the internal keys.
       if (archive.Extract(this->K, this->k) == StatusError)
 	escape("unable to extract the internal keys");
+
+      leave();
+    }
+
+//
+// ---------- fileable --------------------------------------------------------
+//
+
+    ///
+    /// this method loads a key pair from a file.
+    ///
+    Status		KeyPair::Load(const String&		path,
+				      const String&		pass)
+    {
+      Region		region;
+      struct ::stat	status;
+      Cipher		cipher;
+      SecretKey		key;
+      int		fd;
+
+      enter();
+
+      // retrieve information on the file, if it exsits.
+      if (::stat(path.c_str(), &status) == -1)
+	escape(::strerror(errno));
+
+      // create a secret key with the given pass.
+      if (key.Create(pass) == StatusError)
+	escape("unable to create the secret key");
+
+      // prepare the region.
+      if (region.Prepare(status.st_size) == StatusError)
+	escape("unable to prepare the region");
+
+      // set the correct size.
+      region.size = status.st_size;
+
+      // open the file.
+      if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
+	escape(::strerror(errno));
+
+      // read the file's content.
+      if (::read(fd, region.contents, region.size) == -1)
+	escape(::strerror(errno));
+
+      // close the file.
+      ::close(fd);
+
+      // decode and extract the ciher.
+      if (Base64::Decode(String((char*)region.contents, region.size),
+			 cipher) == StatusError)
+	escape("unable to decode the cipher");
+
+      // decrypt the cipher file content with the secret key.
+      if (key.Decrypt(cipher, *this) == StatusError)
+	escape("unable to decrypt the keypair");
+
+      leave();
+    }
+
+    ///
+    /// this method stores a key pair in a file, taking care to encrypt
+    /// it with the given pass.
+    ///
+    Status		KeyPair::Store(const String&		path,
+				       const String&		pass) const
+    {
+      struct ::stat	status;
+      Cipher		cipher;
+      String		string;
+      SecretKey		key;
+      int		fd;
+
+      enter();
+
+      // retrieve information on the file, if it exsits.
+      if (::stat(path.c_str(), &status) == 0)
+	escape(::strerror(errno));
+
+      // create a secret key with this pass.
+      if (key.Create(pass) == StatusError)
+	escape("unable to create the secret key");
+
+      // encrypt the keypair.
+      if (key.Encrypt(*this, cipher) == StatusError)
+	escape("unable to decrypt the keypair");
+
+      // encode in base64.
+      if (Base64::Encode(cipher, string) == StatusError)
+	escape("unable to encode in base64");
+
+      // open the file.
+      if ((fd = ::open(path.c_str(),
+		       O_WRONLY | O_CREAT | O_TRUNC,
+		       0400)) == -1)
+	escape(::strerror(errno));
+
+      // write the file.
+      if (::write(fd, string.c_str(), string.length()) != string.length())
+	{
+	  ::close(fd);
+
+	  escape("unable to write the key pair file");
+	}
+
+      // close the file.
+      ::close(fd);
 
       leave();
     }

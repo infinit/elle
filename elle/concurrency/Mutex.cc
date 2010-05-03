@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Mutex.cc
 //
 // created       julien quintard   [sun mar  7 17:25:49 2010]
-// updated       julien quintard   [sun mar 28 03:13:23 2010]
+// updated       julien quintard   [sun may  2 17:21:44 2010]
 //
 
 //
@@ -16,13 +16,10 @@
 //
 
 #include <elle/concurrency/Mutex.hh>
+#include <elle/concurrency/Fiber.hh>
 
-///
-/// these includes are placed here in order to prevent pre-processing
-/// conflicts.
-///
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Maid.hh>
 
 namespace elle
 {

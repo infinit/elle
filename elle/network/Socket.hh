@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Socket.hh
+// file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [mon apr 26 18:31:42 2010]
+// updated       julien quintard   [mon may  3 21:20:41 2010]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -18,20 +18,18 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/io/IO.hh>
-#include <elle/concurrency/Concurrency.hh>
+#include <elle/core/String.hh>
 
-#include <elle/miscellaneous/Status.hh>
-#include <elle/miscellaneous/Callback.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
 
-#include <elle/network/Parcel.hh>
-
-#include <elle/idiom/Open.hh>
+#include <elle/concurrency/Callback.hh>
 
 namespace elle
 {
-  using namespace io;
+  using namespace core;
+  using namespace radix;
+  using namespace concurrency;
 
   namespace network
   {
@@ -41,7 +39,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// the Parcel type must be forward declare to avoid conflicts.
     ///
     class Parcel;
 
@@ -49,15 +47,13 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
-
     ///
     /// this class abstracts the notion of socket. indeed, the socket
     /// can be non-connected i.e a slot, connected to a channel or connected
     /// locally to a bridge.
     ///
     class Socket:
-      public Meta,
-      public Dumpable
+      public Entity
     {
     public:
       //
@@ -117,5 +113,11 @@ namespace elle
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/network/Parcel.hh>
 
 #endif

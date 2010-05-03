@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [wed mar 31 01:08:55 2010]
+// updated       julien quintard   [mon may  3 22:30:05 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_EVENT_HH
@@ -18,11 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/archive/Archive.hh>
-#include <elle/io/IO.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Boolean.hh>
 
-#include <elle/miscellaneous/Status.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
+
+#include <elle/archive/Archive.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rand.h>
@@ -32,9 +34,8 @@
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
   using namespace archive;
-  using namespace io;
 
   namespace concurrency
   {
@@ -48,8 +49,7 @@ namespace elle
     /// so on.
     ///
     class Event:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -71,9 +71,10 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, Event);
+      // object
+      declare(Event, _());
       Boolean		operator==(const Event&) const;
+      Boolean		operator<(const Event&) const;
 
       // archivable
       Status		Serialize(Archive&) const;
@@ -87,13 +88,6 @@ namespace elle
       //
       Natural64		identifier;
     };
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    Boolean		operator<(const Event&,
-				  const Event&);
 
   }
 }

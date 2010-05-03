@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [wed mar 31 21:38:17 2010]
+// updated       julien quintard   [mon may  3 21:26:05 2010]
 //
 
 //
@@ -47,13 +47,13 @@ namespace elle
 	escape("unable to initialize the Elle library");
 
       // set up the program
-      if (Program::Setup(argc, argv) == StatusError)
+      if (Program::Setup() == StatusError)
 	escape("unable to set up the program");
 
       // set up the node
       if (node.Setup(String(argv[1]),
 		     String(argv[2]),
-		     (Port)::strtoul(argv[3], NULL, NULL)) == StatusError)
+		     (Port)::strtoul(argv[3], NULL, 0)) == StatusError)
 	escape("unable to start the node");
 
       // start the node.
@@ -81,7 +81,7 @@ namespace elle
 int			main(const int				argc,
 			     const char*			argv[])
 {
-  if (elle::test::Main(argc, argv) == elle::miscellaneous::StatusError)
+  if (elle::test::Main(argc, argv) == elle::radix::StatusError)
     {
       show();
 

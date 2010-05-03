@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Resource.hh
+// file          /home/mycure/infinit/elle/concurrency/Resource.hh
 //
 // created       julien quintard   [sun mar 28 00:28:32 2010]
-// updated       julien quintard   [mon apr 26 19:04:20 2010]
+// updated       julien quintard   [sun may  2 13:00:11 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_RESOURCE_HH
@@ -18,11 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
+#include <elle/radix/Entity.hh>
 
 namespace elle
 {
-  using namespace core;
+  using namespace radix;
 
   namespace concurrency
   {
@@ -51,7 +51,7 @@ namespace elle
     /// memory address.
     ///
     class Resource:
-      public Meta
+      public Entity
     {
     };
 

@@ -5,10 +5,10 @@
 //
 // license       network
 //
-// file          /home/mycure/infinit/libraries/elle/network/Session.hh
+// file          /home/mycure/infinit/elle/network/Session.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [mon apr 26 19:23:47 2010]
+// updated       julien quintard   [mon may  3 21:21:03 2010]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH
@@ -18,32 +18,26 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/miscellaneous/Miscellaneous.hh>
-#include <elle/concurrency/Concurrency.hh>
+#include <elle/core/Natural.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
+
+#include <elle/concurrency/Fiber.hh>
+#include <elle/concurrency/Phase.hh>
+#include <elle/concurrency/Event.hh>
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Address.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
   using namespace concurrency;
 
   namespace network
   {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    class Socket;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -54,8 +48,7 @@ namespace elle
     /// socket and sender's address for instance.
     ///
     class Session:
-      public Meta,
-      public Dumpable
+      public Entity
     {
     public:
       //

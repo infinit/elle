@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [tue apr  6 19:32:31 2010]
+// updated       julien quintard   [mon may  3 22:36:16 2010]
 //
 
 #ifndef ELLE_UTIL_TIME_HH
@@ -20,11 +20,10 @@
 
 #include <elle/core/Boolean.hh>
 #include <elle/core/Natural.hh>
-#include <elle/core/Entity.hh>
 
-#include <elle/io/Dumpable.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
 
-#include <elle/archive/Archivable.hh>
 #include <elle/archive/Archive.hh>
 
 #include <elle/idiom/Close.hh>
@@ -34,7 +33,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace io;
+  using namespace radix;
   using namespace archive;
 
   namespace util
@@ -48,8 +47,7 @@ namespace elle
     /// this class represents a time stamp.
     ///
     class Time:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -68,9 +66,11 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, Time);
+      // object
+      declare(Time, _());
       Boolean		operator==(const Time&) const;
+      Boolean		operator<(const Time&) const;
+      Time		operator+(const Time&);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -93,24 +93,7 @@ namespace elle
       Natural8		dst;
     };
 
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    Time		operator+(const Time&,
-				  const Time&);
-
-    Boolean		operator<(const Time&,
-				  const Time&);
-
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
 
 #endif

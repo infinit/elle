@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Program.hh
+// file          /home/mycure/infinit/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [mon apr 26 19:07:09 2010]
+// updated       julien quintard   [mon may  3 21:13:15 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -18,11 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
 
-#include <elle/miscellaneous/Status.hh>
-#include <elle/miscellaneous/Callback.hh>
-
+#include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Accord.hh>
 
 #include <elle/idiom/Close.hh>
@@ -33,6 +32,8 @@
 
 namespace elle
 {
+  using namespace radix;
+
   namespace concurrency
   {
 
@@ -44,7 +45,7 @@ namespace elle
     /// this class represents the running program.
     ///
     class Program:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -63,9 +64,7 @@ namespace elle
       static Status		Initialize();
       static Status		Clean();
 
-      static Status		Setup(const Natural32,
-				      const Character*[],
-				      Callback<>* = NULL,
+      static Status		Setup(Callback<>* = NULL,
 				      Callback<>* = NULL);
       static Status		Launch();
       static Void		Signal(int);
@@ -81,9 +80,6 @@ namespace elle
       // attributes
       //
       Accord			accord;
-
-      Natural32			argc;
-      const Character**		argv;
 
       ::QCoreApplication*	core;
 

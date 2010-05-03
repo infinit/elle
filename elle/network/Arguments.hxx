@@ -5,17 +5,36 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Arguments.hxx
+// file          /home/mycure/infinit/elle/network/Arguments.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [mon apr 26 18:22:14 2010]
+// updated       julien quintard   [sun may  2 21:13:17 2010]
 //
 
 #ifndef ELLE_NETWORK_ARGUMENTS_HXX
 #define ELLE_NETWORK_ARGUMENTS_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/radix/Entity.hh>
+
+#include <elle/archive/Archive.hh>
+
+#include <elle/network/Message.hh>
+
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
+  using namespace standalone;
+  using namespace radix;
+  using namespace archive;
+
   namespace network
   {
 
@@ -33,8 +52,7 @@ namespace elle
     ///
     template <const Tag G>
     class Arguments<G>:
-      public Meta,
-      public Archivable
+      public Entity
     {
     public:
       //
@@ -86,7 +104,7 @@ namespace elle
 	      typename T1>
     class Arguments<G,
 		    T1>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -144,7 +162,7 @@ namespace elle
 	      typename T2>
     class Arguments<G,
 		    T1, T2>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -208,7 +226,7 @@ namespace elle
 	      typename T3>
     class Arguments<G,
 		    T1, T2, T3>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -278,7 +296,7 @@ namespace elle
 	      typename T4>
     class Arguments<G,
 		    T1, T2, T3, T4>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -354,7 +372,7 @@ namespace elle
 	      typename T5>
     class Arguments<G,
 		    T1, T2, T3, T4, T5>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -436,7 +454,7 @@ namespace elle
 	      typename T6>
     class Arguments<G,
 		    T1, T2, T3, T4, T5, T6>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -524,7 +542,7 @@ namespace elle
 	      typename T7>
     class Arguments<G,
 		    T1, T2, T3, T4, T5, T6, T7>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -618,7 +636,7 @@ namespace elle
 	      typename T8>
     class Arguments<G,
 		    T1, T2, T3, T4, T5, T6, T7, T8>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -718,7 +736,7 @@ namespace elle
 	      typename T9>
     class Arguments<G,
 		    T1, T2, T3, T4, T5, T6, T7, T8, T9>:
-      public Meta
+      public Entity
     {
     public:
       //

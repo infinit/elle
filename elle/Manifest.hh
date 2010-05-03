@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/Manifest.hh
+// file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sun apr 18 20:05:37 2010]
+// updated       julien quintard   [sun may  2 20:55:34 2010]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -21,11 +21,12 @@
 #include <elle/core/Natural.hh>
 #include <elle/core/Character.hh>
 
-#include <elle/miscellaneous/Report.hh>
+#include <elle/standalone/Report.hh>
 
 #include <elle/network/Tag.hh>
-
 #include <elle/network/Range.hh>
+#include <elle/network/Message.hh>
+#include <elle/network/Parameters.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -84,6 +85,6 @@ namespace elle
 
 // Error
 outward(elle::TagError,
-	parameters(const elle::miscellaneous::Report));
+	parameters(const elle::standalone::Report));
 
 #endif

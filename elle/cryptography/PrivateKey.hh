@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...ibraries/elle/cryptography/PrivateKey.hh
+// file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [thu apr 22 14:23:29 2010]
+// updated       julien quintard   [mon may  3 22:32:23 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -18,21 +18,19 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/io/IO.hh>
+#include <elle/core/Boolean.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Large.hh>
 
-#include <elle/core/Core.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
 
 #include <elle/archive/Archive.hh>
 
-#include <elle/miscellaneous/Status.hh>
-
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Code.hh>
-#include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Signature.hh>
-#include <elle/cryptography/Digest.hh>
-#include <elle/cryptography/OneWay.hh>
-#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Clear.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
@@ -45,9 +43,8 @@
 
 namespace elle
 {
-  using namespace io;
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
   using namespace archive;
 
   namespace cryptography
@@ -61,8 +58,7 @@ namespace elle
     /// this class represents a private key based on the RSA cryptosystem.
     ///
     class PrivateKey:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -105,8 +101,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, PrivateKey);
+      // object
+      declare(PrivateKey, _());
       Boolean		operator==(const PrivateKey&) const;
 
       // dumpable

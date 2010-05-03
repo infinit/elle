@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Large.cc
 //
 // created       julien quintard   [thu feb  5 15:37:07 2009]
-// updated       julien quintard   [fri mar  5 11:37:54 2010]
+// updated       julien quintard   [sun may  2 10:51:22 2010]
 //
 
 //
@@ -16,6 +16,12 @@
 //
 
 #include <elle/core/Large.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
+
+#include <elle/idiom/Close.hh>
+# include <string.h>
+#include <elle/idiom/Open.hh>
 
 //
 // ---------- operators -------------------------------------------------------
@@ -30,17 +36,31 @@ namespace std
   std::ostream&		operator<<(std::ostream&		stream,
 				   const elle::core::Large&	element)
   {
-    char*		hexadecimal;
+    static const elle::core::Natural32	Length = 50;
+    char*				hexadecimal;
 
     // transform the number into hexadecimal.
     hexadecimal = ::BN_bn2hex(&element);
 
-    // put an hexadecimal representation of the big number into the stream.
-    stream << hexadecimal;
+    // display the string, depending on its length.
+    if (::strlen(hexadecimal) < Length)
+      {
+	// if the string is short enough, display it in its entirety.
+	stream << hexadecimal;
+      }
+    else
+      {
+	elle::core::String		string(hexadecimal);
+
+	// otherwise chop it and display the begining and the end only.
+	stream << string.substr(0, Length / 2) << "..."
+	       << string.substr(string.length() - (Length / 2));
+      }
 
     // free the hexadecimal.
     ::OPENSSL_free(hexadecimal);
 
     return (stream);
   }
+
 }

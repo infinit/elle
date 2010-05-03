@@ -1,14 +1,14 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       il
+// project       elle
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/archive/Archive.hh
+// file          /home/mycure/infinit/elle/archive/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [mon apr 26 15:44:04 2010]
+// updated       julien quintard   [mon may  3 21:08:01 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HH
@@ -18,10 +18,18 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Boolean.hh>
+#include <elle/core/Integer.hh>
+#include <elle/core/Large.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Null.hh>
+#include <elle/core/Real.hh>
+#include <elle/core/String.hh>
+#include <elle/core/Void.hh>
 
-#include <elle/miscellaneous/Status.hh>
-#include <elle/miscellaneous/Region.hh>
+#include <elle/standalone/Region.hh>
+
+#include <elle/radix/Status.hh>
 
 #include <elle/system/System.hh>
 
@@ -33,7 +41,8 @@ namespace elle
 {
   using namespace io;
   using namespace core;
-  using namespace miscellaneous;
+  using namespace standalone;
+  using namespace radix;
   using namespace system;
 
   ///
@@ -48,7 +57,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// the Archivable must be forward declared to prevent conflicts.
     ///
     class Archivable;
 
@@ -209,12 +218,16 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, Archive);
-      Boolean		operator==(const Archive&) const;
-
       // dumpable
       Status		Dump(const Natural32 = 0) const;
+
+      // object-like
+      Status		Imprint(Natural32&) const;
+      Status		Clone(Archive*&) const;
+
+      Archive&		operator=(const Archive&);
+      Boolean		operator==(const Archive&) const;
+      Boolean		operator!=(const Archive&) const;
 
       //
       // attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Frame.cc
 //
 // created       julien quintard   [tue mar 23 14:22:43 2010]
-// updated       julien quintard   [sun mar 28 21:27:52 2010]
+// updated       julien quintard   [mon may  3 00:18:20 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/concurrency/Frame.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -82,7 +85,7 @@ namespace elle
 
       // dump the stack address.
       std::cout << alignment << Dumpable::Shift << "[Stack] "
-		<< std::hex << (Void*)this->stack << std::endl;
+		<< std::hex << static_cast<Void*>(this->stack) << std::endl;
 
       leave();
     }
