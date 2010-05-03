@@ -1,18 +1,18 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       8debug
+// project       8setup
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8debug/Debug.hh
+// file          /home/mycure/infinit/applications/8setup/Setup.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [thu apr 29 13:42:10 2010]
+// updated       julien quintard   [thu apr 29 13:34:03 2010]
 //
 
-#ifndef DEBUG_DEBUG_HH
-#define DEBUG_DEBUG_HH
+#ifndef SETUP_SETUP_HH
+#define SETUP_SETUP_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -23,6 +23,9 @@
 
 #include <elle/idiom/Close.hh>
 # include <sys/stat.h>
+# include <sys/types.h>
+# include <dirent.h>
+# include <unistd.h>
 #include <elle/idiom/Open.hh>
 
 namespace application
@@ -33,9 +36,9 @@ namespace application
 //
 
   ///
-  /// this class implements the 8debug application.
+  /// this class implements the 8setup application.
   ///
-  class Debug
+  class Setup
   {
   public:
     //
@@ -45,16 +48,19 @@ namespace application
       {
 	OperationUnknown = 0,
 
-	OperationResolve,
-	OperationDump
+	OperationInitialize,
+	OperationClean,
+	OperationCheck
       };
 
     //
     // static methods
     //
-    static Status	Dump(const etoile::hole::Address&,
-			     const KeyPair&,
-			     const etoile::kernel::Token&);
+    static Status	Empty(const String&);
+
+    static Status	Initialize();
+    static Status	Clean();
+    static Status	Check();
   };
 
 }

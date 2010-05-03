@@ -1,24 +1,25 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       8network
+// project       8universe
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8network/Network.hh
+// file          /home/mycure/infinit/applications/8universe/Universe.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [thu apr 22 22:20:20 2010]
+// updated       julien quintard   [sat may  1 20:46:05 2010]
 //
 
-#ifndef NETWORK_NETWORK_HH
-#define NETWORK_NETWORK_HH
+#ifndef UNIVERSE_UNIVERSE_HH
+#define UNIVERSE_UNIVERSE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
 
 #include <elle/idiom/Close.hh>
@@ -33,20 +34,30 @@ namespace application
 //
 
   ///
-  /// this class implements the 8network application.
+  /// this class implements the 8universe application.
   ///
-  class Network
+  class Universe
   {
   public:
     //
-    // constants
+    // enumerations
     //
-    static const String			Path;
+    enum Operation
+      {
+	OperationUnknown = 0,
+
+	OperationCreate,
+	OperationDestroy,
+	OperationInformation
+      };
 
     //
     // static methods
     //
-    static Status	New(const String&);
+    static Status	Create(const String&,
+			       const String&);
+    static Status	Destroy(const String&);
+    static Status	Information(const String&);
   };
 
 }

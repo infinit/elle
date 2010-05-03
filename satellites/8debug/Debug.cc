@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8debug/Debug.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri apr 23 13:13:30 2010]
+// updated       julien quintard   [thu apr 29 13:52:32 2010]
 //
 
 //
@@ -30,26 +30,6 @@ namespace application
   const Character	Component[] = "8debug";
 
 //
-// ---------- functions -------------------------------------------------------
-//
-
-  ///
-  /// this function displays the usage.
-  ///
-  Void			Usage(const String&			text)
-  {
-    // display the usage.
-    std::cerr << "$> 8debug -d "
-	      << "-a {block address} -p {key pair} -t {token}"
-	      << std::endl;
-
-    // display the text.
-    std::cout << std::endl << "[error] " << text << std::endl;
-
-    ::exit(EXIT_FAILURE);
-  }
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -66,7 +46,7 @@ namespace application
 
     // valid the arguments.
     if (address == etoile::hole::Address::Null)
-      Usage("unable to dump a block without its address");
+      escape("unable to dump a block without its address");
 
     // retrieve the block directly from the hole.
     if (etoile::hole::Hole::Get(address, block) != StatusTrue)
@@ -162,6 +142,9 @@ namespace application
     if (block->Dump() == StatusError)
       escape("unable to dump the block");
 
+    // delete the block.
+    delete block;
+
     leave();
   }
 
@@ -170,13 +153,17 @@ namespace application
 //
 
   ///
-  /// this method initializes the application.
+  /// the main function.
   ///
-  Status		Debug::Initialize(const Natural32	argc,
-					  const Character*	argv[])
+  Status		Main(Natural32				argc,
+			     Character*				argv[])
   {
-    etoile::hole::Address	root;
-    String			path;
+    Debug::Operation		operation;
+    Parser*			parser;
+    etoile::hole::Address	address;
+    KeyPair			pair;
+    etoile::kernel::Token	token;
+    Character			option;
 
     enter();
 
@@ -185,63 +172,72 @@ namespace application
       escape("unable to initialize the Elle library");
 
     // set up the program.
-    if (Program::Setup(argc, argv) == StatusError)
+    if (Program::Setup() == StatusError)
       escape("unable to set up the program");
+
+    // initialize Infinit.
+    if (infinit::Infinit::Initialize() == StatusError)
+      escape("unable to initialize Infinit");
 
     // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == StatusError)
       escape("unable to initialize the Etoile library");
 
-    leave();
-  }
+    // initialize the operation.
+    operation = Debug::OperationUnknown;
 
-  ///
-  /// this method cleans the application.
-  ///
-  Status		Debug::Clean()
-  {
-    enter();
- 
-    // clean the Etoile library.
-    if (etoile::Etoile::Clean() == StatusError)
-      escape("unable to clean the Etoile library");
+    // allocate a new parser.
+    parser = new Parser(argc, argv);
 
-    // clean the Elle library.
-    if (Elle::Clean() == StatusError)
-      escape("unable to clean the Elle library");
+    // set up the parser.
+    if (parser->Register('h',
+			 "help",
+			 "display the help",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
 
-    leave();
-  }
+    if (parser->Register('d',
+			 "dump",
+			 "dump a block identified by the address",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
 
-  ///
-  /// the main function.
-  ///
-  Status		Main(Natural32				argc,
-			     Character*				argv[])
-  {
-    Debug::Operation		operation = Debug::OperationUnknown;
-    etoile::hole::Address	address;
-    KeyPair			pair;
-    etoile::kernel::Token	token;
-    int				opt;
+    if (parser->Register('a',
+			 "address",
+			 "specifies the block's address ARG in base64",
+			 Parser::TypeRequired) == StatusError)
+      escape("unable to register the option");
 
-    enter();
+    if (parser->Register('p',
+			 "pair",
+			 "specifies the key pair ARG in base64 to use "
+			 "for decrypting protected information such as tokens",
+			 Parser::TypeRequired) == StatusError)
+      escape("unable to register the option");
 
-    // initialize the application.
-    if (Debug::Initialize(argc, (const Character**)argv) == StatusError)
-      escape("unable to initialize the application");
+    if (parser->Register('t',
+			 "token",
+			 "specifies the token ARG, in base64, to use for "
+			 "decrypting the block's content",
+			 Parser::TypeRequired) == StatusError)
+      escape("unable to register the option");
 
-    // parse the options.
-    while ((opt = ::getopt(argc, argv, "da:p:t:")) != -1)
+    // parse.
+    while (parser->Parse(option) == StatusTrue)
       {
 	// act according to the current option.
-	switch (opt)
+	switch (option)
 	  {
 	  case 'd':
 	    {
 	      if (operation != Debug::OperationUnknown)
-		Usage("the dump operation cannot be set concurrently to "
-		      "an other operation");
+		{
+		  // display the usage.
+		  parser->Usage();
+
+		  escape("the dump operation cannot be set concurrently to "
+			 "an other operation");
+		}
 
 	      operation = Debug::OperationDump;
 
@@ -286,11 +282,23 @@ namespace application
 
 	      break;
 	    }
+	  case '?':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("unknown option");
+	    }
+	  case ':':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("missing argument");
+	    }
 	  default:
 	    {
-	      Usage("unknown option");
-
-	      break;
+	      escape("an error occured while parsing the options");
 	    }
 	  }
       }
@@ -300,6 +308,7 @@ namespace application
       {
       case Debug::OperationDump:
 	{
+	  // dump the block.
 	  if (Debug::Dump(address, pair, token) == StatusError)
 	    escape("unable to dump the block");
 
@@ -307,15 +316,27 @@ namespace application
 	}
       default:
 	{
-	  Usage("no operation has been requested");
+	  // display the usage.
+	  parser->Usage();
 
-	  break;
+	  escape("please specify an operation to perform");
 	}
       }
 
-    // clean the application.
-    if (Debug::Clean() == StatusError)
-      escape("unable to clean the application");
+    // delete the parser.
+    delete parser;
+
+    // clean the Etoile library.
+    if (etoile::Etoile::Clean() == StatusError)
+      escape("unable to clean the Etoile library");
+
+    // clean Infinit.
+    if (infinit::Infinit::Clean() == StatusError)
+      escape("unable to clean Infinit");
+
+    // clean the Elle library.
+    if (Elle::Clean() == StatusError)
+      escape("unable to clean the Elle library");
 
     leave();
   }

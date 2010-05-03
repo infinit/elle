@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon apr 19 15:34:48 2010]
+// updated       julien quintard   [sat may  1 20:58:35 2010]
 //
 
 //
@@ -29,85 +29,101 @@ namespace application
   ///
   const Character	Component[] = "8user";
 
-  ///
-  /// this string contains the path to the user infinit configuration
-  /// directory.
-  ///
-  const String		User::Path = System::Path::Home + "/.infinit";
-
 //
 // ---------- methods ---------------------------------------------------------
 //
 
   ///
-  /// this method creates a new user by generating a new key pair.
+  /// this method creates a new user by generating a new key pair and
+  /// storing a user block.
   ///
-  Status		User::New(const String&			name)
+  Status		User::Create(const String&		name)
   {
-    Archive		archive;
+    String		path =
+      Lune::Keys + System::Path::Separator + name + ".pair";
     struct ::stat	stat;
-    String		path = User::Path + "/keys/" + name + ".pair";
-    Integer32		fd;
     String		prompt;
-    String		passphrase;
-    SecretKey		key;
-    Cipher		cipher;
+    String		pass;
     KeyPair		pair;
-    String		string;
 
     enter();
+
+    // check the argument.
+    if (name.empty() == true)
+      escape("unable to create a user without a user name");
 
     // get the file status.
     if (::stat(path.c_str(), &stat) == 0)
       escape("this user seems to already exist");
 
+    // prompt the user for the passphrase.
+    prompt = "Enter passphrase for keypair '" + path + "': ";
+    pass = String(::getpass(prompt.c_str()));
+
     // generate a key pair.
     if (pair.Generate() == StatusError)
       escape("unable to generate the key pair");
 
-    // prompt the user for the passphrase.
-    prompt = "Enter passphrase for keypair '" + path + "': ";
-    passphrase = String(::getpass(prompt.c_str()));
+    // store the pair.
+    if (pair.Store(path, pass) == StatusError)
+      escape("unable to store the key pair");
 
-    // create a secret key with this passphrase.
-    if (key.Create(passphrase) == StatusError)
-      escape("unable to create the secret key");
-
-    // encrypt the keypair.
-    if (key.Encrypt(pair, cipher) == StatusError)
-      escape("unable to decrypt the keypair");
-
-    // create an archive.
-    if (archive.Create() == StatusError)
-      escape("unable to create the archive");
-
-    // serialize the encrypted key pair.
-    if (archive.Serialize(cipher) == StatusError)
-      escape("unable to serialize the cipher");
-
-    // open the file.
-    if ((fd = ::open(path.c_str(),
-		     O_WRONLY | O_CREAT | O_TRUNC,
-		     0400)) == -1)
-      escape(::strerror(errno));
-
-    // write the file.
-    if (::write(fd, archive.contents, archive.size) != archive.size)
-      {
-	::close(fd);
-
-	escape("unable to write the key pair file");
-      }
-
-    // close the file.
-    ::close(fd);
-
-    // encode the user's public key in base64.
-    if (Base64::Encode(pair.K, string) == StatusError)
-      escape("unable to encode the public key");
+    /// XXX \todo a block should be created and inserted in the hole.
 
     // display the tuple user (name, identifier).
-    std::cout << name << " " << string << std::endl;
+    std::cout << name << " " << pair() << std::endl;
+
+    leave();
+  }
+
+  ///
+  /// this method destroys an existing user.
+  ///
+  Status		User::Destroy(const String&		name)
+  {
+    enter();
+
+    // XXX
+
+    leave();
+  }
+
+  ///
+  /// this method sets an attribute in the user block.
+  ///
+  Status		User::Set(const String&			name,
+				  const String&			attribute,
+				  const String&			value)
+  {
+    enter();
+
+    // XXX
+
+    leave();
+  }
+
+  ///
+  /// this method gets an attribute from the user block.
+  ///
+  Status		User::Get(const String&			name,
+				  const String&			attribute)
+  {
+    enter();
+
+    // XXX
+
+    leave();
+  }
+
+  ///
+  /// this method unset an attribute in the user block.
+  ///
+  Status		User::Unset(const String&		name,
+				    const String&		attribute)
+  {
+    enter();
+
+    // XXX
 
     leave();
   }
@@ -122,31 +138,294 @@ namespace application
   Status		Main(Natural32				argc,
 			     Character*				argv[])
   {
+    Parser*		parser;
+    User::Operation	operation;
+    Character		option;
     String		name;
-    String		command;
+    String		attribute;
+    String		value;
 
     enter();
 
-    /// XXX \todo to improve with real argument parsing.
-    {
-      if (argc != 3)
-	escape("[usage] ./8user {command} {name}");
-
-      command.assign(argv[1]);
-      name.assign(argv[2]);
-    }
-
     // initialize the Elle library.
     if (Elle::Initialize() == StatusError)
-      escape("unable to initialize the Elle library");
+      escape("unable to initialize Elle");
 
-    // trigger a command depending on the arguments.
-    if (command == "new")
-      User::New(name);
+    // set up the program.
+    if (Program::Setup() == StatusError)
+      escape("unable to set up the program");
 
-    // clean the Elle library.
+    // initialize the Lune library.
+    if (Lune::Initialize() == StatusError)
+      escape("unable to initialize Lune");
+
+    // initialize the Etoile.
+    if (Etoile::Initialize() == StatusError)
+      escape("unable to initialize Etoile");
+
+    // initialize the operation.
+    operation = User::OperationUnknown;
+
+    // allocate a new parser.
+    parser = new Parser(argc, argv);
+
+    // set up the parser.
+    if (parser->Register('h',
+			 "help",
+			 "display the help",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('c',
+			 "create",
+			 "create a new user",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('d',
+			 "destroy",
+			 "destroy an existing user",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('s',
+			 "set",
+			 "set an attribute in the user's block",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('g',
+			 "get",
+			 "get, hence display, a user's attribute",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('u',
+			 "unset",
+			 "unset an existing attribute in the user's block",
+			 Parser::TypeNone) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('n',
+			 "name",
+			 "specifies a user name",
+			 Parser::TypeRequired) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('a',
+			 "attribute",
+			 "specifies an attribute name",
+			 Parser::TypeRequired) == StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('v',
+			 "value",
+			 "specifies an attribute value",
+			 Parser::TypeRequired) == StatusError)
+      escape("unable to register the option");
+
+    // parse.
+    while (parser->Parse(option) == StatusTrue)
+      {
+	switch (option)
+	  {
+	  case 'h':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      // quit.
+	      leave();
+	    }
+	  case 'c':
+	    {
+	      // check if the operation has already been set up.
+	      if (operation != User::OperationUnknown)
+		{
+		  // display the usage.
+		  parser->Usage();
+
+		  escape("the create operation cannot be set concurrently "
+			 "to another operation");
+		}
+
+	      operation = User::OperationCreate;
+
+	      break;
+	    }
+	  case 'd':
+	    {
+	      // check if the operation has already been set up.
+	      if (operation != User::OperationUnknown)
+		{
+		  // display the usage.
+		  parser->Usage();
+
+		  escape("the destroy operation cannot be set concurrently to "
+			 "another operation");
+		}
+
+	      operation = User::OperationDestroy;
+
+	      break;
+	    }
+	  case 's':
+	    {
+	      // check if the operation has already been set up.
+	      if (operation != User::OperationUnknown)
+		{
+		  // display the usage.
+		  parser->Usage();
+
+		  escape("the set operation cannot be set concurrently to "
+			 "another operation");
+		}
+
+	      operation = User::OperationSet;
+
+	      break;
+	    }
+	  case 'g':
+	    {
+	      // check if the operation has already been set up.
+	      if (operation != User::OperationUnknown)
+		{
+		  // display the usage.
+		  parser->Usage();
+
+		  escape("the get operation cannot be set concurrently to "
+			 "another operation");
+		}
+
+	      operation = User::OperationGet;
+
+	      break;
+	    }
+	  case 'u':
+	    {
+	      // check if the operation has already been set up.
+	      if (operation != User::OperationUnknown)
+		{
+		  // display the usage.
+		  parser->Usage();
+
+		  escape("the unset operation cannot be set concurrently to "
+			 "another operation");
+		}
+
+	      operation = User::OperationUnset;
+
+	      break;
+	    }
+	  case 'n':
+	    {
+	      // retrieve the user name.
+	      name.assign(optarg);
+
+	      break;
+	    }
+	  case 'a':
+	    {
+	      // retrieve the attribute name.
+	      attribute.assign(optarg);
+
+	      break;
+	    }
+	  case 'v':
+	    {
+	      // retrieve the value.
+	      value.assign(optarg);
+
+	      break;
+	    }
+	  case '?':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("unknown option");
+	    }
+	  case ':':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("missing argument");
+	    }
+	  default:
+	    {
+	      escape("an error occured while parsing the options");
+	    }
+	  }
+      }
+
+    // trigger the operation.
+    switch (operation)
+      {
+      case User::OperationCreate:
+	{
+	  // create a user.
+	  if (User::Create(name) == StatusError)
+	    escape("unable to create the user");
+
+	  break;
+	}
+      case User::OperationDestroy:
+	{
+	  // destroy a user.
+	  if (User::Destroy(name) == StatusError)
+	    escape("unable to destroy the user");
+
+	  break;
+	}
+      case User::OperationSet:
+	{
+	  // set an attribute.
+	  if (User::Set(name, attribute, value) == StatusError)
+	    escape("unable to set the attribute");
+
+	  break;
+	}
+      case User::OperationGet:
+	{
+	  // get an attribute
+	  if (User::Get(name, attribute) == StatusError)
+	    escape("unable to get the attribute");
+
+	  break;
+	}
+      case User::OperationUnset:
+	{
+	  // unset an attribute.
+	  if (User::Unset(name, attribute) == StatusError)
+	    escape("unable to destroy the user");
+
+	  break;
+	}
+      case User::OperationUnknown:
+      default:
+	{
+	  // display the usage.
+	  parser->Usage();
+
+	  escape("please specify an operation to perform");
+	}
+      }
+
+    // delete the parser.
+    delete parser;
+
+    // clean the Etoile.
+    if (Etoile::Clean() == StatusError)
+      escape("unable to clean Etoile");
+
+    // clean Lune
+    if (Lune::Clean() == StatusError)
+      escape("unable to clean Lune");
+
+    // clean Elle.
     if (Elle::Clean() == StatusError)
-      escape("unable to clean the Elle library");
+      escape("unable to clean Elle");
 
     leave();
   }
