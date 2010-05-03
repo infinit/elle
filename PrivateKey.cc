@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...ibraries/elle/cryptography/PrivateKey.cc
+// file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [thu apr 22 23:41:27 2010]
+// updated       julien quintard   [mon may  3 22:44:33 2010]
 //
 
 //
@@ -16,14 +16,11 @@
 //
 
 #include <elle/cryptography/PrivateKey.hh>
+#include <elle/cryptography/OneWay.hh>
+#include <elle/cryptography/SecretKey.hh>
 
 namespace elle
 {
-  using namespace io;
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
-
   namespace cryptography
   {
 
@@ -309,7 +306,7 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -348,9 +345,9 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, PrivateKey);
+    embed(PrivateKey, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------

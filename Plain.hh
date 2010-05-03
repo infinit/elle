@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Plain.hh
 //
 // created       julien quintard   [wed feb 11 12:39:47 2009]
-// updated       julien quintard   [sat mar  7 22:03:03 2009]
+// updated       julien quintard   [sun may  2 18:41:19 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PLAIN_HH
@@ -18,11 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/Region.hh>
+#include <elle/standalone/Region.hh>
 
 namespace elle
 {
-  using namespace miscellaneous;
+  using namespace standalone;
 
   namespace cryptography
   {

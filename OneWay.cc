@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/OneWay.cc
 //
 // created       julien quintard   [mon oct 29 13:26:52 2007]
-// updated       julien quintard   [tue mar  2 14:55:53 2010]
+// updated       julien quintard   [sun may  2 18:52:17 2010]
 //
 
 //
@@ -19,9 +19,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-
   namespace cryptography
   {
 

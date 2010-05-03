@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...libraries/elle/cryptography/PublicKey.hh
+// file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [mon apr 26 18:15:59 2010]
+// updated       julien quintard   [mon may  3 22:33:00 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
@@ -18,18 +18,18 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/io/IO.hh>
-#include <elle/core/Core.hh>
-#include <elle/archive/Archive.hh>
+#include <elle/core/Boolean.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Large.hh>
 
-#include <elle/miscellaneous/Status.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
+
+#include <elle/archive/Archive.hh>
 
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Signature.hh>
-#include <elle/cryptography/Digest.hh>
-#include <elle/cryptography/OneWay.hh>
-#include <elle/cryptography/SecretKey.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
@@ -40,14 +40,12 @@
 
 namespace elle
 {
-  using namespace io;
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
   using namespace archive;
 
   namespace cryptography
   {
-
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -57,8 +55,7 @@ namespace elle
     /// this class represents a public key.
     ///
     class PublicKey:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -95,8 +92,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, PublicKey);
+      // object
+      declare(PublicKey, _());
       Boolean		operator==(const PublicKey&) const;
 
       // dumpable
