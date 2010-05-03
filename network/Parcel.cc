@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Parcel.cc
+// file          /home/mycure/infinit/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [sun apr 25 16:48:43 2010]
+// updated       julien quintard   [sun may  2 20:43:18 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/network/Parcel.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {

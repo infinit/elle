@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Door.hxx
+// file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [mon apr 26 01:10:26 2010]
+// updated       julien quintard   [sun may  2 20:51:28 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -18,7 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Outputs.hh>
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/network/Packet.hh>
 
 #include <elle/Manifest.hh>
 

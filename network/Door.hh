@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Door.hh
+// file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [mon apr 26 18:22:34 2010]
+// updated       julien quintard   [mon may  3 21:21:46 2010]
 //
 
 ///
@@ -29,11 +29,17 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/concurrency/Concurrency.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
 
-#include <elle/network/Network.hh>
-#include <elle/network/Packet.hh>
+#include <elle/standalone/Region.hh>
+
+#include <elle/radix/Status.hh>
+
+#include <elle/concurrency/Event.hh>
+
 #include <elle/network/Channel.hh>
+#include <elle/network/Parcel.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -42,6 +48,11 @@
 
 namespace elle
 {
+  using namespace core;
+  using namespace standalone;
+  using namespace radix;
+  using namespace concurrency;
+
   namespace network
   {
 

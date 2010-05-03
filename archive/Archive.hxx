@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/archive/Archive.hxx
+// file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [mon apr 26 23:16:53 2010]
+// updated       julien quintard   [sun may  2 13:11:58 2010]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -18,13 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace standalone;
 
   namespace archive
   {
@@ -157,8 +157,9 @@ namespace elle
     /// this method extract a compound type.
     ///
     template <typename T>
-    inline Status	Archive::Behaviour<T, true>::Extract(Archive& archive,
-							     Archivable& element)
+    inline Status	Archive::Behaviour<T, true>::Extract(
+			  Archive&				archive,
+			  Archivable&				element)
     {
       return (element.Extract(archive));
     }
@@ -170,8 +171,9 @@ namespace elle
     /// hence provide the Serialize() and Extract() methods.
     ///
     template <typename T>
-    inline Status	Archive::Behaviour<T, true>::Serialize(Archive&	archive,
-							       const Archivable& element)
+    inline Status	Archive::Behaviour<T, true>::Serialize(
+			  Archive&				archive,
+			  const Archivable&			element)
     {
       return (element.Serialize(archive));
     }
@@ -423,19 +425,20 @@ namespace elle
     }
 
     ///
-    /// this method specifically prints a Natural8 since, by default, it
-    /// is considered as a 'char'.
+    /// this method specializes the Print() method for the Region type
+    /// which is a non-core, non-archivable type, a rare exception.
     ///
     template <>
-    inline Status	Print(const Natural8&			element,
-			      const Natural32			margin)
+    inline Status	Print<Region>(const Region&		element,
+				      const Natural32		margin)
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[" << ArchiveMap<Natural8>::Name << "] "
-		<< std::dec << (Natural32)element << std::endl;
+      std::cout << alignment << "[Region] "
+		<< element.contents << " :: "
+		<< element.size << "/" << element.capacity << std::endl;
 
       leave();
     }

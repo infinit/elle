@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.hh
 //
 // created       julien quintard   [fri oct 16 04:10:36 2009]
-// updated       julien quintard   [thu apr  8 14:56:04 2010]
+// updated       julien quintard   [mon may  3 22:34:22 2010]
 //
 
 #ifndef ELLE_NETWORK_HOST_HH
@@ -18,10 +18,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/miscellaneous/Miscellaneous.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Boolean.hh>
+#include <elle/core/String.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
+
 #include <elle/archive/Archive.hh>
-#include <elle/io/IO.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QHostAddress>
@@ -30,6 +34,8 @@
 
 namespace elle
 {
+  using namespace core;
+  using namespace radix;
   using namespace archive;
 
   namespace network
@@ -43,8 +49,7 @@ namespace elle
     /// this class represents a network host.
     ///
     class Host:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -78,8 +83,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, Host);
+      // object
+      declare(Host, _());
       Boolean		operator==(const Host&) const;
 
       // archivable

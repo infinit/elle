@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/archive/Archive.cc
+// file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [mon apr 26 23:17:05 2010]
+// updated       julien quintard   [sun may  2 15:31:03 2010]
 //
 
 //
@@ -20,7 +20,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace standalone;
   using namespace system;
 
   namespace archive
@@ -619,27 +619,39 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- seal ------------------------------------------------------------
 //
 
     ///
-    /// this method check if two archives match.
+    /// this method seals the serialization archive and transforms it into
+    /// into an extraction archive.
     ///
-    Boolean		Archive::operator==(const Archive&	element) const
+    /// this method should not be used but for debugging purposes.
+    ///
+    Status		Archive::Seal()
     {
+      Region		chunk;
+
       enter();
 
-      // call the super-method.
-      if (Region::operator==(element) == false)
-	false();
+      // detach the data from the archive so that nothing is freed.
+      if (this->Detach() == StatusError)
+	escape("unable to detach the archive's data");
 
-      true();
+      // wrap the archive's content so that the data is not lost.
+      if (chunk.Wrap(this->contents, this->size) == StatusError)
+	escape("unable to wrap the archive's content");
+
+      // recycle the archive.
+      if (this->Recycle<Archive>() == StatusError)
+	escape("unable to recycle the archive");
+
+      // prepare the archive for extraction.
+      if (this->Prepare(chunk) == StatusError)
+	escape("unable to prepare the archive for extraction");
+
+      leave();
     }
-
-    ///
-    /// this macro-function call generates the entity.
-    ///
-    embed(Entity, Archive);
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -889,38 +901,73 @@ namespace elle
     }
 
 //
-// ---------- seal ------------------------------------------------------------
+// ---------- object-like -----------------------------------------------------
 //
 
     ///
-    /// this method seals the serialization archive and transforms it into
-    /// into an extraction archive.
+    /// this method returns the size of the archive object.
     ///
-    /// this method should not be used but for debugging purposes.
-    ///
-    Status		Archive::Seal()
+    Status		Archive::Imprint(Natural32&		size) const
     {
-      Region		chunk;
-
       enter();
 
-      // detach the data from the archive so that nothing is freed.
-      if (this->Detach() == StatusError)
-	escape("unable to detach the archive's data");
-
-      // wrap the archive's content so that the data is not lost.
-      if (chunk.Wrap(this->contents, this->size) == StatusError)
-	escape("unable to wrap the archive's content");
-
-      // recycle the archive.
-      if (this->Recycle<Archive>() == StatusError)
-	escape("unable to recycle the archive");
-
-      // prepare the archive for extraction.
-      if (this->Prepare(chunk) == StatusError)
-	escape("unable to prepare the archive for extraction");
+      // return the size.
+      size = sizeof(Archive);
 
       leave();
+    }
+
+    ///
+    /// this method clones the current archive.
+    ///
+    Status		Archive::Clone(Archive*&		object) const
+    {
+      enter();
+
+      // allocate the object.
+      object = new Archive(*this);
+
+      leave();
+    }
+
+    ///
+    /// this method copies a archive.
+    ///
+    Archive&		Archive::operator=(const Archive&	element)
+    {
+      enter();
+
+      // test if the archives are identical.
+      if (this == &element)
+	return (*this);
+
+      // recycle the object.
+      if (this->Recycle(&element) == StatusError)
+	yield("unable to recycle the object", *this);
+
+      return (*this);
+    }
+
+    ///
+    /// this method check if two archives match.
+    ///
+    Boolean		Archive::operator==(const Archive&	element) const
+    {
+      enter();
+
+      // call the super-method.
+      if (Archive::operator==(element) == false)
+	false();
+
+      true();
+    }
+
+    ///
+    /// this method compares two archives.
+    ///
+    Boolean		Archive::operator!=(const Archive&	element) const
+    {
+      return (!(*this == element));
     }
 
   }

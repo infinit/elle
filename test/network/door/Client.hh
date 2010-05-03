@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [thu apr  8 15:11:23 2010]
+// updated       julien quintard   [sun may  2 21:58:08 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_CLIENT_HH
@@ -18,10 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/miscellaneous/Miscellaneous.hh>
-#include <elle/network/Network.hh>
-#include <elle/concurrency/Concurrency.hh>
+#include <elle/Elle.hh>
 
 #include <elle/test/network/door/Manifest.hh>
 
@@ -31,10 +28,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace network;
-
   namespace test
   {
 

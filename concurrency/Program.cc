@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Program.cc
+// file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [tue apr 27 11:54:28 2010]
+// updated       julien quintard   [sun may  2 17:34:40 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/concurrency/Program.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -65,29 +68,31 @@ namespace elle
     ///
     /// this method sets up the program for startup.
     ///
-    Status		Program::Setup(const Natural32		argc,
-				       const Character*		argv[],
-				       Callback<>*		prolog,
+    Status		Program::Setup(Callback<>*		prolog,
 				       Callback<>*		epilog)
     {
+      int		n;
+
       enter();
 
-      // set the arguments.
-      program->argc = argc;
-      program->argv = argv;
+      // set the number of arguments as zero since we do not want
+      // QCoreApplication to bother parsing arguments.
+      n = 0;
 
       // allocate the QT program.
-      program->core = new ::QCoreApplication((int&)program->argc,
-					     (char**)program->argv);
+      program->core = new ::QCoreApplication(n, NULL);
 
       // set the prolog/epilog callbacks.
       program->prolog = prolog;
       program->epilog = epilog;
 
       // set the signal handlers.
+      ::signal(SIGINT, &Program::Signal);
+      ::signal(SIGQUIT, &Program::Signal);
       ::signal(SIGABRT, &Program::Signal);
       ::signal(SIGTERM, &Program::Signal);
-      ::signal(SIGINT, &Program::Signal);
+
+      ::signal(SIGKILL, &Program::Signal);
 
       leave();
     }
@@ -174,10 +179,27 @@ namespace elle
     ///
     /// this method is triggered whenever a POSIX signal is received.
     ///
-    Void		Program::Signal(int)
+    Void		Program::Signal(int			signal)
     {
-      // stop the program.
-      Program::Exit();
+      // stop the program depending on the signal.
+      switch (signal)
+	{
+	case SIGINT:
+	case SIGQUIT:
+	case SIGABRT:
+	case SIGTERM:
+	  {
+	    // exit properly by finishing processing the last events.
+	    Program::Exit();
+
+	    break;
+	  }
+	case SIGKILL:
+	  {
+	    // exit brutally!!!
+	    ::exit(EXIT_FAILURE);
+	  }
+	}
     }
 
 //

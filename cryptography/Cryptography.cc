@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.cc
 //
 // created       julien quintard   [tue oct 30 12:16:42 2007]
-// updated       julien quintard   [thu mar 11 17:04:27 2010]
+// updated       julien quintard   [sun may  2 18:27:18 2010]
 //
 
 //
@@ -17,10 +17,17 @@
 
 #include <elle/cryptography/Cryptography.hh>
 
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Close.hh>
+# include <openssl/engine.h>
+# include <openssl/err.h>
+# include <openssl/rand.h>
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
-  using namespace miscellaneous;
-
   namespace cryptography
   {
 

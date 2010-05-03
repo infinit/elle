@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [tue apr  6 18:55:54 2010]
+// updated       julien quintard   [sun may  2 17:30:23 2010]
 //
 
 //
@@ -17,6 +17,9 @@
 
 #include <elle/concurrency/Timer.hh>
 #include <elle/concurrency/Fiber.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {

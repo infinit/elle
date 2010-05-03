@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [wed mar 31 01:09:07 2010]
+// updated       julien quintard   [mon may  3 22:43:06 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/concurrency/Event.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -58,8 +61,8 @@ namespace elle
       do
 	{
 	  // generate random bytes.
-	  if (RAND_bytes((unsigned char*)&this->identifier,
-			 sizeof(this->identifier)) == 0)
+	  if (::RAND_bytes((unsigned char*)&this->identifier,
+			   sizeof(this->identifier)) == 0)
 	    escape(::ERR_error_string(ERR_get_error(), NULL));
 	} while (*this == Event::Null);
 
@@ -67,7 +70,7 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -89,9 +92,17 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this operator compares two events.
     ///
-    embed(Entity, Event);
+    Boolean		Event::operator<(const Event&		element) const
+    {
+      return (this->identifier < element.identifier);
+    }
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Event, _(), _());
 
 //
 // ---------- archivable ------------------------------------------------------
@@ -141,19 +152,6 @@ namespace elle
       std::cout << alignment << "[Event] " << this->identifier << std::endl;
 
       leave();
-    }
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    ///
-    /// this operator compares two events.
-    ///
-    Boolean		operator<(const Event&			lhs,
-				  const Event&			rhs)
-    {
-      return (lhs.identifier < rhs.identifier);
     }
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Pack.cc
 //
 // created       julien quintard   [wed jan 28 12:08:47 2009]
-// updated       julien quintard   [wed mar  3 11:29:32 2010]
+// updated       julien quintard   [sun may  2 21:54:18 2010]
 //
 
 //
@@ -22,10 +22,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
-
   namespace test
   {
 

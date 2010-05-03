@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Fiber.hh
+// file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [tue apr 27 13:18:43 2010]
+// updated       julien quintard   [mon may  3 21:11:49 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -18,17 +18,19 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Void.hh>
 
-#include <elle/miscellaneous/Status.hh>
-#include <elle/miscellaneous/Callback.hh>
-#include <elle/miscellaneous/Closure.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Meta.hh>
 
-#include <elle/concurrency/Frame.hh>
+#include <elle/concurrency/Callback.hh>
+#include <elle/concurrency/Closure.hh>
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Resource.hh>
-#include <elle/concurrency/Environment.hh>
 #include <elle/concurrency/Phase.hh>
+#include <elle/concurrency/Frame.hh>
+#include <elle/concurrency/Environment.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -38,7 +40,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
 
   namespace concurrency
   {
@@ -80,8 +82,7 @@ namespace elle
     /// fiber and resumes it.
     ///
     class Fiber:
-      public Meta,
-      public Dumpable
+      public Entity
     {
     public:
       //
@@ -144,7 +145,7 @@ namespace elle
 
       static C::Container	Cache;
 
-      static Void*		Trash;
+      static Meta*		Trash;
 
       static P::Container	Phases;
 
@@ -159,17 +160,17 @@ namespace elle
       template <typename... T>
       static Void	Launch(Closure<T...>*);
 
-      template <typename T = Void>
+      template <typename T = Meta>
       static Status	Wait(const Event&,
 			     T*& = (T*&)Trash);
-      template <typename T = Void>
+      template <typename T = Meta>
       static Status	Awaken(const Event&,
 			       T* = (T*)NULL);
 
-      template <typename T = Void>
+      template <typename T = Meta>
       static Status	Wait(const Resource*,
 			     T*& = (T*&)Trash);
-      template <typename T = Void>
+      template <typename T = Meta>
       static Status	Awaken(const Resource*,
 			       T* = (T*)NULL);
 
@@ -228,7 +229,7 @@ namespace elle
 
       Environment*	environment;
 
-      Void*		data;
+      Meta*		data;
     };
   }
 }

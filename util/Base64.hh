@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/util/Base64.hh
+// file          /home/mycure/infinit/elle/util/Base64.hh
 //
 // created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [thu apr 22 14:22:10 2010]
+// updated       julien quintard   [mon may  3 21:10:11 2010]
 //
 
 #ifndef ELLE_UTIL_BASE64_HH
@@ -19,14 +19,12 @@
 //
 
 #include <elle/core/String.hh>
-#include <elle/core/Character.hh>
 
-#include <elle/miscellaneous/Byte.hh>
-#include <elle/miscellaneous/Status.hh>
+#include <elle/radix/Status.hh>
 
 namespace elle
 {
-  namespace miscellaneous
+  namespace standalone
   {
 
 //
@@ -34,7 +32,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// the region needs to be forward declared.
     ///
     class Region;
   }
@@ -47,12 +45,14 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this forward declare the archive.
     ///
     class Archive;
   }
 
-  using namespace miscellaneous;
+  using namespace core;
+  using namespace standalone;
+  using namespace radix;
   using namespace archive;
 
   namespace util
@@ -231,9 +231,7 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/Region.hh>
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
+#include <elle/standalone/Region.hh>
 
 #include <elle/archive/Archive.hh>
 

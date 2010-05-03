@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...libraries/elle/cryptography/Signature.cc
+// file          /home/mycure/infinit/elle/cryptography/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [thu apr 22 23:39:12 2010]
+// updated       julien quintard   [mon may  3 22:44:24 2010]
 //
 
 //
@@ -17,11 +17,12 @@
 
 #include <elle/cryptography/Signature.hh>
 
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
+  using namespace standalone;
 
   namespace cryptography
   {
@@ -36,7 +37,7 @@ namespace elle
     const Signature		Signature::Null;
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -58,9 +59,9 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Signature);
+    embed(Signature, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [wed mar 31 21:38:26 2010]
+// updated       julien quintard   [mon may  3 21:26:10 2010]
 //
 
 //
@@ -19,9 +19,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-
   namespace test
   {
 
@@ -51,7 +48,7 @@ namespace elle
 	escape("unable to initialize the Elle library");
 
       // setup the program.
-      if (Program::Setup(argc, argv) == StatusError)
+      if (Program::Setup() == StatusError)
 	escape("unable to set up the program");
 
       // launch either the client or the server.
@@ -99,7 +96,7 @@ namespace elle
 int			main(const int				argc,
 			     const char*			argv[])
 {
-  if (elle::test::Main(argc, argv) == elle::miscellaneous::StatusError)
+  if (elle::test::Main(argc, argv) == elle::radix::StatusError)
     {
       show();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [tue apr  6 23:50:18 2010]
+// updated       julien quintard   [mon may  3 22:51:00 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/util/Time.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -99,7 +102,7 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -127,9 +130,70 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this operator compares two times.
     ///
-    embed(Entity, Time);
+    Boolean		Time::operator<(const Time&		element) const
+    {
+      return ((this->year < element.year) ||
+	      (this->month < element.month) ||
+	      (this->day < element.day) ||
+	      (this->hour < element.hour) ||
+	      (this->minute < element.minute) ||
+	      (this->second < element.second));
+    }
+
+    ///
+    /// this operator adds a time to the current one.
+    ///
+    Time		Time::operator+(const Time&		element)
+    {
+      Time		result;
+
+      result.second = this->second + element.second;
+      result.hour = this->hour + element.hour;
+      result.minute = this->minute + element.minute;
+      result.day = this->day + element.day;
+      result.month = this->month + element.month;
+      result.year = this->year + element.year;
+
+      if (result.second > 60)
+	{
+	  result.minute += result.second / 60;
+	  result.second = result.second % 60;
+	}
+
+      if (result.minute > 60)
+	{
+	  result.hour += 1;
+	  result.minute -= 60;
+	}
+
+      if (result.hour > 60)
+	{
+	  result.day += 1;
+	  result.hour -= 60;
+	}
+
+      /// \todo XXX[does not handle special months]
+      if (result.day > 31)
+	{
+	  result.month += 1;
+	  result.day -= 31;
+	}
+
+      if (result.month > 12)
+	{
+	  result.year += 1;
+	  result.month -= 12;
+	}
+
+      return (result);
+    }
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Time, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -215,75 +279,6 @@ namespace elle
 	escape("unable to extract the attributes");
 
       leave();
-    }
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    ///
-    /// this operator adds two times together.
-    ///
-    Time		operator+(const Time&			lhs,
-				  const Time&			rhs)
-    {
-      Time		result(lhs);
-
-      enter();
-
-      result.second += rhs.second;
-      result.hour += rhs.hour;
-      result.minute += rhs.minute;
-      result.day += rhs.day;
-      result.month += rhs.month;
-      result.year += rhs.year;
-
-      if (result.second > 60)
-	{
-	  result.minute += result.second / 60;
-	  result.second = result.second % 60;
-	}
-
-      if (result.minute > 60)
-	{
-	  result.hour += 1;
-	  result.minute -= 60;
-	}
-
-      if (result.hour > 60)
-	{
-	  result.day += 1;
-	  result.hour -= 60;
-	}
-
-      /// \todo XXX[does not handle special months]
-      if (result.day > 31)
-	{
-	  result.month += 1;
-	  result.day -= 31;
-	}
-
-      if (result.month > 12)
-	{
-	  result.year += 1;
-	  result.month -= 12;
-	}
-
-      return (result);
-    }
-
-    ///
-    /// this operator compares two times.
-    ///
-    Boolean		operator<(const Time&			lhs,
-				  const Time&			rhs)
-    {
-      return ((lhs.year < rhs.year) ||
-	      (lhs.month < rhs.month) ||
-	      (lhs.day < rhs.day) ||
-	      (lhs.hour < rhs.hour) ||
-	      (lhs.minute < rhs.minute) ||
-	      (lhs.second < rhs.second));
     }
 
   }

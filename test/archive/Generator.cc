@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Generator.cc
 //
 // created       julien quintard   [fri jan 30 03:09:18 2009]
-// updated       julien quintard   [wed mar  3 11:27:45 2010]
+// updated       julien quintard   [sun may  2 21:54:49 2010]
 //
 
 //
@@ -19,10 +19,6 @@
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
-
   namespace test
   {
 
@@ -235,7 +231,7 @@ namespace elle
 
       enter();
 
-      if (value.Prepare(size) == NULL)
+      if (value.Prepare(size) == StatusError)
 	escape("unable to prepare the region");
 
       value.size = size;

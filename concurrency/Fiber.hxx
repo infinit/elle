@@ -8,11 +8,18 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [fri apr  9 02:12:09 2010]
+// updated       julien quintard   [mon may  3 00:17:48 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
 #define ELLE_CONCURRENCY_FIBER_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -259,7 +266,7 @@ namespace elle
 	escape("unable to swap to the application context");
 
       // retrieve the data.
-      data = (T*)Fiber::Current->data;
+      data = static_cast<T*>(Fiber::Current->data);
 
       // reset the data.
       Fiber::Current->data = NULL;
@@ -315,7 +322,7 @@ namespace elle
 	escape("unable to swap to the application context");
 
       // retrieve the data.
-      data = (T*)Fiber::Current->data;
+      data = static_cast<T*>(Fiber::Current->data);
 
       //printf("[/XXX 0x%x] Fiber::Wait() :: 0x%x\n",
       //Fiber::Current, data);
@@ -355,7 +362,7 @@ namespace elle
 	  awaken = true;
 
 	  // set the data.
-	  fiber->data = (Void*)data;
+	  fiber->data = static_cast<Meta*>(data);
 
 	  // set the state as awaken.
 	  fiber->state = Fiber::StateAwaken;
@@ -407,7 +414,7 @@ namespace elle
 	  awaken = true;
 
 	  // set the data.
-	  fiber->data = (Void*)data;
+	  fiber->data = static_cast<Meta*>(data);
 
 	  // set the state as awaken.
 	  fiber->state = Fiber::StateAwaken;

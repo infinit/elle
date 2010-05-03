@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Tag.hh
 //
 // created       julien quintard   [sun nov 29 20:23:37 2009]
-// updated       julien quintard   [wed mar 31 14:54:04 2010]
+// updated       julien quintard   [sun may  2 20:40:00 2010]
 //
 
 #ifndef ELLE_NETWORK_CODE_HH
@@ -18,10 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Natural.hh>
 
 namespace elle
 {
+  using namespace core;
+
   namespace network
   {
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/system/System.hh
 //
 // created       julien quintard   [mon jan 26 20:21:10 2009]
-// updated       julien quintard   [wed mar 24 22:14:15 2010]
+// updated       julien quintard   [mon may  3 21:07:53 2010]
 //
 
 #ifndef ELLE_SYSTEM_SYSTEM_HH
@@ -18,18 +18,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/String.hh>
+#include <elle/core/Character.hh>
 
-#include <elle/miscellaneous/Status.hh>
-
-#include <elle/idiom/Close.hh>
-# include <QSysInfo>
-# include <QDir>
-#include <elle/idiom/Open.hh>
+#include <elle/radix/Status.hh>
 
 namespace elle
 {
   using namespace core;
+  using namespace radix;
 
   ///
   /// this namespace contains system-related stuff.

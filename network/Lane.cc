@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Lane.cc
+// file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [tue apr 27 17:10:34 2010]
+// updated       julien quintard   [sun may  2 19:59:43 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/network/Lane.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {

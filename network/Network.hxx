@@ -8,11 +8,18 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [wed mar 31 02:42:23 2010]
+// updated       julien quintard   [sun may  2 20:28:51 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
 #define ELLE_NETWORK_NETWORK_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {

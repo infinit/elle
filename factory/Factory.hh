@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/factory/Factory.hh
+// file          /home/mycure/infinit/elle/factory/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [tue apr 27 13:35:38 2010]
+// updated       julien quintard   [mon may  3 21:14:50 2010]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HH
@@ -18,10 +18,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
-#include <elle/concurrency/Concurrency.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/String.hh>
 
-#include <elle/miscellaneous/Status.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
+
+#include <elle/concurrency/Accord.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
@@ -30,7 +33,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
   using namespace concurrency;
 
   ///
@@ -58,7 +61,7 @@ namespace elle
       /// this class is the base class for factory functionoids.
       ///
       class Functionoid:
-	public Meta
+	public Entity
       {
       public:
 	//
@@ -79,11 +82,11 @@ namespace elle
 	/// since template methods cannot be virtual, the argument is assumed
 	/// to be a derived entity.
 	///
-	virtual Status	Allocate(Entity*&) const = 0;
+	virtual Status	Allocate(Meta*&) const = 0;
       };
 
       ///
-      /// this functionoid contains a method for generating an Entity object
+      /// this functionoid contains a method for generating a Meta object
       /// of the given type.
       ///
       template <typename T>
@@ -99,7 +102,7 @@ namespace elle
 	//
 	// methods
 	//
-	Status		Allocate(Entity*&) const;
+	Status		Allocate(Meta*&) const;
 
 	//
 	// attributes

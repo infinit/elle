@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [wed mar 31 13:53:29 2010]
+// updated       julien quintard   [sun may  2 20:39:18 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <elle/network/Socket.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

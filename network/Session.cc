@@ -5,10 +5,10 @@
 //
 // license       network
 //
-// file          /home/mycure/infinit/libraries/elle/network/Session.cc
+// file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [mon apr 26 19:23:52 2010]
+// updated       julien quintard   [sun may  2 20:35:21 2010]
 //
 
 //
@@ -16,6 +16,11 @@
 //
 
 #include <elle/network/Session.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {

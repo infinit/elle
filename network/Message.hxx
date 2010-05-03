@@ -5,17 +5,25 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Message.hxx
+// file          /home/mycure/infinit/elle/network/Message.hxx
 //
 // created       julien quintard   [thu mar  4 14:53:29 2010]
-// updated       julien quintard   [mon apr 26 18:27:56 2010]
+// updated       julien quintard   [sun may  2 20:00:46 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HXX
 #define ELLE_NETWORK_MESSAGE_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/radix/Entity.hh>
+
 namespace elle
 {
+  using namespace radix;
+
   namespace network
   {
 
@@ -32,7 +40,7 @@ namespace elle
     ///
     template <>
     class Message<TagNone>:
-      public Meta
+      public Entity
     {
     };
 

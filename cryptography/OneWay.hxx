@@ -8,11 +8,20 @@
 // file          /home/mycure/infinit/elle/cryptography/OneWay.hxx
 //
 // created       julien quintard   [sun aug 23 17:11:22 2009]
-// updated       julien quintard   [mon mar  1 12:36:59 2010]
+// updated       julien quintard   [sun may  2 18:41:12 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HXX
 #define ELLE_CRYPTOGRAPHY_ONEWAY_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/archive/Archive.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {

@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...libraries/elle/cryptography/SecretKey.hh
+// file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [thu apr 22 14:32:18 2010]
+// updated       julien quintard   [mon may  3 22:33:16 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
@@ -18,19 +18,18 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/io/IO.hh>
+#include <elle/core/Character.hh>
+#include <elle/core/String.hh>
+#include <elle/core/Natural.hh>
 
-#include <elle/core/Core.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
 
 #include <elle/archive/Archive.hh>
-
-#include <elle/miscellaneous/Status.hh>
 
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/Clear.hh>
-#include <elle/cryptography/Digest.hh>
-#include <elle/cryptography/OneWay.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/evp.h>
@@ -41,9 +40,8 @@
 
 namespace elle
 {
-  using namespace io;
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
   using namespace archive;
 
   namespace cryptography
@@ -57,8 +55,7 @@ namespace elle
     /// this class represents a secret key for symmetric encryption.
     ///
     class SecretKey:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -102,8 +99,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, SecretKey);
+      // object
+      declare(SecretKey, _());
       Boolean		operator==(const SecretKey&) const;
 
       // dumpable

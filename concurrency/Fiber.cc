@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Fiber.cc
+// file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [tue apr 27 15:54:43 2010]
+// updated       julien quintard   [mon may  3 00:16:25 2010]
 //
 
 //
@@ -20,7 +20,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace standalone;
 
   namespace concurrency
   {
@@ -30,14 +30,14 @@ namespace elle
 //
 
     ///
-    /// this value defines fibers' stack size, in bytes: 32KB
+    /// this value defines fibers' stack size, in bytes: 128KB
     ///
-    const Natural32		Fiber::Size = 32768;
+    const Natural32		Fiber::Size = 130712;
 
     ///
     /// this value defines the fibers cache capacity.
     ///
-    const Natural32		Fiber::Capacity = 3;
+    const Natural32		Fiber::Capacity = 0;
 
     ///
     /// this variable holds the fibers waiting or that have been waiting
@@ -70,7 +70,7 @@ namespace elle
     /// the value instead. in other words this variable is unused but
     /// to receive rubbish.
     ///
-    Void*			Fiber::Trash = NULL;
+    Meta*			Fiber::Trash = NULL;
 
     ///
     /// this container holds the callbacks to trigger whenever the state

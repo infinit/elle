@@ -5,20 +5,25 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...ibraries/elle/cryptography/PublicKey.hxx
+// file          /home/mycure/infinit/elle/cryptography/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu apr 22 14:25:58 2010]
+// updated       julien quintard   [sun may  2 18:44:57 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
 #define ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
+  using namespace standalone;
 
   namespace cryptography
   {

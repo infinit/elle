@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Mutex.hh
+// file          /home/mycure/infinit/elle/concurrency/Mutex.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [mon apr 26 15:48:16 2010]
+// updated       julien quintard   [mon may  3 21:13:05 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_MUTEX_HH
@@ -18,21 +18,20 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Natural.hh>
 
-#include <elle/miscellaneous/Status.hh>
+#include <elle/radix/Status.hh>
 
 #include <elle/concurrency/Resource.hh>
-#include <elle/concurrency/Fiber.hh>
 
 #include <elle/idiom/Close.hh>
-#include <QMutex>
+# include <QMutex>
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
 
   namespace concurrency
   {

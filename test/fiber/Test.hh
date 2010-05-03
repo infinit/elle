@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/fiber/Test.hh
+// file          /home/mycure/infinit/libraries/elle/test/fiber/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [fri apr  9 15:59:21 2010]
+// updated       julien quintard   [wed apr 28 21:39:46 2010]
 //
 
 #ifndef ELLE_TEST_FIBER_TEST_HH
@@ -33,6 +33,16 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// this test is supposed to be scheduled as follows:
+    ///
+    /// F1 -> wait ResourceA -> awaken ResourceB
+    /// F2 -> wait ResourceB -> awaken ResourceC
+    /// F3 -> spawn F4 -> awaken ResourceA
+    ///    -> wait ResourceC
+    ///
+    /// order: F1, F2, F3, F4, F3, F1, F2, F3
+    ///
     class Test
     {
     public:

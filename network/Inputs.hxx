@@ -8,11 +8,17 @@
 // file          /home/mycure/infinit/elle/network/Inputs.hxx
 //
 // created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [thu mar 25 20:11:35 2010]
+// updated       julien quintard   [sun may  2 19:56:46 2010]
 //
 
 #ifndef ELLE_NETWORK_INPUTS_HXX
 #define ELLE_NETWORK_INPUTS_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/network/Arguments.hh>
 
 namespace elle
 {

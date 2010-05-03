@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Signature.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [sun apr 18 12:43:22 2010]
+// updated       julien quintard   [mon may  3 22:37:57 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SIGNATURE_HH
@@ -18,17 +18,25 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Core.hh>
+#include <elle/core/Natural.hh>
+#include <elle/core/Boolean.hh>
+
+#include <elle/standalone/Region.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
+
 #include <elle/archive/Archive.hh>
 
-#include <elle/miscellaneous/Status.hh>
+#include <elle/cryptography/Signature.hh>
 
 #include <elle/idiom/Open.hh>
 
 namespace elle
 {
   using namespace core;
-  using namespace miscellaneous;
+  using namespace standalone;
+  using namespace radix;
   using namespace archive;
 
   namespace cryptography
@@ -42,8 +50,7 @@ namespace elle
     /// this class represents an asymmetrically encrypted text.
     ///
     class Signature:
-      public Entity,
-      public Dumpable, public Archivable
+      public Object<>
     {
     public:
       //
@@ -55,8 +62,8 @@ namespace elle
       // interfaces
       //
 
-      // entity
-      declare(Entity, Signature);
+      // object
+      declare(Signature, _());
       Boolean		operator==(const Signature&) const;
 
       // dumpable

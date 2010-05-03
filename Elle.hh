@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [thu apr  8 15:09:11 2010]
+// updated       julien quintard   [mon may  3 21:24:18 2010]
 //
 
 #ifndef ELLE_ELLE_HH
@@ -18,17 +18,23 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Character.hh>
-
-#include <elle/miscellaneous/Status.hh>
+#include <elle/radix/Status.hh>
 
 ///
-/// the main elle namespace
+/// the elle namespace is composed of multiple modules, often regarded
+/// as layers.
+///
+/// the core module comes first with its basic type definitions. then
+/// the standalone module provides fundamental functionalities, followed
+/// by the radix module which serves as a base to many classes. then the
+/// archive module provides the serialization functionality. the io module,
+/// coupled with the archive functionality enables classes to display,
+/// store etc. in a very easy way. more modules are provided which are not
+/// as fundamental as the one cited above.
 ///
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -57,14 +63,16 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/io/IO.hh>
 #include <elle/core/Core.hh>
-#include <elle/miscellaneous/Miscellaneous.hh>
+#include <elle/system/System.hh>
+#include <elle/standalone/Standalone.hh>
+#include <elle/radix/Radix.hh>
 #include <elle/archive/Archive.hh>
+#include <elle/io/IO.hh>
 #include <elle/factory/Factory.hh>
 #include <elle/cryptography/Cryptography.hh>
-#include <elle/network/Network.hh>
 #include <elle/concurrency/Concurrency.hh>
+#include <elle/network/Network.hh>
 #include <elle/util/Util.hh>
 #include <elle/idiom/Idom.hh>
 
@@ -74,15 +82,19 @@ namespace elle
 // ---------- namespaces ------------------------------------------------------
 //
 
-using namespace elle;
-using namespace elle::io;
-using namespace elle::core;
-using namespace elle::miscellaneous;
-using namespace elle::archive;
-using namespace elle::factory;
-using namespace elle::cryptography;
-using namespace elle::network;
-using namespace elle::concurrency;
-using namespace elle::util;
+namespace elle
+{
+  using namespace core;
+  using namespace system;
+  using namespace standalone;
+  using namespace radix;
+  using namespace archive;
+  using namespace io;
+  using namespace factory;
+  using namespace cryptography;
+  using namespace concurrency;
+  using namespace network;
+  using namespace util;
+}
 
 #endif

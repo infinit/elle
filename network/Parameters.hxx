@@ -5,17 +5,38 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Parameters.hxx
+// file          /home/mycure/infinit/elle/network/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [mon apr 26 18:30:03 2010]
+// updated       julien quintard   [mon may  3 21:22:06 2010]
 //
 
 #ifndef ELLE_NETWORK_PARAMETERS_HXX
 #define ELLE_NETWORK_PARAMETERS_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/core/Natural.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
+
+#include <elle/archive/Archive.hh>
+
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
+  using namespace core;
+  using namespace standalone;
+  using namespace radix;
+  using namespace archive;
+
   namespace network
   {
 
@@ -28,7 +49,7 @@ namespace elle
     ///
     template <>
     class Parameters<>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -57,7 +78,7 @@ namespace elle
     ///
     template <typename T1>
     class Parameters<const T1>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -105,7 +126,7 @@ namespace elle
 	      typename T2>
     class Parameters<const T1,
 		     const T2>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -158,7 +179,7 @@ namespace elle
     class Parameters<const T1,
 		     const T2,
 		     const T3>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -216,7 +237,7 @@ namespace elle
 		     const T2,
 		     const T3,
 		     const T4>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -279,7 +300,7 @@ namespace elle
 		     const T3,
 		     const T4,
 		     const T5>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -347,7 +368,7 @@ namespace elle
 		     const T4,
 		     const T5,
 		     const T6>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -422,7 +443,7 @@ namespace elle
 		     const T5,
 		     const T6,
 		     const T7>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -502,7 +523,7 @@ namespace elle
 		     const T6,
 		     const T7,
 		     const T8>:
-      public Meta
+      public Entity
     {
     public:
       //
@@ -587,7 +608,7 @@ namespace elle
 		     const T7,
 		     const T8,
 		     const T9>:
-      public Meta
+      public Entity
     {
     public:
       //

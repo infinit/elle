@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Environment.hxx
 //
 // created       julien quintard   [thu apr  8 14:18:10 2010]
-// updated       julien quintard   [thu apr  8 16:03:43 2010]
+// updated       julien quintard   [mon may  3 00:15:11 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ENVIRONMENT_HXX
@@ -18,8 +18,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
+#include <elle/standalone/Report.hh>
+#include <elle/standalone/Maid.hh>
 
 namespace elle
 {
@@ -40,7 +40,8 @@ namespace elle
       enter();
 
       // push the (name, value) tuple.
-      this->container.push_back(Environment::Value(name, (Void*)value));
+      this->container.push_back(Environment::Value(name,
+						   static_cast<Meta*>(value)));
 
       leave();
     }
@@ -65,7 +66,7 @@ namespace elle
 	  if (iterator->first == name)
 	    {
 	      // return the value.
-	      value = (T*)iterator->second;
+	      value = static_cast<T*>(iterator->second);
 
 	      // remove the item
 	      this->container.erase(iterator);

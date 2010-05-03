@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/util/Settings.cc
+// file          /home/mycure/infinit/elle/util/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [mon apr 26 01:29:44 2010]
+// updated       julien quintard   [mon may  3 22:51:16 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <elle/util/Settings.hh>
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {
@@ -49,123 +52,6 @@ namespace elle
 	output.erase(0, index);
       else
 	output.erase();
-
-      leave();
-    }
-
-    ///
-    /// this method loads a settings file.
-    ///
-    Status		Settings::Load(const String&		path,
-				       Settings&		settings)
-    {
-      std::ifstream		file(path.c_str());
-      String			line;
-      Settings::Section*	section;
-
-      enter();
-
-      // initialize the section pointer.
-      section = NULL;
-
-      // for every line of the file.
-      while (std::getline(file, line))
-	{
-	  String		name;
-	  String		value;
-	  Natural32		position;
-
-	  // first, trim the line.
-	  if (Settings::Trim(line, line) == StatusError)
-	    escape("unable to trim the line");
-
-	  // if the line is empty, ignore it.
-	  if (line.length() == 0)
-	    continue;
-
-	  // if the line is a comment line, ignore it too.
-	  if (line[0] == '#')
-	    continue;
-
-	  // create a new section if the [ character is found.
-	  if (line[0] == '[')
-	    {
-	      String		identifier;
-
-	      // extract the section name.
-	      if (Settings::Trim(line.substr(1, line.find(']') - 1),
-				 name) == StatusError)
-		escape("unable to trim the section");
-
-	      // add the section.
-	      if (settings.Add(identifier) == StatusError)
-		escape("unable to add a new section");
-
-	      // set the current section.
-	      if (settings.Lookup(identifier, section) == StatusError)
-		escape("unable to retrieve the section");
-
-	      continue;
-	    }
-
-	  // locate the equal sign and ignore the line if not valid.
-	  if ((position = line.find('=')) == String::npos)
-	    continue;
-
-	  // if there is no section, stop.
-	  if (section == NULL)
-	    escape("unable to add a setting without a section");
-
-	  // extract the name.
-	  if (Settings::Trim(line.substr(0, position), name) == StatusError)
-	    escape("unable to trim the name");
-
-	  // extract the value.
-	  if (Settings::Trim(line.substr(position + 1), value) == StatusError)
-	    escape("unable to trim the value");
-
-	  // add the assignment to the section.
-	  if (section->Add(name, value) == StatusError)
-	    escape("unable to add the setting to the section");
-	}
-
-      leave();
-    }
-
-    ///
-    /// this method stores a setting into the given file.
-    ///
-    Status		Settings::Store(const Settings&		settings,
-					const String&		path)
-    {
-      std::ofstream			file(path.c_str());
-      Settings::Scoutor			i;
-      Settings::Section::Scoutor	j;
-
-      enter();
-
-      // go through the sections.
-      for (i = settings.sections.begin();
-	   i != settings.sections.end();
-	   i++)
-	{
-	  Settings::Section*	section = *i;
-
-	  // write the section identifier.
-	  file << "[" << section->identifier << "]" << std::endl;
-
-	  // go through the assignments.
-	  for (j = section->assignments.begin();
-	       j != section->assignments.end();
-	       j++)
-	    {
-	      Settings::Assignment*	assignment = *j;
-
-	      // write the assignment.
-	      file << assignment->name << " = "
-		   << assignment->value << std::endl;
-	    }
-	}
 
       leave();
     }
@@ -517,6 +403,179 @@ namespace elle
       // lookup the assignment in the section.
       if (section->Lookup(name, value) == StatusError)
 	escape("unable to locate the assignment");
+
+      leave();
+    }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Settings, _(FormatBase64, FormatCustom), _());
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps a settings object.
+    ///
+    Status		Settings::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+      Settings::Scoutor	i;
+
+      enter();
+
+      std::cout << alignment << "[Settings]" << std::endl;
+
+      // go through the sections.
+      for (i = this->sections.begin();
+	   i != this->sections.end();
+	   i++)
+	{
+	  Settings::Section*		section = *i;
+	  Settings::Section::Scoutor	j;
+
+	  // display the section.
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Section] " << section->identifier << std::endl;
+
+	  // go through the assignments.
+	  for (j = section->assignments.begin();
+	       j != section->assignments.end();
+	       j++)
+	    {
+	      Settings::Assignment*	assignment = *j;
+
+	      // display the assignment.
+	      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+			<< "[" << assignment->name << "] "
+			<< assignment->value << std::endl;
+	    }
+	}
+
+      leave();
+    }
+
+//
+// ---------- fileable --------------------------------------------------------
+//
+
+    ///
+    /// this method loads a settings file.
+    ///
+    Status		Settings::Load(const String&		path)
+    {
+      std::ifstream		file(path.c_str());
+      String			line;
+      Settings::Section*	section;
+
+      enter();
+
+      // initialize the section pointer.
+      section = NULL;
+
+      // for every line of the file.
+      while (std::getline(file, line))
+	{
+	  String		name;
+	  String		value;
+	  Natural32		position;
+
+	  // first, trim the line.
+	  if (Settings::Trim(line, line) == StatusError)
+	    escape("unable to trim the line");
+
+	  // if the line is empty, ignore it.
+	  if (line.length() == 0)
+	    continue;
+
+	  // if the line is a comment line, ignore it too.
+	  if (line[0] == '#')
+	    continue;
+
+	  // create a new section if the [ character is found.
+	  if (line[0] == '[')
+	    {
+	      String		identifier;
+
+	      // extract the section name.
+	      if (Settings::Trim(line.substr(1, line.find(']') - 1),
+				 name) == StatusError)
+		escape("unable to trim the section");
+
+	      // add the section.
+	      if (this->Add(identifier) == StatusError)
+		escape("unable to add a new section");
+
+	      // set the current section.
+	      if (this->Lookup(identifier, section) == StatusError)
+		escape("unable to retrieve the section");
+
+	      continue;
+	    }
+
+	  // locate the equal sign and ignore the line if not valid.
+	  if ((position = line.find('=')) == String::npos)
+	    continue;
+
+	  // if there is no section, stop.
+	  if (section == NULL)
+	    escape("unable to add a setting without a section");
+
+	  // extract the name.
+	  if (Settings::Trim(line.substr(0, position), name) == StatusError)
+	    escape("unable to trim the name");
+
+	  // extract the value.
+	  if (Settings::Trim(line.substr(position + 1), value) == StatusError)
+	    escape("unable to trim the value");
+
+	  // add the assignment to the section.
+	  if (section->Add(name, value) == StatusError)
+	    escape("unable to add the setting to the section");
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method stores a setting into the given file.
+    ///
+    Status		Settings::Store(const String&		path) const
+    {
+      std::ofstream	file(path.c_str());
+      Settings::Scoutor	i;
+
+      enter();
+
+      // go through the sections.
+      for (i = this->sections.begin();
+	   i != this->sections.end();
+	   i++)
+	{
+	  Settings::Section*		section = *i;
+	  Settings::Section::Scoutor	j;
+
+	  // write the section identifier.
+	  file << "[" << section->identifier << "]" << std::endl;
+
+	  // go through the assignments.
+	  for (j = section->assignments.begin();
+	       j != section->assignments.end();
+	       j++)
+	    {
+	      Settings::Assignment*	assignment = *j;
+
+	      // write the assignment.
+	      file << assignment->name << " = "
+		   << assignment->value << std::endl;
+	    }
+	}
 
       leave();
     }

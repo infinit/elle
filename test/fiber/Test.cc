@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [fri apr  9 16:05:13 2010]
+// updated       julien quintard   [mon may  3 21:25:58 2010]
 //
 
 //
@@ -21,17 +21,6 @@ namespace elle
 {
   namespace test
   {
-
-/* XXX
-
-    F1 -> wait ResourceA -> awaken ResourceB
-    F2 -> wait ResourceB -> awaken ResourceC
-    F3 -> spawn F4 -> awaken ResourceA
-       -> wait ResourceC
-
-    F1, F2, F3, F4, F3, F1, F2, F3
-
-*/
 
 //
 // ---------- definitions -----------------------------------------------------
@@ -188,7 +177,7 @@ namespace elle
 	escape("unable to initialize the library");
 
       // setup the program.
-      if (Program::Setup(argc, argv) == StatusError)
+      if (Program::Setup() == StatusError)
 	escape("unable to set up the program");
 
       // create and start the timer1, launching the fiber1.
@@ -230,7 +219,7 @@ namespace elle
 int			main(const int				argc,
 			     const char*			argv[])
 {
-  if (elle::test::Main(argc, argv) == elle::miscellaneous::StatusError)
+  if (elle::test::Main(argc, argv) == elle::radix::StatusError)
     {
       show();
 

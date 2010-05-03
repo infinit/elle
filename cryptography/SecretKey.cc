@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...libraries/elle/cryptography/SecretKey.cc
+// file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [thu apr 22 23:41:33 2010]
+// updated       julien quintard   [mon may  3 22:44:52 2010]
 //
 
 //
@@ -16,14 +16,11 @@
 //
 
 #include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Digest.hh>
+#include <elle/cryptography/OneWay.hh>
 
 namespace elle
 {
-  using namespace io;
-  using namespace core;
-  using namespace miscellaneous;
-  using namespace archive;
-
   namespace cryptography
   {
 
@@ -303,7 +300,7 @@ namespace elle
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
@@ -325,9 +322,9 @@ namespace elle
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, SecretKey);
+    embed(SecretKey, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------

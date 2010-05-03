@@ -5,14 +5,23 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Slot.hxx
+// file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [mon apr 26 01:10:28 2010]
+// updated       julien quintard   [sun may  2 21:12:21 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
 #define ELLE_NETWORK_SLOT_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
+
+#include <elle/network/Packet.hh>
 
 namespace elle
 {

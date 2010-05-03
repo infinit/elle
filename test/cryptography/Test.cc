@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon mar 29 10:42:37 2010]
+// updated       julien quintard   [mon may  3 21:25:52 2010]
 //
 
 //
@@ -248,7 +248,7 @@ namespace elle
 
 int			main()
 {
-  if (elle::test::Main() == elle::miscellaneous::StatusError)
+  if (elle::test::Main() == elle::radix::StatusError)
     {
       show();
 

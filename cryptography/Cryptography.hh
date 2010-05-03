@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.hh
 //
 // created       julien quintard   [tue oct 30 12:15:12 2007]
-// updated       julien quintard   [sat mar 20 01:30:51 2010]
+// updated       julien quintard   [mon may  3 21:17:18 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CRYPTOGRAPHYGRAPHY_HH
@@ -18,30 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/Status.hh>
-
-#include <elle/cryptography/Cipher.hh>
-#include <elle/cryptography/Clear.hh>
-#include <elle/cryptography/Code.hh>
-#include <elle/cryptography/Digest.hh>
-#include <elle/cryptography/KeyPair.hh>
-#include <elle/cryptography/OneWay.hh>
-#include <elle/cryptography/Plain.hh>
-#include <elle/cryptography/PrivateKey.hh>
-#include <elle/cryptography/PublicKey.hh>
-#include <elle/cryptography/SecretKey.hh>
-#include <elle/cryptography/Signature.hh>
-
-#include <elle/idiom/Close.hh>
-# include <openssl/engine.h>
-# include <openssl/err.h>
-# include <openssl/rand.h>
-#include <elle/idiom/Open.hh>
+#include <elle/radix/Status.hh>
 
 namespace elle
 {
-  using namespace core;
-  using namespace miscellaneous;
+  using namespace radix;
 
   ///
   /// this namespace contains everything necessary for performing
@@ -90,5 +71,21 @@ namespace elle
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/Clear.hh>
+#include <elle/cryptography/Code.hh>
+#include <elle/cryptography/Digest.hh>
+#include <elle/cryptography/KeyPair.hh>
+#include <elle/cryptography/OneWay.hh>
+#include <elle/cryptography/Plain.hh>
+#include <elle/cryptography/PrivateKey.hh>
+#include <elle/cryptography/PublicKey.hh>
+#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Signature.hh>
 
 #endif

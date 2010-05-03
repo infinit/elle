@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Door.cc
+// file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [mon apr 26 01:08:36 2010]
+// updated       julien quintard   [sun may  2 21:03:02 2010]
 //
 
 //
@@ -16,6 +16,10 @@
 //
 
 #include <elle/network/Door.hh>
+#include <elle/network/Packet.hh>
+#include <elle/network/Raw.hh>
+#include <elle/network/Inputs.hh>
+#include <elle/network/Network.hh>
 
 namespace elle
 {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Semaphore.cc
 //
 // created       julien quintard   [sun mar  7 19:07:03 2010]
-// updated       julien quintard   [thu mar 25 00:31:22 2010]
+// updated       julien quintard   [sun may  2 17:28:23 2010]
 //
 
 //
@@ -17,12 +17,8 @@
 
 #include <elle/concurrency/Semaphore.hh>
 
-///
-/// these includes are placed here in order to prevent pre-processing
-/// conflicts.
-///
-#include <elle/miscellaneous/Report.hh>
-#include <elle/miscellaneous/Maid.hh>
+#include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 namespace elle
 {

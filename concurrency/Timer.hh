@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Timer.hh
+// file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [mon apr 26 19:06:41 2010]
+// updated       julien quintard   [mon may  3 21:14:29 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -18,10 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
+#include <elle/core/Natural.hh>
 
-#include <elle/miscellaneous/Status.hh>
-#include <elle/miscellaneous/Callback.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
+
+#include <elle/concurrency/Callback.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -30,7 +32,8 @@
 
 namespace elle
 {
-  using namespace miscellaneous;
+  using namespace core;
+  using namespace radix;
 
   namespace concurrency
   {
@@ -46,7 +49,7 @@ namespace elle
     class Timer:
       public ::QObject,
 
-      public Meta
+      public Entity
     {
       Q_OBJECT;
 

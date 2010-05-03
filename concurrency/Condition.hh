@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/concurrency/Condition.hh
+// file          /home/mycure/infinit/elle/concurrency/Condition.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [mon apr 26 19:07:47 2010]
+// updated       julien quintard   [mon may  3 21:12:59 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CONDITION_HH
@@ -18,9 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Meta.hh>
+#include <elle/core/Natural.hh>
 
-#include <elle/miscellaneous/Status.hh>
+#include <elle/radix/Status.hh>
+#include <elle/radix/Entity.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QWaitCondition>
@@ -28,6 +29,9 @@
 
 namespace elle
 {
+  using namespace core;
+  using namespace radix;
+
   namespace concurrency
   {
 
@@ -41,7 +45,7 @@ namespace elle
     /// XXX \todo this class has to be written!
     ///
     class Condition:
-      public Meta
+      public Entity
     {
     public:
       //
