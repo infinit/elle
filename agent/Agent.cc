@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue apr 27 17:27:23 2010]
+// updated       julien quintard   [wed apr 28 21:45:30 2010]
 //
 
 //
@@ -30,12 +30,6 @@ namespace agent
   const Character		Component[] = "agent";
 
   ///
-  /// this string contains the path to the user infinit configuration
-  /// directory.
-  ///
-  const String			Agent::Path = System::Path::Home + "/.infinit";
-
-  ///
   /// this string represents the door's name to Etoile.
   ///
   const String			Agent::Line("etoile");
@@ -50,11 +44,6 @@ namespace agent
   ///
   Door*				Agent::Channel = NULL;
 
-  ///
-  /// the phrase used to connect applications to Etoile.
-  ///
-  String			Agent::Phrase;
-
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -64,10 +53,12 @@ namespace agent
   ///
   Status		Agent::Initialize(const String&		name)
   {
+    String		path =
+      infinit::Infinit::Path::Keys + System::Path::Separator +
+      name + ".pair";
     Archive		archive;
     Region		region;
     struct ::stat	stat;
-    String		path = Agent::Path + "/keys/" + name + ".pair";
     Integer32		fd;
     String		prompt;
     String		passphrase;
@@ -197,6 +188,8 @@ namespace agent
   ///
   Status		Agent::Authenticate()
   {
+    String		phrase;
+
     enter();
 
     //
@@ -236,11 +229,11 @@ namespace agent
 	escape("unable to identify to etoile");
 
       // decrypt the code with the private key.
-      if (Agent::Pair.k.Decrypt(code, Agent::Phrase) == StatusError)
+      if (Agent::Pair.k.Decrypt(code, phrase) == StatusError)
 	escape("unable to decrypt the code");
 
       // hash the phrase.
-      if (OneWay::Hash(Agent::Phrase, digest) == StatusError)
+      if (OneWay::Hash(phrase, digest) == StatusError)
 	escape("unable to hash the phrase");
 
       // authenticate by sending the hash of the phrase.
@@ -255,7 +248,9 @@ namespace agent
     // behalf of who they are working.
     //
     {
-      String		path = Agent::Path + "/public.b64";
+      String		path =
+	infinit::Infinit::Path::Home + System::Path::Separator +
+	"identity.b64";
       String		string;
       Integer32		fd;
 
@@ -286,12 +281,14 @@ namespace agent
     // applications can connect to etoile on behalf of the agent's user.
     //
     {
-      String		path = Agent::Path + "/phrase.b64";
+      String		path =
+	infinit::Infinit::Path::Home + System::Path::Separator +
+	"phrase.b64";
       String		string;
       Integer32		fd;
 
       // encode the phrase in base64.
-      if (Base64::Encode(Agent::Phrase, string) == StatusError)
+      if (Base64::Encode(phrase, string) == StatusError)
 	escape("unable to encode the phrase");
 
       // create the file or overwrite it.
@@ -424,12 +421,16 @@ namespace agent
   ///
   /// the main function.
   ///
-  Status		Main(const Natural32			argc,
-			     const Character*			argv[])
+  Status		Main(Natural32				argc,
+			     Character*				argv[])
   {
     String		name;
 
     enter();
+
+    // initialize the Elle library.
+    if (Elle::Initialize() == StatusError)
+      escape("unable to initialize the Elle library");
 
     /// XXX \todo to improve with real argument parsing.
     {
@@ -439,12 +440,12 @@ namespace agent
       name.assign(argv[1]);
     }
 
-    // initialize the Elle library.
-    if (Elle::Initialize() == StatusError)
-      escape("unable to initialize the Elle library");
+    // initialize Infinit.
+    if (infinit::Infinit::Initialize() == StatusError)
+      escape("unable to initialize Infinit");
 
     // set up the program.
-    if (Program::Setup(argc, argv) == StatusError)
+    if (Program::Setup() == StatusError)
       escape("unable to set up the program");
 
     // initialize the agent.
@@ -458,6 +459,10 @@ namespace agent
     // clean the agent.
     if (Agent::Clean() == StatusError)
       escape("unable to clean the agent");
+
+    // clean Infinit.
+    if (infinit::Infinit::Clean() == StatusError)
+      escape("unable to clean Infinit");
 
     // clean the Elle library.
     if (Elle::Clean() == StatusError)
@@ -475,8 +480,8 @@ namespace agent
 ///
 /// this is the program entry point.
 ///
-int			main(const int				argc,
-                             const char*			argv[])
+int			main(int				argc,
+                             char*				argv[])
 {
   agent::Main(argc, argv);
 

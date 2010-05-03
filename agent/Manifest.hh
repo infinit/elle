@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:34:08 2010]
-// updated       julien quintard   [sun apr 18 20:03:39 2010]
+// updated       julien quintard   [mon may  3 17:30:39 2010]
 //
 
 #ifndef AGENT_MANIFEST_HH
@@ -32,12 +32,12 @@ namespace agent
   ///
   /// XXX
   ///
-  extern const Character	Component[];
+  extern const elle::Character	Component[];
 
   ///
   /// XXX
   ///
-  const Natural32		Tags = 2;
+  const elle::Natural32		Tags = 2;
 
 }
 
@@ -62,7 +62,7 @@ namespace agent
   //
   enum Tag
     {
-      TagDecrypt = Range<Component>::First,
+      TagDecrypt = elle::Range<Component>::First,
       TagDecrypted,
       TagSign,
       TagSigned,
