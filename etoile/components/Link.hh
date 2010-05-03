@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Link.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [thu apr 22 11:10:13 2010]
+// updated       julien quintard   [mon may  3 17:55:10 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -47,30 +47,19 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Create(context::Link*);
-      static Status	Load(context::Link*,
-			     const hole::Address&);
-      static Status	Bind(context::Link*,
-			     const path::Way&);
-      static Status	Resolve(context::Link*,
-				path::Way&);
-      static Status	Discard(context::Link*);
-      static Status	Store(context::Link*);
-      static Status	Destroy(context::Link*);
+      static elle::Status	Create(context::Link*);
+      static elle::Status	Load(context::Link*,
+				     const hole::Address&);
+      static elle::Status	Bind(context::Link*,
+				     const path::Way&);
+      static elle::Status	Resolve(context::Link*,
+					path::Way&);
+      static elle::Status	Discard(context::Link*);
+      static elle::Status	Store(context::Link*);
+      static elle::Status	Destroy(context::Link*);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/journal/Journal.hh>
-
-#include <etoile/user/User.hh>
-
-#include <etoile/components/Rights.hh>
-#include <etoile/components/Contents.hh>
 
 #endif

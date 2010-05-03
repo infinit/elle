@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [thu apr 22 14:49:54 2010]
+// updated       julien quintard   [mon may  3 20:50:44 2010]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <etoile/depot/Unit.hh>
+#include <etoile/depot/Repository.hh>
 
 namespace etoile
 {
@@ -29,7 +30,7 @@ namespace etoile
     ///
     /// this method is used to load an already existing unit.
     ///
-    Status		Unit::Load(String			path)
+    elle::Status	Unit::Load(elle::String			path)
     {
       enter();
 
@@ -43,23 +44,25 @@ namespace etoile
     /// this method sets or updates the unit by serializing the block
     /// and storing its content on the disk.
     ///
-    Status		Unit::Set(hole::Block*			block)
+    elle::Status	Unit::Set(hole::Block*			block)
     {
-      Archive		archive;
-      Natural32		fd;
+      elle::Archive	archive;
+      elle::Natural32	fd;
 
       enter();
 
+      printf("TO REVIEW: this->path n'a pas de sens ici\n");
+      escape("XXX");
+
       // create the path based on the block's address.
-      if (block->address.Identify(this->path) == StatusError)
-	escape("unable to retrieve the block's identity");
+      block->address >> this->path;
 
       // create an archive.
-      if (archive.Create() == StatusError)
+      if (archive.Create() == elle::StatusError)
 	escape("unable to create an archive");
 
       // serialize the block.
-      if (block->Serialize(archive) == StatusError)
+      if (block->Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the block");
 
       // create and open the file.
@@ -90,22 +93,26 @@ namespace etoile
     ///
     /// this method extracts the on-disk unit and returns a live block.
     ///
-    Status		Unit::Get(hole::Block*			block)
+    elle::Status	Unit::Get(hole::Block*			block)
     {
-      Archive		archive;
-      Region		region;
+      elle::Archive	archive;
+      elle::Region	region;
       struct ::stat	stat;
-      Natural32		fd;
-      String		identifier;
+      elle::Natural32	fd;
+      elle::String	identifier;
 
       enter();
+
+      printf("[XXX] ici utiliser Fileable::Store()\n");
+      leave();
+      // XXX
 
       // retrieve information on the path, especially the unit size.
       if (::lstat(this->path.c_str(), &stat) == -1)
 	escape("unable to retrieve information on the path");
 
       // prepare a region to receive the file's content.
-      if (region.Prepare(stat.st_size) == StatusError)
+      if (region.Prepare(stat.st_size) == elle::StatusError)
 	escape("unable to prepare the region");
 
       region.size = stat.st_size;
@@ -126,27 +133,27 @@ namespace etoile
       ::close(fd);
 
       // detach the data from the region to prevent multiple resources release.
-      if (region.Detach() == StatusError)
+      if (region.Detach() == elle::StatusError)
         escape("unable to detach the region");
 
       // prepare the archive.
-      if (archive.Prepare(region) == StatusError)
+      if (archive.Prepare(region) == elle::StatusError)
         escape("unable to prepare the archive");
 
       // extract the component identifier.
-      if (archive.Extract(identifier) == StatusError)
+      if (archive.Extract(identifier) == elle::StatusError)
         escape("unable to extract the component identifier");
 
       // build the block according to the component type.
-      if (Factory::Build(identifier, block) == StatusError)
+      if (elle::Factory::Build(identifier, block) == elle::StatusError)
 	escape("unable to build the block");
 
       // extract the archive.
-      if (block->Extract(archive) == StatusError)
+      if (block->Extract(archive) == elle::StatusError)
         escape("unable to extract the given block");
 
       // bind so that the internal address is computed.
-      if (block->Bind() == StatusError)
+      if (block->Bind() == elle::StatusError)
 	escape("unable to bind the block");
 
       leave();
@@ -155,7 +162,7 @@ namespace etoile
     ///
     /// this method destroys a unit file.
     ///
-    Status		Unit::Destroy()
+    elle::Status		Unit::Destroy()
     {
       enter();
 
@@ -176,15 +183,15 @@ namespace etoile
     ///
     /// this method dumps the unit.
     ///
-    Status		Unit::Dump(const Natural32		margin) const
+    elle::Status	Unit::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Unit] " << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Path] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Path] "
 		<< std::hex << this->path << std::endl;
 
       leave();

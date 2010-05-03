@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Proof.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed apr 14 12:14:58 2010]
+// updated       julien quintard   [mon may  3 23:04:46 2010]
 //
 
 //
@@ -54,7 +54,7 @@ namespace etoile
     /// are identified by the sole index leading to the record of the object's 
     /// access control block.
     ///
-    Status		Proof::Specify(const Index&		index)
+    elle::Status	Proof::Specify(const Index&		index)
     {
       enter();
 
@@ -71,7 +71,7 @@ namespace etoile
     /// this method specifies a vassal-specific proof by embedding
     /// a voucher signed by a delegate or the object's owner himself.
     ///
-    Status		Proof::Specify(const Index&		index,
+    elle::Status	Proof::Specify(const Index&		index,
 				       const Voucher&		voucher)
     {
       enter();
@@ -86,13 +86,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Proof::operator==(const Proof&		element) const
+    elle::Boolean	Proof::operator==(const Proof&		element) const
     {
       enter();
 
@@ -118,9 +118,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Proof);
+    embed(Proof, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -129,26 +129,26 @@ namespace etoile
     ///
     /// this function dumps an proof object.
     ///
-    Status		Proof::Dump(Natural32			margin) const
+    elle::Status	Proof::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Proof]" << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Index] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Index] "
 		<< this->index << std::endl;
 
       if (this->voucher != NULL)
 	{
-	  if (this->voucher->Dump(margin + 2) == StatusError)
+	  if (this->voucher->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the voucher");
 	}
       else
 	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Voucher] " << none << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Voucher] " << elle::none << std::endl;
 	}
 
       leave();
@@ -161,24 +161,24 @@ namespace etoile
     ///
     /// this method serializes the proof object.
     ///
-    Status		Proof::Serialize(Archive&		archive) const
+    elle::Status	Proof::Serialize(elle::Archive&		archive) const
     {
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize(this->index) == StatusError)
+      if (archive.Serialize(this->index) == elle::StatusError)
 	escape("unable to serialize the index");
 
       // serialize the voucher.
       if (this->voucher != NULL)
 	{
-	  if (archive.Serialize(*this->voucher) == StatusError)
+	  if (archive.Serialize(*this->voucher) == elle::StatusError)
 	    escape("unable to serialize the voucher");
 	}
       else
 	{
 	  // serialize 'none'.
-	  if (archive.Serialize(none) == StatusError)
+	  if (archive.Serialize(elle::none) == elle::StatusError)
 	    escape("unable to serialize 'none'");
 	}
 
@@ -188,24 +188,24 @@ namespace etoile
     ///
     /// this method extracts the proof object.
     ///
-    Status		Proof::Extract(Archive&			archive)
+    elle::Status	Proof::Extract(elle::Archive&		archive)
     {
-      Archive::Type	type;
+      elle::Archive::Type	type;
 
       enter();
 
       // extract the attributes.
-      if (archive.Extract(this->index) == StatusError)
+      if (archive.Extract(this->index) == elle::StatusError)
 	escape("unable to extract the index");
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == StatusError)
+      if (archive.Fetch(type) == elle::StatusError)
 	escape("unable to fetch the next element's type");
 
-      if (type == Archive::TypeNull)
+      if (type == elle::Archive::TypeNull)
 	{
 	  // nothing to do, keep the voucher to NULL.
-	  if (archive.Extract(none) == StatusError)
+	  if (archive.Extract(elle::none) == elle::StatusError)
 	    escape("unable to extract null");
 	}
       else
@@ -214,7 +214,7 @@ namespace etoile
 	  this->voucher = new Voucher;
 
 	  // extract the voucher.
-	  if (archive.Extract(*this->voucher) == StatusError)
+	  if (archive.Extract(*this->voucher) == elle::StatusError)
 	    escape("unable to extract the voucher");
 	}
 

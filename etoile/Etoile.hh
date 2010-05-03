@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [sat mar 27 00:45:04 2010]
+// updated       julien quintard   [mon may  3 12:25:31 2010]
 //
 
 #ifndef ETOILE_ETOILE_HH
@@ -19,6 +19,9 @@
 //
 
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
+
+#include <etoile/hole/Address.hh> // XXX a virer des qu'on aurait les memento
 
 ///
 /// the principal namespace
@@ -39,8 +42,8 @@ namespace etoile
     //
     // static methods
     //
-    static Status	Initialize();
-    static Status	Clean();
+    static elle::Status	Initialize(const hole::Address& = hole::Address::Null);
+    static elle::Status	Clean();
   };
 
 }
@@ -60,16 +63,22 @@ namespace etoile
 #include <etoile/wall/User.hh>
 #include <etoile/wall/Wall.hh>
 
-using namespace etoile;
-using namespace etoile::components;
-using namespace etoile::configuration;
-using namespace etoile::context;
-using namespace etoile::kernel;
-using namespace etoile::depot;
-using namespace etoile::hole;
-using namespace etoile::journal;
-using namespace etoile::path;
-using namespace etoile::user;
-using namespace etoile::wall;
+//
+// ---------- namespace -------------------------------------------------------
+//
+
+namespace etoile
+{
+  using namespace components;
+  using namespace configuration;
+  using namespace context;
+  using namespace kernel;
+  using namespace depot;
+  using namespace hole;
+  using namespace journal;
+  using namespace path;
+  using namespace user;
+  using namespace wall;
+}
 
 #endif

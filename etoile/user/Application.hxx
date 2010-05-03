@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hxx
 //
 // created       julien quintard   [wed apr 21 20:59:52 2010]
-// updated       julien quintard   [thu apr 22 16:06:15 2010]
+// updated       julien quintard   [mon may  3 17:19:35 2010]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HXX
@@ -28,10 +28,10 @@ namespace etoile
     /// by the application as long as it provides its identifier.
     ///
     template <typename T>
-    Status		Application::Add(const context::Identifier& identifier,
+    elle::Status	Application::Add(const context::Identifier& identifier,
 					 T*			context)
     {
-      std::pair<Application::Iterator, Boolean>	result;
+      std::pair<Application::Iterator, elle::Boolean>	result;
 
       enter();
 
@@ -52,7 +52,7 @@ namespace etoile
     /// this method retrieves a recorded context.
     ///
     template <typename T>
-    Status		Application::Retrieve(const
+    elle::Status	Application::Retrieve(const
 					        context::Identifier&
 					          identifier,
 					      T*&		context)
@@ -74,7 +74,7 @@ namespace etoile
       // context, this method sets the current fiber in the context so that,
       // should the application die while the fiber is blocked, the system
       // can retrieve and delete both the application and fiber.
-      context->fiber = Fiber::Current;
+      context->fiber = elle::Fiber::Current;
 
       leave();
     }

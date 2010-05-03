@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [tue apr 27 15:52:18 2010]
+// updated       julien quintard   [mon may  3 19:17:49 2010]
 //
 
 //
@@ -16,6 +16,12 @@
 //
 
 #include <etoile/depot/Repository.hh>
+#include <etoile/depot/Cell.hh>
+#include <etoile/depot/Unit.hh>
+
+#include <etoile/configuration/Configuration.hh>
+
+#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {
@@ -29,7 +35,7 @@ namespace etoile
     ///
     /// the expiration delays for blocks depending on their family.
     ///
-    Time*				Repository::Delays[hole::Families];
+    elle::Time*				Repository::Delays[hole::Families];
 
     ///
     /// the data container.
@@ -39,19 +45,16 @@ namespace etoile
     ///
     /// the cache attributes: size, capacity and LRU list.
     ///
-    Natural64				Repository::Cache::Size = 0;
-    Natural64&				Repository::Cache::Capacity =
-      configuration::Configuration::Cache::Capacity;
+    elle::Natural64			Repository::Cache::Size = 0;
+    elle::Natural64			Repository::Cache::Capacity;
     Repository::Access::Container	Repository::Cache::Queue;
 
     ///
     /// the reserve attributes: size, capacity and LRU list.
     ///
-    String&				Repository::Reserve::Path =
-      configuration::Configuration::Reserve::Path;
-    Natural64				Repository::Reserve::Size = 0;
-    Natural64&				Repository::Reserve::Capacity =
-      configuration::Configuration::Reserve::Capacity;
+    elle::String			Repository::Reserve::Path;
+    elle::Natural64			Repository::Reserve::Size = 0;
+    elle::Natural64			Repository::Reserve::Capacity;
     Repository::Access::Container	Repository::Reserve::Queue;
 
 //
@@ -61,16 +64,35 @@ namespace etoile
     ///
     /// this method initializes the repository.
     ///
-    Status		Repository::Initialize()
+    elle::Status	Repository::Initialize()
     {
       enter();
 
-      // set the content hash block to NULL since such blocks never expire.
-      Repository::Delays[hole::FamilyContentHashBlock] = NULL;
+      //
+      // set the static definitions.
+      //
+      {
+	Repository::Cache::Capacity =
+	  configuration::Configuration::Cache::Capacity;
 
-      // set the public key blocks delay.
-      Repository::Delays[hole::FamilyPublicKeyBlock] = new Time;
-      Repository::Delays[hole::FamilyPublicKeyBlock]->minute = 5;
+	Repository::Reserve::Path =
+	  lune::Lune::Reserve;
+
+	Repository::Reserve::Capacity =
+	  configuration::Configuration::Reserve::Capacity;
+      }
+
+      //
+      // set the delays
+      //
+      {
+	// set the content hash block to NULL since such blocks never expire.
+	Repository::Delays[hole::FamilyContentHashBlock] = NULL;
+
+	// set the public key blocks delay.
+	Repository::Delays[hole::FamilyPublicKeyBlock] = new elle::Time;
+	Repository::Delays[hole::FamilyPublicKeyBlock]->minute = 5;
+      }
 
       leave();
     }
@@ -78,7 +100,7 @@ namespace etoile
     ///
     /// this method cleans the repository by releasing the resources used.
     ///
-    Status		Repository::Clean()
+    elle::Status	Repository::Clean()
     {
       Repository::Data::Scoutor		i;
       Repository::Access::Scoutor	j;
@@ -93,7 +115,7 @@ namespace etoile
 	  Record*	record = i->second;
 
 	  // destroy the record.
-	  if (record->Destroy() == StatusError)
+	  if (record->Destroy() == elle::StatusError)
 	    escape("unable to dump the record");
 
 	  // delete the record.
@@ -116,12 +138,12 @@ namespace etoile
     ///
     /// this method updates the repository by storing a new block.
     ///
-    Status		Repository::Put(const hole::Address&	address,
+    elle::Status	Repository::Put(const hole::Address&	address,
 					hole::Block*		block)
     {
-      std::pair<Repository::Data::Iterator, bool>	result;
-      Repository::Data::Iterator			iterator;
-      Record*						record;
+      std::pair<Repository::Data::Iterator, elle::Boolean>	result;
+      Repository::Data::Iterator				iterator;
+      Record*							record;
 
       enter(instance(record));
 
@@ -137,7 +159,7 @@ namespace etoile
 	    record = new Record;
 
 	    // create the record.
-	    if (record->Create(address) == StatusError)
+	    if (record->Create(address) == elle::StatusError)
 	      escape("unable to create the record");
 
 	    // insert the record.
@@ -185,14 +207,14 @@ namespace etoile
       // then, evict data so that the new block ca be stored.
       //
       {
-	Natural32	size;
+	elle::Natural32	size;
 
 	// retrieve the size of the object.
-	if (block->Imprint(size) == StatusError)
+	if (block->Imprint(size) == elle::StatusError)
 	  escape("unable to retrieve the object's size");
 
 	// evict enough data from the cache so that the block can be stored.
-	if (Repository::Evict(LocationCache, size) == StatusError)
+	if (Repository::Evict(LocationCache, size) == elle::StatusError)
 	  escape("unable to evict enough data");
       }
 
@@ -213,7 +235,7 @@ namespace etoile
 	      //
 
 	      // update the cell.
-	      if (record->cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == elle::StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -226,7 +248,7 @@ namespace etoile
 	      //
 
 	      // destroy the unit.
-	      if (record->unit->Destroy() == StatusError)
+	      if (record->unit->Destroy() == elle::StatusError)
 		escape("unable to destroy the unit");
 
 	      // release the unit.
@@ -236,7 +258,7 @@ namespace etoile
 	      record->cell = new Cell;
 
 	      // create a cell.
-	      if (record->cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == elle::StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -252,7 +274,7 @@ namespace etoile
 	      record->cell = new Cell;
 
 	      // create the cell.
-	      if (record->cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == elle::StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -272,7 +294,7 @@ namespace etoile
 	Repository::Cache::Queue.push_back(record);
 
 	// re-compute the expiration timer, if required.
-	if (record->Monitor() == StatusError)
+	if (record->Monitor() == elle::StatusError)
 	  escape("unable to reset the timer");
       }
 
@@ -283,7 +305,7 @@ namespace etoile
     /// this method retrieve a data block, possibly from the cache or the
     /// reserve.
     ///
-    Status		Repository::Get(const hole::Address&	address,
+    elle::Status	Repository::Get(const hole::Address&	address,
 					hole::Block*&		block)
     {
       Record*		record;
@@ -315,7 +337,7 @@ namespace etoile
 	      //
 
 	      // get the block's data from the cell.
-	      if (record->cell->Get(block) == StatusError)
+	      if (record->cell->Get(block) == elle::StatusError)
 		escape("unable to get the block's data");
 
 	      // remove the access stamp.
@@ -325,7 +347,7 @@ namespace etoile
 	    }
 	  case LocationReserve:
 	    {
-	      Natural32	size;
+	      elle::Natural32	size;
 
 	      //
 	      // if the data is in the reserve, get the data, destroy the
@@ -336,20 +358,20 @@ namespace etoile
 	      Repository::Reserve::Queue.remove(record);
 
 	      // retrieve the size of the object.
-	      if (block->Imprint(size) == StatusError)
+	      if (block->Imprint(size) == elle::StatusError)
 		escape("unable to retrieve the object's size");
 
 	      // evict enough data from the cache so that the block
 	      // can be stored.
-	      if (Repository::Evict(LocationCache, size) == StatusError)
+	      if (Repository::Evict(LocationCache, size) == elle::StatusError)
 		escape("unable to evict enough data");
 
 	      // get the block's data from the unit.
-	      if (record->unit->Get(block) == StatusError)
+	      if (record->unit->Get(block) == elle::StatusError)
 		escape("unable to get the block's data");
 
 	      // destroy the unit.
-	      if (record->unit->Destroy() == StatusError)
+	      if (record->unit->Destroy() == elle::StatusError)
 		escape("unable to destroy the unit");
 
 	      // release the unit.
@@ -359,7 +381,7 @@ namespace etoile
 	      record->cell = new Cell;
 
 	      // create a cell.
-	      if (record->cell->Set(block) == StatusError)
+	      if (record->cell->Set(block) == elle::StatusError)
 		escape("unable to set the cell");
 
 	      break;
@@ -380,7 +402,7 @@ namespace etoile
 	Repository::Cache::Queue.push_back(record);
 
 	// re-compute the expiration timer.
-	if (record->Monitor() == StatusError)
+	if (record->Monitor() == elle::StatusError)
 	  escape("unable to reset the timer");
       }
 
@@ -390,7 +412,7 @@ namespace etoile
     ///
     /// this method removes the given block from repository.
     ///
-    Status		Repository::Discard(const hole::Address& address)
+    elle::Status	Repository::Discard(const hole::Address& address)
     {
       Repository::Data::Iterator	iterator;
       Record*				record;
@@ -430,7 +452,7 @@ namespace etoile
 	}
 
       // destroy the record's content.
-      if (record->Destroy() == StatusError)
+      if (record->Destroy() == elle::StatusError)
 	escape("unable to destroy the record");
 
       // stop tracking.
@@ -446,11 +468,11 @@ namespace etoile
     /// this method removes the least recently used elements until the
     /// given repository, cache or reserve, has enough free space.
     ///
-    Status		Repository::Evict(const Location	location,
-					  const Natural32	length)
+    elle::Status	Repository::Evict(const Location	location,
+					  const elle::Natural32	length)
     {
-      Natural64*			size;
-      const Natural64*			capacity;
+      elle::Natural64*			size;
+      const elle::Natural64*		capacity;
       Repository::Access::Container*	access;
 
       enter();
@@ -483,7 +505,7 @@ namespace etoile
 
       // evict data from the repository until there is enough room for
       // the upcoming insertion.
-      while ((*size + (Natural64)length) > *capacity)
+      while ((*size + (elle::Natural64)length) > *capacity)
 	{
 	  Record*			record;
 	  Repository::Data::Iterator	iterator;
@@ -507,18 +529,18 @@ namespace etoile
 		enter(instance(unit));
 
 		// retrieve the block.
-		if (record->cell->Get(block) == StatusError)
+		if (record->cell->Get(block) == elle::StatusError)
 		  escape("unable to retrieve the block from the cell");
 
 		// new unit.
 		unit = new Unit;
 
 		// set the unit.
-		if (unit->Set(block) == StatusError)
+		if (unit->Set(block) == elle::StatusError)
 		  escape("unable to set the unit");
 
 		// destroy the cell.
-		if (record->cell->Destroy() == StatusError)
+		if (record->cell->Destroy() == elle::StatusError)
 		  escape("unable to destroy the cell");
 
 		// release the cell.
@@ -562,7 +584,7 @@ namespace etoile
 		//
 
 		// destroy the record, including the unit.
-		if (record->Destroy() == StatusError)
+		if (record->Destroy() == elle::StatusError)
 		  escape("unable to destroy the record");
 
 		// remove the record from the repository.
@@ -589,9 +611,9 @@ namespace etoile
     ///
     /// this method dumps the whole repository.
     ///
-    Status		Repository::Show(const Natural32	margin)
+    elle::Status	Repository::Show(const elle::Natural32	margin)
     {
-      String				alignment(margin, ' ');
+      elle::String			alignment(margin, ' ');
       Repository::Data::Scoutor		i;
       Repository::Access::Scoutor	j;
 
@@ -599,24 +621,28 @@ namespace etoile
 
       std::cout << alignment << "[Repository]" << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Cache]" << std::endl;
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift << "[Size] "
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Cache]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift
+		<< elle::Dumpable::Shift << "[Size] "
 		<< std::dec << Repository::Cache::Size << std::endl;
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Capacity] " << std::dec << Repository::Cache::Capacity
 		<< std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Reserve]" << std::endl;
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift << "[Size] "
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Reserve]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+		<< "[Size] "
 		<< std::dec << Repository::Reserve::Size << std::endl;
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Capacity] " << std::dec << Repository::Reserve::Capacity
 		<< std::endl;
 
       //
       // dump the data.
       //
-      std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[Data]" << std::endl;
 
       for (i = Repository::Container.begin();
 	   i != Repository::Container.end();
@@ -625,17 +651,18 @@ namespace etoile
 	  Record*	record = i->second;
 
 	  // dump the record.
-	  if (record->Dump(margin + 4) == StatusError)
+	  if (record->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the record");
 	}
 
       //
       // dump the access.
       //
-      std::cout << alignment << Dumpable::Shift << "[Access]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Access]" << std::endl;
 
       // first, the cache accesses.
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Cache]" << std::endl;
 
       for (j = Repository::Cache::Queue.begin();
@@ -645,12 +672,14 @@ namespace etoile
 	  Record*	record = *j;
 
 	  // dump the record's address.
-	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		    << Dumpable::Shift << "[Pointer] " << record << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << elle::Dumpable::Shift << elle::Dumpable::Shift
+		    << "[Pointer] " << record << std::endl;
 	}
 
       // second, the reserve accesses.
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift
+		<< elle::Dumpable::Shift
 		<< "[Reserve]" << std::endl;
 
       for (j = Repository::Reserve::Queue.begin();
@@ -660,8 +689,9 @@ namespace etoile
 	  Record*	record = *j;
 
 	  // dump the record's address.
-	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		    << Dumpable::Shift << "[Pointer] " << record << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << elle::Dumpable::Shift << elle::Dumpable::Shift
+		    << "[Pointer] " << record << std::endl;
 	}
 
       leave();

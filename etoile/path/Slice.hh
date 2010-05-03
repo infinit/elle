@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Slice.hh
 //
 // created       julien quintard   [fri apr  2 01:29:28 2010]
-// updated       julien quintard   [fri apr  2 01:31:04 2010]
+// updated       julien quintard   [mon may  3 13:29:51 2010]
 //
 
 #ifndef ETOILE_PATH_SLICE_HH
@@ -35,7 +35,7 @@ namespace etoile
     /// for instance, the path /teton/avale/suce/ is composed of
     /// three slices, teton, avale and suce.
     ///
-    typedef String		Slice;
+    typedef elle::String	Slice;
 
   }
 }

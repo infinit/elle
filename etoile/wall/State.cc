@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/State.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [sun apr 18 19:18:06 2010]
+// updated       julien quintard   [mon may  3 23:05:57 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/wall/State.hh>
+
+#include <etoile/kernel/Role.hh>
 
 namespace etoile
 {
@@ -38,7 +40,7 @@ namespace etoile
     ///
     /// this method generates the state according to the given object.
     ///
-    Status		State::Create(const kernel::Object&	object)
+    elle::Status	State::Create(const kernel::Object&	object)
     {
       enter();
 
@@ -82,13 +84,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		State::operator==(const State&		element) const
+    elle::Boolean	State::operator==(const State&		element) const
     {
       enter();
 
@@ -112,9 +114,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, State);
+    embed(State, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -123,61 +125,67 @@ namespace etoile
     ///
     /// this method dumps the state object.
     ///
-    Status		State::Dump(const Natural32		margin) const
+    elle::Status	State::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[State]" << std::endl;
 
       // dump the genre.
-      std::cout << alignment << Dumpable::Shift << "[Genre] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Genre] "
 		<< this->genre << std::endl;
 
       //
       // dump the stamps.
       //
       {
-	std::cout << alignment << Dumpable::Shift << "[Stamps]" << std::endl;
+	std::cout << alignment << elle::Dumpable::Shift
+		  << "[Stamps]" << std::endl;
 
 	// dump the creation time.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
+		  << elle::Dumpable::Shift
 		  << "[Creation]" << std::endl;
 
-	if (this->stamps.creation.Dump(margin + 6) == StatusError)
+	if (this->stamps.creation.Dump(margin + 6) == elle::StatusError)
 	  escape("unable to dump the creation time");
 
 	// dump the modification time.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
+		  << elle::Dumpable::Shift
 		  << "[Modification]" << std::endl;
 
-	if (this->stamps.modification.Dump(margin + 6) == StatusError)
+	if (this->stamps.modification.Dump(margin + 6) == elle::StatusError)
 	  escape("unable to dump the modification time");
       }
 
       // dump the size.
-      std::cout << alignment << Dumpable::Shift << "[Size] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Size] "
 		<< std::dec << this->size << std::endl;
 
       //
       // dump the public keys.
       //
       {
-	std::cout << alignment << Dumpable::Shift << "[Keys]" << std::endl;
+	std::cout << alignment << elle::Dumpable::Shift
+		  << "[Keys]" << std::endl;
 
 	// dump the owner public key.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
+		  << elle::Dumpable::Shift
 		  << "[Owner]" << std::endl;
 
-	if (this->keys.owner.Dump(margin + 6) == StatusError)
+	if (this->keys.owner.Dump(margin + 6) == elle::StatusError)
 	  escape("unable to dump the owner public key");
 
 	// dump the author public key.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
+		  << elle::Dumpable::Shift
 		  << "[Author]" << std::endl;
 
-	if (this->keys.author.Dump(margin + 6) == StatusError)
+	if (this->keys.author.Dump(margin + 6) == elle::StatusError)
 	  escape("unable to dump the author public key");
       }
 
@@ -185,11 +193,12 @@ namespace etoile
       // dump the permissions.
       //
       {
-	std::cout << alignment << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
 		  << "[Permissions]" << std::endl;
 
 	// dump the owner permissions.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
+		  << elle::Dumpable::Shift
 		  << "[Owner] " << this->permissions.owner << std::endl;
       }
 
@@ -197,14 +206,17 @@ namespace etoile
       // dump the versions.
       //
       {
-	std::cout << alignment << Dumpable::Shift << "[Versions]" << std::endl;
+	std::cout << alignment << elle::Dumpable::Shift
+		  << "[Versions]" << std::endl;
 
 	// dump the meta version.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
+		  << elle::Dumpable::Shift
 		  << "[Meta] " << std::dec << this->versions.meta << std::endl;
 
 	// dump the data version.
-	std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	std::cout << alignment << elle::Dumpable::Shift
+		  << elle::Dumpable::Shift
 		  << "[Data] " << std::dec << this->versions.data << std::endl;
       }
 
@@ -218,7 +230,7 @@ namespace etoile
     ///
     /// this method serializes the state.
     ///
-    Status		State::Serialize(Archive&		archive) const
+    elle::Status	State::Serialize(elle::Archive&		archive) const
     {
       enter();
 
@@ -231,7 +243,7 @@ namespace etoile
 			    this->keys.author,
 			    this->permissions.owner,
 			    this->versions.meta,
-			    this->versions.data) == StatusError)
+			    this->versions.data) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -240,7 +252,7 @@ namespace etoile
     ///
     /// this method extracts the state.
     ///
-    Status		State::Extract(Archive&			archive)
+    elle::Status	State::Extract(elle::Archive&		archive)
     {
       enter();
 
@@ -253,7 +265,7 @@ namespace etoile
 			  this->keys.author,
 			  this->permissions.owner,
 			  this->versions.meta,
-			  this->versions.data) == StatusError)
+			  this->versions.data) == elle::StatusError)
 	escape("unable to extract the attributes");
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.hh
 //
 // created       julien quintard   [thu mar  4 11:56:54 2010]
-// updated       julien quintard   [mon apr 26 18:54:49 2010]
+// updated       julien quintard   [mon may  3 17:31:20 2010]
 //
 
 #ifndef ETOILE_USER_CLIENT_HH
@@ -52,8 +52,7 @@ namespace etoile
     /// this class handles clients from connections to authentications etc.
     ///
     class Client:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -82,22 +81,22 @@ namespace etoile
       //
       // static methods
       //
-      static Status		Initialize();
-      static Status		Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status		Add(Client*);
-      static Status		Locate(Client*,
+      static elle::Status	Add(Client*);
+      static elle::Status	Locate(Client*,
 				       C::Iterator&);
-      static Status		Remove(Client*);
+      static elle::Status	Remove(Client*);
 
-      static Status		Retrieve(const Channel*,
+      static elle::Status	Retrieve(const elle::Channel*,
 					 Client*&);
-      static Status		Retrieve(const PublicKey&,
+      static elle::Status	Retrieve(const elle::PublicKey&,
 					 Client*&);
-      static Status		Retrieve(const String&,
+      static elle::Status	Retrieve(const elle::String&,
 					 Client*&);
 
-      static Status		Show(const Natural32 = 0);
+      static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // static attributes
@@ -113,29 +112,29 @@ namespace etoile
       //
       // methods
       //
-      Status			Create();
-      Status			Destroy();
+      elle::Status		Create();
+      elle::Status		Destroy();
 
-      Status			Record(Agent*);
+      elle::Status		Record(Agent*);
 
-      Status			Add(Application*);
-      Status			Locate(Application*,
+      elle::Status		Add(Application*);
+      elle::Status		Locate(Application*,
 				       A::Iterator&);
-      Status			Retrieve(const Channel*,
+      elle::Status		Retrieve(const elle::Channel*,
 					 Application*&);
-      Status			Remove(Application*);
+      elle::Status		Remove(Application*);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status			Dump(const Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      String			phrase;
+      elle::String		phrase;
 
       Agent*			agent;
       A::Container		applications;
@@ -145,11 +144,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/user/Map.hh>
 
 #endif

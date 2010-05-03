@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.cc
 //
 // created       julien quintard   [thu mar 11 16:21:11 2010]
-// updated       julien quintard   [tue apr 27 18:08:06 2010]
+// updated       julien quintard   [mon may  3 20:54:30 2010]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <etoile/user/Client.hh>
+#include <etoile/user/Map.hh>
 
 namespace etoile
 {
@@ -68,10 +69,10 @@ namespace etoile
     ///
     /// this method creates the client by generating a random phrase.
     ///
-    Status		Client::Create()
+    elle::Status	Client::Create()
     {
       char*		hexadecimal;
-      Large		number;
+      elle::Large	number;
 
       enter();
 
@@ -94,18 +95,18 @@ namespace etoile
     ///
     /// this method destroys the client.
     ///
-    Status		Client::Destroy()
+    elle::Status	Client::Destroy()
     {
       Client::A::Iterator	iterator;
 
       enter();
 
       // destroy the mapping for the agent.
-      if (Map::Remove(this->agent->remote->channel) == StatusError)
+      if (Map::Remove(this->agent->remote->channel) == elle::StatusError)
 	escape("unable to remove the agent mapping");
 
       // destroy the agent.
-      if (this->agent->Destroy() == StatusError)
+      if (this->agent->Destroy() == elle::StatusError)
 	escape("unable to destroy the agent");
 
       // destroy every application.
@@ -114,11 +115,11 @@ namespace etoile
 	   iterator++)
 	{
 	  // remove the mapping.
-	  if (Map::Remove((*iterator)->channel) == StatusError)
+	  if (Map::Remove((*iterator)->channel) == elle::StatusError)
 	    escape("unable to remove the application mapping");
 
 	  // destroy the application
-	  if ((*iterator)->Destroy() == StatusError)
+	  if ((*iterator)->Destroy() == elle::StatusError)
 	    escape("unable to destroy the application");
 	}
 
@@ -128,7 +129,7 @@ namespace etoile
     ///
     /// this method records the initial agent.
     ///
-    Status		Client::Record(Agent*			agent)
+    elle::Status	Client::Record(Agent*			agent)
     {
       enter();
 
@@ -136,12 +137,12 @@ namespace etoile
       this->agent = agent;
 
       // add a mapping between the agent's channel and the client.
-      if (Map::Add(this->agent->remote->channel, this) == StatusError)
+      if (Map::Add(this->agent->remote->channel, this) == elle::StatusError)
 	escape("unable to add a mapping between the agent and the client");
 
       // create the subject in order to makes manipulating the user
       // a lot easier in many contexts.
-      if (this->subject.Create(agent->K) == StatusError)
+      if (this->subject.Create(agent->K) == elle::StatusError)
 	escape("unable to create the subject");
 
       leave();
@@ -150,7 +151,7 @@ namespace etoile
     ///
     /// this method adds an application.
     ///
-    Status		Client::Add(Application*		application)
+    elle::Status	Client::Add(Application*		application)
     {
       enter();
 
@@ -158,7 +159,7 @@ namespace etoile
       this->applications.push_front(application);
 
       // add a mapping between the application's channel and the client.
-      if (Map::Add(application->channel, this) == StatusError)
+      if (Map::Add(application->channel, this) == elle::StatusError)
 	escape("unable to add a mapping between the agent and the client");
 
       leave();
@@ -167,7 +168,7 @@ namespace etoile
     ///
     /// this method tries to locate an application.
     ///
-    Status		Client::Locate(Application*		application,
+    elle::Status	Client::Locate(Application*		application,
 				       A::Iterator&		iterator)
     {
       enter();
@@ -185,7 +186,7 @@ namespace etoile
     ///
     /// this method returns the application associated with the given channel.
     ///
-    Status		Client::Retrieve(const Channel*		channel,
+    elle::Status	Client::Retrieve(const elle::Channel*	channel,
 					 Application*&		application)
     {
       Client::A::Scoutor	scoutor;
@@ -212,14 +213,14 @@ namespace etoile
     ///
     /// this method adds an application.
     ///
-    Status		Client::Remove(Application*		application)
+    elle::Status	Client::Remove(Application*		application)
     {
       Client::A::Iterator	iterator;
 
       enter();
 
       // locate the application.
-      if (this->Locate(application, iterator) != StatusTrue)
+      if (this->Locate(application, iterator) != elle::StatusTrue)
 	escape("unable to locate the given application");
 
       // remove the application.
@@ -238,9 +239,9 @@ namespace etoile
     ///
     /// this method dumps a client.
     ///
-    Status		Client::Dump(const Natural32		margin) const
+    elle::Status	Client::Dump(const elle::Natural32	margin) const
     {
-      String			alignment(margin, ' ');
+      elle::String		alignment(margin, ' ');
       Client::A::Scoutor	scoutor;
 
       enter();
@@ -248,15 +249,15 @@ namespace etoile
       std::cout << alignment << "[Client] " << std::hex << this << std::endl;
 
       // dump the phrase
-      std::cout << alignment << Dumpable::Shift << "[Phrase] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Phrase] "
 		<< this->phrase << std::endl;
 
       // dump the agent.
-      if (this->agent->Dump(margin + 2) == StatusError)
+      if (this->agent->Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the agent");
 
       // dump the applications.
-      std::cout << alignment << Dumpable::Shift << "[Applications]"
+      std::cout << alignment << elle::Dumpable::Shift << "[Applications]"
 		<< std::endl;
 
       // dump each application.
@@ -265,7 +266,7 @@ namespace etoile
 	   scoutor++)
 	{
 	  // dump the application.
-	  if ((*scoutor)->Dump(margin + 4) == StatusError)
+	  if ((*scoutor)->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the application");
 	}
 
@@ -279,7 +280,7 @@ namespace etoile
     ///
     /// this method initializes the client container.
     ///
-    Status		Client::Initialize()
+    elle::Status	Client::Initialize()
     {
       enter();
 
@@ -291,7 +292,7 @@ namespace etoile
     ///
     /// this method cleans the client container.
     ///
-    Status		Client::Clean()
+    elle::Status	Client::Clean()
     {
       enter();
 
@@ -301,7 +302,7 @@ namespace etoile
 	  Client*	client = Client::Clients.front();
 
 	  // remove the client.
-	  if (Client::Remove(client) == StatusError)
+	  if (Client::Remove(client) == elle::StatusError)
 	    escape("unable to remove the client");
 	}
 
@@ -311,7 +312,7 @@ namespace etoile
     ///
     /// this method adds a client.
     ///
-    Status		Client::Add(Client*			client)
+    elle::Status	Client::Add(Client*			client)
     {
       enter();
 
@@ -324,7 +325,7 @@ namespace etoile
     ///
     /// this method tries to locate the given client.
     ///
-    Status		Client::Locate(Client*			client,
+    elle::Status	Client::Locate(Client*			client,
 				       C::Iterator&		iterator)
     {
       enter();
@@ -342,21 +343,21 @@ namespace etoile
     ///
     /// this method removes a client.
     ///
-    Status		Client::Remove(Client*			client)
+    elle::Status	Client::Remove(Client*			client)
     {
       Client::C::Iterator	iterator;
 
       enter();
 
       // try to locate the client.
-      if (Client::Locate(client, iterator) != StatusTrue)
+      if (Client::Locate(client, iterator) != elle::StatusTrue)
 	escape("unable to locate the client to remove");
 
       // erase the client from the list.
       Client::Clients.erase(iterator);
 
       // destroy the client.
-      if (client->Destroy() == StatusError)
+      if (client->Destroy() == elle::StatusError)
 	escape("unable to destroy the client");
 
       // delete the object.
@@ -368,7 +369,7 @@ namespace etoile
     ///
     /// this method locates a client from a channel.
     ///
-    Status		Client::Retrieve(const Channel*		channel,
+    elle::Status	Client::Retrieve(const elle::Channel*	channel,
 					 Client*&		client)
     {
       return (Map::Retrieve(channel, client));
@@ -377,7 +378,7 @@ namespace etoile
     ///
     /// this method retrieves a client from a public key.
     ///
-    Status		Client::Retrieve(const PublicKey&	K,
+    elle::Status	Client::Retrieve(const elle::PublicKey&	K,
 					 Client*&		client)
     {
       Client::C::Scoutor	scoutor;
@@ -403,7 +404,7 @@ namespace etoile
     ///
     /// this method retrieves a client from a phrase.
     ///
-    Status		Client::Retrieve(const String&		phrase,
+    elle::Status	Client::Retrieve(const elle::String&	phrase,
 					 Client*&		client)
     {
       Client::C::Scoutor	scoutor;
@@ -429,10 +430,10 @@ namespace etoile
     ///
     /// this method dumps the registered clients.
     ///
-    Status		Client::Show(const Natural32		margin)
+    elle::Status	Client::Show(const elle::Natural32	margin)
     {
       Client::C::Scoutor	scoutor;
-      String			alignment(margin, ' ');
+      elle::String		alignment(margin, ' ');
 
       enter();
 
@@ -444,7 +445,7 @@ namespace etoile
 	   scoutor++)
 	{
 	  // dump the client.
-	  if ((*scoutor)->Dump(margin + 2) == StatusError)
+	  if ((*scoutor)->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the client");
 	}
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [wed mar 31 00:06:22 2010]
+// updated       julien quintard   [mon may  3 13:06:13 2010]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -52,8 +52,8 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
       //
       // templates
@@ -65,8 +65,8 @@ namespace etoile
       /// to a hole::Block*& or to const-equivalents.
       ///
       template <typename T>
-      static Status	Put(const hole::Address&		address,
-			    T*					block)
+      static elle::Status	Put(const hole::Address&	address,
+				    T*				block)
       {
 	// just forward the call to the appropriate method with the correct
 	// types.
@@ -74,8 +74,8 @@ namespace etoile
       }
 
       template <typename T>
-      static Status	Get(const hole::Address&		address,
-			    T*&					block)
+      static elle::Status	Get(const hole::Address&	address,
+				    T*&				block)
       {
 	// just forward the call to the appropriate method with the correct
 	// types.
@@ -86,10 +86,10 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Put(const hole::Address&,
-			    hole::Block*);
-      static Status	Get(const hole::Address&,
-			    hole::Block*&);
+      static elle::Status	Put(const hole::Address&,
+				    hole::Block*);
+      static elle::Status	Get(const hole::Address&,
+				    hole::Block*&);
     };
 
   }
@@ -99,9 +99,10 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/depot/Repository.hh>
-#include <etoile/depot/Record.hh>
 #include <etoile/depot/Cell.hh>
+#include <etoile/depot/Location.hh>
+#include <etoile/depot/Record.hh>
+#include <etoile/depot/Repository.hh>
 #include <etoile/depot/Unit.hh>
 
 #endif

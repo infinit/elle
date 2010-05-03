@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Reference.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [tue apr 20 06:29:10 2010]
+// updated       julien quintard   [mon may  3 22:58:45 2010]
 //
 
 #ifndef ETOILE_KERNEL_REFERENCE_HH
@@ -40,8 +40,7 @@ namespace etoile
     /// this class represents the contents of a link.
     ///
     class Reference:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -52,25 +51,24 @@ namespace etoile
       //
       // methods
       //
-      Status		Bind(const path::Way&);
-      Status		Resolve(path::Way&) const;
+      elle::Status	Bind(const path::Way&);
+      elle::Status	Resolve(path::Way&) const;
 
-      Status		Capacity(Size&) const;
+      elle::Status	Capacity(Size&) const;
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Reference);
-      // XXX operator==
+      // object
+      declare(Reference, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
@@ -82,11 +80,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/path/Length.hh>
 
 #endif

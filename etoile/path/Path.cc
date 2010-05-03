@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [tue apr 27 21:05:32 2010]
+// updated       julien quintard   [mon may  3 13:28:40 2010]
 //
 
 //
@@ -16,6 +16,11 @@
 //
 
 #include <etoile/path/Path.hh>
+
+#include <etoile/context/Directory.hh>
+#include <etoile/context/Context.hh>
+
+#include <etoile/components/Directory.hh>
 
 namespace etoile
 {
@@ -38,7 +43,7 @@ namespace etoile
     ///
     /// this method initialises the path component.
     ///
-    Status		Path::Initialize(const hole::Address&	address)
+    elle::Status	Path::Initialize(const hole::Address&	address)
     {
       enter();
 
@@ -46,7 +51,7 @@ namespace etoile
       Path::Root = new hole::Address(address);
 
       // initialize the cache.
-      if (Cache::Initialize() == StatusError)
+      if (Cache::Initialize() == elle::StatusError)
 	escape("unable to initialize the cache");
 
       leave();
@@ -55,12 +60,12 @@ namespace etoile
     ///
     /// this method cleans the path module.
     ///
-    Status		Path::Clean()
+    elle::Status	Path::Clean()
     {
       enter();
 
       // clean the cache.
-      if (Cache::Clean() == StatusError)
+      if (Cache::Clean() == elle::StatusError)
 	escape("unable to clean the cache");
 
       // delete the root address.
@@ -77,7 +82,7 @@ namespace etoile
     /// cache. then, the resolving process retrieved the uncached directory
     /// objects and explore them.
     ///
-    Status		Path::Resolve(const Route&		route,
+    elle::Status	Path::Resolve(const Route&		route,
 				      hole::Address&		address)
     {
       Venue		venue;
@@ -89,7 +94,7 @@ namespace etoile
       //route.Dump();
 
       // first ask the cache to resolve as much as it can.
-      //if (Cache::Resolve(route, venue) == StatusError)
+      //if (Cache::Resolve(route, venue) == elle::StatusError)
       //escape("unable to resolve part of the route through the cache");
 
       // if the cache did not resolve anything.
@@ -132,24 +137,25 @@ namespace etoile
 	  kernel::Entry*	entry;
 
 	  // allocate a new context.
-	  if (context::Context::New(context) == StatusError)
+	  if (context::Context::New(context) == elle::StatusError)
 	    escape("unable to allocate a new context");
 
 	  // load the directory referenced by address.
-	  if (components::Directory::Load(context, address) == StatusError)
+	  if (components::Directory::Load(context, address) ==
+	      elle::StatusError)
 	    escape("unable to load one of the route's directories");
 
 	  // look up for the name.
 	  if (components::Directory::Lookup(context,
 					    *scoutor,
-					    entry) == StatusError)
+					    entry) == elle::StatusError)
 	    escape("unable to find one of the route's entries");
 
 	  // if there is no such entry, abort.
 	  if (entry == NULL)
 	    {
 	      // close the context.
-	      if (components::Directory::Discard(context) == StatusError)
+	      if (components::Directory::Discard(context) == elle::StatusError)
 		escape("unable to close the context");
 
 	      escape("unable to locate the target path");
@@ -159,16 +165,16 @@ namespace etoile
 	  address = entry->address;
 
 	  // record the address in the venue.
-	  if (venue.Record(address) == StatusError)
+	  if (venue.Record(address) == elle::StatusError)
 	    escape("unable to record the venue address");
 
 	  // close the context.
-	  if (components::Directory::Discard(context) == StatusError)
+	  if (components::Directory::Discard(context) == elle::StatusError)
 	    escape("unable to close the context");
 	}
 
       // update the resolved path to the cache.
-      //if (Cache::Update(route, venue) == StatusError)
+      //if (Cache::Update(route, venue) == elle::StatusError)
       //escape("unable to update the cache");
 
       // return the target address.

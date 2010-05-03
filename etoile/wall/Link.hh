@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [thu apr 22 11:08:18 2010]
+// updated       julien quintard   [mon may  3 15:57:40 2010]
 //
 
 #ifndef ETOILE_WALL_LINK_HH
@@ -47,30 +47,19 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Create();
-      static Status	Load(const path::Way&);
-      static Status	Lock(const context::Identifier&);
-      static Status	Release(const context::Identifier&);
-      static Status	Bind(const context::Identifier&,
-			     const path::Way&);
-      static Status	Resolve(const context::Identifier&);
-      static Status	Discard(const context::Identifier&);
-      static Status	Store(const context::Identifier&);
-      static Status	Destroy(const context::Identifier&);
+      static elle::Status	Create();
+      static elle::Status	Load(const path::Way&);
+      static elle::Status	Lock(const context::Identifier&);
+      static elle::Status	Release(const context::Identifier&);
+      static elle::Status	Bind(const context::Identifier&,
+				     const path::Way&);
+      static elle::Status	Resolve(const context::Identifier&);
+      static elle::Status	Discard(const context::Identifier&);
+      static elle::Status	Store(const context::Identifier&);
+      static elle::Status	Destroy(const context::Identifier&);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/context/Link.hh>
-#include <etoile/context/Format.hh>
-
-#include <etoile/user/User.hh>
-
-#include <etoile/path/Path.hh>
 
 #endif

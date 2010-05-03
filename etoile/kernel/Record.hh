@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.hh
 //
 // created       julien quintard   [thu apr  1 19:48:42 2010]
-// updated       julien quintard   [tue apr 20 06:29:53 2010]
+// updated       julien quintard   [mon may  3 22:58:57 2010]
 //
 
 #ifndef ETOILE_KERNEL_RECORD_HH
@@ -39,8 +39,7 @@ namespace etoile
     /// to access the data.
     ///
     class Record:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -64,10 +63,10 @@ namespace etoile
       //
       // methods
       //
-      Status		Update(const Subject&,
+      elle::Status	Update(const Subject&,
 			       const Permissions&,
-			       const SecretKey&);
-      Status		Update(const Subject&,
+			       const elle::SecretKey&);
+      elle::Status	Update(const Subject&,
 			       const Permissions&,
 			       const Token&);
 
@@ -75,16 +74,16 @@ namespace etoile
       // interfaces
       //
 
-      // entity
-      declare(Entity, Record);
-      Boolean		operator==(const Record&) const;
+      // object
+      declare(Record, _());
+      elle::Boolean	operator==(const Record&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       // rangeable
       Subject&		Symbol();

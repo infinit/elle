@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [tue apr 27 21:05:07 2010]
+// updated       julien quintard   [mon may  3 18:56:18 2010]
 //
 
 //
@@ -16,6 +16,13 @@
 //
 
 #include <etoile/wall/Directory.hh>
+
+#include <etoile/context/Directory.hh>
+#include <etoile/context/Format.hh>
+
+#include <etoile/user/User.hh>
+
+#include <etoile/path/Path.hh>
 
 namespace etoile
 {
@@ -29,7 +36,7 @@ namespace etoile
     ///
     /// this method creates an new, though orphan, directory object.
     ///
-    Status		Directory::Create()
+    elle::Status	Directory::Create()
     {
       context::Directory*	context;
       user::User*		user;
@@ -39,7 +46,7 @@ namespace etoile
       printf("[XXX] Directory::Create()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -47,20 +54,21 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // create a new context.
-      if (context::Context::New(context) == StatusError)
+      if (context::Context::New(context) == elle::StatusError)
 	escape("unable to allocate a new context");
 
       // create a new directory.
-      if (components::Directory::Create(context) == StatusError)
+      if (components::Directory::Create(context) == elle::StatusError)
 	escape("unable to create the directory");
 
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
+	    elle::Inputs<TagIdentifier>(context->identifier)) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       // export the context.
-      if (context::Context::Export(context) == StatusError)
+      if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
 
       // waive.
@@ -72,7 +80,7 @@ namespace etoile
     ///
     /// this method loads the directory and creates a new context.
     ///
-    Status		Directory::Load(const
+    elle::Status	Directory::Load(const
 					  path::Way&		way)
     {
       context::Directory*	context;
@@ -83,7 +91,7 @@ namespace etoile
       printf("[XXX] Directory::Load()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -91,30 +99,34 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // create a new context.
-      if (context::Context::New(context) == StatusError)
+      if (context::Context::New(context) == elle::StatusError)
 	escape("unable to allocate a new context");
 
       // create a route from the given way.
-      if (context->route.Create(way) == StatusError)
+      if (context->route.Create(way) == elle::StatusError)
 	escape("unable to create a route");
 
       // resolve the route in a directory address.
-      if (path::Path::Resolve(context->route, context->address) == StatusError)
+      if (path::Path::Resolve(context->route, context->address) ==
+	  elle::StatusError)
 	escape("unable to resolve the given route into an directory address");
 
       // load the directory in the given context.
       if (components::Directory::Load(context,
-				      context->address) == StatusError)
+				      context->address) == elle::StatusError)
 	escape("unable to load the directory in the given context");
 
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
+	    elle::Inputs<TagIdentifier>(context->identifier)) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       // export the context.
-      if (context::Context::Export(context) == StatusError)
+      if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
+
+      printf("[XXX] /Directory::Load(%qu)\n", context->identifier.value);
 
       // waive.
       waive(context);
@@ -125,7 +137,7 @@ namespace etoile
     ///
     /// this method adds an entry.
     ///
-    Status		Directory::Add(const
+    elle::Status	Directory::Add(const
 					 context::Identifier&	parent,
 				       const path::Slice&	name,
 				       const
@@ -140,7 +152,7 @@ namespace etoile
       printf("[XXX] Directory::Add()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -148,22 +160,23 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the directory context.
-      if (user->application->Retrieve(parent, directory) == StatusError)
+      if (user->application->Retrieve(parent, directory) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // retrieve the subdirectory context.
-      if (user->application->Retrieve(child, subdirectory) == StatusError)
+      if (user->application->Retrieve(child, subdirectory) ==
+	  elle::StatusError)
 	escape("unable to retrieve the context");
 
       // request the directory component to add the entry.
       if (components::Directory::Add(directory,
 				     name,
-				     subdirectory) == StatusError)
+				     subdirectory) == elle::StatusError)
 	escape("unable to add the entry");
 
       // reply to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagOk>()) == StatusError)
+	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -176,7 +189,7 @@ namespace etoile
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
     ///
-    Status		Directory::Lock(const
+    elle::Status	Directory::Lock(const
 					  context::Identifier&	identifier)
     {
       enter();
@@ -194,7 +207,7 @@ namespace etoile
     ///
     /// this method releases a previously locked directory.
     ///
-    Status		Directory::Release(const
+    elle::Status	Directory::Release(const
 					     context::Identifier& identifer)
     {
       enter();
@@ -207,7 +220,7 @@ namespace etoile
     ///
     /// this method returns the address associated with the given name.
     ///
-    Status		Directory::Lookup(const
+    elle::Status	Directory::Lookup(const
 					    context::Identifier& identifier,
 					  const
 					    path::Slice&	name)
@@ -221,7 +234,7 @@ namespace etoile
       printf("[XXX] Directory::Lookup()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -229,7 +242,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -240,7 +254,7 @@ namespace etoile
       // lookup the directory.
       if (components::Directory::Lookup(context,
 					name,
-					entry) == StatusError)
+					entry) == elle::StatusError)
 	escape("unable to know if the given name is present in the directory");
 
       // return the status to the caller.
@@ -248,14 +262,15 @@ namespace etoile
 	{
 	  // return a null entry.
 	  if (user->application->channel->Reply(
-		Inputs<TagDirectoryEntry>(kernel::Entry::Null)) == StatusError)
+	        elle::Inputs<TagDirectoryEntry>(kernel::Entry::Null)) ==
+	      elle::StatusError)
 	    escape("unable to reply to the application");
 	}
       else
 	{
 	  // return the entry.
 	  if (user->application->channel->Reply(
-	        Inputs<TagDirectoryEntry>(*entry)) == StatusError)
+	        elle::Inputs<TagDirectoryEntry>(*entry)) == elle::StatusError)
 	    escape("unable to reply to the application");
 	}
 
@@ -266,7 +281,7 @@ namespace etoile
     /// this method returns a set [offset, offset + size[ of entries
     /// (name, address) from the directory identified by _identifier_.
     ///
-    Status		Directory::Consult(const
+    elle::Status	Directory::Consult(const
 					     context::Identifier& identifier,
 					   const
 					     kernel::Offset&	offset,
@@ -279,10 +294,10 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Directory::Consult()\n");
+      printf("[XXX] Directory::Consult(%qu)\n", identifier.value);
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -290,7 +305,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -302,12 +318,12 @@ namespace etoile
       if (components::Directory::Consult(context,
 					 offset,
 					 size,
-					 range) == StatusError)
+					 range) == elle::StatusError)
 	escape("unable to consult the directory");
 
       // return the set to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagDirectoryRange>(range)) == StatusError)
+	    elle::Inputs<TagDirectoryRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -316,7 +332,7 @@ namespace etoile
     ///
     /// this method renames an entry of the given directory.
     ///
-    Status		Directory::Rename(const
+    elle::Status	Directory::Rename(const
 					    context::Identifier& identifier,
 					  const
 					    path::Slice&	from,
@@ -331,7 +347,7 @@ namespace etoile
       printf("[XXX] Directory::Rename()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -339,7 +355,7 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) == elle::StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -350,11 +366,12 @@ namespace etoile
       // rename the entry.
       if (components::Directory::Rename(context,
 					from,
-					to) == StatusError)
+					to) == elle::StatusError)
 	escape("unable to rename the entry");
 
       // return the set to the caller.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -363,7 +380,7 @@ namespace etoile
     ///
     /// this method removes an entry.
     ///
-    Status		Directory::Remove(const
+    elle::Status	Directory::Remove(const
 					    context::Identifier& identifier,
 					  const path::Slice&	name)
     {
@@ -375,7 +392,7 @@ namespace etoile
       printf("[XXX] Directory::Remove()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -383,17 +400,18 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the directory context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the context");
 
       // request the directory component to remove the entry.
       if (components::Directory::Remove(context,
-					name) == StatusError)
+					name) == elle::StatusError)
 	escape("unable to create the subdirectory");
 
       // reply to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagOk>()) == StatusError)
+	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -402,7 +420,7 @@ namespace etoile
     ///
     /// this method discards the directory's modifications.
     ///
-    Status		Directory::Discard(const
+    elle::Status	Directory::Discard(const
 					     context::Identifier& identifier)
     {
       context::Directory*	context;
@@ -413,7 +431,7 @@ namespace etoile
       printf("[XXX] Directory::Discard()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -421,7 +439,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -430,11 +449,12 @@ namespace etoile
 	escape("unable to store a non-directory object");
 
       // discard the context.
-      if (components::Directory::Discard(context) == StatusError)
+      if (components::Directory::Discard(context) == elle::StatusError)
 	escape("unable to discard the directory's modifications");
 
       // reply to the application.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -444,7 +464,7 @@ namespace etoile
     /// this method closes the context and applies, if required, the
     /// modifications.
     ///
-    Status		Directory::Store(const
+    elle::Status	Directory::Store(const
 					   context::Identifier&	identifier)
     {
       context::Directory*	context;
@@ -455,7 +475,7 @@ namespace etoile
       printf("[XXX] Directory::Store()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -463,7 +483,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -472,11 +493,12 @@ namespace etoile
 	escape("unable to store a non-directory object");
 
       // store the context.
-      if (components::Directory::Store(context) == StatusError)
+      if (components::Directory::Store(context) == elle::StatusError)
 	escape("unable to store the directory context");
 
       // reply to the application.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -485,7 +507,7 @@ namespace etoile
     ///
     /// this method destroys a directory.
     ///
-    Status		Directory::Destroy(const
+    elle::Status	Directory::Destroy(const
 					     context::Identifier& identifier)
     {
       context::Directory*	context;
@@ -496,7 +518,7 @@ namespace etoile
       printf("[XXX] Directory::Destroy()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -504,7 +526,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
@@ -513,11 +536,12 @@ namespace etoile
 	escape("unable to store a non-directory object");
 
       // destroy the context.
-      if (components::Directory::Destroy(context) == StatusError)
+      if (components::Directory::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the directory context");
 
       // reply to the application.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();

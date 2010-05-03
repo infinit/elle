@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.hh
 //
 // created       julien quintard   [thu mar 11 16:29:56 2010]
-// updated       julien quintard   [mon apr 26 18:54:28 2010]
+// updated       julien quintard   [mon may  3 13:37:43 2010]
 //
 
 #ifndef ETOILE_USER_AGENT_HH
@@ -52,14 +52,13 @@ namespace etoile
     /// pour les perfs ou pour initializer des choses.
     ///
     class Agent:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
       // constants
       //
-      static const Natural32		Expiration;
+      static const elle::Natural32		Expiration;
 
       //
       // enumerations
@@ -87,21 +86,20 @@ namespace etoile
       /// performing sensitive operations.
       ///
       class Local:
-	public Meta,
-	public Dumpable
+	public elle::Entity
       {
       public:
 	//
 	// attributes
 	//
-	PrivateKey	k;
+	elle::PrivateKey	k;
 
 	//
 	// interfaces
 	//
 
 	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+	elle::Status	Dump(const elle::Natural32 = 0) const;
       };
 
       ///
@@ -109,8 +107,7 @@ namespace etoile
       /// with an external agent process.
       ///
       struct Remote:
-	public Meta,
-	public Dumpable
+	public Entity
       {
       public:
 	//
@@ -122,16 +119,16 @@ namespace etoile
 	//
 	// attributes
 	//
-	State		state;
-	Timer		timer;
-	Channel*	channel;
+	State			state;
+	elle::Timer		timer;
+	elle::Channel*		channel;
 
 	//
 	// interfaces
 	//
 
 	// dumpable
-	Status		Dump(const Natural32 = 0) const;
+	elle::Status	Dump(const elle::Natural32 = 0) const;
       };
 
       //
@@ -143,32 +140,32 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const KeyPair&);
-      Status		Create(const PublicKey&,
-			       Channel*);
+      elle::Status	Create(const elle::KeyPair&);
+      elle::Status	Create(const elle::PublicKey&,
+			       elle::Channel*);
 
-      Status		Authenticate();
-      Status		Destroy();
+      elle::Status	Authenticate();
+      elle::Status	Destroy();
 
       //
       // callbacks
       //
-      Status		Timeout();
-      Status		Error(const String&);
+      elle::Status	Timeout();
+      elle::Status	Error(const elle::String&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
       Type		type;
 
-      PublicKey		K;
+      elle::PublicKey	K;
 
       union
       {
@@ -180,13 +177,13 @@ namespace etoile
       // template methods
       //
       template <typename... T>
-      Status		Encrypt(T&...) const;
-      Status		Decrypt(const Code&,
-				Clear&) const;
-      Status		Sign(const Plain&,
-			     Signature&) const;
+      elle::Status	Encrypt(T&...) const;
+      elle::Status	Decrypt(const elle::Code&,
+				elle::Clear&) const;
+      elle::Status	Sign(const elle::Plain&,
+			     elle::Signature&) const;
       template <typename... T>
-      Status		Verify(T&...) const;
+      elle::Status	Verify(T&...) const;
 
       //
       // variadic templates
@@ -195,59 +192,59 @@ namespace etoile
       // decrypt
       template <typename T,
 		typename... TT>
-      Status		Decrypt(const Code&,
+      elle::Status	Decrypt(const elle::Code&,
 				T&,
 				TT&...) const;
 
       // sign
       template <typename T1>
-      Status		Sign(const T1&,
-			     Signature&) const;
+      elle::Status	Sign(const T1&,
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
-			     Signature&) const;
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2,
 		typename T3>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
 			     const T3&,
-			     Signature&) const;
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
 		typename T4>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
 			     const T3&,
 			     const T4&,
-			     Signature&) const;
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
 		typename T4,
 		typename T5>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
 			     const T3&,
 			     const T4&,
 			     const T5&,
-			     Signature&) const;
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
 		typename T4,
 		typename T5,
 		typename T6>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
 			     const T3&,
 			     const T4&,
 			     const T5&,
 			     const T6&,
-			     Signature&) const;
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -255,14 +252,14 @@ namespace etoile
 		typename T5,
 		typename T6,
 		typename T7>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
 			     const T3&,
 			     const T4&,
 			     const T5&,
 			     const T6&,
 			     const T7&,
-			     Signature&) const;
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -271,7 +268,7 @@ namespace etoile
 		typename T6,
 		typename T7,
 		typename T8>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
 			     const T3&,
 			     const T4&,
@@ -279,7 +276,7 @@ namespace etoile
 			     const T6&,
 			     const T7&,
 			     const T8&,
-			     Signature&) const;
+			     elle::Signature&) const;
       template <typename T1,
 		typename T2,
 		typename T3,
@@ -289,7 +286,7 @@ namespace etoile
 		typename T7,
 		typename T8,
 		typename T9>
-      Status		Sign(const T1&,
+      elle::Status	Sign(const T1&,
 			     const T2&,
 			     const T3&,
 			     const T4&,
@@ -298,7 +295,7 @@ namespace etoile
 			     const T7&,
 			     const T8&,
 			     const T9&,
-			     Signature&) const;
+			     elle::Signature&) const;
 
       //
       // forward methods
@@ -312,16 +309,16 @@ namespace etoile
       /// build archives and we are already receiving an archive.
       ///
 
-      Status		Decrypt(const Code&		code,
-				Archive&		archive) const
+      elle::Status	Decrypt(const elle::Code&	code,
+				elle::Archive&		archive) const
       {
-	return (this->Decrypt(code, (Plain&)archive));
+	return (this->Decrypt(code, (elle::Plain&)archive));
       }
 
-      Status		Sign(const Archive&		archive,
-			     Signature&			signature) const
+      elle::Status	Sign(const elle::Archive&	archive,
+			     elle::Signature&		signature) const
       {
-	return (this->Sign((Plain&)archive, signature));
+	return (this->Sign((elle::Plain&)archive, signature));
       }
     };
 
@@ -333,12 +330,5 @@ namespace etoile
 //
 
 #include <etoile/user/Agent.hxx>
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/user/Client.hh>
-#include <etoile/user/User.hh>
 
 #endif

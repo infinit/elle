@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Link.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu apr 22 11:10:36 2010]
+// updated       julien quintard   [mon may  3 12:43:12 2010]
 //
 
 //
@@ -16,6 +16,12 @@
 //
 
 #include <etoile/components/Link.hh>
+#include <etoile/components/Rights.hh>
+#include <etoile/components/Contents.hh>
+
+#include <etoile/journal/Journal.hh>
+
+#include <etoile/user/User.hh>
 
 namespace etoile
 {
@@ -29,14 +35,14 @@ namespace etoile
     ///
     /// this method creates a link object.
     ///
-    Status		Link::Create(context::Link*		context)
+    elle::Status	Link::Create(context::Link*		context)
     {
       user::User*	user;
 
       enter();
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // allocate a new link object.
@@ -44,11 +50,11 @@ namespace etoile
 
       // create the irectory.
       if (context->object->Create(kernel::GenreLink,
-				  user->client->agent->K) == StatusError)
+				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the link object");
 
       // bind the object.
-      if (context->object->Bind() == StatusError)
+      if (context->object->Bind() == elle::StatusError)
 	escape("unable to bind the object");
 
       // set the address.
@@ -61,14 +67,14 @@ namespace etoile
     /// this method loads the link object identified by the given
     /// address in the context.
     ///
-    Status		Link::Load(context::Link*		context,
+    elle::Status	Link::Load(context::Link*		context,
 				   const hole::Address&		address)
 					
     {
       enter();
 
       // load the object.
-      if (Object::Load(context, address) == StatusError)
+      if (Object::Load(context, address) == elle::StatusError)
 	escape("unable to load the object");
 
       // check that the object is a link.
@@ -81,13 +87,13 @@ namespace etoile
     ///
     /// this method binds a new target to the link.
     ///
-    Status		Link::Bind(context::Link*		context,
+    elle::Status	Link::Bind(context::Link*		context,
 				   const path::Way&		way)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the reference.
@@ -95,11 +101,11 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // bind the link.
-      if (context->contents->content->Bind(way) == StatusError)
+      if (context->contents->content->Bind(way) == elle::StatusError)
 	escape("unable to bind the link");
 
       leave();
@@ -108,13 +114,13 @@ namespace etoile
     ///
     /// this method returns the way associated with this link.
     ///
-    Status		Link::Resolve(context::Link*		context,
+    elle::Status	Link::Resolve(context::Link*		context,
 				      path::Way&		way)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the reference.
@@ -122,11 +128,11 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // resolve the link.
-      if (context->contents->content->Resolve(way) == StatusError)
+      if (context->contents->content->Resolve(way) == elle::StatusError)
 	escape("unable to resolve the link");
 
       leave();
@@ -135,12 +141,12 @@ namespace etoile
     ///
     /// this method discards the modifications applied onto the context.
     ///
-    Status		Link::Discard(context::Link*		context)
+    elle::Status	Link::Discard(context::Link*		context)
     {
       enter();
 
       // discard the object's modifications.
-      if (Object::Discard(context) == StatusError)
+      if (Object::Discard(context) == elle::StatusError)
 	escape("unable to discard the object modifications");
 
       leave();
@@ -149,18 +155,18 @@ namespace etoile
     ///
     /// this store the modifications applied onto the link context.
     ///
-    Status		Link::Store(context::Link*		context)
+    elle::Status	Link::Store(context::Link*		context)
     {
       user::User*	user;
 
       enter();
 
       // close the catalog.
-      if (Contents::Close(context) == StatusError)
+      if (Contents::Close(context) == elle::StatusError)
 	escape("unable to close the contents");
 
       // store the object.
-      if (Object::Store(context) == StatusError)
+      if (Object::Store(context) == elle::StatusError)
 	escape("unable to store the object");
 
       leave();
@@ -169,7 +175,7 @@ namespace etoile
     ///
     /// this method removes the object along with the blocks attached to it.
     ///
-    Status		Link::Destroy(context::Link*		context)
+    elle::Status	Link::Destroy(context::Link*		context)
     {
       user::User*	user;
       kernel::Size	size;
@@ -177,7 +183,7 @@ namespace etoile
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user is the object owner.
@@ -185,11 +191,11 @@ namespace etoile
 	escape("unable to destroy a not-owned object");
 
       // destroy the contents.
-      if (Contents::Destroy(context) == StatusError)
+      if (Contents::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the contents");
 
       // destroy the object.
-      if (Object::Destroy(context) == StatusError)
+      if (Object::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the object");
 
       leave();

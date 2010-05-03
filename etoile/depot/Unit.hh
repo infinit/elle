@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [mon apr 26 18:37:20 2010]
+// updated       julien quintard   [mon may  3 17:40:29 2010]
 //
 
 #ifndef ETOILE_DEPOT_UNIT_HH
@@ -36,38 +36,31 @@ namespace etoile
     /// slower storage medium that main memory such as a hard disk.
     ///
     class Unit:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
       // methods
       //
-      Status		Load(const String);
+      elle::Status	Load(const elle::String);
 
-      Status		Set(hole::Block*);
-      Status		Get(hole::Block*);
-      Status		Destroy();
+      elle::Status	Set(hole::Block*);
+      elle::Status	Get(hole::Block*);
+      elle::Status	Destroy();
 
       //
       // interfaces
       //
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      String		path;
-      Natural32		size;
+      elle::String	path;
+      elle::Natural32	size;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/depot/Repository.hh>
 
 #endif

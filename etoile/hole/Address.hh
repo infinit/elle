@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [sun apr 18 16:25:11 2010]
+// updated       julien quintard   [mon may  3 22:59:52 2010]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -38,8 +38,7 @@ namespace etoile
     /// XXX
     ///
     class Address:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<elle::FormatBase64, elle::FormatBase64>
     {
     public:
       //
@@ -57,39 +56,31 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const Family,
-			       const Archivable&);
-      Status		Identify(String&) const;
+      elle::Status	Create(const Family,
+			       const elle::Archivable&);
 
       //
       // attributes
       //
       Family		family;
-      Digest*		digest;
+      elle::Digest*	digest;
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Address);
-      Boolean		operator==(const Address&) const;
+      // object
+      declare(Address, _(elle::FormatBase64, elle::FormatBase64));
+      elle::Boolean	operator==(const Address&) const;
+      elle::Boolean	operator<(const Address&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
     };
-
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    elle::Boolean	operator<(const etoile::hole::Address&,
-				  const etoile::hole::Address&);
 
   }
 }

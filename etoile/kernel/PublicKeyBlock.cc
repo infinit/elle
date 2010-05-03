@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [thu apr 22 17:15:31 2010]
+// updated       julien quintard   [mon may  3 20:52:59 2010]
 //
 
 //
@@ -39,14 +39,14 @@ namespace etoile
 //
 
     ///
-    /// this method creates a PKB by generating a keypair.
+    /// this method creates a PKB based on the given public key.
     ///
-    Status		PublicKeyBlock::Create(const KeyPair&	pair)
+    elle::Status	PublicKeyBlock::Create(const elle::PublicKey&	K)
     {
       enter();
 
       // copy the public key.
-      this->K = pair.K;
+      this->K = K;
 
       leave();
     }
@@ -54,12 +54,12 @@ namespace etoile
     ///
     /// this method computes the block's address.
     ///
-    Status		PublicKeyBlock::Bind()
+    elle::Status	PublicKeyBlock::Bind()
     {
       enter();
 
       // compute the address.
-      if (this->address.Create(this->family, this->K) == StatusError)
+      if (this->address.Create(this->family, this->K) == elle::StatusError)
 	escape("unable to compute the PKB's address");
 
       leave();
@@ -68,7 +68,7 @@ namespace etoile
     ///
     /// this method verifies the block's validity.
     ///
-    Status		PublicKeyBlock::Validate(const hole::Address& address)
+    elle::Status	PublicKeyBlock::Validate(const hole::Address& address)
       const
     {
       hole::Address	self;
@@ -81,7 +81,7 @@ namespace etoile
       //
 
       // compute the address.
-      if (self.Create(this->family, this->K) == StatusError)
+      if (self.Create(this->family, this->K) == elle::StatusError)
 	escape("unable to compute the PKB's address");
 
       // verify with the recorded address.
@@ -103,21 +103,22 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		PublicKeyBlock::Dump(const Natural32	margin) const
+    elle::Status	PublicKeyBlock::Dump(const
+					       elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
 
       // dump the parent class.
-      if (hole::Block::Dump(margin + 2) == StatusError)
+      if (hole::Block::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
-      std::cout << alignment << Dumpable::Shift << "[K]" << std::endl;
-      if (this->K.Dump(margin + 4) == StatusError)
+      std::cout << alignment << elle::Dumpable::Shift << "[K]" << std::endl;
+      if (this->K.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the public key");
 
       leave();
@@ -130,16 +131,16 @@ namespace etoile
     ///
     /// this method serializes the block object.
     ///
-    Status		PublicKeyBlock::Serialize(Archive&	archive) const
+    elle::Status	PublicKeyBlock::Serialize(elle::Archive& archive) const
     {
       enter();
 
       // serialize the parent class.
-      if (hole::Block::Serialize(archive) == StatusError)
+      if (hole::Block::Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the underlying block");
 
       // serialize the public key.
-      if (archive.Serialize(this->K) == StatusError)
+      if (archive.Serialize(this->K) == elle::StatusError)
 	escape("unable to serialize the public key");
 
       leave();
@@ -148,16 +149,16 @@ namespace etoile
     ///
     /// this method extracts the block object.
     ///
-    Status		PublicKeyBlock::Extract(Archive&	archive)
+    elle::Status	PublicKeyBlock::Extract(elle::Archive&	archive)
     {
       enter();
 
       // extract the parent class.
-      if (hole::Block::Extract(archive) == StatusError)
+      if (hole::Block::Extract(archive) == elle::StatusError)
 	escape("unable to extract the underlying block");
 
       // extract the public key.
-      if (archive.Extract(this->K) == StatusError)
+      if (archive.Extract(this->K) == elle::StatusError)
 	escape("unable to extract the public key");
 
       leave();

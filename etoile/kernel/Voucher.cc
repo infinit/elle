@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu mar 25 17:48:57 2010]
+// updated       julien quintard   [mon may  3 23:04:54 2010]
 //
 
 //
@@ -29,13 +29,13 @@ namespace etoile
     // XXX
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Voucher::operator==(const Voucher&	element) const
+    elle::Boolean	Voucher::operator==(const Voucher&	element) const
     {
       enter();
 
@@ -52,9 +52,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Voucher);
+    embed(Voucher, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -63,18 +63,18 @@ namespace etoile
     ///
     /// this function dumps an voucher object.
     ///
-    Status		Voucher::Dump(Natural32			margin) const
+    elle::Status	Voucher::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Voucher]" << std::endl;
 
-      if (this->user.Dump(margin + 2) == StatusError)
+      if (this->user.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the user key");
 
-      if (this->signature.Dump(margin + 2) == StatusError)
+      if (this->signature.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the signature");
 
       leave();
@@ -87,13 +87,13 @@ namespace etoile
     ///
     /// this method serializes the voucher object.
     ///
-    Status		Voucher::Serialize(Archive&		archive) const
+    elle::Status	Voucher::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->user,
-			    this->signature) == StatusError)
+			    this->signature) == elle::StatusError)
 	escape("unable to serialize the internal elements");
 
       leave();
@@ -102,13 +102,13 @@ namespace etoile
     ///
     /// this method extracts the voucher object.
     ///
-    Status		Voucher::Extract(Archive&		archive)
+    elle::Status	Voucher::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->user,
-			  this->signature) == StatusError)
+			  this->signature) == elle::StatusError)
 	escape("unable to extract the internal elements");
 
       leave();

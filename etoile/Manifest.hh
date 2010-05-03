@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [thu apr 22 11:02:53 2010]
+// updated       julien quintard   [mon may  3 17:31:00 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -45,12 +45,12 @@ namespace etoile
   ///
   /// XXX
   ///
-  extern const Character	Component[];
+  extern const elle::Character	Component[];
 
   ///
   /// XXX
   ///
-  const Natural32		Tags = 100;
+  const elle::Natural32		Tags = 100;
 
 }
 
@@ -76,7 +76,7 @@ namespace etoile
   enum Tag
     {
       // etoile
-      TagOk = Range<Component>::First,
+      TagOk = elle::Range<Component>::First,
       TagIdentifier,
 
       // wall
@@ -228,13 +228,13 @@ inward(etoile::TagFileLoad,
 inward(etoile::TagFileWrite,
        parameters(const etoile::context::Identifier,
 		  const etoile::kernel::Offset,
-		  const elle::miscellaneous::Region));
+		  const elle::standalone::Region));
 inward(etoile::TagFileRead,
        parameters(const etoile::context::Identifier,
 		  const etoile::kernel::Offset,
 		  const etoile::kernel::Size));
 outward(etoile::TagFileRegion,
-	parameters(const elle::miscellaneous::Region));
+	parameters(const elle::standalone::Region));
 inward(etoile::TagFileAdjust,
        parameters(const etoile::context::Identifier,
 		  const etoile::kernel::Size));

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Trait.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [mon apr 19 13:52:45 2010]
+// updated       julien quintard   [mon may  3 23:04:22 2010]
 //
 
 //
@@ -45,21 +45,21 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Trait::Trait(const String&					name,
-		 const String&					value):
+    Trait::Trait(const elle::String&				name,
+		 const elle::String&				value):
       name(name),
       value(value)
     {
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Trait::operator==(const Trait&		element) const
+    elle::Boolean	Trait::operator==(const Trait&		element) const
     {
       enter();
 
@@ -76,9 +76,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Trait);
+    embed(Trait, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -87,20 +87,20 @@ namespace etoile
     ///
     /// this function dumps a trait.
     ///
-    Status		Trait::Dump(Natural32			margin) const
+    elle::Status	Trait::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Trait]" << std::endl;
 
       // dump the name.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift
 		<< "[Name] " << this->name << std::endl;
 
       // dump the value.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift
 		<< "[Value] " << this->value << std::endl;
 
       leave();
@@ -113,13 +113,13 @@ namespace etoile
     ///
     /// this method serializes the trait object.
     ///
-    Status		Trait::Serialize(Archive&		archive) const
+    elle::Status	Trait::Serialize(elle::Archive&		archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->name,
-			    this->value) == StatusError)
+			    this->value) == elle::StatusError)
 	escape("unable to serialize the trait");
 
       leave();
@@ -128,13 +128,13 @@ namespace etoile
     ///
     /// this method extracts the trait object.
     ///
-    Status		Trait::Extract(Archive&		archive)
+    elle::Status	Trait::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->name,
-			  this->value) == StatusError)
+			  this->value) == elle::StatusError)
 	escape("unable to extract the trait");
 
       leave();
@@ -147,7 +147,7 @@ namespace etoile
     ///
     /// this method returns the symbol of a trait i.e the name.
     ///
-    String&		Trait::Symbol()
+    elle::String&	Trait::Symbol()
     {
       return (this->name);
     }

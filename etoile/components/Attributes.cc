@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Attributes.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [mon apr 19 19:39:19 2010]
+// updated       julien quintard   [mon may  3 17:56:12 2010]
 //
 
 //
@@ -16,6 +16,11 @@
 //
 
 #include <etoile/components/Attributes.hh>
+#include <etoile/components/Rights.hh>
+
+#include <etoile/kernel/State.hh>
+
+#include <etoile/depot/Depot.hh>
 
 namespace etoile
 {
@@ -29,16 +34,16 @@ namespace etoile
     ///
     /// this method sets a trait.
     ///
-    Status		Attributes::Set(context::Object*	context,
-					const String&		name,
-					const String&		value)
+    elle::Status	Attributes::Set(context::Object*	context,
+					const elle::String&	name,
+					const elle::String&	value)
     {
       user::User*	user;
 
       enter();
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
@@ -46,11 +51,11 @@ namespace etoile
 	escape("the object's owner only can modify the attributes");
 
       // test if the attribute already exists.
-      if (context->object->meta.attributes.Exist(name) == StatusTrue)
+      if (context->object->meta.attributes.Exist(name) == elle::StatusTrue)
 	{
 	  // update the trait, properly i.e by calling the Update() method.
-	  if (context->object->meta.attributes.Update(name,
-						      value) == StatusError)
+	  if (context->object->meta.attributes.Update(name, value) ==
+	      elle::StatusError)
 	    escape("unable to update the trait");
 	}
       else
@@ -64,7 +69,7 @@ namespace etoile
 	  trait = new kernel::Trait(name, value);
 
 	  // add the trait to the attributes.
-	  if (context->object->meta.attributes.Add(trait) == StatusError)
+	  if (context->object->meta.attributes.Add(trait) == elle::StatusError)
 	    escape("unable to add the trait");
 
 	  // waive.
@@ -79,7 +84,7 @@ namespace etoile
             context->object->meta.attributes,
 	    context->object->meta.access,
 	    context->object->meta.owner.permissions,
-	    context->object->meta.owner.token) == StatusError)
+	    context->object->meta.owner.token) == elle::StatusError)
 	escape("unable to update the object's meta section");
 
       leave();
@@ -89,14 +94,15 @@ namespace etoile
     /// this method looks for the given name in the attributes and
     /// return the associated trait.
     ///
-    Status		Attributes::Get(context::Object*	context,
-					const String&		name,
+    elle::Status	Attributes::Get(context::Object*	context,
+					const elle::String&	name,
 					kernel::Trait*&		trait)
     {
       enter();
 
       // lookup in the attributes object.
-      if (context->object->meta.attributes.Lookup(name, trait) == StatusError)
+      if (context->object->meta.attributes.Lookup(name,
+						  trait) == elle::StatusError)
 	escape("unable to lookup in the attributes");
 
       leave();
@@ -105,7 +111,7 @@ namespace etoile
     ///
     /// this method returns the attributes.
     ///
-    Status		Attributes::Fetch(context::Object*	context,
+    elle::Status	Attributes::Fetch(context::Object*	context,
 					  kernel::Range<kernel::Trait>& range)
     {
       enter();
@@ -113,7 +119,7 @@ namespace etoile
       // consult the attributes.
       if (context->object->meta.attributes.Consult(kernel::IndexFirst,
 						   kernel::SizeMaximum,
-						   range) == StatusError)
+						   range) == elle::StatusError)
 	escape("unable to fetch the attributes");
 
       leave();
@@ -122,15 +128,15 @@ namespace etoile
     ///
     /// this method removes a trait from the attributes.
     ///
-    Status		Attributes::Omit(context::Object*	context,
-					 const String&		name)
+    elle::Status	Attributes::Omit(context::Object*	context,
+					 const elle::String&	name)
     {
       user::User*	user;
 
       enter();
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
@@ -138,7 +144,7 @@ namespace etoile
 	escape("the object's owner only can modify the attributes");
 
       // remove the trait associated with the given name.
-      if (context->object->meta.attributes.Remove(name) == StatusTrue)
+      if (context->object->meta.attributes.Remove(name) == elle::StatusTrue)
 	escape("unable to remove the trait");
 
       // update the object since the attributes have changed.
@@ -146,7 +152,7 @@ namespace etoile
             context->object->meta.attributes,
 	    context->object->meta.access,
 	    context->object->meta.owner.permissions,
-	    context->object->meta.owner.token) == StatusError)
+	    context->object->meta.owner.token) == elle::StatusError)
 	escape("unable to update the object's meta section");
 
       leave();

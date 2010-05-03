@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.hh
 //
 // created       julien quintard   [sat jan 30 15:18:59 2010]
-// updated       julien quintard   [tue apr  6 12:12:24 2010]
+// updated       julien quintard   [mon may  3 13:11:56 2010]
 //
 
 #ifndef ETOILE_JOURNAL_JOURNAL_HH
@@ -48,13 +48,13 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status	Record(context::Context*);
+      static elle::Status	Record(context::Context*);
 
-      static Status	Get(const hole::Address&,
-			    hole::Block*&);
+      static elle::Status	Get(const hole::Address&,
+				    hole::Block*&);
     };
 
   }
@@ -65,8 +65,7 @@ namespace etoile
 //
 
 #include <etoile/journal/Bucket.hh>
+#include <etoile/journal/Item.hh>
 #include <etoile/journal/Operation.hh>
-
-#include <etoile/hole/Hole.hh>
 
 #endif

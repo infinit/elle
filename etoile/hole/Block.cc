@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [thu apr 22 17:13:53 2010]
+// updated       julien quintard   [mon may  3 23:11:22 2010]
 //
 
 //
@@ -40,31 +40,65 @@ namespace etoile
     }
 
 //
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method computes the address of the block.
+    ///
+    elle::Status	Block::Bind()
+    {
+      enter();
+
+      fail("this method should never have been called");
+    }
+
+    ///
+    /// this method returns StatusTrue if the block is valid, StatusFalse
+    /// otherwise.
+    ///
+    elle::Status	Block::Validate(const Address&) const
+    {
+      enter();
+
+      fail("this method should never have been called");
+    }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Block, _(), _());
+
+//
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
     /// this method dumps the block's internals.
     ///
-    Status		Block::Dump(const Natural32		margin) const
+    elle::Status	Block::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Block]" << std::endl;
 
       // dump the block address.
-      if (this->address.Dump(margin + 2 ) == StatusError)
+      if (this->address.Dump(margin + 2 ) == elle::StatusError)
 	escape("unable to dump the address");
 
       // dump the family.
-      std::cout << alignment << Dumpable::Shift << "[Family] "
-		<< (Natural32)this->family << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[Family] "
+		<< (elle::Natural32)this->family << std::endl;
 
       // dump the family.
-      std::cout << alignment << Dumpable::Shift << "[Component] "
-		<< (Natural32)this->component << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[Component] "
+		<< (elle::Natural32)this->component << std::endl;
 
       leave();
     }
@@ -76,13 +110,14 @@ namespace etoile
     ///
     /// this method archives the block attributes.
     ///
-    Status		Block::Serialize(Archive&		archive) const
+    elle::Status	Block::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize((Natural8&)this->family,
-			    (Natural8&)this->component) == StatusError)
+      if (archive.Serialize((elle::Natural8&)this->family,
+			    (elle::Natural8&)this->component) ==
+	  elle::StatusError)
 	escape("unable to serialize the block's attributes");
 
       leave();
@@ -91,13 +126,14 @@ namespace etoile
     ///
     /// this method extracts the attributes.
     ///
-    Status		Block::Extract(Archive&			archive)
+    elle::Status	Block::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extracts the attributes.
-      if (archive.Extract((Natural8&)this->family,
-			  (Natural8&)this->component) == StatusError)
+      if (archive.Extract((elle::Natural8&)this->family,
+			  (elle::Natural8&)this->component) ==
+	  elle::StatusError)
 	escape("unable to extract the block's attributes");
 
       leave();

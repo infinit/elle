@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Author.hh
 //
 // created       julien quintard   [sun aug 23 15:30:06 2009]
-// updated       julien quintard   [tue apr  6 12:02:59 2010]
+// updated       julien quintard   [mon may  3 12:39:15 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_AUTHOR_HH
@@ -41,7 +41,7 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Forge(context::Object*);
+      static elle::Status	Forge(context::Object*);
     };
 
   }

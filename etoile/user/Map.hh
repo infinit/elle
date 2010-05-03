@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Map.hh
 //
 // created       julien quintard   [fri mar 19 11:59:09 2010]
-// updated       julien quintard   [wed mar 31 00:18:36 2010]
+// updated       julien quintard   [mon may  3 13:48:40 2010]
 //
 
 #ifndef ETOILE_USER_MAP_HH
@@ -52,24 +52,24 @@ namespace etoile
       //
       // types
       //
-      typedef std::pair<const Channel*, Client*>	Value;
-      typedef std::map<const Channel*, Client*>		Container;
+      typedef std::pair<const elle::Channel*, Client*>	Value;
+      typedef std::map<const elle::Channel*, Client*>	Container;
       typedef Container::iterator			Iterator;
       typedef Container::const_iterator			Scoutor;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status	Add(const Channel*,
-			    Client*);
-      static Status	Retrieve(const Channel*,
-				 Client*&);
-      static Status	Remove(const Channel*);
+      static elle::Status	Add(const elle::Channel*,
+				    Client*);
+      static elle::Status	Retrieve(const elle::Channel*,
+					 Client*&);
+      static elle::Status	Remove(const elle::Channel*);
 
-      static Status	Show(const Natural32 = 0);
+      static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // static attributes

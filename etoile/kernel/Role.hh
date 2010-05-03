@@ -8,11 +8,17 @@
 // file          /home/mycure/infinit/etoile/kernel/Role.hh
 //
 // created       julien quintard   [sun apr  4 14:38:46 2010]
-// updated       julien quintard   [sun apr  4 14:44:58 2010]
+// updated       julien quintard   [mon may  3 16:58:29 2010]
 //
 
 #ifndef ETOILE_KERNEL_ROLE_HH
 #define ETOILE_KERNEL_ROLE_HH
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/Elle.hh>
 
 namespace etoile
 {
@@ -27,7 +33,7 @@ namespace etoile
     /// this defines the type that is used to represent which role
     /// a user can play on an object.
     ///
-    typedef Natural8			Role;
+    typedef elle::Natural8		Role;
 
 //
 // ---------- constants -------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.hh
 //
 // created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [mon apr 26 18:49:23 2010]
+// updated       julien quintard   [mon may  3 22:59:14 2010]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH
@@ -40,8 +40,7 @@ namespace etoile
     /// is useless.
     ///
     class Venue:
-      public Entity,
-      public Dumpable
+      public elle::Object<>
     {
     public:
       //
@@ -59,18 +58,18 @@ namespace etoile
       //
       // methods
       //
-      Status		Record(const hole::Address&);
+      elle::Status	Record(const hole::Address&);
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Venue);
-      Boolean		operator==(const Venue&) const;
+      // object
+      declare(Venue, _());
+      elle::Boolean	operator==(const Venue&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

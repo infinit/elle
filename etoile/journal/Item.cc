@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Item.cc
 //
 // created       julien quintard   [mon apr  5 21:26:41 2010]
-// updated       julien quintard   [fri apr 16 14:33:24 2010]
+// updated       julien quintard   [mon may  3 20:51:59 2010]
 //
 
 //
@@ -54,20 +54,20 @@ namespace etoile
     ///
     /// this method dumps the item.
     ///
-    Status		Item::Dump(const Natural32		margin) const
+    elle::Status	Item::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Item]" << std::endl;
 
       // dump the operation.
-      std::cout << alignment << Dumpable::Shift << "[Operation] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Operation] "
 		<< this->operation << std::endl;
 
       // dump the address.
-      if (this->address.Dump(margin + 2) == StatusError)
+      if (this->address.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the address");
 
       // display operation-specific information.
@@ -76,7 +76,7 @@ namespace etoile
 	case OperationPush:
 	  {
 	    // dump the block pointer.
-	    std::cout << alignment << Dumpable::Shift << "[Block] "
+	    std::cout << alignment << elle::Dumpable::Shift << "[Block] "
 		      << std::hex << this->block << std::endl;
 
 	    break;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [wed apr  7 19:27:25 2010]
+// updated       julien quintard   [mon may  3 23:05:00 2010]
 //
 
 //
@@ -52,7 +52,7 @@ namespace etoile
     ///
     /// this method creates a owner-specific author object.
     ///
-    Status		Author::Create()
+    elle::Status	Author::Create()
     {
       enter();
 
@@ -68,7 +68,7 @@ namespace etoile
     /// a user has been directly granted access to an object i.e is
     /// explicitely listed in the Access block.
     ///
-    Status		Author::Create(const Index&		index)
+    elle::Status	Author::Create(const Index&		index)
     {
       enter();
 
@@ -79,7 +79,7 @@ namespace etoile
       this->proof = new Proof;
 
       // set the proof.
-      if (this->proof->Specify(index) == StatusError)
+      if (this->proof->Specify(index) == elle::StatusError)
 	escape("unable to specify the proof");
 
       leave();
@@ -90,7 +90,7 @@ namespace etoile
     /// used whenever a user is granted access indirectly through
     /// one or more group memberships.
     ///
-    Status		Author::Create(const Index&		index,
+    elle::Status	Author::Create(const Index&		index,
 				       const Voucher&		voucher)
     {
       enter();
@@ -102,20 +102,20 @@ namespace etoile
       this->proof = new Proof;
 
       // set the proof.
-      if (this->proof->Specify(index, voucher) == StatusError)
+      if (this->proof->Specify(index, voucher) == elle::StatusError)
 	escape("unable to specify the proof");
 
       leave();
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Author::operator==(const Author&	element) const
+    elle::Boolean	Author::operator==(const Author&	element) const
     {
       enter();
 
@@ -141,9 +141,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Author);
+    embed(Author, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -152,26 +152,26 @@ namespace etoile
     ///
     /// this function dumps an address object.
     ///
-    Status		Author::Dump(Natural32			margin) const
+    elle::Status	Author::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Author]" << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Role] "
-		<< (Natural32)this->role << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[Role] "
+		<< (elle::Natural32)this->role << std::endl;
 
       if (this->proof != NULL)
 	{
-	  if (this->proof->Dump(margin + 2) == StatusError)
+	  if (this->proof->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the proof");
 	}
       else
 	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Proof] " << none << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Proof] " << elle::none << std::endl;
 	}
 
       leave();
@@ -184,24 +184,24 @@ namespace etoile
     ///
     /// this method serializes the address object.
     ///
-    Status		Author::Serialize(Archive&		archive) const
+    elle::Status	Author::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the role.
-      if (archive.Serialize(this->role) == StatusError)
+      if (archive.Serialize(this->role) == elle::StatusError)
 	escape("unable to serialize the role");
 
       if (this->proof != NULL)
 	{
 	  // serialize the internal proof.
-	  if (archive.Serialize(*this->proof) == StatusError)
+	  if (archive.Serialize(*this->proof) == elle::StatusError)
 	    escape("unable to serialize the proof");
 	}
       else
 	{
 	  // serialize 'none'.
-	  if (archive.Serialize(none) == StatusError)
+	  if (archive.Serialize(elle::none) == elle::StatusError)
 	    escape("unable to serialize 'none'");
 	}
 
@@ -211,24 +211,24 @@ namespace etoile
     ///
     /// this method extracts the address object.
     ///
-    Status		Author::Extract(Archive&		archive)
+    elle::Status	Author::Extract(elle::Archive&		archive)
     {
-      Archive::Type	type;
+      elle::Archive::Type	type;
 
       enter();
 
       // extract the role.
-      if (archive.Extract(this->role) == StatusError)
+      if (archive.Extract(this->role) == elle::StatusError)
 	escape("unable to extract the role");
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == StatusError)
+      if (archive.Fetch(type) == elle::StatusError)
 	escape("unable to fetch the next element's type");
 
-      if (type == Archive::TypeNull)
+      if (type == elle::Archive::TypeNull)
 	{
 	  // nothing to do, keep the proof to NULL.
-	  if (archive.Extract(none) == StatusError)
+	  if (archive.Extract(elle::none) == elle::StatusError)
 	    escape("unable to extract null");
 	}
       else
@@ -237,7 +237,7 @@ namespace etoile
 	  this->proof = new Proof;
 
 	  // extract the internal proof.
-	  if (archive.Extract(*this->proof) == StatusError)
+	  if (archive.Extract(*this->proof) == elle::StatusError)
 	    escape("unable to extract the proof");
 	}
 

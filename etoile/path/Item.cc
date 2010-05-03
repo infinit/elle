@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.cc
 //
 // created       julien quintard   [fri aug  7 21:44:49 2009]
-// updated       julien quintard   [fri apr  2 01:32:25 2010]
+// updated       julien quintard   [mon may  3 20:54:16 2010]
 //
 
 //
@@ -64,7 +64,7 @@ namespace etoile
     ///
     /// this method tries to resolve a name within the item scope.
     ///
-    Status		Item::Resolve(const Slice&		name,
+    elle::Status	Item::Resolve(const Slice&		name,
 				      Item*&			item)
     {
       Item::Scoutor	scoutor;
@@ -88,12 +88,12 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Item::Update(const Slice&		name,
+    elle::Status	Item::Update(const Slice&		name,
 				     const hole::Address&	address)
     {
-      std::pair<Item::Iterator, bool>	result;
-      Item::Scoutor			scoutor;
-      Item*				item;
+      std::pair<Item::Iterator, elle::Boolean>	result;
+      Item::Scoutor				scoutor;
+      Item*					item;
 
       enter(instance(item));
 
@@ -137,7 +137,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Item::Destroy()
+    elle::Status		Item::Destroy()
     {
       enter();
 
@@ -153,22 +153,22 @@ namespace etoile
     ///
     /// this method dumps the item in a recursive way.
     ///
-    Status		Item::Dump(const Natural32		margin)
+    elle::Status	Item::Dump(const elle::Natural32	margin)
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Item]" << std::endl;
 
       // dump the attributes.
-      std::cout << alignment << Dumpable::Shift << "[Name] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Name] "
 		<< this->name << std::endl;
 
-      if (this->address.Dump(margin + 2) == StatusError)
+      if (this->address.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the address");
 
-      std::cout << alignment << Dumpable::Shift << "[Directory] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Directory] "
 		<< std::hex << this->directory << std::endl;
 
       // dump the data, if there is any.
@@ -176,7 +176,8 @@ namespace etoile
 	{
 	  Item::Scoutor	scoutor;
 
-	  std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Data]" << std::endl;
 
 	  // recursively dump all the sub-items.
 	  for (scoutor = this->data->begin();
@@ -184,7 +185,7 @@ namespace etoile
 	       scoutor++)
 	    {
 	      // dump the sub-item.
-	      if (scoutor->second->Dump(margin + 4) == StatusError)
+	      if (scoutor->second->Dump(margin + 4) == elle::StatusError)
 		escape("unable to dump the sub-item");
 	    }
 	}

@@ -8,8 +8,17 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [mon apr 26 19:22:52 2010]
+// updated       julien quintard   [mon may  3 23:03:16 2010]
 //
+
+#ifndef ETOILE_KERNEL_RANGE_HXX
+#define ETOILE_KERNEL_RANGE_HXX
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/kernel/Index.hh>
 
 namespace etoile
 {
@@ -68,7 +77,7 @@ namespace etoile
 	    }
 
 	  // add the item to the container.
-	  if (this->Add(item) == StatusError)
+	  if (this->Add(item) == elle::StatusError)
 	    alert("unable to add the item to the container");
 	}
 
@@ -105,7 +114,7 @@ namespace etoile
     /// this method adds an item to the range.
     ///
     template <typename T>
-    Status		Range<T>::Add(T*			item)
+    elle::Status	Range<T>::Add(T*			item)
     {
       enter();
 
@@ -123,12 +132,12 @@ namespace etoile
     /// this method returns true if an item for the given symbol exists.
     ///
     template <typename T>
-    Status		Range<T>::Exist(const Range<T>::S&	symbol)
+    elle::Status	Range<T>::Exist(const Range<T>::S&	symbol)
     {
       enter();
 
       // try to locate the entry.
-      if (this->Locate(symbol) != StatusTrue)
+      if (this->Locate(symbol) != elle::StatusTrue)
 	false();
 
       true();
@@ -140,7 +149,7 @@ namespace etoile
     /// the method returns true if the item is found, false otherwise.
     ///
     template <typename T>
-    Status		Range<T>::Lookup(const Range<T>::S&	symbol,
+    elle::Status	Range<T>::Lookup(const Range<T>::S&	symbol,
 					 T*&			item)
     {
       Range<T>::Iterator	iterator;
@@ -164,7 +173,7 @@ namespace etoile
     /// this method removes an item from the range.
     ///
     template <typename T>
-    Status		Range<T>::Remove(const Range<T>::S&	symbol)
+    elle::Status	Range<T>::Remove(const Range<T>::S&	symbol)
     {
       Range<T>::Iterator	iterator;
 
@@ -187,7 +196,7 @@ namespace etoile
     /// this method returns the number of items in the range.
     ///
     template <typename T>
-    Status		Range<T>::Capacity(Size&		size) const
+    elle::Status	Range<T>::Capacity(Size&		size) const
     {
       enter();
 
@@ -203,7 +212,7 @@ namespace etoile
     /// the method returns true if the item is found, false otherwise.
     ///
     template <typename T>
-    Status		Range<T>::Locate(const Range<T>::S&	symbol,
+    elle::Status	Range<T>::Locate(const Range<T>::S&	symbol,
 					 Range<T>::Iterator*	i)
     {
       Range<T>::Iterator	iterator;
@@ -237,7 +246,7 @@ namespace etoile
     /// dies.
     ///
     template <typename T>
-    Status		Range<T>::Detach()
+    elle::Status	Range<T>::Detach()
     {
       enter();
 
@@ -248,13 +257,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Range<T>, template <typename T>);
+    embed(Range<T>, _(), _(template <typename T>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -264,9 +273,9 @@ namespace etoile
     /// this function dumps a range.
     ///
     template <typename T>
-    Status		Range<T>::Dump(Natural32		margin) const
+    elle::Status	Range<T>::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
       Range<T>::Scoutor	scoutor;
 
       enter();
@@ -274,7 +283,7 @@ namespace etoile
       std::cout << alignment << "[Range]" << std::endl;
 
       // dump the options.
-      std::cout << alignment << Dumpable::Shift << "[Options] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Options] "
 		<< this->options << std::endl;
 
       // dump every item.
@@ -285,7 +294,7 @@ namespace etoile
 	  T*		item = *scoutor;
 
 	  // dump the item.
-	  if (item->Dump(margin + 2) == StatusError)
+	  if (item->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the item");
 	}
 
@@ -300,7 +309,7 @@ namespace etoile
     /// this method serializes the range object.
     ///
     template <typename T>
-    Status		Range<T>::Serialize(Archive&		archive) const
+    elle::Status	Range<T>::Serialize(elle::Archive&	archive) const
     {
       Range<T>::Scoutor	scoutor;
       Size		size;
@@ -311,7 +320,7 @@ namespace etoile
       size = this->container.size();
 
       // serialize the number of items.
-      if (archive.Serialize(size) == StatusError)
+      if (archive.Serialize(size) == elle::StatusError)
 	escape("unable to serialize the number of items");
 
       // serialize every item.
@@ -322,7 +331,7 @@ namespace etoile
 	  T*		item = *scoutor;
 
 	  // serialize the item.
-	  if (archive.Serialize(*item) == StatusError)
+	  if (archive.Serialize(*item) == elle::StatusError)
 	    escape("unable to serialize the item");
 	}
 
@@ -333,7 +342,7 @@ namespace etoile
     /// this method extracts the range object.
     ///
     template <typename T>
-    Status		Range<T>::Extract(Archive&		archive)
+    elle::Status	Range<T>::Extract(elle::Archive&	archive)
     {
       Size		size;
       Index		i;
@@ -341,7 +350,7 @@ namespace etoile
       enter();
 
       // extract the number of items.
-      if (archive.Extract(size) == StatusError)
+      if (archive.Extract(size) == elle::StatusError)
 	escape("unable to extract the number of items");
 
       // extract every item.
@@ -355,7 +364,7 @@ namespace etoile
 	  item = new T;
 
 	  // extract the item.
-	  if (archive.Extract(*item) == StatusError)
+	  if (archive.Extract(*item) == elle::StatusError)
 	    escape("unable to extract the item");
 
 	  // add the item to the container.
@@ -372,3 +381,5 @@ namespace etoile
 
   }
 }
+
+#endif

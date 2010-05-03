@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Author.cc
 //
 // created       julien quintard   [sun aug 23 15:33:40 2009]
-// updated       julien quintard   [tue apr  6 12:09:03 2010]
+// updated       julien quintard   [mon may  3 12:39:28 2010]
 //
 
 //
@@ -30,7 +30,7 @@ namespace etoile
     /// this method forges the author object required to modify the
     /// object associated with the given context.
     ///
-    Status		Author::Forge(context::Object*		context)
+    elle::Status	Author::Forge(context::Object*		context)
     {
       user::User*	user;
 
@@ -41,11 +41,11 @@ namespace etoile
 	leave();
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the current user");
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // allocate a new author.
@@ -57,7 +57,7 @@ namespace etoile
 	case kernel::RoleOwner:
 	  {
 	    // create an owner author.
-	    if (context->author->Create() == StatusError)
+	    if (context->author->Create() == elle::StatusError)
 	      escape("unable to create the author");
 
 	    break;
@@ -68,11 +68,11 @@ namespace etoile
 
 	    // retrieve the record index.
 	    if (context->access->Locate(user->client->subject,
-					index) == StatusError)
+					index) == elle::StatusError)
 	      escape("unable to locate the record");
 
 	    // create the delegate-specific author.
-	    if (context->author->Create(index) == StatusError)
+	    if (context->author->Create(index) == elle::StatusError)
 	      escape("unable to create the author");
 
 	    break;

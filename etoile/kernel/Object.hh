@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [thu apr 22 17:16:15 2010]
+// updated       julien quintard   [mon may  3 22:58:33 2010]
 //
 
 #ifndef ETOILE_KERNEL_OBJECT_HH
@@ -70,7 +70,7 @@ namespace etoile
       //
       // identifier
       //
-      static const String	Name;
+      static const elle::String		Name;
 
       //
       // constructors & destructors
@@ -80,38 +80,37 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const Genre,
-			       const PublicKey&);
+      elle::Status	Create(const Genre,
+			       const elle::PublicKey&);
 
-      Status		Update(const Author&,
+      elle::Status	Update(const Author&,
 			       const hole::Address&,
 			       const Size&,
-			       const Digest&);
-      Status		Administrate(const Attributes&,
+			       const elle::Digest&);
+      elle::Status	Administrate(const Attributes&,
 				     const hole::Address&,
 				     const Permissions&,
 				     const Token&);
 
-      Status		Seal(const user::Agent&,
+      elle::Status	Seal(const user::Agent&,
 			     const Access* = NULL);
 
-      Status		Validate(const hole::Address&,
+      elle::Status	Validate(const hole::Address&,
 				 const Access* = NULL) const;
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Object);
-      // XXX operator==
+      // object
+      declare(Object, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
@@ -119,63 +118,55 @@ namespace etoile
 
       struct
       {
-	PublicKey	K;
+	elle::PublicKey		K;
 
-	Signature	signature;
+	elle::Signature		signature;
 
-	Subject		subject;
-      }			owner;
+	Subject			subject;
+      }				owner;
 
-      Author		author;
+      Author			author;
 
       struct
       {
 	struct
 	{
-	  Permissions	permissions;
-	  Token		token;
+	  Permissions		permissions;
+	  Token			token;
 
-	  Record	record;
-	}		owner;
+	  Record		record;
+	}			owner;
 
-	Genre		genre;
-	Time		stamp;
+	Genre			genre;
+	elle::Time		stamp;
 
-	Attributes	attributes;
+	Attributes		attributes;
 
-	hole::Address	access;
+	hole::Address		access;
 
-	Version		version;
-	Signature	signature;
+	Version			version;
+	elle::Signature		signature;
 
-	State		state;
-      }			meta;
+	State			state;
+      }				meta;
 
       struct
       {
-	hole::Address	contents;
+	hole::Address		contents;
 
-	Size		size;
-	Time		stamp;
+	Size			size;
+	elle::Time		stamp;
 
-	Digest		fingerprint;
+	elle::Digest		fingerprint;
 
-	Version		version;
-	Signature	signature;
+	Version			version;
+	elle::Signature		signature;
 
-	State		state;
-      }			data;
+	State			state;
+      }				data;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/user/Agent.hh>
-
-#include <etoile/hole/Component.hh>
 
 #endif

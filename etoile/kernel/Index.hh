@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Index.hh
 //
 // created       julien quintard   [thu apr  1 22:36:01 2010]
-// updated       julien quintard   [fri apr  2 13:32:50 2010]
+// updated       julien quintard   [mon may  3 17:20:18 2010]
 //
 
 #ifndef ETOILE_KERNEL_INDEX_HH
@@ -42,8 +42,8 @@ namespace etoile
     ///
     /// this constants defines the first and last indexes.
     ///
-    const Index			IndexFirst = Type<Index>::Minimum;
-    const Index			IndexLast = Type<Index>::Maximum;
+    const Index			IndexFirst = elle::Type<Index>::Minimum;
+    const Index			IndexLast = elle::Type<Index>::Maximum;
 
   }
 }

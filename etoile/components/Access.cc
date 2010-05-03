@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [thu apr 22 23:13:17 2010]
+// updated       julien quintard   [mon may  3 17:40:00 2010]
 //
 
 //
@@ -16,6 +16,11 @@
 //
 
 #include <etoile/components/Access.hh>
+#include <etoile/components/Rights.hh>
+
+#include <etoile/kernel/State.hh>
+
+#include <etoile/depot/Depot.hh>
 
 namespace etoile
 {
@@ -30,7 +35,7 @@ namespace etoile
     /// this method opens i.e load, the access block if present or
     /// creates an empty new one otherwise.
     ///
-    Status		Access::Open(context::Object*		context)
+    elle::Status	Access::Open(context::Object*		context)
     {
       enter();
 
@@ -43,7 +48,7 @@ namespace etoile
 	{
 	  // load the block.
 	  if (depot::Depot::Get(context->object->meta.access,
-				context->access) == StatusError)
+				context->access) == elle::StatusError)
 	    escape("unable to load the access");
 	}
       else
@@ -59,7 +64,7 @@ namespace etoile
     /// this method adds a record to the access block, granting access
     /// to the given subject.
     ///
-    Status		Access::Grant(context::Object*		context,
+    elle::Status	Access::Grant(context::Object*		context,
 				      const kernel::Subject&	subject,
 				      const kernel::Permissions& permissions)
     {
@@ -69,7 +74,7 @@ namespace etoile
       enter(instance(record));
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
@@ -77,7 +82,7 @@ namespace etoile
 	escape("the object's owner only can modify the accesses");
 
       // look in the access object.
-      if (context->access->Exist(subject) == StatusTrue)
+      if (context->access->Exist(subject) == elle::StatusTrue)
 	escape("this subject already exist in the access block");
 
       // update the access block or object according to the subject.
@@ -92,7 +97,7 @@ namespace etoile
                 context->object->meta.attributes,
 		context->object->meta.access,
 		permissions,
-		context->object->meta.owner.token) == StatusError)
+		context->object->meta.owner.token) == elle::StatusError)
 	    escape("unable to update the object's meta section");
 	}
       else
@@ -102,7 +107,7 @@ namespace etoile
 	  //
 
 	  // open the access.
-	  if (Access::Open(context) == StatusError)
+	  if (Access::Open(context) == elle::StatusError)
 	    escape("unable to open the access");
 
 	  // allocate a new record.
@@ -111,11 +116,11 @@ namespace etoile
 	  // create the new record.
 	  if (record->Update(subject,
 			     permissions,
-			     context->rights->key) == StatusError)
+			     context->rights->key) == elle::StatusError)
 	    escape("unable to create the new record");
 
 	  // add the record to the access object.
-	  if (context->access->Add(record) == StatusError)
+	  if (context->access->Add(record) == elle::StatusError)
 	    escape("unable to add the new record");
 
 	  // stop tracking record.
@@ -123,14 +128,14 @@ namespace etoile
 	}
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the subject is the user.
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  if (Rights::Update(context, permissions) == StatusError)
+	  if (Rights::Update(context, permissions) == elle::StatusError)
 	    escape("unable to update the rights' permissions");
 	}
 
@@ -141,7 +146,7 @@ namespace etoile
     /// this method looks for the given subject in the access block and
     /// return the associated permissions.
     ///
-    Status		Access::Lookup(context::Object*		context,
+    elle::Status	Access::Lookup(context::Object*		context,
 				       const kernel::Subject&	subject,
 				       kernel::Record*&		record)
     {
@@ -150,7 +155,7 @@ namespace etoile
       enter();
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // try to make the best of this call.
@@ -162,7 +167,7 @@ namespace etoile
 	  //
 
 	  // determine the user's rights on the object.
-	  if (Rights::Determine(context) == StatusError)
+	  if (Rights::Determine(context) == elle::StatusError)
 	    escape("unable to determine the user's rights");
 
 	  // set the record attributes from the user's rights.
@@ -194,11 +199,12 @@ namespace etoile
 	      //
 
 	      // open the access.
-	      if (Access::Open(context) == StatusError)
+	      if (Access::Open(context) == elle::StatusError)
 		escape("unable to open the access");
 
 	      // lookup in the access object.
-	      if (context->access->Lookup(subject, record) == StatusError)
+	      if (context->access->Lookup(subject,
+					  record) == elle::StatusError)
 		escape("unable to lookup in the access object");
 	    }
 	}
@@ -209,7 +215,7 @@ namespace etoile
     ///
     /// this method returns a subset---i.e a range---of the access block.
     ///
-    Status		Access::Consult(context::Object*	context,
+    elle::Status	Access::Consult(context::Object*	context,
 					const kernel::Index&	index,
 					const kernel::Size&	size,
 					kernel::Range<kernel::Record>&	range)
@@ -217,7 +223,7 @@ namespace etoile
       enter();
 
       // open the access.
-      if (Access::Open(context) == StatusError)
+      if (Access::Open(context) == elle::StatusError)
 	escape("unable to open the access");
 
       // if the index starts with 0, including the owner by creating
@@ -230,7 +236,7 @@ namespace etoile
 	  enter(instance(record));
 
 	  // create a subject for the owner.
-	  if (subject.Create(context->object->owner.K) == StatusError)
+	  if (subject.Create(context->object->owner.K) == elle::StatusError)
 	    escape("unable to create the owner subject");
 
 	  // create the record.
@@ -239,7 +245,7 @@ namespace etoile
 				      context->object->meta.owner.token);
 
 	  // add the record to the range.
-	  if (range.Add(record) == StatusError)
+	  if (range.Add(record) == elle::StatusError)
 	    escape("unable to add the owner record");
 
 	  // waive.
@@ -247,14 +253,18 @@ namespace etoile
 
 	  // consult the access object by taking care of consulting one
 	  // record less.
-	  if (context->access->Consult(index, size - 1, range) == StatusError)
+	  if (context->access->Consult(index,
+				       size - 1,
+				       range) == elle::StatusError)
 	    escape("unable to consult the access object");
 	}
       else
 	{
 	  // consult the access object by taking care of starting the
 	  // consultation one index before.
-	  if (context->access->Consult(index - 1 , size, range) == StatusError)
+	  if (context->access->Consult(index - 1 ,
+				       size,
+				       range) == elle::StatusError)
 	    escape("unable to consult the access object");
 	}
 
@@ -264,7 +274,7 @@ namespace etoile
     ///
     /// this method updates an existing record with the given permissions.
     ///
-    Status		Access::Update(context::Object*		context,
+    elle::Status	Access::Update(context::Object*		context,
 				       const kernel::Subject&	subject,
 				       const kernel::Permissions& permissions)
     {
@@ -273,7 +283,7 @@ namespace etoile
       enter();
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
@@ -292,7 +302,7 @@ namespace etoile
                 context->object->meta.attributes,
 		context->object->meta.access,
 		permissions,
-		context->object->meta.owner.token) == StatusError)
+		context->object->meta.owner.token) == elle::StatusError)
 	    escape("unable to update the object's meta section");
 	}
       else
@@ -303,29 +313,29 @@ namespace etoile
 	  kernel::Record*	record;
 
 	  // open the access.
-	  if (Access::Open(context) == StatusError)
+	  if (Access::Open(context) == elle::StatusError)
 	    escape("unable to open the access");
 
 	  // retrieve the record associated with the given subject.
-	  if (context->access->Lookup(subject, record) == StatusTrue)
+	  if (context->access->Lookup(subject, record) == elle::StatusTrue)
 	    escape("unable to retrive the subject's access record");
 
 	  // update the record.
 	  if (record->Update(subject,
 			     permissions,
-			     context->rights->key) == StatusError)
+			     context->rights->key) == elle::StatusError)
 	    escape("unable to update the subject's record");
 	}
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the subject is the user.
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  if (Rights::Update(context, permissions) == StatusError)
+	  if (Rights::Update(context, permissions) == elle::StatusError)
 	    escape("unable to update the rigths' permissions");
 	}
 
@@ -335,7 +345,7 @@ namespace etoile
     ///
     /// this method blocks a subject by recording it in a black list.
     ///
-    Status		Access::Block(context::Object*		context,
+    elle::Status	Access::Block(context::Object*		context,
 				      const kernel::Subject&	subject)
     {
       user::User*	user;
@@ -343,7 +353,7 @@ namespace etoile
       enter();
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
@@ -353,14 +363,15 @@ namespace etoile
       // XXX record in black list.
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the subject is the user.
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  if (Rights::Update(context, kernel::PermissionNone) == StatusError)
+	  if (Rights::Update(context,
+			     kernel::PermissionNone) == elle::StatusError)
 	    escape("unable to update the rights' permissions");
 	}
 
@@ -371,7 +382,7 @@ namespace etoile
     /// this method revokes a subject's access by updating the access
     /// block.
     ///
-    Status		Access::Revoke(context::Object*		context,
+    elle::Status	Access::Revoke(context::Object*		context,
 				       const kernel::Subject&	subject)
     {
       user::User*	user;
@@ -379,7 +390,7 @@ namespace etoile
       enter();
 
       // determine the rights over the object.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // verify that the user can modify the accesses.
@@ -398,7 +409,7 @@ namespace etoile
                 context->object->meta.attributes,
 		context->object->meta.access,
 		kernel::PermissionNone,
-		context->object->meta.owner.token) == StatusError)
+		context->object->meta.owner.token) == elle::StatusError)
 	    escape("unable to update the object's meta section");
 	}
       else
@@ -409,23 +420,24 @@ namespace etoile
 	  kernel::Record*	record;
 
 	  // open the access.
-	  if (Access::Open(context) == StatusError)
+	  if (Access::Open(context) == elle::StatusError)
 	    escape("unable to open the access");
 
 	  // remove the record associated with the given subject.
-	  if (context->access->Remove(subject) == StatusTrue)
+	  if (context->access->Remove(subject) == elle::StatusTrue)
 	    escape("unable to remove the subject's access record");
 	}
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the subject is the user.
       if (user->client->subject == subject)
 	{
 	  // update the context rights.
-	  if (Rights::Update(context, kernel::PermissionNone) == StatusError)
+	  if (Rights::Update(context,
+			     kernel::PermissionNone) == elle::StatusError)
 	    escape("unable to update the rights' permissions");
 	}
 
@@ -439,13 +451,13 @@ namespace etoile
     /// this key must then be distributed to every subject authorised to
     /// access the object in reading, under the form of a token.
     ///
-    Status		Access::Upgrade(context::Object*	context,
-					const SecretKey&	key)
+    elle::Status	Access::Upgrade(context::Object*	context,
+					const elle::SecretKey&	key)
     {
       enter();
 
       // upgrate the access block records.
-      if (context->access->Upgrade(key) == StatusError)
+      if (context->access->Upgrade(key) == elle::StatusError)
 	escape("unable to upgrade the access records");
 
       // then, update the object's owner token.
@@ -456,7 +468,7 @@ namespace etoile
       // to read.
       if (context->object->meta.owner.token.Update(
             key,
-	    context->object->owner.K) == StatusError)
+	    context->object->owner.K) == elle::StatusError)
 	escape("unable to update the owner's token");
 
       // finally, update the object's meta section though the
@@ -465,7 +477,7 @@ namespace etoile
 	    context->object->meta.attributes,
             context->object->meta.access,
 	    context->object->meta.owner.permissions,
-	    context->object->meta.owner.token) == StatusError)
+	    context->object->meta.owner.token) == elle::StatusError)
 	escape("unable to update the object's meta section");
 
       // update the rights' token/key if the user has the permission to
@@ -473,7 +485,7 @@ namespace etoile
       if (context->rights->record.permissions & kernel::PermissionRead)
 	{
 	  // XXX for now, just disable the token so that an error occurs.
-	  SecretKey k;
+	  elle::SecretKey k;
 
 	  context->rights->record.token = kernel::Token::Null;
 	  context->rights->key = k;
@@ -485,7 +497,7 @@ namespace etoile
     ///
     /// this method destroys the access block.
     ///
-    Status		Access::Destroy(context::Object*	context)
+    elle::Status	Access::Destroy(context::Object*	context)
     {
       enter();
 
@@ -494,7 +506,7 @@ namespace etoile
 	{
 	  // record the block as needed to be removed.
 	  if (context->bucket.Destroy(
-	        context->object->meta.access) == StatusError)
+	        context->object->meta.access) == elle::StatusError)
 	    escape("unable to record the block in the bucket");
 
 	  // update the object's meta section with the null address.
@@ -502,7 +514,7 @@ namespace etoile
 		context->object->meta.attributes,
 		hole::Address::Null,
 		context->object->meta.owner.permissions,
-		context->object->meta.owner.token) == StatusError)
+		context->object->meta.owner.token) == elle::StatusError)
 	    escape("unable to update the object's meta section");
 
 	  // release the context access object.
@@ -520,7 +532,7 @@ namespace etoile
     /// and therefore modifications eed to be published or not, in which
     /// case nothing is done.
     ///
-    Status		Access::Close(context::Object*		context)
+    elle::Status	Access::Close(context::Object*		context)
     {
       kernel::Size	size;
 
@@ -543,7 +555,7 @@ namespace etoile
 	}
 
       // retrieve the access's size.
-      if (context->access->Capacity(size) == StatusError)
+      if (context->access->Capacity(size) == elle::StatusError)
 	escape("unable to retrieve the access's size");
 
       //
@@ -560,7 +572,7 @@ namespace etoile
 	  //
 
 	  // destroy the access block and update the object accordingly.
-	  if (Access::Destroy(context) == StatusError)
+	  if (Access::Destroy(context) == elle::StatusError)
 	    escape("unable to destroy the access block");
 	}
       else
@@ -575,19 +587,19 @@ namespace etoile
 	    {
 	      // record the access so that it is destroyed.
 	      if (context->bucket.Destroy(
-		    context->object->meta.access) == StatusError)
+		    context->object->meta.access) == elle::StatusError)
 		  escape("unable to record the access block in the bucket");
 	      }
 
 	  // bind the access as, since the block has changed, its address
 	  // is going to be different.
-	  if (context->access->Bind() == StatusError)
+	  if (context->access->Bind() == elle::StatusError)
 	    escape("unable to bind the access");
 
 	  // register the block as needed to be published.
 	  if (context->bucket.Push(
 		context->access->address,
-		context->access) == StatusError)
+		context->access) == elle::StatusError)
 	    escape("unable to record the access block in the bucket");
 
 	  // set the state as clean.
@@ -598,7 +610,7 @@ namespace etoile
 		context->object->meta.attributes,
    	        context->access->address,
 		context->object->meta.owner.permissions,
-		context->object->meta.owner.token) == StatusError)
+		context->object->meta.owner.token) == elle::StatusError)
 	    escape("unable to update the object's meta section");
 	}
 

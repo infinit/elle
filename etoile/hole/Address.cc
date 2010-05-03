@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu apr 22 15:00:02 2010]
+// updated       julien quintard   [mon may  3 23:11:00 2010]
 //
 
 //
@@ -47,15 +47,14 @@ namespace etoile
     ///
     /// this is the copy constructor.
     ///
-    Address::Address(const Address&				address):
-      Entity::Entity(address)
+    Address::Address(const Address&				address)
     {
       // copy the digest, if present.
       if (address.digest != NULL)
 	{
 	  this->family = address.family;
 
-	  this->digest = new Digest;
+	  this->digest = new elle::Digest;
 	  *this->digest = *address.digest;
 	}
       else
@@ -83,8 +82,8 @@ namespace etoile
     /// create the address based on an object by serializing it before
     /// hashing it.
     ///
-    Status		Address::Create(const Family		family,
-					const Archivable&	object)
+    elle::Status	Address::Create(const Family		family,
+					const elle::Archivable&	object)
     {
       enter();
 
@@ -96,52 +95,23 @@ namespace etoile
 	delete this->digest;
 
       // allocate the digest object.
-      this->digest = new Digest;
+      this->digest = new elle::Digest;
 
       // compute the digest based on the object's archive.
-      if (OneWay::Hash(object, *this->digest) == StatusError)
+      if (elle::OneWay::Hash(object, *this->digest) == elle::StatusError)
 	escape("unable to hash the given object");
 
       leave();
     }
 
-    ///
-    /// this method transforms the internal address representation into
-    /// a string.
-    ///
-    Status		Address::Identify(String&		string) const
-    {
-      Archive		archive;
-
-      enter();
-
-      // check the address.
-      if (this->digest == NULL)
-	escape("unable to identify a null address");
-
-      // create the archive.
-      if (archive.Create() == StatusError)
-	escape("unable to create the archive");
-
-      // serialize the address.
-      if (archive.Serialize(*this) == StatusError)
-	escape("unable to serialize the address");
-
-      // encode in base64.
-      if (Base64::Encode(archive, string) == StatusError)
-	escape("unable to encode the archive in base64");
-
-      leave();      
-    }
-
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Address::operator==(const Address&	element) const
+    elle::Boolean	Address::operator==(const Address&	element) const
     {
       enter();
 
@@ -167,9 +137,58 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this operator compares two objects.
     ///
-    embed(Entity, Address);
+    elle::Boolean	Address::operator<(const Address&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	false();
+
+      // test for a null digest.
+      if ((this->digest == NULL) && (element.digest == NULL))
+	false();
+      else if (this->digest == NULL)
+	true();
+      else if (element.digest == NULL)
+	false();
+      else
+	{
+	  elle::Natural32	i;
+
+	  // test the sizes.
+	  if (this->digest->region.size < element.digest->region.size)
+	    true();
+	  else if (this->digest->region.size > element.digest->region.size)
+	    false();
+
+	  // compare the family.
+	  if (this->family < element.family)
+	    true();
+
+	  // finally, go through the data and compare.
+	  for (i = 0; i < this->digest->region.size; i++)
+	    {
+	      // if the elements are different.
+	      if (this->digest->region.contents[i] !=
+		  element.digest->region.contents[i])
+		{
+		  return (this->digest->region.contents[i] <
+			  element.digest->region.contents[i] ?
+			  elle::StatusTrue : elle::StatusFalse);
+		}
+	    }
+	}
+
+      false();
+    }
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Address, _(elle::FormatBase64, elle::FormatBase64), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -178,9 +197,9 @@ namespace etoile
     ///
     /// this function dumps an address object.
     ///
-    Status		Address::Dump(Natural32			margin) const
+    elle::Status	Address::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
@@ -188,16 +207,16 @@ namespace etoile
 
       if (this->digest != NULL)
 	{
-	  std::cout << alignment << Dumpable::Shift << "[Family] "
+	  std::cout << alignment << elle::Dumpable::Shift << "[Family] "
 		    << std::hex << this->family << std::endl;
 
-	  if (this->digest->Dump(margin + 2) == StatusError)
+	  if (this->digest->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the digest");
 	}
       else
 	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Digest] " << none << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Digest] " << elle::none << std::endl;
 	}
 
       leave();
@@ -210,21 +229,21 @@ namespace etoile
     ///
     /// this method serializes the address object.
     ///
-    Status		Address::Serialize(Archive&		archive) const
+    elle::Status	Address::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
-	  if (archive.Serialize((Natural8&)this->family,
-				*this->digest) == StatusError)
+	  if (archive.Serialize((elle::Natural8&)this->family,
+				*this->digest) == elle::StatusError)
 	    escape("unable to serialize the digest");
 	}
       else
 	{
 	  // serialize 'none'.
-	  if (archive.Serialize(none) == StatusError)
+	  if (archive.Serialize(elle::none) == elle::StatusError)
 	    escape("unable to serialize 'none'");
 	}
 
@@ -234,84 +253,34 @@ namespace etoile
     ///
     /// this method extracts the address object.
     ///
-    Status		Address::Extract(Archive&		archive)
+    elle::Status	Address::Extract(elle::Archive&		archive)
     {
-      Archive::Type	type;
+      elle::Archive::Type	type;
 
       enter();
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == StatusError)
+      if (archive.Fetch(type) == elle::StatusError)
 	escape("unable to fetch the next element's type");
 
-      if (type == Archive::TypeNull)
+      if (type == elle::Archive::TypeNull)
 	{
 	  // nothing to do, keep the digest to NULL.
-	  if (archive.Extract(none) == StatusError)
+	  if (archive.Extract(elle::none) == elle::StatusError)
 	    escape("unable to extract null");
 	}
       else
 	{
 	  // allocate a digest.
-	  this->digest = new Digest;
+	  this->digest = new elle::Digest;
 
 	  // extract the internal digest.
-	  if (archive.Extract((Natural8&)this->family,
-			      *this->digest) == StatusError)
+	  if (archive.Extract((elle::Natural8&)this->family,
+			      *this->digest) == elle::StatusError)
 	    escape("unable to extract the digest");
 	}
 
       leave();
-    }
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::core::Boolean	operator<(const etoile::hole::Address&	lhs,
-				  const etoile::hole::Address&	rhs)
-    {
-      enter();
-
-      // test for a null digest.
-      if ((lhs.digest == NULL) && (rhs.digest == NULL))
-	false();
-      else if (lhs.digest == NULL)
-	true();
-      else if (rhs.digest == NULL)
-	false();
-      else
-	{
-	  Natural32		i;
-
-	  // test the sizes.
-	  if (lhs.digest->region.size < rhs.digest->region.size)
-	    true();
-	  else if (lhs.digest->region.size > rhs.digest->region.size)
-	    false();
-
-	  // compare the family.
-	  if (lhs.family < rhs.family)
-	    true();
-
-	  // finally, go through the data and compare.
-	  for (i = 0; i < lhs.digest->region.size; i++)
-	    {
-	      // if the elements are different.
-	      if (lhs.digest->region.contents[i] !=
-		  rhs.digest->region.contents[i])
-		{
-		  return (lhs.digest->region.contents[i] <
-			  rhs.digest->region.contents[i] ?
-			  StatusTrue : StatusFalse);
-		}
-	    }
-	}
-
-      false();
     }
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [tue apr 27 20:41:27 2010]
+// updated       julien quintard   [mon may  3 12:44:08 2010]
 //
 
 //
@@ -16,6 +16,17 @@
 //
 
 #include <etoile/components/Object.hh>
+#include <etoile/components/Access.hh>
+
+#include <etoile/user/User.hh>
+
+#include <etoile/depot/Depot.hh>
+
+#include <etoile/journal/Journal.hh>
+
+#include <etoile/context/Context.hh>
+
+#include <etoile/wall/State.hh>
 
 namespace etoile
 {
@@ -29,7 +40,7 @@ namespace etoile
     ///
     /// this method loads an object in the given context.
     ///
-    Status		Object::Load(context::Object*		context,
+    elle::Status	Object::Load(context::Object*		context,
 				     const hole::Address&	address)
     {
       enter();
@@ -38,7 +49,7 @@ namespace etoile
       context->address = address;
 
       // get the block.
-      if (depot::Depot::Get(address, context->object) == StatusError)
+      if (depot::Depot::Get(address, context->object) == elle::StatusError)
 	escape("unable to retrieve the block");
 
       leave();
@@ -48,13 +59,13 @@ namespace etoile
     /// this method fills the state object with general-purpose information
     /// on the object.
     ///
-    Status		Object::Information(context::Object*	context,
+    elle::Status	Object::Information(context::Object*	context,
 					    wall::State&	state)
     {
       enter();
 
       // create the state based on the object.
-      if (state.Create(*context->object) == StatusError)
+      if (state.Create(*context->object) == elle::StatusError)
 	escape("unable to create the state");
 
       leave();
@@ -63,18 +74,18 @@ namespace etoile
     ///
     /// this method stores the object.
     ///
-    Status		Object::Store(context::Object*		context)
+    elle::Status	Object::Store(context::Object*		context)
     {
       user::User*	user;
 
       enter();
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the current user");
 
       // close the access.
-      if (Access::Close(context) == StatusError)
+      if (Access::Close(context) == elle::StatusError)
 	escape("unable to close the access");
 
       // if the object has been modified, seal it and record it.
@@ -83,18 +94,18 @@ namespace etoile
 	{
 	  // seal the object.
 	  if (context->object->Seal(*user->client->agent,
-				    context->access) == StatusError)
+				    context->access) == elle::StatusError)
 	    escape("unable to seal the object");
 
 	  // record the object in the bucket.
 	  if (context->bucket.Push(
 		context->object->address,
-		context->object) == StatusError)
+		context->object) == elle::StatusError)
 	    escape("unable to record the object block in the bucket");
 	}
 
       // record the context in the journal.
-      if (journal::Journal::Record(context) == StatusError)
+      if (journal::Journal::Record(context) == elle::StatusError)
 	escape("unable to the context");
 
       leave();
@@ -103,17 +114,17 @@ namespace etoile
     ///
     /// this method discards the modifications.
     ///
-    Status		Object::Discard(context::Object*	context)
+    elle::Status	Object::Discard(context::Object*	context)
     {
       enter();
 
       // import the context so that it no longer is usable by the
       // application.
-      if (context::Context::Import(context) == StatusError)
+      if (context::Context::Import(context) == elle::StatusError)
 	escape("unable to import the context");
 
       // delete the context.
-      if (context::Context::Delete(context) == StatusError)
+      if (context::Context::Delete(context) == elle::StatusError)
 	escape("unable to delete the context");
 
       leave();
@@ -122,23 +133,23 @@ namespace etoile
     ///
     /// this method destroys the object.
     ///
-    Status		Object::Destroy(context::Object*	context)
+    elle::Status	Object::Destroy(context::Object*	context)
     {
       user::User*	user;
 
       enter();
 
       // destroy the access.
-      if (Access::Destroy(context) == StatusError)
+      if (Access::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the access");
 
       // record the object in the bucket.
       if (context->bucket.Destroy(
-	    context->object->address) == StatusError)
+	    context->object->address) == elle::StatusError)
 	escape("unable to record the object block in the bucket");
 
       // record the context in the journal.
-      if (journal::Journal::Record(context) == StatusError)
+      if (journal::Journal::Record(context) == elle::StatusError)
 	escape("unable to the context");
 
       leave();

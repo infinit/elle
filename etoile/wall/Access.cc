@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [thu apr 22 10:09:35 2010]
+// updated       julien quintard   [mon may  3 13:51:58 2010]
 //
 
 //
@@ -16,6 +16,15 @@
 //
 
 #include <etoile/wall/Access.hh>
+
+#include <etoile/kernel/Permissions.hh>
+
+#include <etoile/context/Object.hh>
+#include <etoile/context/Format.hh>
+
+#include <etoile/components/Access.hh>
+
+#include <etoile/user/User.hh>
 
 namespace etoile
 {
@@ -30,7 +39,7 @@ namespace etoile
     /// this method returns the caller the access record associated with
     /// the given subject.
     ///
-    Status		Access::Lookup(const
+    elle::Status	Access::Lookup(const
 				         context::Identifier&	identifier,
 				       const
 				         kernel::Subject&	subject)
@@ -44,7 +53,7 @@ namespace etoile
       printf("[XXX] Access::Lookup()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -52,7 +61,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -61,7 +71,8 @@ namespace etoile
 	escape("unable to test non-objects");
 
       // request the components.
-      if (components::Access::Lookup(context, subject, record) == StatusError)
+      if (components::Access::Lookup(context, subject, record) ==
+	  elle::StatusError)
 	escape("unable to retrieve the subject's access record");
 
       // answer the caller, depending on the result.
@@ -69,14 +80,15 @@ namespace etoile
 	{
 	  // return the null record.
 	  if (user->application->channel->Reply(
-		Inputs<TagAccessRecord>(kernel::Record::Null)) == StatusError)
+	        elle::Inputs<TagAccessRecord>(kernel::Record::Null)) ==
+	      elle::StatusError)
 	    escape("unable to reply to the application");
 	}
       else
 	{
 	  // return the record.
 	  if (user->application->channel->Reply(
-	        Inputs<TagAccessRecord>(*record)) == StatusError)
+	        elle::Inputs<TagAccessRecord>(*record)) == elle::StatusError)
 	    escape("unable to reply to the application");
 	}
 
@@ -86,7 +98,7 @@ namespace etoile
     ///
     /// this method returns a subset of the access list.
     ///
-    Status		Access::Consult(const
+    elle::Status	Access::Consult(const
 				          context::Identifier&	identifier,
 					const
 					  kernel::Index&	index,
@@ -102,7 +114,7 @@ namespace etoile
       printf("[XXX] Access::Consult()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -110,7 +122,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -122,12 +135,12 @@ namespace etoile
       if (components::Access::Consult(context,
 				      index,
 				      size,
-				      range) == StatusError)
+				      range) == elle::StatusError)
 	escape("unable to consult the access list");
 
       // answer the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagAccessRange>(range)) == StatusError)
+	    elle::Inputs<TagAccessRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -137,7 +150,7 @@ namespace etoile
     /// this method grants access to the given subject, with the given
     /// permissions.
     ///
-    Status		Access::Grant(const
+    elle::Status	Access::Grant(const
 				        context::Identifier&	identifier,
 				      const
 				        kernel::Subject&	subject,
@@ -152,7 +165,7 @@ namespace etoile
       printf("[XXX] Access::Grant()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -160,7 +173,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -171,11 +185,12 @@ namespace etoile
       // request the components.
       if (components::Access::Grant(context,
 				    subject,
-				    permissions) == StatusError)
+				    permissions) == elle::StatusError)
 	escape("unable to grant access to the subject");
 
       // answer the caller.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -184,7 +199,7 @@ namespace etoile
     ///
     /// this method updates the permissions of the given subject.
     ///
-    Status		Access::Update(const
+    elle::Status	Access::Update(const
 				         context::Identifier&	identifier,
 				       const
 				         kernel::Subject&	subject,
@@ -199,7 +214,7 @@ namespace etoile
       printf("[XXX] Access::Update()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -207,7 +222,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -218,11 +234,12 @@ namespace etoile
       // request the components.
       if (components::Access::Update(context,
 				     subject,
-				     permissions) == StatusError)
+				     permissions) == elle::StatusError)
 	escape("unable to update the access list");
 
       // answer the caller.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -231,7 +248,7 @@ namespace etoile
     ///
     /// this method blocks the given subject from accessing the object.
     ///
-    Status		Access::Block(const
+    elle::Status	Access::Block(const
 				        context::Identifier&	identifier,
 				      const
 				        kernel::Subject&	subject)
@@ -249,7 +266,7 @@ namespace etoile
     ///
     /// this method removes the permissions from the given subject.
     ///
-    Status		Access::Revoke(const
+    elle::Status	Access::Revoke(const
 				         context::Identifier&	identifier,
 				       const
 				         kernel::Subject&	subject)
@@ -262,7 +279,7 @@ namespace etoile
       printf("[XXX] Access::Revoke()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -270,7 +287,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the object context");
 
       // check if the context is an object.
@@ -280,11 +298,12 @@ namespace etoile
 
       // request the components.
       if (components::Access::Revoke(context,
-				     subject) == StatusError)
+				     subject) == elle::StatusError)
 	escape("unable to revoke the subject's permissions");
 
       // answer the caller.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();

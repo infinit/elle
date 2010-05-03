@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [mon apr 26 18:42:07 2010]
+// updated       julien quintard   [mon may  3 22:57:29 2010]
 //
 
 #ifndef ETOILE_KERNEL_RANGE_HH
@@ -23,7 +23,6 @@
 #include <etoile/kernel/Subject.hh>
 #include <etoile/kernel/Record.hh>
 #include <etoile/kernel/Size.hh>
-#include <etoile/kernel/Index.hh>
 
 #include <list>
 
@@ -48,8 +47,7 @@ namespace etoile
     ///
     template <typename T>
     class Range:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -86,31 +84,30 @@ namespace etoile
       //
       // methods
       //
-      Status		Add(T*);
-      Status		Exist(const S&);
-      Status		Lookup(const S&,
+      elle::Status	Add(T*);
+      elle::Status	Exist(const S&);
+      elle::Status	Lookup(const S&,
 			       T*& = Trash);
-      Status		Remove(const S&);
-      Status		Capacity(Size&) const;
-      Status		Locate(const S&,
+      elle::Status	Remove(const S&);
+      elle::Status	Capacity(Size&) const;
+      elle::Status	Locate(const S&,
 			       Iterator* = NULL);
 
-      Status		Detach();
+      elle::Status	Detach();
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Range<T>);
-      // XXX operator==
+      // object
+      declare(Range<T>, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
@@ -128,11 +125,5 @@ namespace etoile
 //
 
 #include <etoile/kernel/Range.hxx>
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/kernel/Index.hh>
 
 #endif

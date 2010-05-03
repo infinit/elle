@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [thu apr 22 17:15:10 2010]
+// updated       julien quintard   [mon may  3 16:44:48 2010]
 //
 
 #ifndef ETOILE_KERNEL_PUBLICKEYBLOCK_HH
@@ -53,26 +53,26 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const KeyPair&);
+      elle::Status	Create(const elle::PublicKey&);
 
-      Status		Bind();
-      Status		Validate(const hole::Address&) const;
+      elle::Status	Bind();
+      elle::Status	Validate(const hole::Address&) const;
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
-      PublicKey		K;
+      elle::PublicKey		K;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [thu apr 22 22:42:06 2010]
+// updated       julien quintard   [mon may  3 20:54:52 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/user/Agent.hh>
+#include <etoile/user/Client.hh>
+#include <etoile/user/User.hh>
 
 namespace etoile
 {
@@ -32,7 +34,7 @@ namespace etoile
     ///
     /// this value is in milli-seconds.
     ///
-    const Natural32		Agent::Expiration = 2000;
+    const elle::Natural32	Agent::Expiration = 2000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -100,7 +102,7 @@ namespace etoile
     /// this method creates an local agent by installing the agent's
     /// key pair.
     ///
-    Status		Agent::Create(const KeyPair&		pair)
+    elle::Status	Agent::Create(const elle::KeyPair&	pair)
     {
       enter();
 
@@ -123,11 +125,11 @@ namespace etoile
     /// this method creates an remote agent by setting the communication
     /// channel.
     ///
-    Status		Agent::Create(const PublicKey&		K,
-				      Channel*			channel)
+    elle::Status	Agent::Create(const elle::PublicKey&	K,
+				      elle::Channel*		channel)
     {
-      Callback<>		timeout(&Agent::Timeout, this);
-      Callback<const String>	error(&Agent::Error, this);
+      elle::Callback<>				timeout(&Agent::Timeout, this);
+      elle::Callback<const elle::String>	error(&Agent::Error, this);
 
       enter();
 
@@ -144,16 +146,16 @@ namespace etoile
       this->remote->channel = channel;
 
       // create the timer.
-      if (this->remote->timer.Create(Timer::ModeSingle,
-				     timeout) == StatusError)
+      if (this->remote->timer.Create(elle::Timer::ModeSingle,
+				     timeout) == elle::StatusError)
 	escape("unable to create the timer");
 
       // register the error callback to the deletion.
-      if (this->remote->channel->Monitor(error) == StatusError)
+      if (this->remote->channel->Monitor(error) == elle::StatusError)
 	escape("unable to monitor the callback");
 
       // start the timer.
-      if (this->remote->timer.Start(Agent::Expiration) == StatusError)
+      if (this->remote->timer.Start(Agent::Expiration) == elle::StatusError)
 	escape("unable to start the timer");
 
       leave();
@@ -163,7 +165,7 @@ namespace etoile
     /// this method marks the agent as authenticated by stopping the timer
     /// and so on.
     ///
-    Status		Agent::Authenticate()
+    elle::Status	Agent::Authenticate()
     {
       enter();
 
@@ -175,7 +177,7 @@ namespace etoile
       this->remote->state = Agent::StateAuthenticated;
 
       // stop the timer.
-      if (this->remote->timer.Stop() == StatusError)
+      if (this->remote->timer.Stop() == elle::StatusError)
 	escape("unable to stop the timer");
 
       leave();
@@ -184,7 +186,7 @@ namespace etoile
     ///
     /// this method destroyes the agent.
     ///
-    Status		Agent::Destroy()
+    elle::Status	Agent::Destroy()
     {
       enter();
 
@@ -199,11 +201,11 @@ namespace etoile
 	case Agent::TypeRemote:
 	  {
 	    // stop the timer, just in case.
-	    if (this->remote->timer.Stop() == StatusError)
+	    if (this->remote->timer.Stop() == elle::StatusError)
 	      escape("unable to stop the timer");
 
 	    // withdraw the control management.
-	    if (this->remote->channel->Withdraw() == StatusError)
+	    if (this->remote->channel->Withdraw() == elle::StatusError)
 	      escape("unable to withdraw the socket control");
 
 	    break;
@@ -217,8 +219,8 @@ namespace etoile
     /// this method decrypts a code by requesting the agent process
     /// to perform the cryptographic operation.
     ///
-    Status		Agent::Decrypt(const Code&		code,
-				       Clear&			clear) const
+    elle::Status	Agent::Decrypt(const elle::Code&	code,
+				       elle::Clear&		clear) const
     {
       enter();
 
@@ -228,7 +230,7 @@ namespace etoile
 	case Agent::TypeLocal:
 	  {
 	    // perform the decryption manually.
-	    if (this->local->k.Decrypt(code, clear) == StatusError)
+	    if (this->local->k.Decrypt(code, clear) == elle::StatusError)
 	      escape("unable to decrypt the code");
 
 	    break;
@@ -241,8 +243,9 @@ namespace etoile
 
 	    // send a request to the agent.
 	    if (this->remote->channel->Call(
-                  Inputs<agent::TagDecrypt>(code),
-		  Outputs<agent::TagDecrypted>(clear)) == StatusError)
+		  elle::Inputs<agent::TagDecrypt>(code),
+		  elle::Outputs<agent::TagDecrypted>(clear)) ==
+		elle::StatusError)
 	      escape("unable to call the agent for decrypting a code");
 
 	    break;
@@ -256,8 +259,8 @@ namespace etoile
     /// this method signs a code by requesting the agent process
     /// to perform the cryptographic operation.
     ///
-    Status		Agent::Sign(const Plain&		plain,
-				    Signature&			signature)
+    elle::Status	Agent::Sign(const elle::Plain&		plain,
+				    elle::Signature&		signature)
       const
     {
       enter();
@@ -268,7 +271,7 @@ namespace etoile
 	case Agent::TypeLocal:
 	  {
 	    // perform the signing manually.
-	    if (this->local->k.Sign(plain, signature) == StatusError)
+	    if (this->local->k.Sign(plain, signature) == elle::StatusError)
 	      escape("unable to sign the plain");
 
 	    break;
@@ -281,8 +284,9 @@ namespace etoile
 
 	    // send a request to the agent.
 	    if (this->remote->channel->Call(
-		  Inputs<agent::TagSign>(plain),
-		  Outputs<agent::TagSigned>(signature)) == StatusError)
+		  elle::Inputs<agent::TagSign>(plain),
+		  elle::Outputs<agent::TagSigned>(signature)) ==
+		elle::StatusError)
 	      escape("unable to call the agent for performing a signature");
 
 	    break;
@@ -301,14 +305,14 @@ namespace etoile
     ///
     /// the call is just forwarded to the Error() callback.
     ///
-    Status		Agent::Timeout()
+    elle::Status	Agent::Timeout()
     {
       Client*		client;
 
       enter();
 
       // forward the call.
-      if (this->Error("the agent has timed out") == StatusError)
+      if (this->Error("the agent has timed out") == elle::StatusError)
 	escape("an error occured in the Error() callback\n");
 
       leave();
@@ -317,21 +321,22 @@ namespace etoile
     ///
     /// this callbacks is triggered if an error occurs on the channel.
     ///
-    Status		Agent::Error(const String&		error)
+    elle::Status	Agent::Error(const elle::String&	error)
     {
       Client::A::Iterator	iterator;
-      Report			report;
+      elle::Report		report;
       Client*			client;
 
       enter();
 
       // retrieve the client related to this agent's channel.
-      if (Client::Retrieve(this->remote->channel, client) != StatusTrue)
+      if (Client::Retrieve(this->remote->channel, client) != elle::StatusTrue)
 	escape("unable to retrieve the client associated with the agent");
 
       // record an error message.
-      report.Record(Report::TypeError,
-		    "",
+      report.Record(elle::Report::TypeError,
+		    "_",
+		    __DATE__ " "  __TIME__,
 		    "the agent has been disconnected");
 
       // go through the client's applications.
@@ -344,11 +349,11 @@ namespace etoile
 	  // send an error message to the application without caring
 	  // if it succeeds as we just want to inform everyone before
 	  // shutting every application related to this agent down.
-	  application->channel->Send(Inputs<TagError>(report));
+	  application->channel->Send(elle::Inputs<elle::TagError>(report));
 	}
 
       // remove the whole client since the agent timed-out.
-      if (Client::Remove(client) == StatusError)
+      if (Client::Remove(client) == elle::StatusError)
 	escape("unable to remove the client");
 
       leave();
@@ -361,16 +366,16 @@ namespace etoile
     ///
     /// this method dumps a local agent.
     ///
-    Status		Agent::Local::Dump(const Natural32	margin) const
+    elle::Status	Agent::Local::Dump(const elle::Natural32 margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Local]" << std::endl;
 
       // dump the private key.
-      if (this->k.Dump(margin + 2) == StatusError)
+      if (this->k.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the private key");
 
       leave();
@@ -379,20 +384,20 @@ namespace etoile
     ///
     /// this method dumps a remote agent.
     ///
-    Status		Agent::Remote::Dump(const Natural32	margin) const
+    elle::Status	Agent::Remote::Dump(const elle::Natural32 margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Remote]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << Dumpable::Shift << "[State] "
+      std::cout << alignment << elle::Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
       // dump the channel.
-      if (this->channel->Dump(margin + 2) == StatusError)
+      if (this->channel->Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the channel");
 
       leave();
@@ -401,16 +406,16 @@ namespace etoile
     ///
     /// this method dumps the agent.
     ///
-    Status		Agent::Dump(const Natural32		margin) const
+    elle::Status	Agent::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Agent] " << std::hex << this << std::endl;
 
       // dump the public key.
-      if (this->K.Dump(margin + 2) == StatusError)
+      if (this->K.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the public key");
 
       // dump the rest depending on the agent's type.
@@ -419,7 +424,7 @@ namespace etoile
 	case Agent::TypeLocal:
 	  {
 	    // dump the local agent.
-	    if (this->local->Dump(margin + 2) == StatusError)
+	    if (this->local->Dump(margin + 2) == elle::StatusError)
 	      escape("unable to dump the local agent");
 
 	    break;
@@ -427,7 +432,7 @@ namespace etoile
 	case Agent::TypeRemote:
 	  {
 	    // dump the remote agent.
-	    if (this->remote->Dump(margin + 2) == StatusError)
+	    if (this->remote->Dump(margin + 2) == elle::StatusError)
 	      escape("unable to dump the remote agent");
 
 	    break;

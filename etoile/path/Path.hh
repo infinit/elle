@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [tue apr 27 16:06:39 2010]
+// updated       julien quintard   [mon may  3 13:28:16 2010]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -46,16 +46,16 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Initialize(const hole::Address&);
-      static Status	Clean();
+      static elle::Status	Initialize(const hole::Address&);
+      static elle::Status	Clean();
 
-      static Status	Resolve(const Route&,
-				hole::Address&);
+      static elle::Status	Resolve(const Route&,
+					hole::Address&);
 
       //
       // static attributes
       //
-      static hole::Address*		Root;
+      static hole::Address*	Root;
     };
 
   }
@@ -67,15 +67,10 @@ namespace etoile
 
 #include <etoile/path/Cache.hh>
 #include <etoile/path/Item.hh>
+#include <etoile/path/Length.hh>
 #include <etoile/path/Route.hh>
 #include <etoile/path/Slice.hh>
 #include <etoile/path/Venue.hh>
 #include <etoile/path/Way.hh>
-#include <etoile/path/Length.hh>
-
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Context.hh>
-
-#include <etoile/components/Directory.hh>
 
 #endif

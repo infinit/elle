@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [mon apr 26 18:35:47 2010]
+// updated       julien quintard   [mon may  3 17:40:12 2010]
 //
 
 #ifndef ETOILE_DEPOT_CELL_HH
@@ -35,8 +35,7 @@ namespace etoile
     /// this class holds a block in its memory form/
     ///
     class Cell:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -47,14 +46,14 @@ namespace etoile
       //
       // methods
       //
-      Status		Set(hole::Block*);
-      Status		Get(hole::Block*&);
-      Status		Destroy();
+      elle::Status	Set(hole::Block*);
+      elle::Status	Get(hole::Block*&);
+      elle::Status	Destroy();
 
       //
       // interfaces
       //
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
@@ -64,11 +63,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/depot/Repository.hh>
 
 #endif

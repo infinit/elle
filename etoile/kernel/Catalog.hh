@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [mon apr 19 14:35:47 2010]
+// updated       julien quintard   [mon may  3 22:57:37 2010]
 //
 
 #ifndef ETOILE_KERNEL_CATALOG_HH
@@ -45,8 +45,7 @@ namespace etoile
     /// developed.
     ///
     class Catalog:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -57,32 +56,31 @@ namespace etoile
       //
       // methods
       //
-      Status		Add(Entry*);
-      Status		Exist(const path::Slice&);
-      Status		Lookup(const path::Slice&,
+      elle::Status	Add(Entry*);
+      elle::Status	Exist(const path::Slice&);
+      elle::Status	Lookup(const path::Slice&,
 			       Entry*&);
-      Status		Consult(const Index&,
+      elle::Status	Consult(const Index&,
 				const Size&,
 				Range<Entry>&) const;
-      Status		Rename(const path::Slice&,
+      elle::Status	Rename(const path::Slice&,
 			       const path::Slice&);
-      Status		Remove(const path::Slice&);
-      Status		Capacity(Offset&) const;
+      elle::Status	Remove(const path::Slice&);
+      elle::Status	Capacity(Offset&) const;
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Catalog);
-      // XXX operator==
+      // object
+      declare(Catalog, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [fri apr 23 11:22:26 2010]
+// updated       julien quintard   [mon may  3 17:42:55 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -19,6 +19,9 @@
 //
 
 #include <etoile/components/Author.hh>
+#include <etoile/components/Access.hh>
+
+#include <etoile/depot/Depot.hh>
 
 namespace etoile
 {
@@ -30,7 +33,7 @@ namespace etoile
     /// new empty one.
     ///
     template <typename T>
-    Status		Contents::Open(T*			context)
+    elle::Status	Contents::Open(T*			context)
     {
       enter();
 
@@ -43,11 +46,11 @@ namespace etoile
 	{
 	  // load the block.
 	  if (depot::Depot::Get(context->object->data.contents,
-				context->contents) == StatusError)
+				context->contents) == elle::StatusError)
 	    escape("unable to load the contents");
 
 	  // determine the rights the current user has on this object.
-	  if (Rights::Determine(context) == StatusError)
+	  if (Rights::Determine(context) == elle::StatusError)
 	    escape("unable to determine the user's rights");
 
 	  // verify that the user has the read permission.
@@ -56,7 +59,8 @@ namespace etoile
 	    escape("the user does not have the right to read the contents");
 
 	  // decrypt the contents i.e the contents.
-	  if (context->contents->Decrypt(context->rights->key) == StatusError)
+	  if (context->contents->Decrypt(context->rights->key) ==
+	      elle::StatusError)
 	    escape("unable to decrypt the contents");
 	}
       else
@@ -65,7 +69,7 @@ namespace etoile
 	  context->contents = new kernel::Contents<typename T::Content>;
 
 	  // create the contents.
-	  if (context->contents->Create() == StatusError)
+	  if (context->contents->Create() == elle::StatusError)
 	    escape("unable to create the contents");
 	}
 
@@ -76,7 +80,7 @@ namespace etoile
     /// this method destroys the contents.
     ///
     template <typename T>
-    Status		Contents::Destroy(T*			context)
+    elle::Status	Contents::Destroy(T*			context)
     {
       enter();
 
@@ -84,12 +88,12 @@ namespace etoile
       if (context->object->data.contents != hole::Address::Null)
 	{
 	  // forge the author which will be attached to the modified object.
-	  if (Author::Forge(context) == StatusError)
+	  if (Author::Forge(context) == elle::StatusError)
 	    escape("unable to forge an author");
 
 	  // record the block as needed to be removed.
 	  if (context->bucket.Destroy(
-	        context->object->data.contents) == StatusError)
+	        context->object->data.contents) == elle::StatusError)
 	    escape("unable to record the block in the bucket");
 
 	  // update the object's data section with the null address.
@@ -97,7 +101,7 @@ namespace etoile
 	        *context->author,
 		hole::Address::Null,
 		0,
-		Digest::Null) == StatusError)
+		elle::Digest::Null) == elle::StatusError)
 	    escape("unable to update the object's data section");
 
 	  // release the contents's memory.
@@ -112,11 +116,12 @@ namespace etoile
 	  //
 
 	  // open the access.
-	  if (Access::Open(context) == StatusError)
+	  if (Access::Open(context) == elle::StatusError)
 	    escape("unable to open the access");
 
 	  // upgrade the access entries with a null key.
-	  if (Access::Upgrade(context, SecretKey::Null) == StatusError)
+	  if (Access::Upgrade(context, elle::SecretKey::Null) ==
+	      elle::StatusError)
 	    escape("unable to upgrade the accesses");
 	}
 
@@ -130,9 +135,9 @@ namespace etoile
     /// object is updated.
     ///
     template <typename T>
-    Status		Contents::Close(T*			context)
+    elle::Status	Contents::Close(T*			context)
     {
-      SecretKey		key;
+      elle::SecretKey	key;
       kernel::Size	size;
 
       enter();
@@ -159,7 +164,7 @@ namespace etoile
       }
 
       // retrieve the contents's size.
-      if (context->contents->content->Capacity(size) == StatusError)
+      if (context->contents->content->Capacity(size) == elle::StatusError)
 	escape("unable to retrieve the contents's size");
 
       //
@@ -167,7 +172,7 @@ namespace etoile
       //
       {
 	// forge the author which will be attached to the modified object.
-	if (Author::Forge(context) == StatusError)
+	if (Author::Forge(context) == elle::StatusError)
 	  escape("unable to forge an author");
 
 	// modify the object according to the content of the contents.
@@ -180,7 +185,7 @@ namespace etoile
 	    //
 
 	    // destroy the contents block and update the object accordingly.
-	    if (Contents::Destroy(context) == StatusError)
+	    if (Contents::Destroy(context) == elle::StatusError)
 	      escape("unable to destroy the contents");
 	  }
 	else
@@ -189,31 +194,31 @@ namespace etoile
 	    // otherwise, the new contents address needs to be computed while
 	    // the object must be updated accordingly.
 	    //
-	    Digest	fingerprint;
+	    elle::Digest	fingerprint;
 
 	    // delete the previous data block, should one exist.
 	    if (context->object->data.contents != hole::Address::Null)
 	      {
 		// record the contents so that it is destroyed.
 		if (context->bucket.Destroy(
-		      context->object->data.contents) == StatusError)
+		      context->object->data.contents) == elle::StatusError)
 		  escape("unable to record the contents block in the bucket");
 	      }
 
 	    // generate a secret key.
-	    if (key.Generate() == StatusError)
+	    if (key.Generate() == elle::StatusError)
 	      escape("unable to generate the secret key");
 
 	    // compute a fingerprint of the key.
-	    if (OneWay::Hash(key, fingerprint) == StatusError)
+	    if (elle::OneWay::Hash(key, fingerprint) == elle::StatusError)
 	      escape("unable to compute a fingerprint of the key");
 
 	    // encrypt the contents.
-	    if (context->contents->Encrypt(key) == StatusError)
+	    if (context->contents->Encrypt(key) == elle::StatusError)
 	      escape("unable to encrypt the contents");
 
 	    // bind the contents i.e seal it by computing its address.
-	    if (context->contents->Bind() == StatusError)
+	    if (context->contents->Bind() == elle::StatusError)
 	      escape("unable to bind the contents");
 
 	    // set the contents as clean.
@@ -222,7 +227,7 @@ namespace etoile
 	    // record the contents so that it is published.
 	    if (context->bucket.Push(
 		  context->contents->address,
-		  context->contents) == StatusError)
+		  context->contents) == elle::StatusError)
 	      escape("unable to record the contents block in the bucket");
 
 	    // update the object data section.
@@ -230,7 +235,7 @@ namespace etoile
                   *context->author,
 		  context->contents->address,
 		  size,
-		  fingerprint) == StatusError)
+		  fingerprint) == elle::StatusError)
 	      escape("unable to update the object data section");
 
 	    //
@@ -240,11 +245,11 @@ namespace etoile
 	    //
 
 	    // open the access.
-	    if (Access::Open(context) == StatusError)
+	    if (Access::Open(context) == elle::StatusError)
 	      escape("unable to open the access");
 
 	    // upgrade the access entries with the new key.
-	    if (Access::Upgrade(context, key) == StatusError)
+	    if (Access::Upgrade(context, key) == elle::StatusError)
 	      escape("unable to upgrade the accesses");
 	  }
       }

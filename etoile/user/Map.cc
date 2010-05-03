@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Map.cc
 //
 // created       julien quintard   [fri mar 19 13:37:42 2010]
-// updated       julien quintard   [mon mar 29 15:07:34 2010]
+// updated       julien quintard   [mon may  3 18:41:59 2010]
 //
 
 //
@@ -39,7 +39,7 @@ namespace etoile
     ///
     /// this method initializes the map.
     ///
-    Status		Map::Initialize()
+    elle::Status	Map::Initialize()
     {
       enter();
 
@@ -51,7 +51,7 @@ namespace etoile
     ///
     /// this method cleans the map container.
     ///
-    Status		Map::Clean()
+    elle::Status	Map::Clean()
     {
       enter();
 
@@ -60,7 +60,7 @@ namespace etoile
 	{
 	  Iterator	iterator = Map::Mappings.begin();
 
-	  if (Map::Remove(iterator->first) == StatusError)
+	  if (Map::Remove(iterator->first) == elle::StatusError)
 	    escape("unable to remove the mapping");
 	}
 
@@ -70,10 +70,10 @@ namespace etoile
     ///
     /// this method adds a mapping.
     ///
-    Status		Map::Add(const Channel*			channel,
+    elle::Status	Map::Add(const elle::Channel*		channel,
 				 Client*			client)
     {
-      std::pair<Map::Iterator, Boolean>		result;
+      std::pair<Map::Iterator, elle::Boolean>		result;
 
       enter();
 
@@ -90,7 +90,7 @@ namespace etoile
     ///
     /// this method retrieves a client from its associated channel.
     ///
-    Status		Map::Retrieve(const Channel*		channel,
+    elle::Status	Map::Retrieve(const elle::Channel*	channel,
 				      Client*&			client)
     {
       Map::Iterator	iterator;
@@ -113,7 +113,7 @@ namespace etoile
     ///
     /// this method removes a mapping.
     ///
-    Status		Map::Remove(const Channel*		channel)
+    elle::Status	Map::Remove(const elle::Channel*	channel)
     {
       enter();
 
@@ -127,10 +127,10 @@ namespace etoile
     ///
     /// this method dumps the map.
     ///
-    Status		Map::Show(const Natural32		margin)
+    elle::Status	Map::Show(const elle::Natural32		margin)
     {
       Map::Scoutor	scoutor;
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
@@ -142,8 +142,9 @@ namespace etoile
 	   scoutor++)
 	{
 	  // print the record.
-	  std::cout << alignment << Dumpable::Shift << "[Channel/Client] "
-		    << std::hex << scoutor->first << " / "
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Channel - Client] "
+		    << std::hex << scoutor->first << " - "
 		    << std::hex << scoutor->second << std::endl;
 	}
 

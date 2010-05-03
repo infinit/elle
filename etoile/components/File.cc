@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/File.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu apr 22 11:10:01 2010]
+// updated       julien quintard   [mon may  3 12:42:26 2010]
 //
 
 //
@@ -16,6 +16,12 @@
 //
 
 #include <etoile/components/File.hh>
+#include <etoile/components/Rights.hh>
+#include <etoile/components/Contents.hh>
+
+#include <etoile/journal/Journal.hh>
+
+#include <etoile/user/User.hh>
 
 namespace etoile
 {
@@ -29,14 +35,14 @@ namespace etoile
     ///
     /// this method creates a file object.
     ///
-    Status		File::Create(context::File*		context)
+    elle::Status	File::Create(context::File*		context)
     {
       user::User*	user;
 
       enter();
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // allocate a new file object.
@@ -44,11 +50,11 @@ namespace etoile
 
       // create the irectory.
       if (context->object->Create(kernel::GenreFile,
-				  user->client->agent->K) == StatusError)
+				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the file object");
 
       // bind the object.
-      if (context->object->Bind() == StatusError)
+      if (context->object->Bind() == elle::StatusError)
 	escape("unable to bind the object");
 
       // set the address.
@@ -61,14 +67,14 @@ namespace etoile
     /// this method loads the file object identified by the given
     /// address in the context.
     ///
-    Status		File::Load(context::File*		context,
+    elle::Status	File::Load(context::File*		context,
 				   const hole::Address&		address)
 					
     {
       enter();
 
       // load the object.
-      if (Object::Load(context, address) == StatusError)
+      if (Object::Load(context, address) == elle::StatusError)
 	escape("unable to load the object");
 
       // check that the object is a file.
@@ -81,14 +87,14 @@ namespace etoile
     ///
     /// this method write a specific region of the file.
     ///
-    Status		File::Write(context::File*		context,
+    elle::Status	File::Write(context::File*		context,
 				    const kernel::Offset&	offset,
-				    const Region&		region)
+				    const elle::Region&		region)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the data.
@@ -96,11 +102,11 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // write the file.
-      if (context->contents->content->Write(offset, region) == StatusError)
+      if (context->contents->content->Write(offset, region) == elle::StatusError)
 	escape("unable to write the file");
 
       leave();
@@ -109,15 +115,15 @@ namespace etoile
     ///
     /// this method returns a specific region of the file.
     ///
-    Status		File::Read(context::File*		context,
+    elle::Status	File::Read(context::File*		context,
 				   const kernel::Offset&	offset,
 				   const kernel::Size&		size,
-				   Region&			region)
+				   elle::Region&		region)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the data.
@@ -125,13 +131,13 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // read the file.
       if (context->contents->content->Read(offset,
 					   size,
-					   region) == StatusError)
+					   region) == elle::StatusError)
 	escape("unable to read the file");
 
       leave();
@@ -140,13 +146,13 @@ namespace etoile
     ///
     /// this method adjusts the size of the file's contents.
     ///
-    Status		File::Adjust(context::File*		context,
+    elle::Status	File::Adjust(context::File*		context,
 				     const kernel::Size&	size)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the data.
@@ -154,11 +160,11 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // adjust the size.
-      if (context->contents->content->Adjust(size) == StatusError)
+      if (context->contents->content->Adjust(size) == elle::StatusError)
 	escape("unable to adjust the file size");
 
       leave();
@@ -167,12 +173,12 @@ namespace etoile
     ///
     /// this method discards the modifications applied onto the context.
     ///
-    Status		File::Discard(context::File*		context)
+    elle::Status	File::Discard(context::File*		context)
     {
       enter();
 
       // discard the object's modifications.
-      if (Object::Discard(context) == StatusError)
+      if (Object::Discard(context) == elle::StatusError)
 	escape("unable to discard the object modifications");
 
       leave();
@@ -181,18 +187,18 @@ namespace etoile
     ///
     /// this store the modifications applied onto the file context.
     ///
-    Status		File::Store(context::File*		context)
+    elle::Status	File::Store(context::File*		context)
     {
       user::User*	user;
 
       enter();
 
       // close the catalog.
-      if (Contents::Close(context) == StatusError)
+      if (Contents::Close(context) == elle::StatusError)
 	escape("unable to close the contents");
 
       // store the object.
-      if (Object::Store(context) == StatusError)
+      if (Object::Store(context) == elle::StatusError)
 	escape("unable to store the object");
 
       leave();
@@ -201,7 +207,7 @@ namespace etoile
     ///
     /// this method removes the object along with the blocks attached to it.
     ///
-    Status		File::Destroy(context::File*		context)
+    elle::Status	File::Destroy(context::File*		context)
     {
       user::User*	user;
       kernel::Size	size;
@@ -209,7 +215,7 @@ namespace etoile
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user is the object owner.
@@ -217,11 +223,11 @@ namespace etoile
 	escape("unable to destroy a not-owned object");
 
       // destroy the contents.
-      if (Contents::Destroy(context) == StatusError)
+      if (Contents::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the contents");
 
       // destroy the object.
-      if (Object::Destroy(context) == StatusError)
+      if (Object::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the object");
 
       leave();

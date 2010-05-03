@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [fri apr  2 13:32:22 2010]
+// updated       julien quintard   [mon may  3 22:58:20 2010]
 //
 
 #ifndef ETOILE_KERNEL_PROOF_HH
@@ -36,8 +36,7 @@ namespace etoile
     /// note that no voucher is embedded should the author be a delegate.
     ///
     class Proof:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -49,24 +48,24 @@ namespace etoile
       //
       // methods
       //
-      Status		Specify(const Index&);
-      Status		Specify(const Index&,
+      elle::Status	Specify(const Index&);
+      elle::Status	Specify(const Index&,
 				const Voucher&);
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Proof);
-      Boolean		operator==(const Proof&) const;
+      // object
+      declare(Proof, _());
+      elle::Boolean	operator==(const Proof&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes

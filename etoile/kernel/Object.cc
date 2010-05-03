@@ -1,14 +1,14 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       infinit
+// project       etoile
 //
 // license       infinit
 //
 // file          /home/mycure/infinit/etoile/kernel/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [thu apr 22 17:15:58 2010]
+// updated       julien quintard   [mon may  3 23:03:33 2010]
 //
 
 //
@@ -16,6 +16,10 @@
 //
 
 #include <etoile/kernel/Object.hh>
+
+#include <etoile/hole/Component.hh>
+
+#include <etoile/user/Agent.hh>
 
 namespace etoile
 {
@@ -29,7 +33,7 @@ namespace etoile
     ///
     /// the component identifier.
     ///
-    const String		Object::Name = "Object";
+    const elle::String			Object::Name = "Object";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -41,6 +45,10 @@ namespace etoile
     Object::Object():
       PublicKeyBlock::PublicKeyBlock(hole::ComponentObject)
     {
+      //
+      // the attributes below are initialized in the constructor body
+      // because they belong to a sub-structure.
+      //
       this->meta.state = StateClean;
       this->meta.owner.permissions = PermissionNone;
       this->meta.genre = GenreUnknown;
@@ -56,29 +64,29 @@ namespace etoile
 //
 
     ///
-    /// this method creates the object given the owner keypair and the
-    /// type of object.
+    /// this method creates the object given the owner public and the
+    /// genre of the object to create.
     ///
     /// the method (i) starts by initializing the underlying public key block
     /// (ii) records the owner's public key and signs it with the short-lived
     /// block private key (iii) sets the meta data, and finally (iv)
     /// initializes the data part by setting the owner as the author.
     ///
-    Status		Object::Create(const Genre		genre,
-				       const PublicKey&		owner)
+    elle::Status	Object::Create(const Genre		genre,
+				       const elle::PublicKey&	owner)
     {
-      KeyPair		pair;
+      elle::KeyPair	pair;
 
       enter();
 
       // (i)
       {
 	// generate a key pair for the PKB.
-	if (pair.Generate() == StatusError)
+	if (pair.Generate() == elle::StatusError)
 	  escape("unable to generate a key pair");
 
 	// create the underlying public key block.
-	if (PublicKeyBlock::Create(pair) == StatusError)
+	if (PublicKeyBlock::Create(pair.K) == elle::StatusError)
 	  escape("unable to create the underlying public key block");
       }
 
@@ -93,14 +101,15 @@ namespace etoile
 	// key will be used on behalf of the block's private key since
 	// a link is now made through this signature between the block
 	// and the owner.
-	if (pair.k.Sign(this->owner.K, this->owner.signature) == StatusError)
+	if (pair.k.Sign(this->owner.K, this->owner.signature) ==
+	    elle::StatusError)
 	  escape("unable to sign the owner public key with the PKB "
 		 "private key");
 
 	// create a subject corresponding to the user. note that this
 	// subject will never be serialized hence is not really part of
 	// the object but is used to ease the process of access control.
-	if (this->owner.subject.Create(this->owner.K) == StatusError)
+	if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
 	  escape("unable to create the owner subject");
       }
 
@@ -113,17 +122,17 @@ namespace etoile
 	if (this->Administrate(this->meta.attributes,
 			       hole::Address::Null,
 			       PermissionReadWrite,
-			       this->meta.owner.token) == StatusError)
+			       this->meta.owner.token) == elle::StatusError)
 	  escape("unable to set the initial meta data");
       }
 
       // (iv)
       {
-	Digest		fingerprint;
+	elle::Digest	fingerprint;
 	Author		author;
 
 	// set an owner author.
-	if (author.Create() == StatusError)
+	if (author.Create() == elle::StatusError)
 	  escape("unable to create an author");
 
 	// set the initial data with no contents, an empty fingerprint and
@@ -131,7 +140,7 @@ namespace etoile
 	if (this->Update(author,
 			 hole::Address::Null,
 			 0,
-			 fingerprint) == StatusError)
+			 fingerprint) == elle::StatusError)
 	  escape("unable to set the initial data");
       }
 
@@ -141,15 +150,15 @@ namespace etoile
     ///
     /// this method updates the data section.
     ///
-    Status		Object::Update(const Author&		author,
+    elle::Status	Object::Update(const Author&		author,
 				       const hole::Address&	contents,
 				       const Size&		size,
-				       const Digest&		fingerprint)
+				       const elle::Digest&	fingerprint)
     {
       enter();
 
       // set the last update time.
-      if (this->data.stamp.Current() == StatusError)
+      if (this->data.stamp.Current() == elle::StatusError)
 	escape("unable to set the last update time");
 
       // set the author.
@@ -173,7 +182,7 @@ namespace etoile
     ///
     /// this method updates the meta section.
     ///
-    Status		Object::Administrate(const Attributes&	attributes,
+    elle::Status	Object::Administrate(const Attributes&	attributes,
 					     const hole::Address& access,
 					     const Permissions&	permissions,
 					     const Token&	token)
@@ -213,7 +222,7 @@ namespace etoile
       //
 
       // set the last management time.
-      if (this->meta.stamp.Current() == StatusError)
+      if (this->meta.stamp.Current() == elle::StatusError)
 	escape("unable to set the last management time");
 
       // set the attributes.
@@ -231,7 +240,7 @@ namespace etoile
       if (this->meta.owner.record.Update(this->owner.subject,
 					 this->meta.owner.permissions,
 					 this->meta.owner.token) ==
-	  StatusError)
+	  elle::StatusError)
 	escape("unable to create the owner access record");
 
       leave();
@@ -240,7 +249,7 @@ namespace etoile
     ///
     /// this method seals the data and meta data by signing them.
     ///
-    Status		Object::Seal(const user::Agent&		agent,
+    elle::Status	Object::Seal(const user::Agent&		agent,
 				     const Access*		access)
     {
       enter();
@@ -261,7 +270,7 @@ namespace etoile
 			 this->meta.owner.token,
 			 this->meta.access,
 
-			 this->data.signature) == StatusError)
+			 this->data.signature) == elle::StatusError)
 	    escape("unable to sign the data archive");
 
 	  // mark the section as clean.
@@ -288,7 +297,7 @@ namespace etoile
 	      // access records is computed which is then included in
 	      // the meta signature.
 	      //
-	      Digest	fingerprint;
+	      elle::Digest	fingerprint;
 
 	      // test if there is an access block.
 	      if (access == NULL)
@@ -297,7 +306,7 @@ namespace etoile
 
 	      // compute the fingerprint of the access (subject, permissions)
 	      // tuples.
-	      if (access->Fingerprint(fingerprint) == StatusError)
+	      if (access->Fingerprint(fingerprint) == elle::StatusError)
 		escape("unable to compute the access block fingerprint");
 
 	      // sign the meta data, making sure to include the access
@@ -310,7 +319,7 @@ namespace etoile
 
 			     fingerprint,
 
-			     this->meta.signature) == StatusError)
+			     this->meta.signature) == elle::StatusError)
 		escape("unable to sign the meta archive");
 	    }
 	  else
@@ -327,7 +336,7 @@ namespace etoile
 			     this->meta.attributes,
 			     this->meta.version,
 
-			     this->meta.signature) == StatusError)
+			     this->meta.signature) == elle::StatusError)
 		escape("unable to sign the meta archive");
 	    }
 
@@ -347,18 +356,18 @@ namespace etoile
     /// signature (iv) retrieves the author's public key (v) verifies
     /// the data signature.
     ///
-    Status		Object::Validate(const hole::Address&	address,
+    elle::Status	Object::Validate(const hole::Address&	address,
 					 const Access*		access)
       const
     {
-      const PublicKey*	author;
+      const elle::PublicKey*	author;
 
       enter();
 
       // (i)
       {
 	// call the parent class.
-	if (PublicKeyBlock::Validate(address) == StatusFalse)
+	if (PublicKeyBlock::Validate(address) == elle::StatusFalse)
 	  flee("unable to verify the underlying PKB");
       }
 
@@ -366,7 +375,7 @@ namespace etoile
       {
 	// verify the owner's key signature with the block's public key.
 	if (this->K.Verify(this->owner.signature,
-			   this->owner.K) != StatusTrue)
+			   this->owner.K) != elle::StatusTrue)
 	  flee("unable to verify the owner's signature");
       }
 
@@ -374,7 +383,7 @@ namespace etoile
       {
 	if (this->meta.access != hole::Address::Null)
 	  {
-	    Digest	fingerprint;
+	    elle::Digest	fingerprint;
 
 	    // test if there is an access block.
 	    if (access == NULL)
@@ -382,7 +391,7 @@ namespace etoile
 
 	    // compute the fingerprint of the access (subject, permissions)
 	    // tuples.
-	    if (access->Fingerprint(fingerprint) == StatusError)
+	    if (access->Fingerprint(fingerprint) == elle::StatusError)
 	      escape("unable to compute the access block fingerprint");
 
 	    // verify the meta part, including the access fingerprint.
@@ -394,7 +403,7 @@ namespace etoile
 				     this->meta.attributes,
 				     this->meta.version,
 
-				     fingerprint) == StatusError)
+				     fingerprint) == elle::StatusError)
 	      flee("unable to verify the meta's signature");
 	  }
 	else
@@ -406,7 +415,7 @@ namespace etoile
 				     this->meta.genre,
 				     this->meta.stamp,
 				     this->meta.attributes,
-				     this->meta.version) == StatusError)
+				     this->meta.version) == elle::StatusError)
 	      flee("unable to verify the meta's signature");
 	  }
       }
@@ -441,7 +450,7 @@ namespace etoile
 			   this->data.version,
 
 			   this->meta.owner.token,
-			   this->meta.access) != StatusTrue)
+			   this->meta.access) != elle::StatusTrue)
 	  flee("unable to verify the data signature");
       }
 
@@ -449,13 +458,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Object);
+    embed(Object, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -464,105 +473,107 @@ namespace etoile
     ///
     /// this function dumps an object object.
     ///
-    Status		Object::Dump(Natural32			margin) const
+    elle::Status	Object::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent class.
-      if (PublicKeyBlock::Dump(margin + 2) == StatusError)
+      if (PublicKeyBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying public key block");
 
       // dump the owner part.
-      std::cout << alignment << Dumpable::Shift << "[Owner]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[Owner]"
+		<< std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[K]" << std::endl;
-      if (this->owner.K.Dump(margin + 6) == StatusError)
+      if (this->owner.K.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the owner's public key");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Signature]" << std::endl;
-      if (this->owner.signature.Dump(margin + 6) == StatusError)
+      if (this->owner.signature.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the owner's signature");
 
       // dump the author part.
-      if (this->author.Dump(margin + 2) == StatusError)
+      if (this->author.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the author");
 
       // dump the meta part.
-      std::cout << alignment << Dumpable::Shift << "[Meta]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[Meta]" << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Owner] " << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		<< Dumpable::Shift << "[Permissions] "
-		<< (Natural32)this->meta.owner.permissions << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+		<< elle::Dumpable::Shift << "[Permissions] "
+		<< (elle::Natural32)this->meta.owner.permissions << std::endl;
 
-      if (this->meta.owner.token.Dump(margin + 6) == StatusError)
+      if (this->meta.owner.token.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the meta owner's token");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
-		<< "[Genre] " << (Natural32)this->meta.genre << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+		<< "[Genre] " << (elle::Natural32)this->meta.genre
+		<< std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Stamp] " << std::endl;
-      if (this->meta.stamp.Dump(margin + 6) == StatusError)
+      if (this->meta.stamp.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the meta stamp");
 
-      if (this->meta.attributes.Dump(margin + 4) == StatusError)
+      if (this->meta.attributes.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the meta attributess");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Access]" << std::endl;
-      if (this->meta.access.Dump(margin + 6) == StatusError)
+      if (this->meta.access.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the meta access address");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Version] " << this->meta.version << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Signature]" << std::endl;
-      if (this->meta.signature.Dump(margin + 6) == StatusError)
+      if (this->meta.signature.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the meta signature");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[State] " << this->meta.state << std::endl;
 
       // dump the data part.
-      std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[Data]" << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Contents]" << std::endl;
-      if (this->data.contents.Dump(margin + 6) == StatusError)
+      if (this->data.contents.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the contents' address");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Size] " << this->data.size << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Stamp]" << std::endl;
-      if (this->data.stamp.Dump(margin + 6) == StatusError)
+      if (this->data.stamp.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the data stamp");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Fingerprint]" << std::endl;
-      if (this->data.fingerprint.Dump(margin + 6) == StatusError)
+      if (this->data.fingerprint.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the fingerprint");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Version] " << this->data.version << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Signature]" << std::endl;
-      if (this->data.signature.Dump(margin + 6) == StatusError)
+      if (this->data.signature.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the data signature");
 
-      std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[State] " << this->data.state << std::endl;
 
       leave();
@@ -575,25 +586,25 @@ namespace etoile
     ///
     /// this method serializes the object object.
     ///
-    Status		Object::Serialize(Archive&		archive) const
+    elle::Status	Object::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the component name.
-      if (archive.Serialize(Object::Name) == StatusError)
+      if (archive.Serialize(Object::Name) == elle::StatusError)
 	escape("unable to serialize the component identifier");
 
       // call the parent class.
-      if (PublicKeyBlock::Serialize(archive) == StatusError)
+      if (PublicKeyBlock::Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the underlying PKB");
 
       // serialize the owner part.
       if (archive.Serialize(this->owner.K,
-			    this->owner.signature) == StatusError)
+			    this->owner.signature) == elle::StatusError)
 	escape("unable to serialize the owner part");
 
       // serialize the author part.
-      if (archive.Serialize(this->author) == StatusError)
+      if (archive.Serialize(this->author) == elle::StatusError)
 	escape("unable to serialize the author");
 
       // serialize the meta part.
@@ -604,7 +615,7 @@ namespace etoile
 			    this->meta.attributes,
 			    this->meta.access,
 			    this->meta.version,
-			    this->meta.signature) == StatusError)
+			    this->meta.signature) == elle::StatusError)
 	escape("unable to serialize the meta part");
 
       // serialize the data part.
@@ -613,7 +624,7 @@ namespace etoile
 			    this->data.stamp,
 			    this->data.fingerprint,
 			    this->data.version,
-			    this->data.signature) == StatusError)
+			    this->data.signature) == elle::StatusError)
 	escape("unable to serialize the data part");
 
       leave();
@@ -622,23 +633,21 @@ namespace etoile
     ///
     /// this method extracts the object object.
     ///
-    Status		Object::Extract(Archive&		archive)
+    elle::Status	Object::Extract(elle::Archive&		archive)
     {
-      Archive::Type	type;
-
       enter();
 
       // call the parent class.
-      if (PublicKeyBlock::Extract(archive) == StatusError)
+      if (PublicKeyBlock::Extract(archive) == elle::StatusError)
 	escape("unable to extract the underyling PKB");
 
       // extract the owner part.
       if (archive.Extract(this->owner.K,
-			  this->owner.signature) == StatusError)
+			  this->owner.signature) == elle::StatusError)
 	escape("unable to extract the owner part");
 
       // extract the author part.
-      if (archive.Extract(this->author) == StatusError)
+      if (archive.Extract(this->author) == elle::StatusError)
 	escape("unable to extract the author");
 
       // extract the meta part.
@@ -649,7 +658,7 @@ namespace etoile
 			  this->meta.attributes,
 			  this->meta.access,
 			  this->meta.version,
-			  this->meta.signature) == StatusError)
+			  this->meta.signature) == elle::StatusError)
 	escape("unable to extract the meta part");
 
       // extract the data part.
@@ -658,18 +667,18 @@ namespace etoile
 			  this->data.stamp,
 			  this->data.fingerprint,
 			  this->data.version,
-			  this->data.signature) == StatusError)
+			  this->data.signature) == elle::StatusError)
 	escape("unable to extract the data part");
 
       // compute the owner subject.
-      if (this->owner.subject.Create(this->owner.K) == StatusError)
+      if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
 	escape("unable to create the owner subject");
 
       // compute the owner record.
       if (this->meta.owner.record.Update(this->owner.subject,
 					 this->meta.owner.permissions,
 					 this->meta.owner.token) ==
-	  StatusError)
+	  elle::StatusError)
 	escape("unable to create the owner access record");
 
       leave();

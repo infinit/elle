@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [thu apr 22 23:13:09 2010]
+// updated       julien quintard   [mon may  3 23:03:05 2010]
 //
 
 //
@@ -61,9 +61,9 @@ namespace etoile
     ///
     /// this method creates/updates a record.
     ///
-    Status		Record::Update(const Subject&		subject,
+    elle::Status	Record::Update(const Subject&		subject,
 				       const Permissions&	permissions,
-				       const SecretKey&		key)
+				       const elle::SecretKey&	key)
     {
       enter();
 
@@ -83,7 +83,7 @@ namespace etoile
 	    case Subject::TypeUser:
 	      {
 		// create the token with the user's public key.
-		if (this->token.Update(key, *subject.user) == StatusError)
+		if (this->token.Update(key, *subject.user) == elle::StatusError)
 		  escape("unable to create the token");
 
 		break;
@@ -115,7 +115,7 @@ namespace etoile
     ///
     /// this method creates/updates a record with a ready-to-be-used token.
     ///
-    Status		Record::Update(const Subject&		subject,
+    elle::Status	Record::Update(const Subject&		subject,
 				       const Permissions&	permissions,
 				       const Token&		token)
     {
@@ -134,13 +134,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Record::operator==(const Record&	element) const
+    elle::Boolean	Record::operator==(const Record&	element) const
     {
       enter();
 
@@ -158,9 +158,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Record);
+    embed(Record, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -169,25 +169,25 @@ namespace etoile
     ///
     /// this function dumps a record.
     ///
-    Status		Record::Dump(Natural32			margin) const
+    elle::Status	Record::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Record]" << std::endl;
 
       // dump the subject.
-      if (this->subject.Dump(margin + 2) == StatusError)
+      if (this->subject.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the subject");
 
       // dump the permissions.
-      std::cout << alignment << Dumpable::Shift
+      std::cout << alignment << elle::Dumpable::Shift
 		<< "[Permissions] " << std::dec
-		<< (Natural32)this->permissions << std::endl;
+		<< (elle::Natural32)this->permissions << std::endl;
 
       // dump the token.
-      if (this->token.Dump(margin + 2) == StatusError)
+      if (this->token.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the token");
 
       leave();
@@ -200,14 +200,14 @@ namespace etoile
     ///
     /// this method serializes the record object.
     ///
-    Status		Record::Serialize(Archive&		archive) const
+    elle::Status	Record::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->subject,
 			    this->permissions,
-			    this->token) == StatusError)
+			    this->token) == elle::StatusError)
 	escape("unable to serialize the record");
 
       leave();
@@ -216,14 +216,14 @@ namespace etoile
     ///
     /// this method extracts the record object.
     ///
-    Status		Record::Extract(Archive&		archive)
+    elle::Status	Record::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->subject,
 			  this->permissions,
-			  this->token) == StatusError)
+			  this->token) == elle::StatusError)
 	escape("unable to extract the record");
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [mon apr 26 19:18:51 2010]
+// updated       julien quintard   [mon may  3 23:05:48 2010]
 //
 
 //
@@ -31,7 +31,7 @@ namespace etoile
     /// this method creates a route from a string by splitting it according
     /// to the path separator.
     ///
-    Status		Route::Create(const Way&		way)
+    elle::Status	Route::Create(const Way&		way)
     {
       Length		start;
       Length		end;
@@ -39,8 +39,10 @@ namespace etoile
       enter();
 
       // initialize the pointers.
-      start = way.path.find_first_not_of(System::Path::Separator);
-      end = way.path.find_first_of(System::Path::Separator, start);
+      start =
+	way.path.find_first_not_of(elle::System::Path::Separator);
+      end =
+	way.path.find_first_of(elle::System::Path::Separator, start);
 
       // go through the string.
       while (start < way.path.length())
@@ -54,8 +56,10 @@ namespace etoile
 	  this->elements.push_back(element);
 
 	  // compute the next offsets.
-	  start = way.path.find_first_not_of(System::Path::Separator, end);
-	  end = way.path.find_first_of(System::Path::Separator, start);
+	  start =
+	    way.path.find_first_not_of(elle::System::Path::Separator, end);
+	  end =
+	    way.path.find_first_of(elle::System::Path::Separator, start);
 	}
 
       leave();
@@ -64,7 +68,7 @@ namespace etoile
     ///
     /// this method creates a route by appending a name to an existing route.
     ///
-    Status		Route::Create(const Route&		route,
+    elle::Status	Route::Create(const Route&		route,
 				      const Slice&		name)
     {
       enter();
@@ -79,13 +83,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Route::operator==(const Route&		element) const
+    elle::Boolean	Route::operator==(const Route&		element) const
     {
       Route::Scoutor	s;
       Route::Scoutor	t;
@@ -111,9 +115,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Route);
+    embed(Route, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -122,9 +126,9 @@ namespace etoile
     ///
     /// this method dumps a route.
     ///
-    Status		Route::Dump(const Natural32		margin) const
+    elle::Status	Route::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
       Route::Scoutor	scoutor;
 
       enter();
@@ -136,7 +140,8 @@ namespace etoile
       for (scoutor = this->elements.begin();
 	   scoutor != this->elements.end();
 	   scoutor++)
-	std::cout << alignment << Dumpable::Shift << *scoutor << std::endl;
+	std::cout << alignment << elle::Dumpable::Shift
+		  << *scoutor << std::endl;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [wed apr  7 00:52:15 2010]
+// updated       julien quintard   [mon may  3 17:43:55 2010]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH
@@ -68,7 +68,7 @@ namespace etoile
       //
       // constants
       //
-      static Natural32&		Capacity;
+      static const elle::Natural32&	Capacity;
 
       //
       // types
@@ -80,16 +80,16 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status	Update(const Route&,
-			       const Venue&);
-      static Status	Resolve(const Route&,
-				Venue&);
-      static Status	Evict();
+      static elle::Status	Update(const Route&,
+				       const Venue&);
+      static elle::Status	Resolve(const Route&,
+					Venue&);
+      static elle::Status	Evict();
 
-      static Status	Show(const Natural32 = 0);
+      static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // static attributes
@@ -97,16 +97,10 @@ namespace etoile
       static Item		Data;
       static Container		Queue;
 
-      static Natural32		Size;
+      static elle::Natural32	Size;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/configuration/Configuration.hh>
 
 #endif

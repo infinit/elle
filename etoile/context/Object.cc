@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [thu apr 22 13:03:58 2010]
+// updated       julien quintard   [mon may  3 12:54:08 2010]
 //
 
 //
@@ -81,44 +81,44 @@ namespace etoile
     ///
     /// this method dumps a context.
     ///
-    Status		Object::Dump(const Natural32		margin) const
+    elle::Status	Object::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent context.
-      if (Context::Dump(margin + 2) == StatusError)
+      if (Context::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the parent context");
 
       // dump the route.
-      if (this->route.Dump(margin + 2) == StatusError)
+      if (this->route.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the route");
 
       // dump the address.
-      if (this->address.Dump(margin + 2) == StatusError)
+      if (this->address.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the address");
 
       // dump the object.
       if (this->object != NULL)
-	if (this->object->Dump(margin + 2) == StatusError)
+	if (this->object->Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the object");
 
       // dump the access.
       if (this->access != NULL)
-	if (this->access->Dump(margin + 2) == StatusError)
+	if (this->access->Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the access");
 
       // dump the rights.
       if (this->rights != NULL)
-	if (this->rights->Dump(margin + 2) == StatusError)
+	if (this->rights->Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the rights");
 
       // dump the author.
       if (this->author != NULL)
-	if (this->author->Dump(margin + 2) == StatusError)
+	if (this->author->Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the author");
 
       leave();

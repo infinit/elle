@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hxx
 //
 // created       julien quintard   [sun apr  4 12:50:13 2010]
-// updated       julien quintard   [tue apr 27 21:06:40 2010]
+// updated       julien quintard   [mon may  3 12:48:03 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HXX
@@ -33,7 +33,7 @@ namespace etoile
     /// this method generates a new context.
     ///
     template <typename T>
-    Status		Context::New(T*&			context)
+    elle::Status	Context::New(T*&			context)
     {
       enter();
 
@@ -41,7 +41,7 @@ namespace etoile
       context = new T;
 
       // then, create the context.
-      if (context->Create() == StatusError)
+      if (context->Create() == elle::StatusError)
 	escape("unable to create the context");
 
       leave();
@@ -51,7 +51,7 @@ namespace etoile
     /// this method deletes a context.
     ///
     template <typename T>
-    Status		Context::Delete(T*			context)
+    elle::Status	Context::Delete(T*			context)
     {
       enter();
 
@@ -66,7 +66,7 @@ namespace etoile
     /// appropriate container.
     ///
     template <typename T>
-    Status		Context::Export(T*			context)
+    elle::Status	Context::Export(T*			context)
     {
       enter();
 
@@ -75,7 +75,7 @@ namespace etoile
 
       // store the context in the application.
       if (context->application->Add(context->identifier,
-				    context) == StatusError)
+				    context) == elle::StatusError)
 	escape("unable to add the context");
 
       leave();
@@ -86,7 +86,7 @@ namespace etoile
     /// necessary.
     ///
     template <typename T>
-    Status		Context::Import(T*			context)
+    elle::Status	Context::Import(T*			context)
     {
       enter();
 
@@ -95,7 +95,8 @@ namespace etoile
 	leave();
 
       // otherwise, remove the context from the application's container.
-      if (context->application->Remove(context->identifier) == StatusError)
+      if (context->application->Remove(context->identifier) ==
+	  elle::StatusError)
 	escape("unable to remove the context");
 
       leave();

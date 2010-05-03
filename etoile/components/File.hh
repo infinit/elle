@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/File.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [thu apr 22 11:09:31 2010]
+// updated       julien quintard   [mon may  3 17:54:57 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -47,35 +47,24 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Create(context::File*);
-      static Status	Load(context::File*,
-			     const hole::Address&);
-      static Status	Write(context::File*,
-			      const kernel::Offset&,
-			      const Region&);
-      static Status	Read(context::File*,
-			     const kernel::Offset&,
-			     const kernel::Size&,
-			     Region&);
-      static Status	Adjust(context::File*,
-			       const kernel::Size&);
-      static Status	Discard(context::File*);
-      static Status	Store(context::File*);
-      static Status	Destroy(context::File*);
+      static elle::Status	Create(context::File*);
+      static elle::Status	Load(context::File*,
+				     const hole::Address&);
+      static elle::Status	Write(context::File*,
+				      const kernel::Offset&,
+				      const elle::Region&);
+      static elle::Status	Read(context::File*,
+				     const kernel::Offset&,
+				     const kernel::Size&,
+				     elle::Region&);
+      static elle::Status	Adjust(context::File*,
+				       const kernel::Size&);
+      static elle::Status	Discard(context::File*);
+      static elle::Status	Store(context::File*);
+      static elle::Status	Destroy(context::File*);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/journal/Journal.hh>
-
-#include <etoile/user/User.hh>
-
-#include <etoile/components/Rights.hh>
-#include <etoile/components/Contents.hh>
 
 #endif

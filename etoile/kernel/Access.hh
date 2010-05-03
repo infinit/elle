@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [thu apr 22 21:48:02 2010]
+// updated       julien quintard   [mon may  3 22:58:39 2010]
 //
 
 #ifndef ETOILE_KERNEL_ACCESS_HH
@@ -56,34 +56,33 @@ namespace etoile
       //
       // methods
       //
-      Status		Add(Record*);
-      Status		Exist(const Subject&);
-      Status		Lookup(const Subject&,
+      elle::Status	Add(Record*);
+      elle::Status	Exist(const Subject&);
+      elle::Status	Lookup(const Subject&,
 			       Record*&);
-      Status		Consult(const Index&,
+      elle::Status	Consult(const Index&,
 				const Size&,
 				Range<Record>&) const;
-      Status		Upgrade(const SecretKey&);
-      Status		Remove(const Subject&);
-      Status		Capacity(Size&) const;
-      Status		Locate(const Subject&,
+      elle::Status	Upgrade(const elle::SecretKey&);
+      elle::Status	Remove(const Subject&);
+      elle::Status	Capacity(Size&) const;
+      elle::Status	Locate(const Subject&,
 			       Index&);
-      Status		Fingerprint(Digest&) const;
+      elle::Status	Fingerprint(elle::Digest&) const;
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Access);
-      // XXX operator==
+      // object
+      declare(Access, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
@@ -95,12 +94,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/hole/Address.hh>
-#include <etoile/hole/Component.hh>
 
 #endif

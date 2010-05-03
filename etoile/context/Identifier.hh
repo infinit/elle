@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [wed mar 31 01:17:13 2010]
+// updated       julien quintard   [mon may  3 22:54:21 2010]
 //
 
 #ifndef ETOILE_CONCURRENCY_IDENTIFIER_HH
@@ -33,8 +33,7 @@ namespace etoile
     /// identifiers are used to uniquely identify contexts.
     ///
     class Identifier:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -45,7 +44,7 @@ namespace etoile
       //
       // static attribute
       //
-      static Natural64			Counter;
+      static elle::Natural64		Counter;
 
       //
       // constructors & destructors
@@ -55,35 +54,29 @@ namespace etoile
       //
       // methods
       //
-      Status		Generate();
+      elle::Status	Generate();
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Identifier);
-      Boolean		operator==(const Identifier&) const;
+      // object
+      declare(Identifier, _());
+      elle::Boolean	operator==(const Identifier&) const;
+      elle::Boolean	operator<(const Identifier&) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Natural64		value;
+      elle::Natural64	value;
     };
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    Boolean		operator<(const Identifier&,
-				  const Identifier&);
 
   }
 }

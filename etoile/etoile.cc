@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [tue apr 27 17:13:07 2010]
+// updated       julien quintard   [mon may  3 17:45:31 2010]
 //
 
 //
@@ -24,33 +24,71 @@ namespace etoile
 // ---------- functions -------------------------------------------------------
 //
 
-  Status		Main(const Natural32			argc,
-			     const Character*			argv[])
+  elle::Status		Main(const elle::Natural32		argc,
+			     const elle::Character*		argv[])
   {
+    hole::Address	root;
+
     enter();
 
     // initialize the Elle library.
-    if (Elle::Initialize() == StatusError)
+    if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize the Elle library");
 
+    // initialize the lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize the Lune library");
+
     // set up the program.
-    if (Program::Setup(argc, argv) == StatusError)
+    if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
+    // XXX
+    {
+      // XXX[hack for the /]
+      {
+	int		fd;
+
+	fd = ::open("/home/mycure/.infinit/hole/.root", O_RDONLY);
+
+	elle::Region	region;
+
+	region.Prepare(4096);
+
+	region.size = read(fd, region.contents, region.capacity);
+
+	region.Detach();
+
+	elle::Archive	archive;
+
+	archive.Prepare(region);
+
+	archive.Extract(root);
+
+	expose();
+
+	std::cout << "[root] " << root << std::endl;
+      }
+    }
+
     // initialize etoile.
-    if (Etoile::Initialize() == StatusError)
+    if (Etoile::Initialize(root) == elle::StatusError)
       escape("unable to initialize etoile");
 
     // launch the program.
-    if (Program::Launch() == StatusError)
+    if (elle::Program::Launch() == elle::StatusError)
       escape("an error occured while processing events");
 
     // clean etoile.
-    if (Etoile::Clean() == StatusError)
+    if (Etoile::Clean() == elle::StatusError)
       escape("unable to clean etoile");
 
+    // clean the Lune library.
+    if (lune::Lune::Clean() == elle::StatusError)
+      escape("unable to clean the Lune library");
+
     // clean the Elle library.
-    if (Elle::Clean() == StatusError)
+    if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean the Elle library");
 
     leave();

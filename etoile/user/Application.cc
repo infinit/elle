@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.cc
 //
 // created       julien quintard   [thu mar 11 17:09:58 2010]
-// updated       julien quintard   [thu apr 22 10:09:00 2010]
+// updated       julien quintard   [mon may  3 20:54:47 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/user/Application.hh>
+#include <etoile/user/Client.hh>
+#include <etoile/user/Map.hh>
 
 namespace etoile
 {
@@ -51,9 +53,9 @@ namespace etoile
     ///
     /// this method creates the channel.
     ///
-    Status		Application::Create(Channel*		channel)
+    elle::Status	Application::Create(elle::Channel*	channel)
     {
-      Callback<const String>	error(&Application::Error, this);
+      elle::Callback<const elle::String> error(&Application::Error, this);
 
       enter();
 
@@ -61,7 +63,7 @@ namespace etoile
       this->channel = channel;
 
       // register the error callback to the deletion.
-      if (this->channel->Monitor(error) == StatusError)
+      if (this->channel->Monitor(error) == elle::StatusError)
 	escape("unable to monitor the callback");
 
       leave();
@@ -70,12 +72,12 @@ namespace etoile
     ///
     /// this method destroys the application.
     ///
-    Status		Application::Destroy()
+    elle::Status	Application::Destroy()
     {
       enter();
 
       // withdraw the control management.
-      if (this->channel->Withdraw() == StatusError)
+      if (this->channel->Withdraw() == elle::StatusError)
 	escape("unable to withdraw the socket control");
 
       // XXX go through the contexts: delete them and delete the associated
@@ -87,7 +89,7 @@ namespace etoile
     ///
     /// this method removes a recorded context.
     ///
-    Status		Application::Remove(const
+    elle::Status	Application::Remove(const
 					      context::Identifier& identifier)
     {
       Application::Iterator	iterator;
@@ -116,7 +118,7 @@ namespace etoile
     ///
     /// this callbacks is triggered if an error occurs on the channel.
     ///
-    Status		Application::Error(const String&)
+    elle::Status	Application::Error(const elle::String&)
     {
       Client*		client;
 
@@ -125,11 +127,11 @@ namespace etoile
       printf("[XXX] Application:Error()\n");
 
       // retrieve the client related to this application's channel.
-      if (Client::Retrieve(this->channel, client) != StatusTrue)
+      if (Client::Retrieve(this->channel, client) != elle::StatusTrue)
 	escape("unable to retrieve the client associated with the agent");
 
       // remove the application from the client.
-      if (client->Remove(this) == StatusError)
+      if (client->Remove(this) == elle::StatusError)
 	escape("unable to remove the application");
 
       leave();
@@ -142,9 +144,9 @@ namespace etoile
     ///
     /// this method dumps the application.
     ///
-    Status		Application::Dump(const Natural32	margin) const
+    elle::Status	Application::Dump(const elle::Natural32	margin) const
     {
-      String			alignment(margin, ' ');
+      elle::String		alignment(margin, ' ');
       Application::Scoutor	scoutor;
 
       enter();
@@ -153,10 +155,10 @@ namespace etoile
 		<< std::hex << this << std::endl;
 
       // dump the channel.
-      if (this->channel->Dump(margin + 2) == StatusError)
+      if (this->channel->Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the channel");
 
-      std::cout << alignment << Dumpable::Shift << "[Contexts] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Contexts] "
 		<< std::dec << this->contexts.size() << std::endl;
 
       // dump the contexts' addresses.
@@ -164,7 +166,8 @@ namespace etoile
 	   scoutor != this->contexts.end();
 	   scoutor++)
 	{
-	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << elle::Dumpable::Shift
 		    << "[" << scoutor->first << "] "
 		    << scoutor->second << std::endl;
 	}

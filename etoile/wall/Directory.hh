@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [thu apr 22 11:07:21 2010]
+// updated       julien quintard   [mon may  3 15:48:13 2010]
 //
 
 #ifndef ETOILE_WALL_DIRECTORY_HH
@@ -47,40 +47,29 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Create();
-      static Status	Load(const path::Way&);
-      static Status	Lock(const context::Identifier&);
-      static Status	Release(const context::Identifier&);
-      static Status	Add(const context::Identifier&,
-			    const path::Slice&,
-			    const context::Identifier&);
-      static Status	Lookup(const context::Identifier&,
-			       const path::Slice&);
-      static Status	Consult(const context::Identifier&,
-				const kernel::Index&,
-				const kernel::Size&);
-      static Status	Rename(const context::Identifier&,
-			       const path::Slice&,
-			       const path::Slice&);
-      static Status	Remove(const context::Identifier&,
-			       const path::Slice&);
-      static Status	Discard(const context::Identifier&);
-      static Status	Store(const context::Identifier&);
-      static Status	Destroy(const context::Identifier&);
+      static elle::Status	Create();
+      static elle::Status	Load(const path::Way&);
+      static elle::Status	Lock(const context::Identifier&);
+      static elle::Status	Release(const context::Identifier&);
+      static elle::Status	Add(const context::Identifier&,
+				    const path::Slice&,
+				    const context::Identifier&);
+      static elle::Status	Lookup(const context::Identifier&,
+				       const path::Slice&);
+      static elle::Status	Consult(const context::Identifier&,
+					const kernel::Index&,
+					const kernel::Size&);
+      static elle::Status	Rename(const context::Identifier&,
+				       const path::Slice&,
+				       const path::Slice&);
+      static elle::Status	Remove(const context::Identifier&,
+				       const path::Slice&);
+      static elle::Status	Discard(const context::Identifier&);
+      static elle::Status	Store(const context::Identifier&);
+      static elle::Status	Destroy(const context::Identifier&);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Format.hh>
-
-#include <etoile/user/User.hh>
-
-#include <etoile/path/Path.hh>
 
 #endif

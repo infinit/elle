@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [thu apr 22 11:07:08 2010]
+// updated       julien quintard   [mon may  3 18:57:22 2010]
 //
 
 //
@@ -16,6 +16,13 @@
 //
 
 #include <etoile/wall/File.hh>
+
+#include <etoile/context/Directory.hh>
+#include <etoile/context/Format.hh>
+
+#include <etoile/user/User.hh>
+
+#include <etoile/path/Path.hh>
 
 namespace etoile
 {
@@ -29,7 +36,7 @@ namespace etoile
     ///
     /// this method creates an new, though orphan, file object.
     ///
-    Status		File::Create()
+    elle::Status	File::Create()
     {
       context::File*	context;
       user::User*	user;
@@ -39,7 +46,7 @@ namespace etoile
       printf("[XXX] File::Create()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -47,20 +54,21 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // allocate a new context.
-      if (context::Context::New(context) == StatusError)
+      if (context::Context::New(context) == elle::StatusError)
 	escape("unable to allocate a new context");
 
       // create a new file.
-      if (components::File::Create(context) == StatusError)
+      if (components::File::Create(context) == elle::StatusError)
 	escape("unable to create the file");
 
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
+	    elle::Inputs<TagIdentifier>(context->identifier)) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       // export the context.
-      if (context::Context::Export(context) == StatusError)
+      if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
 
       // waive.
@@ -72,7 +80,7 @@ namespace etoile
     ///
     /// this method loads the file and creates a new context.
     ///
-    Status		File::Load(const path::Way&		way)
+    elle::Status	File::Load(const path::Way&		way)
     {
       context::File*	context;
       user::User*	user;
@@ -82,7 +90,7 @@ namespace etoile
       printf("[XXX] File::Load()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -90,29 +98,31 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // allocate a new context.
-      if (context::Context::New(context) == StatusError)
+      if (context::Context::New(context) == elle::StatusError)
 	escape("unable to allocate a new context");
 
       // create a route from the given way.
-      if (context->route.Create(way) == StatusError)
+      if (context->route.Create(way) == elle::StatusError)
 	escape("unable to create a route");
 
       // resolve the route in a file address.
-      if (path::Path::Resolve(context->route, context->address) == StatusError)
+      if (path::Path::Resolve(context->route, context->address) ==
+	  elle::StatusError)
 	escape("unable to resolve the given route into an file address");
 
       // load the file in the given context.
       if (components::File::Load(context,
-				      context->address) == StatusError)
+				      context->address) == elle::StatusError)
 	escape("unable to load the file in the given context");
 
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagIdentifier>(context->identifier)) == StatusError)
+	    elle::Inputs<TagIdentifier>(context->identifier)) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       // export the context.
-      if (context::Context::Export(context) == StatusError)
+      if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
 
       // waive.
@@ -128,8 +138,8 @@ namespace etoile
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
     ///
-    Status		File::Lock(const
-					  context::Identifier&	identifier)
+    elle::Status	File::Lock(const
+				     context::Identifier&	identifier)
     {
       enter();
 
@@ -146,8 +156,8 @@ namespace etoile
     ///
     /// this method releases a previously locked file.
     ///
-    Status		File::Release(const
-					     context::Identifier& identifer)
+    elle::Status	File::Release(const
+				        context::Identifier&	identifer)
     {
       enter();
 
@@ -159,9 +169,9 @@ namespace etoile
     ///
     /// this method writes a region of the file.
     ///
-    Status		File::Write(const context::Identifier& identifier,
+    elle::Status	File::Write(const context::Identifier& identifier,
 				    const kernel::Offset&	offset,
-				    const Region&		region)
+				    const elle::Region&		region)
     {
       context::File*	context;
       user::User*	user;
@@ -171,7 +181,7 @@ namespace etoile
       printf("[XXX] File::Write()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -179,7 +189,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -188,12 +199,13 @@ namespace etoile
 	escape("unable to test a non-file object");
 
       // write the file.
-      if (components::File::Write(context, offset, region) == StatusError)
+      if (components::File::Write(context, offset, region) ==
+	  elle::StatusError)
 	escape("unable to write the file");
 
       // answer the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagOk>()) == StatusError)
+	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -202,20 +214,20 @@ namespace etoile
     ///
     /// this method reads a region of the file.
     ///
-    Status		File::Read(const context::Identifier&	identifier,
+    elle::Status	File::Read(const context::Identifier&	identifier,
 				   const kernel::Offset&	offset,
 				   const kernel::Size&		size)
     {
       context::File*	context;
       user::User*	user;
-      Region		region;
+      elle::Region	region;
 
       enter();
 
       printf("[XXX] File::Read()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -223,16 +235,18 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the file context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the context");
 
       // request the file component.
-      if (components::File::Read(context, offset, size, region) == StatusError)
+      if (components::File::Read(context, offset, size, region) ==
+	  elle::StatusError)
 	escape("unable to read the file");
 
       // reply to the caller.
       if (user->application->channel->Reply(
-	    Inputs<TagFileRegion>(region)) == StatusError)
+	    elle::Inputs<TagFileRegion>(region)) == elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -241,7 +255,7 @@ namespace etoile
     ///
     /// this method adjusts the size of a file.
     ///
-    Status		File::Adjust(const context::Identifier&	identifier,
+    elle::Status	File::Adjust(const context::Identifier&	identifier,
 				     const kernel::Size&	size)
     {
       context::File*	context;
@@ -252,7 +266,7 @@ namespace etoile
       printf("[XXX] File::Adjust()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -260,7 +274,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -269,11 +284,12 @@ namespace etoile
 	escape("unable to rename a non-file object");
 
       // adjust the file.
-      if (components::File::Adjust(context, size) == StatusError)
+      if (components::File::Adjust(context, size) == elle::StatusError)
 	escape("unable to adjust the file size");
 
       // return the set to the caller.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -282,7 +298,7 @@ namespace etoile
     ///
     /// this method discards the file's modifications.
     ///
-    Status		File::Discard(const context::Identifier& identifier)
+    elle::Status	File::Discard(const context::Identifier& identifier)
     {
       context::File*	context;
       user::User*	user;
@@ -292,7 +308,7 @@ namespace etoile
       printf("[XXX] File::Discard()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -300,7 +316,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -309,11 +326,12 @@ namespace etoile
 	escape("unable to store a non-file object");
 
       // discard the context.
-      if (components::File::Discard(context) == StatusError)
+      if (components::File::Discard(context) == elle::StatusError)
 	escape("unable to discard the file's modifications");
 
       // reply to the application.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -323,7 +341,7 @@ namespace etoile
     /// this method closes the context and applies, if required, the
     /// modifications.
     ///
-    Status		File::Store(const context::Identifier&	identifier)
+    elle::Status	File::Store(const context::Identifier&	identifier)
     {
       context::File*	context;
       user::User*	user;
@@ -333,7 +351,7 @@ namespace etoile
       printf("[XXX] File::Store()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -341,7 +359,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -350,11 +369,12 @@ namespace etoile
 	escape("unable to store a non-file object");
 
       // store the context.
-      if (components::File::Store(context) == StatusError)
+      if (components::File::Store(context) == elle::StatusError)
 	escape("unable to store the file context");
 
       // reply to the application.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();
@@ -363,7 +383,7 @@ namespace etoile
     ///
     /// this method destroys a file.
     ///
-    Status		File::Destroy(const context::Identifier& identifier)
+    elle::Status	File::Destroy(const context::Identifier& identifier)
     {
       context::File*	context;
       user::User*	user;
@@ -373,7 +393,7 @@ namespace etoile
       printf("[XXX] File::Destroy()\n");
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check if the user is an application..
@@ -381,7 +401,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == StatusError)
+      if (user->application->Retrieve(identifier, context) ==
+	  elle::StatusError)
 	escape("unable to retrieve the file context");
 
       // check if the context is file.
@@ -390,11 +411,12 @@ namespace etoile
 	escape("unable to store a non-file object");
 
       // destroy the context.
-      if (components::File::Destroy(context) == StatusError)
+      if (components::File::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the file context");
 
       // reply to the application.
-      if (user->application->channel->Reply(Inputs<TagOk>()) == StatusError)
+      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
+	  elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();

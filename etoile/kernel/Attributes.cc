@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [thu apr 22 21:49:27 2010]
+// updated       julien quintard   [mon may  3 23:04:06 2010]
 //
 
 //
@@ -29,12 +29,12 @@ namespace etoile
     ///
     /// this method adds the given entry to the attributes.
     ///
-    Status		Attributes::Add(Trait*			trait)
+    elle::Status	Attributes::Add(Trait*			trait)
     {
       enter();
 
       // add the trait in the range.
-      if (this->range.Add(trait) == StatusError)
+      if (this->range.Add(trait) == elle::StatusError)
 	escape("unable to add the trait in the range");
 
       leave();
@@ -43,7 +43,7 @@ namespace etoile
     ///
     /// this method tests if the given name exists.
     ///
-    Status		Attributes::Exist(const String&		name)
+    elle::Status	Attributes::Exist(const elle::String&		name)
     {
       enter();
 
@@ -57,13 +57,13 @@ namespace etoile
     ///
     /// this method returns the trait corresponding to the given name.
     ///
-    Status		Attributes::Lookup(const String&	name,
+    elle::Status	Attributes::Lookup(const elle::String&	name,
 					   Trait*&		trait)
     {
       enter();
 
       // look in the range.
-      if (this->range.Lookup(name, trait) == StatusError)
+      if (this->range.Lookup(name, trait) == elle::StatusError)
 	escape("unable to retrieve the trait");
 
       leave();
@@ -73,7 +73,7 @@ namespace etoile
     /// this method returns a subset of the attributes delimited by the given
     /// index and size.
     ///
-    Status		Attributes::Consult(const Index&	index,
+    elle::Status	Attributes::Consult(const Index&	index,
 					    const Size&		size,
 					    Range<Trait>&	range)
       const
@@ -84,7 +84,7 @@ namespace etoile
       enter();
 
       // first detach the data from the range.
-      if (range.Detach() == StatusError)
+      if (range.Detach() == elle::StatusError)
 	escape("unable to detach the data from the range");
 
       // go through the attributes entries.
@@ -98,7 +98,7 @@ namespace etoile
 	  if ((i >= index) && (i < (index + size)))
 	    {
 	      // add the trait to the range.
-	      if (range.Add(trait) == StatusError)
+	      if (range.Add(trait) == elle::StatusError)
 		escape("unable to add the trait to the range");
 	    }
 	}
@@ -109,8 +109,8 @@ namespace etoile
     ///
     /// this method updates an existing trait's value.
     ///
-    Status		Attributes::Update(const String&	name,
-					   const String&	value)
+    elle::Status	Attributes::Update(const elle::String&	name,
+					   const elle::String&	value)
     {
       Range<Trait>::Iterator	iterator;
 
@@ -129,12 +129,12 @@ namespace etoile
     ///
     /// this method removes the given trait.
     ///
-    Status		Attributes::Remove(const String&	name)
+    elle::Status	Attributes::Remove(const elle::String&	name)
     {
       enter();
 
       // remove the trait from the range.
-      if (this->range.Remove(name) == StatusError)
+      if (this->range.Remove(name) == elle::StatusError)
 	escape("unable to remove the trait");
 
       leave();
@@ -143,25 +143,25 @@ namespace etoile
     ///
     /// this method returns the size of the attributes.
     ///
-    Status		Attributes::Capacity(Size&		size) const
+    elle::Status	Attributes::Capacity(Size&		size) const
     {
       enter();
 
       // look at the size of the range.
-      if (this->range.Capacity(size) == StatusError)
+      if (this->range.Capacity(size) == elle::StatusError)
 	escape("unable to retrieve the range size");
 
       leave();
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Attributes);
+    embed(Attributes, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -170,9 +170,9 @@ namespace etoile
     ///
     /// this function dumps a attributes.
     ///
-    Status		Attributes::Dump(Natural32		margin) const
+    elle::Status	Attributes::Dump(elle::Natural32	margin) const
     {
-      String			alignment(margin, ' ');
+      elle::String		alignment(margin, ' ');
       Range<Trait>::Scoutor	scoutor;
 
       enter();
@@ -180,7 +180,7 @@ namespace etoile
       std::cout << alignment << "[Attributes]" << std::endl;
 
       // dump the range.
-      if (this->range.Dump(margin + 2) == StatusError)
+      if (this->range.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the range");
 
       leave();
@@ -193,12 +193,12 @@ namespace etoile
     ///
     /// this method serializes the attributes object.
     ///
-    Status		Attributes::Serialize(Archive&		archive) const
+    elle::Status	Attributes::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the range.
-      if (archive.Serialize(this->range) == StatusError)
+      if (archive.Serialize(this->range) == elle::StatusError)
 	escape("unable to serialize the range");
 
       leave();
@@ -207,12 +207,12 @@ namespace etoile
     ///
     /// this method extracts the attributes object.
     ///
-    Status		Attributes::Extract(Archive&		archive)
+    elle::Status	Attributes::Extract(elle::Archive&	archive)
     {
       enter();
 
       // extract the range.
-      if (archive.Extract(this->range) == StatusError)
+      if (archive.Extract(this->range) == elle::StatusError)
 	escape("unable to extract the range");
 
       leave();

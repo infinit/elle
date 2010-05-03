@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Bucket.hh
 //
 // created       julien quintard   [sat jan 30 16:26:50 2010]
-// updated       julien quintard   [mon apr 26 18:37:54 2010]
+// updated       julien quintard   [mon may  3 13:10:48 2010]
 //
 
 #ifndef ETOILE_JOURNAL_BUCKET_HH
@@ -39,8 +39,7 @@ namespace etoile
     /// be published or destroyed.
     ///
     struct Bucket:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -58,9 +57,9 @@ namespace etoile
       //
       // methods
       //
-      Status		Push(const hole::Address&,
+      elle::Status	Push(const hole::Address&,
 			     hole::Block*);
-      Status		Destroy(const hole::Address&);
+      elle::Status	Destroy(const hole::Address&);
 
       //
       // interfaces

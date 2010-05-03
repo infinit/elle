@@ -8,18 +8,8 @@
 // file          /home/mycure/infinit/etoile/context/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [thu apr 22 12:55:40 2010]
+// updated       julien quintard   [mon may  3 12:53:53 2010]
 //
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-///
-/// this include has been placed here in order to avoid a pre-processing
-/// looping issue
-///
-#include <etoile/context/Context.hh>
 
 #ifndef ETOILE_CONTEXT_OBJECT_HH
 #define ETOILE_CONTEXT_OBJECT_HH
@@ -27,6 +17,8 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <etoile/context/Context.hh>
 
 #include <etoile/kernel/Object.hh>
 #include <etoile/kernel/Access.hh>
@@ -72,7 +64,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

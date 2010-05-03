@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.hh
 //
 // created       julien quintard   [thu dec  3 03:07:53 2009]
-// updated       julien quintard   [mon apr 26 18:36:59 2010]
+// updated       julien quintard   [mon may  3 12:58:30 2010]
 //
 
 #ifndef ETOILE_DEPOT_RECORD_HH
@@ -35,6 +35,9 @@ namespace etoile
 // ---------- forward declarations --------------------------------------------
 //
 
+    ///
+    /// XXX
+    ///
     class Cell;
     class Unit;
 
@@ -47,8 +50,7 @@ namespace etoile
     /// memory cache or in its unit form i.e in the reserve.
     ///
     class Record:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -69,33 +71,27 @@ namespace etoile
 	Unit*		unit;
       };
 
-      Timer*		timer;
+      elle::Timer*	timer;
 
       //
       // methods
       //
-      Status		Create(const hole::Address&);
-      Status		Monitor();
-      Status		Destroy();
+      elle::Status	Create(const hole::Address&);
+      elle::Status	Monitor();
+      elle::Status	Destroy();
 
       //
       // interfaces
       //
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // callbacks
       //
-      Status		Discard();
+      elle::Status	Discard();
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/depot/Repository.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [thu apr 22 12:29:26 2010]
+// updated       julien quintard   [mon may  3 23:05:34 2010]
 //
 
 //
@@ -53,7 +53,7 @@ namespace etoile
     ///
     /// simple constructor
     ///
-    Way::Way(const String&					path):
+    Way::Way(const elle::String&				path):
       path(path)
     {
     }
@@ -64,14 +64,14 @@ namespace etoile
     ///
     Way::Way(const Way&						way,
 	     Slice&						name):
-      path(way.path, 0, way.path.find_last_of(System::Path::Separator))
+      path(way.path, 0, way.path.find_last_of(elle::System::Path::Separator))
     {
       Length	start;
       Length	end;
 
       // compute the offsets.
-      end = way.path.find_last_of(System::Path::Separator);
-      start = way.path.find_first_not_of(System::Path::Separator, end);
+      end = way.path.find_last_of(elle::System::Path::Separator);
+      start = way.path.find_first_not_of(elle::System::Path::Separator, end);
 
       // compute name.
       name.assign(way.path.substr(start, name.npos));
@@ -84,7 +84,7 @@ namespace etoile
     ///
     /// this method returns the length of the way.
     ///
-    Status		Way::Capacity(Length&			length) const
+    elle::Status	Way::Capacity(Length&			length) const
     {
       enter();
 
@@ -95,13 +95,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Way);
+    embed(Way, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -110,9 +110,9 @@ namespace etoile
     ///
     /// this function dumps the object.
     ///
-    Status		Way::Dump(Natural32		margin) const
+    elle::Status	Way::Dump(elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
@@ -128,12 +128,12 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    Status		Way::Serialize(Archive&		archive) const
+    elle::Status	Way::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the target.
-      if (archive.Serialize(this->path) == StatusError)
+      if (archive.Serialize(this->path) == elle::StatusError)
 	escape("unable to serialize the path");
 
       leave();
@@ -142,12 +142,12 @@ namespace etoile
     ///
     /// this method extracts the object.
     ///
-    Status		Way::Extract(Archive&		archive)
+    elle::Status	Way::Extract(elle::Archive&	archive)
     {
       enter();
 
       // extract the target.
-      if (archive.Extract(this->path) == StatusError)
+      if (archive.Extract(this->path) == elle::StatusError)
 	escape("unable to extract the path");
 
       leave();

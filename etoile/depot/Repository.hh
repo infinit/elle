@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [fri apr  2 13:54:01 2010]
+// updated       julien quintard   [mon may  3 17:39:25 2010]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
 
 #include <etoile/hole/Address.hh>
 #include <etoile/hole/Block.hh>
@@ -40,6 +41,9 @@ namespace etoile
 // ---------- forward declarations --------------------------------------------
 //
 
+    ///
+    /// XXX
+    ///
     class Record;
 
 //
@@ -89,40 +93,40 @@ namespace etoile
       //
       // methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status	Put(const hole::Address&,
-			    hole::Block*);
-      static Status	Get(const hole::Address&,
-			    hole::Block*&);
-      static Status	Evict(const Location,
-			      const Natural32);
-      static Status	Discard(const hole::Address&);
+      static elle::Status	Put(const hole::Address&,
+				    hole::Block*);
+      static elle::Status	Get(const hole::Address&,
+				    hole::Block*&);
+      static elle::Status	Evict(const Location,
+				      const elle::Natural32);
+      static elle::Status	Discard(const hole::Address&);
 
-      static Status	Show(const Natural32 = 0);
+      static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // static attributes
       //
-      static Time*			Delays[hole::Families];
+      static elle::Time*		Delays[hole::Families];
 
       static Data::Container		Container;
 
       struct				Cache
       {
-	static Natural64		Size;
-	static Natural64&		Capacity;
+	static elle::Natural64		Size;
+	static elle::Natural64		Capacity;
 
 	static Access::Container	Queue;
       };
 
       struct				Reserve
       {
-	static String&			Path;
+	static elle::String		Path;
 
-	static Natural64		Size;
-	static Natural64&		Capacity;
+	static elle::Natural64		Size;
+	static elle::Natural64		Capacity;
 
 	static Access::Container	Queue;
       };
@@ -130,16 +134,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/configuration/Configuration.hh>
-
-#include <etoile/hole/Hole.hh>
-
-#include <etoile/depot/Cell.hh>
-#include <etoile/depot/Unit.hh>
 
 #endif

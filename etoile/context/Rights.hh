@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:59:43 2010]
-// updated       julien quintard   [mon apr 26 18:35:25 2010]
+// updated       julien quintard   [mon may  3 17:37:19 2010]
 //
 
 #ifndef ETOILE_CONTEXT_RIGHTS_HH
@@ -37,8 +37,7 @@ namespace etoile
     /// object and its contents.
     ///
     class Rights:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -51,14 +50,14 @@ namespace etoile
       //
 
       // dumpable
-      Status			Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
       kernel::Role		role;
       kernel::Record		record;
-      SecretKey			key;
+      elle::SecretKey		key;
     };
 
   }

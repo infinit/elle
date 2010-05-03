@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [mon apr 19 11:36:12 2010]
+// updated       julien quintard   [mon may  3 17:44:16 2010]
 //
 
 #ifndef ETOILE_WALL_ATTRIBUTES_HH
@@ -44,27 +44,17 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Set(const context::Identifier&,
-			    const String&,
-			    const String&);
-      static Status	Get(const context::Identifier&,
-			    const String&);
-      static Status	Fetch(const context::Identifier&);
-      static Status	Omit(const context::Identifier&,
-			     const String&);
+      static elle::Status	Set(const context::Identifier&,
+				    const elle::String&,
+				    const elle::String&);
+      static elle::Status	Get(const context::Identifier&,
+				    const elle::String&);
+      static elle::Status	Fetch(const context::Identifier&);
+      static elle::Status	Omit(const context::Identifier&,
+				     const elle::String&);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/context/Object.hh>
-
-#include <etoile/components/Attributes.hh>
-
-#include <etoile/user/User.hh>
 
 #endif

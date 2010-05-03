@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [wed mar 31 15:20:25 2010]
+// updated       julien quintard   [mon may  3 18:46:18 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/depot/Depot.hh>
+
+#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {
@@ -29,7 +31,7 @@ namespace etoile
     ///
     /// this method initializes the depot.
     ///
-    Status		Depot::Initialize()
+    elle::Status	Depot::Initialize()
     {
       return (Repository::Initialize());
     }
@@ -37,7 +39,7 @@ namespace etoile
     ///
     /// this method cleans the depot.
     ///
-    Status		Depot::Clean()
+    elle::Status	Depot::Clean()
     {
       return (Repository::Clean());
     }
@@ -45,13 +47,13 @@ namespace etoile
     ///
     /// this method stores a block by updating the repository.
     ///
-    Status		Depot::Put(const hole::Address&		address,
+    elle::Status	Depot::Put(const hole::Address&		address,
 				   hole::Block*			block)
     {
       enter();
 
       // update in the repository.
-      //if (Repository::Put(address, block) == StatusError)
+      //if (Repository::Put(address, block) == elle::StatusError)
       //escape("unable to put the block in the repository");
 
       leave();
@@ -60,7 +62,7 @@ namespace etoile
     ///
     /// this method retrieves a block from the storage layer.
     ///
-    Status		Depot::Get(const hole::Address&		address,
+    elle::Status	Depot::Get(const hole::Address&		address,
 				   hole::Block*&		block)
     {
       enter();
@@ -69,11 +71,11 @@ namespace etoile
       // XXX
 
       // look in the repository.
-      //if (Repository::Get(address, block) == StatusTrue)
+      //if (Repository::Get(address, block) == elle::StatusTrue)
       //leave();
 
       // finally, look in the hole.
-      if (hole::Hole::Get(address, block) == StatusTrue)
+      if (hole::Hole::Get(address, block) == elle::StatusTrue)
 	leave();
 
       escape("unable to find the block");

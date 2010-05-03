@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Voucher.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [mon apr  5 23:00:49 2010]
+// updated       julien quintard   [mon may  3 22:56:28 2010]
 //
 
 #ifndef ETOILE_KERNEL_VOUCHER_HH
@@ -35,14 +35,13 @@ namespace etoile
     /// at the time it has been carried out.
     ///
     class Voucher:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
       // methods
       //
-      //Status		Create(PublicKey&, ...);
+      //elle::Status		Create(PublicKey&, ...);
       // XXX un voucher devrait etre lie a un contenu donc probablement
       // version + hash content, un truc du genre bien que le contenu on
       // s'en fout en fait vu que le delegate ne va pas verifier. le truc
@@ -53,22 +52,22 @@ namespace etoile
       // interfaces
       //
 
-      // entity
-      declare(Entity, Voucher);
-      Boolean		operator==(const Voucher&) const;
+      // object
+      declare(Voucher, _());
+      elle::Boolean	operator==(const Voucher&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
-      PublicKey		user;
-      Signature		signature;
+      elle::PublicKey	user;
+      elle::Signature	signature;
       // XXX signature should include Object address and data version
     };
 

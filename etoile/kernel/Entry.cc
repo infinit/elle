@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Entry.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [mon apr 19 13:52:23 2010]
+// updated       julien quintard   [mon may  3 23:05:05 2010]
 //
 
 //
@@ -53,13 +53,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Entry::operator==(const Entry&	element) const
+    elle::Boolean	Entry::operator==(const Entry&	element) const
     {
       enter();
 
@@ -76,9 +76,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Entry);
+    embed(Entry, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -87,20 +87,20 @@ namespace etoile
     ///
     /// this function dumps a entry.
     ///
-    Status		Entry::Dump(Natural32			margin) const
+    elle::Status	Entry::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Entry]" << std::endl;
 
       // dump the name.
-      std::cout << alignment << Dumpable::Shift << "[Name] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Name] "
 		<< this->name << std::endl;
 
       // dump the address.
-      if (this->address.Dump(margin + 2) == StatusError)
+      if (this->address.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the token");
 
       leave();
@@ -113,13 +113,13 @@ namespace etoile
     ///
     /// this method serializes the entry object.
     ///
-    Status		Entry::Serialize(Archive&		archive) const
+    elle::Status	Entry::Serialize(elle::Archive&		archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->name,
-			    this->address) == StatusError)
+			    this->address) == elle::StatusError)
 	escape("unable to serialize the entry");
 
       leave();
@@ -128,13 +128,13 @@ namespace etoile
     ///
     /// this method extracts the entry object.
     ///
-    Status		Entry::Extract(Archive&		archive)
+    elle::Status	Entry::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->name,
-			  this->address) == StatusError)
+			  this->address) == elle::StatusError)
 	escape("unable to extract the entry");
 
       leave();

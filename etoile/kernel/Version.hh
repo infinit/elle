@@ -8,11 +8,17 @@
 // file          /home/mycure/infinit/etoile/kernel/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [fri apr  2 12:21:48 2010]
+// updated       julien quintard   [mon may  3 17:05:22 2010]
 //
 
 #ifndef ETOILE_KERNEL_VERSION_HH
 #define ETOILE_KERNEL_VERSION_HH
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/Elle.hh>
 
 namespace etoile
 {
@@ -27,7 +33,7 @@ namespace etoile
     /// this type represents a version which is used for objects for
     /// instance.
     ///
-    typedef Natural64		Version;
+    typedef elle::Natural64		Version;
 
   }
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [mon apr 19 14:33:27 2010]
+// updated       julien quintard   [mon may  3 17:39:48 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ACCESS_HH
@@ -45,41 +45,31 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Open(context::Object*);
-      static Status	Grant(context::Object*,
-			      const kernel::Subject&,
-			      const kernel::Permissions&);
-      static Status	Lookup(context::Object*,
-			       const kernel::Subject&,
-			       kernel::Record*&);
-      static Status	Consult(context::Object*,
-				const kernel::Index&,
-				const kernel::Size&,
-				kernel::Range<kernel::Record>&);
-      static Status	Update(context::Object*,
-			       const kernel::Subject&,
-			       const kernel::Permissions&);
-      static Status	Block(context::Object*,
-			      const kernel::Subject&);
-      static Status	Revoke(context::Object*,
-			       const kernel::Subject&);
-      static Status	Upgrade(context::Object*,
-				const SecretKey&);
-      static Status	Destroy(context::Object*);
-      static Status	Close(context::Object*);
+      static elle::Status	Open(context::Object*);
+      static elle::Status	Grant(context::Object*,
+				      const kernel::Subject&,
+				      const kernel::Permissions&);
+      static elle::Status	Lookup(context::Object*,
+				       const kernel::Subject&,
+				       kernel::Record*&);
+      static elle::Status	Consult(context::Object*,
+					const kernel::Index&,
+					const kernel::Size&,
+					kernel::Range<kernel::Record>&);
+      static elle::Status	Update(context::Object*,
+				       const kernel::Subject&,
+				       const kernel::Permissions&);
+      static elle::Status	Block(context::Object*,
+				      const kernel::Subject&);
+      static elle::Status	Revoke(context::Object*,
+				       const kernel::Subject&);
+      static elle::Status	Upgrade(context::Object*,
+					const elle::SecretKey&);
+      static elle::Status	Destroy(context::Object*);
+      static elle::Status	Close(context::Object*);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/kernel/State.hh>
-
-#include <etoile/depot/Depot.hh>
-
-#include <etoile/components/Rights.hh>
 
 #endif

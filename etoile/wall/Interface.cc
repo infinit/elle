@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [thu apr 22 11:03:39 2010]
+// updated       julien quintard   [mon may  3 18:54:58 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/wall/Interface.hh>
+#include <etoile/wall/Wall.hh>
+#include <etoile/wall/Object.hh>
 
 namespace etoile
 {
@@ -29,7 +31,7 @@ namespace etoile
     ///
     /// this array contains the interface callbacks.
     ///
-    Routine*		Interface::Callbacks[etoile::Tags];
+    elle::Routine*		Interface::Callbacks[etoile::Tags];
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -39,20 +41,23 @@ namespace etoile
     /// this method initializes the interface by registering the
     /// callbacks for inward messages.
     ///
-    Status		Interface::Initialize()
+    elle::Status	Interface::Initialize()
     {
       enter();
+
+      // initialize the structure to zero.
+      ::memset(Interface::Callbacks, 0x0, sizeof(Interface::Callbacks));
 
       // user
       InterfaceRegister(etoile::TagWallIdentify,
 			Wall::Identify,
-			parameters(const PublicKey));
+			parameters(const elle::PublicKey));
       InterfaceRegister(etoile::TagWallAuthenticate,
 			Wall::Authenticate,
-			parameters(const Digest));
+			parameters(const elle::Digest));
       InterfaceRegister(etoile::TagWallConnect,
 			Wall::Connect,
-			parameters(const String));
+			parameters(const elle::String));
 
       // object
       InterfaceRegister(etoile::TagObjectLoad,
@@ -119,7 +124,7 @@ namespace etoile
 			File::Write,
 			parameters(const context::Identifier,
 				   const kernel::Offset,
-				   const Region));
+				   const elle::Region));
       InterfaceRegister(etoile::TagFileRead,
 			File::Read,
 			parameters(const context::Identifier,
@@ -196,19 +201,19 @@ namespace etoile
       InterfaceRegister(etoile::TagAttributesSet,
 			Attributes::Set,
 			parameters(const context::Identifier,
-				   const String,
-				   const String));
+				   const elle::String,
+				   const elle::String));
       InterfaceRegister(etoile::TagAttributesGet,
 			Attributes::Get,
 			parameters(const context::Identifier,
-				   const String));
+				   const elle::String));
       InterfaceRegister(etoile::TagAttributesFetch,
 			Attributes::Fetch,
 			parameters(const context::Identifier));
       InterfaceRegister(etoile::TagAttributesOmit,
 			Attributes::Omit,
 			parameters(const context::Identifier,
-				   const String));
+				   const elle::String));
 
       leave();
     }
@@ -216,15 +221,18 @@ namespace etoile
     ///
     /// this method cleans the interface by deleting the callbacks.
     ///
-    Status		Interface::Clean()
+    elle::Status	Interface::Clean()
     {
-      Natural32		i;
+      elle::Natural32	i;
 
       enter();
 
       // delete the callbacks.
-      for (i = TagNone; i < etoile::Tags; i++)
-	delete Interface::Callbacks[i];
+      for (i = elle::TagNone; i < etoile::Tags; i++)
+	{
+	  if (Interface::Callbacks[i] != NULL)
+	    delete Interface::Callbacks[i];
+	}
 
       leave();
     }

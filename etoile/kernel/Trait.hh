@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Trait.hh
 //
 // created       julien quintard   [thu apr  1 19:48:42 2010]
-// updated       julien quintard   [tue apr 20 06:29:44 2010]
+// updated       julien quintard   [mon may  3 22:58:02 2010]
 //
 
 #ifndef ETOILE_KERNEL_TRAIT_HH
@@ -40,8 +40,7 @@ namespace etoile
     /// is associated with it.
     ///
     class Trait:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -52,38 +51,38 @@ namespace etoile
       //
       // types
       //
-      typedef String			S;
+      typedef elle::String		S;
 
       //
       // constructors & destructors
       //
       Trait();
-      Trait(const String&,
-	    const String&);
+      Trait(const elle::String&,
+	    const elle::String&);
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Trait);
-      Boolean		operator==(const Trait&) const;
+      // object
+      declare(Trait, _());
+      elle::Boolean	operator==(const Trait&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       // rangeable
-      String&		Symbol();
+      elle::String&	Symbol();
 
       //
       // attributes
       //
-      String		name;
-      String		value;
+      elle::String	name;
+      elle::String	value;
     };
 
   }

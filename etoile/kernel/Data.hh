@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [tue apr 20 10:22:04 2010]
+// updated       julien quintard   [mon may  3 22:58:08 2010]
 //
 
 #ifndef ETOILE_KERNEL_DATA_HH
@@ -36,8 +36,7 @@ namespace etoile
     /// this class represents file data.
     ///
     class Data:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -48,36 +47,35 @@ namespace etoile
       //
       // methods
       //
-      Status		Write(const Offset&,
-			      const Region&);
-      Status		Read(const Offset&,
+      elle::Status	Write(const Offset&,
+			      const elle::Region&);
+      elle::Status	Read(const Offset&,
 			     const Size&,
-			     Region&) const;
-      Status		Adjust(const Size&);
+			     elle::Region&) const;
+      elle::Status	Adjust(const Size&);
 
-      Status		Capacity(Size&) const;
+      elle::Status	Capacity(Size&) const;
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Data);
-      // XXX operator==
+      // object
+      declare(Data, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
       State		state;
 
-      Region		region;
+      elle::Region	region;
     };
 
   }

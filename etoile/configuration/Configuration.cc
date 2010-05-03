@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.cc
 //
 // created       julien quintard   [mon aug 10 16:46:56 2009]
-// updated       julien quintard   [wed mar 17 17:41:23 2010]
+// updated       julien quintard   [mon may  3 12:46:02 2010]
 //
 
 //
@@ -29,23 +29,22 @@ namespace etoile
     ///
     /// path-specific configuration attributes.
     ///
-    Natural32		Configuration::Path::Capacity = 4096;
+    const elle::Natural32	Configuration::Path::Capacity = 4096;
 
     ///
     /// cache-specific configuration attributes.
     ///
-    Natural64		Configuration::Cache::Capacity = 2097152;
+    const elle::Natural64	Configuration::Cache::Capacity = 2097152;
 
     ///
     /// reserve-specific configuration attributes.
     ///
-    String		Configuration::Reserve::Path;
-    Natural64		Configuration::Reserve::Capacity = 1073741824;
+    const elle::Natural64	Configuration::Reserve::Capacity = 1073741824;
 
     ///
     /// wall-specific configuration attributes
     ///
-    String		Configuration::Wall::Line("etoile");
+    const elle::String		Configuration::Wall::Line("etoile");
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -55,13 +54,11 @@ namespace etoile
     /// this method initializes the configuration, building attributes
     /// that depend on other for instance.
     ///
-    Status		Configuration::Initialize(const String&	path)
+    elle::Status	Configuration::Initialize()
     {
       enter();
 
-      // build the reserve path.
-      Configuration::Reserve::Path =
-	path + System::Path::Separator + String("reserve");
+      // nothing to do.
 
       leave();
     }
@@ -69,9 +66,11 @@ namespace etoile
     ///
     /// this method cleans the configuration resources.
     ///
-    Status		Configuration::Clean()
+    elle::Status	Configuration::Clean()
     {
       enter();
+
+      // nothing to do.
 
       leave();
     }

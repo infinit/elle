@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.hh
 //
 // created       julien quintard   [mon aug 10 12:13:56 2009]
-// updated       julien quintard   [tue mar 16 21:40:18 2010]
+// updated       julien quintard   [mon may  3 12:45:35 2010]
 //
 
 #ifndef ETOILE_CONFIGURATION_CONFIGURATION_HH
@@ -43,30 +43,29 @@ namespace etoile
       //
       struct				Path
       {
-	static Natural32		Capacity;
+	static const elle::Natural32	Capacity;
       };
 
       struct				Cache
       {
-	static Natural64		Capacity;
+	static const elle::Natural64	Capacity;
       };
 
       struct				Reserve
       {
-	static String			Path;
-	static Natural64		Capacity;
+	static const elle::Natural64	Capacity;
       };
 
       struct				Wall
       {
-	static String			Line;
+	static const elle::String	Line;
       };
 
       //
       // static methods
       //
-      static Status	Initialize(const String&);
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
     };
 
     // XXX ajouter depot/Repository/Delays enfin tous les delays (path, depot)

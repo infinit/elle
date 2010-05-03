@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.cc
 //
 // created       julien quintard   [wed mar 31 02:37:45 2010]
-// updated       julien quintard   [thu apr 22 16:13:13 2010]
+// updated       julien quintard   [mon may  3 19:46:54 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/context/Context.hh>
+
+#include <etoile/user/User.hh>
 
 namespace etoile
 {
@@ -44,14 +46,14 @@ namespace etoile
     ///
     /// this method creates a context.
     ///
-    Status		Context::Create()
+    elle::Status	Context::Create()
     {
       user::User*	user;
 
       enter();
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // check that the current client is an application.
@@ -62,10 +64,10 @@ namespace etoile
       this->application = user->application;
 
       // set the fiber so it can be destroyed should the application die.
-      this->fiber = Fiber::Current;
+      this->fiber = elle::Fiber::Current;
 
       // generate an identifier.
-      if (this->identifier.Generate() == StatusError)
+      if (this->identifier.Generate() == elle::StatusError)
 	escape("unable to generate an identifier");
 
       leave();
@@ -78,9 +80,9 @@ namespace etoile
     ///
     /// this method dumps a context.
     ///
-    Status		Context::Dump(const Natural32		margin) const
+    elle::Status	Context::Dump(const elle::Natural32	margin) const
     {
-      String			alignment(margin, ' ');
+      elle::String		alignment(margin, ' ');
       journal::Bucket::Scoutor	scoutor;
 
       enter();
@@ -89,29 +91,30 @@ namespace etoile
       std::cout << alignment << "[Context]" << std::endl;
 
       // dump the format.
-      std::cout << alignment << Dumpable::Shift
-		<< "[Format] " << std::hex << (Natural32)this->format
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Format] " << std::hex << (elle::Natural32)this->format
 		<< std::endl;
 
       // dump the type.
-      std::cout << alignment << Dumpable::Shift
-		<< "[Type] " << std::hex << (Natural32)this->type
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Type] " << std::hex << (elle::Natural32)this->type
 		<< std::endl;
 
       // dump the application.
-      if (this->application->Dump(margin + 2) == StatusError)
+      if (this->application->Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the application");
 
       // dump the fiber.
-      if (this->fiber->Dump(margin + 2) == StatusError)
+      if (this->fiber->Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the fiber");
 
       // dump the identifier.
-      if (this->identifier.Dump(margin + 2) == StatusError)
+      if (this->identifier.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the identifier");
 
       // dump the bucket
-      std::cout << alignment << Dumpable::Shift << "[Bucket]" << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Bucket]" << std::endl;
 
       // go through the bucket.
       for (scoutor = this->bucket.container.begin();
@@ -121,7 +124,7 @@ namespace etoile
 	  journal::Item*	item = *scoutor;
 
 	  // dump the item.
-	  if (item->Dump(margin + 4) == StatusError)
+	  if (item->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the item");
 	}
 

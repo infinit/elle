@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.cc
 //
 // created       julien quintard   [thu mar  4 12:39:12 2010]
-// updated       julien quintard   [tue apr 27 18:06:06 2010]
+// updated       julien quintard   [mon may  3 20:54:38 2010]
 //
 
 //
@@ -52,14 +52,14 @@ namespace etoile
     ///
     /// this method creates a user based on the given client.
     ///
-    Status		User::Create(Client*			client)
+    elle::Status	User::Create(Client*			client)
     {
-      Session*		session;
+      elle::Session*	session;
 
       enter();
 
       // retrieve the session.
-      if (Session::Instance(session) == StatusError)
+      if (elle::Session::Instance(session) == elle::StatusError)
 	escape("unable to retrieve the session");
 
       // set the client.
@@ -81,8 +81,8 @@ namespace etoile
 
 	  // set the application.
 	  if (this->client->Retrieve(
-                static_cast<Channel*>(session->socket),
-		this->application) == StatusError)
+		static_cast<elle::Channel*>(session->socket),
+		this->application) == elle::StatusError)
 	    escape("unable to retrieve the application belonging "
 		   "to the client");
 	}
@@ -100,24 +100,24 @@ namespace etoile
     ///
     /// this method dumps the user.
     ///
-    Status		User::Dump(const Natural32		margin) const
+    elle::Status	User::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[User] " << std::hex << this << std::endl;
 
       // dump the session.
-      if (this->session->Dump(margin + 2) == StatusError)
+      if (this->session->Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the session");
 
       // dump the client.
-      std::cout << alignment << Dumpable::Shift << "[Client] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Client] "
 		<< std::hex << this->client << std::endl;
 
       // dump the type.
-      std::cout << alignment << Dumpable::Shift << "[Type] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Type] "
 		<< this->type << std::endl;
 
       // dump the content.
@@ -125,14 +125,14 @@ namespace etoile
 	{
 	case User::TypeAgent:
 	  {
-	    std::cout << alignment << Dumpable::Shift << "[Agent] "
+	    std::cout << alignment << elle::Dumpable::Shift << "[Agent] "
 		      << std::hex << this->agent << std::endl;
 
 	    break;
 	  }
 	case User::TypeApplication:
 	  {
-	    std::cout << alignment << Dumpable::Shift << "[Application] "
+	    std::cout << alignment << elle::Dumpable::Shift << "[Application] "
 		      << std::hex << this->application << std::endl;
 
 	    break;
@@ -149,26 +149,27 @@ namespace etoile
     ///
     /// this method initializes the user module.
     ///
-    Status		User::Initialize()
+    elle::Status	User::Initialize()
     {
-      Callback<const Phase, Fiber*>	govern(&User::Govern);
+      elle::Callback<const elle::Phase,
+	             elle::Fiber*>		govern(&User::Govern);
 
       enter();
 
       // initialize the map.
-      if (Map::Initialize() == StatusError)
+      if (Map::Initialize() == elle::StatusError)
 	escape("unable to initialize the map");
 
       // initialize the client.
-      if (Client::Initialize() == StatusError)
+      if (Client::Initialize() == elle::StatusError)
 	escape("unable to initialize the client");
 
       // initialize the guest.
-      if (Guest::Initialize() == StatusError)
+      if (Guest::Initialize() == elle::StatusError)
 	escape("unable to initialize the guest");
 
       // register the callback to the fiber system.
-      if (Fiber::Register(govern) == StatusError)
+      if (elle::Fiber::Register(govern) == elle::StatusError)
 	escape("unable to register the govern callback");
 
       leave();
@@ -178,20 +179,20 @@ namespace etoile
     /// this method cleans the user module by destroying all the clients
     /// and channels.
     ///
-    Status		User::Clean()
+    elle::Status	User::Clean()
     {
       enter();
 
       // clean the guest.
-      if (Guest::Clean() == StatusError)
+      if (Guest::Clean() == elle::StatusError)
 	escape("unable to clean the guest");
 
       // clean the client.
-      if (Client::Clean() == StatusError)
+      if (Client::Clean() == elle::StatusError)
 	escape("unable to clean the client");
 
       // clean the map.
-      if (Map::Clean() == StatusError)
+      if (Map::Clean() == elle::StatusError)
 	escape("unable to clean the map");
 
       leave();
@@ -201,14 +202,14 @@ namespace etoile
     /// this method returns the current User instance depending on
     /// the session.
     ///
-    Status		User::Instance(User*&			user)
+    elle::Status	User::Instance(User*&			user)
     {
-      Session*		session;
+      elle::Session*	session;
 
       enter();
 
       // retrieve the session.
-      if (Session::Instance(session) == StatusError)
+      if (elle::Session::Instance(session) == elle::StatusError)
 	escape("unable to retrieve the session");
 
       // if the currently loaded user does not corresponds to the
@@ -218,16 +219,16 @@ namespace etoile
 	  Client*	client;
 
 	  // check if the session's socket is a channel.
-	  if ((session->socket->type & Socket::TypeChannel) == 0)
+	  if ((session->socket->type & elle::Socket::TypeChannel) == 0)
 	    escape("the session's socket is not a channel");
 
 	  // retrieve the client.
-	  if (Map::Retrieve(static_cast<Channel*>(session->socket),
-			    client) == StatusError)
+	  if (Map::Retrieve(static_cast<elle::Channel*>(session->socket),
+			    client) == elle::StatusError)
 	    escape("unablt to retrive the client from the session's socket");
 
 	  // create the user.
-	  if (User::Current->Create(client) == StatusError)
+	  if (User::Current->Create(client) == elle::StatusError)
 	    escape("unable to assign the user");
 	}
       else
@@ -245,26 +246,26 @@ namespace etoile
     /// this method initializes, saves, restores and cleans the user
     /// associated with the current fiber.
     ///
-    Status		User::Govern(const Phase&		phase,
-				     Fiber*&			fiber)
+    elle::Status	User::Govern(const elle::Phase&		phase,
+				     elle::Fiber*&		fiber)
     {
       enter();
 
       // perform an operation depending on the phase.
       switch (phase)
 	{
-	case PhaseInitialize:
+	case elle::PhaseInitialize:
 	  {
 	    // allocate a new user.
 	    User::Current = new User;
 
 	    break;
 	  }
-	case PhaseSave:
+	case elle::PhaseSave:
 	  {
 	    // save the user in the fiber's environment.
 	    if (fiber->environment->Store("user",
-					  User::Current) == StatusError)
+					  User::Current) == elle::StatusError)
 	      escape("unable to store the user in the environment");
 
 	    // set the pointer to NULL, for safety purposes.
@@ -272,16 +273,16 @@ namespace etoile
 
 	    break;
 	  }
-	case PhaseRestore:
+	case elle::PhaseRestore:
 	  {
 	    // restore the user from the fiber's environment.
 	    if (fiber->environment->Load("user",
-					 User::Current) == StatusError)
+					 User::Current) == elle::StatusError)
 	      escape("unable to load the user from the environment");
 
 	    break;
 	  }
-	case PhaseClean:
+	case elle::PhaseClean:
 	  {
 	    // delete the user.
 	    delete User::Current;

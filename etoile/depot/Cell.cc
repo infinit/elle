@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.cc
 //
 // created       julien quintard   [tue jan 26 14:07:29 2010]
-// updated       julien quintard   [thu mar 25 17:50:56 2010]
+// updated       julien quintard   [mon may  3 20:50:49 2010]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <etoile/depot/Cell.hh>
+#include <etoile/depot/Repository.hh>
 
 namespace etoile
 {
@@ -44,7 +45,7 @@ namespace etoile
     /// note that if the pointer of the current and new blocks are identical,
     /// nothing is done as the block has already been modified in place.
     ///
-    Status		Cell::Set(hole::Block*			block)
+    elle::Status	Cell::Set(hole::Block*			block)
     {
       enter();
 
@@ -57,7 +58,7 @@ namespace etoile
 	  leave();
 
 	// release the current content.
-	if (this->Destroy() == StatusError)
+	if (this->Destroy() == elle::StatusError)
 	  escape("unable to release the current content");
 
 	// set the block.
@@ -68,14 +69,14 @@ namespace etoile
       // increase the cache usage.
       //
       {
-	Natural32	size;
+	elle::Natural32	size;
 
 	// retrieve the block's memory imprint.
-	if (this->block->Imprint(size) == StatusError)
+	if (this->block->Imprint(size) == elle::StatusError)
 	  escape("unable to retrieve the object's memory imprint");
 
 	// update the cache usage.
-	Repository::Cache::Size += (Natural64)size;
+	Repository::Cache::Size += (elle::Natural64)size;
       }
 
       leave();
@@ -84,7 +85,7 @@ namespace etoile
     ///
     /// this method returns the block's content.
     ///
-    Status		Cell::Get(hole::Block*&			block)
+    elle::Status	Cell::Get(hole::Block*&			block)
     {
       enter();
 
@@ -98,9 +99,9 @@ namespace etoile
     /// this method releases the resources allocated by the cell and
     /// therefore updates the cache usage since one block is being released.
     ///
-    Status		Cell::Destroy()
+    elle::Status	Cell::Destroy()
     {
-      Natural32		size;
+      elle::Natural32	size;
 
       enter();
 
@@ -108,11 +109,11 @@ namespace etoile
       if (this->block != NULL)
 	{
 	  // retrieve the block's memory imprint.
-	  if (this->block->Imprint(size) == StatusError)
+	  if (this->block->Imprint(size) == elle::StatusError)
 	    escape("unable to retrieve the object's memory imprint");
 
 	  // update the cache usage.
-	  Repository::Cache::Size -= (Natural64)size;
+	  Repository::Cache::Size -= (elle::Natural64)size;
 
 	  // delete the block.
 	  delete this->block;
@@ -128,23 +129,23 @@ namespace etoile
     ///
     /// this method dumps the cell.
     ///
-    Status		Cell::Dump(const Natural32		margin) const
+    elle::Status	Cell::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
- Natural32		size;
+      elle::String	alignment(margin, ' ');
+      elle::Natural32	size;
 
       enter();
 
       // retrieve the block's memory imprint.
-      if (this->block->Imprint(size) == StatusError)
+      if (this->block->Imprint(size) == elle::StatusError)
 	escape("unable to retrieve the object's memory imprint");
 
       std::cout << alignment << "[Cell] " << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Block] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Block] "
 		<< std::hex << this->block << std::endl;
 
-      std::cout << alignment << Dumpable::Shift << "[Size] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Size] "
 		<< std::hex << size << std::endl;
 
       leave();

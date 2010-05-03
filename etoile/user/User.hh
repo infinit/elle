@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/User.hh
 //
 // created       julien quintard   [thu mar 11 16:05:28 2010]
-// updated       julien quintard   [mon apr 26 19:23:34 2010]
+// updated       julien quintard   [mon may  3 13:33:01 2010]
 //
 
 #ifndef ETOILE_USER_USER_HH
@@ -50,8 +50,7 @@ namespace etoile
     ///
     ///
     class User:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -67,13 +66,13 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status	Instance(User*&);
+      static elle::Status	Instance(User*&);
 
-      static Status	Govern(const Phase&,
-			       Fiber*&);
+      static elle::Status	Govern(const elle::Phase&,
+				       elle::Fiber*&);
 
       //
       // static attribute
@@ -88,19 +87,19 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(Client*);
+      elle::Status	Create(Client*);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Session*		session;
+      elle::Session*	session;
 
       Client*		client;
 
@@ -123,7 +122,7 @@ namespace etoile
 #include <etoile/user/Agent.hh>
 #include <etoile/user/Application.hh>
 #include <etoile/user/Client.hh>
-#include <etoile/user/Map.hh>
 #include <etoile/user/Guest.hh>
+#include <etoile/user/Map.hh>
 
 #endif

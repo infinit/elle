@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue apr 20 10:29:49 2010]
+// updated       julien quintard   [mon may  3 23:04:17 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/kernel/Reference.hh>
+
+#include <etoile/path/Length.hh>
 
 namespace etoile
 {
@@ -41,7 +43,7 @@ namespace etoile
     ///
     /// this method sets the target way.
     ///
-    Status		Reference::Bind(const path::Way&	target)
+    elle::Status	Reference::Bind(const path::Way&	target)
     {
       enter();
 
@@ -57,7 +59,7 @@ namespace etoile
     ///
     /// this method retrieve the target.
     ///
-    Status		Reference::Resolve(path::Way&		target) const
+    elle::Status	Reference::Resolve(path::Way&		target) const
     {
       enter();
 
@@ -70,14 +72,14 @@ namespace etoile
     ///
     /// this method returns the length of the referenced way.
     ///
-    Status		Reference::Capacity(Size&		size) const
+    elle::Status	Reference::Capacity(Size&		size) const
     {
       path::Length	length;
 
       enter();
 
       // retrieve the length.
-      if (this->target.Capacity(length) == StatusError)
+      if (this->target.Capacity(length) == elle::StatusError)
 	escape("unable to retrieve the way length");
 
       // set the size.
@@ -87,13 +89,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Reference);
+    embed(Reference, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -102,20 +104,20 @@ namespace etoile
     ///
     /// this function dumps the object.
     ///
-    Status		Reference::Dump(Natural32		margin) const
+    elle::Status	Reference::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Reference] " << std::endl;
 
       // dump the state.
-      std::cout << alignment << Dumpable::Shift << "[State] "
+      std::cout << alignment << elle::Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
       // dump the target.
-      if (this->target.Dump(margin + 2) == StatusError)
+      if (this->target.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the target");
 
       leave();
@@ -128,12 +130,12 @@ namespace etoile
     ///
     /// this method serializes the object.
     ///
-    Status		Reference::Serialize(Archive&		archive) const
+    elle::Status	Reference::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the target.
-      if (archive.Serialize(this->target) == StatusError)
+      if (archive.Serialize(this->target) == elle::StatusError)
 	escape("unable to serialize the target");
 
       leave();
@@ -142,12 +144,12 @@ namespace etoile
     ///
     /// this method extracts the object.
     ///
-    Status		Reference::Extract(Archive&		archive)
+    elle::Status	Reference::Extract(elle::Archive&	archive)
     {
       enter();
 
       // extract the target.
-      if (archive.Extract(this->target) == StatusError)
+      if (archive.Extract(this->target) == elle::StatusError)
 	escape("unable to extract the target");
 
       leave();

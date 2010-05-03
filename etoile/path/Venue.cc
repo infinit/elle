@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [mon apr 26 18:49:36 2010]
+// updated       julien quintard   [mon may  3 23:05:41 2010]
 //
 
 //
@@ -38,7 +38,7 @@ namespace etoile
     ///
     /// this method records the next step of the venue.
     ///
-    Status		Venue::Record(const hole::Address&	address)
+    elle::Status	Venue::Record(const hole::Address&	address)
     {
       enter();
 
@@ -55,9 +55,9 @@ namespace etoile
     ///
     /// this method dumps a venue.
     ///
-    Status		Venue::Dump(const Natural32		margin) const
+    elle::Status	Venue::Dump(const elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
       Venue::Scoutor	scoutor;
 
       enter();
@@ -68,20 +68,20 @@ namespace etoile
       for (scoutor = this->elements.begin();
 	   scoutor != this->elements.end();
 	   scoutor++)
-	if (scoutor->Dump(margin + 2) == StatusError)
+	if (scoutor->Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the address");
 
       leave();
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Venue::operator==(const Venue&		element) const
+    elle::Boolean	Venue::operator==(const Venue&		element) const
     {
       Venue::Scoutor	s;
       Venue::Scoutor	t;
@@ -107,9 +107,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Venue);
+    embed(Venue, _(), _());
 
   }
 }

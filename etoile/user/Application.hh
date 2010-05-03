@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hh
 //
 // created       julien quintard   [thu mar 11 17:09:50 2010]
-// updated       julien quintard   [mon apr 26 18:54:41 2010]
+// updated       julien quintard   [mon may  3 13:40:40 2010]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HH
@@ -50,8 +50,7 @@ namespace etoile
     /// and requesting operations.
     ///
     class Application:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -71,34 +70,34 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(Channel*);
-      Status		Destroy();
+      elle::Status	Create(elle::Channel*);
+      elle::Status	Destroy();
 
       template <typename T>
-      Status		Add(const context::Identifier&,
+      elle::Status	Add(const context::Identifier&,
 			    T*);
       template <typename T>
-      Status		Retrieve(const context::Identifier&,
+      elle::Status	Retrieve(const context::Identifier&,
 				 T*&);
-      Status		Remove(const context::Identifier&);
+      elle::Status	Remove(const context::Identifier&);
 
       //
       // callbacks
       //
-      Status		Timeout();
-      Status		Error(const String&);
+      elle::Status	Timeout();
+      elle::Status	Error(const elle::String&);
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Channel*		channel;
+      elle::Channel*	channel;
 
       Container		contexts;
     };
@@ -117,12 +116,5 @@ namespace etoile
 //
 
 #include <etoile/user/Application.hxx>
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/user/Client.hh>
-#include <etoile/user/Map.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [mon apr 26 18:47:38 2010]
+// updated       julien quintard   [mon may  3 17:43:23 2010]
 //
 
 #ifndef ETOILE_PATH_ITEM_HH
@@ -47,8 +47,7 @@ namespace etoile
     /// benefit.
     ///
     struct Item:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -70,18 +69,18 @@ namespace etoile
       //
       // methods
       //
-      Status		Resolve(const Slice&,
+      elle::Status	Resolve(const Slice&,
 				Item*&);
-      Status		Update(const Slice&,
+      elle::Status	Update(const Slice&,
 			       const hole::Address&);
-      Status		Destroy();
+      elle::Status	Destroy();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0);
+      elle::Status	Dump(const elle::Natural32 = 0);
 
       //
       // attributes

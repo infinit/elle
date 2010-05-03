@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [thu apr 22 23:12:32 2010]
+// updated       julien quintard   [mon may  3 23:03:54 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <etoile/kernel/Access.hh>
+
+#include <etoile/hole/Address.hh>
+#include <etoile/hole/Component.hh>
 
 namespace etoile
 {
@@ -43,12 +46,12 @@ namespace etoile
     ///
     /// this method adds the given record to the ACL.
     ///
-    Status		Access::Add(Record*			record)
+    elle::Status	Access::Add(Record*			record)
     {
       enter();
 
       // add the record in the range.
-      if (this->range.Add(record) == StatusError)
+      if (this->range.Add(record) == elle::StatusError)
 	escape("unable to add the record in the range");
 
       // set the object as dirty.
@@ -60,7 +63,7 @@ namespace etoile
     ///
     /// this method tests if the given subject exists.
     ///
-    Status		Access::Exist(const Subject&		subject)
+    elle::Status	Access::Exist(const Subject&		subject)
     {
       enter();
 
@@ -74,13 +77,13 @@ namespace etoile
     ///
     /// this method returns the record corresponding to the given subject.
     ///
-    Status		Access::Lookup(const Subject&		subject,
+    elle::Status	Access::Lookup(const Subject&		subject,
 				       Record*&			record)
     {
       enter();
 
       // look in the range.
-      if (this->range.Lookup(subject, record) == StatusError)
+      if (this->range.Lookup(subject, record) == elle::StatusError)
 	escape("unable to retrieve the record");
 
       leave();
@@ -90,7 +93,7 @@ namespace etoile
     /// this method returns a range representing a subset of the access
     /// control list delimited by the given index and size.
     ///
-    Status		Access::Consult(const Index&		index,
+    elle::Status	Access::Consult(const Index&		index,
 					const Size&		size,
 					Range<Record>&		range) const
     {
@@ -100,7 +103,7 @@ namespace etoile
       enter();
 
       // first detach the data from the range.
-      if (range.Detach() == StatusError)
+      if (range.Detach() == elle::StatusError)
 	escape("unable to detach the data from the range");
 
       // go through the records.
@@ -114,7 +117,7 @@ namespace etoile
 	  if ((i >= index) && (i < (index + size)))
 	    {
 	      // add the record to the range.
-	      if (range.Add(record) == StatusError)
+	      if (range.Add(record) == elle::StatusError)
 		escape("unable to add the record to the given range");
 	    }
 	}
@@ -126,7 +129,7 @@ namespace etoile
     /// this method updates the records with the given secret key by
     /// encrypted the given key with every subject's public key.
     ///
-    Status		Access::Upgrade(const SecretKey&	key)
+    elle::Status	Access::Upgrade(const elle::SecretKey&	key)
     {
       Range<Record>::Iterator	iterator;
 
@@ -154,10 +157,10 @@ namespace etoile
 		// capable of decrypting it.
 		//
 
-		PublicKey*	K = record->subject.user;
+		elle::PublicKey*	K = record->subject.user;
 
 		// update the token.
-		if (record->token.Update(key, *K) == StatusError)
+		if (record->token.Update(key, *K) == elle::StatusError)
 		  escape("unable to update the token");
 
 		break;
@@ -171,9 +174,9 @@ namespace etoile
 		// respond to vassal's requests.
 		//
 
-		PublicKey*	K;
-		hole::Address*	address;
-		Token		token;
+		elle::PublicKey*	K;
+		hole::Address*		address;
+		Token			token;
 
 		// retrieve the group's block address.
 		// XXX
@@ -207,12 +210,12 @@ namespace etoile
     ///
     /// this method removes the given record.
     ///
-    Status		Access::Remove(const Subject&		subject)
+    elle::Status	Access::Remove(const Subject&		subject)
     {
       enter();
 
       // remove the record from the range.
-      if (this->range.Remove(subject) == StatusError)
+      if (this->range.Remove(subject) == elle::StatusError)
 	escape("unable to remove the record");
 
       // set the object as dirty.
@@ -224,12 +227,12 @@ namespace etoile
     ///
     /// this method returns the size of the access control list.
     ///
-    Status		Access::Capacity(Size&			size) const
+    elle::Status	Access::Capacity(Size&			size) const
     {
       enter();
 
       // look at the size of the range.
-      if (this->range.Capacity(size) == StatusError)
+      if (this->range.Capacity(size) == elle::StatusError)
 	escape("unable to retrieve the range size");
 
       leave();
@@ -238,7 +241,7 @@ namespace etoile
     ///
     /// this method returns the index location of the given subject.
     ///
-    Status		Access::Locate(const Subject&		subject,
+    elle::Status	Access::Locate(const Subject&		subject,
 				       Index&			index)
     {
       Range<Record>::Scoutor	scoutor;
@@ -266,15 +269,15 @@ namespace etoile
     ///
     /// this is required by the object class for access control purposes.
     ///
-    Status		Access::Fingerprint(Digest&		digest) const
+    elle::Status	Access::Fingerprint(elle::Digest&	digest) const
     {
       Range<Record>::Scoutor	scoutor;
-      Archive			archive;
+      elle::Archive		archive;
 
       enter();
 
       // create the archive.
-      if (archive.Create() == StatusError)
+      if (archive.Create() == elle::StatusError)
 	escape("unable to create an archive");
 
       // go through the range and serialize every tuple (subject, permissions).
@@ -286,25 +289,25 @@ namespace etoile
 
 	  // serialize the subject and permissions.
 	  if (archive.Serialize(record->subject,
-				record->permissions) == StatusError)
+				record->permissions) == elle::StatusError)
 	    escape("unable to serialize the (subject, permissions) tuple");
 	}
 
       // hash the archive.
-      if (OneWay::Hash(archive, digest) == StatusError)
+      if (elle::OneWay::Hash(archive, digest) == elle::StatusError)
 	escape("unable to hash the set of archived tuples");
 
       leave();
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Access);
+    embed(Access, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -313,20 +316,20 @@ namespace etoile
     ///
     /// this function dumps the access.
     ///
-    Status		Access::Dump(Natural32			margin) const
+    elle::Status	Access::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Access]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << Dumpable::Shift << "[State] "
+      std::cout << alignment << elle::Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
       // dump the range.
-      if (this->range.Dump(margin + 2) == StatusError)
+      if (this->range.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the range");
 
       leave();
@@ -339,12 +342,12 @@ namespace etoile
     ///
     /// this method serializes the access object.
     ///
-    Status		Access::Serialize(Archive&		archive) const
+    elle::Status	Access::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the range.
-      if (archive.Serialize(this->range) == StatusError)
+      if (archive.Serialize(this->range) == elle::StatusError)
 	escape("unable to serialize the range");
 
       leave();
@@ -353,12 +356,12 @@ namespace etoile
     ///
     /// this method extracts the access object.
     ///
-    Status		Access::Extract(Archive&		archive)
+    elle::Status	Access::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the range.
-      if (archive.Extract(this->range) == StatusError)
+      if (archive.Extract(this->range) == elle::StatusError)
 	escape("unable to extract the range");
 
       leave();

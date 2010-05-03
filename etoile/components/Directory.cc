@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu apr 22 11:09:21 2010]
+// updated       julien quintard   [mon may  3 12:41:25 2010]
 //
 
 //
@@ -16,6 +16,12 @@
 //
 
 #include <etoile/components/Directory.hh>
+#include <etoile/components/Rights.hh>
+#include <etoile/components/Contents.hh>
+
+#include <etoile/journal/Journal.hh>
+
+#include <etoile/user/User.hh>
 
 namespace etoile
 {
@@ -29,14 +35,14 @@ namespace etoile
     ///
     /// this method creates a directory object.
     ///
-    Status		Directory::Create(context::Directory*	context)
+    elle::Status	Directory::Create(context::Directory*	context)
     {
       user::User*	user;
 
       enter();
 
       // load the current user.
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
       // allocate a new directory object.
@@ -44,11 +50,11 @@ namespace etoile
 
       // create the irectory.
       if (context->object->Create(kernel::GenreDirectory,
-				  user->client->agent->K) == StatusError)
+				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the directory object");
 
       // bind the object.
-      if (context->object->Bind() == StatusError)
+      if (context->object->Bind() == elle::StatusError)
 	escape("unable to bind the object");
 
       // set the address.
@@ -61,14 +67,14 @@ namespace etoile
     /// this method loads the directory object identified by the given
     /// address in the context.
     ///
-    Status		Directory::Load(context::Directory*	context,
+    elle::Status	Directory::Load(context::Directory*	context,
 					const hole::Address&	address)
 					
     {
       enter();
 
       // load the object.
-      if (Object::Load(context, address) == StatusError)
+      if (Object::Load(context, address) == elle::StatusError)
 	escape("unable to load the object");
 
       // check that the object is a directory.
@@ -81,7 +87,7 @@ namespace etoile
     ///
     /// this method adds a directory entry to the directory.
     ///
-    Status		Directory::Add(context::Directory*	directory,
+    elle::Status	Directory::Add(context::Directory*	directory,
 				       const path::Slice&	name,
 				       context::Directory*	subdirectory)
     {
@@ -90,7 +96,7 @@ namespace etoile
       enter(instance(entry));
 
       // determine the rights.
-      if (Rights::Determine(directory) == StatusError)
+      if (Rights::Determine(directory) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
@@ -98,14 +104,14 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(directory) == StatusError)
+      if (Contents::Open(directory) == elle::StatusError)
 	escape("unable to open the contents");
 
       // allocate a new entry.
       entry = new kernel::Entry(name, subdirectory->object->address);
 
       // add the entry in the directory.
-      if (directory->contents->content->Add(entry) == StatusError)
+      if (directory->contents->content->Add(entry) == elle::StatusError)
 	escape("unable to add the entry in the directory");
 
       // stop tracking.
@@ -117,14 +123,14 @@ namespace etoile
     ///
     /// this method returns the address corresponding to the given name.
     ///
-    Status		Directory::Lookup(context::Directory*	context,
+    elle::Status	Directory::Lookup(context::Directory*	context,
 					  const path::Slice&	name,
 					  kernel::Entry*&	entry)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
@@ -132,11 +138,11 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // look up the entry.
-      if (context->contents->content->Lookup(name, entry) == StatusError)
+      if (context->contents->content->Lookup(name, entry) == elle::StatusError)
 	escape("unable to find the entry in the directory");
 
       leave();
@@ -145,7 +151,7 @@ namespace etoile
     ///
     /// this method returns a subset of the directory entries.
     ///
-    Status		Directory::Consult(context::Directory*	context,
+    elle::Status	Directory::Consult(context::Directory*	context,
 					   const kernel::Index&	index,
 					   const kernel::Size&	size,
 					   kernel::Range<kernel::Entry>& range)
@@ -153,7 +159,7 @@ namespace etoile
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
@@ -161,13 +167,13 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // consult the directory catalog.
       if (context->contents->content->Consult(index,
 					      size,
-					      range) == StatusError)
+					      range) == elle::StatusError)
 	escape("unable to consult the directory");
 
       leave();
@@ -176,14 +182,14 @@ namespace etoile
     ///
     /// this method renames an entry.
     ///
-    Status		Directory::Rename(context::Directory*	context,
-					const path::Slice&	from,
-					const path::Slice&	to)
+    elle::Status	Directory::Rename(context::Directory*	context,
+					  const path::Slice&	from,
+					  const path::Slice&	to)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
@@ -191,11 +197,11 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // rename the entry.
-      if (context->contents->content->Rename(from, to) == StatusError)
+      if (context->contents->content->Rename(from, to) == elle::StatusError)
 	escape("unable to rename the directory's entry");
 
       leave();
@@ -204,13 +210,13 @@ namespace etoile
     ///
     /// this method removes an entry.
     ///
-    Status		Directory::Remove(context::Directory*	context,
+    elle::Status	Directory::Remove(context::Directory*	context,
 					  const path::Slice&	name)
     {
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
@@ -218,11 +224,11 @@ namespace etoile
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
-      if (Contents::Open(context) == StatusError)
+      if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
       // remove the entry.
-      if (context->contents->content->Remove(name) == StatusError)
+      if (context->contents->content->Remove(name) == elle::StatusError)
 	escape("unable to remove the directory's entry");
 
       leave();
@@ -231,18 +237,18 @@ namespace etoile
     ///
     /// this store the modifications applied onto the directory context.
     ///
-    Status		Directory::Store(context::Directory*	context)
+    elle::Status	Directory::Store(context::Directory*	context)
     {
       user::User*	user;
 
       enter();
 
       // close the catalog.
-      if (Contents::Close(context) == StatusError)
+      if (Contents::Close(context) == elle::StatusError)
 	escape("unable to close the contents");
 
       // store the object.
-      if (Object::Store(context) == StatusError)
+      if (Object::Store(context) == elle::StatusError)
 	escape("unable to store the object");
 
       leave();
@@ -251,12 +257,12 @@ namespace etoile
     ///
     /// this method discards the modifications applied onto the context.
     ///
-    Status		Directory::Discard(context::Directory*	context)
+    elle::Status	Directory::Discard(context::Directory*	context)
     {
       enter();
 
       // discard the object's modifications.
-      if (Object::Discard(context) == StatusError)
+      if (Object::Discard(context) == elle::StatusError)
 	escape("unable to discard the object modifications");
 
       leave();
@@ -269,7 +275,7 @@ namespace etoile
     /// it contains references to sub-entries. it is therefore the
     /// responsability of the caller to destroy the entries.
     ///
-    Status		Directory::Destroy(context::Directory*	context)
+    elle::Status	Directory::Destroy(context::Directory*	context)
     {
       user::User*	user;
       kernel::Size	size;
@@ -277,7 +283,7 @@ namespace etoile
       enter();
 
       // determine the rights.
-      if (Rights::Determine(context) == StatusError)
+      if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
       // check if the current user is the object owner.
@@ -285,11 +291,11 @@ namespace etoile
 	escape("unable to destroy a not-owned object");
 
       // destroy the contents.
-      if (Contents::Destroy(context) == StatusError)
+      if (Contents::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the contents");
 
       // destroy the object.
-      if (Object::Destroy(context) == StatusError)
+      if (Object::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the object");
 
       leave();

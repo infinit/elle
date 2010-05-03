@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [tue apr 20 21:30:58 2010]
+// updated       julien quintard   [mon may  3 23:05:22 2010]
 //
 
 //
@@ -41,8 +41,8 @@ namespace etoile
     ///
     /// this method updates a segment of the data object.
     ///
-    Status		Data::Write(const Offset&		offset,
-				    const Region&		region)
+    elle::Status	Data::Write(const Offset&		offset,
+				    const elle::Region&		region)
     {
       enter();
 
@@ -50,14 +50,14 @@ namespace etoile
       if ((offset + region.size) > this->region.capacity)
 	{
 	  // adjust the region capacity.
-	  if (this->region.Adjust(offset + region.size) == StatusError)
+	  if (this->region.Adjust(offset + region.size) == elle::StatusError)
 	    escape("unable to expand the region");
 	}
 
       // write the data.
       if (this->region.Write(offset,
 			     region.contents,
-			     region.size) == StatusError)
+			     region.size) == elle::StatusError)
 	escape("unable to write the data");
 
       // set the data as dirty.
@@ -69,9 +69,9 @@ namespace etoile
     ///
     /// this method returns a region of the data object.
     ///
-    Status		Data::Read(const Offset&		offset,
+    elle::Status	Data::Read(const Offset&		offset,
 				   const Size&			size,
-				   Region&			region) const
+				   elle::Region&		region) const
     {
       Size		length;
 
@@ -88,7 +88,7 @@ namespace etoile
 	size;
 
       // prepare the output region.
-      if (region.Prepare(length) == StatusError)
+      if (region.Prepare(length) == elle::StatusError)
 	escape("unable to prepare the output region");
 
       // set the current size.
@@ -97,7 +97,7 @@ namespace etoile
       // read the data from the region.
       if (this->region.Read(offset,
 			    region.contents,
-			    region.size) == StatusError)
+			    region.size) == elle::StatusError)
 	escape("unable to read the data");
 
       leave();
@@ -107,12 +107,12 @@ namespace etoile
     /// this method adjust the size of the data either by expanding or
     /// shrinking the region.
     ///
-    Status		Data::Adjust(const Size&		size)
+    elle::Status	Data::Adjust(const Size&		size)
     {
       enter();
 
       // first, make sure the region's capacity is large enough.
-      if (this->region.Adjust(size) == StatusError)
+      if (this->region.Adjust(size) == elle::StatusError)
 	escape("unable to adjust the region size");
 
       // then, manually set the region size.
@@ -127,7 +127,7 @@ namespace etoile
     ///
     /// this method returns the size of the data.
     ///
-    Status		Data::Capacity(Size&			size) const
+    elle::Status	Data::Capacity(Size&			size) const
     {
       enter();
 
@@ -138,13 +138,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Data);
+    embed(Data, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -153,20 +153,20 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		Data::Dump(Natural32			margin) const
+    elle::Status	Data::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Data]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << Dumpable::Shift << "[State] "
+      std::cout << alignment << elle::Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
       // dump the region attribute.
-      if (this->region.Dump(margin + 2) == StatusError)
+      if (this->region.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the region");
 
       leave();
@@ -179,12 +179,12 @@ namespace etoile
     ///
     /// this method serializes the block object.
     ///
-    Status		Data::Serialize(Archive&		archive) const
+    elle::Status	Data::Serialize(elle::Archive&		archive) const
     {
       enter();
 
       // serialize the internal region.
-      if (archive.Serialize(this->region) == StatusError)
+      if (archive.Serialize(this->region) == elle::StatusError)
 	escape("unable to serialize the internal region");
 
       leave();
@@ -193,12 +193,12 @@ namespace etoile
     ///
     /// this method extracts the block object.
     ///
-    Status		Data::Extract(Archive&			archive)
+    elle::Status	Data::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the region.
-      if (archive.Extract(this->region) == StatusError)
+      if (archive.Extract(this->region) == elle::StatusError)
 	escape("unable to extract the region");
 
       leave();

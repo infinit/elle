@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [wed apr 21 23:25:09 2010]
+// updated       julien quintard   [mon may  3 12:43:30 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -42,32 +42,16 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Load(context::Object*,
-			     const hole::Address&);
-      static Status	Information(context::Object*,
-				    wall::State&);
-      static Status	Store(context::Object*);
-      static Status	Discard(context::Object*);
-      static Status	Destroy(context::Object*);
+      static elle::Status	Load(context::Object*,
+				     const hole::Address&);
+      static elle::Status	Information(context::Object*,
+					    wall::State&);
+      static elle::Status	Store(context::Object*);
+      static elle::Status	Discard(context::Object*);
+      static elle::Status	Destroy(context::Object*);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/user/User.hh>
-
-#include <etoile/depot/Depot.hh>
-
-#include <etoile/components/Access.hh>
-
-#include <etoile/journal/Journal.hh>
-
-#include <etoile/context/Context.hh>
-
-#include <etoile/wall/State.hh>
 
 #endif

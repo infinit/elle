@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu apr 22 17:14:26 2010]
+// updated       julien quintard   [mon may  3 16:26:39 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <etoile/kernel/ContentHashBlock.hh>
+
+#include <etoile/hole/Family.hh>
+#include <etoile/hole/Component.hh>
 
 namespace etoile
 {
@@ -42,12 +45,12 @@ namespace etoile
     ///
     /// this method computes the address of the block.
     ///
-    Status		ContentHashBlock::Bind()
+    elle::Status	ContentHashBlock::Bind()
     {
       enter();
 
       // compute the address.
-      if (this->address.Create(this->family, *this) == StatusError)
+      if (this->address.Create(this->family, *this) == elle::StatusError)
 	escape("unable to compute the CHB's address");
 
       leave();
@@ -57,7 +60,7 @@ namespace etoile
     /// this method verifies that the block is valid according to the
     /// given requested address.
     ///
-    Status		ContentHashBlock::Validate(const
+    elle::Status	ContentHashBlock::Validate(const
 						     hole::Address& address)
       const
     {
@@ -66,7 +69,7 @@ namespace etoile
       enter();
 
       // compute the address of this object.
-      if (self.Create(this->family, *this) == StatusError)
+      if (self.Create(this->family, *this) == elle::StatusError)
 	escape("unable to compute the CHB's address");
 
       // compare the address with the given one.
@@ -83,16 +86,17 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		ContentHashBlock::Dump(const Natural32	margin) const
+    elle::Status	ContentHashBlock::Dump(const
+					         elle::Natural32 margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
 
       // dump the parent class.
-      if (hole::Block::Dump(margin + 2) == StatusError)
+      if (hole::Block::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       leave();
@@ -105,12 +109,13 @@ namespace etoile
     ///
     /// this method serializes the block object.
     ///
-    Status		ContentHashBlock::Serialize(Archive&	archive) const
+    elle::Status	ContentHashBlock::Serialize(elle::Archive& archive)
+      const
     {
       enter();
 
       // serialize the parent class.
-      if (hole::Block::Serialize(archive) == StatusError)
+      if (hole::Block::Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the underlying block");
 
       leave();
@@ -119,12 +124,12 @@ namespace etoile
     ///
     /// this method extracts the block object.
     ///
-    Status		ContentHashBlock::Extract(Archive&	archive)
+    elle::Status	ContentHashBlock::Extract(elle::Archive& archive)
     {
       enter();
 
       // extract the parent class.
-      if (hole::Block::Extract(archive) == StatusError)
+      if (hole::Block::Extract(archive) == elle::StatusError)
 	escape("unable to extract the underlying block");
 
       leave();

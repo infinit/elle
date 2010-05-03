@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Subject.hh
 //
 // created       julien quintard   [fri aug 14 16:26:10 2009]
-// updated       julien quintard   [tue apr  6 22:44:19 2010]
+// updated       julien quintard   [mon may  3 22:56:20 2010]
 //
 
 #ifndef ETOILE_KERNEL_SUBJECT_HH
@@ -36,8 +36,7 @@ namespace etoile
     /// can be granted access such as a user or a group.
     ///
     class Subject:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -60,33 +59,33 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(const PublicKey&);
-      Status		Create(const hole::Address&);
+      elle::Status	Create(const elle::PublicKey&);
+      elle::Status	Create(const hole::Address&);
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Subject);
-      Boolean		operator==(const Subject&) const;
+      // object
+      declare(Subject, _());
+      elle::Boolean	operator==(const Subject&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Type		type;
+      Type			type;
 
       union
       {
-	PublicKey*	user;
-	hole::Address*	group;
+	elle::PublicKey*	user;
+	hole::Address*		group;
       };
     };
 

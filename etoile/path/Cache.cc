@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [wed apr 14 12:58:09 2010]
+// updated       julien quintard   [mon may  3 13:26:25 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/path/Cache.hh>
+
+#include <etoile/configuration/Configuration.hh>
 
 namespace etoile
 {
@@ -43,13 +45,13 @@ namespace etoile
     /// whenever this threshold is reached, an item is dismissed from
     /// the cache.
     ///
-    Natural32&			Cache::Capacity =
+    const elle::Natural32&	Cache::Capacity =
       configuration::Configuration::Path::Capacity;
 
     ///
     /// this variable holds the number of items currently cached.
     ///
-    Natural32			Cache::Size = 0;
+    elle::Natural32		Cache::Size = 0;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -58,7 +60,7 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Cache::Initialize()
+    elle::Status	Cache::Initialize()
     {
       enter();
 
@@ -70,13 +72,13 @@ namespace etoile
     ///
     /// XXX
     ///
-    Status		Cache::Clean()
+    elle::Status	Cache::Clean()
     {
       enter();
 
       /* XXX
       // purge the hierarchy.
-      if (Cache::Root.Purge() == StatusError)
+      if (Cache::Root.Purge() == elle::StatusError)
 	escape("unable to purge the root directory item");
       */
 
@@ -86,7 +88,7 @@ namespace etoile
     ///
     /// this method adds/updates a path.
     ///
-    Status		Cache::Update(const Route&		route,
+    elle::Status	Cache::Update(const Route&		route,
 				      const Venue&		venue)
     {
       Route::Scoutor	r;
@@ -103,11 +105,11 @@ namespace etoile
 	  hole::Address	address;
 
 	  // update the item with the new address.
-	  if (item->Update(*r, *v) == StatusError)
+	  if (item->Update(*r, *v) == elle::StatusError)
 	    escape("unable to update the item");
 
 	  // try to resolve within this item.
-	  if (item->Resolve(*r, item) != StatusTrue)
+	  if (item->Resolve(*r, item) != elle::StatusTrue)
 	    escape("unexpected resolution failure");
 	}
 
@@ -119,7 +121,7 @@ namespace etoile
     /// returns both the address of the largest cached item plus an
     /// updated list of the names remaining to be resolved manually.
     ///
-    Status		Cache::Resolve(const Route&		route,
+    elle::Status	Cache::Resolve(const Route&		route,
 				       Venue&			venue)
     {
       Route::Scoutor	scoutor;
@@ -133,11 +135,11 @@ namespace etoile
 	   scoutor++)
 	{
 	  // try to resolve within this item.
-	  if (item->Resolve(*scoutor, item) != StatusTrue)
+	  if (item->Resolve(*scoutor, item) != elle::StatusTrue)
 	    break;
 
 	  // add the address to the venue.
-	  if (venue.Record(item->address) == StatusError)
+	  if (venue.Record(item->address) == elle::StatusError)
 	    escape("unable to record the venue address");
 	}
 
@@ -147,16 +149,16 @@ namespace etoile
     ///
     /// this method dumps the whole cache.
     ///
-    Status		Cache::Show(const Natural32		margin)
+    elle::Status	Cache::Show(const elle::Natural32	margin)
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Cache]" << std::endl;
 
       // just initiate a recursive dump, starting with the root item.
-      if (Cache::Data.Dump(margin + 2) == StatusError)
+      if (Cache::Data.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the cache data");
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.hh
 //
 // created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [mon apr 26 18:56:08 2010]
+// updated       julien quintard   [mon may  3 16:07:28 2010]
 //
 
 #ifndef ETOILE_WALL_WALL_HH
@@ -42,23 +42,23 @@ namespace etoile
       //
       // constants
       //
-      static const String&		Line;
+      static const elle::String&		Line;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status	Identify(const PublicKey&);
-      static Status	Authenticate(const Digest&);
-      static Status	Connect(const String&);
+      static elle::Status	Identify(const elle::PublicKey&);
+      static elle::Status	Authenticate(const elle::Digest&);
+      static elle::Status	Connect(const elle::String&);
 
       //
       // callbacks
       //
-      static Status	Error(const Report&);
-      static Status	Connection(Door*&);
+      static elle::Status	Error(const elle::Report&);
+      static elle::Status	Connection(elle::Door*&);
     };
 
   }
@@ -68,20 +68,14 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/configuration/Configuration.hh>
-#include <etoile/user/User.hh>
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/wall/Interface.hh>
-#include <etoile/wall/User.hh>
-#include <etoile/wall/Object.hh>
-#include <etoile/wall/Directory.hh>
-#include <etoile/wall/File.hh>
-#include <etoile/wall/Link.hh>
 #include <etoile/wall/Access.hh>
 #include <etoile/wall/Attributes.hh>
+#include <etoile/wall/Directory.hh>
+#include <etoile/wall/File.hh>
+#include <etoile/wall/Interface.hh>
+#include <etoile/wall/Link.hh>
+#include <etoile/wall/Object.hh>
+#include <etoile/wall/State.hh>
+#include <etoile/wall/User.hh>
 
 #endif

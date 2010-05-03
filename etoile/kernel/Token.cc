@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu apr 22 23:43:51 2010]
+// updated       julien quintard   [mon may  3 23:03:26 2010]
 //
 
 //
@@ -17,9 +17,6 @@
 
 #include <etoile/kernel/Token.hh>
 
-///
-/// these includes are placed here to prevent pre-processing conflicts.
-///
 #include <etoile/user/Agent.hh>
 
 namespace etoile
@@ -57,7 +54,7 @@ namespace etoile
       if (token.code != NULL)
 	{
 	  // duplicate the code.
-	  this->code = new Code(*token.code);
+	  this->code = new elle::Code(*token.code);
 	}
       else
 	this->code = NULL;
@@ -80,8 +77,8 @@ namespace etoile
     ///
     /// this method creates or update the token.
     ///
-    Status		Token::Update(const SecretKey&		key,
-				      const PublicKey&		K)
+    elle::Status	Token::Update(const elle::SecretKey&	key,
+				      const elle::PublicKey&	K)
     {
       enter();
 
@@ -90,17 +87,17 @@ namespace etoile
 	delete this->code;
 
       // if the secret key is null, reinitialize to the default null token.
-      if (key == SecretKey::Null)
+      if (key == elle::SecretKey::Null)
 	{
 	  this->code = NULL;
 	}
       else
 	{
 	  // allocate a new code.
-	  this->code = new Code;
+	  this->code = new elle::Code;
 
 	  // encrypt the given secret key with the given public key.
-	  if (K.Encrypt(key, *this->code) == StatusError)
+	  if (K.Encrypt(key, *this->code) == elle::StatusError)
 	    escape("unable to encrypt the key");
 	}
 
@@ -110,8 +107,8 @@ namespace etoile
     ///
     /// this method extracts the secret key from the token.
     ///
-    Status		Token::Extract(const user::Agent&	agent,
-				       SecretKey&		key) const
+    elle::Status	Token::Extract(const user::Agent&	agent,
+				       elle::SecretKey&		key) const
     {
       enter();
 
@@ -120,20 +117,20 @@ namespace etoile
 	escape("unable to retrieve the key out of a null token");
 
       // decrypt the code.
-      if (agent.Decrypt(*this->code, key) == StatusError)
+      if (agent.Decrypt(*this->code, key) == elle::StatusError)
 	escape("unable to decrypt the token's content");
 
       leave();
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Token::operator==(const Token&		element) const
+    elle::Boolean	Token::operator==(const Token&		element) const
     {
       enter();
 
@@ -157,9 +154,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Token);
+    embed(Token, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -168,9 +165,9 @@ namespace etoile
     ///
     /// this function dumps an block object.
     ///
-    Status		Token::Dump(Natural32		margin) const
+    elle::Status	Token::Dump(elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
@@ -179,13 +176,13 @@ namespace etoile
       // dump the code.
       if (this->code != NULL)
 	{
-	  if (this->code->Dump(margin + 2) == StatusError)
+	  if (this->code->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the parent Code class");
 	}
       else
 	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Code] " << none << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Code] " << elle::none << std::endl;
 	}
 
       leave();
@@ -198,20 +195,20 @@ namespace etoile
     ///
     /// this method serializes the block object.
     ///
-    Status		Token::Serialize(Archive&	archive) const
+    elle::Status	Token::Serialize(elle::Archive&		archive) const
     {
       enter();
 
       // serialize the code.
       if (this->code != NULL)
 	{
-	  if (archive.Serialize(*this->code) == StatusError)
+	  if (archive.Serialize(*this->code) == elle::StatusError)
 	    escape("unable to serialize the code");
 	}
       else
 	{
 	  // serialize 'none'.
-	  if (archive.Serialize(none) == StatusError)
+	  if (archive.Serialize(elle::none) == elle::StatusError)
 	    escape("unable to serialize 'none'");
 	}
 
@@ -221,29 +218,29 @@ namespace etoile
     ///
     /// this method extracts the block object.
     ///
-    Status		Token::Extract(Archive&	archive)
+    elle::Status	Token::Extract(elle::Archive&		archive)
     {
-      Archive::Type	type;
+      elle::Archive::Type	type;
 
       enter();
 
       // fetch the next element's type.
-      if (archive.Fetch(type) == StatusError)
+      if (archive.Fetch(type) == elle::StatusError)
 	escape("unable to fetch the next element's type");
 
-      if (type == Archive::TypeNull)
+      if (type == elle::Archive::TypeNull)
 	{
 	  // nothing to do, keep the code to NULL.
-	  if (archive.Extract(none) == StatusError)
+	  if (archive.Extract(elle::none) == elle::StatusError)
 	    escape("unable to extract null");
 	}
       else
 	{
 	  // allocate a code.
-	  this->code = new Code;
+	  this->code = new elle::Code;
 
 	  // extract the code.
-	  if (archive.Extract(*this->code) == StatusError)
+	  if (archive.Extract(*this->code) == elle::StatusError)
 	    escape("unable to extract the code");
 	}
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Guest.hh
 //
 // created       julien quintard   [wed mar 17 21:49:41 2010]
-// updated       julien quintard   [mon apr 26 18:54:59 2010]
+// updated       julien quintard   [mon may  3 13:46:16 2010]
 //
 
 #ifndef ETOILE_USER_GUEST_HH
@@ -36,8 +36,7 @@ namespace etoile
     /// within a time frame.
     ///
     class Guest:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -52,7 +51,7 @@ namespace etoile
       //
       // constants
       //
-      static const Natural32		Expiration;
+      static const elle::Natural32		Expiration;
 
       //
       // types
@@ -70,37 +69,37 @@ namespace etoile
       //
       // methods
       //
-      Status		Create(Channel*);
-      Status		Detach();
-      Status		Destroy();
+      elle::Status		Create(elle::Channel*);
+      elle::Status		Detach();
+      elle::Status		Destroy();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // static methods
       //
-      static Status	Initialize();
-      static Status	Clean();
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
-      static Status	Add(Guest*);
-      static Status	Locate(Channel*,
-			       Iterator&);
-      static Status	Retrieve(Channel*,
-				 Guest*&);
-      static Status	Remove(Guest*);
+      static elle::Status	Add(Guest*);
+      static elle::Status	Locate(elle::Channel*,
+				       Iterator&);
+      static elle::Status	Retrieve(elle::Channel*,
+					 Guest*&);
+      static elle::Status	Remove(Guest*);
 
-      static Status	Show(const Natural32 = 0);
+      static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // callbacks
       //
-      Status		Timeout();
-      Status		Error(const String&);
+      elle::Status		Timeout();
+      elle::Status		Error(const elle::String&);
 
       //
       // static attributes
@@ -110,9 +109,9 @@ namespace etoile
       //
       // attributes
       //
-      Timer		timer;
+      elle::Timer	timer;
       Options		options;
-      Channel*		channel;
+      elle::Channel*	channel;
     };
 
   }

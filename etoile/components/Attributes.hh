@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Attributes.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [mon apr 19 14:41:09 2010]
+// updated       julien quintard   [mon may  3 17:56:24 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ATTRIBUTES_HH
@@ -44,29 +44,19 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Set(context::Object*,
-			    const String&,
-			    const String&);
-      static Status	Get(context::Object*,
-			    const String&,
-			    kernel::Trait*&);
-      static Status	Fetch(context::Object*,
-			      kernel::Range<kernel::Trait>&);
-      static Status	Omit(context::Object*,
-			     const String&);
+      static elle::Status	Set(context::Object*,
+				    const elle::String&,
+				    const elle::String&);
+      static elle::Status	Get(context::Object*,
+				    const elle::String&,
+				    kernel::Trait*&);
+      static elle::Status	Fetch(context::Object*,
+				      kernel::Range<kernel::Trait>&);
+      static elle::Status	Omit(context::Object*,
+				     const elle::String&);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/kernel/State.hh>
-
-#include <etoile/depot/Depot.hh>
-
-#include <etoile/components/Rights.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [mon apr 26 11:24:45 2010]
+// updated       julien quintard   [mon may  3 18:59:56 2010]
 //
 
 //
@@ -16,6 +16,9 @@
 //
 
 #include <etoile/hole/Hole.hh>
+
+#include <etoile/kernel/Object.hh>
+#include <etoile/kernel/Access.hh>
 
 namespace etoile
 {
@@ -30,11 +33,11 @@ namespace etoile
     /// this method takes a live block and stores its data into the storage
     /// layer.
     ///
-    Status		Hole::Put(const Address&		address,
+    elle::Status	Hole::Put(const Address&		address,
 				  const Block*			block)
     {
-      Archive		archive;
-      String		identity;
+      elle::Archive	archive;
+      elle::String	identity;
 
       enter();
       /*
@@ -47,8 +50,12 @@ namespace etoile
 	case ComponentAccess:
 	  {
 	    // validate the block.
-	    if (block->Validate(address) != StatusTrue)
-	      escape("unable to validate the retrieved block");
+	    if (block->Validate(address) != elle::StatusTrue)
+	      {
+		printf("[XXX] unable to validate the retrieved block");
+		while (true)
+		  ;
+	      }
 
 	    break;
 	  }
@@ -62,23 +69,35 @@ namespace etoile
 	    if (object->meta.access != Address::Null)
 	      {
 		if (Hole::Get(object->meta.access,
-			      (Block*&)access) != StatusTrue)
-		  escape("unable to retrieve the access block");
+			      (Block*&)access) != elle::StatusTrue)
+		  {
+		    printf("[XXX] unable to retrieve the access block");
+		    while (true)
+		      ;
+		  }
 	      }
 	    else
 	      access = NULL;
 
 	    // validate the block the normal way.
-	    if (object->Validate(address, access) != StatusTrue)
-	      escape("unable to validate the retrieved block");
+	    if (object->Validate(address, access) != elle::StatusTrue)
+	      {
+		printf("[XXX] unable to validate the retrieved block");
+		while (true)
+		  ;
+	      }
 
 	    // XXX[debug] retrieve the data block just to make sure it exists.
 	    if (object->data.contents != Address::Null)
 	      {
 		Block*			b;
 
-		if (Hole::Get(object->data.contents, b) != StatusTrue)
-		  escape("unable to retrieve the data block");
+		if (Hole::Get(object->data.contents, b) != elle::StatusTrue)
+		  {
+		    printf("unable to retrieve the data block");
+		    while (true)
+		      ;
+		  }
 
 		delete b;
 	      }
@@ -91,16 +110,16 @@ namespace etoile
 	  }
 	}
       */
+
       // first, turns the address into a string.
-      if (address.Identify(identity) == StatusError)
-	escape("unable to identify the address");
+      address >> identity;
 
       // create an archive.
-      if (archive.Create() == StatusError)
+      if (archive.Create() == elle::StatusError)
 	escape("unable to create an archive");
 
       // serialize the block.
-      if (block->Serialize(archive) == StatusError)
+      if (block->Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the block");
 
       // XXX[temporary hack emulating a storage layer]
@@ -143,19 +162,18 @@ namespace etoile
     ///    verifying. the storage layer (Hole) should be able to understand
     ///    Address and Block!
     ///
-    Status		Hole::Get(const Address&		address,
+    elle::Status	Hole::Get(const Address&		address,
 				  Block*&			block)
     {
-      Archive		archive;
-      Region		region;
-      String		identity;
-      String		identifier;
+      elle::Archive	archive;
+      elle::Region	region;
+      elle::String	identity;
+      elle::String	identifier;
 
       enter();
 
       // identify the address.
-      if (address.Identify(identity) == StatusError)
-        escape("unable to identify the address");
+      address >> identity;
 
       // XXX[temporary hack for local storage]
       {
@@ -170,7 +188,7 @@ namespace etoile
 	if (lstat(path, &stat) == -1)
 	  false();
 
-	if (region.Prepare(stat.st_size) == StatusError)
+	if (region.Prepare(stat.st_size) == elle::StatusError)
 	  escape("unable to prepare the region");
 
 	region.size = stat.st_size;
@@ -186,27 +204,27 @@ namespace etoile
       }
 
       // detach the data from the region to prevent multiple resources release.
-      if (region.Detach() == StatusError)
+      if (region.Detach() == elle::StatusError)
         escape("unable to detach the region");
 
       // prepare the archive.
-      if (archive.Prepare(region) == StatusError)
+      if (archive.Prepare(region) == elle::StatusError)
         escape("unable to prepare the archive");
 
       // extract the component identifier.
-      if (archive.Extract(identifier) == StatusError)
+      if (archive.Extract(identifier) == elle::StatusError)
         escape("unable to extract the component identifier");
 
       // build the block according to the component type.
-      if (Factory::Build(identifier, block) == StatusError)
+      if (elle::Factory::Build(identifier, block) == elle::StatusError)
 	escape("unable to build the block");
 
       // extract the archive.
-      if (block->Extract(archive) == StatusError)
+      if (block->Extract(archive) == elle::StatusError)
         escape("unable to extract the given block");
 
       // bind so that the internal address is computed.
-      if (block->Bind() == StatusError)
+      if (block->Bind() == elle::StatusError)
 	escape("unable to bind the block");
       /*
       // verify the block's validity, depending on the block component.
@@ -218,8 +236,12 @@ namespace etoile
 	case ComponentAccess:
 	  {
 	    // validate the block.
-	    if (block->Validate(address) != StatusTrue)
-	      escape("unable to validate the retrieved block");
+	    if (block->Validate(address) != elle::StatusTrue)
+	      {
+		printf("[XXX] unable to validate the retrieved block");
+		while (true)
+		  ;
+	      }
 
 	    break;
 	  }
@@ -232,23 +254,35 @@ namespace etoile
 	    if (object->meta.access != Address::Null)
 	      {
 		if (Hole::Get(object->meta.access,
-			      (Block*&)access) != StatusTrue)
-		  escape("unable to retrieve the access block");
+			      (Block*&)access) != elle::StatusTrue)
+		  {
+		    printf("[XXX] unable to retrieve the access block");
+		    while (true)
+		      ;
+		  }
 	      }
 	    else
 	      access = NULL;
 
 	    // validate the block the normal way.
-	    if (object->Validate(address, access) != StatusTrue)
-	      escape("unable to validate the retrieved block");
+	    if (object->Validate(address, access) != elle::StatusTrue)
+	      {
+		printf("unable to validate the retrieved block");
+		while (true)
+		  ;
+	      }
 
 	    // XXX[debug] retrieve the data block just to make sure it exists.
 	    if (object->data.contents != Address::Null)
 	      {
 		Block*			b;
 
-		if (Hole::Get(object->data.contents, b) != StatusTrue)
-		  escape("unable to retrieve the data block");
+		if (Hole::Get(object->data.contents, b) != elle::StatusTrue)
+		  {
+		    printf("unable to retrieve the data block");
+		    while (true)
+		      ;
+		  }
 
 		delete b;
 	      }
@@ -271,15 +305,14 @@ namespace etoile
     ///   data, whose should challenge our clients, proving that we are
     ///   the owner.
     ///
-    Status		Hole::Erase(const Address&		address)
+    elle::Status	Hole::Erase(const Address&		address)
     {
-      String		identity;
+      elle::String	identity;
 
       enter();
 
       // identify the address.
-      if (address.Identify(identity) == StatusError)
-        escape("unable to identify the address");
+      address >> identity;
 
       // XXX[temporary hack for local storage]
       {

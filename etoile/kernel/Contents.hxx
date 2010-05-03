@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [thu apr 22 17:30:50 2010]
+// updated       julien quintard   [mon may  3 23:05:16 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HXX
@@ -69,9 +69,9 @@ namespace etoile
     /// and encrypts the archive.
     ///
     template <typename T>
-    Status		Contents<T>::Encrypt(const SecretKey&	key)
+    elle::Status	Contents<T>::Encrypt(const elle::SecretKey&	key)
     {
-      Archive		archive;
+      elle::Archive	archive;
 
       enter();
 
@@ -84,18 +84,18 @@ namespace etoile
 	delete this->cipher;
 
       // allocate a new cipher.
-      this->cipher = new Cipher;
+      this->cipher = new elle::Cipher;
 
       // create the archive.
-      if (archive.Create() == StatusError)
+      if (archive.Create() == elle::StatusError)
 	escape("unable to create the archive");
 
       // serialize the block.
-      if (this->content->Serialize(archive) == StatusError)
+      if (this->content->Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the block");
 
       // encrypt the archive with the given secret key.
-      if (key.Encrypt(archive, *cipher) == StatusError)
+      if (key.Encrypt(archive, *cipher) == elle::StatusError)
 	escape("unable to encrypt the archived block");
 
       leave();
@@ -106,10 +106,10 @@ namespace etoile
     /// given key, creating a new block.
     ///
     template <typename T>
-    Status		Contents<T>::Decrypt(const SecretKey&	key)
+    elle::Status	Contents<T>::Decrypt(const elle::SecretKey&	key)
     {
-      Archive		archive;
-      Clear		clear;
+      elle::Archive	archive;
+      elle::Clear	clear;
 
       enter();
 
@@ -125,32 +125,32 @@ namespace etoile
       this->content = new T;
 
       // decrypt the cipher.
-      if (key.Decrypt(*this->cipher, clear) == StatusError)
+      if (key.Decrypt(*this->cipher, clear) == elle::StatusError)
 	escape("unable to decrypt the cipher");
 
       // prepare the archive with the clear, which is basically a region.
-      if (archive.Prepare(clear) == StatusError)
+      if (archive.Prepare(clear) == elle::StatusError)
 	escape("unable to prepare the archive");
 
       // detach the 'clear' region as it will be taken over by the archive.
-      if (clear.Detach() == StatusError)
+      if (clear.Detach() == elle::StatusError)
 	escape("unable to detach the region from the clear");
 
       // extract the block.
-      if (archive.Extract(*this->content) == StatusError)
+      if (archive.Extract(*this->content) == elle::StatusError)
 	escape("unable to extract the block");
 
       leave();
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Contents<T>, template <typename T>);
+    embed(Contents<T>, _(), _(template <typename T>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -160,7 +160,7 @@ namespace etoile
     /// this method simply allocates the fundamental attributes.
     ///
     template <typename T>
-    Status		Contents<T>::Create()
+    elle::Status	Contents<T>::Create()
     {
       enter();
 
@@ -174,35 +174,35 @@ namespace etoile
     /// this method dumps the contents.
     ///
     template <typename T>
-    Status		Contents<T>::Dump(Natural32		margin) const
+    elle::Status	Contents<T>::Dump(elle::Natural32	margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Contents]" << std::endl;
 
       // dump the parent class.
-      if (ContentHashBlock::Dump(margin + 2) == StatusError)
+      if (ContentHashBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       // if present, dump the content.
       if (this->content != NULL)
 	{
-	  std::cout << alignment << Dumpable::Shift
+	  std::cout << alignment << elle::Dumpable::Shift
 		    << "[Content]" << std::endl;
 
-	  if (this->content->Dump(margin + 4) == StatusError)
+	  if (this->content->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the content");
 	}
 
       // if present, dump the cipher.
       if (this->cipher != NULL)
 	{
-	  std::cout << alignment << Dumpable::Shift
+	  std::cout << alignment << elle::Dumpable::Shift
 		    << "[Cipher]" << std::endl;
 
-	  if (this->cipher->Dump(margin + 4) == StatusError)
+	  if (this->cipher->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the cipher");
 	}
 
@@ -219,7 +219,7 @@ namespace etoile
     /// encrypted form.
     ///
     template <typename T>
-    Status		Contents<T>::Serialize(Archive&		archive) const
+    elle::Status	Contents<T>::Serialize(elle::Archive&	archive) const
     {
       enter();
 
@@ -228,11 +228,11 @@ namespace etoile
 	escape("unable to serialize an unciphered content");
 
       // serialize the component name.
-      if (archive.Serialize(Contents<T>::Name) == StatusError)
+      if (archive.Serialize(Contents<T>::Name) == elle::StatusError)
 	escape("unable to serialize the component identifier");
 
       // just serialize the cipher in the archive.
-      if (archive.Serialize(*this->cipher) == StatusError)
+      if (archive.Serialize(*this->cipher) == elle::StatusError)
 	escape("unable to serialize the cipher");
 
       leave();
@@ -243,15 +243,15 @@ namespace etoile
     /// block in its encrypted form.
     ///
     template <typename T>
-    Status		Contents<T>::Extract(Archive&		archive)
+    elle::Status	Contents<T>::Extract(elle::Archive&	archive)
     {
       enter();
 
       // allocate a new cipher.
-      this->cipher = new Cipher;
+      this->cipher = new elle::Cipher;
 
       // extract the cipher from the archive.
-      if (archive.Extract(*this->cipher) == StatusError)
+      if (archive.Extract(*this->cipher) == elle::StatusError)
 	escape("unable to serialize the cipher");
 
       leave();

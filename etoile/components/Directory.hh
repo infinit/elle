@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [wed apr 21 23:25:40 2010]
+// updated       julien quintard   [mon may  3 17:55:05 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -47,41 +47,30 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Create(context::Directory*);
-      static Status	Load(context::Directory*,
-			     const hole::Address&);
-      static Status	Add(context::Directory*,
-			    const path::Slice&,
-			    context::Directory*);
-      static Status	Lookup(context::Directory*,
-			       const path::Slice&,
-			       kernel::Entry*&);
-      static Status	Consult(context::Directory*,
-				const kernel::Index&,
-				const kernel::Size&,
-				kernel::Range<kernel::Entry>&);
-      static Status	Rename(context::Directory*,
-			       const path::Slice&,
-			       const path::Slice&);
-      static Status	Remove(context::Directory*,
-			       const path::Slice&);
-      static Status	Store(context::Directory*);
-      static Status	Discard(context::Directory*);
-      static Status	Destroy(context::Directory*);
+      static elle::Status	Create(context::Directory*);
+      static elle::Status	Load(context::Directory*,
+				     const hole::Address&);
+      static elle::Status	Add(context::Directory*,
+				    const path::Slice&,
+				    context::Directory*);
+      static elle::Status	Lookup(context::Directory*,
+				       const path::Slice&,
+				       kernel::Entry*&);
+      static elle::Status	Consult(context::Directory*,
+					const kernel::Index&,
+					const kernel::Size&,
+					kernel::Range<kernel::Entry>&);
+      static elle::Status	Rename(context::Directory*,
+				       const path::Slice&,
+				       const path::Slice&);
+      static elle::Status	Remove(context::Directory*,
+				       const path::Slice&);
+      static elle::Status	Store(context::Directory*);
+      static elle::Status	Discard(context::Directory*);
+      static elle::Status	Destroy(context::Directory*);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/journal/Journal.hh>
-
-#include <etoile/user/User.hh>
-
-#include <etoile/components/Rights.hh>
-#include <etoile/components/Contents.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [thu apr 22 21:49:22 2010]
+// updated       julien quintard   [mon may  3 22:56:08 2010]
 //
 
 #ifndef ETOILE_KERNEL_ATTRIBUTES_HH
@@ -39,39 +39,37 @@ namespace etoile
     /// used for storing object-specific extra information.
     ///
     class Attributes:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
       // methods
       //
-      Status		Add(Trait*);
-      Status		Exist(const String&);
-      Status		Lookup(const String&,
+      elle::Status	Add(Trait*);
+      elle::Status	Exist(const elle::String&);
+      elle::Status	Lookup(const elle::String&,
 			       Trait*&);
-      Status		Consult(const Index&,
+      elle::Status	Consult(const Index&,
 				const Size&,
 				Range<Trait>&) const;
-      Status		Update(const String&,
-			       const String&);
-      Status		Remove(const String&);
-      Status		Capacity(Size&) const;
+      elle::Status	Update(const elle::String&,
+			       const elle::String&);
+      elle::Status	Remove(const elle::String&);
+      elle::Status	Capacity(Size&) const;
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Attributes);
-      // XXX
+      // object
+      declare(Attributes, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [thu apr 22 11:06:05 2010]
+// updated       julien quintard   [mon may  3 17:44:53 2010]
 //
 
 #ifndef ETOILE_WALL_FILE_HH
@@ -47,35 +47,24 @@ namespace etoile
       //
       // static methods
       //
-      static Status	Create();
-      static Status	Load(const path::Way&);
-      static Status	Lock(const context::Identifier&);
-      static Status	Release(const context::Identifier&);
-      static Status	Write(const context::Identifier&,
-			      const kernel::Offset&,
-			      const Region&);
-      static Status	Read(const context::Identifier&,
-			     const kernel::Offset&,
-			     const kernel::Size&);
-      static Status	Adjust(const context::Identifier&,
-			       const kernel::Size&);
-      static Status	Discard(const context::Identifier&);
-      static Status	Store(const context::Identifier&);
-      static Status	Destroy(const context::Identifier&);
+      static elle::Status	Create();
+      static elle::Status	Load(const path::Way&);
+      static elle::Status	Lock(const context::Identifier&);
+      static elle::Status	Release(const context::Identifier&);
+      static elle::Status	Write(const context::Identifier&,
+				      const kernel::Offset&,
+				      const elle::Region&);
+      static elle::Status	Read(const context::Identifier&,
+				     const kernel::Offset&,
+				     const kernel::Size&);
+      static elle::Status	Adjust(const context::Identifier&,
+				       const kernel::Size&);
+      static elle::Status	Discard(const context::Identifier&);
+      static elle::Status	Store(const context::Identifier&);
+      static elle::Status	Destroy(const context::Identifier&);
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Format.hh>
-
-#include <etoile/user/User.hh>
-
-#include <etoile/path/Path.hh>
 
 #endif

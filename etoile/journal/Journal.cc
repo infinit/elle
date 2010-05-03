@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [mon apr 26 01:03:07 2010]
+// updated       julien quintard   [mon may  3 13:12:12 2010]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/journal/Journal.hh>
+
+#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {
@@ -29,7 +31,7 @@ namespace etoile
     ///
     /// this method initializes the journal.
     ///
-    Status		Journal::Initialize()
+    elle::Status	Journal::Initialize()
     {
       enter();
 
@@ -41,7 +43,7 @@ namespace etoile
     ///
     /// this method cleans the journal.
     ///
-    Status		Journal::Clean()
+    elle::Status	Journal::Clean()
     {
       enter();
 
@@ -53,7 +55,7 @@ namespace etoile
     ///
     /// this method registers a context as being ready to be processed.
     ///
-    Status		Journal::Record(context::Context*	context)
+    elle::Status	Journal::Record(context::Context*	context)
     {
       Bucket::Scoutor	scoutor;
 
@@ -61,7 +63,7 @@ namespace etoile
 
       // first, remove the exportation so that the application cannot
       // use this context anymore.
-      if (context::Context::Import(context) == StatusError)
+      if (context::Context::Import(context) == elle::StatusError)
 	escape("unable to import the context");
 
       // XXX easy temporary version, just publish everything.
@@ -77,14 +79,14 @@ namespace etoile
 	    case OperationPush:
 	      {
 		if (hole::Hole::Put(item->address,
-				    item->block) == StatusError)
+				    item->block) == elle::StatusError)
 		  escape("unable to publish the block through hole");
 
 		break;
 	      }
 	    case OperationDestroy:
 	      {
-		if (hole::Hole::Erase(item->address) == StatusError)
+		if (hole::Hole::Erase(item->address) == elle::StatusError)
 		  escape("unable to erase the block through hole");
 
 		break;
@@ -93,7 +95,7 @@ namespace etoile
 	}
 
       // finally, delete the context.
-      if (context::Context::Delete(context) == StatusError)
+      if (context::Context::Delete(context) == elle::StatusError)
 	escape("unable to delete the context");
 
       leave();
@@ -103,7 +105,7 @@ namespace etoile
     /// this method is called by Depot whenever looking for a particular
     /// block.
     ///
-    Status		Journal::Get(const hole::Address&	address,
+    elle::Status	Journal::Get(const hole::Address&	address,
 				     hole::Block*&		block)
     {
       enter();

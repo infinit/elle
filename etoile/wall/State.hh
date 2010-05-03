@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/State.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [sun apr 18 19:12:28 2010]
+// updated       julien quintard   [mon may  3 22:59:29 2010]
 //
 
 #ifndef ETOILE_WALL_STATE_HH
@@ -53,8 +53,7 @@ namespace etoile
     /// this class describes an object's meta data.
     ///
     class State:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -65,22 +64,22 @@ namespace etoile
       //
       // method
       //
-      Status		Create(const kernel::Object&);
+      elle::Status	Create(const kernel::Object&);
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, State);
-      Boolean		operator==(const State&) const;
+      // object
+      declare(State, _());
+      elle::Boolean	operator==(const State&) const;
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
@@ -89,16 +88,16 @@ namespace etoile
 
       struct
       {
-	Time			creation;
-	Time			modification;
+	elle::Time		creation;
+	elle::Time		modification;
       }				stamps;
 
       kernel::Offset		size;
 
       struct
       {
-	PublicKey		owner;
-	PublicKey		author;
+	elle::PublicKey		owner;
+	elle::PublicKey		author;
       }				keys;
 
       struct
@@ -121,6 +120,5 @@ namespace etoile
 //
 
 #include <etoile/kernel/Object.hh>
-#include <etoile/kernel/Role.hh>
 
 #endif

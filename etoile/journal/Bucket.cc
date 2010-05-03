@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Bucket.cc
 //
 // created       julien quintard   [mon apr  5 21:33:25 2010]
-// updated       julien quintard   [fri apr 16 14:29:00 2010]
+// updated       julien quintard   [mon may  3 13:11:02 2010]
 //
 
 //
@@ -52,7 +52,7 @@ namespace etoile
     ///
     /// this method records a block to be pushed to the hole.
     ///
-    Status		Bucket::Push(const hole::Address&	address,
+    elle::Status	Bucket::Push(const hole::Address&	address,
 				     hole::Block*		block)
     {
       Item*		item;
@@ -78,7 +78,7 @@ namespace etoile
     ///
     /// this method records a block to be poped from the hole.
     ///
-    Status		Bucket::Destroy(const hole::Address&	address)
+    elle::Status	Bucket::Destroy(const hole::Address&	address)
     {
       Item*		item;
 

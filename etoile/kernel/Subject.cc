@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [tue apr  6 22:45:34 2010]
+// updated       julien quintard   [mon may  3 23:02:55 2010]
 //
 
 //
@@ -47,7 +47,7 @@ namespace etoile
 	case Subject::TypeUser:
 	  {
 	    // copy the user public key.
-	    this->user = new PublicKey(*subject.user);
+	    this->user = new elle::PublicKey(*subject.user);
 
 	    break;
 	  }
@@ -98,7 +98,7 @@ namespace etoile
     ///
     /// this method creates a user subject.
     ///
-    Status		Subject::Create(const PublicKey&	K)
+    elle::Status	Subject::Create(const elle::PublicKey&	K)
     {
       enter();
 
@@ -106,7 +106,7 @@ namespace etoile
       this->type = Subject::TypeUser;
 
       // allocate and copy the key.
-      this->user = new PublicKey(K);
+      this->user = new elle::PublicKey(K);
 
       leave();
     }
@@ -114,7 +114,7 @@ namespace etoile
     ///
     /// this method creates a group subject.
     ///
-    Status		Subject::Create(const hole::Address&	descriptor)
+    elle::Status	Subject::Create(const hole::Address&	descriptor)
     {
       enter();
 
@@ -128,13 +128,13 @@ namespace etoile
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
     /// this operator compares two objects.
     ///
-    Boolean		Subject::operator==(const Subject&	element) const
+    elle::Boolean	Subject::operator==(const Subject&	element) const
     {
       enter();
 
@@ -168,9 +168,9 @@ namespace etoile
     }
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Subject);
+    embed(Subject, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -179,16 +179,16 @@ namespace etoile
     ///
     /// this function dumps an time object.
     ///
-    Status		Subject::Dump(Natural32			margin) const
+    elle::Status	Subject::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Subject]" << std::endl;
 
       // display the type.
-      std::cout << alignment << Dumpable::Shift << "[Type] "
+      std::cout << alignment << elle::Dumpable::Shift << "[Type] "
 		<< this->type << std::endl;
 
       // compare the identifier.
@@ -196,22 +196,22 @@ namespace etoile
 	{
 	case Subject::TypeUser:
 	  {
-	    std::cout << alignment << Dumpable::Shift
+	    std::cout << alignment << elle::Dumpable::Shift
 		      << "[Identifier]" << std::endl;
 
 	    // dump the user public key.
-	    if (this->user->Dump(margin + 4) == StatusError)
+	    if (this->user->Dump(margin + 4) == elle::StatusError)
 	      escape("unable to dump the user's public key");
 
 	    break;
 	  }
 	case Subject::TypeGroup:
 	  {
-	    std::cout << alignment << Dumpable::Shift
+	    std::cout << alignment << elle::Dumpable::Shift
 		      << "[Identifier]" << std::endl;
 
 	    // dump the group address.
-	    if (this->group->Dump(margin + 4) == StatusError)
+	    if (this->group->Dump(margin + 4) == elle::StatusError)
 	      escape("unable to dump the group address");
 
 	    break;
@@ -232,12 +232,12 @@ namespace etoile
     ///
     /// this method serializes the subject.
     ///
-    Status		Subject::Serialize(Archive&		archive) const
+    elle::Status	Subject::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the type.
-      if (archive.Serialize((Natural8&)this->type) == StatusError)
+      if (archive.Serialize((elle::Natural8&)this->type) == elle::StatusError)
 	escape("unable to serialize the type");
 
       // serialize the identifier.
@@ -246,7 +246,7 @@ namespace etoile
 	case Subject::TypeUser:
 	  {
 	    // serialize the user public key.
-	    if (archive.Serialize(*this->user) == StatusError)
+	    if (archive.Serialize(*this->user) == elle::StatusError)
 	      escape("unable to serialize the user public key");
 
 	    break;
@@ -254,7 +254,7 @@ namespace etoile
 	case Subject::TypeGroup:
 	  {
 	    // serialize the group address.
-	    if (archive.Serialize(*this->group) == StatusError)
+	    if (archive.Serialize(*this->group) == elle::StatusError)
 	      escape("unable to serialize the group address");
 
 	    break;
@@ -271,12 +271,12 @@ namespace etoile
     ///
     /// this method extracts the subject.
     ///
-    Status		Subject::Extract(Archive&		archive)
+    elle::Status	Subject::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the type.
-      if (archive.Extract((Natural8&)this->type) == StatusError)
+      if (archive.Extract((elle::Natural8&)this->type) == elle::StatusError)
 	escape("unable to extract the type");
 
       // extract the identifier.
@@ -285,10 +285,10 @@ namespace etoile
 	case Subject::TypeUser:
 	  {
 	    // allocate a new public key.
-	    this->user = new PublicKey;
+	    this->user = new elle::PublicKey;
 
 	    // extract the user public key.
-	    if (archive.Extract(*this->user) == StatusError)
+	    if (archive.Extract(*this->user) == elle::StatusError)
 	      escape("unable to extract the user public key");
 
 	    break;
@@ -299,7 +299,7 @@ namespace etoile
 	    this->group = new hole::Address;
 
 	    // extract the group address.
-	    if (archive.Extract(*this->group) == StatusError)
+	    if (archive.Extract(*this->group) == elle::StatusError)
 	      escape("unable to extract the group address");
 
 	    break;

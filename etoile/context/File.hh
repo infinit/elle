@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/File.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [tue apr 20 10:31:11 2010]
+// updated       julien quintard   [mon may  3 12:49:01 2010]
 //
 
 #ifndef ETOILE_CONTEXT_FILE_HH
@@ -56,7 +56,7 @@ namespace etoile
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
@@ -66,11 +66,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/context/Format.hh>
 
 #endif

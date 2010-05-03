@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [thu apr 22 23:15:49 2010]
+// updated       julien quintard   [mon may  3 17:55:52 2010]
 //
 
 //
@@ -16,6 +16,11 @@
 //
 
 #include <etoile/components/Rights.hh>
+#include <etoile/components/Access.hh>
+
+#include <etoile/user/User.hh>
+
+#include <etoile/kernel/Token.hh>
 
 namespace etoile
 {
@@ -30,7 +35,7 @@ namespace etoile
     /// this method determines the rights the current user has over the
     /// given object.
     ///
-    Status		Rights::Determine(context::Object*	context)
+    elle::Status	Rights::Determine(context::Object*	context)
     {
       user::User*	user;
 
@@ -41,7 +46,7 @@ namespace etoile
 	leave();
 
       // load the current user;
-      if (user::User::Instance(user) == StatusError)
+      if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the current user");
 
       // allocate the structure.
@@ -64,17 +69,17 @@ namespace etoile
 	  // if a token is present, decrypt it.
 	  if (context->rights->record.token != kernel::Token::Null)
 	    {
-	      Digest		fingerprint;
+	      elle::Digest	fingerprint;
 
 	      // extract the secret key from the token.
 	      if (context->rights->record.token.Extract(
                     *user->client->agent,
-		    context->rights->key) == StatusError)
+		    context->rights->key) == elle::StatusError)
 		escape("unable to extract the secret key from the token");
 
 	      // compute a fingerprint of the key.
-	      if (OneWay::Hash(context->rights->key,
-			       fingerprint) == StatusError)
+	      if (elle::OneWay::Hash(context->rights->key,
+				     fingerprint) == elle::StatusError)
 		escape("unable to compute a fingerprint of the key");
 
 	      // verify the key's validity according to the public fingerprint.
@@ -97,17 +102,18 @@ namespace etoile
 	  //
 
 	  // open the access.
-	  if (Access::Open(context) == StatusError)
+	  if (Access::Open(context) == elle::StatusError)
 	    escape("unable to open the access");
 
 	  // test if the user is present in the access block.
-	  if (context->access->Exist(user->client->subject) == StatusTrue)
+	  if (context->access->Exist(user->client->subject) ==
+	      elle::StatusTrue)
 	    {
 	      kernel::Record*	record;
 
 	      // retrieve the complete access record.
 	      if (context->access->Lookup(user->client->subject,
-					  record) == StatusError)
+					  record) == elle::StatusError)
 		escape("unable to retrieve the access record");
 
 	      // set the role.
@@ -119,17 +125,17 @@ namespace etoile
 	      // decrypt the token and verify the key, if present.
 	      if (context->rights->record.token != kernel::Token::Null)
 		{
-		  Digest	fingerprint;
+		  elle::Digest	fingerprint;
 
 		  // extract the secret key from the token.
 		  if (context->rights->record.token.Extract(
                         *user->client->agent,
-		        context->rights->key) == StatusError)
+		        context->rights->key) == elle::StatusError)
 		    escape("unable to extract the secret key from the token");
 
 		  // compute a fingerprint of the key.
-		  if (OneWay::Hash(context->rights->key,
-				   fingerprint) == StatusError)
+		  if (elle::OneWay::Hash(context->rights->key,
+					 fingerprint) == elle::StatusError)
 		    escape("unable to compute a fingerprint of the key");
 
 		  // verify the key's validity according to the
@@ -160,7 +166,7 @@ namespace etoile
     ///
     /// this method updates the user's permissions.
     ///
-    Status		Rights::Update(context::Object*		context,
+    elle::Status	Rights::Update(context::Object*		context,
 				       const
 				         kernel::Permissions&	permissions)
     {

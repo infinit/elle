@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.hh
 //
 // created       julien quintard   [fri aug 14 22:36:10 2009]
-// updated       julien quintard   [mon apr 26 18:34:38 2010]
+// updated       julien quintard   [mon may  3 17:36:30 2010]
 //
 
 #ifndef ETOILE_CONTEXT_CONTEXT_HH
@@ -57,8 +57,7 @@ namespace etoile
     /// execute.
     ///
     class Context:
-      public Meta,
-      public Dumpable
+      public elle::Entity
     {
     public:
       //
@@ -74,14 +73,14 @@ namespace etoile
       // static methods
       //
       template <typename T>
-      static Status	New(T*&);
+      static elle::Status	New(T*&);
       template <typename T>
-      static Status	Delete(T*);
+      static elle::Status	Delete(T*);
 
       template <typename T>
-      static Status	Export(T*);
+      static elle::Status	Export(T*);
       template <typename T>
-      static Status	Import(T*);
+      static elle::Status	Import(T*);
 
       //
       // constructors & destructors
@@ -91,14 +90,14 @@ namespace etoile
       //
       // methods
       //
-      Status		Create();
+      elle::Status		Create();
 
       //
       // interfaces
       //
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
@@ -108,7 +107,7 @@ namespace etoile
       Type			type;
 
       user::Application*	application;
-      Fiber*			fiber;
+      elle::Fiber*		fiber;
 
       Identifier		identifier;
 
@@ -129,16 +128,5 @@ namespace etoile
 //
 
 #include <etoile/context/Context.hxx>
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/context/Object.hh>
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Link.hh>
-#include <etoile/context/Rights.hh>
-
-#include <etoile/user/User.hh>
 
 #endif

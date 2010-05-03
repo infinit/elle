@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Offset.hh
 //
 // created       julien quintard   [sun jan 31 22:34:41 2010]
-// updated       julien quintard   [fri apr  2 00:01:35 2010]
+// updated       julien quintard   [mon may  3 17:20:26 2010]
 //
 
 #ifndef ETOILE_KERNEL_OFFSET_HH
@@ -42,8 +42,8 @@ namespace etoile
     ///
     /// this constants defines the first and last offsets.
     ///
-    const Offset		OffsetFirst = Type<Offset>::Minimum;
-    const Offset		OffsetLast = Type<Offset>::Maximum;
+    const Offset		OffsetFirst = elle::Type<Offset>::Minimum;
+    const Offset		OffsetLast = elle::Type<Offset>::Maximum;
 
   }
 }

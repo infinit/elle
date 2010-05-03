@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [thu apr 22 17:19:48 2010]
+// updated       julien quintard   [mon may  3 22:57:45 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HH
@@ -52,7 +52,7 @@ namespace etoile
       //
       // identifier
       //
-      static const String	Name;
+      static const elle::String		Name;
 
       //
       // constructors & destructors
@@ -63,32 +63,31 @@ namespace etoile
       //
       // methods
       //
-      Status		Create();
+      elle::Status	Create();
 
-      Status		Encrypt(const SecretKey&);
-      Status		Decrypt(const SecretKey&);
+      elle::Status	Encrypt(const elle::SecretKey&);
+      elle::Status	Decrypt(const elle::SecretKey&);
 
       //
       // interfaces
       //
 
-      // entity
-      declare(Entity, Contents<T>);
-      // XXX operator==
+      // object
+      declare(Contents<T>, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
       T*		content;
 
-      Cipher*		cipher;
+      elle::Cipher*	cipher;
     };
 
   }

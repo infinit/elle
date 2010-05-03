@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [fri apr 23 15:44:44 2010]
+// updated       julien quintard   [mon may  3 23:05:27 2010]
 //
 
 //
@@ -41,12 +41,12 @@ namespace etoile
     ///
     /// this method adds the given entry to the catalog.
     ///
-    Status		Catalog::Add(Entry*			entry)
+    elle::Status	Catalog::Add(Entry*			entry)
     {
       enter();
 
       // add the entry in the range.
-      if (this->range.Add(entry) == StatusError)
+      if (this->range.Add(entry) == elle::StatusError)
 	escape("unable to add the entry in the range");
 
       // range the object as dirty.
@@ -58,7 +58,7 @@ namespace etoile
     ///
     /// this method tests if the given name exists.
     ///
-    Status		Catalog::Exist(const path::Slice&	name)
+    elle::Status	Catalog::Exist(const path::Slice&	name)
     {
       enter();
 
@@ -72,13 +72,13 @@ namespace etoile
     ///
     /// this method returns the entry corresponding to the given name.
     ///
-    Status		Catalog::Lookup(const path::Slice&	name,
+    elle::Status	Catalog::Lookup(const path::Slice&	name,
 					Entry*&			entry)
     {
       enter();
 
       // look in the range.
-      if (this->range.Lookup(name, entry) == StatusError)
+      if (this->range.Lookup(name, entry) == elle::StatusError)
 	escape("unable to retrieve the entry");
 
       leave();
@@ -88,7 +88,7 @@ namespace etoile
     /// this method returns a subrange of the catalog delimited by the given
     /// index and size.
     ///
-    Status		Catalog::Consult(const Index&		index,
+    elle::Status	Catalog::Consult(const Index&		index,
 					 const Size&		size,
 					 Range<Entry>&		range)
       const
@@ -99,7 +99,7 @@ namespace etoile
       enter();
 
       // first detach the data from the range.
-      if (range.Detach() == StatusError)
+      if (range.Detach() == elle::StatusError)
 	escape("unable to detach the data from the range");
 
       // go through the catalog entries.
@@ -113,7 +113,7 @@ namespace etoile
 	  if ((i >= index) && (i < (index + size)))
 	    {
 	      // add the entry to the range.
-	      if (range.Add(entry) == StatusError)
+	      if (range.Add(entry) == elle::StatusError)
 		escape("unable to add the entry to the range");
 	    }
 	}
@@ -124,12 +124,12 @@ namespace etoile
     ///
     /// this method removes the given entry.
     ///
-    Status		Catalog::Remove(const path::Slice&	name)
+    elle::Status	Catalog::Remove(const path::Slice&	name)
     {
       enter();
 
       // remove the entry from the range.
-      if (this->range.Remove(name) == StatusError)
+      if (this->range.Remove(name) == elle::StatusError)
 	escape("unable to remove the entry");
 
       // range the object as dirty.
@@ -141,7 +141,7 @@ namespace etoile
     ///
     /// this method renames an entry.
     ///
-    Status		Catalog::Rename(const path::Slice&	from,
+    elle::Status	Catalog::Rename(const path::Slice&	from,
 					const path::Slice&	to)
     {
       Entry*		entry;
@@ -149,7 +149,7 @@ namespace etoile
       enter();
 
       // look in the range.
-      if (this->range.Lookup(from, entry) == StatusError)
+      if (this->range.Lookup(from, entry) == elle::StatusError)
 	escape("unable to retrieve the entry");
 
       // modify the name.
@@ -164,25 +164,25 @@ namespace etoile
     ///
     /// this method returns the size of the catalog.
     ///
-    Status		Catalog::Capacity(Size&			size) const
+    elle::Status	Catalog::Capacity(Size&			size) const
     {
       enter();
 
       // look at the size of the range.
-      if (this->range.Capacity(size) == StatusError)
+      if (this->range.Capacity(size) == elle::StatusError)
 	escape("unable to retrieve the range size");
 
       leave();
     }
 
 //
-// ---------- entity ----------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// this macro-function call generates the entity.
+    /// this macro-function call generates the object.
     ///
-    embed(Entity, Catalog);
+    embed(Catalog, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -191,20 +191,20 @@ namespace etoile
     ///
     /// this function dumps the catalog.
     ///
-    Status		Catalog::Dump(Natural32			margin) const
+    elle::Status	Catalog::Dump(elle::Natural32		margin) const
     {
-      String		alignment(margin, ' ');
+      elle::String	alignment(margin, ' ');
 
       enter();
 
       std::cout << alignment << "[Catalog]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << Dumpable::Shift << "[State] "
+      std::cout << alignment << elle::Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
 
       // dump the range.
-      if (this->range.Dump(margin + 2) == StatusError)
+      if (this->range.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the range");
 
       leave();
@@ -217,12 +217,12 @@ namespace etoile
     ///
     /// this method serializes the catalog object.
     ///
-    Status		Catalog::Serialize(Archive&		archive) const
+    elle::Status	Catalog::Serialize(elle::Archive&	archive) const
     {
       enter();
 
       // serialize the range.
-      if (archive.Serialize(this->range) == StatusError)
+      if (archive.Serialize(this->range) == elle::StatusError)
 	escape("unable to serialize the range");
 
       leave();
@@ -231,12 +231,12 @@ namespace etoile
     ///
     /// this method extracts the catalog object.
     ///
-    Status		Catalog::Extract(Archive&		archive)
+    elle::Status	Catalog::Extract(elle::Archive&		archive)
     {
       enter();
 
       // extract the range.
-      if (archive.Extract(this->range) == StatusError)
+      if (archive.Extract(this->range) == elle::StatusError)
 	escape("unable to extract the range");
 
       leave();

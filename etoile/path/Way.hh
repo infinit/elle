@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.hh
 //
 // created       julien quintard   [tue mar 30 23:31:29 2010]
-// updated       julien quintard   [mon apr 26 18:50:20 2010]
+// updated       julien quintard   [mon may  3 22:59:23 2010]
 //
 
 #ifndef ETOILE_PATH_WAY_HH
@@ -36,8 +36,7 @@ namespace etoile
     /// this class represents a string-based path i.e a way.
     ///
     class Way:
-      public Entity,
-      public Dumpable, public Archivable
+      public elle::Object<>
     {
     public:
       //
@@ -50,34 +49,33 @@ namespace etoile
       //
       Way();
       Way(const Way&);
-      Way(const String&);
+      Way(const elle::String&);
       Way(const Way&,
 	  Slice&);
 
       //
       // methods
       //
-      Status		Capacity(Length&) const;
+      elle::Status		Capacity(Length&) const;
 
 
       // interfaces
       //
 
-      // entity
-      declare(Entity, Way);
-      // XXX operator==
+      // object
+      declare(Way, _());
 
       // dumpable
-      Status		Dump(const Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
-      String		path;
+      elle::String	path;
     };
 
   }
