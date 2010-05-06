@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hxx
 //
 // created       julien quintard   [fri apr 30 17:43:29 2010]
-// updated       julien quintard   [sun may  2 15:24:42 2010]
+// updated       julien quintard   [wed may  5 23:16:27 2010]
 //
 
 #ifndef ELLE_IO_FILEABLE_HXX
@@ -57,7 +57,7 @@ namespace elle
       //
       // methods
       //
-      Status		Load(const String&			path)
+      virtual Status	Load(const String&			path)
       {
 	Archive		archive;
 	Region		region;
@@ -103,7 +103,7 @@ namespace elle
 	leave();
       }
 
-      Status		Store(const String&			path) const
+      virtual Status	Store(const String&			path) const
       {
 	Archive		archive;
 	int		fd;
@@ -152,7 +152,7 @@ namespace elle
       //
       // methods
       //
-      Status		Load(const String&			path)
+      virtual Status	Load(const String&			path)
       {
 	Region		region;
 	String		string;
@@ -191,7 +191,7 @@ namespace elle
 	leave();
       }
 
-      Status		Store(const String&			path) const
+      virtual Status	Store(const String&			path) const
       {
 	String		string;
 	int		fd;
@@ -236,7 +236,7 @@ namespace elle
       //
       // methods
       //
-      Status		Load(const String&			path)
+      virtual Status	Load(const String&			path)
       {
 	Region		region;
 	String		string;
@@ -275,7 +275,7 @@ namespace elle
 	leave();
       }
 
-      Status		Store(const String&			path) const
+      virtual Status	Store(const String&			path) const
       {
 	String		string;
 	int		fd;

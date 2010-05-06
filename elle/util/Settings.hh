@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [mon may  3 22:36:41 2010]
+// updated       julien quintard   [tue may  4 12:47:50 2010]
 //
 
 #ifndef ELLE_UTIL_SETTINGS_HH
@@ -68,13 +68,6 @@ namespace elle
 		   const String&);
 
 	//
-	// interfaces
-	//
-
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
-
-	//
 	// attributes
 	//
 	String		name;
@@ -112,13 +105,6 @@ namespace elle
 	Status		Remove(const String&);
 	Status		Locate(const String&,
 			       Iterator* = NULL);
-
-	//
-	// interfaces
-	//
-
-	// dumpable
-	Status		Dump(const Natural32 = 0) const;
 
 	//
 	// attributes

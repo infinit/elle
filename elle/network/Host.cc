@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [mon may  3 22:50:39 2010]
+// updated       julien quintard   [tue may  4 13:24:59 2010]
 //
 
 //
@@ -89,6 +89,9 @@ namespace elle
     {
       enter();
 
+      // set the type.
+      this->type = Host::TypeIP;
+
       // set the address.
       if (this->location.setAddress(::QString(string.c_str())) == false)
 	escape("unable to set the location");
@@ -150,18 +153,21 @@ namespace elle
     ///
     Status		Host::Extract(Archive&			archive)
     {
+      Natural8		type;
       String		host;
 
       enter();
 
       // extract the host.
-      if (archive.Extract((Natural8&)this->type,
+      if (archive.Extract(type,
 			  host) == StatusError)
 	escape("unable to extract the host");
 
-      // create the host properly.
-      if (this->Create(host) == StatusError)
-	escape("unable to create the host");
+      // set the type.
+      this->type = static_cast<Host::Type>(type);
+
+      // set the location.
+      this->location.setAddress(host.c_str());
 
       leave();
     }

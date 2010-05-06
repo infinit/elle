@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [mon may  3 22:44:52 2010]
+// updated       julien quintard   [tue may  4 10:18:06 2010]
 //
 
 //
@@ -346,7 +346,11 @@ namespace elle
 	}
       else
 	{
-	  std::cout << alignment << "[SecretKey] " << *this << std::endl;
+	  std::cout << alignment << "[SecretKey] " << std::endl;
+
+	  // dump the region.
+	  if (this->region.Dump(margin + 2) == StatusError)
+	    escape("unable to dump the secret key");
 	}
 
       leave();

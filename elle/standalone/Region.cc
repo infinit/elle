@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [mon may  3 00:19:00 2010]
+// updated       julien quintard   [wed may  5 22:14:37 2010]
 //
 
 //
@@ -334,7 +334,7 @@ namespace elle
     ///
     Status		Region::Dump(const Natural32		margin) const
     {
-      Natural32		space = 80 - margin - Dumpable::Shift.length();
+      Natural32		space = 78 - margin - Dumpable::Shift.length();
       String		alignment(margin, ' ');
       Natural32		i;
       Natural32		j;
@@ -349,6 +349,12 @@ namespace elle
 		<< "size(" << std::dec << this->size << ") "
 		<< "capacity(" << std::dec << this->capacity << ")"
 		<< std::endl;
+
+      // since a byte is represented by two characters.
+      space = space / 2;
+
+      // set the fill to '0'.
+      std::cout.fill('0');
 
       // display the region.
       for (i = 0; i < (this->size / space); i++)

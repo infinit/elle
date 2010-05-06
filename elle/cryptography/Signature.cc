@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [mon may  3 22:44:24 2010]
+// updated       julien quintard   [tue may  4 10:18:15 2010]
 //
 
 //
@@ -83,7 +83,11 @@ namespace elle
 	}
       else
 	{
-	  std::cout << alignment << "[Signature] " << *this << std::endl;
+	  std::cout << alignment << "[Signature] " << std::endl;
+
+	  // dump the region.
+	  if (this->region.Dump(margin + 2) == StatusError)
+	    escape("unable to dump the secret key");
 	}
 
       leave();

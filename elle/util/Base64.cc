@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Base64.cc
 //
 // created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [sun may  2 21:18:22 2010]
+// updated       julien quintard   [tue may  4 13:26:25 2010]
 //
 
 //
@@ -79,6 +79,9 @@ namespace elle
 
       enter();
 
+      // first clear the string.
+      string.clear();
+
       for (i = 0, j = 0; i < region.size; i++)
 	{
 	  in[j++] = (Character)region.contents[i];
@@ -135,6 +138,7 @@ namespace elle
 
       enter();
 
+      // first, validate the input string.
       if (Base64::Validate(string) != StatusTrue)
 	escape("the argument is not a valid base64 string");
 

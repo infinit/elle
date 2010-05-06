@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [mon may  3 22:44:33 2010]
+// updated       julien quintard   [tue may  4 10:15:27 2010]
 //
 
 //
@@ -369,7 +369,20 @@ namespace elle
 	}
       else
 	{
-	  std::cout << alignment << "[PrivateKey] " << *this << std::endl;
+	  std::cout << alignment << "[PrivateKey]" << std::endl;
+
+	  // dump the internal numbers.
+	  std::cout << alignment << Dumpable::Shift << "[n] "
+		    << *this->key->pkey.rsa->n << std::endl;
+
+	  std::cout << alignment << Dumpable::Shift << "[d] "
+		    << *this->key->pkey.rsa->d << std::endl;
+
+	  std::cout << alignment << Dumpable::Shift << "[p] "
+		    << *this->key->pkey.rsa->p << std::endl;
+
+	  std::cout << alignment << Dumpable::Shift << "[q] "
+		    << *this->key->pkey.rsa->q << std::endl;
 	}
 
       leave();

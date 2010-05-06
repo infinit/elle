@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [mon may  3 22:51:16 2010]
+// updated       julien quintard   [tue may  4 13:04:59 2010]
 //
 
 //
@@ -505,7 +505,7 @@ namespace elle
 
 	      // extract the section name.
 	      if (Settings::Trim(line.substr(1, line.find(']') - 1),
-				 name) == StatusError)
+				 identifier) == StatusError)
 		escape("unable to trim the section");
 
 	      // add the section.
