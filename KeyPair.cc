@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [mon may  3 22:43:41 2010]
+// updated       julien quintard   [wed may  5 13:12:41 2010]
 //
 
 //
@@ -54,6 +54,11 @@ namespace elle
     /// this defines a null key pair.
     ///
     const KeyPair		KeyPair::Null;
+
+    ///
+    /// this string defines the key pair files extension.
+    ///
+    const String		KeyPair::Extension = ".pair";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -141,6 +146,21 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method creates a key pair from both a public and private key.
+    ///
+    Status		KeyPair::Create(const PublicKey&	K,
+					const PrivateKey&	k)
+    {
+      enter();
+
+      // assign the attributes.
+      this->K = K;
+      this->k = k;
+
+      leave();
+    }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -181,7 +201,15 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[KeyPair] " << *this << std::endl;
+      std::cout << alignment << "[KeyPair]" << std::endl;
+
+      // dump the public key.
+      if (this->K.Dump(margin + 2) == StatusError)
+	escape("unable to dump the public key");
+
+      // dump the private key.
+      if (this->k.Dump(margin + 2) == StatusError)
+	escape("unable to dump the public key");
 
       leave();
     }
@@ -225,9 +253,10 @@ namespace elle
     ///
     /// this method loads a key pair from a file.
     ///
-    Status		KeyPair::Load(const String&		path,
+    Status		KeyPair::Load(const String&		name,
 				      const String&		pass)
     {
+      String		path = name + KeyPair::Extension;
       Region		region;
       struct ::stat	status;
       Cipher		cipher;
@@ -262,7 +291,7 @@ namespace elle
       // close the file.
       ::close(fd);
 
-      // decode and extract the ciher.
+      // decode and extract the cipher.
       if (Base64::Decode(String((char*)region.contents, region.size),
 			 cipher) == StatusError)
 	escape("unable to decode the cipher");
@@ -278,9 +307,10 @@ namespace elle
     /// this method stores a key pair in a file, taking care to encrypt
     /// it with the given pass.
     ///
-    Status		KeyPair::Store(const String&		path,
+    Status		KeyPair::Store(const String&		name,
 				       const String&		pass) const
     {
+      String		path = name + KeyPair::Extension;
       struct ::stat	status;
       Cipher		cipher;
       String		string;
@@ -288,10 +318,6 @@ namespace elle
       int		fd;
 
       enter();
-
-      // retrieve information on the file, if it exsits.
-      if (::stat(path.c_str(), &status) == 0)
-	escape(::strerror(errno));
 
       // create a secret key with this pass.
       if (key.Create(pass) == StatusError)
