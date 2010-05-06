@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [mon may  3 23:11:00 2010]
+// updated       julien quintard   [wed may  5 00:13:07 2010]
 //
 
 //
@@ -203,20 +203,23 @@ namespace etoile
 
       enter();
 
-      std::cout << alignment << "[Address] " << *this << std::endl;
-
-      if (this->digest != NULL)
+      // display the address depending on its value.
+      if (*this == Address::Null)
 	{
-	  std::cout << alignment << elle::Dumpable::Shift << "[Family] "
-		    << std::hex << this->family << std::endl;
-
-	  if (this->digest->Dump(margin + 2) == elle::StatusError)
-	    escape("unable to dump the digest");
+	  std::cout << alignment << "[Address] " << elle::none << std::endl;
 	}
       else
 	{
+	  std::cout << alignment << "[Address] " << std::endl;
+
+	  // dump the family.
 	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Digest] " << elle::none << std::endl;
+		    << "[Family] " << std::dec
+		    << (elle::Natural32)this->family << std::endl;
+
+	  // dump the digest.
+	  if (this->digest->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the digest");
 	}
 
       leave();

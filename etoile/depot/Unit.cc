@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [mon may  3 20:50:44 2010]
+// updated       julien quintard   [tue may  4 10:43:50 2010]
 //
 
 //
@@ -55,7 +55,8 @@ namespace etoile
       escape("XXX");
 
       // create the path based on the block's address.
-      block->address >> this->path;
+      if (block->address.Save(this->path) == elle::StatusError)
+	escape("unable to save the address' unique");
 
       // create an archive.
       if (archive.Create() == elle::StatusError)

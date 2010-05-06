@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.hh
 //
 // created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [mon may  3 16:07:28 2010]
+// updated       julien quintard   [tue may  4 10:59:01 2010]
 //
 
 #ifndef ETOILE_WALL_WALL_HH
@@ -75,7 +75,7 @@ namespace etoile
 #include <etoile/wall/Interface.hh>
 #include <etoile/wall/Link.hh>
 #include <etoile/wall/Object.hh>
-#include <etoile/wall/State.hh>
+#include <etoile/wall/Status.hh>
 #include <etoile/wall/User.hh>
 
 #endif

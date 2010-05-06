@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [mon may  3 12:43:30 2010]
+// updated       julien quintard   [tue may  4 11:00:46 2010]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH
@@ -23,6 +23,8 @@
 #include <etoile/context/Object.hh>
 
 #include <etoile/hole/Address.hh>
+
+#include <etoile/wall/Status.hh>
 
 namespace etoile
 {
@@ -45,7 +47,7 @@ namespace etoile
       static elle::Status	Load(context::Object*,
 				     const hole::Address&);
       static elle::Status	Information(context::Object*,
-					    wall::State&);
+					    wall::Status&);
       static elle::Status	Store(context::Object*);
       static elle::Status	Discard(context::Object*);
       static elle::Status	Destroy(context::Object*);

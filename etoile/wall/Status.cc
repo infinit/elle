@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/State.cc
+// file          /home/mycure/infinit/etoile/wall/Status.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [mon may  3 23:05:57 2010]
+// updated       julien quintard   [tue may  4 10:59:34 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/wall/State.hh>
+#include <etoile/wall/Status.hh>
 
 #include <etoile/kernel/Role.hh>
 
@@ -29,18 +29,18 @@ namespace etoile
 //
 
     ///
-    /// this defines a empty, unused hence null state.
+    /// this defines a empty, unused hence null status.
     ///
-    const State			State::Null;
+    const Status			Status::Null;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method generates the state according to the given object.
+    /// this method generates the status according to the given object.
     ///
-    elle::Status	State::Create(const kernel::Object&	object)
+    elle::Status	Status::Create(const kernel::Object&	object)
     {
       enter();
 
@@ -90,7 +90,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	State::operator==(const State&		element) const
+    elle::Boolean	Status::operator==(const Status&	element) const
     {
       enter();
 
@@ -116,22 +116,22 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(State, _(), _());
+    embed(Status, _(), _());
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// this method dumps the state object.
+    /// this method dumps the status object.
     ///
-    elle::Status	State::Dump(const elle::Natural32	margin) const
+    elle::Status	Status::Dump(const elle::Natural32	margin) const
     {
       elle::String	alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[State]" << std::endl;
+      std::cout << alignment << "[Status]" << std::endl;
 
       // dump the genre.
       std::cout << alignment << elle::Dumpable::Shift << "[Genre] "
@@ -228,9 +228,9 @@ namespace etoile
 //
 
     ///
-    /// this method serializes the state.
+    /// this method serializes the status.
     ///
-    elle::Status	State::Serialize(elle::Archive&		archive) const
+    elle::Status	Status::Serialize(elle::Archive&	archive) const
     {
       enter();
 
@@ -250,9 +250,9 @@ namespace etoile
     }
 
     ///
-    /// this method extracts the state.
+    /// this method extracts the status.
     ///
-    elle::Status	State::Extract(elle::Archive&		archive)
+    elle::Status	Status::Extract(elle::Archive&		archive)
     {
       enter();
 

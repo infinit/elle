@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [mon may  3 18:59:56 2010]
+// updated       julien quintard   [tue may  4 10:44:03 2010]
 //
 
 //
@@ -112,7 +112,8 @@ namespace etoile
       */
 
       // first, turns the address into a string.
-      address >> identity;
+      if (address.Save(identity) == elle::StatusError)
+	escape("unable to save the address' unique");
 
       // create an archive.
       if (archive.Create() == elle::StatusError)
@@ -173,7 +174,8 @@ namespace etoile
       enter();
 
       // identify the address.
-      address >> identity;
+      if (address.Save(identity) == elle::StatusError)
+	escape("unable to save the address' unique");
 
       // XXX[temporary hack for local storage]
       {
@@ -312,7 +314,8 @@ namespace etoile
       enter();
 
       // identify the address.
-      address >> identity;
+      if (address.Save(identity) == elle::StatusError)
+	escape("unable to save the address' unique");
 
       // XXX[temporary hack for local storage]
       {

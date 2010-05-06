@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [mon may  3 23:05:34 2010]
+// updated       julien quintard   [tue may  4 11:39:27 2010]
 //
 
 //

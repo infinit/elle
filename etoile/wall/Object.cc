@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [mon may  3 18:55:46 2010]
+// updated       julien quintard   [tue may  4 11:00:18 2010]
 //
 
 //
@@ -126,7 +126,7 @@ namespace etoile
 					      context::Identifier& identifier)
     {
       context::Object*		context;
-      State			state;
+      Status			status;
       user::User*		user;
 
       enter();
@@ -151,13 +151,14 @@ namespace etoile
 	  context::FormatObject)
 	escape("unable to get information on non-object contexts");
 
-      // request the object component to fill the state structure.
-      if (components::Object::Information(context, state) == elle::StatusError)
+      // request the object component to fill the status structure.
+      if (components::Object::Information(context,
+					  status) == elle::StatusError)
 	escape("unable to retrieve information on the object");
 
-      // return the state to the caller.
+      // return the status to the caller.
       if (user->application->channel->Reply(
-	    elle::Inputs<TagObjectState>(state)) == elle::StatusError)
+	    elle::Inputs<TagObjectStatus>(status)) == elle::StatusError)
 	escape("unable to reply to the application");
 
       leave();

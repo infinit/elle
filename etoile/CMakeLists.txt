@@ -71,7 +71,7 @@ ADD_LIBRARY(etoile
   wall/Directory.cc
   wall/File.cc
   wall/Link.cc
-  wall/State.cc
+  wall/Status.cc
   wall/Attributes.cc
 
   hole/Hole.cc

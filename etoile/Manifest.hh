@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [mon may  3 17:31:00 2010]
+// updated       julien quintard   [tue may  4 10:59:57 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -25,7 +25,7 @@
 
 #include <etoile/context/Identifier.hh>
 
-#include <etoile/wall/State.hh>
+#include <etoile/wall/Status.hh>
 
 #include <etoile/kernel/Size.hh>
 #include <etoile/kernel/Index.hh>
@@ -88,7 +88,7 @@ namespace etoile
       // object
       TagObjectLoad,
       TagObjectInformation,
-      TagObjectState,
+      TagObjectStatus,
       TagObjectDiscard,
       TagObjectStore,
 
@@ -177,8 +177,8 @@ inward(etoile::TagObjectLoad,
        parameters(const etoile::path::Way));
 inward(etoile::TagObjectInformation,
        parameters(const etoile::context::Identifier));
-outward(etoile::TagObjectState,
-	parameters(const etoile::wall::State));
+outward(etoile::TagObjectStatus,
+	parameters(const etoile::wall::Status));
 inward(etoile::TagObjectDiscard,
        parameters(const etoile::context::Identifier));
 inward(etoile::TagObjectStore,

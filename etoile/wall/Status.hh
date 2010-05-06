@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/State.hh
+// file          /home/mycure/infinit/etoile/wall/Status.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [mon may  3 22:59:29 2010]
+// updated       julien quintard   [tue may  4 10:59:12 2010]
 //
 
-#ifndef ETOILE_WALL_STATE_HH
-#define ETOILE_WALL_STATE_HH
+#ifndef ETOILE_WALL_STATUS_HH
+#define ETOILE_WALL_STATUS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -52,14 +52,14 @@ namespace etoile
     ///
     /// this class describes an object's meta data.
     ///
-    class State:
+    class Status:
       public elle::Object<>
     {
     public:
       //
       // constants
       //
-      static const State		Null;
+      static const Status		Null;
 
       //
       // method
@@ -71,8 +71,8 @@ namespace etoile
       //
 
       // object
-      declare(State, _());
-      elle::Boolean	operator==(const State&) const;
+      declare(Status, _());
+      elle::Boolean	operator==(const Status&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

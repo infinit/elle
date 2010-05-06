@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [mon may  3 12:44:08 2010]
+// updated       julien quintard   [tue may  4 11:01:03 2010]
 //
 
 //
@@ -25,8 +25,6 @@
 #include <etoile/journal/Journal.hh>
 
 #include <etoile/context/Context.hh>
-
-#include <etoile/wall/State.hh>
 
 namespace etoile
 {
@@ -56,17 +54,17 @@ namespace etoile
     }
 
     ///
-    /// this method fills the state object with general-purpose information
+    /// this method fills the status object with general-purpose information
     /// on the object.
     ///
     elle::Status	Object::Information(context::Object*	context,
-					    wall::State&	state)
+					    wall::Status&	status)
     {
       enter();
 
-      // create the state based on the object.
-      if (state.Create(*context->object) == elle::StatusError)
-	escape("unable to create the state");
+      // create the status based on the object.
+      if (status.Create(*context->object) == elle::StatusError)
+	escape("unable to create the status");
 
       leave();
     }

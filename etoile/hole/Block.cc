@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [mon may  3 23:11:22 2010]
+// updated       julien quintard   [tue may  4 10:21:37 2010]
 //
 
 //
@@ -96,7 +96,7 @@ namespace etoile
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
 		<< (elle::Natural32)this->family << std::endl;
 
-      // dump the family.
+      // dump the component.
       std::cout << alignment << elle::Dumpable::Shift << "[Component] "
 		<< (elle::Natural32)this->component << std::endl;
 
