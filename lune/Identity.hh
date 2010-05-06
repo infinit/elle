@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Memento.hh
+// file          /home/mycure/infinit/lune/Identity.hh
 //
-// created       julien quintard   [sat may  1 21:16:41 2010]
-// updated       julien quintard   [thu may  6 01:09:25 2010]
+// created       julien quintard   [wed may  5 20:55:12 2010]
+// updated       julien quintard   [thu may  6 01:08:25 2010]
 //
 
-#ifndef LUNE_MEMENTO_HH
-#define LUNE_MEMENTO_HH
+#ifndef LUNE_IDENTITY_HH
+#define LUNE_IDENTITY_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,8 +22,6 @@
 
 #include <lune/Authority.hh>
 
-#include <etoile/hole/Address.hh>
-
 namespace lune
 {
 
@@ -32,14 +30,11 @@ namespace lune
 //
 
   ///
-  /// this class represents a universe descriptor.
+  /// this class represents a identity, issued by the Infinit authority,
+  /// which represents a user.
   ///
-  /// note that although this class inherit the common Object<>,
-  /// it also overload the Fileable Store() and Load() methods in order
-  /// to pass the right path.
-  ///
-  class Memento:
-    public elle::Object<>
+  class Identity:
+    public elle::Object<elle::FormatBase64, elle::FormatCustom>
   {
   public:
     //
@@ -50,10 +45,8 @@ namespace lune
     //
     // methods
     //
-
     elle::Status	Create(const elle::String&,
-			       const etoile::hole::Address&,
-			       const elle::Address&);
+			       const elle::KeyPair&);
 
     elle::Status	Seal(const Authority&);
     elle::Status	Validate(const Authority&) const;
@@ -63,7 +56,7 @@ namespace lune
     //
 
     // object
-    declare(Memento, _());
+    declare(Identity, _(elle::FormatBase64, elle::FormatCustom));
 
     // dumpable
     elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -73,17 +66,18 @@ namespace lune
     elle::Status	Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
+    elle::Status	Load(const elle::String&,
+			     const elle::String&);
+    elle::Status	Store(const elle::String&,
+			      const elle::String&) const;
 
     //
     // attributes
     //
-    elle::String		name;
-    etoile::hole::Address	address;
-    elle::Address		network;
+    elle::String	name;
+    elle::KeyPair	pair;
 
-    elle::Signature		signature;
+    elle::Signature	signature;
   };
 
 }

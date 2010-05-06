@@ -1,39 +1,65 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       elle
+// project       lune
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/lune/Phrase.hh
+// file          /home/mycure/infinit/lune/Phrase.hh
 //
 // created       julien quintard   [sat may  1 12:52:01 2010]
-// updated       julien quintard   [sat may  1 12:53:53 2010]
+// updated       julien quintard   [wed may  5 00:08:31 2010]
 //
 
-#ifndef ELLE_LUNE_PHRASE_HH
-#define ELLE_LUNE_PHRASE_HH
+#ifndef LUNE_PHRASE_HH
+#define LUNE_PHRASE_HH
 
-namespace elle
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/Elle.hh>
+
+namespace lune
 {
-  namespace lune
-  {
 
 //
 // ---------- classes ---------------------------------------------------------
 //
 
-    ///
-    /// this class represents a phrase i.e a string identifying a user
-    /// by linking applications with the user's agent.
-    ///
-    class Phrase:
-      public Entity,
-      public Dumpable, public Fileable<FormatRaw>
-    {
-    };
+  ///
+  /// this class represents a phrase i.e a string linking applications
+  /// with the user's agent.
+  ///
+  class Phrase:
+    public elle::Object<>
+  {
+  public:
+    //
+    // methods
+    //
+    elle::Status	Create(const elle::String&);
 
-  }
+    //
+    // interfaces
+    //
+
+    // object
+    declare(Phrase, _());
+
+    // dumpable
+    elle::Status	Dump(const elle::Natural32 = 0) const;
+
+    // archivable
+    elle::Status	Serialize(elle::Archive&) const;
+    elle::Status	Extract(elle::Archive&);
+
+    //
+    // attributes
+    //
+    elle::String	string;
+  };
+
 }
 
 #endif

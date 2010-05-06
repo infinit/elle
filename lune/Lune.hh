@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.hh
 //
 // created       julien quintard   [fri apr 30 12:55:13 2010]
-// updated       julien quintard   [mon may  3 12:25:16 2010]
+// updated       julien quintard   [wed may  5 21:02:53 2010]
 //
 
 //
@@ -50,14 +50,16 @@ namespace lune
     //
     static elle::String		Home;
 
-    static elle::String		Keys;
+    static elle::String		Users;
+    static elle::String		Passports;
+
     static elle::String		Universes;
     static elle::String		Reserve;
     static elle::String		Hole;
 
+    static elle::String		Authority;
     static elle::String		Phrase;
-    static elle::String		Identity;
-    static elle::String		Accesses;
+    static elle::String		Access;
   };
 
 }
@@ -66,6 +68,9 @@ namespace lune
 // ---------- includes --------------------------------------------------------
 //
 
-// XXX
+#include <lune/Authority.hh>
+#include <lune/Memento.hh>
+#include <lune/Identity.hh>
+#include <lune/Phrase.hh>
 
 #endif
