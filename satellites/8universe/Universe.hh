@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8universe/Universe.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [sat may  1 20:46:05 2010]
+// updated       julien quintard   [tue may  4 11:45:50 2010]
 //
 
 #ifndef UNIVERSE_UNIVERSE_HH
@@ -54,10 +54,11 @@ namespace application
     //
     // static methods
     //
-    static Status	Create(const String&,
-			       const String&);
-    static Status	Destroy(const String&);
-    static Status	Information(const String&);
+    static elle::Status		Create(const elle::String&,
+				       const elle::Address&,
+				       const elle::String&);
+    static elle::Status		Destroy(const elle::String&);
+    static elle::Status		Information(const elle::String&);
   };
 
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8universe/Universe.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat may  1 20:55:03 2010]
+// updated       julien quintard   [thu may  6 01:12:20 2010]
 //
 
 //
@@ -27,7 +27,7 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const Character	Component[] = "8universe";
+  const elle::Character		Component[] = "8universe";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -37,80 +37,148 @@ namespace application
   /// this method creates a new universe by using the user 'name' as the
   /// initial user.
   ///
-  Status		Universe::Create(const String&		name,
-					 const String&		user)
+  elle::Status		Universe::Create(const elle::String&	name,
+					 const elle::Address&	network,
+					 const elle::String&	owner)
   {
-    KeyPair			pair;
+    lune::Authority		authority;
+    lune::Identity		identity;
     etoile::kernel::Object	directory;
 
     enter();
 
-    // test the arguments.
-    if ((name.empty() == true) || (user.empty() == true))
-      escape("unable to create a universe without a name and/or a user");
-
     //
-    // retrieve the initial user's key pair.
+    // test the arguments.
     //
     {
-      String		path =
-	Lune::Keys + System::Path::Separator + user + ".pair";
-      String		prompt;
-      String		pass;
+      // test the name argument.
+      if (name.empty() == true)
+	escape("unable to create a universe without a name");
 
-      // prompt the user for the passphrase.
-      prompt = "Enter passphrase for keypair '" + path + "': ";
-      pass = String(::getpass(prompt.c_str()));
+      // test the network argument.
+      if (network == elle::Address::Null)
+	escape("unable to create a universe without a bootstrap node");
 
-      // load the key pair.
-      if (pair.Load(path, pass) == StatusError)
-	escape("unable to load the key pair");
+      // test the owner argument.
+      if (owner.empty() == true)
+	escape("unable to create a universe without a owner");
     }
 
     //
-    // create a directory.
+    // retrieve the authority.
+    //
+    {
+      elle::String		prompt;
+      elle::String		pass;
+
+      // prompt the user for the passphrase.
+      prompt = "Enter passphrase for the authority: ";
+      pass = elle::String(::getpass(prompt.c_str()));
+
+      // load the authority.
+      if (authority.Load(pass) == elle::StatusError)
+	escape("unable to load the authority");
+    }
+
+    //
+    // retrieve the owner's identity.
+    //
+    {
+      elle::String		prompt;
+      elle::String		pass;
+
+      // prompt the user for the passphrase.
+      prompt = "Enter passphrase for keypair '" + owner + "': ";
+      pass = elle::String(::getpass(prompt.c_str()));
+
+      // load the identity.
+      if (identity.Load(owner, pass) == elle::StatusError)
+	escape("unable to load the owner's identity");
+    }
+
+    //
+    // create the root directory.
     //
     {
       etoile::user::Agent	agent;
 
-      // create the agent.
-      if (agent.Create(pair) == StatusError)
+      // create the agent based on the owner's key pair.
+      //
+      // this agent will be used to sign the root directory's object.
+      if (agent.Create(identity.pair) == elle::StatusError)
 	escape("unable to create the agent");
 
-      // create directory object.
-      if (directory.Create(GenreDirectory, agent.K) == StatusError)
+      // create directory object, setting the user's as the owner.
+      if (directory.Create(etoile::GenreDirectory,
+			   agent.K) == elle::StatusError)
 	escape("unable to create the object directory");
 
-      // seal the data and meta data.
-      if (directory.Seal(agent) == StatusError)
+      // seal the directory.
+      if (directory.Seal(agent) == elle::StatusError)
 	escape("unable to seal the object");
 
-      // compute the address.
-      if (directory.Bind() == StatusError)
+      // compute the directory's address.
+      if (directory.Bind() == elle::StatusError)
 	escape("unable to bind the object to an address");
     }
 
     //
-    // store the directory object.
+    // create the universe's layout.
     //
     {
-      // store the block.
-      if (etoile::hole::Hole::Put(directory.address,
-				  &directory) == StatusError)
-	escape("unable to store the directory block");
+      // create the universe directory.
+      if (::mkdir((lune::Lune::Universes +
+		   elle::System::Path::Separator +
+		   name).c_str(), 0700) == -1)
+	escape(::strerror(errno));
+
+      // create the universe's reserve directory.
+      if (::mkdir((lune::Lune::Universes +
+		   elle::System::Path::Separator +
+		   name +
+		   elle::System::Path::Separator +
+		   lune::Lune::Reserve).c_str(), 0700) == -1)
+	escape(::strerror(errno));
+
+      // create the universe's hole directory.
+      if (::mkdir((lune::Lune::Universes +
+		   elle::System::Path::Separator +
+		   name +
+		   elle::System::Path::Separator +
+		   lune::Lune::Hole).c_str(), 0700) == -1)
+	escape(::strerror(errno));
     }
 
     //
-    // hack for bootstrapping purposes: store the root directory
-    // address in a .root file.
+    // create the universe's memento.
     //
     {
-      String		path =
-	Lune::Universes + System::Path::Separator + name + ".uni";
+      lune::Memento	memento;
 
-      // store the universe's address.
-      if (directory.address.Store(path) == StatusError)
-	escape("unable to store the universe file");
+      // create the memento.
+      if (memento.Create(name,
+			 directory.address,
+			 network) == elle::StatusError)
+	escape("unable to create the universe's memento");
+
+      // seal the memento.
+      if (memento.Seal(authority) == elle::StatusError)
+	escape("unable to seal the memento");
+
+      // store the memento.
+      if (memento.Store(name) == elle::StatusError)
+	escape("unable to store the memento file");
+    }
+
+    //
+    // store the root directory block now that the universe exists.
+    //
+    {
+      // store the object.
+      if (etoile::hole::Hole::Put(name,
+				  directory.address,
+				  &directory) == elle::StatusError)
+	escape("unable to store the directory block");
     }
 
     leave();
@@ -119,7 +187,7 @@ namespace application
   ///
   /// this method destroys an existing universe.
   ///
-  Status		Universe::Destroy(const String&		name)
+  elle::Status		Universe::Destroy(const elle::String&	name)
   {
     enter();
 
@@ -131,11 +199,27 @@ namespace application
   ///
   /// this method retrieves and displays information on the given universe.
   ///
-  Status		Universe::Information(const String&	name)
+  elle::Status		Universe::Information(const elle::String& name)
   {
+    lune::Memento	memento;
+
     enter();
 
-    // XXX
+    /*
+    // test the arguments.
+    if (name.empty() == true)
+      escape("please specify the name of the universe");
+
+    // load the memento.
+    if (memento.Load(path) == elle::StatusError)
+      escape("unable to load the memento file");
+
+    // display the informations.
+    std::cout << "[Name] " << memento.name << std::endl;
+    std::cout << "[Address] " << memento.address << std::endl;
+    std::cout << "[Network]" << std::endl;
+    memento.network.Dump(2);
+    */
 
     leave();
   }
@@ -147,78 +231,86 @@ namespace application
   ///
   /// the main function.
   ///
-  Status		Main(Natural32				argc,
-			     Character*				argv[])
+  elle::Status		Main(elle::Natural32			argc,
+			     elle::Character*			argv[])
   {
-    Parser*		parser;
-    Universe::Operation	operation;
-    Character		option;
-    String		name;
-    String		user;
+    elle::Parser*		parser;
+    Universe::Operation		operation;
+    elle::Character		option;
+    elle::String		name;
+    elle::String		owner;
+    elle::Address		network;
 
     enter();
 
     // initialize the Elle library.
-    if (Elle::Initialize() == StatusError)
+    if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (Program::Setup() == StatusError)
+    if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
     // initialize the Lune library.
-    if (Lune::Initialize() == StatusError)
+    if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
     // initialize the Etoile.
-    if (Etoile::Initialize() == StatusError)
+    if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
 
     // initialize the operation.
     operation = Universe::OperationUnknown;
 
     // allocate a new parser.
-    parser = new Parser(argc, argv);
+    parser = new elle::Parser(argc, argv);
 
     // set up the parser.
     if (parser->Register('h',
 			 "help",
 			 "display the help",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('c',
 			 "create",
 			 "create a new universe",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('d',
 			 "destroy",
 			 "destroy an existing universe",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('i',
 			 "information",
 			 "print information on the universe",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('n',
 			 "name",
 			 "specifies the universe name",
-			 Parser::TypeRequired) == StatusError)
+			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
-    if (parser->Register('u',
-			 "user",
-			 "specifies the name of the universe's creator",
-			 Parser::TypeRequired) == StatusError)
+    if (parser->Register('o',
+			 "owner",
+			 "specifies the name of the universe's owner",
+			 elle::Parser::TypeRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('b',
+			 "bootstrap",
+			 "specifies the universe's bootstrap node's network "
+			 "address of the form 'host:port'",
+			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
-    while (parser->Parse(option) == StatusTrue)
+    while (parser->Parse(option) == elle::StatusTrue)
       {
 	switch (option)
 	  {
@@ -285,10 +377,18 @@ namespace application
 
 	      break;
 	    }
-	  case 'u':
+	  case 'o':
 	    {
-	      // assign the user.
-	      user.assign(optarg);
+	      // assign the owner.
+	      owner.assign(optarg);
+
+	      break;
+	    }
+	  case 'b':
+	    {
+	      // create the node.
+	      if (network.Create(optarg) == elle::StatusError)
+		escape("unable to create the bootstrap address");
 
 	      break;
 	    }
@@ -319,7 +419,7 @@ namespace application
       case Universe::OperationCreate:
 	{
 	  // create the universe.
-	  if (Universe::Create(name, user) == StatusError)
+	  if (Universe::Create(name, network, owner) == elle::StatusError)
 	    escape("unable to create the universe");
 
 	  break;
@@ -327,7 +427,7 @@ namespace application
       case Universe::OperationDestroy:
 	{
 	  // destroy the universe.
-	  if (Universe::Destroy(name) == StatusError)
+	  if (Universe::Destroy(name) == elle::StatusError)
 	    escape("unable to destroy the universe");
 
 	  break;
@@ -335,7 +435,7 @@ namespace application
       case Universe::OperationInformation:
 	{
 	  // get information on the universe.
-	  if (Universe::Information(name) == StatusError)
+	  if (Universe::Information(name) == elle::StatusError)
 	    escape("unable to retrieve information on the universe");
 
 	  break;
@@ -354,15 +454,15 @@ namespace application
     delete parser;
 
     // clean the Etoile.
-    if (Etoile::Clean() == StatusError)
+    if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
 
     // clean Lune
-    if (Lune::Clean() == StatusError)
+    if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
 
     // clean Elle.
-    if (Elle::Clean() == StatusError)
+    if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
     leave();

@@ -1,24 +1,23 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       8user
+// project       8passport
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8user/User.hh
+// file          /home/mycure/infinit/applications/8passport/Passport.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [wed may  5 21:46:08 2010]
+// updated       julien quintard   [tue may  4 18:54:42 2010]
 //
 
-#ifndef USER_USER_HH
-#define USER_USER_HH
+#ifndef PASSPORT_PASSPORT_HH
+#define PASSPORT_PASSPORT_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
@@ -35,9 +34,9 @@ namespace application
 //
 
   ///
-  /// this class implements the 8user application.
+  /// this class implements the 8passport application.
   ///
-  class User
+  class Passport
   {
   public:
     //
@@ -49,15 +48,22 @@ namespace application
 
 	OperationCreate,
 	OperationDestroy,
-	OperationInformation
+	OperationUnset
       };
 
     //
     // static methods
     //
-    static elle::Status		Create(const elle::String&);
-    static elle::Status		Destroy(const elle::String&);
-    static elle::Status		Information(const elle::String&);
+    static Status	Create(const String&);
+    static Status	Destroy(const String&);
+
+    static Status	Set(const String&,
+			    const String&,
+			    const String&);
+    static Status	Get(const String&,
+			    const String&);
+    static Status	Unset(const String&,
+			      const String&);
   };
 
 }

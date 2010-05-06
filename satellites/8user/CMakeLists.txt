@@ -4,6 +4,6 @@ ADD_EXECUTABLE(8user
   User.cc
 )
 
-TARGET_LINK_LIBRARIES(8user elle lune etoile crypto ssl dl
+TARGET_LINK_LIBRARIES(8user infinit elle lune etoile crypto ssl dl
 		            ${QT_QTNETWORK_LIBRARIES}
 			    ${QT_QTCORE_LIBRARIES})

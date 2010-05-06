@@ -1,21 +1,21 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       8user
+// project       8authority
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8user/User.cc
+// file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu may  6 01:07:56 2010]
+// updated       julien quintard   [wed may  5 20:37:06 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <applications/8user/User.hh>
+#include <applications/8authority/Authority.hh>
 
 namespace application
 {
@@ -27,127 +27,88 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "8user";
+  const elle::Character		Component[] = "8authority";
+
+  ///
+  /// this value defines the authority key pair length.
+  ///
+  /// the length is kept high in order to make attacks more difficult.
+  ///
+  const elle::Natural32		Authority::Length = 4096;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
   ///
-  /// this method creates a new user by generating a new key pair and
-  /// storing a user block.
+  /// this method creates a new authority by using the user 'name' as the
+  /// initial user.
   ///
-  elle::Status		User::Create(const elle::String&	name)
+  elle::Status		Authority::Create()
   {
     elle::String	prompt;
     elle::String	pass;
     elle::KeyPair	pair;
     lune::Authority	authority;
-    lune::Identity	identity;
 
     enter();
 
-    // check the argument.
-    if (name.empty() == true)
-      escape("unable to create a user without a user name");
-
     // prompt the user for the passphrase.
-    prompt = "Enter passphrase for the authority: ";
+    prompt = "Enter passphrase for the authority keypair: ";
     pass = elle::String(::getpass(prompt.c_str()));
 
-    // load the authority.
-    if (authority.Load(pass) == elle::StatusError)
-      escape("unable to load the authority");
-
-    // create the user's directory.
-    if (::mkdir((lune::Lune::Users +
-		 elle::System::Path::Separator +
-		 name).c_str(), 0700) == -1)
-      escape(::strerror(errno));
-
-    // create the passports directory.
-    if (::mkdir((lune::Lune::Users +
-		 elle::System::Path::Separator +
-		 name +
-		 elle::System::Path::Separator +
-		 lune::Lune::Passports).c_str(), 0700) == -1)
-      escape(::strerror(errno));
-
-    // prompt the user for the passphrase.
-    prompt = "Enter passphrase for keypair '" + name + "': ";
-    pass = elle::String(::getpass(prompt.c_str()));
-
-    // generate a key pair.
-    if (pair.Generate() == elle::StatusError)
+    // generate the authority key pair.
+    if (pair.Generate(Authority::Length) == elle::StatusError)
       escape("unable to generate the key pair");
 
-    // create the identity.
-    if (identity.Create(name, pair) == elle::StatusError)
-      escape("unable to create the identity");
+    // create the authority with the generated key pair.
+    if (authority.Create(pair) == elle::StatusError)
+      escape("unable to create the authority");
 
-    // seal the identity.
-    if (identity.Seal(authority) == elle::StatusError)
-      escape("unable to seal the identity");
-
-    // store the identity.
-    if (identity.Store(name, pass) == elle::StatusError)
-      escape("unable to store the identity");
+    // store the authority.
+    if (authority.Store(pass) == elle::StatusError)
+      escape("unable to store the authority");
 
     leave();
   }
 
   ///
-  /// this method destroys an existing user.
+  /// this method destroys the existing authority.
   ///
-  elle::Status		User::Destroy(const elle::String&	name)
+  elle::Status		Authority::Destroy()
   {
+    struct ::stat	status;
+
     enter();
 
-    // XXX
+    // XXX soit une method supplementaire dans Fileable soit a la main :(
+    // vu qu'on ne connait pas l'extension.
 
     leave();
   }
 
   ///
-  /// this method displays information on the given user.
+  /// this method retrieves and displays information on the authority.
   ///
-  elle::Status		User::Information(const elle::String&	name)
+  elle::Status		Authority::Information()
   {
     elle::String	prompt;
     elle::String	pass;
     lune::Authority	authority;
-    lune::Identity	identity;
-    elle::PublicKey	K;
 
     enter();
 
-    // check the argument.
-    if (name.empty() == true)
-      escape("unable to create a user without a user name");
-
-    // restore the authority's public key.
-    if (K.Restore(Infinit::Authority) == elle::StatusError)
-      escape("unable to restore the authority's public key");
-
-    // create the authority based on the hard-coded public key.
-    if (authority.Create(K) == elle::StatusError)
-      escape("unable to create the authority");
-
     // prompt the user for the passphrase.
-    prompt = "Enter passphrase for keypair '" + name + "': ";
+    prompt = "Enter passphrase for the authority keypair: ";
     pass = elle::String(::getpass(prompt.c_str()));
 
-    // load the identity.
-    if (identity.Load(name, pass) == elle::StatusError)
-      escape("unable to load the identity");
+    // load the authority.
+    if (authority.Load(pass) == elle::StatusError)
+      escape("unable to load the authority file");
 
-    // verify the identity.
-    if (identity.Validate(authority) != elle::StatusTrue)
-      escape("the identity seems to be invalid");
-
-    // dump the identity.
-    if (identity.Dump() == elle::StatusError)
-      escape("unable to dump the identity");
+    // dump the authority.
+    if (authority.Dump() == elle::StatusError)
+      escape("unable to dump the authority");
 
     leave();
   }
@@ -162,12 +123,9 @@ namespace application
   elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
   {
-    elle::Parser*	parser;
-    User::Operation	operation;
-    elle::Character	option;
-    elle::String	name;
-    elle::String	attribute;
-    elle::String	value;
+    elle::Parser*		parser;
+    Authority::Operation	operation;
+    elle::Character		option;
 
     enter();
 
@@ -188,7 +146,7 @@ namespace application
       escape("unable to initialize Etoile");
 
     // initialize the operation.
-    operation = User::OperationUnknown;
+    operation = Authority::OperationUnknown;
 
     // allocate a new parser.
     parser = new elle::Parser(argc, argv);
@@ -202,26 +160,20 @@ namespace application
 
     if (parser->Register('c',
 			 "create",
-			 "create a new user",
+			 "create the authority",
 			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('d',
 			 "destroy",
-			 "destroy an existing user",
+			 "destroy the existing authority",
 			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('i',
 			 "information",
-			 "display information on an existing user",
+			 "print information on the authority",
 			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('n',
-			 "name",
-			 "specifies a user name",
-			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -240,7 +192,7 @@ namespace application
 	  case 'c':
 	    {
 	      // check if the operation has already been set up.
-	      if (operation != User::OperationUnknown)
+	      if (operation != Authority::OperationUnknown)
 		{
 		  // display the usage.
 		  parser->Usage();
@@ -249,14 +201,14 @@ namespace application
 			 "to another operation");
 		}
 
-	      operation = User::OperationCreate;
+	      operation = Authority::OperationCreate;
 
 	      break;
 	    }
 	  case 'd':
 	    {
 	      // check if the operation has already been set up.
-	      if (operation != User::OperationUnknown)
+	      if (operation != Authority::OperationUnknown)
 		{
 		  // display the usage.
 		  parser->Usage();
@@ -265,30 +217,23 @@ namespace application
 			 "another operation");
 		}
 
-	      operation = User::OperationDestroy;
+	      operation = Authority::OperationDestroy;
 
 	      break;
 	    }
 	  case 'i':
 	    {
 	      // check if the operation has already been set up.
-	      if (operation != User::OperationUnknown)
+	      if (operation != Authority::OperationUnknown)
 		{
 		  // display the usage.
 		  parser->Usage();
 
-		  escape("the information operation cannot be set "
-			 "concurrently to another operation");
+		  escape("the print operation cannot be set concurrently to "
+			 "another operation");
 		}
 
-	      operation = User::OperationInformation;
-
-	      break;
-	    }
-	  case 'n':
-	    {
-	      // retrieve the user name.
-	      name.assign(optarg);
+	      operation = Authority::OperationInformation;
 
 	      break;
 	    }
@@ -316,39 +261,39 @@ namespace application
     // trigger the operation.
     switch (operation)
       {
-      case User::OperationCreate:
+      case Authority::OperationCreate:
 	{
-	  // create a user.
-	  if (User::Create(name) == elle::StatusError)
-	    escape("unable to create the user");
+	  // create the authority.
+	  if (Authority::Create() == elle::StatusError)
+	    escape("unable to create the authority");
 
 	  // display a message.
-	  std::cout << "The user has been created successfully!"
+	  std::cout << "The authority has been created successfully!"
 		    << std::endl;
 
 	  break;
 	}
-      case User::OperationDestroy:
+      case Authority::OperationDestroy:
 	{
-	  // destroy a user.
-	  if (User::Destroy(name) == elle::StatusError)
-	    escape("unable to destroy the user");
+	  // destroy the authority.
+	  if (Authority::Destroy() == elle::StatusError)
+	    escape("unable to destroy the authority");
 
 	  // display a message.
-	  std::cout << "The user has been destroyed successfully!"
+	  std::cout << "The authority has been destroyed successfully!"
 		    << std::endl;
 
 	  break;
 	}
-      case User::OperationInformation:
+      case Authority::OperationInformation:
 	{
-	  // display information.
-	  if (User::Information(name) == elle::StatusError)
-	    escape("unable to display information on the user");
+	  // get information on the authority.
+	  if (Authority::Information() == elle::StatusError)
+	    escape("unable to retrieve information on the authority");
 
 	  break;
 	}
-      case User::OperationUnknown:
+      case Authority::OperationUnknown:
       default:
 	{
 	  // display the usage.

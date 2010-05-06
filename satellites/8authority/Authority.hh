@@ -1,24 +1,23 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       8user
+// project       8authority
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8user/User.hh
+// file          /home/mycure/infinit/applications/8authority/Authority.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [wed may  5 21:46:08 2010]
+// updated       julien quintard   [wed may  5 19:52:41 2010]
 //
 
-#ifndef USER_USER_HH
-#define USER_USER_HH
+#ifndef AUTHORITY_AUTHORITY_HH
+#define AUTHORITY_AUTHORITY_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
@@ -35,11 +34,16 @@ namespace application
 //
 
   ///
-  /// this class implements the 8user application.
+  /// this class implements the 8authority application.
   ///
-  class User
+  class Authority
   {
   public:
+    //
+    // constants
+    //
+    static const elle::Natural32		Length;
+
     //
     // enumerations
     //
@@ -55,9 +59,9 @@ namespace application
     //
     // static methods
     //
-    static elle::Status		Create(const elle::String&);
-    static elle::Status		Destroy(const elle::String&);
-    static elle::Status		Information(const elle::String&);
+    static elle::Status		Create();
+    static elle::Status		Destroy();
+    static elle::Status		Information();
   };
 
 }
