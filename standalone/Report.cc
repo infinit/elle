@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [sun may  2 15:19:38 2010]
+// updated       julien quintard   [tue may  4 13:11:41 2010]
 //
 
 //
@@ -322,9 +322,9 @@ namespace elle
 	  // display the entry.
 	  std::cout << entry->message
 		    << " ("
-		    << entry->location << " @ "
+		    << entry->location
+		    << ") @ "
 		    << entry->time
-		    << ")"
 		    << std::endl;
 	}
 
@@ -396,7 +396,7 @@ namespace elle
 			      entry->message) == StatusError)
 	    escape("unable to serialize the entry");
 
-	  entry->type = (Report::Type)type;
+	  entry->type = static_cast<Report::Type>(type);
 
 	  // push the extract entry in the container.
 	  this->container.push_front(entry);

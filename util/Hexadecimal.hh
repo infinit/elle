@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Hexadecimal.hh
 //
 // created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [mon may  3 21:09:57 2010]
+// updated       julien quintard   [tue may  4 10:52:59 2010]
 //
 
 #ifndef ELLE_UTIL_HEXADECIMAL_HH
@@ -22,34 +22,12 @@
 
 #include <elle/radix/Status.hh>
 
+#include <elle/standalone/Region.hh>
+
+#include <elle/archive/Archive.hh>
+
 namespace elle
 {
-  namespace standalone
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// this Region must be forward declared in order to prevent conflicts.
-    ///
-    class Region;
-  }
-
-  namespace archive
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// this forward declare this Archive class.
-    ///
-    class Archive;
-  }
-
   using namespace core;
   using namespace standalone;
   using namespace radix;
@@ -226,14 +204,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/standalone/Region.hh>
-
-#include <elle/archive/Archive.hh>
 
 //
 // ---------- templates -------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [mon may  3 22:50:49 2010]
+// updated       julien quintard   [tue may  4 13:23:15 2010]
 //
 
 //
@@ -51,6 +51,29 @@ namespace elle
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates an address from a string of the form
+    /// 'host:port'.
+    ///
+    Status		Address::Create(const String&		string)
+    {
+      Natural32		separator;
+
+      enter();
+
+      // locate the ':' separator.
+      separator = string.find_first_of(':');
+
+      // create the host.
+      if (this->host.Create(string.substr(0, separator)) == StatusError)
+	escape("unable to create the host");
+
+      // create the port.
+      this->port = ::strtoul(string.substr(separator + 1).c_str(), NULL, 0);
+
+      leave();
+    }
 
     ///
     /// this method creates an address.

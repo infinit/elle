@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hxx
 //
 // created       julien quintard   [sun may  2 13:22:46 2010]
-// updated       julien quintard   [mon may  3 00:21:27 2010]
+// updated       julien quintard   [tue may  4 13:25:34 2010]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HXX
@@ -41,18 +41,28 @@ namespace elle
     {
     public:
       //
-      // operators
+      // methods
       //
-      Void		operator>>(Unique&			unique) const
+      Status		Save(Unique&				unique) const
       {
+	enter();
+
 	// encode the object in hexadecimal.
-	Hexadecimal::Encode(*this, unique);
+	if (Hexadecimal::Encode(*this, unique) == StatusError)
+	  escape("unable to encode the object in hexadecimal");
+
+	leave();
       }
 
-      Void		operator<<(const Unique&		unique)
+      Status		Restore(const Unique&			unique)
       {
+	enter();
+
 	// decode the unique and reconstitute the object.
-	Hexadecimal::Decode(unique, *this);
+	if (Hexadecimal::Decode(unique, *this) == StatusError)
+	  escape("unable to decode the hexadecimal unique");
+
+	leave();
       }
     };
 
@@ -69,18 +79,28 @@ namespace elle
     {
     public:
       //
-      // operators
+      // methods
       //
-      Void		operator>>(Unique&			unique) const
+      Status		Save(Unique&				unique) const
       {
+	enter();
+
 	// encode the object in base64.
-	Base64::Encode(*this, unique);
+	if (Base64::Encode(*this, unique) == StatusError)
+	  escape("unable to encode the object in base64");
+
+	leave();
       }
 
-      Void		operator<<(const Unique&		unique)
+      Status		Restore(const Unique&			unique)
       {
+	enter();
+
 	// decode the unique and reconstitute the object.
-	Base64::Decode(unique, *this);
+	if (Base64::Decode(unique, *this) == StatusError)
+	  escape("unable to decode the base64 unique");
+
+	leave();
       }
     };
 
@@ -99,18 +119,18 @@ namespace elle
       //
       // operators
       //
-      virtual Void	operator>>(Unique&			unique) const
+      virtual Status	Save(Unique&) const
       {
 	enter();
 
-	alert("this method should never have been called");
+	escape("this method should never have been called");
       }
 
-      virtual Void	operator<<(const Unique&		unique)
+      virtual Status	Restore(const Unique&)
       {
 	enter();
 
-	alert("this method should never have been called");
+	escape("this method should never have been called");
       }
     };
 
@@ -137,8 +157,11 @@ namespace std
     static const elle::core::Natural32	Length = 50;
     elle::io::Unique			unique;
 
+    enter();
+
     // generate the unique identifier.
-    object >> unique;
+    if (object.Save(unique) == elle::radix::StatusError)
+      yield("unable to save the object", stream);
 
     // display the unique depending on its length.
     if (unique.length() < Length)
@@ -153,6 +176,9 @@ namespace std
 	       << "..."
 	       << unique.substr(unique.length() - (Length / 2));
       }
+
+    // release.
+    release();
 
     return (stream);
   }

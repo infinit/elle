@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Base64.hh
 //
 // created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [mon may  3 21:10:11 2010]
+// updated       julien quintard   [tue may  4 10:52:33 2010]
 //
 
 #ifndef ELLE_UTIL_BASE64_HH
@@ -22,34 +22,12 @@
 
 #include <elle/radix/Status.hh>
 
+#include <elle/standalone/Region.hh>
+
+#include <elle/archive/Archive.hh>
+
 namespace elle
 {
-  namespace standalone
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// the region needs to be forward declared.
-    ///
-    class Region;
-  }
-
-  namespace archive
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// this forward declare the archive.
-    ///
-    class Archive;
-  }
-
   using namespace core;
   using namespace standalone;
   using namespace radix;
@@ -226,14 +204,6 @@ namespace elle
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/standalone/Region.hh>
-
-#include <elle/archive/Archive.hh>
 
 //
 // ---------- templates -------------------------------------------------------

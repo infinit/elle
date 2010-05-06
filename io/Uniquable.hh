@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hh
 //
 // created       julien quintard   [sun may  2 12:01:53 2010]
-// updated       julien quintard   [mon may  3 00:21:11 2010]
+// updated       julien quintard   [wed may  5 23:17:01 2010]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HH
@@ -23,6 +23,8 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/radix/Status.hh>
+
 #include <elle/archive/Archivable.hh>
 
 #include <elle/io/Format.hh>
@@ -31,6 +33,7 @@
 namespace elle
 {
   using namespace core;
+  using namespace radix;
   using namespace archive;
 
   namespace io
@@ -44,26 +47,38 @@ namespace elle
     /// this class enables the inherited class to be represented in
     /// a unique compact string-based form.
     ///
+    /// besides, this unique string representation can be used to
+    /// save and restore the original object from/to main memory.
+    ///
     template <const Format F>
     class Uniquable:
       public virtual Archivable
     {
     public:
       //
-      // operators
+      // methods
       //
-      virtual Void	operator>>(Unique&			unique) const
+
+      ///
+      /// this method returns in the Unique, the string-based representation
+      /// of the object's archive.
+      ///
+      Status		Save(Unique&) const
       {
 	enter();
 
-	alert("this method should never have been called");
+	escape("this method should never have been called");
       }
 
-      virtual Void	operator<<(const Unique&		unique)
+      ///
+      /// this method reconstructs the living object based on the
+      /// unique string representation.
+      ///
+      Status		Restore(const Unique&)
       {
 	enter();
 
-	alert("this method should never have been called");
+	escape("this method should never have been called");
       }
     };
 
