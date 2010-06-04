@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [mon may  3 22:21:26 2010]
+// updated       julien quintard   [fri may 28 12:26:49 2010]
 //
 
 #ifndef ELLE_RADIX_OBJECT_HH
@@ -29,7 +29,6 @@
 #include <elle/io/Dumpable.hh>
 #include <elle/io/Format.hh>
 #include <elle/io/Uniquable.hh>
-#include <elle/io/Fileable.hh>
 
 namespace elle
 {
@@ -52,11 +51,10 @@ namespace elle
     /// assignment, which can be recycled but also compared. in addition,
     /// an object can be serialized hence stored offline such as in a file.
     ///
-    template <const Format U = FormatBase64, const Format F = FormatRaw>
     class Object:
       public Meta,
       public virtual Dumpable, public virtual Archivable,
-      public virtual Uniquable<U>, public virtual Fileable<F>
+      public virtual Uniquable<FormatBase64>
     {
     public:
       //

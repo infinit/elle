@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Routine.hh
 //
 // created       julien quintard   [wed mar 24 19:50:08 2010]
-// updated       julien quintard   [mon may  3 22:30:34 2010]
+// updated       julien quintard   [fri may 28 12:15:41 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ROUTINE_HH
@@ -40,7 +40,7 @@ namespace elle
     /// or static method.
     ///
     class Routine:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -73,7 +73,7 @@ namespace elle
       //
 
       // object
-      declare(Routine, _());
+      declare(Routine);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

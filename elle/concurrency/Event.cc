@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [mon may  3 22:43:06 2010]
+// updated       julien quintard   [fri may 28 12:16:06 2010]
 //
 
 //
@@ -102,7 +102,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Event, _(), _());
+    embed(Event, _());
 
 //
 // ---------- archivable ------------------------------------------------------

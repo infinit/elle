@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.cc
 //
 // created       julien quintard   [tue feb 23 00:18:03 2010]
-// updated       julien quintard   [mon may  3 22:50:26 2010]
+// updated       julien quintard   [fri may 28 12:18:46 2010]
 //
 
 //
@@ -73,7 +73,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Header, _(), _());
+    embed(Header, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

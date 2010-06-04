@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.hh
 //
 // created       julien quintard   [mon feb 22 23:48:40 2010]
-// updated       julien quintard   [mon may  3 22:34:08 2010]
+// updated       julien quintard   [fri may 28 12:18:00 2010]
 //
 
 #ifndef ELLE_NETWORK_HEADER_HH
@@ -50,7 +50,7 @@ namespace elle
     /// XXX
     ///
     class Header:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -75,7 +75,7 @@ namespace elle
       //
 
       // object
-      declare(Header, _());
+      declare(Header);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

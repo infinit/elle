@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Signature.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [tue may  4 10:18:15 2010]
+// updated       julien quintard   [fri may 28 12:19:12 2010]
 //
 
 //
@@ -61,7 +61,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Signature, _(), _());
+    embed(Signature, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

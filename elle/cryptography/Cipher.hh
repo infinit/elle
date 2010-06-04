@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cipher.hh
 //
 // created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [mon may  3 22:33:09 2010]
+// updated       julien quintard   [fri may 28 12:14:54 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CIPHER_HH
@@ -47,7 +47,7 @@ namespace elle
     /// this class represents a symmetrically ciphered text.
     ///
     class Cipher:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -60,7 +60,7 @@ namespace elle
       //
 
       // object
-      declare(Cipher, _());
+      declare(Cipher);
       Boolean		operator==(const Cipher&) const;
 
       // dumpable

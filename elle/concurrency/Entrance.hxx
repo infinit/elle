@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Entrance.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [mon may  3 22:43:21 2010]
+// updated       julien quintard   [fri may 28 12:16:17 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ENTRANCE_HXX
@@ -135,7 +135,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Entrance<T...>, _(), _(template <typename... T>));
+    embed(Entrance<T...>, _(template <typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

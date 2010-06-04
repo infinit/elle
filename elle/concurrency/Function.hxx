@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [mon may  3 22:39:45 2010]
+// updated       julien quintard   [fri may 28 12:16:44 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HXX
@@ -70,7 +70,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Function<T...>, _(), _(template <typename... T>));
+    embed(Function<T...>, _(template <typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

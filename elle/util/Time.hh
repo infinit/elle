@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [mon may  3 22:36:16 2010]
+// updated       julien quintard   [fri may 28 12:18:24 2010]
 //
 
 #ifndef ELLE_UTIL_TIME_HH
@@ -47,7 +47,7 @@ namespace elle
     /// this class represents a time stamp.
     ///
     class Time:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -67,7 +67,7 @@ namespace elle
       //
 
       // object
-      declare(Time, _());
+      declare(Time);
       Boolean		operator==(const Time&) const;
       Boolean		operator<(const Time&) const;
       Time		operator+(const Time&);

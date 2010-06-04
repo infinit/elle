@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [tue may  4 13:04:59 2010]
+// updated       julien quintard   [fri may 28 12:18:35 2010]
 //
 
 //
@@ -414,7 +414,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Settings, _(FormatBase64, FormatCustom), _());
+    embed(Settings, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

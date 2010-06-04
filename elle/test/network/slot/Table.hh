@@ -41,7 +41,7 @@ namespace elle
 //
 
     class Table:
-      public Object<>
+      public Object
     {
     public:
       //

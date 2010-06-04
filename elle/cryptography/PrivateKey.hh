@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [mon may  3 22:32:23 2010]
+// updated       julien quintard   [fri may 28 12:17:18 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -58,7 +58,7 @@ namespace elle
     /// this class represents a private key based on the RSA cryptosystem.
     ///
     class PrivateKey:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -102,7 +102,7 @@ namespace elle
       //
 
       // object
-      declare(PrivateKey, _());
+      declare(PrivateKey);
       Boolean		operator==(const PrivateKey&) const;
 
       // dumpable
