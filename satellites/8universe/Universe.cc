@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8universe/Universe.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu may  6 01:12:20 2010]
+// updated       julien quintard   [mon may 10 09:41:44 2010]
 //
 
 //
@@ -76,8 +76,12 @@ namespace application
       pass = elle::String(::getpass(prompt.c_str()));
 
       // load the authority.
-      if (authority.Load(pass) == elle::StatusError)
+      if (authority.Load() == elle::StatusError)
 	escape("unable to load the authority");
+
+      // decrypt the authority.
+      if (authority.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the authority");
     }
 
     //
@@ -92,8 +96,12 @@ namespace application
       pass = elle::String(::getpass(prompt.c_str()));
 
       // load the identity.
-      if (identity.Load(owner, pass) == elle::StatusError)
+      if (identity.Load(owner) == elle::StatusError)
 	escape("unable to load the owner's identity");
+
+      // decrypt the authority.
+      if (identity.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the identity");
     }
 
     //
@@ -202,24 +210,55 @@ namespace application
   elle::Status		Universe::Information(const elle::String& name)
   {
     lune::Memento	memento;
+    lune::Authority	authority;
 
     enter();
 
-    /*
+    //
     // test the arguments.
-    if (name.empty() == true)
-      escape("please specify the name of the universe");
+    //
+    {
+      // test the name.
+      if (name.empty() == true)
+	escape("please specify the name of the universe");
+    }
 
-    // load the memento.
-    if (memento.Load(path) == elle::StatusError)
-      escape("unable to load the memento file");
+    //
+    // retrieve the authority.
+    //
+    {
+      elle::PublicKey	K;
 
-    // display the informations.
-    std::cout << "[Name] " << memento.name << std::endl;
-    std::cout << "[Address] " << memento.address << std::endl;
-    std::cout << "[Network]" << std::endl;
-    memento.network.Dump(2);
-    */
+      // restore the authority's public key.
+      if (K.Restore(Infinit::Authority) == elle::StatusError)
+	escape("unable to restore the authority's public key");
+
+      // create the authority based on the hard-coded public key.
+      if (authority.Create(K) == elle::StatusError)
+	escape("unable to create the authority");
+    }
+
+    //
+    // retrieve the memento.
+    //
+    {
+      // load the memento.
+      if (memento.Load(name) == elle::StatusError)
+	escape("unable to load the memento");
+
+      // validate the memento.
+      if (memento.Validate(authority) != elle::StatusTrue)
+	escape("unable to validate the memento");
+    }
+
+    //
+    // display information.
+    //
+    {
+      // dump the memento.
+      if (memento.Dump() == elle::StatusError)
+	escape("unable to dump the memento");
+    }
 
     leave();
   }
@@ -284,7 +323,7 @@ namespace application
 			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
-    if (parser->Register('i',
+    if (parser->Register('x',
 			 "information",
 			 "print information on the universe",
 			 elle::Parser::TypeNone) == elle::StatusError)
@@ -354,7 +393,7 @@ namespace application
 
 	      break;
 	    }
-	  case 'i':
+	  case 'x':
 	    {
 	      // check if the operation has already been set up.
 	      if (operation != Universe::OperationUnknown)
@@ -422,6 +461,10 @@ namespace application
 	  if (Universe::Create(name, network, owner) == elle::StatusError)
 	    escape("unable to create the universe");
 
+	  // display a message.
+	  std::cout << "The universe has been created successfully!"
+		    << std::endl;
+
 	  break;
 	}
       case Universe::OperationDestroy:
@@ -429,6 +472,10 @@ namespace application
 	  // destroy the universe.
 	  if (Universe::Destroy(name) == elle::StatusError)
 	    escape("unable to destroy the universe");
+
+	  // display a message.
+	  std::cout << "The universe has been destroyed successfully!"
+		    << std::endl;
 
 	  break;
 	}

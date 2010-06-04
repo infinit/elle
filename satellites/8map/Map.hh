@@ -1,26 +1,26 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       8access
+// project       8map
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8access/Access.hh
+// file          /home/mycure/infinit/applications/8map/Map.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [sun apr 18 19:59:25 2010]
+// updated       julien quintard   [mon may 10 17:21:20 2010]
 //
 
-#ifndef ACCESS_ACCESS_HH
-#define ACCESS_ACCESS_HH
+#ifndef MAP_MAP_HH
+#define MAP_MAP_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
-#include <map/Map.hh>
 
 #include <elle/idiom/Close.hh>
 # include <sys/stat.h>
@@ -34,16 +34,11 @@ namespace application
 //
 
   ///
-  /// this class implements the 8access application.
+  /// this class implements the 8map application.
   ///
-  class Access
+  class Map
   {
   public:
-    //
-    // constants
-    //
-    static const String			Path;
-
     //
     // enumerations
     //
@@ -68,15 +63,14 @@ namespace application
     //
     // static methods
     //
-    static Status	Add(const Type&,
-			    const String&,
-			    const PublicKey&,
-			    const etoile::hole::Address&);
-    static Status	Remove(const Type&,
-			       const String&);
-    static Status	Dump(const Type&,
-			     const String&);
-    static Status	Show(const Type&);
+    static elle::Status		Add(const Type&,
+				    const elle::String&,
+				    const elle::Unique&);
+    static elle::Status		Remove(const Type&,
+				       const elle::String&);
+    static elle::Status		Dump(const Type&,
+				     const elle::String&);
+    static elle::Status		Show(const Type&);
   };
 
 }

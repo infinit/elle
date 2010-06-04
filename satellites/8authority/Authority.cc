@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [wed may  5 20:37:06 2010]
+// updated       julien quintard   [mon may 10 07:34:14 2010]
 //
 
 //
@@ -65,8 +65,12 @@ namespace application
     if (authority.Create(pair) == elle::StatusError)
       escape("unable to create the authority");
 
+    // encrypt the authority.
+    if (authority.Encrypt(pass) == elle::StatusError)
+      escape("unable to encrypt the authority");
+
     // store the authority.
-    if (authority.Store(pass) == elle::StatusError)
+    if (authority.Store() == elle::StatusError)
       escape("unable to store the authority");
 
     leave();
@@ -95,6 +99,7 @@ namespace application
     elle::String	prompt;
     elle::String	pass;
     lune::Authority	authority;
+    elle::Unique	unique;
 
     enter();
 
@@ -103,12 +108,25 @@ namespace application
     pass = elle::String(::getpass(prompt.c_str()));
 
     // load the authority.
-    if (authority.Load(pass) == elle::StatusError)
+    if (authority.Load() == elle::StatusError)
       escape("unable to load the authority file");
+
+    // decrypt the authority.
+    if (authority.Decrypt(pass) == elle::StatusError)
+      escape("unable to decrypt the authority");
 
     // dump the authority.
     if (authority.Dump() == elle::StatusError)
       escape("unable to dump the authority");
+
+    // XXX
+    // retrive the public key's unique.
+    if (authority.K.Save(unique) == elle::StatusError)
+      escape("unable to save the authority's public key");
+
+    // dump the public key's unique so that it can be easily hard-coded in the
+    // infinit software sources.
+    std::cout << "[Unique] " << unique << std::endl;
 
     leave();
   }
@@ -170,7 +188,7 @@ namespace application
 			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
-    if (parser->Register('i',
+    if (parser->Register('x',
 			 "information",
 			 "print information on the authority",
 			 elle::Parser::TypeNone) == elle::StatusError)
@@ -221,7 +239,7 @@ namespace application
 
 	      break;
 	    }
-	  case 'i':
+	  case 'x':
 	    {
 	      // check if the operation has already been set up.
 	      if (operation != Authority::OperationUnknown)

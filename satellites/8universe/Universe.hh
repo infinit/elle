@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8universe/Universe.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [tue may  4 11:45:50 2010]
+// updated       julien quintard   [fri may  7 08:15:56 2010]
 //
 
 #ifndef UNIVERSE_UNIVERSE_HH
@@ -18,6 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>

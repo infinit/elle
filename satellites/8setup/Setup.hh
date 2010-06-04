@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [thu apr 29 13:34:03 2010]
+// updated       julien quintard   [mon may 10 09:55:08 2010]
 //
 
 #ifndef SETUP_SETUP_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
 
 #include <elle/idiom/Close.hh>
@@ -56,11 +57,11 @@ namespace application
     //
     // static methods
     //
-    static Status	Empty(const String&);
+    static elle::Status		Empty(const elle::String&);
 
-    static Status	Initialize();
-    static Status	Clean();
-    static Status	Check();
+    static elle::Status		Initialize();
+    static elle::Status		Clean();
+    static elle::Status		Check();
   };
 
 }

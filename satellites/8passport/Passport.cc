@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8passport/Passport.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue may  4 20:26:51 2010]
+// updated       julien quintard   [tue may 25 11:46:52 2010]
 //
 
 //
@@ -27,49 +27,109 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const Character	Component[] = "8passport";
+  const elle::Character		Component[] = "8passport";
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
   ///
-  /// this method creates a new passport by generating a new key pair and
-  /// storing a passport block.
+  /// this method creates a new passport for the given user in the given
+  /// universe.
   ///
-  elle::Status		Passport::Create(const String&		name)
+  elle::Status		Passport::Create(const elle::String&	user,
+					 const elle::String&	universe)
   {
-    String		path =
-      Lune::Keys + System::Path::Separator + name + ".pair";
-    struct ::stat	stat;
-    String		prompt;
-    String		pass;
-    KeyPair		pair;
+    lune::Authority	authority;
+    lune::Identity	identity;
+    lune::Memento	memento;
 
     enter();
 
-    // check the argument.
-    if (name.empty() == true)
-      escape("unable to create a passport without a passport name");
+    //
+    // check the arguments.
+    //
+    {
+      // check the user.
+      if (user.empty() == true)
+	escape("unable to create a passport without a user name");
 
-    // get the file status.
-    if (::stat(path.c_str(), &stat) == 0)
-      escape("this passport seems to already exist");
+      // check the universe.
+      if (universe.empty() == true)
+	escape("unable to create a passport without a universe name");
+    }
 
-    // prompt the passport for the passphrase.
-    prompt = "Enter passphrase for keypair '" + path + "': ";
-    pass = String(::getpass(prompt.c_str()));
+    //
+    // retrieve the authority.
+    //
+    {
+      elle::String	prompt;
+      elle::String	pass;
 
-    // generate a key pair.
-    if (pair.Generate() == elle::StatusError)
-      escape("unable to generate the key pair");
+      // prompt the passport for the passphrase.
+      prompt = "Enter passphrase for the authority: ";
+      pass = elle::String(::getpass(prompt.c_str()));
 
-    // store the pair.
-    if (pair.Store(path, pass) == elle::StatusError)
-      escape("unable to store the key pair");
+      // load the authority.
+      if (authority.Load() == elle::StatusError)
+	escape("unable to load the authority");
 
-    // display the tuple passport (name, identifier).
-    std::cout << name << " " << pair() << std::endl;
+      // decrypt the authority.
+      if (authority.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the authority");
+    }
+
+    //
+    // retrieve the identity.
+    //
+    {
+      elle::String	prompt;
+      elle::String	pass;
+
+      // prompt the passport for the passphrase.
+      prompt = "Enter passphrase for keypair '" + user + "': ";
+      pass = elle::String(::getpass(prompt.c_str()));
+
+      // load the identity.
+      if (identity.Load(user) == elle::StatusError)
+	escape("unable to load the identity");
+
+      // decrypt the identity.
+      if (identity.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the identity");
+    }
+
+    //
+    // retrieve the memento.
+    //
+    {
+      // load the memento.
+      if (memento.Load(universe) == elle::StatusError)
+	escape("unable to load the memento");
+    }
+
+    //
+    // create the passport.
+    //
+    {
+      lune::Passport	passport;
+
+      // create a passport.
+      if (passport.Create(user, universe) == elle::StatusError)
+	escape("unable to create the passport");
+
+      // encrypt the passport.
+      if (passport.Encrypt(identity) == elle::StatusError)
+	escape("unable to encrypt the passport");
+
+      // seal the passport.
+      if (passport.Seal(authority) == elle::StatusError)
+	escape("unable to seal the passport");
+
+      // store the passport.
+      if (passport.Store(user, universe) == elle::StatusError)
+	escape("unable to store the passport");
+    }
 
     leave();
   }
@@ -77,7 +137,8 @@ namespace application
   ///
   /// this method destroys an existing passport.
   ///
-  elle::Status		Passport::Destroy(const String&		name)
+  elle::Status		Passport::Destroy(const elle::String&	user,
+					  const elle::String&	universe)
   {
     enter();
 
@@ -87,41 +148,87 @@ namespace application
   }
 
   ///
-  /// this method sets an attribute in the passport block.
+  /// this method displays information on the given passport.
   ///
-  elle::Status		Passport::Set(const String&			name,
-				  const String&			attribute,
-				  const String&			value)
+  elle::Status		Passport::Information(const elle::String& user,
+					      const elle::String& universe)
   {
+    lune::Authority	authority;
+    lune::Identity	identity;
+    lune::Memento	memento;
+
     enter();
 
-    // XXX
+    //
+    // check the arguments.
+    //
+    {
+      // check the user.
+      if (user.empty() == true)
+	escape("unable to create a passport without a user name");
 
-    leave();
-  }
+      // check the universe.
+      if (universe.empty() == true)
+	escape("unable to create a passport without a universe name");
+    }
 
-  ///
-  /// this method gets an attribute from the passport block.
-  ///
-  elle::Status		Passport::Get(const String&			name,
-				  const String&			attribute)
-  {
-    enter();
+    //
+    // retrieve the authority.
+    //
+    {
+      elle::PublicKey	K;
 
-    // XXX
+      // restore the authority's public key.
+      if (K.Restore(Infinit::Authority) == elle::StatusError)
+	escape("unable to restore the authority's public key");
 
-    leave();
-  }
+      // create the authority based on the hard-coded public key.
+      if (authority.Create(K) == elle::StatusError)
+	escape("unable to create the authority");
+    }
 
-  ///
-  /// this method unset an attribute in the passport block.
-  ///
-  elle::Status		Passport::Unset(const String&		name,
-				    const String&		attribute)
-  {
-    enter();
+    //
+    // retrieve the identity.
+    //
+    {
+      elle::String	prompt;
+      elle::String	pass;
 
-    // XXX
+      // prompt the passport for the passphrase.
+      prompt = "Enter passphrase for keypair '" + user + "': ";
+      pass = elle::String(::getpass(prompt.c_str()));
+
+      // load the identity.
+      if (identity.Load(user) == elle::StatusError)
+	escape("unable to load the identity");
+
+      // decrypt the identity.
+      if (identity.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the identity");
+    }
+
+    //
+    // retrieve the passport.
+    //
+    {
+      lune::Passport	passport;
+
+      // load the passport.
+      if (passport.Load(user, universe) == elle::StatusError)
+	escape("unable to load the passport");
+
+      // validate the passport.
+      if (passport.Validate(authority) == elle::StatusError)
+	escape("unable to validate the passport");
+
+      // decrypt the passport.
+      if (passport.Decrypt(identity) == elle::StatusError)
+	escape("unable to decrypt the passport");
+
+      // dump the passport.
+      if (passport.Dump() == elle::StatusError)
+	escape("unable to dump the passport");
+    }
 
     leave();
   }
@@ -133,93 +240,76 @@ namespace application
   ///
   /// the main function.
   ///
-  elle::Status		Main(Natural32				argc,
-			     Character*				argv[])
+  elle::Status		Main(elle::Natural32			argc,
+			     elle::Character*			argv[])
   {
-    Parser*		parser;
+    elle::Parser*	parser;
     Passport::Operation	operation;
-    Character		option;
-    String		name;
-    String		attribute;
-    String		value;
+    elle::Character	option;
+    elle::String	universe;
+    elle::String	user;
 
     enter();
 
     // initialize the Elle library.
-    if (Elle::Initialize() == elle::StatusError)
+    if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (Program::Setup() == elle::StatusError)
+    if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
     // initialize the Lune library.
-    if (Lune::Initialize() == elle::StatusError)
+    if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
     // initialize the Etoile.
-    if (Etoile::Initialize() == elle::StatusError)
+    if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
 
     // initialize the operation.
     operation = Passport::OperationUnknown;
 
     // allocate a new parser.
-    parser = new Parser(argc, argv);
+    parser = new elle::Parser(argc, argv);
 
     // set up the parser.
     if (parser->Register('h',
 			 "help",
 			 "display the help",
-			 Parser::TypeNone) == elle::StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('c',
 			 "create",
 			 "create a new passport",
-			 Parser::TypeNone) == elle::StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('d',
 			 "destroy",
 			 "destroy an existing passport",
-			 Parser::TypeNone) == elle::StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
-    if (parser->Register('s',
-			 "set",
-			 "set an attribute in the passport's block",
-			 Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('g',
-			 "get",
-			 "get, hence display, a passport's attribute",
-			 Parser::TypeNone) == elle::StatusError)
+    if (parser->Register('x',
+			 "information",
+			 "display information on an existing passport",
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('u',
-			 "unset",
-			 "unset an existing attribute in the passport's block",
-			 Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('n',
-			 "name",
-			 "specifies a passport name",
-			 Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('a',
-			 "attribute",
-			 "specifies an attribute name",
-			 Parser::TypeRequired) == elle::StatusError)
+			 "user",
+			 "specifies the name of the user to which the "
+			 "passport is related to",
+			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('v',
-			 "value",
-			 "specifies an attribute value",
-			 Parser::TypeRequired) == elle::StatusError)
+			 "universe",
+			 "specifies the name of the universe to which "
+			 "the passport is related to",
+			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
@@ -267,7 +357,7 @@ namespace application
 
 	      break;
 	    }
-	  case 's':
+	  case 'x':
 	    {
 	      // check if the operation has already been set up.
 	      if (operation != Passport::OperationUnknown)
@@ -275,64 +365,25 @@ namespace application
 		  // display the usage.
 		  parser->Usage();
 
-		  escape("the set operation cannot be set concurrently to "
-			 "another operation");
+		  escape("the information operation cannot be set "
+			 "concurrently to another operation");
 		}
 
-	      operation = Passport::OperationSet;
-
-	      break;
-	    }
-	  case 'g':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Passport::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the get operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = Passport::OperationGet;
+	      operation = Passport::OperationInformation;
 
 	      break;
 	    }
 	  case 'u':
 	    {
-	      // check if the operation has already been set up.
-	      if (operation != Passport::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the unset operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = Passport::OperationUnset;
-
-	      break;
-	    }
-	  case 'n':
-	    {
-	      // retrieve the passport name.
-	      name.assign(optarg);
-
-	      break;
-	    }
-	  case 'a':
-	    {
-	      // retrieve the attribute name.
-	      attribute.assign(optarg);
+	      // retrieve the user.
+	      user.assign(optarg);
 
 	      break;
 	    }
 	  case 'v':
 	    {
-	      // retrieve the value.
-	      value.assign(optarg);
+	      // retrieve the universe.
+	      universe.assign(optarg);
 
 	      break;
 	    }
@@ -363,40 +414,32 @@ namespace application
       case Passport::OperationCreate:
 	{
 	  // create a passport.
-	  if (Passport::Create(name) == elle::StatusError)
+	  if (Passport::Create(user, universe) == elle::StatusError)
 	    escape("unable to create the passport");
+
+	  // display a message.
+	  std::cout << "The passport has been created successfully!"
+		    << std::endl;
 
 	  break;
 	}
       case Passport::OperationDestroy:
 	{
 	  // destroy a passport.
-	  if (Passport::Destroy(name) == elle::StatusError)
+	  if (Passport::Destroy(user, universe) == elle::StatusError)
 	    escape("unable to destroy the passport");
 
-	  break;
-	}
-      case Passport::OperationSet:
-	{
-	  // set an attribute.
-	  if (Passport::Set(name, attribute, value) == elle::StatusError)
-	    escape("unable to set the attribute");
+	  // display a message.
+	  std::cout << "The passport has been destroyed successfully!"
+		    << std::endl;
 
 	  break;
 	}
-      case Passport::OperationGet:
+      case Passport::OperationInformation:
 	{
-	  // get an attribute
-	  if (Passport::Get(name, attribute) == elle::StatusError)
-	    escape("unable to get the attribute");
-
-	  break;
-	}
-      case Passport::OperationUnset:
-	{
-	  // unset an attribute.
-	  if (Passport::Unset(name, attribute) == elle::StatusError)
-	    escape("unable to destroy the passport");
+	  // display information.
+	  if (Passport::Information(user, universe) == elle::StatusError)
+	    escape("unable to display information on the passport");
 
 	  break;
 	}
@@ -414,15 +457,15 @@ namespace application
     delete parser;
 
     // clean the Etoile.
-    if (Etoile::Clean() == elle::StatusError)
+    if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
 
     // clean Lune
-    if (Lune::Clean() == elle::StatusError)
+    if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
 
     // clean Elle.
-    if (Elle::Clean() == elle::StatusError)
+    if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
     leave();

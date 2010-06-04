@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8passport/Passport.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [tue may  4 18:54:42 2010]
+// updated       julien quintard   [mon may 10 09:44:33 2010]
 //
 
 #ifndef PASSPORT_PASSPORT_HH
@@ -18,6 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
@@ -48,22 +49,18 @@ namespace application
 
 	OperationCreate,
 	OperationDestroy,
-	OperationUnset
+	OperationInformation
       };
 
     //
     // static methods
     //
-    static Status	Create(const String&);
-    static Status	Destroy(const String&);
-
-    static Status	Set(const String&,
-			    const String&,
-			    const String&);
-    static Status	Get(const String&,
-			    const String&);
-    static Status	Unset(const String&,
-			      const String&);
+    static elle::Status		Create(const elle::String&,
+				       const elle::String&);
+    static elle::Status		Destroy(const elle::String&,
+					const elle::String&);
+    static elle::Status		Information(const elle::String&,
+					    const elle::String&);
   };
 
 }

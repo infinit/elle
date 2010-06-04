@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat may  1 20:37:21 2010]
+// updated       julien quintard   [mon may 10 17:33:11 2010]
 //
 
 //
@@ -27,7 +27,7 @@ namespace application
   ///
   /// this value defines the component's name.
   ///
-  const Character	Component[] = "8setup";
+  const elle::Character		Component[] = "8setup";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -36,9 +36,9 @@ namespace application
   ///
   /// this method empties a directory.
   ///
-  Status		Setup::Empty(const String&		path)
+  elle::Status		Setup::Empty(const elle::String&	path)
   {
-    DIR*		directory;
+    ::DIR*		directory;
     struct ::dirent*	entry;
 
     enter();
@@ -58,11 +58,13 @@ namespace application
 	// if the entry is a directory.
 	if (entry->d_type == DT_DIR)
 	  {
-	    String	target =
-	      path + System::Path::Separator + String(entry->d_name);
+	    elle::String	target =
+	      path +
+	      elle::System::Path::Separator +
+	      elle::String(entry->d_name);
 
 	    // empty it as well.
-	    if (Setup::Empty(target) == StatusError)
+	    if (Setup::Empty(target) == elle::StatusError)
 	      escape("unable to empty a subdirectory");
 
 	    // remove the directory.
@@ -71,8 +73,10 @@ namespace application
 	  }
 	else
 	  {
-	    String	target =
-	      path + System::Path::Separator + String(entry->d_name);
+	    elle::String	target =
+	      path +
+	      elle::System::Path::Separator +
+	      elle::String(entry->d_name);
 
 	    // otherwise, just remove the file.
 	    if (::unlink(target.c_str()) == -1)
@@ -89,26 +93,34 @@ namespace application
   ///
   /// this method initializes the user's environment.
   ///
-  Status		Setup::Initialize()
+  elle::Status		Setup::Initialize()
   {
     enter();
+
+    //
+    // empty the infinit directory.
+    //
+    {
+      // empty the directory.
+      Setup::Empty(lune::Lune::Home);
+    }
 
     //
     // infinit/
     //
     {
       // create the user's Infinit home directory.
-      if (::mkdir(Lune::Home.c_str(), 0700) == -1)
+      if (::mkdir(lune::Lune::Home.c_str(), 0700) == -1)
 	escape("unable to create the infinit home directory");
     }
 
     //
-    // infinit/keys/
+    // infinit/users/
     //
     {
       // create the keys directory.
-      if (::mkdir(Lune::Keys.c_str(), 0700) == -1)
-	escape("unable to create the keys directory");
+      if (::mkdir(lune::Lune::Users.c_str(), 0700) == -1)
+	escape("unable to create the users directory");
     }
 
     //
@@ -116,31 +128,20 @@ namespace application
     //
     {
       // create the universes directory.
-      if (::mkdir(Lune::Universes.c_str(), 0700) == -1)
+      if (::mkdir(lune::Lune::Universes.c_str(), 0700) == -1)
 	escape("unable to create the universes directory");
     }
 
     //
-    // infinit/reserve/
+    // infinit/map
     //
     {
-      // create the reserve directory.
-      if (::mkdir(Lune::Reserve.c_str(), 0700) == -1)
-	escape("unable to create the reserve directory");
-    }
+      lune::Associat	associat;
 
-    //
-    // infinit/hole
-    //
-    {
-      // create the hole directory.
-      if (::mkdir(Lune::Hole.c_str(), 0700) == -1)
-	escape("unable to create the hole directory");
+      // store an initial, empty, associat.
+      if (associat.Store() == elle::StatusError)
+	escape("unable to store the associat");
     }
-
-    // display a message.
-    std::cout << "The infinit environment has been initialized successfully!"
-	      << std::endl;
 
     leave();
   }
@@ -148,74 +149,17 @@ namespace application
   ///
   /// this method cleans the user's environment.
   ///
-  Status		Setup::Clean()
+  elle::Status		Setup::Clean()
   {
     enter();
 
-    //
-    // infinit/hole/
-    //
-    {
-      // empty the hole.
-      if (Setup::Empty(Lune::Hole) == StatusError)
-	escape("unable to empty the hole directory");
+    // empty the home.
+    if (Setup::Empty(lune::Lune::Home) == elle::StatusError)
+      escape("unable to empty the home directory");
 
-      // destroy the hole directory.
-      if (::rmdir(Lune::Hole.c_str()) == -1)
-	escape("unable to remove the hole directory");
-    }
-
-    //
-    // infinit/reserve/
-    //
-    {
-      // empty the reserve.
-      if (Setup::Empty(Lune::Reserve) == StatusError)
-	escape("unable to empty the reserve directory");
-
-      // destroy the reserve directory.
-      if (::rmdir(Lune::Reserve.c_str()) == -1)
-	escape("unable to remove the reserve directory");
-    }
-
-    //
-    // infinit/keys/
-    //
-    {
-      // empty the keys.
-      if (Setup::Empty(Lune::Keys) == StatusError)
-	escape("unable to empty the keys directory");
-
-      // destroy the keys directory.
-      if (::rmdir(Lune::Keys.c_str()) == -1)
-	escape("unable to remove the keys directory");
-    }
-
-    //
-    // infinit/universes/
-    //
-    {
-      // empty the universes.
-      if (Setup::Empty(Lune::Universes) == StatusError)
-	escape("unable to empty the universes directory");
-
-      // destroy the universes directory.
-      if (::rmdir(Lune::Universes.c_str()) == -1)
-	escape("unable to remove the universes directory");
-    }
-
-    //
-    // infinit/
-    //
-    {
-      // empty the home.
-      if (Setup::Empty(Lune::Home) == StatusError)
-	escape("unable to empty the home directory");
-
-      // destroy the user's Infinit home directory.
-      if (::rmdir(Lune::Home.c_str()) == -1)
-	escape("unable to remove the infinit home directory");
-    }
+    // destroy the user's Infinit home directory.
+    if (::rmdir(lune::Lune::Home.c_str()) == -1)
+      escape("unable to remove the infinit home directory");
 
     // display a message.
     std::cout << "The infinit environment has been cleaned successfully!"
@@ -228,12 +172,13 @@ namespace application
   /// this method checks if the user's environment is valid i.e all the
   /// required directories exist, with the correct permissions.
   ///
-  Status		Setup::Check()
+  elle::Status		Setup::Check()
   {
     struct ::stat	stat;
 
     enter();
 
+    /*
     //
     // infinit/
     //
@@ -270,82 +215,21 @@ namespace application
       }
 
       //
-      // infinit/identity
+      // infinit/authority
       //
       {
-	// test the identity file.
-	if (::stat(Lune::Identity.c_str(), &stat) == 0)
+	// test the authority file.
+	if (::stat(lune::Lune::Authority.c_str(), &stat) == 0)
 	  {
 	    // test the type.
 	    if (S_ISREG(stat.st_mode) == 0)
-	      escape("the path to the identity is not a file");
+	      escape("the path to the authority is not a file");
 
 	    // test the permissions.
 	    if ((stat.st_mode & 0777) != 0600)
-	      escape("the identity file should have the following "
+	      escape("the authority file should have the following "
 		     "permissions: 0600");
 	  }
-      }
-    }
-
-    //
-    // infinit/keys/
-    //
-    {
-      // test the keys directory.
-      if (::stat(Lune::Keys.c_str(), &stat) == -1)
-	escape("the keys directory does not seem to exist");
-
-      // test the type.
-      if (S_ISDIR(stat.st_mode) == 0)
-	escape("the path to the keys is not a directory");
-
-      // test the permissions.
-      if ((stat.st_mode & 0777) != 0700)
-	escape("the keys directory should have the following "
-	       "permissions: 0700");
-
-      //
-      // infinit/keys/*
-      //
-      {
-	DIR*			directory;
-	struct ::dirent*	entry;
-
-	// open the directory.
-	if ((directory = ::opendir(Lune::Keys.c_str())) ==
-	    NULL)
-	  escape("unable to open the keys directory");
-
-	// go through the entries.
-	while ((entry = ::readdir(directory)) != NULL)
-	  {
-	    // ignore the . and ..
-	    if ((::strcmp(entry->d_name, ".") == 0) ||
-		(::strcmp(entry->d_name, "..") == 0))
-	      continue;
-
-	    // if the entry is a file.
-	    if (entry->d_type == DT_REG)
-	      {
-		String	target =
-		  Lune::Keys +
-		  System::Path::Separator +
-		  String(entry->d_name);
-
-		// test the key file.
-		if (::stat(target.c_str(), &stat) == -1)
-		  escape("the key file does not seem to exist");
-
-		// test the permissions.
-		if ((stat.st_mode & 0777) != 0400)
-		  escape("the key files should have the following "
-			 "permissions: 0400");
-	      }
-	  }
-
-	// close the directory.
-	::closedir(directory);
       }
     }
 
@@ -354,7 +238,7 @@ namespace application
     //
     {
       // test the universes directory.
-      if (::stat(Lune::Universes.c_str(), &stat) == -1)
+      if (::stat(lune::Lune::Universes.c_str(), &stat) == -1)
 	escape("the universes directory does not seem to exist");
 
       // test the type.
@@ -368,45 +252,27 @@ namespace application
     }
 
     //
-    // infinit/reserve/
+    // infinit/users/
     //
     {
-      // test the reserve directory.
-      if (::stat(Lune::Reserve.c_str(), &stat) == -1)
-	escape("the reserve directory does not seem to exist");
+      // test the keys directory.
+      if (::stat(lune::Lune::Users.c_str(), &stat) == -1)
+	escape("the userss directory does not seem to exist");
 
       // test the type.
       if (S_ISDIR(stat.st_mode) == 0)
-	escape("the path to the reserve is not a directory");
+	escape("the path to the users is not a directory");
 
       // test the permissions.
       if ((stat.st_mode & 0777) != 0700)
-	escape("the reserve directory should have the following "
-	       "permissions: 0700");
-    }
-
-    //
-    // infinit/hole/
-    //
-    {
-      // test the hole directory.
-      if (::stat(Lune::Hole.c_str(), &stat) == -1)
-	escape("the hole directory does not seem to exist");
-
-      // test the type.
-      if (S_ISDIR(stat.st_mode) == 0)
-	escape("the path to the hole is not a directory");
-
-      // test the permissions.
-      if ((stat.st_mode & 0777) != 0700)
-	escape("the hole directory should have the following "
+	escape("the users directory should have the following "
 	       "permissions: 0700");
     }
 
     // display a message.
     std::cout << "The infinit environment seems to be valid!"
 	      << std::endl;
-
+    */
     leave();
   }
 
@@ -417,64 +283,64 @@ namespace application
   ///
   /// the main function.
   ///
-  Status		Main(Natural32				argc,
-			     Character*				argv[])
+  elle::Status		Main(elle::Natural32			argc,
+			     elle::Character*			argv[])
   {
-    Parser*		parser;
+    elle::Parser*	parser;
     Setup::Operation	operation;
-    Character		option;
+    elle::Character	option;
 
     enter();
 
     // initialize the Elle library.
-    if (Elle::Initialize() == StatusError)
+    if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
 
     // set up the program.
-    if (Program::Setup() == StatusError)
+    if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
     // initialize the Lune library.
-    if (Lune::Initialize() == StatusError)
+    if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
     // initialize the Etoile.
-    if (Etoile::Initialize() == StatusError)
+    if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
 
     // initialize the operation.
     operation = Setup::OperationUnknown;
 
     // allocate a new parser.
-    parser = new Parser(argc, argv);
+    parser = new elle::Parser(argc, argv);
 
     // set up the parser.
     if (parser->Register('h',
 			 "help",
 			 "display the help",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('i',
 			 "initialize",
 			 "initialize the user's infinit environment",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('c',
 			 "clean",
 			 "clean the user's infinit environment",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     if (parser->Register('k',
 			 "check",
 			 "check if the user's infinit environment is valid",
-			 Parser::TypeNone) == StatusError)
+			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
-    while (parser->Parse(option) == StatusTrue)
+    while (parser->Parse(option) == elle::StatusTrue)
       {
 	switch (option)
 	  {
@@ -561,7 +427,7 @@ namespace application
       case Setup::OperationInitialize:
 	{
 	  // initialize the environment.
-	  if (Setup::Initialize() == StatusError)
+	  if (Setup::Initialize() == elle::StatusError)
 	    escape("unable to initialize the environment");
 
 	  break;
@@ -569,7 +435,7 @@ namespace application
       case Setup::OperationClean:
 	{
 	  // clean the environment.
-	  if (Setup::Clean() == StatusError)
+	  if (Setup::Clean() == elle::StatusError)
 	    escape("unable to clean the environment");
 
 	  break;
@@ -577,7 +443,7 @@ namespace application
       case Setup::OperationCheck:
 	{
 	  // check the environment.
-	  if (Setup::Check() == StatusError)
+	  if (Setup::Check() == elle::StatusError)
 	    escape("unable to check the environment");
 
 	  break;
@@ -596,15 +462,15 @@ namespace application
     delete parser;
 
     // clean the Etoile.
-    if (Etoile::Clean() == StatusError)
+    if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
 
     // clean Lune.
-    if (Lune::Clean() == StatusError)
+    if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
 
     // clean Elle.
-    if (Elle::Clean() == StatusError)
+    if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
     leave();

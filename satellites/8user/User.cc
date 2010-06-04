@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu may  6 01:07:56 2010]
+// updated       julien quintard   [mon may 24 11:05:19 2010]
 //
 
 //
@@ -56,8 +56,12 @@ namespace application
     pass = elle::String(::getpass(prompt.c_str()));
 
     // load the authority.
-    if (authority.Load(pass) == elle::StatusError)
+    if (authority.Load() == elle::StatusError)
       escape("unable to load the authority");
+
+    // decrypt the authority.
+    if (authority.Decrypt(pass) == elle::StatusError)
+      escape("unable to decrypt the authority");
 
     // create the user's directory.
     if (::mkdir((lune::Lune::Users +
@@ -85,12 +89,16 @@ namespace application
     if (identity.Create(name, pair) == elle::StatusError)
       escape("unable to create the identity");
 
+    // encrypt the identity.
+    if (identity.Encrypt(pass) == elle::StatusError)
+      escape("unable to encrypt the identity");
+
     // seal the identity.
     if (identity.Seal(authority) == elle::StatusError)
       escape("unable to seal the identity");
 
     // store the identity.
-    if (identity.Store(name, pass) == elle::StatusError)
+    if (identity.Store(name) == elle::StatusError)
       escape("unable to store the identity");
 
     leave();
@@ -118,6 +126,7 @@ namespace application
     lune::Authority	authority;
     lune::Identity	identity;
     elle::PublicKey	K;
+    elle::Unique	unique;
 
     enter();
 
@@ -138,16 +147,28 @@ namespace application
     pass = elle::String(::getpass(prompt.c_str()));
 
     // load the identity.
-    if (identity.Load(name, pass) == elle::StatusError)
+    if (identity.Load(name) == elle::StatusError)
       escape("unable to load the identity");
 
     // verify the identity.
     if (identity.Validate(authority) != elle::StatusTrue)
       escape("the identity seems to be invalid");
 
+    // decrypt the identity.
+    if (identity.Decrypt(pass) == elle::StatusError)
+      escape("unable to decrypt the identity");
+
     // dump the identity.
     if (identity.Dump() == elle::StatusError)
       escape("unable to dump the identity");
+
+    // retrieve the user's public key unique.
+    if (identity.pair.K.Save(unique) == elle::StatusError)
+      escape("unable to save the public key's unique");
+
+    // display the unique.
+    std::cout << std::endl
+	      << "[Unique] " << unique << std::endl;
 
     leave();
   }
@@ -212,7 +233,7 @@ namespace application
 			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
-    if (parser->Register('i',
+    if (parser->Register('x',
 			 "information",
 			 "display information on an existing user",
 			 elle::Parser::TypeNone) == elle::StatusError)
@@ -269,7 +290,7 @@ namespace application
 
 	      break;
 	    }
-	  case 'i':
+	  case 'x':
 	    {
 	      // check if the operation has already been set up.
 	      if (operation != User::OperationUnknown)
