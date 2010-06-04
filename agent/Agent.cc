@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [wed apr 28 21:45:30 2010]
+// updated       julien quintard   [tue may 25 11:43:12 2010]
 //
 
 //
@@ -27,22 +27,27 @@ namespace agent
   ///
   /// this value defines the component's name.
   ///
-  const Character		Component[] = "agent";
+  const elle::Character		Component[] = "agent";
 
   ///
   /// this string represents the door's name to Etoile.
   ///
-  const String			Agent::Line("etoile");
+  const elle::String		Agent::Line("etoile");
 
   ///
-  /// the agent key pair though only the private key will be needed.
+  /// the user's identity.
   ///
-  KeyPair			Agent::Pair;
+  lune::Identity		Agent::Identity;
+
+  ///
+  /// the user's chain of passports.
+  ///
+  lune::Chain			Agent::Chain;
 
   ///
   /// the door to Etoile.
   ///
-  Door*				Agent::Channel = NULL;
+  elle::Door*			Agent::Channel = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -51,106 +56,79 @@ namespace agent
   ///
   /// this method initializes the agent, by fetching the user's key pair.
   ///
-  Status		Agent::Initialize(const String&		name)
+  elle::Status		Agent::Initialize(const elle::String&	name)
   {
-    String		path =
-      infinit::Infinit::Path::Keys + System::Path::Separator +
-      name + ".pair";
-    Archive		archive;
-    Region		region;
-    struct ::stat	stat;
-    Integer32		fd;
-    String		prompt;
-    String		passphrase;
-    SecretKey		key;
-    Cipher		cipher;
+    lune::Authority	authority;
 
     enter();
 
     //
-    // load the user's key pair.
+    // load the authority.
     //
     {
-      // get the file status.
-      if (::stat(path.c_str(), &stat) == -1)
-	escape("unable to access the user's key pair");
+      elle::PublicKey	K;
 
-      // prepare the region.
-      if (region.Prepare(stat.st_size) == StatusError)
-	escape("unable to prepare the region");
+      // restore the authority's public key.
+      if (K.Restore(Infinit::Authority) == elle::StatusError)
+	escape("unable to restore the authority's public key");
 
-      // set the region size.
-      region.size = stat.st_size;
-
-      // open the file.
-      if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-	escape(::strerror(errno));
-
-      // read the file.
-      if (::read(fd, region.contents, region.size) != region.size)
-	{
-	  ::close(fd);
-
-	  escape("unable to read the key pair file");
-	}
-
-      // close the file.
-      ::close(fd);
-
-      // detach the contents from the region.
-      if (region.Detach() == StatusError)
-	escape("unable to detach the contents from the region");
-
-      // prepare the archive with the region.
-      if (archive.Prepare(region) == StatusError)
-	escape("unable to prepare the archive");
-
-      // extract the cipher from the ciphered archive.
-      if (archive.Extract(cipher) == StatusError)
-	escape("unable to extract the cipher");
-
-      // prompt the user for the passphrase.
-      prompt = "Enter passphrase for keypair '" + path + "': ";
-      passphrase = String(::getpass(prompt.c_str()));
-
-      // create a secret key with this passphrase.
-      if (key.Create(passphrase) == StatusError)
-	escape("unable to create the secret key");
-
-      // decrypt the keypair file content with the secret key.
-      if (key.Decrypt(cipher, Agent::Pair) == StatusError)
-	escape("unable to decrypt the keypair");
+      // create the authority based on the hard-coded public key.
+      if (authority.Create(K) == elle::StatusError)
+	escape("unable to create the authority");
     }
 
     //
-    // dump the user's identity.
+    // load the user identity.
     //
     {
-      // dump the name.
-      std::cout << "[Name] " << name << std::endl;
+      elle::String	prompt;
+      elle::String	pass;
 
-      // display the key pair.
-      std::cout << "[Pair] " << Agent::Pair << std::endl;
+      // prompt the user for the passphrase.
+      prompt = "Enter passphrase for keypair '" + name + "': ";
+      pass = elle::String(::getpass(prompt.c_str()));
+
+      // load the identity.
+      if (Agent::Identity.Load(name) == elle::StatusError)
+	escape("unable to load the identity");
+
+      // verify the identity.
+      if (Agent::Identity.Validate(authority) != elle::StatusTrue)
+	escape("the identity seems to be invalid");
+
+      // decrypt the identity.
+      if (Agent::Identity.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the identity");
+    }
+
+    //
+    // load the user's chain i.e collection of passports.
+    //
+    {
+      if (Agent::Chain.Load(Agent::Identity) == elle::StatusError)
+	escape("unable to import the user's chain of passports");
     }
 
     //
     // register the inward messages.
     //
     {
-      Callback<const Report>	error(&Agent::Error);
-      Callback<const Code>	decrypt(&Agent::Decrypt);
-      Callback<const Plain>	sign(&Agent::Sign);
+      elle::Callback<const elle::Report>	error(&Agent::Error);
+      elle::Callback<const elle::String,
+		     const elle::Code>		decrypt(&Agent::Decrypt);
+      elle::Callback<const elle::String,
+		     const elle::Plain>		sign(&Agent::Sign);
 
       // register the error message.
-      if (Network::Register<TagError>(error) == StatusError)
+      if (elle::Network::Register<elle::TagError>(error) == elle::StatusError)
         escape("unable to register the error callback");
 
       // register the decrypt message.
-      if (Network::Register<TagDecrypt>(decrypt) == StatusError)
+      if (elle::Network::Register<TagDecrypt>(decrypt) == elle::StatusError)
         escape("unable to register the decrypt callback");
 
       // register the sign message.
-      if (Network::Register<TagSign>(sign) == StatusError)
+      if (elle::Network::Register<TagSign>(sign) == elle::StatusError)
         escape("unable to register the sign callback");
     }
 
@@ -158,11 +136,11 @@ namespace agent
     // trigger the Start() callback in a fiber so that it can block.
     //
     {
-      Entrance<>		start(&Agent::Start);
-      Closure<>			closure(start);
+      elle::Entrance<>		start(&Agent::Start);
+      elle::Closure<>		closure(start);
 
       // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
+      if (elle::Fiber::Spawn(closure) == elle::StatusError)
 	escape("unable to spawn a fiber");
     }
 
@@ -172,7 +150,7 @@ namespace agent
   ///
   /// this method cleans the agent.
   ///
-  Status		Agent::Clean()
+  elle::Status		Agent::Clean()
   {
     enter();
 
@@ -186,9 +164,9 @@ namespace agent
   ///
   /// this method authenticate the agent to Etoile.
   ///
-  Status		Agent::Authenticate()
+  elle::Status		Agent::Authenticate()
   {
-    String		phrase;
+    elle::String	string;
 
     enter();
 
@@ -196,21 +174,21 @@ namespace agent
     // connect the agent to etoile.
     //
     {
-      Callback<const String>	error(&Agent::Error);
+      elle::Callback<const elle::String>	error(&Agent::Error);
 
       // allocate a door.
-      Agent::Channel = new Door;
+      Agent::Channel = new elle::Door;
 
       // create the door.
-      if (Agent::Channel->Create() == StatusError)
+      if (Agent::Channel->Create() == elle::StatusError)
 	escape("unable to create the door");
 
       // monitor the socket.
-      if (Agent::Channel->Monitor(error) == StatusError)
+      if (Agent::Channel->Monitor(error) == elle::StatusError)
 	escape("unable to create the door");
 
       // connect the door.
-      if (Agent::Channel->Connect(Agent::Line) == StatusError)
+      if (Agent::Channel->Connect(Agent::Line) == elle::StatusError)
 	escape("unable to connect to Etoile");
     }
 
@@ -218,62 +196,29 @@ namespace agent
     // authenticate.
     //
     {
-      Code			code;
-      Digest			digest;
+      elle::Code		code;
+      elle::Digest		digest;
 
-      // identify to etoile by passing the user's public key for challenging
-      // along with the phrase.
+      // identify to etoile by passing the user's public key for challenging.
       if (Agent::Channel->Call(
-	    Inputs<etoile::TagWallIdentify>(Agent::Pair.K),
-	    Outputs<etoile::TagWallChallenge>(code)) == StatusError)
+	    elle::Inputs<etoile::TagWallIdentify>(Agent::Identity.pair.K),
+	    elle::Outputs<etoile::TagWallChallenge>(code)) ==
+	  elle::StatusError)
 	escape("unable to identify to etoile");
 
       // decrypt the code with the private key.
-      if (Agent::Pair.k.Decrypt(code, phrase) == StatusError)
+      if (Agent::Identity.pair.k.Decrypt(code, string) == elle::StatusError)
 	escape("unable to decrypt the code");
 
-      // hash the phrase.
-      if (OneWay::Hash(phrase, digest) == StatusError)
+      // hash the phrase string.
+      if (elle::OneWay::Hash(string, digest) == elle::StatusError)
 	escape("unable to hash the phrase");
 
-      // authenticate by sending the hash of the phrase.
+      // authenticate by sending the hash of the phrase string.
       if (Agent::Channel->Call(
-	    Inputs<etoile::TagWallAuthenticate>(digest),
-	    Outputs<etoile::TagOk>()) == StatusError)
+	    elle::Inputs<etoile::TagWallAuthenticate>(digest),
+	    elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	escape("unable to authenticate to etoile");
-    }
-
-    //
-    // store the user's public key so that applications can know on
-    // behalf of who they are working.
-    //
-    {
-      String		path =
-	infinit::Infinit::Path::Home + System::Path::Separator +
-	"identity.b64";
-      String		string;
-      Integer32		fd;
-
-      // encode the public key in base64.
-      if (Base64::Encode(Agent::Pair.K, string) == StatusError)
-	escape("unable to encode the public key");
-
-      // create the file or overwrite it.
-      if ((fd = ::open(path.c_str(),
-		       O_WRONLY | O_TRUNC | O_CREAT,
-		       0600)) == -1)
-	escape(::strerror(errno));
-
-      // write the file.
-      if (::write(fd, string.c_str(), string.length()) != string.length())
-	{
-	  ::close(fd);
-
-	  escape("unable to write the public key file");
-	}
-
-      // close the file.
-      ::close(fd);
     }
 
     //
@@ -281,32 +226,15 @@ namespace agent
     // applications can connect to etoile on behalf of the agent's user.
     //
     {
-      String		path =
-	infinit::Infinit::Path::Home + System::Path::Separator +
-	"phrase.b64";
-      String		string;
-      Integer32		fd;
+      lune::Phrase		phrase;
 
-      // encode the phrase in base64.
-      if (Base64::Encode(phrase, string) == StatusError)
-	escape("unable to encode the phrase");
+      // create the phrase.
+      if (phrase.Create(string) == elle::StatusError)
+	escape("unable to create the phrase");
 
-      // create the file or overwrite it.
-      if ((fd = ::open(path.c_str(),
-		       O_WRONLY | O_TRUNC | O_CREAT,
-		       0600)) == -1)
-	escape(::strerror(errno));
-
-      // write the file.
-      if (::write(fd, string.c_str(), string.length()) != string.length())
-	{
-	  ::close(fd);
-
-	  escape("unable to write the phrase file");
-	}
-
-      // close the file.
-      ::close(fd);
+      // store the phrase.
+      if (phrase.Store() == elle::StatusError)
+	escape("unable to store the phrase");
     }
 
     leave();
@@ -319,15 +247,15 @@ namespace agent
   ///
   /// this callback is triggered as soon as the agent has been initialized.
   ///
-  Status		Agent::Start()
+  elle::Status		Agent::Start()
   {
     enter();
 
     // authenticate the agent.
-    if (Agent::Authenticate() == StatusError)
+    if (Agent::Authenticate() == elle::StatusError)
       {
 	// exit the program.
-	Program::Exit();
+	elle::Program::Exit();
 
 	escape("unable to authenticate to etoile");
       }
@@ -339,18 +267,25 @@ namespace agent
   /// this callback is triggered whenever Etoile needs to decrypt
   /// a code with the agent's private key.
   ///
-  Status		Agent::Decrypt(const Code&		code)
+  elle::Status		Agent::Decrypt(const elle::String&	universe,
+				       const elle::Code&	code)
   {
-    Clear		clear;
+    lune::Passport*	passport;
+    elle::Clear		clear;
 
     enter();
 
+    // retrieve the universe.
+    if (Agent::Chain.Lookup(universe, passport) == elle::StatusError)
+      escape("unable to retrieve the passport for this universe");
+
     // perform the cryptographic operation.
-    if (Agent::Pair.k.Decrypt(code, clear) == StatusError)
+    if (passport->pair->k.Decrypt(code, clear) == elle::StatusError)
       escape("unable to perform the decryption");
 
     // reply to the caller.
-    if (Agent::Channel->Reply(Inputs<TagDecrypted>(clear)) == StatusError)
+    if (Agent::Channel->Reply(
+	  elle::Inputs<TagDecrypted>(clear)) == elle::StatusError)
       escape("unable to reply to the caller");
 
     leave();
@@ -359,18 +294,25 @@ namespace agent
   ///
   /// this callback is triggered whenever Etoile needs to perform a signature.
   ///
-  Status		Agent::Sign(const Plain&		plain)
+  elle::Status		Agent::Sign(const elle::String&		universe,
+				    const elle::Plain&		plain)
   {
-    Signature		signature;
+    lune::Passport*	passport;
+    elle::Signature	signature;
 
     enter();
 
+    // retrieve the universe.
+    if (Agent::Chain.Lookup(universe, passport) == elle::StatusError)
+      escape("unable to retrieve the passport for this universe");
+
     // perform the cryptographic operation.
-    if (Agent::Pair.k.Sign(plain, signature) == StatusError)
+    if (passport->pair->k.Sign(plain, signature) == elle::StatusError)
       escape("unable to perform the signature");
 
     // reply to the caller.
-    if (Agent::Channel->Reply(Inputs<TagSigned>(signature)) == StatusError)
+    if (Agent::Channel->Reply(
+	  elle::Inputs<TagSigned>(signature)) == elle::StatusError)
       escape("unable to reply to the caller");
 
     leave();
@@ -379,18 +321,18 @@ namespace agent
   ///
   /// this callback is triggered whenever an error on Etoile.
   ///
-  Status		Agent::Error(const Report&		report)
+  elle::Status		Agent::Error(const elle::Report&	report)
   {
     enter();
 
     // report the error.
-    report(Report::TypeError, report);
+    report(elle::Report::TypeError, report);
 
     // display the errors.
     show();
 
     // quit the program.
-    Program::Exit();
+    elle::Program::Exit();
 
     leave();
   }
@@ -398,18 +340,18 @@ namespace agent
   ///
   /// this callback is triggered whenever an error occurs on the socket.
   ///
-  Status		Agent::Error(const String&		error)
+  elle::Status		Agent::Error(const elle::String&	error)
   {
     enter();
 
     // report the error.
-    report(Report::TypeError, error);
+    report(elle::Report::TypeError, error);
 
     // display the errors.
     show();
 
     // quit the program.
-    Program::Exit();
+    elle::Program::Exit();
 
     leave();
   }
@@ -421,52 +363,115 @@ namespace agent
   ///
   /// the main function.
   ///
-  Status		Main(Natural32				argc,
-			     Character*				argv[])
+  elle::Status		Main(elle::Natural32			argc,
+			     elle::Character*			argv[])
   {
-    String		name;
+    elle::Parser*	parser;
+    elle::Character	option;
+    elle::String	name;
 
     enter();
 
     // initialize the Elle library.
-    if (Elle::Initialize() == StatusError)
-      escape("unable to initialize the Elle library");
-
-    /// XXX \todo to improve with real argument parsing.
-    {
-      if (argc != 2)
-	escape("[usage] ./agent {name}");
-
-      name.assign(argv[1]);
-    }
-
-    // initialize Infinit.
-    if (infinit::Infinit::Initialize() == StatusError)
-      escape("unable to initialize Infinit");
+    if (elle::Elle::Initialize() == elle::StatusError)
+      escape("unable to initialize Elle");
 
     // set up the program.
-    if (Program::Setup() == StatusError)
+    if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
+    // initialize the Lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize Lune");
+
+    // allocate a new parser.
+    parser = new elle::Parser(argc, argv);
+
+    // set up the parser.
+    if (parser->Register('h',
+			 "help",
+			 "display the help",
+			 elle::Parser::TypeNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('n',
+			 "name",
+			 "specifies the name of the user",
+			 elle::Parser::TypeRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // parse.
+    while (parser->Parse(option) == elle::StatusTrue)
+      {
+	switch (option)
+	  {
+	  case 'h':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      // quit.
+	      leave();
+	    }
+	  case 'n':
+	    {
+	      // retrieve the user name.
+	      name.assign(optarg);
+
+	      break;
+	    }
+	  case '?':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("unknown option");
+	    }
+	  case ':':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("missing argument");
+	    }
+	  default:
+	    {
+	      escape("an error occured while parsing the options");
+	    }
+	  }
+      }
+
+    // check the name.
+    if (name.empty() == true)
+      {
+	// display the usage.
+	parser->Usage();
+
+	escape("please specify the name of the user");
+      }
+
     // initialize the agent.
-    if (Agent::Initialize(name) == StatusError)
+    if (Agent::Initialize(name) == elle::StatusError)
       escape("unable to initialize the agent");
 
     // launch the program.
-    if (Program::Launch() == StatusError)
+    if (elle::Program::Launch() == elle::StatusError)
       escape("unable to process the events");
 
     // clean the agent.
-    if (Agent::Clean() == StatusError)
+    if (Agent::Clean() == elle::StatusError)
       escape("unable to clean the agent");
 
-    // clean Infinit.
-    if (infinit::Infinit::Clean() == StatusError)
-      escape("unable to clean Infinit");
+    // delete the parser.
+    delete parser;
 
-    // clean the Elle library.
-    if (Elle::Clean() == StatusError)
-      escape("unable to clean the Elle library");
+    // clean Lune
+    if (lune::Lune::Clean() == elle::StatusError)
+      escape("unable to clean Lune");
+
+    // clean Elle.
+    if (elle::Elle::Clean() == elle::StatusError)
+      escape("unable to clean Elle");
 
     leave();
   }
