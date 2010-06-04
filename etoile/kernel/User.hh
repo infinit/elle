@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/User.hh
 //
 // created       julien quintard   [thu apr 29 19:34:10 2010]
-// updated       julien quintard   [mon may  3 22:56:15 2010]
+// updated       julien quintard   [fri may 28 17:43:39 2010]
 //
 
 #ifndef ETOILE_KERNEL_USER_HH
@@ -50,7 +50,7 @@ namespace etoile
       //
 
       // object
-      declare(User, _());
+      declare(User);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

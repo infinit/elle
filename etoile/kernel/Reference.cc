@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon may  3 23:04:17 2010]
+// updated       julien quintard   [fri may 28 19:12:01 2010]
 //
 
 //
@@ -95,7 +95,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Reference, _(), _());
+    embed(Reference, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

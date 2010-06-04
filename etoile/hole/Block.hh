@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [mon may  3 23:00:02 2010]
+// updated       julien quintard   [fri may 28 19:05:19 2010]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -19,6 +19,8 @@
 //
 
 #include <elle/Elle.hh>
+
+#include <lune/Lune.hh>
 
 #include <etoile/hole/Address.hh>
 #include <etoile/hole/Family.hh>
@@ -39,9 +41,14 @@ namespace etoile
     /// note that every block is identified by an address.
     ///
     class Block:
-      public elle::Object<>
+      public elle::Object
     {
     public:
+      //
+      // constants
+      //
+      static const elle::String		Extension;
+
       //
       // constructors & destructors
       //
@@ -52,15 +59,19 @@ namespace etoile
       //
       // methods
       //
-      virtual elle::Status	Bind();
-      virtual elle::Status	Validate(const Address&) const;
+      virtual elle::Status	Bind(const Universe&);
+      virtual elle::Status	Validate(const Universe&,
+					 const Address&) const;
+
+      elle::Status	Load();
+      elle::Status	Store() const;
 
       //
       // interfaces
       //
 
       // object
-      declare(Block, _());
+      declare(Block);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

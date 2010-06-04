@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.hh
 //
 // created       julien quintard   [thu apr  1 19:48:42 2010]
-// updated       julien quintard   [mon may  3 22:58:57 2010]
+// updated       julien quintard   [fri may 28 17:48:59 2010]
 //
 
 #ifndef ETOILE_KERNEL_RECORD_HH
@@ -39,7 +39,7 @@ namespace etoile
     /// to access the data.
     ///
     class Record:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -75,7 +75,7 @@ namespace etoile
       //
 
       // object
-      declare(Record, _());
+      declare(Record);
       elle::Boolean	operator==(const Record&) const;
 
       // dumpable

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Token.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [mon may  3 22:58:51 2010]
+// updated       julien quintard   [fri may 28 17:48:43 2010]
 //
 
 #ifndef ETOILE_KERNEL_TOKEN_HH
@@ -49,7 +49,7 @@ namespace etoile
     /// use this key, it is encrypted with the user's public key.
     ///
     class Token:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -77,7 +77,7 @@ namespace etoile
       //
 
       // object
-      declare(Token, _());
+      declare(Token);
       elle::Boolean	operator==(const Token&) const;
 
       // dumpable

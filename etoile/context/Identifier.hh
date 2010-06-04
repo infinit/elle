@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [mon may  3 22:54:21 2010]
+// updated       julien quintard   [fri may 28 17:40:25 2010]
 //
 
 #ifndef ETOILE_CONCURRENCY_IDENTIFIER_HH
@@ -33,7 +33,7 @@ namespace etoile
     /// identifiers are used to uniquely identify contexts.
     ///
     class Identifier:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -61,7 +61,7 @@ namespace etoile
       //
 
       // object
-      declare(Identifier, _());
+      declare(Identifier);
       elle::Boolean	operator==(const Identifier&) const;
       elle::Boolean	operator<(const Identifier&) const;
 

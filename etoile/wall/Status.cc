@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Status.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [tue may  4 10:59:34 2010]
+// updated       julien quintard   [fri may 28 17:50:18 2010]
 //
 
 //
@@ -116,7 +116,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Status, _(), _());
+    embed(Status, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

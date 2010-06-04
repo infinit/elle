@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [mon may  3 22:58:33 2010]
+// updated       julien quintard   [fri may 28 19:10:38 2010]
 //
 
 #ifndef ETOILE_KERNEL_OBJECT_HH
@@ -33,6 +33,7 @@
 #include <etoile/kernel/Role.hh>
 
 #include <etoile/hole/Address.hh>
+#include <etoile/hole/Universe.hh>
 
 namespace etoile
 {
@@ -95,7 +96,8 @@ namespace etoile
       elle::Status	Seal(const user::Agent&,
 			     const Access* = NULL);
 
-      elle::Status	Validate(const hole::Address&,
+      elle::Status	Validate(const hole::Universe&,
+				 const hole::Address&,
 				 const Access* = NULL) const;
 
       //
@@ -103,7 +105,7 @@ namespace etoile
       //
 
       // object
-      declare(Object, _());
+      declare(Object);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [mon may  3 23:05:00 2010]
+// updated       julien quintard   [fri may 28 17:42:50 2010]
 //
 
 //
@@ -143,7 +143,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Author, _(), _());
+    embed(Author, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

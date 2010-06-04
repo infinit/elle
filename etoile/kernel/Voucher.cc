@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Voucher.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [mon may  3 23:04:54 2010]
+// updated       julien quintard   [fri may 28 17:45:46 2010]
 //
 
 //
@@ -54,7 +54,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Voucher, _(), _());
+    embed(Voucher, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

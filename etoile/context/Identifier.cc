@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Identifier.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [mon may  3 23:02:18 2010]
+// updated       julien quintard   [fri may 28 17:40:31 2010]
 //
 
 //
@@ -55,7 +55,7 @@ namespace etoile
     ///
     /// this method generates a new unique identifier.
     ///
-    elle::Status		Identifier::Generate()
+    elle::Status	Identifier::Generate()
     {
       enter();
 
@@ -99,7 +99,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Identifier, _(), _());
+    embed(Identifier, _());
 
 //
 // ---------- archivable ------------------------------------------------------

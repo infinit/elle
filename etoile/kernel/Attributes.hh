@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [mon may  3 22:56:08 2010]
+// updated       julien quintard   [fri may 28 17:43:01 2010]
 //
 
 #ifndef ETOILE_KERNEL_ATTRIBUTES_HH
@@ -39,7 +39,7 @@ namespace etoile
     /// used for storing object-specific extra information.
     ///
     class Attributes:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -62,7 +62,7 @@ namespace etoile
       //
 
       // object
-      declare(Attributes, _());
+      declare(Attributes);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [mon may  3 23:05:41 2010]
+// updated       julien quintard   [fri may 28 17:49:34 2010]
 //
 
 //
@@ -109,7 +109,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Venue, _(), _());
+    embed(Venue, _());
 
   }
 }

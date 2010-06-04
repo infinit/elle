@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.hh
 //
 // created       julien quintard   [sun aug  9 16:44:42 2009]
-// updated       julien quintard   [mon may  3 13:06:42 2010]
+// updated       julien quintard   [fri jun  4 14:26:15 2010]
 //
 
 #ifndef ETOILE_HOLE_HOLE_HH
@@ -41,11 +41,14 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Put(const Address&,
+      static elle::Status	Put(const elle::String&,
+				    const Address&,
 				    const Block*);
-      static elle::Status	Get(const Address&,
+      static elle::Status	Get(const elle::String&,
+				    const Address&,
 				    Block*&);
-      static elle::Status	Erase(const Address&);
+      static elle::Status	Erase(const elle::String&,
+				      const Address&);
     };
 
   }

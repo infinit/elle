@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Subject.hh
 //
 // created       julien quintard   [fri aug 14 16:26:10 2009]
-// updated       julien quintard   [mon may  3 22:56:20 2010]
+// updated       julien quintard   [fri may 28 17:45:25 2010]
 //
 
 #ifndef ETOILE_KERNEL_SUBJECT_HH
@@ -36,7 +36,7 @@ namespace etoile
     /// can be granted access such as a user or a group.
     ///
     class Subject:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -67,7 +67,7 @@ namespace etoile
       //
 
       // object
-      declare(Subject, _());
+      declare(Subject);
       elle::Boolean	operator==(const Subject&) const;
 
       // dumpable

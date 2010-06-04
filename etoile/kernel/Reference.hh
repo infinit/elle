@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Reference.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [mon may  3 22:58:45 2010]
+// updated       julien quintard   [fri may 28 17:48:34 2010]
 //
 
 #ifndef ETOILE_KERNEL_REFERENCE_HH
@@ -40,7 +40,7 @@ namespace etoile
     /// this class represents the contents of a link.
     ///
     class Reference:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -61,7 +61,7 @@ namespace etoile
       //
 
       // object
-      declare(Reference, _());
+      declare(Reference);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

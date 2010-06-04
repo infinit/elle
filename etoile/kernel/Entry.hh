@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Entry.hh
 //
 // created       julien quintard   [fri apr  2 00:03:02 2010]
-// updated       julien quintard   [mon may  3 22:58:26 2010]
+// updated       julien quintard   [fri may 28 17:47:53 2010]
 //
 
 #ifndef ETOILE_KERNEL_ENTRY_HH
@@ -38,7 +38,7 @@ namespace etoile
     /// composed of a name and its object's corresponding address.
     ///
     class Entry:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -63,7 +63,7 @@ namespace etoile
       //
 
       // object
-      declare(Entry, _());
+      declare(Entry);
       elle::Boolean	operator==(const Entry&) const;
 
       // dumpable

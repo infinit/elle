@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [mon may  3 22:57:45 2010]
+// updated       julien quintard   [fri may 28 17:46:28 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HH
@@ -73,7 +73,7 @@ namespace etoile
       //
 
       // object
-      declare(Contents<T>, _());
+      declare(Contents<T>);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

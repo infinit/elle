@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [tue may  4 11:39:27 2010]
+// updated       julien quintard   [fri may 28 17:49:48 2010]
 //
 
 //
@@ -101,7 +101,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Way, _(), _());
+    embed(Way, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

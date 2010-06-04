@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Voucher.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [mon may  3 22:56:28 2010]
+// updated       julien quintard   [fri may 28 17:45:41 2010]
 //
 
 #ifndef ETOILE_KERNEL_VOUCHER_HH
@@ -35,7 +35,7 @@ namespace etoile
     /// at the time it has been carried out.
     ///
     class Voucher:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -53,7 +53,7 @@ namespace etoile
       //
 
       // object
-      declare(Voucher, _());
+      declare(Voucher);
       elle::Boolean	operator==(const Voucher&) const;
 
       // dumpable

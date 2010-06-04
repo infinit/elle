@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hh
 //
 // created       julien quintard   [thu mar 11 17:09:50 2010]
-// updated       julien quintard   [mon may  3 13:40:40 2010]
+// updated       julien quintard   [mon may 31 07:47:18 2010]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HH
@@ -97,6 +97,8 @@ namespace etoile
       //
       // attributes
       //
+      hole::Universe	universe;
+
       elle::Channel*	channel;
 
       Container		contexts;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [mon may  3 20:54:52 2010]
+// updated       julien quintard   [mon may 24 22:26:59 2010]
 //
 
 //
@@ -241,12 +241,15 @@ namespace etoile
 	    if (this->remote->state != Agent::StateAuthenticated)
 	      escape("the agent seems not to have been authenticated");
 
+	    printf("XXX PASS UNIVERSE\n");
+	    /* XXX
 	    // send a request to the agent.
 	    if (this->remote->channel->Call(
 		  elle::Inputs<agent::TagDecrypt>(code),
 		  elle::Outputs<agent::TagDecrypted>(clear)) ==
 		elle::StatusError)
 	      escape("unable to call the agent for decrypting a code");
+	    */
 
 	    break;
 	  }
@@ -282,12 +285,15 @@ namespace etoile
 	    if (this->remote->state != Agent::StateAuthenticated)
 	      escape("the agent seems not to have been authenticated");
 
+	    printf("XXX PASS UNIVERSE\n");
+	    /* XXX
 	    // send a request to the agent.
 	    if (this->remote->channel->Call(
 		  elle::Inputs<agent::TagSign>(plain),
 		  elle::Outputs<agent::TagSigned>(signature)) ==
 		elle::StatusError)
 	      escape("unable to call the agent for performing a signature");
+	    */
 
 	    break;
 	  }

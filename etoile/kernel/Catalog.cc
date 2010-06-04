@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [mon may  3 23:05:27 2010]
+// updated       julien quintard   [fri may 28 17:46:17 2010]
 //
 
 //
@@ -182,7 +182,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Catalog, _(), _());
+    embed(Catalog, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

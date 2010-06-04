@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [mon may  3 23:05:48 2010]
+// updated       julien quintard   [fri may 28 17:49:20 2010]
 //
 
 //
@@ -117,7 +117,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Route, _(), _());
+    embed(Route, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

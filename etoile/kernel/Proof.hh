@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Proof.hh
 //
 // created       julien quintard   [sat jul 25 00:45:05 2009]
-// updated       julien quintard   [mon may  3 22:58:20 2010]
+// updated       julien quintard   [fri may 28 17:47:21 2010]
 //
 
 #ifndef ETOILE_KERNEL_PROOF_HH
@@ -36,7 +36,7 @@ namespace etoile
     /// note that no voucher is embedded should the author be a delegate.
     ///
     class Proof:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -57,7 +57,7 @@ namespace etoile
       //
 
       // object
-      declare(Proof, _());
+      declare(Proof);
       elle::Boolean	operator==(const Proof&) const;
 
       // dumpable

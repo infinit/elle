@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon may  3 16:26:39 2010]
+// updated       julien quintard   [fri may 28 19:07:17 2010]
 //
 
 //
@@ -45,12 +45,13 @@ namespace etoile
     ///
     /// this method computes the address of the block.
     ///
-    elle::Status	ContentHashBlock::Bind()
+    elle::Status	ContentHashBlock::Bind(const hole::Universe& universe)
     {
       enter();
 
       // compute the address.
-      if (this->address.Create(this->family, *this) == elle::StatusError)
+      if (this->address.Create(universe, this->family,
+			       this->component, *this) == elle::StatusError)
 	escape("unable to compute the CHB's address");
 
       leave();
@@ -61,6 +62,8 @@ namespace etoile
     /// given requested address.
     ///
     elle::Status	ContentHashBlock::Validate(const
+						     hole::Universe& universe,
+						   const
 						     hole::Address& address)
       const
     {
@@ -69,7 +72,8 @@ namespace etoile
       enter();
 
       // compute the address of this object.
-      if (self.Create(this->family, *this) == elle::StatusError)
+      if (self.Create(universe, this->family,
+		      this->component, *this) == elle::StatusError)
 	escape("unable to compute the CHB's address");
 
       // compare the address with the given one.

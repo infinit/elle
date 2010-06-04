@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Status.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [tue may  4 10:59:12 2010]
+// updated       julien quintard   [fri may 28 17:50:12 2010]
 //
 
 #ifndef ETOILE_WALL_STATUS_HH
@@ -53,7 +53,7 @@ namespace etoile
     /// this class describes an object's meta data.
     ///
     class Status:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -71,7 +71,7 @@ namespace etoile
       //
 
       // object
-      declare(Status, _());
+      declare(Status);
       elle::Boolean	operator==(const Status&) const;
 
       // dumpable

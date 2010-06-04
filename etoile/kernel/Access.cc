@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [mon may  3 23:03:54 2010]
+// updated       julien quintard   [fri may 28 17:48:24 2010]
 //
 
 //
@@ -307,7 +307,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Access, _(), _());
+    embed(Access, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [mon may  3 19:17:49 2010]
+// updated       julien quintard   [thu may 27 16:04:37 2010]
 //
 
 //
@@ -76,7 +76,7 @@ namespace etoile
 	  configuration::Configuration::Cache::Capacity;
 
 	Repository::Reserve::Path =
-	  lune::Lune::Reserve;
+	  lune::Lune::Home::Reserve;
 
 	Repository::Reserve::Capacity =
 	  configuration::Configuration::Reserve::Capacity;

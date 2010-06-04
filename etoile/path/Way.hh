@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.hh
 //
 // created       julien quintard   [tue mar 30 23:31:29 2010]
-// updated       julien quintard   [mon may  3 22:59:23 2010]
+// updated       julien quintard   [fri may 28 17:49:44 2010]
 //
 
 #ifndef ETOILE_PATH_WAY_HH
@@ -36,7 +36,7 @@ namespace etoile
     /// this class represents a string-based path i.e a way.
     ///
     class Way:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -63,7 +63,7 @@ namespace etoile
       //
 
       // object
-      declare(Way, _());
+      declare(Way);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

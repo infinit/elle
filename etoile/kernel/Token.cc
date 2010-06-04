@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [mon may  3 23:03:26 2010]
+// updated       julien quintard   [fri may 28 17:48:51 2010]
 //
 
 //
@@ -156,7 +156,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Token, _(), _());
+    embed(Token, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

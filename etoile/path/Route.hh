@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [mon may  3 22:59:07 2010]
+// updated       julien quintard   [fri may 28 17:49:16 2010]
 //
 
 #ifndef ETOILE_PATH_ROUTE_HH
@@ -38,7 +38,7 @@ namespace etoile
     /// a route is a sequence of names forming a path.
     ///
     class Route:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -65,7 +65,7 @@ namespace etoile
       //
 
       // object
-      declare(Route, _());
+      declare(Route);
       elle::Boolean	operator==(const Route&) const;
 
       // dumpable

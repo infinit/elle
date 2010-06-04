@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Author.hh
 //
 // created       julien quintard   [fri aug 21 22:04:45 2009]
-// updated       julien quintard   [mon may  3 22:55:59 2010]
+// updated       julien quintard   [fri may 28 17:42:44 2010]
 //
 
 #ifndef ETOILE_KERNEL_AUTHOR_HH
@@ -37,7 +37,7 @@ namespace etoile
     /// this class represents the last user to have modified an object.
     ///
     class Author:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -59,7 +59,7 @@ namespace etoile
       //
 
       // object
-      declare(Author, _());
+      declare(Author);
       elle::Boolean	operator==(const Author&) const;
 
       // dumpable

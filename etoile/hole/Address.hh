@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [wed may  5 00:06:59 2010]
+// updated       julien quintard   [fri may 28 18:01:33 2010]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -20,7 +20,10 @@
 
 #include <elle/Elle.hh>
 
+#include <etoile/hole/Universe.hh>
 #include <etoile/hole/Family.hh>
+#include <etoile/hole/Component.hh>
+#include <etoile/hole/Universe.hh>
 
 #include <ostream>
 #include <sstream>
@@ -38,7 +41,7 @@ namespace etoile
     /// XXX
     ///
     class Address:
-      public elle::Object<elle::FormatBase64, elle::FormatBase64>
+      public elle::Object, elle::Fileable<elle::FormatBase64>
     {
     public:
       //
@@ -56,13 +59,17 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create(const Family,
+      elle::Status	Create(const Universe&,
+			       const Family,
+			       const Component,
 			       const elle::Archivable&);
 
       //
       // attributes
       //
+      Universe		universe;
       Family		family;
+      Component		component;
       elle::Digest*	digest;
 
       //
@@ -70,7 +77,7 @@ namespace etoile
       //
 
       // object
-      declare(Address, _(elle::FormatBase64, elle::FormatBase64));
+      declare(Address);
       elle::Boolean	operator==(const Address&) const;
       elle::Boolean	operator<(const Address&) const;
 

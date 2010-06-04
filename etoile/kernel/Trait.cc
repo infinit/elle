@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Trait.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [mon may  3 23:04:22 2010]
+// updated       julien quintard   [fri may 28 17:46:59 2010]
 //
 
 //
@@ -78,7 +78,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Trait, _(), _());
+    embed(Trait, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

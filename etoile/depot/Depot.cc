@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [mon may  3 18:46:18 2010]
+// updated       julien quintard   [fri may  7 07:14:45 2010]
 //
 
 //
@@ -75,8 +75,8 @@ namespace etoile
       //leave();
 
       // finally, look in the hole.
-      if (hole::Hole::Get(address, block) == elle::StatusTrue)
-	leave();
+      //if (hole::Hole::Get(address, block) == elle::StatusTrue)
+      //leave();
 
       escape("unable to find the block");
     }

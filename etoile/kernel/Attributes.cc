@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [mon may  3 23:04:06 2010]
+// updated       julien quintard   [fri may 28 17:45:03 2010]
 //
 
 //
@@ -161,7 +161,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Attributes, _(), _());
+    embed(Attributes, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

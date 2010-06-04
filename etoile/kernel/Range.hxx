@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [mon may  3 23:03:16 2010]
+// updated       julien quintard   [fri may 28 17:46:02 2010]
 //
 
 #ifndef ETOILE_KERNEL_RANGE_HXX
@@ -263,7 +263,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Range<T>, _(), _(template <typename T>));
+    embed(Range<T>, _(template <typename T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

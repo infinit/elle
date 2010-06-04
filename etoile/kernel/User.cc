@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/User.cc
 //
 // created       julien quintard   [thu apr 29 19:56:29 2010]
-// updated       julien quintard   [mon may  3 17:05:04 2010]
+// updated       julien quintard   [fri may 28 17:45:15 2010]
 //
 
 //
@@ -60,6 +60,15 @@ namespace etoile
 
       leave();
     }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(User, _());
 
   }
 }

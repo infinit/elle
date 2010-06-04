@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [tue may  4 10:44:03 2010]
+// updated       julien quintard   [thu may 27 16:05:30 2010]
 //
 
 //
@@ -33,12 +33,10 @@ namespace etoile
     /// this method takes a live block and stores its data into the storage
     /// layer.
     ///
-    elle::Status	Hole::Put(const Address&		address,
+    elle::Status	Hole::Put(const elle::String&		universe,
+				  const Address&		address,
 				  const Block*			block)
     {
-      elle::Archive	archive;
-      elle::String	identity;
-
       enter();
       /*
       // verify the block's validity, depending on the block component.
@@ -111,36 +109,9 @@ namespace etoile
 	}
       */
 
-      // first, turns the address into a string.
-      if (address.Save(identity) == elle::StatusError)
-	escape("unable to save the address' unique");
-
-      // create an archive.
-      if (archive.Create() == elle::StatusError)
-	escape("unable to create an archive");
-
-      // serialize the block.
-      if (block->Serialize(archive) == elle::StatusError)
-	escape("unable to serialize the block");
-
-      // XXX[temporary hack emulating a storage layer]
-      {
-	char		path[4096];
-	int		fd;
-
-	printf("[XXX] Hole::Put(%s)\n", identity.c_str());
-
-	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
-
-	if ((fd = open(path, O_CREAT | O_TRUNC | O_WRONLY, 0600)) == -1)
-	  escape("unable to open the file");
-
-	if (write(fd, archive.contents, archive.size) == -1)
-	  escape("unable to write the archive");
-
-	if (close(fd) == -1)
-	  escape("unable to close the file");
-      }
+      // store the block in the given universe.
+      if (block->Store(universe) == elle::StatusError)
+	escape("unable to store the block");
 
       leave();
     }
@@ -163,71 +134,16 @@ namespace etoile
     ///    verifying. the storage layer (Hole) should be able to understand
     ///    Address and Block!
     ///
-    elle::Status	Hole::Get(const Address&		address,
+    elle::Status	Hole::Get(const elle::String&		universe,
+				  const Address&		address,
 				  Block*&			block)
     {
-      elle::Archive	archive;
-      elle::Region	region;
-      elle::String	identity;
-      elle::String	identifier;
-
       enter();
 
-      // identify the address.
-      if (address.Save(identity) == elle::StatusError)
-	escape("unable to save the address' unique");
+      // load the block from the given universe.
+      if (block->Load(universe) != elle::StatusTrue)
+	false();
 
-      // XXX[temporary hack for local storage]
-      {
-	char		path[4096];
-	struct stat	stat;
-	int		fd;
-
-	printf("[XXX] Hole::Get(%s)\n", identity.c_str());
-
-	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
-
-	if (lstat(path, &stat) == -1)
-	  false();
-
-	if (region.Prepare(stat.st_size) == elle::StatusError)
-	  escape("unable to prepare the region");
-
-	region.size = stat.st_size;
-
-	if ((fd = open(path, O_RDONLY)) == -1)
-	  escape("unable to open the file");
-
-	if (read(fd, region.contents, region.size) == -1)
-	  escape("unable to read the region");
-
-	if (close(fd) == -1)
-	  escape("unable to close the file");
-      }
-
-      // detach the data from the region to prevent multiple resources release.
-      if (region.Detach() == elle::StatusError)
-        escape("unable to detach the region");
-
-      // prepare the archive.
-      if (archive.Prepare(region) == elle::StatusError)
-        escape("unable to prepare the archive");
-
-      // extract the component identifier.
-      if (archive.Extract(identifier) == elle::StatusError)
-        escape("unable to extract the component identifier");
-
-      // build the block according to the component type.
-      if (elle::Factory::Build(identifier, block) == elle::StatusError)
-	escape("unable to build the block");
-
-      // extract the archive.
-      if (block->Extract(archive) == elle::StatusError)
-        escape("unable to extract the given block");
-
-      // bind so that the internal address is computed.
-      if (block->Bind() == elle::StatusError)
-	escape("unable to bind the block");
       /*
       // verify the block's validity, depending on the block component.
       switch (block->component)
@@ -307,27 +223,31 @@ namespace etoile
     ///   data, whose should challenge our clients, proving that we are
     ///   the owner.
     ///
-    elle::Status	Hole::Erase(const Address&		address)
+    elle::Status	Hole::Erase(const elle::String&		universe,
+				    const Address&		address)
     {
-      elle::String	identity;
-
+      /*
+      elle::String	path =
+	lune::Lune::Universes +
+	elle::System::Path::Separator +
+	universe +
+	elle::System::Path::Separator +
+	lune::Lune::Hole +
+	elle::System::Path::Separator;
+      elle::String	unique;
+      */
       enter();
-
+      /*
       // identify the address.
-      if (address.Save(identity) == elle::StatusError)
+      if (address.Save(unique) == elle::StatusError)
 	escape("unable to save the address' unique");
 
-      // XXX[temporary hack for local storage]
-      {
-	char		path[4096];
+      // complete the path.
+      path += unique;
 
-	printf("[XXX] Hole::Destroy(%s)\n", identity.c_str());
-
-	sprintf(path, "/home/mycure/.infinit/hole/%s", identity.c_str());
-
-	::unlink(path);
-      }
-
+      // remove the path.
+      ::unlink(path.c_str());
+      */
       leave();
     }
 

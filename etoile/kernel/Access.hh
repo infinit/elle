@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [mon may  3 22:58:39 2010]
+// updated       julien quintard   [fri may 28 17:48:20 2010]
 //
 
 #ifndef ETOILE_KERNEL_ACCESS_HH
@@ -75,7 +75,7 @@ namespace etoile
       //
 
       // object
-      declare(Access, _());
+      declare(Access);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

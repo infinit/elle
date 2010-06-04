@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [mon may  3 23:02:55 2010]
+// updated       julien quintard   [fri may 28 17:45:30 2010]
 //
 
 //
@@ -170,7 +170,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Subject, _(), _());
+    embed(Subject, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

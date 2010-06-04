@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Trait.hh
 //
 // created       julien quintard   [thu apr  1 19:48:42 2010]
-// updated       julien quintard   [mon may  3 22:58:02 2010]
+// updated       julien quintard   [fri may 28 17:46:53 2010]
 //
 
 #ifndef ETOILE_KERNEL_TRAIT_HH
@@ -40,7 +40,7 @@ namespace etoile
     /// is associated with it.
     ///
     class Trait:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -65,7 +65,7 @@ namespace etoile
       //
 
       // object
-      declare(Trait, _());
+      declare(Trait);
       elle::Boolean	operator==(const Trait&) const;
 
       // dumpable

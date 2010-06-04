@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [tue may  4 10:21:37 2010]
+// updated       julien quintard   [fri may 28 18:01:15 2010]
 //
 
 //
@@ -21,6 +21,15 @@ namespace etoile
 {
   namespace hole
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+  ///
+  /// this string defines the block files extension.
+  ///
+  const elle::String		Block::Extension = ".blk";
 
 //
 // ---------- constructs & destructors ----------------------------------------
@@ -64,6 +73,75 @@ namespace etoile
       fail("this method should never have been called");
     }
 
+    ///
+    /// this method loads the block.
+    ///
+    elle::Status	Block::Load()
+    {
+      elle::String	path;
+      elle::Unique	unique;
+      elle::Region	region;
+
+      enter();
+
+      // first, turns the block's address into a string.
+      if (address.Save(unique) == elle::StatusError)
+	escape("unable to save the address' unique");
+
+      // compute the path.
+      path =
+	lune::User::Hole + elle::System::Path::Separator +
+	unique + Block::Extension;
+
+      // read the file's content.
+      if (File::Read(path, region) == StatusError)
+	escape("unable to read the file's content");
+
+      // decode and extract the object.
+      if (Hexadecimal::Decode(String((char*)region.contents, region.size),
+			      *this) == StatusError)
+	escape("unable to decode the object");
+
+      leave();
+    }
+
+    ///
+    /// this method stores the block in its file format in the given universe.
+    ///
+    elle::Status	Block::Store() const
+    {
+      elle::String	path;
+      elle::Unique	unique;
+      elle::Region	region;
+      elle::String	string;
+
+      enter();
+
+      // first, turns the block's address into a string.
+      if (address.Save(unique) == elle::StatusError)
+	escape("unable to save the address' unique");
+
+      // compute the path.
+      path =
+	lune::User::Hole + elle::System::Path::Separator +
+	unique + Block::Extension;
+
+      // encode in hexadecimal.
+      if (Hexadecimal::Encode(*this, string) == StatusError)
+	escape("unable to encode the object in hexadecimal");
+
+      // wrap the string.
+      if (region.Wrap((Byte*)string.c_str(),
+		      string.length()) == StatusError)
+	escape("unable to wrap the string in a region");
+
+      // write the file's content.
+      if (File::Write(path, region) == StatusError)
+	escape("unable to write the file's content");
+
+      leave();
+    }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -71,7 +149,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Block, _(), _());
+    embed(Block, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

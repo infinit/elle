@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [mon may  3 22:58:08 2010]
+// updated       julien quintard   [fri may 28 17:47:08 2010]
 //
 
 #ifndef ETOILE_KERNEL_DATA_HH
@@ -36,7 +36,7 @@ namespace etoile
     /// this class represents file data.
     ///
     class Data:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -61,7 +61,7 @@ namespace etoile
       //
 
       // object
-      declare(Data, _());
+      declare(Data);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

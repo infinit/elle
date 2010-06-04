@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [mon may  3 23:05:16 2010]
+// updated       julien quintard   [fri may 28 17:46:39 2010]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HXX
@@ -150,7 +150,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Contents<T>, _(), _(template <typename T>));
+    embed(Contents<T>, _(template <typename T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

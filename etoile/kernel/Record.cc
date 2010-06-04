@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Record.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [mon may  3 23:03:05 2010]
+// updated       julien quintard   [fri may 28 17:49:03 2010]
 //
 
 //
@@ -160,7 +160,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Record, _(), _());
+    embed(Record, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

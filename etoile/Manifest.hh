@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [tue may  4 10:59:57 2010]
+// updated       julien quintard   [mon may 24 22:22:25 2010]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -164,13 +164,13 @@ outward(etoile::TagIdentifier,
 
 // wall
 inward(etoile::TagWallIdentify,
-       parameters(const elle::cryptography::PublicKey));
+       parameters(const elle::PublicKey));
 outward(etoile::TagWallChallenge,
-	parameters(const elle::cryptography::Code));
+	parameters(const elle::Code));
 inward(etoile::TagWallAuthenticate,
-       parameters(const elle::cryptography::Digest));
+       parameters(const elle::Digest));
 inward(etoile::TagWallConnect,
-       parameters(const elle::core::String));
+       parameters(const elle::String));
 
 // object
 inward(etoile::TagObjectLoad,
@@ -228,13 +228,13 @@ inward(etoile::TagFileLoad,
 inward(etoile::TagFileWrite,
        parameters(const etoile::context::Identifier,
 		  const etoile::kernel::Offset,
-		  const elle::standalone::Region));
+		  const elle::Region));
 inward(etoile::TagFileRead,
        parameters(const etoile::context::Identifier,
 		  const etoile::kernel::Offset,
 		  const etoile::kernel::Size));
 outward(etoile::TagFileRegion,
-	parameters(const elle::standalone::Region));
+	parameters(const elle::Region));
 inward(etoile::TagFileAdjust,
        parameters(const etoile::context::Identifier,
 		  const etoile::kernel::Size));
@@ -296,11 +296,11 @@ inward(etoile::TagAccessRevoke,
 // attributes
 inward(etoile::TagAttributesSet,
        parameters(const etoile::context::Identifier,
-		  const elle::core::String,
-		  const elle::core::String));
+		  const elle::String,
+		  const elle::String));
 inward(etoile::TagAttributesGet,
        parameters(const etoile::context::Identifier,
-		  const elle::core::String));
+		  const elle::String));
 outward(etoile::TagAttributesTrait,
 	parameters(const etoile::kernel::Trait));
 inward(etoile::TagAttributesFetch,
@@ -309,7 +309,7 @@ outward(etoile::TagAttributesRange,
 	parameters(const etoile::kernel::Range<etoile::kernel::Trait>));
 inward(etoile::TagAttributesOmit,
        parameters(const etoile::context::Identifier,
-		  const elle::core::String));
+		  const elle::String));
 
 //
 // ---------- dependencies ----------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [mon may  3 23:05:22 2010]
+// updated       julien quintard   [fri may 28 17:47:13 2010]
 //
 
 //
@@ -144,7 +144,7 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Data, _(), _());
+    embed(Data, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

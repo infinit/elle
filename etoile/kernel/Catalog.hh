@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [mon may  3 22:57:37 2010]
+// updated       julien quintard   [fri may 28 17:46:12 2010]
 //
 
 #ifndef ETOILE_KERNEL_CATALOG_HH
@@ -45,7 +45,7 @@ namespace etoile
     /// developed.
     ///
     class Catalog:
-      public elle::Object<>
+      public elle::Object
     {
     public:
       //
@@ -73,7 +73,7 @@ namespace etoile
       //
 
       // object
-      declare(Catalog, _());
+      declare(Catalog);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
