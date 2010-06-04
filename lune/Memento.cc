@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Memento.cc
 //
 // created       julien quintard   [sat may  1 21:19:13 2010]
-// updated       julien quintard   [thu may  6 01:11:16 2010]
+// updated       julien quintard   [fri may 28 18:11:36 2010]
 //
 
 //
@@ -84,6 +84,66 @@ namespace lune
     true();
   }
 
+  ///
+  /// this method loads a memento.
+  ///
+  elle::Status		Memento::Load(const elle::String&	name)
+  {
+    elle::String	path =
+      Lune::Environment == Lune::ModeUser ?
+      Lune::User::Universes + elle::System::Path::Separator +
+      name + Memento::Extension :
+      Lune::System::Universes + elle::System::Path::Separator +
+      name + Memento::Extension;
+    elle::Region	region;
+
+    enter();
+
+    // read the file's content.
+    if (elle::File::Read(path, region) == elle::StatusError)
+      escape("unable to read the file's content");
+
+    // decode and extract the object.
+    if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
+					       region.size),
+				  *this) == elle::StatusError)
+      escape("unable to decode the object");
+
+    leave();
+  }
+
+  ///
+  /// this method stores a memento.
+  ///
+  elle::Status		Memento::Store(const elle::String&	name) const
+  {
+    elle::String	path =
+      Lune::Environment == Lune::ModeUser ?
+      Lune::User::Universes + elle::System::Path::Separator +
+      name + Memento::Extension :
+      Lune::System::Universes + elle::System::Path::Separator +
+      name + Memento::Extension;
+    elle::Region	region;
+    elle::String	string;
+
+    enter();
+
+    // encode in hexadecimal.
+    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
+      escape("unable to encode the object in hexadecimal");
+
+    // wrap the string.
+    if (region.Wrap((elle::Byte*)string.c_str(),
+		    string.length()) == elle::StatusError)
+      escape("unable to wrap the string in a region");
+
+    // write the file's content.
+    if (elle::File::Write(path, region) == elle::StatusError)
+      escape("unable to write the file's content");
+
+    leave();
+  }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -91,7 +151,7 @@ namespace lune
   ///
   /// this macro-function call generates the object.
   ///
-  embed(Memento, _(), _());
+  embed(Memento, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -137,7 +197,8 @@ namespace lune
     // serialize the attributes.
     if (archive.Serialize(this->name,
 			  this->address,
-			  this->network) == elle::StatusError)
+			  this->network,
+			  this->signature) == elle::StatusError)
       escape("unable to serialize the attributes");
 
     leave();
@@ -153,56 +214,9 @@ namespace lune
     // extract the attributes.
     if (archive.Extract(this->name,
 			this->address,
-			this->network) == elle::StatusError)
+			this->network,
+			this->signature) == elle::StatusError)
       escape("unable to extract the attributes");
-
-    leave();
-  }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-  ///
-  /// this method loads a memento.
-  ///
-  elle::Status		Memento::Load(const elle::String&	name)
-  {
-    elle::String	path =
-      Lune::Universes +
-      elle::System::Path::Separator +
-      name +
-      elle::System::Path::Separator +
-      name +
-      Memento::Extension;
-
-    enter();
-
-    // load as usual, but taking care to pass the right path.
-    if (Object<>::Load(path) == elle::StatusError)
-      escape("unable to load the memento");
-
-    leave();
-  }
-
-  ///
-  /// this method stores a memento.
-  ///
-  elle::Status		Memento::Store(const elle::String&	name) const
-  {
-    elle::String	path =
-      Lune::Universes +
-      elle::System::Path::Separator +
-      name +
-      elle::System::Path::Separator +
-      name +
-      Memento::Extension;
-
-    enter();
-
-    // store as usual, but taking care to pass the right path.
-    if (Object<>::Store(path) == elle::StatusError)
-      escape("unable to store the memento");
 
     leave();
   }

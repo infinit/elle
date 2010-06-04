@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Phrase.hh
 //
 // created       julien quintard   [sat may  1 12:52:01 2010]
-// updated       julien quintard   [wed may  5 00:08:31 2010]
+// updated       julien quintard   [fri may 28 17:38:03 2010]
 //
 
 #ifndef LUNE_PHRASE_HH
@@ -32,20 +32,28 @@ namespace lune
   /// with the user's agent.
   ///
   class Phrase:
-    public elle::Object<>
+    public elle::Object
   {
   public:
+    //
+    // constants
+    //
+    static const elle::String		Extension;
+
     //
     // methods
     //
     elle::Status	Create(const elle::String&);
+
+    elle::Status	Load();
+    elle::Status	Store() const;
 
     //
     // interfaces
     //
 
     // object
-    declare(Phrase, _());
+    declare(Phrase);
 
     // dumpable
     elle::Status	Dump(const elle::Natural32 = 0) const;

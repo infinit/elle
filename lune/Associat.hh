@@ -1,18 +1,18 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       elle
+// project       lune
 //
 // license       infinit
 //
 // file          /home/mycure/infinit/lune/Associat.hh
 //
-// created       julien quintard   [sun apr 18 10:49:35 2010]
-// updated       julien quintard   [mon may  3 11:18:28 2010]
+// created       julien quintard   [mon may 10 15:52:06 2010]
+// updated       julien quintard   [fri may 28 12:30:39 2010]
 //
 
-#ifndef ELLE_LUNE_ASSOCIAT_HH
-#define ELLE_LUNE_ASSOCIAT_HH
+#ifndef LUNE_ASSOCIAT_HH
+#define LUNE_ASSOCIAT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,80 +20,59 @@
 
 #include <elle/Elle.hh>
 
-namespace elle
+#include <etoile/hole/Address.hh>
+
+#include <lune/Map.hh>
+#include <lune/Lune.hh>
+
+namespace lune
 {
-  namespace lune
-  {
 
 //
 // ---------- classes ---------------------------------------------------------
 //
 
-    ///
-    /// this class represents a associat of links between local user/group
-    /// names and Infinit identifiers.
-    ///
-    template <typename T>
-    class Associat:
-      Object<>
-    {
-    public:
-      //
-      // constants
-      //
-      static const T*		Trash;
+  ///
+  /// this class contains the links between local users and groups and
+  /// Infinit identifiers so that Infinit can be used with local file
+  /// system entities such as UNIX's UIDs/GIDs for instance.
+  ///
+  class Associat:
+    public elle::Object
+  {
+  public:
+    //
+    // constants
+    //
+    static const elle::String		Extension;
 
-      //
-      // types
-      //
-      typedef std::pair<String, T>			Value;
-      typedef std::list<Value>				Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+    //
+    // methods
+    //
+    elle::Status	Load();
+    elle::Status	Store() const;
 
-      //
-      // static methods
-      //
-      static Status	Load(const String&,
-			     Associat<T>&);
-      static Status	Store(const Associat<T>&,
-			      const String&);
+    //
+    // interfaces
+    //
 
-      //
-      // methods
-      //
-      Status		Add(const String&,
-			    const T&);
-      Status		Lookup(const String&,
-			       const T*& = Trash);
-      Status		Lookup(const T&,
-			       const String*& = Trash);
-      Status		Remove(const String&);
+    // object
+    declare(Associat);
 
-      //
-      // interfaces
-      //
+    // dumpable
+    elle::Status	Dump(const elle::Natural32 = 0) const;
 
-      // dumpable
-      Status		Dump(const Natural32 = 0) const;
+    // archivable
+    elle::Status	Serialize(elle::Archive&) const;
+    elle::Status	Extract(elle::Archive&);
 
-      // archivable
-      Status		Serialize(Archive&) const;
-      Status		Extract(Archive&);
+    //
+    // attributes
+    //
+    Map<elle::PublicKey>	users;
+    Map<etoile::hole::Address>	groups;
+  };
 
-      //
-      // attributes
-      //
-      Container		container;
-    };
-
-  }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <elle/lune/Associat.hxx>
 
 #endif

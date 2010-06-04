@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Authority.cc
 //
 // created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [wed may  5 21:38:30 2010]
+// updated       julien quintard   [fri may 28 18:05:53 2010]
 //
 
 //
@@ -38,7 +38,8 @@ namespace lune
   /// default constructor.
   ///
   Authority::Authority():
-    k(NULL)
+    k(NULL),
+    cipher(NULL)
   {
   }
 
@@ -50,6 +51,10 @@ namespace lune
     // release the private key, if present.
     if (this->k != NULL)
       delete this->k;
+
+    // release the cipher.
+    if (this->cipher != NULL)
+      delete this->cipher;
   }
 
 //
@@ -62,6 +67,9 @@ namespace lune
   elle::Status		Authority::Create(const elle::KeyPair&	pair)
   {
     enter();
+
+    // set the type.
+    this->type = Authority::TypePair;
 
     // set the public key.
     this->K = pair.K;
@@ -79,8 +87,169 @@ namespace lune
   {
     enter();
 
+    // set the type.
+    this->type = Authority::TypePublic;
+
     // set the public key.
     this->K = K;
+
+    leave();
+  }
+
+  ///
+  /// this method encrypts the keys.
+  ///
+  elle::Status		Authority::Encrypt(const elle::String&		pass)
+  {
+    elle::SecretKey	key;
+
+    enter();
+
+    // create a secret key with this pass.
+    if (key.Create(pass) == elle::StatusError)
+      escape("unable to create the secret key");
+
+    // allocate the cipher.
+    this->cipher = new elle::Cipher;
+
+    // encrypt depending on the type.
+    switch (this->type)
+      {
+      case Authority::TypePair:
+	{
+	  // encrypt the authority.
+	  if (key.Encrypt(this->K, *this->k,
+			  *this->cipher) == elle::StatusError)
+	    escape("unable to encrypt the authority");
+
+	  break;
+	}
+      case Authority::TypePublic:
+	{
+	  // encrypt the authority.
+	  if (key.Encrypt(this->K,
+			  *this->cipher) == elle::StatusError)
+	    escape("unable to encrypt the authority");
+
+	  break;
+	}
+      case Authority::TypeUnknown:
+      default:
+	{
+	  escape("unknown type");
+	}
+      }
+
+    leave();
+  }
+
+  ///
+  /// this method decrypts the keys.
+  ///
+  elle::Status		Authority::Decrypt(const elle::String&		pass)
+  {
+    elle::SecretKey	key;
+
+    enter();
+
+    // check the cipher.
+    if (this->cipher == NULL)
+      escape("unable to decrypt an unencrypted authority");
+
+    // create a secret key with this pass.
+    if (key.Create(pass) == elle::StatusError)
+      escape("unable to create the secret key");
+
+    // decrypt depending on the type.
+    switch (this->type)
+      {
+      case Authority::TypePair:
+	{
+	  // allocate the private key.
+	  this->k = new elle::PrivateKey;
+
+	  // decrypt the authority.
+	  if (key.Decrypt(*this->cipher,
+			  this->K, *this->k) == elle::StatusError)
+	    escape("unable to decrypt the authority");
+
+	  break;
+	}
+      case Authority::TypePublic:
+	{
+	  // decrypt the authority.
+	  if (key.Decrypt(*this->cipher,
+			  this->K) == elle::StatusError)
+	    escape("unable to decrypt the authority");
+
+	  break;
+	}
+      case Authority::TypeUnknown:
+      default:
+	{
+	  escape("unknown type");
+	}
+      }
+
+    leave();
+  }
+
+  ///
+  /// this method loads the system's authority file.
+  ///
+  elle::Status		Authority::Load()
+  {
+    elle::String	path =
+      Lune::System::Authority + Authority::Extension;
+    elle::Region	region;
+
+    enter();
+
+    // check the mode.
+    if (Lune::Environment != Lune::ModeSystem)
+      escape("unable to manipulate authority files in this mode");
+
+    // read the file's content.
+    if (elle::File::Read(path, region) == elle::StatusError)
+      escape("unable to read the file's content");
+
+    // decode and extract the object.
+    if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
+					       region.size),
+				  *this) == elle::StatusError)
+      escape("unable to decode the object");
+
+    leave();
+  }
+
+  ///
+  /// this method stores a authority.
+  ///
+  elle::Status		Authority::Store() const
+  {
+    elle::String	path =
+      Lune::System::Authority + Authority::Extension;
+    elle::Region	region;
+    elle::String	string;
+
+    enter();
+
+    // check the mode.
+    if (Lune::Environment != Lune::ModeSystem)
+      escape("unable to manipulate authority files in this mode");
+
+    // encode in hexadecimal.
+    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
+      escape("unable to encode the object in hexadecimal");
+
+    // wrap the string.
+    if (region.Wrap((elle::Byte*)string.c_str(),
+		    string.length()) == elle::StatusError)
+      escape("unable to wrap the string in a region");
+
+    // write the file's content.
+    if (elle::File::Write(path, region) == elle::StatusError)
+      escape("unable to write the file's content");
 
     leave();
   }
@@ -92,7 +261,7 @@ namespace lune
   ///
   /// this macro-function call generates the object.
   ///
-  embed(Authority, _(elle::FormatBase64, elle::FormatCustom), _());
+  embed(Authority, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -110,6 +279,10 @@ namespace lune
 
     std::cout << alignment << "[Authority]" << std::endl;
 
+    // dump the type.
+    std::cout << alignment << elle::Dumpable::Shift
+	      << "[Type] " << (elle::Natural32)this->type << std::endl;
+
     // dump the public key.
     if (this->K.Dump(margin + 2) == elle::StatusError)
       escape("unable to dump the public key");
@@ -122,14 +295,12 @@ namespace lune
 	  escape("unable to dump the private key");
       }
 
-    // retrive the public key's unique.
-    if (this->K.Save(unique) == elle::StatusError)
-      escape("unable to save the public key");
-
-    // dump the public key's unique so that it can be easily hard-coded in the
-    // infinit software sources.
-    std::cout << alignment << elle::Dumpable::Shift
-	      << "[Unique] " << unique << std::endl;
+    // dump the cipher.
+    if (this->cipher != NULL)
+      {
+	if (this->cipher->Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the cipher");
+      }
 
     leave();
   }
@@ -145,23 +316,14 @@ namespace lune
   {
     enter();
 
-    // serialize the public key.
-    if (archive.Serialize(this->K) == elle::StatusError)
-      escape("unable to serialize the public key");
+    // check the cipher.
+    if (this->cipher == NULL)
+      escape("unable to serialize an unencrypted authority");
 
-    // serialize the private key.
-    if (this->k != NULL)
-      {
-	// serialize the key.
-	if (archive.Serialize(*this->k) == elle::StatusError)
-	  escape("unable to serialize the private key");
-      }
-    else
-      {
-	// serialize 'none'.
-	if (archive.Serialize(elle::none) == elle::StatusError)
-	  escape("unable to serialize 'none'");
-      }
+    // serialize the type and cipher.
+    if (archive.Serialize((elle::Byte&)this->type,
+			  *this->cipher) == elle::StatusError)
+      escape("unable to serialize the attributes");
 
     leave();
   }
@@ -171,137 +333,19 @@ namespace lune
   ///
   elle::Status		Authority::Extract(elle::Archive&	archive)
   {
-    elle::Archive::Type	type;
+    elle::Byte		type;
 
     enter();
 
-    // extract the public key.
-    if (archive.Extract(this->K) == elle::StatusError)
+    // allocate the cipher.
+    this->cipher = new elle::Cipher;
+
+    // extract the type and cipher.
+    if (archive.Extract(type, *this->cipher) == elle::StatusError)
       escape("unable to extract the attributes");
 
-    // fetch the next element's type.
-    if (archive.Fetch(type) == elle::StatusError)
-      escape("unable to fetch the next element's type");
-
-    // extract the private key.
-    if (type == elle::Archive::TypeNull)
-      {
-	// nothing to extract.
-	if (archive.Extract(elle::none) == elle::StatusError)
-	  escape("unable to extract null");
-      }
-    else
-      {
-	// allocate a private key.
-	this->k = new elle::PrivateKey;
-
-	// extract the internal digest.
-	if (archive.Extract(*this->k) == elle::StatusError)
-	  escape("unable to extract the private key");
-	}
-
-    leave();
-  }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-  ///
-  /// this method loads an authority.
-  ///
-  elle::Status		Authority::Load(const elle::String&	pass)
-  {
-    elle::String	path =
-      Lune::Authority + Authority::Extension;
-    elle::Region	region;
-    struct ::stat	status;
-    elle::Cipher	cipher;
-    elle::SecretKey	key;
-    int			fd;
-
-    enter();
-
-    // retrieve information on the file, if it exsits.
-    if (::stat(path.c_str(), &status) == -1)
-      escape(::strerror(errno));
-
-    // create a secret key with the given pass.
-    if (key.Create(pass) == elle::StatusError)
-      escape("unable to create the secret key");
-
-    // prepare the region.
-    if (region.Prepare(status.st_size) == elle::StatusError)
-      escape("unable to prepare the region");
-
-    // set the correct size.
-    region.size = status.st_size;
-
-    // open the file.
-    if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-      escape(::strerror(errno));
-
-    // read the file's content.
-    if (::read(fd, region.contents, region.size) == -1)
-      escape(::strerror(errno));
-
-    // close the file.
-    ::close(fd);
-
-    // decode and extract the cipher.
-    if (elle::Base64::Decode(elle::String((char*)region.contents, region.size),
-			     cipher) == elle::StatusError)
-      escape("unable to decode the cipher");
-
-    // decrypt the cipher file content with the secret key.
-    if (key.Decrypt(cipher, *this) == elle::StatusError)
-      escape("unable to decrypt the authority");
-
-    leave();
-  }
-
-  ///
-  /// this method stores a authority.
-  ///
-  elle::Status		Authority::Store(const elle::String&	pass) const
-  {
-    elle::String	path =
-      Lune::Authority + Authority::Extension;
-    elle::Cipher	cipher;
-    elle::String	string;
-    elle::SecretKey	key;
-    int			fd;
-
-    enter();
-
-    // create a secret key with this pass.
-    if (key.Create(pass) == elle::StatusError)
-      escape("unable to create the secret key");
-
-    // encrypt the authority.
-    if (key.Encrypt(*this, cipher) == elle::StatusError)
-      escape("unable to encrypt the authority");
-
-    // encode in base64.
-    if (elle::Base64::Encode(cipher, string) == elle::StatusError)
-      escape("unable to encode in base64");
-
-    // open the file.
-    if ((fd = ::open(path.c_str(),
-		     O_WRONLY | O_CREAT | O_TRUNC,
-		     0400)) == -1)
-      escape(::strerror(errno));
-
-    // write the file.
-    if (::write(fd, string.c_str(), string.length()) != string.length())
-      {
-	::close(fd);
-
-	escape("unable to write the authority file");
-      }
-
-    // close the file.
-    ::close(fd);
+    // set the type.
+    this->type = (Authority::Type)type;
 
     leave();
   }

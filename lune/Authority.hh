@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Authority.hh
 //
 // created       julien quintard   [tue may  4 23:35:57 2010]
-// updated       julien quintard   [wed may  5 21:43:19 2010]
+// updated       julien quintard   [fri may 28 15:21:59 2010]
 //
 
 #ifndef LUNE_AUTHORITY_HH
@@ -36,13 +36,23 @@ namespace lune
   /// verify signatures.
   ///
   class Authority:
-    public elle::Object<elle::FormatBase64, elle::FormatCustom>
+    public elle::Object
   {
   public:
     //
     // constants
     //
     static const elle::String		Extension;
+
+    //
+    // enumerations
+    //
+    enum Type
+      {
+	TypeUnknown,
+	TypePair,
+	TypePublic
+      };
 
     //
     // constructors & destructors
@@ -56,12 +66,18 @@ namespace lune
     elle::Status	Create(const elle::KeyPair&);
     elle::Status	Create(const elle::PublicKey&);
 
+    elle::Status	Encrypt(const elle::String&);
+    elle::Status	Decrypt(const elle::String&);
+
+    elle::Status	Load();
+    elle::Status	Store() const;
+
     //
     // interfaces
     //
 
     // object
-    declare(Authority, _(elle::FormatBase64, elle::FormatCustom));
+    declare(Authority);
 
     // dumpable
     elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -70,15 +86,15 @@ namespace lune
     elle::Status	Serialize(elle::Archive&) const;
     elle::Status	Extract(elle::Archive&);
 
-    // fileable
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
-
     //
     // attributes
     //
+    Type		type;
+
     elle::PublicKey	K;
     elle::PrivateKey*	k;
+
+    elle::Cipher*	cipher;
   };
 
 }

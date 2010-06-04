@@ -63,6 +63,7 @@ o l'appplication qui se connecte a Etoile en specifiant le reseau doit fournir l
   reseau. Etoile verifie que le passport correspond a l'identite du user en cours. puis tout est
   passe a hole, via un Hole::Join, qui lui alloue le necessaire, se connecte au reseau.
   NON il faudrait que ce soit Hole qui verifie tout ca!
+o refoutre lune/ dans un repo specifique
 
 --
 

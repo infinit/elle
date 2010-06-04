@@ -3,20 +3,19 @@
 //
 // project       lune
 //
-// license       infinit
+// license       associat
 //
-// file          /home/mycure/infinit/lune/Phrase.cc
+// file          /home/mycure/infinit/lune/Associat.cc
 //
-// created       julien quintard   [tue may  4 20:49:38 2010]
-// updated       julien quintard   [fri may 28 18:15:51 2010]
+// created       julien quintard   [mon may 10 16:14:02 2010]
+// updated       julien quintard   [fri may 28 18:05:34 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <lune/Phrase.hh>
-#include <lune/Lune.hh>
+#include <lune/Associat.hh>
 
 namespace lune
 {
@@ -26,42 +25,29 @@ namespace lune
 //
 
   ///
-  /// this string defines the phrase files extension.
+  /// this string defines the associat files extension.
   ///
-  const elle::String		Phrase::Extension = ".phr";
+  const elle::String		Associat::Extension = ".asct";
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
   ///
-  /// this method creates a phrase.
+  /// this method loads the user's local associat.
   ///
-  elle::Status		Phrase::Create(const elle::String&	string)
-  {
-    enter();
-
-    // assign the string.
-    this->string = string;
-
-    leave();
-  }
-
-  ///
-  /// this method loads the user's local map.
-  ///
-  elle::Status		Phrase::Load()
+  elle::Status		Associat::Load()
   {
     elle::String	path =
       Lune::User::Home + elle::System::Path::Separator +
-      Lune::User::Name + Phrase::Extension;
+      Lune::User::Name + Associat::Extension;
     elle::Region	region;
 
     enter();
 
     // check the mode.
     if (Lune::Environment != Lune::ModeUser)
-      escape("unable to manipulate phrase files in this mode");
+      escape("unable to manipulate associat files in this mode");
 
     // read the file's content.
     if (elle::File::Read(path, region) == elle::StatusError)
@@ -77,13 +63,13 @@ namespace lune
   }
 
   ///
-  /// this method stores the user's local map.
+  /// this method stores the user's local associat.
   ///
-  elle::Status		Phrase::Store() const
+  elle::Status		Associat::Store() const
   {
     elle::String	path =
       Lune::User::Home + elle::System::Path::Separator +
-      Lune::User::Name + Phrase::Extension;
+      Lune::User::Name + Associat::Extension;
     elle::Region	region;
     elle::String	string;
 
@@ -91,7 +77,7 @@ namespace lune
 
     // check the mode.
     if (Lune::Environment != Lune::ModeUser)
-      escape("unable to manipulate phrase files in this mode");
+      escape("unable to manipulate associat files in this mode");
 
     // encode in hexadecimal.
     if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
@@ -116,22 +102,30 @@ namespace lune
   ///
   /// this macro-function call generates the object.
   ///
-  embed(Phrase, _());
+  embed(Associat, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
   ///
-  /// this method dumps the object.
+  /// this method dumps the associat.
   ///
-  elle::Status		Phrase::Dump(const elle::Natural32	margin) const
+  elle::Status		Associat::Dump(const elle::Natural32	margin) const
   {
     elle::String	alignment(margin, ' ');
 
     enter();
 
-    std::cout << alignment << "[Phrase] " << this->string << std::endl;
+    std::cout << alignment << "[Associat]" << std::endl;
+
+    // dump the users map.
+    if (this->users.Dump(margin + 2) == elle::StatusError)
+      escape("unable to dump the users map");
+
+    // dump the groups map.
+    if (this->groups.Dump(margin + 2) == elle::StatusError)
+      escape("unable to dump the groups map");
 
     leave();
   }
@@ -141,29 +135,29 @@ namespace lune
 //
 
   ///
-  /// this method serializes the object.
+  /// this method serializes a associat.
   ///
-  elle::Status		Phrase::Serialize(elle::Archive&	archive) const
+  elle::Status		Associat::Serialize(elle::Archive&	archive) const
   {
     enter();
 
-    // serialize the attributes.
-    if (archive.Serialize(this->string) == elle::StatusError)
-      escape("unable to serialize the attributes");
+    // serialize the maps.
+    if (archive.Serialize(this->users, this->groups) == elle::StatusError)
+      escape("unable to serialize the maps");
 
     leave();
   }
 
   ///
-  /// this method extracts the object.
+  /// this method extract a public key from the given archive.
   ///
-  elle::Status		Phrase::Extract(elle::Archive&		archive)
+  elle::Status		Associat::Extract(elle::Archive&	archive)
   {
     enter();
 
-    // extract the attributes.
-    if (archive.Extract(this->string) == elle::StatusError)
-      escape("unable to extract the attributes");
+    // extract the maps.
+    if (archive.Extract(this->users, this->groups) == elle::StatusError)
+      escape("unable to extract the maps");
 
     leave();
   }
