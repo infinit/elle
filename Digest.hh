@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Digest.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [mon may  3 22:32:31 2010]
+// updated       julien quintard   [fri may 28 12:17:28 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_DIGEST_HH
@@ -47,7 +47,7 @@ namespace elle
     /// this class represents an asymmetrically encrypted text.
     ///
     class Digest:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -60,7 +60,7 @@ namespace elle
       //
 
       // object
-      declare(Digest, _());
+      declare(Digest);
       Boolean		operator==(const Digest&) const;
 
       // dumpable

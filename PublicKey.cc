@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [tue may  4 10:17:05 2010]
+// updated       julien quintard   [fri may 28 12:19:08 2010]
 //
 
 //
@@ -327,7 +327,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(PublicKey, _(), _());
+    embed(PublicKey, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

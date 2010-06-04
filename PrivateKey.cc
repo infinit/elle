@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [tue may  4 10:15:27 2010]
+// updated       julien quintard   [fri may 28 12:19:24 2010]
 //
 
 //
@@ -347,7 +347,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(PrivateKey, _(), _());
+    embed(PrivateKey, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

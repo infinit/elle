@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [wed may  5 13:12:41 2010]
+// updated       julien quintard   [fri may 28 12:19:33 2010]
 //
 
 //
@@ -19,8 +19,12 @@
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/SecretKey.hh>
 
+#include <elle/core/Byte.hh>
+
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+
+#include <elle/io/File.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
@@ -186,7 +190,7 @@ namespace elle
     ///
     /// this macro-function call generates the entity.
     ///
-    embed(KeyPair, _(FormatBase64, FormatCustom), _());
+    embed(KeyPair, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -258,38 +262,14 @@ namespace elle
     {
       String		path = name + KeyPair::Extension;
       Region		region;
-      struct ::stat	status;
       Cipher		cipher;
       SecretKey		key;
-      int		fd;
 
       enter();
 
-      // retrieve information on the file, if it exsits.
-      if (::stat(path.c_str(), &status) == -1)
-	escape(::strerror(errno));
-
-      // create a secret key with the given pass.
-      if (key.Create(pass) == StatusError)
-	escape("unable to create the secret key");
-
-      // prepare the region.
-      if (region.Prepare(status.st_size) == StatusError)
-	escape("unable to prepare the region");
-
-      // set the correct size.
-      region.size = status.st_size;
-
-      // open the file.
-      if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-	escape(::strerror(errno));
-
-      // read the file's content.
-      if (::read(fd, region.contents, region.size) == -1)
-	escape(::strerror(errno));
-
-      // close the file.
-      ::close(fd);
+      // read the file.
+      if (File::Read(path, region) == StatusError)
+	escape("unable to read the file");
 
       // decode and extract the cipher.
       if (Base64::Decode(String((char*)region.contents, region.size),
@@ -311,11 +291,10 @@ namespace elle
 				       const String&		pass) const
     {
       String		path = name + KeyPair::Extension;
-      struct ::stat	status;
       Cipher		cipher;
       String		string;
       SecretKey		key;
-      int		fd;
+      Region		region;
 
       enter();
 
@@ -331,22 +310,13 @@ namespace elle
       if (Base64::Encode(cipher, string) == StatusError)
 	escape("unable to encode in base64");
 
-      // open the file.
-      if ((fd = ::open(path.c_str(),
-		       O_WRONLY | O_CREAT | O_TRUNC,
-		       0400)) == -1)
-	escape(::strerror(errno));
+      // wrap the string.
+      if (region.Wrap((Byte*)string.c_str(), string.length()) == StatusError)
+	escape("unable to wrap the string");
 
       // write the file.
-      if (::write(fd, string.c_str(), string.length()) != string.length())
-	{
-	  ::close(fd);
-
-	  escape("unable to write the key pair file");
-	}
-
-      // close the file.
-      ::close(fd);
+      if (File::Write(path, region) == StatusError)
+	escape("unable to write the file");
 
       leave();
     }
