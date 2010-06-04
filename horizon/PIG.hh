@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [wed apr 28 16:40:33 2010]
+// updated       julien quintard   [tue may 25 12:06:47 2010]
 //
 
 #ifndef PIG_PIG_HH
@@ -24,9 +24,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <Infinit.hh>
 #include <elle/Elle.hh>
+#include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
-#include <map/Map.hh>
 
 #include <elle/idiom/Close.hh>
 # include <fuse.h>
@@ -51,7 +52,7 @@ namespace pig
     //
     // constants
     //
-    static const String			Line;
+    static const elle::String		Line;
 
     static const etoile::kernel::Size	Range;
 
@@ -160,8 +161,9 @@ namespace pig
     //
     // static methods
     //
-    static Status	Initialize();
-    static Status	Clean();
+    static elle::Status	Initialize(const elle::String&,
+				   const elle::String&);
+    static elle::Status	Clean();
 
     //
     // template methods
@@ -170,7 +172,7 @@ namespace pig
     ///
     /// this method releases no identifier.
     ///
-    static Void		Release()
+    static elle::Void	Release()
     {
       // nothing to do
     }
@@ -180,17 +182,17 @@ namespace pig
     /// context.
     ///
     template <typename T>
-    static Void		Release(T&		identifier)
+    static elle::Void	Release(T&		identifier)
     {
-      PIG::Channel.Call(Inputs<TagObjectDiscard>(identifier),
-			Outputs<TagOk>());
+      PIG::Channel.Call(elle::Inputs<etoile::TagObjectDiscard>(identifier),
+			elle::Outputs<etoile::TagOk>());
     }
 
     ///
     /// this method releases a set of contexts.
     ///
     template <typename T, typename... TT>
-    static Void		Release(T&		identifier,
+    static elle::Void	Release(T&		identifier,
 				TT&...		identifiers)
     {
       Release(identifier);
@@ -200,10 +202,7 @@ namespace pig
     //
     // static attributes
     //
-    static Door					Channel;
-
-    static PublicKey				K;
-    static String				Phrase;
+    static elle::Door				Channel;
 
     static etoile::kernel::Subject*		Subject;
 
@@ -213,11 +212,7 @@ namespace pig
       static gid_t				GID;
     };
 
-    struct					Maps
-    {
-      static map::Map<PublicKey>		Users;
-      static map::Map<etoile::hole::Address>	Groups;
-    };
+    static lune::Associat			Associat;
   };
 
 //

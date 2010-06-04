@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [fri apr 30 12:16:05 2010]
+// updated       julien quintard   [tue may 25 12:09:49 2010]
 //
 
 //
@@ -37,23 +37,12 @@ namespace pig
   ///
   /// this string represents the door's name to Etoile.
   ///
-  const String				PIG::Line("etoile");
+  const elle::String			PIG::Line("etoile");
 
   ///
   /// the door to Etoile.
   ///
-
-  Door					PIG::Channel;
-
-  ///
-  /// the public key of the user the application is running on behalf of.
-  ///
-  PublicKey				PIG::K;
-
-  ///
-  /// the phrase used to connect applications to Etoile.
-  ///
-  String				PIG::Phrase;
+  elle::Door				PIG::Channel;
 
   ///
   /// the subject representing the current user.
@@ -78,16 +67,10 @@ namespace pig
   gid_t					PIG::Somebody::GID;
 
   ///
-  /// this varaible contains the mappings between local user identities and
-  /// Infinit identities.
+  /// this varaible contains the mappings between local user/group
+  /// identities and Infinit identities.
   ///
-  map::Map<PublicKey>			PIG::Maps::Users;
-
-  ///
-  /// this varaible contains the mappings between local group identities and
-  /// Infinit identities.
-  ///
-  map::Map<etoile::hole::Address>	PIG::Maps::Groups;
+  lune::Associat			PIG::Associat;
 
 //
 // ---------- callbacks -------------------------------------------------------
@@ -114,8 +97,9 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       skip(ENOENT);
 
     // set the identifier in the fuse_file_info structure.
@@ -126,8 +110,8 @@ namespace pig
 
     // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectDiscard>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+          elle::Inputs<etoile::TagObjectDiscard>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
     return (result);
@@ -142,9 +126,9 @@ namespace pig
 				      struct fuse_file_info*	info)
   {
     etoile::context::Identifier*	identifier;
-    etoile::wall::State			state;
+    etoile::wall::Status		status;
     etoile::path::Way			way(path);
-    const String*			name;
+    elle::String*			name;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -158,15 +142,16 @@ namespace pig
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectInformation>(*identifier),
-	  Outputs<TagObjectState>(state)) == StatusError)
+          elle::Inputs<etoile::TagObjectInformation>(*identifier),
+	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
       error(EINTR);
 
     // set the uid by first looking into the users map. if no local user is
     // found, the 'somebody' user is used instead, indicating that the
     // file belongs to someone, with the given permissions, but cannot
     // be mapped to a local user name.
-    if (PIG::Maps::Users.Lookup(state.keys.owner, name) == StatusTrue)
+    if (PIG::Associat.users.Lookup(status.keys.owner,
+				   name) == elle::StatusTrue)
       {
 	//
 	// in this case, the object's owner is known locally.
@@ -200,19 +185,21 @@ namespace pig
     stat->st_gid = PIG::Somebody::GID;
 
     // set the size.
-    stat->st_size = (off_t)state.size;
+    stat->st_size = (off_t)status.size;
 
     // convert the times into time_t structures.
     stat->st_atime = time(NULL);
 
-    if (state.stamps.creation.Convert(stat->st_ctime) == StatusError)
+    if (status.stamps.creation.Convert(stat->st_ctime) ==
+	elle::StatusError)
       error(EINTR);
 
-    if (state.stamps.modification.Convert(stat->st_mtime) == StatusError)
+    if (status.stamps.modification.Convert(stat->st_mtime) ==
+	elle::StatusError)
       error(EINTR);
 
     // set the mode and permissions.
-    switch (state.genre)
+    switch (status.genre)
       {
       case etoile::kernel::GenreDirectory:
 	{
@@ -221,13 +208,13 @@ namespace pig
 
 	  // if the user has the read permission, allow her to access
 	  // and read the directory.
-	  if ((state.permissions.owner &
+	  if ((status.permissions.owner &
 	       etoile::kernel::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the directory content.
-	  if ((state.permissions.owner &
+	  if ((status.permissions.owner &
 	       etoile::kernel::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
@@ -241,20 +228,22 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read
 	  // the file.
-	  if ((state.permissions.owner &
+	  if ((status.permissions.owner &
 	       etoile::kernel::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the file content.
-	  if ((state.permissions.owner &
+	  if ((status.permissions.owner &
 	       etoile::kernel::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
 	  // retrieve the attribute.
 	  if (PIG::Channel.Call(
-		Inputs<TagAttributesGet>(*identifier, "posix::exec"),
-		Outputs<TagAttributesTrait>(trait)) == StatusError)
+	        elle::Inputs<etoile::TagAttributesGet>(*identifier,
+						       "posix::exec"),
+		elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
+	      elle::StatusError)
 	    error(ENOENT);
 
 	  // check the trait.
@@ -272,13 +261,13 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read and
 	  // search the linked object.
-	  if ((state.permissions.owner &
+	  if ((status.permissions.owner &
 	       etoile::kernel::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the link.
-	  if ((state.permissions.owner &
+	  if ((status.permissions.owner &
 	       etoile::kernel::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
@@ -326,8 +315,9 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // XXX est-ce necessaire de checker, si ca se trouve c'est deja fait
@@ -335,8 +325,8 @@ namespace pig
 
     // retrieve the user's permissions on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessLookup>(identifier, *PIG::Subject),
-	  Outputs<TagAccessRecord>(record)) == StatusError)
+	  elle::Inputs<etoile::TagAccessLookup>(identifier, *PIG::Subject),
+	  elle::Outputs<etoile::TagAccessRecord>(record)) == elle::StatusError)
       error(EINTR, identifier);
 
     // check the record.
@@ -365,7 +355,7 @@ namespace pig
   {
     etoile::path::Way		way(path);
     etoile::context::Identifier*identifier;
-    etoile::wall::State		state;
+    etoile::wall::Status	status;
     off_t			next;
 
     printf("[XXX] %s(%s, 0x%x, 0x%x, %qu, 0x%x)\n",
@@ -400,10 +390,11 @@ namespace pig
 
 	// read the directory entries.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryConsult>(*identifier,
+	      elle::Inputs<etoile::TagDirectoryConsult>(*identifier,
 					  (etoile::kernel::Offset)offset,
 					  PIG::Range),
-	      Outputs<TagDirectoryRange>(range)) == StatusError)
+	      elle::Outputs<etoile::TagDirectoryRange>(range)) ==
+	    elle::StatusError)
 	  error(EINTR);
 
 	// add the entries by using the filler() function.
@@ -449,8 +440,8 @@ namespace pig
 
     // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryDiscard>(*identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryDiscard>(*identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
     // delete the identifier.
@@ -480,14 +471,16 @@ namespace pig
 
     // load the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryLoad>(way),
-	  Outputs<TagIdentifier>(directory)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // create the subdirectory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryCreate>(),
-	  Outputs<TagIdentifier>(subdirectory)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryCreate>(),
+	  elle::Outputs<etoile::TagIdentifier>(subdirectory)) ==
+	elle::StatusError)
       error(EINTR, directory);
 
     // compute the permissions.
@@ -499,26 +492,28 @@ namespace pig
 
     // set the owner permissions.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessUpdate>(subdirectory, *PIG::Subject, permissions),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagAccessUpdate>(subdirectory,
+					*PIG::Subject,
+					permissions),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, subdirectory, directory);
 
     // add the subdirectory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryAdd>(directory, name, subdirectory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryAdd>(directory, name, subdirectory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, subdirectory, directory);
 
     // store the subdirectory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(subdirectory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryStore>(subdirectory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(directory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryStore>(directory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
     return (0);
@@ -541,32 +536,34 @@ namespace pig
 
     // load the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryLoad>(parent),
-	  Outputs<TagIdentifier>(directory)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryLoad>(parent),
+	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // load the subdirectory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryLoad>(child),
-	  Outputs<TagIdentifier>(subdirectory)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryLoad>(child),
+	  elle::Outputs<etoile::TagIdentifier>(subdirectory)) ==
+	elle::StatusError)
       error(ENOENT, directory);
 
     // remove the entry.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryRemove>(directory, name),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryRemove>(directory, name),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EACCES, subdirectory, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(directory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryStore>(directory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, subdirectory);
 
     // destroy the subdirectory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryDestroy>(subdirectory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryDestroy>(subdirectory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
     return (0);
@@ -580,7 +577,7 @@ namespace pig
 				    int				mask)
   {
     etoile::context::Identifier	identifier;
-    etoile::wall::State		state;
+    etoile::wall::Status	status;
     etoile::path::Way		way(path);
     etoile::kernel::Record	record;
 
@@ -590,20 +587,21 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectInformation>(identifier),
-	  Outputs<TagObjectState>(state)) == StatusError)
+	  elle::Inputs<etoile::TagObjectInformation>(identifier),
+	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
       error(EINTR, identifier);
 
     // retrieve the user's permissions on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessLookup>(identifier, *PIG::Subject),
-	  Outputs<TagAccessRecord>(record)) == StatusError)
+	  elle::Inputs<etoile::TagAccessLookup>(identifier, *PIG::Subject),
+	  elle::Outputs<etoile::TagAccessRecord>(record)) == elle::StatusError)
       error(ENOENT, identifier);
 
     // check the record.
@@ -613,7 +611,7 @@ namespace pig
     // check if the permissions match the mask for execution.
     if ((mask & X_OK) != 0)
       {
-	switch (state.genre)
+	switch (status.genre)
 	  {
 	  case etoile::kernel::GenreDirectory:
 	    {
@@ -630,8 +628,10 @@ namespace pig
 
 	      // get the posix::exec attribute
 	      if (PIG::Channel.Call(
-		    Inputs<TagAttributesGet>(identifier, "posix::exec"),
-		    Outputs<TagAttributesTrait>(trait)) == StatusError)
+		    elle::Inputs<etoile::TagAttributesGet>(identifier,
+							   "posix::exec"),
+		    elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
+		  elle::StatusError)
 		error(ENOENT, identifier);
 
 	      // check the trait.
@@ -646,8 +646,10 @@ namespace pig
 
 	      // get the posix::exec attribute
 	      if (PIG::Channel.Call(
-		    Inputs<TagAttributesGet>(identifier, "posix::exec"),
-		    Outputs<TagAttributesTrait>(trait)) == StatusError)
+		    elle::Inputs<etoile::TagAttributesGet>(identifier,
+							   "posix::exec"),
+		    elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
+		  elle::StatusError)
 		error(ENOENT, identifier);
 
 	      // check the trait.
@@ -675,8 +677,8 @@ namespace pig
 
     // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectDiscard>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     return (0);
@@ -691,7 +693,7 @@ namespace pig
     etoile::context::Identifier	identifier;
     etoile::path::Way		way(path);
     etoile::kernel::Permissions	permissions;
-    etoile::wall::State		state;
+    etoile::wall::Status	status;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -726,8 +728,9 @@ namespace pig
 
    // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // update the accesses.
@@ -735,26 +738,30 @@ namespace pig
     // note that the method assumes that the caller is the object's owner!
     // if not, an error will occur anyway, so why bother checking.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessUpdate>(identifier, *PIG::Subject, permissions),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagAccessUpdate>(identifier,
+					*PIG::Subject,
+					permissions),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT, identifier);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectInformation>(identifier),
-	  Outputs<TagObjectState>(state)) == StatusError)
+	  elle::Inputs<etoile::TagObjectInformation>(identifier),
+	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
       error(EINTR, identifier);
 
     // set the posix::exec attribute if necessary i.e depending on the
     // file genre.
-    switch (state.genre)
+    switch (status.genre)
       {
       case etoile::kernel::GenreFile:
 	{
 	  // set the posix::exec attribute
 	  if (PIG::Channel.Call(
-		Inputs<TagAttributesSet>(identifier, "posix::exec", "true"),
-		Outputs<TagOk>()) == StatusError)
+		elle::Inputs<etoile::TagAttributesSet>(identifier,
+					       "posix::exec",
+					       "true"),
+		elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	    error(EACCES, identifier);
 
 	  break;
@@ -769,8 +776,8 @@ namespace pig
 
     // store the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagObjectStore>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     return (0);
@@ -832,22 +839,23 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // set the attribute.
     if (PIG::Channel.Call(
-	  Inputs<TagAttributesSet>(identifier,
-				   String(name),
-				   String(value, size)),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagAttributesSet>(identifier,
+						 elle::String(name),
+						 elle::String(value, size)),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT, identifier);
 
     // store the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagObjectStore>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     return (0);
@@ -871,21 +879,23 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // get the attribute.
     if (PIG::Channel.Call(
-	  Inputs<TagAttributesGet>(identifier,
-				   String(name)),
-	  Outputs<TagAttributesTrait>(trait)) == StatusError)
+	  elle::Inputs<etoile::TagAttributesGet>(identifier,
+						 elle::String(name)),
+	  elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
+	elle::StatusError)
       error(ENOENT, identifier);
 
     // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectDiscard>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     // test if a trait has been found.
@@ -927,20 +937,22 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // fetch the attributes.
     if (PIG::Channel.Call(
-	  Inputs<TagAttributesFetch>(identifier),
-	  Outputs<TagAttributesRange>(range)) == StatusError)
+	  elle::Inputs<etoile::TagAttributesFetch>(identifier),
+	  elle::Outputs<etoile::TagAttributesRange>(range)) ==
+	elle::StatusError)
       error(ENOENT, identifier);
 
     // discard the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectDiscard>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     // if the size is zero, this call must return the size required to
@@ -995,21 +1007,22 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // omit the attribute.
     if (PIG::Channel.Call(
-	  Inputs<TagAttributesOmit>(identifier,
-				    String(name)),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagAttributesOmit>(identifier,
+						  elle::String(name)),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT, identifier);
 
     // store the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectStore>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagObjectStore>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     return (0);
@@ -1050,38 +1063,39 @@ namespace pig
 
     // load the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryLoad>(from),
-	  Outputs<TagIdentifier>(directory)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryLoad>(from),
+	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // create a link
     if (PIG::Channel.Call(
-	  Inputs<TagLinkCreate>(),
-	  Outputs<TagIdentifier>(link)) == StatusError)
+	  elle::Inputs<etoile::TagLinkCreate>(),
+	  elle::Outputs<etoile::TagIdentifier>(link)) == elle::StatusError)
       error(ENOENT, directory);
 
     // bind the link.
     if (PIG::Channel.Call(
-	  Inputs<TagLinkBind>(link, to),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagLinkBind>(link, to),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT, link, directory);
 
     // add an entry for the link.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryAdd>(directory, name, link),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryAdd>(directory, name, link),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT, link, directory);
 
     // store the link.
     if (PIG::Channel.Call(
-	  Inputs<TagLinkStore>(link),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagLinkStore>(link),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT, directory);
 
     // store the modified directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(directory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryStore>(directory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     return (0);
@@ -1104,20 +1118,21 @@ namespace pig
 
     // load the link.
     if (PIG::Channel.Call(
-	  Inputs<TagLinkLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagLinkLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // resolve the link.
     if (PIG::Channel.Call(
-	  Inputs<TagLinkResolve>(identifier),
-	  Outputs<TagLinkWay>(target)) == StatusError)
+	  elle::Inputs<etoile::TagLinkResolve>(identifier),
+	  elle::Outputs<etoile::TagLinkWay>(target)) == elle::StatusError)
       error(ENOENT, identifier);
 
     // discard the link.
     if (PIG::Channel.Call(
-	  Inputs<TagLinkDiscard>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagLinkDiscard>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     // copy as much as possible of the target into the output buffer.
@@ -1149,14 +1164,15 @@ namespace pig
 
     // load the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryLoad>(way),
-	  Outputs<TagIdentifier>(directory)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // create the file.
     if (PIG::Channel.Call(
-	  Inputs<TagFileCreate>(),
-	  Outputs<TagIdentifier>(file)) == StatusError)
+	  elle::Inputs<etoile::TagFileCreate>(),
+	  elle::Outputs<etoile::TagIdentifier>(file)) == elle::StatusError)
       error(EINTR, directory);
 
     // compute the permissions.
@@ -1168,8 +1184,10 @@ namespace pig
 
     // set the owner permissions.
     if (PIG::Channel.Call(
-	  Inputs<TagAccessUpdate>(file, *PIG::Subject, permissions),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagAccessUpdate>(file,
+						*PIG::Subject,
+						permissions),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, file, directory);
 
     // if the file has the exec bit, add the posix::exec attribute.
@@ -1177,15 +1195,17 @@ namespace pig
       {
 	// set the posix::exec attribute
 	if (PIG::Channel.Call(
-	      Inputs<TagAttributesSet>(file, "posix::exec", "true"),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagAttributesSet>(file,
+						     "posix::exec",
+						     "true"),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(EACCES, file, directory);
       }
 
     // add the file to the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryAdd>(directory, name, file),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryAdd>(directory, name, file),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, file, directory);
 
     // store the file, ensuring the file system consistency.
@@ -1196,20 +1216,20 @@ namespace pig
     // considering the Infinit consistency guaranties, we still prefer
     // to do things right, at least for now.
     if (PIG::Channel.Call(
-	  Inputs<TagFileStore>(file),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagFileStore>(file),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(directory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryStore>(directory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
     // finally, the file is reopened.
     if (PIG::Channel.Call(
-	  Inputs<TagFileLoad>(etoile::path::Way(path)),
-	  Outputs<TagIdentifier>(file)) == StatusError)
+	  elle::Inputs<etoile::TagFileLoad>(etoile::path::Way(path)),
+	  elle::Outputs<etoile::TagIdentifier>(file)) == elle::StatusError)
       error(ENOENT);
 
     // store the identifier in the file handle.
@@ -1233,8 +1253,9 @@ namespace pig
 
     // load the file.
     if (PIG::Channel.Call(
-	  Inputs<TagFileLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagFileLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // store the identifier in the file handle.
@@ -1253,7 +1274,7 @@ namespace pig
 				   struct fuse_file_info*	info)
   {
     etoile::context::Identifier*	identifier;
-    Region				region;
+    elle::Region			region;
 
     printf("[XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
 	   __FUNCTION__,
@@ -1263,15 +1284,15 @@ namespace pig
     identifier = (etoile::context::Identifier*)info->fh;
 
     // wrap the buffer.
-    if (region.Wrap((Byte*)buffer, size) == StatusError)
+    if (region.Wrap((elle::Byte*)buffer, size) == elle::StatusError)
       error(EINTR);
 
     // write the file.
     if (PIG::Channel.Call(
-	  Inputs<TagFileWrite>(*identifier,
+	  elle::Inputs<etoile::TagFileWrite>(*identifier,
 			       (etoile::kernel::Offset)offset,
 			       region),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EACCES);
 
     return (size);
@@ -1287,7 +1308,7 @@ namespace pig
 				  struct fuse_file_info*	info)
   {
     etoile::context::Identifier*	identifier;
-    Region				region;
+    elle::Region			region;
 
     printf("[XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
 	   __FUNCTION__,
@@ -1298,10 +1319,10 @@ namespace pig
 
     // read the file.
     if (PIG::Channel.Call(
-	  Inputs<TagFileRead>(*identifier,
+	  elle::Inputs<etoile::TagFileRead>(*identifier,
 			      (etoile::kernel::Offset)offset,
 			      (etoile::kernel::Size)size),
-	  Outputs<TagFileRegion>(region)) == StatusError)
+	  elle::Outputs<etoile::TagFileRegion>(region)) == elle::StatusError)
       error(EACCES);
 
     // copy the data to the output buffer.
@@ -1327,8 +1348,9 @@ namespace pig
 
     // load the file.
     if (PIG::Channel.Call(
-	  Inputs<TagFileLoad>(way),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagFileLoad>(way),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // set the identifier in the fuse_file_info structure.
@@ -1339,8 +1361,8 @@ namespace pig
 
     // store the file.
     if (PIG::Channel.Call(
-	  Inputs<TagFileStore>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagFileStore>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
     return (result);
@@ -1364,8 +1386,8 @@ namespace pig
 
     // adjust the file's size.
     if (PIG::Channel.Call(
-	  Inputs<TagFileAdjust>(*identifier, size),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagFileAdjust>(*identifier, size),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     return (0);
@@ -1389,8 +1411,8 @@ namespace pig
 
     // store the file.
     if (PIG::Channel.Call(
-	  Inputs<TagFileStore>(*identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagFileStore>(*identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     // delete the identifier.
@@ -1436,20 +1458,21 @@ namespace pig
 
 	// load the directory.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryLoad>(from),
-	      Outputs<TagIdentifier>(directory)) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryLoad>(from),
+	      elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	    elle::StatusError)
 	  error(ENOENT);
 
 	// rename the entry from _f_ to _t_.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryRename>(directory, f, t),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryRename>(directory, f, t),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(ENOENT, directory);
 
 	// store the directory.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryStore>(directory),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryStore>(directory),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(ENOENT);
       }
     else
@@ -1468,50 +1491,53 @@ namespace pig
 	// load the object even though we don't know its genre as we
 	// do not need to know to perform this operation.
 	if (PIG::Channel.Call(
-	      Inputs<TagObjectLoad>(way),
-	      Outputs<TagIdentifier>(object)) == StatusError)
+	      elle::Inputs<etoile::TagObjectLoad>(way),
+	      elle::Outputs<etoile::TagIdentifier>(object)) ==
+	    elle::StatusError)
 	  error(ENOENT);
 
 	// load the _to_ directory.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryLoad>(to),
-	      Outputs<TagIdentifier>(directory)) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryLoad>(to),
+	      elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	    elle::StatusError)
 	  error(ENOENT, object);
 
 	// add an entry.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryAdd>(directory, t, object),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryAdd>(directory, t, object),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(EACCES, directory, object);
 
 	// store the _to_ directory.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryStore>(directory),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryStore>(directory),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(ENOENT, object);
 
 	// load the _from_ directory.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryLoad>(from),
-	      Outputs<TagIdentifier>(directory)) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryLoad>(from),
+	      elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	    elle::StatusError)
 	  error(ENOENT, object);
 
 	// remove the entry.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryRemove>(directory, f),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryRemove>(directory, f),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(EACCES, directory, object);
 
 	// store the _from_ directory.
 	if (PIG::Channel.Call(
-	      Inputs<TagDirectoryStore>(directory),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagDirectoryStore>(directory),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(ENOENT, object);
 
 	// store the object.
 	if (PIG::Channel.Call(
-	      Inputs<TagObjectStore>(object),
-	      Outputs<TagOk>()) == StatusError)
+	      elle::Inputs<etoile::TagObjectStore>(object),
+	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	  error(ENOENT);
       }
 
@@ -1528,7 +1554,7 @@ namespace pig
     etoile::path::Way		parent(child, name);
     etoile::context::Identifier	directory;
     etoile::context::Identifier	identifier;
-    etoile::wall::State		state;
+    etoile::wall::Status	status;
 
     printf("[XXX] %s(%s)\n",
 	   __FUNCTION__,
@@ -1536,49 +1562,52 @@ namespace pig
 
     // load the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectLoad>(child),
-	  Outputs<TagIdentifier>(identifier)) == StatusError)
+	  elle::Inputs<etoile::TagObjectLoad>(child),
+	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectInformation>(identifier),
-	  Outputs<TagObjectState>(state)) == StatusError)
+	  elle::Inputs<etoile::TagObjectInformation>(identifier),
+	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
       error(EINTR, identifier);
 
     // discard the object, as no longer needed.
     if (PIG::Channel.Call(
-	  Inputs<TagObjectDiscard>(identifier),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
     // load the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryLoad>(parent),
-	  Outputs<TagIdentifier>(directory)) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryLoad>(parent),
+	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
+	elle::StatusError)
       error(ENOENT);
 
     // remove the entry.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryRemove>(directory, name),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryRemove>(directory, name),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EACCES, directory);
 
     // remove the object according to its type: file or link.
-    switch (state.genre)
+    switch (status.genre)
       {
       case etoile::kernel::GenreFile:
 	{
 	  // load the object.
 	  if (PIG::Channel.Call(
-	        Inputs<TagFileLoad>(child),
-		Outputs<TagIdentifier>(identifier)) == StatusError)
+	        elle::Inputs<etoile::TagFileLoad>(child),
+		elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	      elle::StatusError)
 	    error(ENOENT, directory);
 
 	  // destroy the file.
 	  if (PIG::Channel.Call(
-	        Inputs<TagFileDestroy>(identifier),
-		Outputs<TagOk>()) == StatusError)
+	        elle::Inputs<etoile::TagFileDestroy>(identifier),
+		elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	    error(EINTR, directory);
 
 	  break;
@@ -1587,14 +1616,15 @@ namespace pig
 	{
 	  // load the link
 	  if (PIG::Channel.Call(
-	        Inputs<TagLinkLoad>(child),
-		Outputs<TagIdentifier>(identifier)) == StatusError)
+	        elle::Inputs<etoile::TagLinkLoad>(child),
+		elle::Outputs<etoile::TagIdentifier>(identifier)) ==
+	      elle::StatusError)
 	    error(ENOENT, directory);
 
 	  // destroy the link.
 	  if (PIG::Channel.Call(
-	        Inputs<TagLinkDestroy>(identifier),
-		Outputs<TagOk>()) == StatusError)
+	        elle::Inputs<etoile::TagLinkDestroy>(identifier),
+		elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	    error(EINTR, directory);
 
 	  break;
@@ -1607,8 +1637,8 @@ namespace pig
 
     // store the directory.
     if (PIG::Channel.Call(
-	  Inputs<TagDirectoryStore>(directory),
-	  Outputs<TagOk>()) == StatusError)
+	  elle::Inputs<etoile::TagDirectoryStore>(directory),
+	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
     return (0);
@@ -1664,107 +1694,70 @@ namespace pig
   ///
   /// this method initializes the system module.
   ///
-  Status		PIG::Initialize()
+  elle::Status		PIG::Initialize(const elle::String&	user,
+					const elle::String&	universe)
   {
+    lune::Authority	authority;
+    lune::Identity	identity;
+    lune::Passport	passport;
+    lune::Phrase	phrase;
+
     enter();
 
     //
-    // initialize the Elle library and Infinit.
+    // load the authority.
     //
     {
-      // initialize Elle.
-      if (Elle::Initialize() == StatusError)
-	escape("unable to initialize the Elle library");
+      elle::PublicKey	K;
 
-      // initialize Infinit.
-      if (infinit::Infinit::Initialize() == StatusError)
-	escape("unable to initialize Infinit");
+      // restore the authority's public key.
+      if (K.Restore(Infinit::Authority) == elle::StatusError)
+	escape("unable to restore the authority's public key");
+
+      // create the authority based on the hard-coded public key.
+      if (authority.Create(K) == elle::StatusError)
+	escape("unable to create the authority");
     }
 
     //
-    // read the public key from the file.
+    // load the user identity.
     //
     {
-      String		path =
-	infinit::Infinit::Path::Home + System::Path::Separator +
-	"identity.b64";
-      Region		region;
-      struct ::stat	stat;
-      Integer32		fd;
+      elle::String	prompt;
+      elle::String	pass;
 
-      // get the file status.
-      if (::stat(path.c_str(), &stat) == -1)
-	escape("unable to access the public key file");
+      // prompt the user for the passphrase.
+      prompt = "Enter passphrase for keypair '" + user + "': ";
+      pass = elle::String(::getpass(prompt.c_str()));
 
-      // prepare the region.
-      if (region.Prepare(stat.st_size) == StatusError)
-	escape("unable to prepare the region");
+      // load the identity.
+      if (identity.Load(user) == elle::StatusError)
+	escape("unable to load the identity");
 
-      // set the region size.
-      region.size = stat.st_size;
+      // verify the identity.
+      if (identity.Validate(authority) != elle::StatusTrue)
+	escape("the identity seems to be invalid");
 
-      // open the file.
-      if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-	escape(::strerror(errno));
-
-      // read the file.
-      if (::read(fd, region.contents, region.size) != region.size)
-	{
-	  ::close(fd);
-
-	  escape("unable to read the public key file");
-	}
-
-      // close the file.
-      ::close(fd);
-
-      // decode the public key.
-      if (Base64::Decode(String((const char*)region.contents, region.size),
-			 PIG::K) == StatusError)
-	escape("unable to decode the public key");
+      // decrypt the identity.
+      if (identity.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the identity");
     }
 
     //
-    // read the phrase from the file.
+    // load the user's passport for the given universe.
     //
     {
-      String		path =
-	infinit::Infinit::Path::Home + System::Path::Separator +
-	"phrase.b64";
-      Region		region;
-      struct ::stat	stat;
-      Integer32		fd;
+      // load the passport.
+      if (passport.Load(user, universe) == elle::StatusError)
+	escape("unable to load the passport");
 
-      // get the file status.
-      if (::stat(path.c_str(), &stat) == -1)
-	escape("unable to access the phrase file");
+      // validate the passport.
+      if (passport.Validate(authority) == elle::StatusError)
+	escape("unable to validate the passport");
 
-      // prepare the region.
-      if (region.Prepare(stat.st_size) == StatusError)
-	escape("unable to prepare the region");
-
-      // set the region size.
-      region.size = stat.st_size;
-
-      // open the file.
-      if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-	escape(::strerror(errno));
-
-      // read the file.
-      if (::read(fd, region.contents, region.size) != region.size)
-	{
-	  ::close(fd);
-
-	  escape("unable to read the phrase file");
-	}
-
-      // close the file.
-      ::close(fd);
-
-      // transform the base64 region into a phrase.
-      if (Base64::Decode(String((const char*)region.contents, region.size),
-			 PIG::Phrase) == StatusError)
-	escape("unable to decode the phrase");
+      // decrypt the passport.
+      if (passport.Decrypt(identity) == elle::StatusError)
+	escape("unable to decrypt the passport");
     }
 
     //
@@ -1775,8 +1768,16 @@ namespace pig
       PIG::Subject = new etoile::kernel::Subject;
 
       // create the subject.
-      if (PIG::Subject->Create(PIG::K) == StatusError)
+      if (PIG::Subject->Create(passport.pair->K) == elle::StatusError)
 	escape("unable to create the user's subject");
+    }
+
+    //
+    // load the phrase.
+    //
+    {
+      if (phrase.Load() == elle::StatusError)
+	escape("unable to load the phrase");
     }
 
     //
@@ -1784,18 +1785,19 @@ namespace pig
     //
     {
       // create the door.
-      if (PIG::Channel.Create(Socket::ModeSynchronous) == StatusError)
+      if (PIG::Channel.Create(elle::Socket::ModeSynchronous) ==
+	  elle::StatusError)
 	escape("unable to create the door");
 
       // connect the door.
-      if (PIG::Channel.Connect(PIG::Line) == StatusError)
+      if (PIG::Channel.Connect(PIG::Line) == elle::StatusError)
 	escape("unable to connect to Etoile");
 
       // connect to etoile by providing the phrase which links the
       // application to the agent.
       if (PIG::Channel.Call(
-	    Inputs< etoile::TagWallConnect >(PIG::Phrase),
-	    Outputs< etoile::TagOk >()) == StatusError)
+	    elle::Inputs<etoile::TagWallConnect>(phrase, universe),
+	    elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	escape("unable to connect to etoile");
     }
 
@@ -1819,21 +1821,9 @@ namespace pig
     // user/group identifiers into local identifiers.
     //
     {
-      String		users =
-	infinit::Infinit::Path::Access + System::Path::Separator +
-	"users.map";
-      String		groups =
-	infinit::Infinit::Path::Access + System::Path::Separator +
-	"groups.map";
-
-      // load the users map.
-      if (map::Map<PublicKey>::Load(users, PIG::Maps::Users) == StatusError)
-	escape("unable to load the users map");
-
-      // load the groups map.
-      if (map::Map<etoile::hole::Address>::Load(groups, PIG::Maps::Groups) ==
-	  StatusError)
-	escape("unable to load the groups map");
+      // load the associat file.
+      if (PIG::Associat.Load() == elle::StatusError)
+	escape("unable to load the associat");
     }
 
     // initialize the fuse operations.
@@ -1880,7 +1870,7 @@ namespace pig
       operations.fsync = PIG::Fsync;
       operations.fsyncdir = PIG::Fsyncdir;
 
-      // XXX
+      // XXX pour trouver le bug de compile du kernel linux
       operations.flush = Flush;
     }
 
@@ -1890,21 +1880,13 @@ namespace pig
   ///
   /// this method cleans the system module.
   ///
-  Status		PIG::Clean()
+  elle::Status		PIG::Clean()
   {
     enter();
 
     // delete the subject.
     if (PIG::Subject != NULL)
       delete PIG::Subject;
-
-    // clean Infinit.
-    if (infinit::Infinit::Clean() == StatusError)
-      escape("unable to clean Infinit");
-
-    // clean the Elle library.
-    if (Elle::Clean() == StatusError)
-      escape("unable to clean the Elle library");
 
     leave();
   }
@@ -1916,22 +1898,133 @@ namespace pig
   ///
   /// this is the entry point of pig.
   ///
-  Status		Main(const Natural32			argc,
-			     const Character*			argv[])
+  elle::Status		Main(elle::Natural32			argc,
+			     elle::Character*			argv[])
   {
+    elle::Parser*	parser;
+    elle::Character	option;
+    elle::String	user;
+    elle::String	universe;
+
     enter();
 
-    // initialize the module.
-    if (PIG::Initialize() == StatusError)
-      escape("unable to initialize the module");
+    // initialize the Elle library.
+    if (elle::Elle::Initialize() == elle::StatusError)
+      escape("unable to initialize Elle");
 
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
+    // initialize the Lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize Lune");
+
+    // allocate a new parser.
+    parser = new elle::Parser(argc, argv);
+
+    // set up the parser.
+    if (parser->Register('h',
+			 "help",
+			 "display the help",
+			 elle::Parser::TypeNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('n',
+			 "name",
+			 "specifies the name of the user",
+			 elle::Parser::TypeRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // parse.
+    while (parser->Parse(option) == elle::StatusTrue)
+      {
+	switch (option)
+	  {
+	  case 'h':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      // quit.
+	      leave();
+	    }
+	  case 'u':
+	    {
+	      // retrieve the user name.
+	      user.assign(optarg);
+
+	      break;
+	    }
+	  case 'v':
+	    {
+	      // retrieve the universe name.
+	      universe.assign(optarg);
+
+	      break;
+	    }
+	  case '?':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("unknown option");
+	    }
+	  case ':':
+	    {
+	      // display the usage.
+	      parser->Usage();
+
+	      escape("missing argument");
+	    }
+	  default:
+	    {
+	      escape("an error occured while parsing the options");
+	    }
+	  }
+      }
+
+    // check the user.
+    if (user.empty() == true)
+      {
+	// display the usage.
+	parser->Usage();
+
+	escape("please specify a user name");
+      }
+
+    // check the universe
+    if (universe.empty() == true)
+      {
+	// display the usage.
+	parser->Usage();
+
+	escape("please specify a universe name");
+      }
+
+    // initialize PIG.
+    if (PIG::Initialize(user, universe) == elle::StatusError)
+      escape("unable to initialize PIG");
+
+    printf("// XXX passer les bons arguments\n");
     // launch fuse.
     if (fuse_main((int)argc, (char**)argv, &operations, NULL) != 0)
       escape("an error occured in FUSE");
 
-    // clean the module.
-    if (PIG::Clean() == StatusError)
-      escape("unable to clean the module");
+    // clean PIG.
+    if (PIG::Clean() == elle::StatusError)
+      escape("unable to clean PIG");
+
+    // delete the parser.
+    delete parser;
+
+    // clean Lune
+    if (lune::Lune::Clean() == elle::StatusError)
+      escape("unable to clean Lune");
+
+    // clean Elle.
+    if (elle::Elle::Clean() == elle::StatusError)
+      escape("unable to clean Elle");
 
     leave();
   }
@@ -1942,8 +2035,8 @@ namespace pig
 // ---------- main ------------------------------------------------------------
 //
 
-int			main(const int			argc,
-			     const char*		argv[])
+int			main(int				argc,
+			     char*				argv[])
 {
   pig::Main(argc, argv);
 
