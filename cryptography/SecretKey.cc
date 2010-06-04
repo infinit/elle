@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [tue may  4 10:18:06 2010]
+// updated       julien quintard   [fri may 28 12:18:58 2010]
 //
 
 //
@@ -324,7 +324,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(SecretKey, _(), _());
+    embed(SecretKey, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

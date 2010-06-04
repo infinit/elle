@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [mon may  3 22:51:00 2010]
+// updated       julien quintard   [fri may 28 12:18:29 2010]
 //
 
 //
@@ -193,7 +193,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Time, _(), _());
+    embed(Time, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

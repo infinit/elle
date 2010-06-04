@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [mon may  3 22:30:54 2010]
+// updated       julien quintard   [fri may 28 12:16:26 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -67,7 +67,7 @@ namespace elle
       //
 
       // object
-      declare(Callback<T...>, _());
+      declare(Callback<T...>);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

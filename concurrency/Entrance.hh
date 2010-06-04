@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Entrance.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [mon may  3 22:30:45 2010]
+// updated       julien quintard   [fri may 28 12:15:49 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ENTRANCE_HH
@@ -71,7 +71,7 @@ namespace elle
       //
 
       // object
-      declare(Entrance<T...>, _());
+      declare(Entrance<T...>);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

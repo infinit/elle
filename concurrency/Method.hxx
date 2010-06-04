@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [mon may  3 22:42:12 2010]
+// updated       julien quintard   [fri may 28 12:15:58 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HXX
@@ -136,7 +136,7 @@ namespace elle
     ///
     /// these are generated automatically.
     ///
-    embed(Method<T...>, _(), _(template <typename... T>));
+    embed(Method<T...>, _(template <typename... T>));
 
   }
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [mon may  3 22:29:52 2010]
+// updated       julien quintard   [fri may 28 12:15:30 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HH
@@ -39,7 +39,7 @@ namespace elle
     ///
     template <typename... T>
     class Method:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -115,7 +115,7 @@ namespace elle
       //
 
       // object
-      declare(Method<T...>, _());
+      declare(Method<T...>);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

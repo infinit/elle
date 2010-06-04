@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [tue may  4 13:23:15 2010]
+// updated       julien quintard   [fri may 28 12:18:50 2010]
 //
 
 //
@@ -115,7 +115,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Address, _(), _());
+    embed(Address, _());
 
 //
 // ---------- archivable ------------------------------------------------------

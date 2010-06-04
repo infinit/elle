@@ -36,7 +36,7 @@ namespace elle
 //
 
     class Neighbour:
-      public Object<>
+      public Object
     {
     public:
       //

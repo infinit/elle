@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [mon may  3 22:31:05 2010]
+// updated       julien quintard   [fri may 28 12:16:38 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HH
@@ -42,7 +42,7 @@ namespace elle
     ///
     template <typename... T>
     class Function:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -66,7 +66,7 @@ namespace elle
       //
 
       // object
-      declare(Function, _());
+      declare(Function);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

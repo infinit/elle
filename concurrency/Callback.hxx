@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [mon may  3 22:42:51 2010]
+// updated       julien quintard   [fri may 28 12:16:32 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -136,7 +136,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Callback<T...>, _(), _(template <typename... T>));
+    embed(Callback<T...>, _(template <typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

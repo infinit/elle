@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [tue may  4 13:24:59 2010]
+// updated       julien quintard   [fri may 28 12:18:41 2010]
 //
 
 //
@@ -125,7 +125,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Host, _(), _());
+    embed(Host, _());
 
 //
 // ---------- archivable ------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.hh
 //
 // created       julien quintard   [fri oct 16 04:10:36 2009]
-// updated       julien quintard   [mon may  3 22:34:22 2010]
+// updated       julien quintard   [fri may 28 12:18:06 2010]
 //
 
 #ifndef ELLE_NETWORK_HOST_HH
@@ -49,7 +49,7 @@ namespace elle
     /// this class represents a network host.
     ///
     class Host:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -84,7 +84,7 @@ namespace elle
       //
 
       // object
-      declare(Host, _());
+      declare(Host);
       Boolean		operator==(const Host&) const;
 
       // archivable

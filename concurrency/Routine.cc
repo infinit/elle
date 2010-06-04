@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Routine.cc
 //
 // created       julien quintard   [wed mar 24 21:12:54 2010]
-// updated       julien quintard   [mon may  3 22:42:33 2010]
+// updated       julien quintard   [fri may 28 12:16:11 2010]
 //
 
 //
@@ -54,7 +54,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Routine, _(), _());
+    embed(Routine, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

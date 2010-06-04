@@ -19,10 +19,12 @@ ADD_LIBRARY(elle
   standalone/Standalone.cc
 
   radix/Meta.cc
+  radix/Object.cc
   radix/Radix.cc
   radix/Trace.cc
 
   io/Dumpable.cc
+  io/File.cc
 
   archive/Archive.cc
   archive/Archivable.cc

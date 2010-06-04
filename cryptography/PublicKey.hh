@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [mon may  3 22:33:00 2010]
+// updated       julien quintard   [fri may 28 12:17:38 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
@@ -55,7 +55,7 @@ namespace elle
     /// this class represents a public key.
     ///
     class PublicKey:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -93,7 +93,7 @@ namespace elle
       //
 
       // object
-      declare(PublicKey, _());
+      declare(PublicKey);
       Boolean		operator==(const PublicKey&) const;
 
       // dumpable

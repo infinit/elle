@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/util/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [tue may  4 12:47:50 2010]
+// updated       julien quintard   [fri may 28 12:31:35 2010]
 //
 
 #ifndef ELLE_UTIL_SETTINGS_HH
@@ -25,6 +25,9 @@
 #include <elle/radix/Object.hh>
 #include <elle/radix/Entity.hh>
 
+#include <elle/io/Fileable.hh>
+#include <elle/io/Format.hh>
+
 #include <elle/idiom/Close.hh>
 # include <list>
 # include <fstream>
@@ -34,6 +37,7 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
+  using namespace io;
 
   namespace util
   {
@@ -47,7 +51,8 @@ namespace elle
     /// configuration files.
     ///
     class Settings:
-      public Object<FormatBase64, FormatCustom>
+      public Object,
+      public virtual Fileable<FormatCustom>
     {
     public:
       //
@@ -156,7 +161,7 @@ namespace elle
       //
 
       // object
-      declare(Settings, _(FormatBase64, FormatCustom));
+      declare(Settings);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

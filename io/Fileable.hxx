@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hxx
 //
 // created       julien quintard   [fri apr 30 17:43:29 2010]
-// updated       julien quintard   [wed may  5 23:16:27 2010]
+// updated       julien quintard   [fri may 28 13:28:38 2010]
 //
 
 #ifndef ELLE_IO_FILEABLE_HXX
@@ -20,6 +20,7 @@
 
 #include <elle/core/Natural.hh>
 #include <elle/core/String.hh>
+#include <elle/core/Byte.hh>
 
 #include <elle/standalone/Region.hh>
 
@@ -29,11 +30,7 @@
 #include <elle/util/Base64.hh>
 #include <elle/util/Hexadecimal.hh>
 
-#include <elle/idiom/Close.hh>
-# include <sys/stat.h>
-# include <unistd.h>
-# include <fcntl.h>
-#include <elle/idiom/Open.hh>
+#include <elle/io/File.hh>
 
 namespace elle
 {
@@ -61,32 +58,12 @@ namespace elle
       {
 	Archive		archive;
 	Region		region;
-	struct ::stat	status;
-	int		fd;
 
 	enter();
 
-	// retrieve information on the associat.
-	if (::stat(path.c_str(), &status) == -1)
-	  escape(::strerror(errno));
-
-	// prepare the region.
-	if (region.Prepare(status.st_size) == StatusError)
-	  escape("unable to prepare the region");
-
-	// set the correct size.
-	region.size = status.st_size;
-
-	// open the file.
-	if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-	  escape(::strerror(errno));
-
 	// read the file's content.
-	if (::read(fd, region.contents, region.size) == -1)
-	  escape(::strerror(errno));
-
-	// close the file.
-	::close(fd);
+	if (File::Read(path, region) == StatusError)
+	  escape("unable to read the file's content");
 
 	// detach the data from the region.
 	if (region.Detach() == StatusError)
@@ -106,7 +83,6 @@ namespace elle
       virtual Status	Store(const String&			path) const
       {
 	Archive		archive;
-	int		fd;
 
 	enter();
 
@@ -118,20 +94,9 @@ namespace elle
 	if (this->Serialize(archive) == StatusError)
 	  escape("unable to serialize the object");
 
-	// open the file.
-	if ((fd = ::open(path.c_str(),
-			 O_CREAT | O_TRUNC | O_WRONLY,
-			 0600)) == -1)
-	  escape(::strerror(errno));
-
-	// write the text to the file.
-	if (::write(fd,
-		    archive.contents,
-		    archive.size) != archive.size)
-	  escape(::strerror(errno));
-
-	// close the file.
-	::close(fd);
+	// write the file's content.
+	if (File::Write(path, archive) == StatusError)
+	  escape("unable to write the file's content");
 
 	leave();
       }
@@ -156,32 +121,12 @@ namespace elle
       {
 	Region		region;
 	String		string;
-	struct ::stat	status;
-	int		fd;
 
 	enter();
 
-	// retrieve information on the associat.
-	if (::stat(path.c_str(), &status) == -1)
-	  escape(::strerror(errno));
-
-	// prepare the region.
-	if (region.Prepare(status.st_size) == StatusError)
-	  escape("unable to prepare the region");
-
-	// set the correct size.
-	region.size = status.st_size;
-
-	// open the file.
-	if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-	  escape(::strerror(errno));
-
 	// read the file's content.
-	if (::read(fd, region.contents, region.size) == -1)
-	  escape(::strerror(errno));
-
-	// close the file.
-	::close(fd);
+	if (File::Read(path, region) == StatusError)
+	  escape("unable to read the file's content");
 
 	// decode and extract the object.
 	if (Hexadecimal::Decode(String((char*)region.contents, region.size),
@@ -194,7 +139,7 @@ namespace elle
       virtual Status	Store(const String&			path) const
       {
 	String		string;
-	int		fd;
+	Region		region;
 
 	enter();
 
@@ -202,20 +147,14 @@ namespace elle
 	if (Hexadecimal::Encode(*this, string) == StatusError)
 	  escape("unable to encode the object in hexadecimal");
 
-	// open the file.
-	if ((fd = ::open(path.c_str(),
-			 O_CREAT | O_TRUNC | O_WRONLY,
-			 0600)) == -1)
-	  escape(::strerror(errno));
+	// wrap the string.
+	if (region.Wrap((Byte*)string.c_str(),
+			string.length()) == StatusError)
+	  escape("unable to wrap the string in a region");
 
-	// write the text to the file.
-	if (::write(fd,
-		    string.c_str(),
-		    string.length()) != string.length())
-	  escape(::strerror(errno));
-
-	// close the file.
-	::close(fd);
+	// write the file's content.
+	if (File::Write(path, region) == StatusError)
+	  escape("unable to write the file's content");
 
 	leave();
       }
@@ -240,32 +179,12 @@ namespace elle
       {
 	Region		region;
 	String		string;
-	struct ::stat	status;
-	int		fd;
 
 	enter();
 
-	// retrieve information on the associat.
-	if (::stat(path.c_str(), &status) == -1)
-	  escape(::strerror(errno));
-
-	// prepare the region.
-	if (region.Prepare(status.st_size) == StatusError)
-	  escape("unable to prepare the region");
-
-	// set the correct size.
-	region.size = status.st_size;
-
-	// open the file.
-	if ((fd = ::open(path.c_str(), O_RDONLY)) == -1)
-	  escape(::strerror(errno));
-
 	// read the file's content.
-	if (::read(fd, region.contents, region.size) == -1)
-	  escape(::strerror(errno));
-
-	// close the file.
-	::close(fd);
+	if (File::Read(path, region) == StatusError)
+	  escape("unable to read the file's content");
 
 	// decode and extract the object.
 	if (Base64::Decode(String((char*)region.contents, region.size),
@@ -278,7 +197,7 @@ namespace elle
       virtual Status	Store(const String&			path) const
       {
 	String		string;
-	int		fd;
+	Region		region;
 
 	enter();
 
@@ -286,20 +205,14 @@ namespace elle
 	if (Base64::Encode(*this, string) == StatusError)
 	  escape("unable to encode the object in base64");
 
-	// open the file.
-	if ((fd = ::open(path.c_str(),
-			 O_CREAT | O_TRUNC | O_WRONLY,
-			 0600)) == -1)
-	  escape(::strerror(errno));
+	// wrap the string.
+	if (region.Wrap((Byte*)string.c_str(),
+			string.length()) == StatusError)
+	  escape("unable to wrap the string in a region");
 
-	// write the text to the file.
-	if (::write(fd,
-		    string.c_str(),
-		    string.length()) != string.length())
-	  escape(::strerror(errno));
-
-	// close the file.
-	::close(fd);
+	// write the file's content.
+	if (File::Write(path, region) == StatusError)
+	  escape("unable to write the file's content");
 
 	leave();
       }

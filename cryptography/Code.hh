@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Code.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [mon may  3 22:31:17 2010]
+// updated       julien quintard   [fri may 28 12:16:55 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CODE_HH
@@ -47,7 +47,7 @@ namespace elle
     /// this class represents an asymmetrically encrypted text.
     ///
     class Code:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -60,7 +60,7 @@ namespace elle
       //
 
       // object
-      declare(Code, _());
+      declare(Code);
       Boolean		operator==(const Code&) const;
 
       // dumpable

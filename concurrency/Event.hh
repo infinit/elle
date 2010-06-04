@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [mon may  3 22:30:05 2010]
+// updated       julien quintard   [fri may 28 12:15:36 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_EVENT_HH
@@ -49,7 +49,7 @@ namespace elle
     /// so on.
     ///
     class Event:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -72,7 +72,7 @@ namespace elle
       //
 
       // object
-      declare(Event, _());
+      declare(Event);
       Boolean		operator==(const Event&) const;
       Boolean		operator<(const Event&) const;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [wed may  5 13:12:59 2010]
+// updated       julien quintard   [fri may 28 12:31:41 2010]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
@@ -25,6 +25,9 @@
 #include <elle/radix/Object.hh>
 
 #include <elle/archive/Archive.hh>
+
+#include <elle/io/Fileable.hh>
+#include <elle/io/Format.hh>
 
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/PrivateKey.hh>
@@ -50,7 +53,8 @@ namespace elle
     /// noted with a lower-case 'k'.
     ///
     class KeyPair:
-      public Object<FormatBase64, FormatCustom>
+      public Object,
+      public virtual Fileable<FormatCustom>
     {
     public:
       //
@@ -85,7 +89,7 @@ namespace elle
       //
 
       // object
-      declare(KeyPair, _(FormatBase64, FormatCustom));
+      declare(KeyPair);
       Boolean		operator==(const KeyPair&) const;
 
       // dumpable

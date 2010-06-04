@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [tue may  4 11:37:27 2010]
+// updated       julien quintard   [fri may 28 12:17:54 2010]
 //
 
 #ifndef ELLE_NETWORK_ADDRESS_HH
@@ -48,7 +48,7 @@ namespace elle
     /// this class represents an address i.e a host and port.
     ///
     class Address:
-      public Object<>
+      public Object
     {
     public:
       //
@@ -73,7 +73,7 @@ namespace elle
       //
 
       // object
-      declare(Address, _());
+      declare(Address);
       Boolean		operator==(const Address&) const;
 
       // archivable
