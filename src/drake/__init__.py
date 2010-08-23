@@ -637,6 +637,52 @@ def dot(*filters):
                 print '  builder_%s -> node_%s' % (builder.uid, dst.uid)
     print '}'
 
+def run(args):
+    args = args[1:]
+
+    mode = lambda n: n.build()
+
+    mode_count = 0
+    i = 0
+
+    while True:
+
+        if mode_count != 0 and node_count == 0:
+
+            # Copy it, since it will change during iteration. This shouldn't
+            # be a problem, all newly inserted will be dependencies of the
+            # already existing nodes. Right?
+            nodes = dict(Node.nodes)
+            for n in nodes:
+                mode(node(n))
+
+        if i >= len(args):
+            break
+
+        node_count = 0
+        arg = args[i]
+        while i < len(args) and arg[0:2] != '--':
+            n = node(arg)
+            mode(n)
+            i += 1
+            node_count += 1
+
+        if i >= len(args):
+            break
+
+        arg = arg[2:]
+        modes = {
+            'build': lambda n: n.build(),
+            'clean': lambda n: n.clean(),
+            }
+
+        if arg in modes:
+            mode = modes[arg]
+            mode_count += 1
+        else:
+            raise Exception('Unknown option: %s.' % arg)
+        i += 1
+
 # Architectures
 x86 = 0
 
