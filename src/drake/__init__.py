@@ -11,12 +11,21 @@ class Exception(Exception):
 
 
 DEBUG = 'DRAKE_DEBUG' in os.environ
+DEBUG_LVL = 0
 
 def debug(msg):
 
     global DEBUG
     if DEBUG:
-        print >> sys.stderr, msg
+        print >> sys.stderr, '%s%s' % (' ' * DEBUG_LVL * 2, msg)
+
+class indentation:
+    def __enter__(self):
+        global DEBUG_LVL
+        DEBUG_LVL += 1
+    def __exit__(self, type, value, traceback):
+        global DEBUG_LVL
+        DEBUG_LVL -= 1
 
 class Path:
 
@@ -179,7 +188,7 @@ class DepFile:
             assert str(path) in Node.nodes
             h = hashlib.sha1(open(str(node(path).path())).read()).hexdigest()
             if self._sha1[path] != h:
-                debug('  Execution needed because hash is outdated: %s.' % path)
+                debug('Execution needed because hash is outdated: %s.' % path)
                 return False
 
         return True
@@ -255,12 +264,13 @@ class Node:
     def build(self):
 
         debug('Building %s' % self)
-        if self.builder is None:
-            if not self.path().exists():
-                raise Exception('no builder to make %s' % self)
-            return
+        with indentation():
+            if self.builder is None:
+                if not self.path().exists():
+                    raise Exception('no builder to make %s' % self)
+                return
 
-        self.builder.run()
+            self.builder.run()
 
 
     def __setattr__(self, name, value):
@@ -377,7 +387,7 @@ class Builder:
 
         # If we were already executed, just skip
         if self.built:
-            debug('  Already built in this run.')
+            debug('Already built in this run.')
             return
 
         # The list of static dependencies is now fixed
@@ -392,37 +402,44 @@ class Builder:
             for f in os.listdir(str(self.cachedir())):
                 if f == 'drake':
                     continue
+                debug('Considering dependencies file %s' % f)
                 depfile = self.depfile(f)
                 depfile.read()
                 handler = self._deps_handlers[f]
 
-                for path in depfile.sha1s():
+                with indentation():
+                    for path in depfile.sha1s():
 
-                    if path in self.srcs or path in self.dynsrc:
-                        continue
+                        if path in self.srcs or path in self.dynsrc:
+                            debug('File %s is already in our sources.' % path)
+                            continue
 
-                    if path in Node.nodes:
-                        node = Node.nodes[path]
-                    else:
-                        node = handler(self, path, None)
+                        if path in Node.nodes:
+                            node = Node.nodes[path]
+                        else:
+                            debug('File %s is unknown, calling handler.' % path)
+                            node = handler(self, path, None)
 
-                    self.add_dynsrc(f, node, None)
+                        debug('Adding %s to our sources.' % path)
+                        self.add_dynsrc(f, node, None)
 
-        # Build all dependencies
-        for path in self.srcs:
-            self.srcs[path].build()
+        # Build dynamic dependencies
         for path in self.dynsrc:
             try:
                 self.dynsrc[path].build()
             except Exception, e:
-                debug('  Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
+                debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                 execute = True
+
+        # Build static dependencies
+        for path in self.srcs:
+            self.srcs[path].build()
 
         # If any target is missing, we must rebuild.
         if not execute:
             for dst in self.dsts:
                 if not dst.path().exists():
-                    debug('  Execution needed because of missing target: %s.' % dst.path())
+                    debug('Execution needed because of missing target: %s.' % dst.path())
                     execute = True
 
         # Load static dependencies
@@ -433,7 +450,7 @@ class Builder:
             for p in self.srcs:
                 path = self.srcs[p].id()
                 if path not in self._depfile._sha1:
-                    debug('  Execution needed because a new dependency appeared: %s.' % path)
+                    debug('Execution needed because a new dependency appeared: %s.' % path)
                     execute = True
                     break
 
@@ -448,6 +465,7 @@ class Builder:
 
         if execute:
 
+            debug('Executing builder')
             # Regenerate dynamic dependencies
             self.dynsrc = {}
             self._depfiles = {}
@@ -465,7 +483,7 @@ class Builder:
                 self._depfiles[name].update()
             self.built = True
         else:
-            debug('  Everything is up to date.')
+            debug('Everything is up to date.')
 
 
     def execute(self):
