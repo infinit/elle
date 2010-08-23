@@ -93,9 +93,8 @@ def deps_handler(builder, path_obj, data):
     path_header.extension = 'hh'
     header = node(path_header)
     Moc(builder.toolkit.qt, header, src)
-    buddy = Object(src, builder.toolkit, builder.config)
-#    builder.obj.buddy_add(deps_handler_name, buddy)
-    return buddy
+    obj = Object(src, builder.toolkit, builder.config)
+    return obj
 
 Builder.register_deps_handler(deps_handler_name, deps_handler)
 Node.extensions['moc.cc'] = Source

@@ -415,7 +415,6 @@ class Object(Node):
     def __init__(self, source, tk, cfg):
 
         self.source = source
-        self._buddies = []
         self.toolkit = tk
         self.cfg = cfg
         path = clone(source.sym_path)
@@ -423,16 +422,6 @@ class Object(Node):
         Node.__init__(self, path)
 
         Compiler(source, self, tk, cfg)
-
-    def buddy_add(self, name, buddy):
-
-        assert buddy.__class__ == Object
-        if buddy not in self._buddies:
-            self._buddies.append((name, buddy))
-
-    def buddies(self):
-
-        return self._buddies
 
 Node.extensions['o'] = Object
 
