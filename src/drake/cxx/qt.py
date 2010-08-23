@@ -49,22 +49,24 @@ class Qt:
 
     def plug(self, tk):
 
-        tk.hook_object_deps_add(self.hook_object_deps)
+        tk.hook_bin_deps_add(self.hook_bin_deps)
         tk.qt = self
 
     moc_re = re.compile('Q_OBJECT')
-    def hook_object_deps(self, compiler):
 
-        for header in [src for src in compiler.all_srcs() if src.__class__ == Header]: # FIXME: inheritance
+    def hook_bin_deps(self, linker):
+
+        # FIXME: all_srcs should be optimized with yield
+        for header in [src for src in linker.all_srcs() if src.__class__ == Header]: # FIXME: inheritance
             found = False
             for line in open(str(header), 'r'):
                 if re.search(self.moc_re, line):
                     found = True
                     break
             if found:
-                self.moc_file(compiler, header)
+                self.moc_file(linker, header)
 
-    def moc_file(self, compiler, header):
+    def moc_file(self, linker, header):
         p = Path(header.src_path)
         p.extension = 'moc.cc'
         src = node(p)
@@ -76,8 +78,8 @@ class Qt:
         if obj_path in Node.nodes:
             obj = node(obj_path)
         else:
-            obj = Object(src, compiler.toolkit, compiler.config)
-        compiler.obj.buddy_add(deps_handler_name, obj)
+            obj = Object(src, linker.toolkit, linker.config)
+        linker.add_dynsrc(deps_handler_name, obj)
 
 def deps_handler(builder, path_obj, data):
 

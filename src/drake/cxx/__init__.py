@@ -11,6 +11,7 @@ class Toolkit:
 
         self.includes = []
         self._hook_object_deps = []
+        self._hook_bin_deps = []
 
     @classmethod
     def default(self):
@@ -24,6 +25,14 @@ class Toolkit:
     def hook_object_deps(self):
 
         return self._hook_object_deps
+
+    def hook_bin_deps_add(self, f):
+
+        self._hook_bin_deps.append(f)
+
+    def hook_bin_deps(self):
+
+        return self._hook_bin_deps
 
     # def include(self, path):
 
@@ -341,21 +350,8 @@ class Linker(Builder):
 
     def dependencies(self):
 
-        offset = 0
-        marks = {}
-        for i in range(len(self.objs)):
-            path = str(self.objs[i + offset])
-            src = self.srcs[path]
-            if src.__class__ == Object:
-                for name, buddy in src.buddies():
-                    if str(buddy) in self.srcs or str(buddy) in marks:
-                        continue
-                    marks[str(buddy)] = None
-                    self.add_dynsrc(name, buddy)
-                    # Put buddies together. Order matters.
-                    self.objs.insert(i + offset + 1, buddy)
-                    offset += 1
-
+        for hook in self.toolkit.hook_bin_deps():
+            hook(self)
 
     def __init__(self, objs, exe, tk, cfg):
 
@@ -369,11 +365,11 @@ class Linker(Builder):
 
     def execute(self):
 
-        return self.cmd(self.toolkit.link(self.config, self.objs, self.exe))
+        return self.cmd(self.toolkit.link(self.config, self.objs + self.dynsrc.values(), self.exe))
 
     def __repr__(self):
 
-        return 'Compiler for %s' % self.exe
+        return 'Linker for %s' % self.exe
 
 
 
