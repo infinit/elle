@@ -209,7 +209,11 @@ class DepFile:
 
         return 'DepFile(%s)' % self.node
 
+def path_build(path):
+    return prefix() / path
 
+def path_src(path):
+    return srctree() / path_build(path)
 
 class Node:
 
