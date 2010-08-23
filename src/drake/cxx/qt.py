@@ -17,11 +17,12 @@ class Qt:
         else:
             test = [prefix]
 
+        beacon = Path('qt4/Qt/qconfig.h')
         for path in test:
             p = Path(path)
             if not p.absolute:
                 p = srctree() / p
-            if (p / 'include/qt4/Qt/qconfig.h').exists():
+            if (p / 'include' / beacon).exists():
 
                 self.prefix = path
 
@@ -40,7 +41,7 @@ class Qt:
 
                 return
 
-        raise Exception('unable to find boost/version.hpp in %s' % ', '.join(test))
+        raise Exception('unable to find %s in %s' % (beacon, ', '.join(test)))
 
     def config(self):
 
