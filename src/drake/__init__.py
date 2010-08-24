@@ -29,6 +29,10 @@ class indentation:
 
 class Path:
 
+    separator = '/'
+    if platform.system() == 'Windows':
+        separator = '\\'
+
     def __init__(self, path):
 
         self.absolute = False
@@ -75,7 +79,7 @@ class Path:
 
     def __str__(self):
 
-        return '/'.join(self.path)
+        return self.separator.join(self.path)
 
     def __repr__(self):
 
