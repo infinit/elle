@@ -1,4 +1,4 @@
-import re
+import platform, re
 from .. import Builder, Exception, Node, Path, node, srctree, CACHEDIR
 from .  import Config, StaticLib, Header, Object, Source
 
