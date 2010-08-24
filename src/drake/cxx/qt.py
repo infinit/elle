@@ -17,29 +17,32 @@ class Qt:
         else:
             test = [prefix]
 
-        beacon = Path('qt4/Qt/qconfig.h')
+        beacon = Path('Qt/qconfig.h')
+        subdirs = [Path('.'), Path('qt4')]
+        lib_suffix = ''
+        if platform.system() == 'Windows':
+            lib_suffix = '4'
         for path in test:
             p = Path(path)
             if not p.absolute:
                 p = srctree() / p
-            if (p / 'include' / beacon).exists():
+            for subdir in subdirs:
+                if (p / 'include' / subdir / beacon).exists():
 
-                self.prefix = path
+                    self.prefix = Path(path)
 
-                self.cfg = Config()
-                self.cfg.add_system_include_path('%s/include/qt4' % self.prefix)
-                self.cfg.add_system_include_path('%s/include/qt4/Qt' % self.prefix)
-                self.cfg.add_system_include_path('%s/include/qt4/QtCore' % self.prefix)
-                self.cfg.lib_path('%s/lib/qt4' % self.prefix)
-                self.cfg.lib('QtCore')
-                self.cfg.lib('QtGui')
+                    self.cfg = Config()
+                    self.cfg.add_system_include_path(self.prefix / 'include' / subdir)
+                    self.cfg.add_system_include_path(self.prefix / 'include' / subdir / 'Qt')
+                    self.cfg.add_system_include_path(self.prefix / 'include' / subdir / 'QtCore')
+                    self.cfg.lib_path(self.prefix / 'lib' / subdir)
+                    self.cfg.lib('QtCore%s' % lib_suffix)
 
-                self.cfg_gui = Config()
-                self.cfg_gui.add_system_include_path('%s/include/qt4/QtGui' % self.prefix)
+                    self.cfg_gui = Config()
+                    self.cfg_gui.add_system_include_path(self.prefix / 'include' / subdir / 'QtGui')
+                    self.cfg.lib('QtGui%s' % lib_suffix)
 
-
-
-                return
+                    return
 
         raise Exception('unable to find %s in %s' % (beacon, ', '.join(test)))
 
