@@ -325,14 +325,19 @@ class Compiler(Builder):
                     # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
                     if test.exists():
                         found = True
+                        # print idt, 'found 1: %s' % test
                         res += self.mkdeps(node(strip_srctree(test)), lvl + 1, marks)
                         break
 
                     test = strip_srctree(include_path) / include
                     if str(test) in Node.nodes:
-                        found = True
-                        res += self.mkdeps(node(test), lvl + 1, marks)
-                        break
+                        # Check this is not an old cached dependency from cxx.inclusions.
+                        # Not sure of myself though.
+                        if test.exists() or node(str(test)).builder is not None:
+                            found = True
+                            # print idt, 'found 2: %s' % test
+                            res += self.mkdeps(node(test), lvl + 1, marks)
+                            break
                 # if not found:
                 #     print idt, '=> not found: %s' % include
                 #     if re.compile('player-create').search(include):
