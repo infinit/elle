@@ -258,9 +258,9 @@ class Config:
         res.flags += rhs.flags
         return res
 
-def deps_handler(builder, path, data):
+def deps_handler(builder, path, t, data):
 
-    return node(path)
+    return node(path, t)
 
 class Compiler(Builder):
 

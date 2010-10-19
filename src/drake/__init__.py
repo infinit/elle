@@ -183,15 +183,16 @@ class DepFile:
         self.path().touch()
         for line in open(str(self.path()), 'r'):
             sha1 = line[:40]
-            src = Path(line[41:-1]) # Chomp the \n
-            self._sha1[str(src)] = sha1
+            remain = line[41:-1].split(' ') # Chomp the \n
+            src = Path(remain[0])
+            self._sha1[str(src)] = (sha1, remain[1])
 
     def up_to_date(self):
 
         for path in self._sha1:
             assert str(path) in Node.nodes
             h = hashlib.sha1(open(str(node(path).path())).read()).hexdigest()
-            if self._sha1[path] != h:
+            if self._sha1[path][0] != h:
                 debug('Execution needed because hash is outdated: %s.' % path)
                 return False
 
@@ -203,7 +204,7 @@ class DepFile:
         f = open(str(self.path()), 'w')
         for path in self._files:
             h = hashlib.sha1(open(path).read()).hexdigest()
-            print >>f, '%s %s' % (h, self._files[path].id())
+            print >>f, '%s %s %s' % (h, self._files[path].id(), self._files[path].drake_type())
 
     def __repr__(self):
 
@@ -226,6 +227,10 @@ class Node:
     uid = 0
     extensions = {}
 
+
+    @classmethod
+    def drake_type(self):
+        return '%s.%s' % (self.__module__, self.__name__)
 
     def __init__(self, path):
 
@@ -394,6 +399,13 @@ class Builder:
         self.dynsrc[str(node.path())] = node
 
 
+    def get_type(self, tname):
+
+        parts = tname.split('.')
+        modname = '.'.join(parts[:-1])
+        cname = parts[-1]
+        return __import__(modname, globals(), locals(), [cname], -1).__dict__[cname]
+
     def run(self):
 
         # If we were already executed, just skip
@@ -429,7 +441,7 @@ class Builder:
                             node = Node.nodes[path]
                         else:
                             debug('File %s is unknown, calling handler.' % path)
-                            node = handler(self, path, None)
+                            node = handler(self, path, self.get_type(depfile.sha1s()[path][1]), None)
 
                         debug('Adding %s to our sources.' % path)
                         self.add_dynsrc(f, node, None)
