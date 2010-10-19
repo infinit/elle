@@ -307,13 +307,16 @@ class Node:
 
 
 
-def node(path):
+def node(path, type = None):
 
     if path.__class__ != Path:
         path = Path(path)
 
     if str(path) in Node.nodes:
         return Node.nodes[str(path)]
+
+    if type is not None:
+        return type(path)
 
     if path.extension not in Node.extensions:
         raise Exception('unknown file type: %s' % path)
