@@ -326,7 +326,7 @@ class Compiler(Builder):
                     if test.exists():
                         found = True
                         # print idt, 'found 1: %s' % test
-                        res += self.mkdeps(node(strip_srctree(test)), lvl + 1, marks)
+                        res += self.mkdeps(node(strip_srctree(test), Header), lvl + 1, marks)
                         break
 
                     test = strip_srctree(include_path) / include
