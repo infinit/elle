@@ -55,7 +55,7 @@ class Path:
         if name == 'extension':
             parts = self.path[-1].split('.')
             if len(parts) > 1:
-                return parts[-1]
+                return '.'.join(parts[1:])
             else:
                 return ''
         return object.__getattr__(self, name)
@@ -66,9 +66,9 @@ class Path:
             parts = self.path[-1].split('.')
             if len(parts) > 1:
                 if value == '':
-                    parts.pop()
+                    parts = [parts[0]]
                 else:
-                    parts[-1] = value
+                    parts = [parts[0], value]
                 self.path[-1] = '.'.join(parts)
             else:
                 if value != '':
