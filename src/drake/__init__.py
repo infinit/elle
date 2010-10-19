@@ -246,6 +246,7 @@ class Node:
         self.builder = None
         self.srctree = srctree()
         Node.nodes[str(self.id())] = self
+        self.consumers = []
 
 
     def clean(self):
@@ -309,6 +310,14 @@ class Node:
     def __lt__(self, rhs):
 
         return self.path() < rhs.path()
+
+
+    def produced_direct(self):
+
+        if len(self.consumers) != 1 or len(self.consumers[0].dsts) != 1:
+            return None
+        else:
+            return self.consumers[0].dsts[0]
 
 
 
@@ -541,6 +550,7 @@ class Builder:
     def add_src(self, src):
 
         self.srcs[str(src.path())] = src
+        src.consumers.append(self)
 
 
     def all_srcs(self):

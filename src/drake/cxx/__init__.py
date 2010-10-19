@@ -453,20 +453,28 @@ class StaticLib(Node):
         self.sources = []
 
         for source in sources:
-
-            if source.__class__ == Object:
-                self.sources.append(source)
-            elif source.__class__ == Source:
-                o = Object(source, tk, cfg)
-                self.sources.append(o)
-            elif source.__class__ == StaticLib:
-                # Import every object file
-                for obj in source.sources:
-                    self.sources.append(obj)
-            else:
-                raise Exception('invalid source for a static library: %s' % source)
+            self.src_add(source, tk, cfg)
 
         StaticLibArchiver(self.sources, self, tk, cfg)
+
+    def src_add(self, source, tk, cfg):
+
+        if source.__class__ == Object:
+            self.sources.append(source)
+        elif source.__class__ == Source:
+            o = Object(source, tk, cfg)
+            self.sources.append(o)
+        elif source.__class__ == Header:
+            pass
+        elif source.__class__ == StaticLib:
+            # Import every object file
+            for obj in source.sources:
+                self.sources.append(obj)
+        else:
+            obj = source.produced_direct()
+            if obj is None:
+                raise Exception('invalid source for a static library: %s' % source)
+            self.src_add(obj, tk, cfg)
 
 
 class Executable(Node):
