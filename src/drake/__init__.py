@@ -315,11 +315,6 @@ class Node(BaseNode):
             return self.src_path
 
 
-    def id(self):
-
-        return self.src_path
-
-
     def build(self):
 
         debug('Building %s' % self)
@@ -363,8 +358,6 @@ class Node(BaseNode):
             return None
         else:
             return self.consumers[0].dsts[0]
-
-
 
 def node(path, type = None):
 
