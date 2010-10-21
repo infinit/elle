@@ -197,7 +197,7 @@ class DepFile:
 
         for path in self._sha1:
             assert str(path) in Node.nodes
-            h = hashlib.sha1(open(str(node(path).path())).read()).hexdigest()
+            h = node(path).hash()
             if self._sha1[path][0] != h:
                 debug('Execution needed because hash is outdated: %s.' % path)
                 return False
@@ -209,7 +209,7 @@ class DepFile:
 
         f = open(str(self.path()), 'w')
         for path in self._files:
-            h = hashlib.sha1(open(path).read()).hexdigest()
+            h = self._files[path].hash()
             print >>f, '%s %s %s' % (h, self._files[path].id(), self._files[path].drake_type())
 
     def __repr__(self):
@@ -226,33 +226,72 @@ def path_build(path):
 def path_src(path):
     return srctree() / path_build(path)
 
-class Node:
 
+class BaseNode:
 
     nodes = {}
     uid = 0
     extensions = {}
 
+    def __init__(self, sym_path, src_path):
+
+        self.sym_path = sym_path
+        self.src_path = src_path
+        self.uid = BaseNode.uid
+        BaseNode.uid += 1
+        self.builder = None
+        self.srctree = srctree()
+        BaseNode.nodes[str(self.id())] = self
+        self.consumers = []
 
     @classmethod
     def drake_type(self):
         return '%s.%s' % (self.__module__, self.__name__)
 
+    def path(self):
+
+        return self.src_path
+
+    def id(self):
+
+        return self.src_path
+
+    def hash(self):
+
+        raise Exception('hash must be implemented by BaseNodes')
+
+    def build(self):
+
+        pass
+
+    def clean(self):
+
+        pass
+
+
+class VirtualNode(BaseNode):
+
+    def __init__(self, name):
+
+        BaseNode.__init__(self, '//%s' % name, '//%s' % (prefix() / name))
+
+    def hash(self):
+
+        raise Exception('hash must be implemented by VirtualNodes')
+
+
+class Node(BaseNode):
+
     def __init__(self, path):
 
         if path.__class__ == str:
             path = Path(path)
+        BaseNode.__init__(self, path, prefix() / path)
 
-        self.sym_path = path
-        self.src_path = prefix() / path
 
-        self.uid = Node.uid
-        Node.uid += 1
+    def hash(self):
 
-        self.builder = None
-        self.srctree = srctree()
-        Node.nodes[str(self.id())] = self
-        self.consumers = []
+        return hashlib.sha1(open(str(self.path())).read()).hexdigest()
 
 
     def clean(self):
