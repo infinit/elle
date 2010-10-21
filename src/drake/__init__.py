@@ -791,47 +791,53 @@ def run(args):
     args = args[1:]
 
     mode = lambda n: n.build()
-
-    mode_count = 0
+    mode_seen = False
+    node_seen = False
     i = 0
+
+    def all():
+        # Copy it, since it will change during iteration. This shouldn't
+        # be a problem, all newly inserted will be dependencies of the
+        # already existing nodes. Right?
+        nodes = dict(Node.nodes)
+        for n in nodes:
+            mode(node(n))
+
 
     while True:
 
-        if mode_count != 0 and node_count == 0:
-
-            # Copy it, since it will change during iteration. This shouldn't
-            # be a problem, all newly inserted will be dependencies of the
-            # already existing nodes. Right?
-            nodes = dict(Node.nodes)
-            for n in nodes:
-                mode(node(n))
-
         if i >= len(args):
+            if not node_seen:
+                all()
             break
 
-        node_count = 0
         arg = args[i]
+
+        if arg[0:2] == '--':
+            if mode_seen and not node_seen:
+                all()
+
+            node_seen = False
+            arg = arg[2:]
+            modes = {
+                'build': lambda n: n.build(),
+                'clean': lambda n: n.clean(),
+                'dot':   lambda n: dot(n),
+                }
+
+            if arg in modes:
+                mode = modes[arg]
+            else:
+                raise Exception('Unknown option: %s.' % arg)
+            i += 1
+            mode_seen = True
+            continue
+
+        node_seen = True
         while i < len(args) and arg[0:2] != '--':
             n = node(arg)
             mode(n)
             i += 1
-            node_count += 1
-
-        if i >= len(args):
-            break
-
-        arg = arg[2:]
-        modes = {
-            'build': lambda n: n.build(),
-            'clean': lambda n: n.clean(),
-            }
-
-        if arg in modes:
-            mode = modes[arg]
-            mode_count += 1
-        else:
-            raise Exception('Unknown option: %s.' % arg)
-        i += 1
 
 # Architectures
 x86 = 0
