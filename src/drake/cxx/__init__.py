@@ -82,11 +82,27 @@ class GccToolkit(Toolkit):
                 concatenate(objs),
                 exe)
 
+    def dynlink(self, cfg, objs, exe):
 
-    def libname(self, cfg, path):
+        return '%s %s%s%s%s %s -shared -o %s' % \
+               (self.cxx,
+                concatenate(cfg.flags),
+                concatenate(cfg.frameworks(), '-framework '),
+                concatenate(cfg.lib_paths, '-L'),
+                concatenate(cfg.libs, '-l'),
+                concatenate(objs),
+                exe)
+
+
+    def libname_static(self, cfg, path):
 
         path = Path(path)
         return path.dirname() / ('lib%s.a' % str(path.basename()))
+
+    def libname_dyn(self, cfg, path):
+
+        path = Path(path)
+        return path.dirname() / ('lib%s.so' % str(path.basename()))
 
 
     def exename(self, cfg, path):
@@ -157,10 +173,15 @@ class VisualToolkit(Toolkit):
                 ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.lib_paths)),
                 ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
 
-    def libname(self, cfg, path):
+    def libname_static(self, cfg, path):
 
         path = Path(path)
         return path.dirname() / ('%s.lib' % str(path.basename()))
+
+    def libname_dyn(self, cfg, path):
+
+        path = Path(path)
+        return path.dirname() / ('%s.dll' % str(path.basename()))
 
     def exename(self, cfg, path):
 
@@ -377,8 +398,37 @@ class Linker(Builder):
         return 'Linker for %s' % self.exe
 
 
+class DynLibLinker(Builder):
 
-class StaticLibArchiver(ShellCommand):
+
+    name = 'dynamic library linkage'
+
+
+    def dependencies(self):
+
+        for hook in self.toolkit.hook_bin_deps():
+            hook(self)
+
+    def __init__(self, objs, lib, tk, cfg):
+
+        self.lib = lib
+        self.toolkit = tk
+        self.config = cfg
+        # This duplicates self.srcs, but preserves the order.
+        self.objs = objs
+        Builder.__init__(self, objs, [lib])
+
+
+    def execute(self):
+
+        return self.cmd('Link %s' % self.lib, self.toolkit.dynlink(self.config, self.objs + self.dynsrc.values(), self.lib))
+
+    def __repr__(self):
+
+        return 'Linker for %s' % self.lib
+
+
+class StaticLibLinker(ShellCommand):
 
     name = 'static library archiving'
 
@@ -428,34 +478,31 @@ class Object(Node):
 
         Compiler(source, self, tk, cfg)
 
+    def mkdeps(self):
+
+        return self.builder.mkdeps()
+
 Node.extensions['o'] = Object
 
+class Lib(Node):
 
-class StaticLib(Node):
+    def __init__(self, path, sources, tk, cfg):
 
-    def __init__(self, path, *args):
+#         if len(args) == 0:
+#             Node.__init__(self, path)
+#             self.builder = None
+#             return
 
-        assert len(args) == 0 or len(args) == 3
-
-        if len(args) == 0:
-            Node.__init__(self, path)
-            self.builder = None
-            return
-
-        sources = args[0]
-        tk = args[1]
-        cfg = args[2]
-
-        path = tk.libname(cfg, path)
+        self.tk = tk
+        self.cfg = cfg
 
         Node.__init__(self, path)
 
         self.sources = []
 
         for source in sources:
-            self.src_add(source, tk, cfg)
+            self.src_add(source, self.tk, self.cfg)
 
-        StaticLibArchiver(self.sources, self, tk, cfg)
 
     def src_add(self, source, tk, cfg):
 
@@ -473,9 +520,22 @@ class StaticLib(Node):
         else:
             obj = source.produced_direct()
             if obj is None:
-                raise Exception('invalid source for a static library: %s' % source)
+                raise Exception('invalid source for a library: %s' % source)
             self.src_add(obj, tk, cfg)
 
+class DynLib(Lib):
+
+    def __init__(self, path, sources, tk, cfg):
+
+        Lib.__init__(self, tk.libname_dyn(cfg, path), sources, tk, cfg)
+        DynLibLinker(self.sources, self, self.tk, self.cfg)
+
+class StaticLib(Lib):
+
+    def __init__(self, path, sources, tk, cfg):
+
+        Lib.__init__(self, tk.libname_static(cfg, path), sources, tk, cfg)
+        StaticLibLinker(self.sources, self, self.tk, self.cfg)
 
 class Executable(Node):
 
