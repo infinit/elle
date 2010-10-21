@@ -302,14 +302,72 @@ def deps_handler(builder, path, t, data):
 
     return node(path, t)
 
+
+def mkdeps(n, lvl, config, marks,
+           f_submarks, f_init, f_add):
+
+    include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
+
+    path = n.path()
+    idt = ' ' * lvl * 2
+
+    if str(path) in marks:
+        return []
+    marks[str(path)] = True
+
+    # print idt, path
+
+    res = f_init(n)
+    n.build()
+    for line in open(str(path), 'r'):
+
+        line = line.strip()
+        match = include_re.match(line)
+        if match:
+            include = match.group(2)
+            found = False
+            for include_path in config.local_include_path():
+                test = include_path / include
+                # print idt, 'test: %s (%s)' % (test, strip_srctree(test))
+                # if re.compile('player-create').search(include):
+                #     print strip_srctree(test)
+                #     print strip_srctree(test) in Node.nodes
+                #     try:
+                #         print '=====> %s' %Node.nodes[strip_srctree(test)]
+                #     except KeyError, e:
+                #         pass
+                # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
+                if test.exists():
+                    found = True
+                    # print idt, 'found 1: %s' % test
+                    subnode = node(strip_srctree(test), Header)
+                    f_add(res, subnode, mkdeps(subnode, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add))
+                    break
+
+                test = strip_srctree(include_path) / include
+                if str(test) in Node.nodes:
+                    # Check this is not an old cached dependency from cxx.inclusions.
+                    # Not sure of myself though.
+                    if test.exists() or node(str(test)).builder is not None:
+                        found = True
+                        # print idt, 'found 2: %s' % test
+                        subnode = node(test)
+                        f_add(res, subnode, mkdeps(subnode, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add))
+                        break
+            # if not found:
+            #     print idt, '=> not found: %s' % include
+            #     if re.compile('player-create').search(include):
+            #         print Node.nodes
+
+    return res
+
+
 class Compiler(Builder):
 
     name = 'C++ compilation'
     deps = 'drake.cxx.inclusions'
 
     Builder.register_deps_handler(deps, deps_handler)
-
-    include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
 
     def __init__(self, src, obj, tk, cfg):
 
@@ -322,8 +380,24 @@ class Compiler(Builder):
 
     def dependencies(self):
 
-        for dep in self.mkdeps(self.src, 0, {}):
-            self.add_dynsrc(self.deps, dep)
+        def flatten(d, res):
+            for k in d:
+                res[k] = None
+                flatten(d[k], res)
+
+        deps = self.mkdeps()
+        ldeps = {}
+        flatten(deps, ldeps)
+        deps = ldeps.keys() + [self.src]
+
+        deps = mkdeps(self.src, 0, self.config, {},
+                      f_init = lambda n: [n],
+                      f_submarks = lambda d: d,
+                      f_add = lambda res, node, sub: res.extend(sub))
+
+        for dep in deps:
+            if dep != self.src:
+                self.add_dynsrc(self.deps, dep)
         for hook in self.toolkit.hook_object_deps():
             hook(self)
 
@@ -332,60 +406,15 @@ class Compiler(Builder):
 
         return self.cmd('Compile %s' % self.obj, self.toolkit.compile(self.config, self.src.path(), self.obj.path()))
 
-    def mkdeps(self, n, lvl, marks):
+    def mkdeps(self):
 
-        path = n.path()
-        idt = ' ' * lvl * 2
+        def add(res, node, sub):
+            res[node] = sub
 
-        if str(path) in marks:
-            return []
-        marks[str(path)] = True
-
-        # print idt, path
-
-        res = [n]
-        n.build()
-        for line in open(str(path), 'r'):
-
-            line = line.strip()
-            match = self.include_re.match(line)
-            if match:
-                include = match.group(2)
-                found = False
-                for include_path in self.config.local_include_path():
-                    test = include_path / include
-                    # print idt, 'test: %s (%s)' % (test, strip_srctree(test))
-                    # if re.compile('player-create').search(include):
-                    #     print strip_srctree(test)
-                    #     print strip_srctree(test) in Node.nodes
-                    #     try:
-                    #         print '=====> %s' %Node.nodes[strip_srctree(test)]
-                    #     except KeyError, e:
-                    #         pass
-                    # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
-                    if test.exists():
-                        found = True
-                        # print idt, 'found 1: %s' % test
-                        res += self.mkdeps(node(strip_srctree(test), Header), lvl + 1, marks)
-                        break
-
-                    test = strip_srctree(include_path) / include
-                    if str(test) in Node.nodes:
-                        # Check this is not an old cached dependency from cxx.inclusions.
-                        # Not sure of myself though.
-                        if test.exists() or node(str(test)).builder is not None:
-                            found = True
-                            # print idt, 'found 2: %s' % test
-                            res += self.mkdeps(node(test), lvl + 1, marks)
-                            break
-                # if not found:
-                #     print idt, '=> not found: %s' % include
-                #     if re.compile('player-create').search(include):
-                #         print Node.nodes
-
-        return res
-
-
+        return mkdeps(self.src, 0, self.config, {},
+                      f_init = lambda n: {},
+                      f_submarks = lambda d: dict(d),
+                      f_add = add)
 
 class Linker(Builder):
 
