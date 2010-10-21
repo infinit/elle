@@ -79,6 +79,10 @@ class Path:
             self.__dict__[name] = value
         return value
 
+    def extension_strip_last_component(self):
+
+        self.extension = '.'.join(self.extension.split('.')[:-1])
+
     def __str__(self):
 
         return self.separator.join(self.path)
