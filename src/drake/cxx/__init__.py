@@ -1,4 +1,4 @@
-from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree
+from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd
 import os, re, shutil, subprocess, tempfile
 
 # FIXME: Factor node and builder for executable and staticlib
@@ -290,7 +290,7 @@ class Compiler(Builder):
 
     def execute(self):
 
-        return self.cmd(self.toolkit.compile(self.config, self.src.path(), self.obj.path()))
+        return self.cmd('Compile %s' % self.obj, self.toolkit.compile(self.config, self.src.path(), self.obj.path()))
 
     def mkdeps(self, n, lvl, marks):
 
@@ -370,7 +370,7 @@ class Linker(Builder):
 
     def execute(self):
 
-        return self.cmd(self.toolkit.link(self.config, self.objs + self.dynsrc.values(), self.exe))
+        return self.cmd('Link %s' % self.exe, self.toolkit.link(self.config, self.objs + self.dynsrc.values(), self.exe))
 
     def __repr__(self):
 
@@ -392,7 +392,7 @@ class StaticLibArchiver(ShellCommand):
 
     def execute(self):
 
-        return self.cmd(self.tk.archive(self.cfg, self.objs, self.lib))
+        return self.cmd('Link %s' % self.lib, self.tk.archive(self.cfg, self.objs, self.lib))
 
 class Source(Node):
 

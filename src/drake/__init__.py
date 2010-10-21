@@ -1,4 +1,4 @@
-import copy, os, hashlib, platform, re, sys, time
+import copy, os, hashlib, platform, re, subprocess, sys, time
 
 def clone(o):
 
@@ -12,6 +12,8 @@ class Exception(Exception):
 
 DEBUG = 'DRAKE_DEBUG' in os.environ
 DEBUG_LVL = 0
+RAW = 'DRAKE_RAW' in os.environ
+SILENT = 'DRAKE_SILENT' in os.environ
 
 def debug(msg):
 
@@ -344,6 +346,27 @@ def nodes(*paths):
     return map(node, paths)
 
 
+def cmd_escape(fmt, *args):
+
+    rg = re.compile('\'')
+
+    args = map(str, args)
+    for arg in args:
+        if rg.match(arg):
+            pass
+    return fmt % tuple(args)
+
+
+def cmd(fmt, *args):
+
+    command = cmd_escape(fmt, *args)
+    return os.system(command) == 0
+
+
+def cmd_output(fmt, *args):
+
+    command = cmd_escape(fmt, *args)
+    return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).communicate()[0] # Chomp \n
 
 
 class Builder:
@@ -380,6 +403,18 @@ class Builder:
         self._depfile = DepFile(self, 'drake')
         self.built = False
         self.dynsrc = {}
+
+
+    def cmd(self, pretty, c, *args):
+
+        c = cmd_escape(c, *args)
+        self.output(c, pretty)
+        return cmd(c)
+
+    def output(self, raw, pretty = None):
+
+        if not SILENT:
+            print (not RAW and pretty) or raw
 
 
     def cachedir(self):
@@ -532,19 +567,6 @@ class Builder:
     def __str__(self):
 
         return self.__class__.__name__
-
-
-    def cmd(self, fmt, *args):
-
-        rg = re.compile('\'')
-
-        args = map(str, args)
-        for arg in args:
-            if rg.match(arg):
-                pass
-        command = fmt % tuple(args)
-        print command
-        return os.system(command) == 0
 
 
     def add_src(self, src):
