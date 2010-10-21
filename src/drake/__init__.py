@@ -244,6 +244,18 @@ class BaseNode:
         BaseNode.nodes[str(self.id())] = self
         self.consumers = []
 
+    def dot(self, marks):
+
+        if (self in marks):
+            return True
+        marks[self] = None
+
+        print '  node_%s [label="%s"]' % (self.uid, self.sym_path)
+        if self.builder is not None:
+            if self.builder.dot(marks):
+                print '  builder_%s -> node_%s' % (self.builder.uid, self.uid)
+        return True
+
     @classmethod
     def drake_type(self):
         return '%s.%s' % (self.__module__, self.__name__)
@@ -620,6 +632,17 @@ class Builder:
                 res += src.builder.all_srcs()
         return res
 
+    def dot(self, marks):
+
+        if (self in marks):
+            return True
+        marks[self] = None
+
+        print '  builder_%s [label="%s", shape=rect]' % (self.uid, self.__class__)
+        for node in self.srcs.values() + self.dynsrc.values():
+            if node.dot(marks):
+                print '  node_%s -> builder_%s' % (node.uid, self.uid)
+        return True
 
 
 class ShellCommand(Builder):
@@ -755,32 +778,13 @@ def raw_include(path, *args, **kwargs):
     res.configure(*args, **kwargs)
     return res
 
-def dot(*filters):
+def dot(node, *filters):
 
-    def take(path):
-        for filter in filters:
-            if re.compile(filter).search(path):
-                return False
-        return True
-
+    node.build()
+    marks = {}
     print 'digraph'
     print '{'
-    for path in Node.nodes:
-        if take(path):
-            node = Node.nodes[path]
-            print '  node_%s [label="%s"]' % (node.uid, node.path())
-    print
-    for builder in Builder.builders:
-        print '  builder_%s [label="%s", shape=rect]' % (builder.uid, builder.__class__)
-        for src in builder.srcs:
-            if take(src):
-                print '  node_%s -> builder_%s' % (builder.srcs[src].uid, builder.uid)
-        for src in builder.dynsrc:
-            if take(src):
-                print '  node_%s -> builder_%s' % (builder.dynsrc[src].uid, builder.uid)
-        for dst in builder.dsts:
-            if take(str(dst.path())):
-                print '  builder_%s -> node_%s' % (builder.uid, dst.uid)
+    node.dot(marks)
     print '}'
 
 def run(args):
