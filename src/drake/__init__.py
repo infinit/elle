@@ -787,6 +787,15 @@ def dot(node, *filters):
     node.dot(marks)
     print '}'
 
+modes_ = {}
+
+def command_add(name, action):
+    modes_[name] = action
+
+command_add('build', lambda n: n.build())
+command_add('clean', lambda n: n.clean())
+command_add('dot',   lambda n: dot(n))
+
 def run(args):
     args = args[1:]
 
@@ -819,14 +828,9 @@ def run(args):
 
             node_seen = False
             arg = arg[2:]
-            modes = {
-                'build': lambda n: n.build(),
-                'clean': lambda n: n.clean(),
-                'dot':   lambda n: dot(n),
-                }
 
-            if arg in modes:
-                mode = modes[arg]
+            if arg in modes_:
+                mode = modes_[arg]
             else:
                 raise Exception('Unknown option: %s.' % arg)
             i += 1

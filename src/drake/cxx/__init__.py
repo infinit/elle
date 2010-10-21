@@ -1,4 +1,4 @@
-from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd
+from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add
 import os, re, shutil, subprocess, tempfile
 
 # FIXME: Factor node and builder for executable and staticlib
@@ -616,3 +616,39 @@ class Executable(Node):
         else:
             self.builder = True # Hack to get the right path in error message
             raise Exception('invalid source type for executable %s: %s' % (self, source))
+
+def dot_merge(n):
+
+    def rec(n, d, marks = {}):
+        print '  node_%s [label="%s"]' % (n.uid, n.sym_path)
+        for s in d:
+            rec(s, d[s], marks)
+            k = (s.uid, n.uid)
+            if k not in marks:
+                marks[k] = None
+                print '  node_%s -> node_%s' % (s.uid, n.uid)
+
+    print 'digraph'
+    print '{'
+    rec(n, n.mkdeps())
+    print '}'
+
+def dot_spread(n):
+
+    def rec(n, d, i = 0):
+        me = i
+        print '  node_%s [label="%s"]' % (me, n.sym_path)
+        for s in d:
+            si = i + 1
+            i = rec(s, d[s], si)
+            k = (s.uid, n.uid)
+            print '  node_%s -> node_%s' % (me, si)
+        return i
+
+    print 'digraph'
+    print '{'
+    rec(n, n.mkdeps())
+    print '}'
+
+command_add('cxx-deps-dot-merge', dot_merge)
+command_add('cxx-deps-dot', dot_spread)
