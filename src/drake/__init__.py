@@ -378,7 +378,7 @@ def node(path, type = None):
         return type(path)
 
     if path.extension not in Node.extensions:
-        raise Exception('unknown file type: %s' % path)
+        return Node(path)
 
     return Node.extensions[path.extension](path)
 
