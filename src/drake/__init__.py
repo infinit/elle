@@ -634,6 +634,65 @@ class ShellCommand(Builder):
 
         return self.cmd(self.fmt, *self.args)
 
+
+class Dictionary(VirtualNode):
+
+    def __init__(self, name, content = {}):
+
+        VirtualNode.__init__(self, 'dictionaries/%s' % name)
+        self.content = content
+
+    def hash(self):
+
+        # FIXME: sha1 of the string repr ain't optimal
+        items = self.content.items()
+        items.sort()
+        return hashlib.sha1(str(items)).hexdigest()
+
+    def __iter__(self):
+
+        return iter(self.content.items())
+
+
+class Expander(Builder):
+
+    def __init__(self, dicts, source, target = None,
+                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
+                 missing_fatal = True):
+
+        if target is None:
+            target = Path(source.sym_path)
+            target.extension_strip_last_component()
+            target = node(target)
+
+        Builder.__init__(self, [source] + dicts, [target])
+        self.dicts = dicts
+        self.matcher = matcher
+        self.missing_fatal = missing_fatal
+        self.source = source
+        self.target = target
+
+    def execute(self):
+
+        self.output('Expand %s to %s' % (self.source, self.target),
+                    'Expand %s' % self.target)
+        vars = {}
+        for d in self.dicts:
+            vars.update(dict(d))
+        content = open(str(self.source.path()), 'r').read()
+        for match in self.matcher.finditer(content):
+            key = match.group(1)
+            try:
+                content = content.replace(match.group(0), str(vars[key]))
+            except KeyError:
+                if self.missing_fatal:
+                    print 'Missing expansion: %s' % key
+                    return False
+
+        print >> open(str(self.target.path()), 'w'), content
+        return True
+
+
 def shell_escape(str):
 
     # FIXME: escape only if needed
