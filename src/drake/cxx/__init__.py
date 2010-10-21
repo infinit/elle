@@ -59,11 +59,21 @@ class GccToolkit(Toolkit):
 
         return 'o'
 
+    def cppflags(self, cfg):
+
+        def print_define((name, v)):
+            if v is None:
+                return '-D%s' % name
+            else:
+                return '-D%s=%s' % (name, v)
+        defines = ' '.join(map(print_define, cfg.defines().items()))
+        system_includes = ' '.join(map(lambda i: '-I %s' % shell_escape(i), cfg.system_include_path()))
+        local_includes  = ' '.join(map(lambda i: '-I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.local_include_path()))
+        return ' '.join([system_includes, local_includes, defines])
+
     def compile(self, cfg, src, obj):
 
-        system_includes = ''.join(map(lambda i: ' -I %s' % shell_escape(i), cfg.system_include_path()))
-        local_includes  = ''.join(map(lambda i: ' -I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.local_include_path()))
-        return '%s%s%s%s -c %s -o %s' % (self.cxx, concatenate(cfg.flags), system_includes, local_includes, src, obj)
+        return ' '.join([self.cxx] + cfg.flags + [self.cppflags(cfg), '-c', str(src), '-o', str(obj)])
 
 
     def archive(self, cfg, objs, lib):
@@ -202,6 +212,7 @@ class Config:
             self.libs = {}
             self.flags = []
             self._framework = {}
+            self._defines = {}
         else:
             self._includes = clone(model._includes)
             self._local_includes = clone(model._local_includes)
@@ -210,6 +221,14 @@ class Config:
             self.libs = clone(model.libs)
             self.flags = clone(model.flags)
             self._framework = clone(model._framework)
+            self._defines = clone(model._defines)
+
+    def define(self, name, value = None):
+
+        self._defines[name] = value
+
+    def defines(self):
+        return self._defines
 
     def flag(self, f):
 
