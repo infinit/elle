@@ -575,15 +575,15 @@ class Executable(Node):
 
     def source_add(self, source):
 
-            if source.__class__ == Object:
-                self.sources.append(source)
-            elif source.__class__ == StaticLib:
-                self.sources.append(source)
-            elif source.__class__ == Source:
-                o = Object(source, self.toolkit, self.config)
-                self.source_add(o)
-            elif source.__class__ == Header:
-                pass
-            else:
-                self.builder = True # Hack to get the right path in error message
-                raise Exception('invalid source type for executable %s: %s' % (self, source))
+        if source.__class__ == Object:
+            self.sources.append(source)
+        elif source.__class__ == StaticLib:
+            self.sources.append(source)
+        elif source.__class__ == Source:
+            o = Object(source, self.toolkit, self.config)
+            self.source_add(o)
+        elif source.__class__ == Header:
+            pass
+        else:
+            self.builder = True # Hack to get the right path in error message
+            raise Exception('invalid source type for executable %s: %s' % (self, source))
