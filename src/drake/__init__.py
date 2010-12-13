@@ -250,6 +250,7 @@ class BaseNode:
         BaseNode.uid += 1
         self.builder = None
         self.srctree = srctree()
+        assert (str(self.id())) not in BaseNode.nodes
         BaseNode.nodes[str(self.id())] = self
         self.consumers = []
 
