@@ -314,9 +314,17 @@ def mkdeps(n, lvl, config, marks,
         return []
     marks[str(path)] = True
 
-    # print idt, path
+#    debug('%smkdeps: %s' % (idt, path))
 
     res = f_init(n)
+
+    def unique(include, prev, new):
+
+        if prev is not None:
+            raise Exception('two node match inclusion %s: %s and %s' % (include, prev, new))
+        return new
+
+
     n.build()
     for line in open(str(path), 'r'):
 
@@ -324,39 +332,26 @@ def mkdeps(n, lvl, config, marks,
         match = include_re.match(line)
         if match:
             include = match.group(2)
-            found = False
+            found = None
             for include_path in config.local_include_path():
-                test = include_path / include
-                # print idt, 'test: %s (%s)' % (test, strip_srctree(test))
-                # if re.compile('player-create').search(include):
-                #     print strip_srctree(test)
-                #     print strip_srctree(test) in Node.nodes
-                #     try:
-                #         print '=====> %s' %Node.nodes[strip_srctree(test)]
-                #     except KeyError, e:
-                #         pass
-                # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
-                if test.exists():
-                    found = True
-                    # print idt, 'found 1: %s' % test
-                    subnode = node(strip_srctree(test), Header)
-                    f_add(res, subnode, mkdeps(subnode, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add))
-                    break
 
                 test = strip_srctree(include_path) / include
                 if str(test) in Node.nodes:
                     # Check this is not an old cached dependency from cxx.inclusions.
                     # Not sure of myself though.
                     if test.exists() or node(str(test)).builder is not None:
-                        found = True
-                        # print idt, 'found 2: %s' % test
-                        subnode = node(test)
-                        f_add(res, subnode, mkdeps(subnode, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add))
-                        break
-            # if not found:
-            #     print idt, '=> not found: %s' % include
-            #     if re.compile('player-create').search(include):
-            #         print Node.nodes
+                        found = unique(include, found, node(test))
+#                        debug('%sfound node: %s' % (idt, test))
+
+
+                test = include_path / include
+                # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
+                if test.exists():
+#                    debug('%sfound file: %s' % (idt, test))
+                    found = unique(include, found, node(strip_srctree(test), Header))
+
+            if found is not None:
+                f_add(res, found, mkdeps(found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add))
 
     return res
 
@@ -379,15 +374,7 @@ class Compiler(Builder):
 
     def dependencies(self):
 
-        def flatten(d, res):
-            for k in d:
-                res[k] = None
-                flatten(d[k], res)
-
-        deps = self.mkdeps()
-        ldeps = {}
-        flatten(deps, ldeps)
-        deps = ldeps.keys() + [self.src]
+        debug('dependencies')
 
         deps = mkdeps(self.src, 0, self.config, {},
                       f_init = lambda n: [n],
@@ -410,10 +397,10 @@ class Compiler(Builder):
         def add(res, node, sub):
             res[node] = sub
 
-        return mkdeps(self.src, 0, self.config, {},
-                      f_init = lambda n: {},
-                      f_submarks = lambda d: dict(d),
-                      f_add = add)
+        return {self.src: mkdeps(self.src, 0, self.config, {},
+                                 f_init = lambda n: {},
+                                 f_submarks = lambda d: dict(d),
+                                 f_add = add)}
 
     def __str__(self):
 
@@ -628,23 +615,54 @@ class Executable(Node):
             self.builder = True # Hack to get the right path in error message
             raise Exception('invalid source type for executable %s: %s' % (self, source))
 
-def dot_merge(n):
+def deps_merge(nodes):
 
-    def rec(n, d, marks = {}):
-        print '  node_%s [label="%s"]' % (n.uid, n.sym_path)
+    def merge(d, into):
+        for k in d:
+            if k not in into:
+                into[k] = d[k]
+            else:
+                merge(d[k], into[k])
+
+    res = {}
+    for node in nodes:
+        merge(node.mkdeps(), res)
+
+    return res
+
+def all_objects_if_none(nodes):
+
+    if len(nodes):
+        return nodes
+    else:
+        return [node for node in Node.nodes.values() if node.__class__ == Object]
+
+def dot_merge(nodes):
+
+    def rec(n, d, marks = {}, skip = False):
+        if not skip:
+            print '  node_%s [label="%s"]' % (n.uid, n.sym_path)
         for s in d:
             rec(s, d[s], marks)
-            k = (s.uid, n.uid)
+            k = (n.uid, s.uid)
             if k not in marks:
                 marks[k] = None
-                print '  node_%s -> node_%s' % (s.uid, n.uid)
+                print '  node_%s -> node_%s' % k
 
     print 'digraph'
     print '{'
-    rec(n, n.mkdeps())
+    deps = deps_merge(all_objects_if_none(nodes))
+    marks = {}
+    print '  {'
+    print '    rank=same'
+    for n in deps:
+        print '    node_%s [label="%s"]' % (n.uid, n.sym_path)
+    print '  }'
+    for n in deps:
+        rec(n, deps[n], marks, True)
     print '}'
 
-def dot_spread(n):
+def dot_spread(nodes):
 
     def rec(n, d, i = 0):
         me = i
@@ -656,9 +674,13 @@ def dot_spread(n):
             print '  node_%s -> node_%s' % (me, si)
         return i
 
+
     print 'digraph'
     print '{'
-    rec(n, n.mkdeps())
+    deps = deps_merge(all_objects_if_none(nodes))
+    i = 0
+    for n in deps:
+        i = rec(n, deps[n], i) + 1
     print '}'
 
 command_add('cxx-deps-dot-merge', dot_merge)
