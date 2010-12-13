@@ -10,24 +10,33 @@ class Exception(Exception):
     pass
 
 
-DEBUG = 'DRAKE_DEBUG' in os.environ
-DEBUG_LVL = 0
+DEBUG = 0
+if 'DRAKE_DEBUG' in os.environ:
+    DEBUG = int(os.environ['DRAKE_DEBUG'])
+DEBUG_TRACE = 1
+DEBUG_TRACE_PLUS = 2
+DEBUG_DEPS = 2
+
+INDENT = 0
+
 RAW = 'DRAKE_RAW' in os.environ
 SILENT = 'DRAKE_SILENT' in os.environ
 
-def debug(msg):
+
+def debug(msg, lvl = 1):
 
     global DEBUG
-    if DEBUG:
-        print >> sys.stderr, '%s%s' % (' ' * DEBUG_LVL * 2, msg)
+    global INDENT
+    if lvl <= DEBUG:
+        print >> sys.stderr, '%s%s' % (' ' * INDENT * 2, msg)
 
 class indentation:
     def __enter__(self):
-        global DEBUG_LVL
-        DEBUG_LVL += 1
+        global INDENT
+        INDENT += 1
     def __exit__(self, type, value, traceback):
-        global DEBUG_LVL
-        DEBUG_LVL -= 1
+        global INDENT
+        INDENT -= 1
 
 class Path:
 
@@ -199,7 +208,7 @@ class DepFile:
             assert str(path) in Node.nodes
             h = node(path).hash()
             if self._sha1[path][0] != h:
-                debug('Execution needed because hash is outdated: %s.' % path)
+                debug('Execution needed because hash is outdated: %s.' % path, DEBUG_DEPS)
                 return False
 
         return True
@@ -214,11 +223,11 @@ class DepFile:
 
     def __repr__(self):
 
-        return 'DepFile(%s)' % repr(self.node)
+        return 'DepFile(%s)' % repr(self.builder)
 
     def __str__(self):
 
-        return 'DepFile(%s)' % self.node
+        return 'DepFile(%s)' % self.builder
 
 def path_build(path):
     return prefix() / path
@@ -326,10 +335,9 @@ class Node(BaseNode):
         else:
             return self.src_path
 
-
     def build(self):
 
-        debug('Building %s' % self)
+        debug('Building %s.' % self, DEBUG_TRACE)
         with indentation():
             if self.builder is None:
                 if not self.path().exists():
@@ -500,9 +508,11 @@ class Builder:
 
     def run(self):
 
+        debug('Running %s.' % self, DEBUG_TRACE_PLUS)
+
         # If we were already executed, just skip
         if self.built:
-            debug('Already built in this run.')
+            debug('Already built in this run.', DEBUG_TRACE_PLUS)
             return
 
         # The list of static dependencies is now fixed
@@ -517,7 +527,7 @@ class Builder:
             for f in os.listdir(str(self.cachedir())):
                 if f == 'drake':
                     continue
-                debug('Considering dependencies file %s' % f)
+                debug('Considering dependencies file %s' % f, DEBUG_DEPS)
                 depfile = self.depfile(f)
                 depfile.read()
                 handler = self._deps_handlers[f]
@@ -526,35 +536,40 @@ class Builder:
                     for path in depfile.sha1s():
 
                         if path in self.srcs or path in self.dynsrc:
-                            debug('File %s is already in our sources.' % path)
+                            debug('File %s is already in our sources.' % path, DEBUG_DEPS)
                             continue
 
                         if path in Node.nodes:
                             node = Node.nodes[path]
                         else:
-                            debug('File %s is unknown, calling handler.' % path)
+                            debug('File %s is unknown, calling handler.' % path, DEBUG_DEPS)
                             node = handler(self, path, self.get_type(depfile.sha1s()[path][1]), None)
 
-                        debug('Adding %s to our sources.' % path)
+                        debug('Adding %s to our sources.' % path, DEBUG_DEPS)
                         self.add_dynsrc(f, node, None)
 
-        # Build dynamic dependencies
-        for path in self.dynsrc:
-            try:
-                self.dynsrc[path].build()
-            except Exception, e:
-                debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
-                execute = True
 
         # Build static dependencies
-        for path in self.srcs:
-            self.srcs[path].build()
+        debug('Build static dependencies')
+        with indentation():
+            for node in self.srcs.values():
+                node.build()
+
+        # Build dynamic dependencies
+        debug('Build dynamic dependencies')
+        with indentation():
+            for path in self.dynsrc:
+                try:
+                    self.dynsrc[path].build()
+                except Exception, e:
+                    debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
+                    execute = True
 
         # If any target is missing, we must rebuild.
         if not execute:
             for dst in self.dsts:
                 if not dst.path().exists():
-                    debug('Execution needed because of missing target: %s.' % dst.path())
+                    debug('Execution needed because of missing target: %s.' % dst.path(), DEBUG_DEPS)
                     execute = True
 
         # Load static dependencies
@@ -565,7 +580,7 @@ class Builder:
             for p in self.srcs:
                 path = self.srcs[p].id()
                 if path not in self._depfile._sha1:
-                    debug('Execution needed because a new dependency appeared: %s.' % path)
+                    debug('Execution needed because a new dependency appeared: %s.' % path, DEBUG_DEPS)
                     execute = True
                     break
 
@@ -579,17 +594,22 @@ class Builder:
 
 
         if execute:
+            debug('Executing builder %s' % self, DEBUG_TRACE)
 
-            debug('Executing builder')
             # Regenerate dynamic dependencies
             self.dynsrc = {}
             self._depfiles = {}
-            self.dependencies()
-            for path in self.dynsrc:
-                self.dynsrc[path].build()
+            debug('Recomputing dependencies', DEBUG_TRACE_PLUS)
+            with indentation():
+                self.dependencies()
+
+            debug('Rebuilding new dynamic dependencies', DEBUG_TRACE_PLUS)
+            with indentation():
+                for node in self.dynsrc.values():
+                    node.build()
 
             if not self.execute():
-                raise Exception('%s failed' % self.name)
+                raise Exception('%s failed' % self)
             for dst in self.dsts:
                 if not dst.path().exists():
                     raise Exception('%s wasn\'t created by %s' % (dst, self))
@@ -598,7 +618,7 @@ class Builder:
                 self._depfiles[name].update()
             self.built = True
         else:
-            debug('Everything is up to date.')
+            debug('Everything is up to date.', DEBUG_TRACE_PLUS)
 
 
     def execute(self):

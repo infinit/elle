@@ -1,5 +1,4 @@
-from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add
-import os, re, shutil, subprocess, tempfile
+from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -416,6 +415,14 @@ class Compiler(Builder):
                       f_submarks = lambda d: dict(d),
                       f_add = add)
 
+    def __str__(self):
+
+        return 'Compiler(%s)' % self.obj
+
+    def __repr__(self):
+
+        return 'Compiler(%s)' % self.obj
+
 class Linker(Builder):
 
 
@@ -443,7 +450,11 @@ class Linker(Builder):
 
     def __repr__(self):
 
-        return 'Linker for %s' % self.exe
+        return 'Linker(%s)' % self.exe
+
+    def __str__(self):
+
+        return 'Linker(%s)' % self.exe
 
 
 class DynLibLinker(Builder):

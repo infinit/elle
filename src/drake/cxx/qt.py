@@ -117,5 +117,5 @@ class Moc(Builder):
 
     def execute(self):
 
-        return self.cmd('%s/bin/moc %s -o %s', self.qt.prefix, self.src, self.tgt)
+        return self.cmd('Moc %s' % self.tgt, '%s/bin/moc %s -o %s', self.qt.prefix, self.src, self.tgt)
 
