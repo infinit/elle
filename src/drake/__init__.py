@@ -619,6 +619,7 @@ class Builder:
                 self._depfiles[name].update()
             self.built = True
         else:
+            self.built = True
             debug('Everything is up to date.', DEBUG_TRACE_PLUS)
 
 
