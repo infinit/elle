@@ -555,7 +555,13 @@ class Lib(Node):
         if source.__class__ == Object:
             self.sources.append(source)
         elif source.__class__ == Source:
-            o = Object(source, tk, cfg)
+            # FIXME: factor
+            p = Path(source.sym_path)
+            p.extension = 'o'
+            if str(p) in Node.nodes:
+                o = Node.nodes[p]
+            else:
+                o = Object(source, tk, cfg)
             self.sources.append(o)
         elif source.__class__ == Header:
             pass
