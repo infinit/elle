@@ -1,4 +1,4 @@
-import copy, os, hashlib, platform, re, subprocess, sys, time
+import copy, os, hashlib, platform, re, subprocess, sys, time, types
 
 def clone(o):
 
@@ -22,6 +22,74 @@ INDENT = 0
 RAW = 'DRAKE_RAW' in os.environ
 SILENT = 'DRAKE_SILENT' in os.environ
 
+
+class Scheduler:
+
+    def __init__(self):
+
+        self.coroutines = []
+        self.i = 0
+
+    def run(self):
+
+        while True:
+            if not self.coroutines:
+                return
+            if self.i >= len(self.coroutines):
+                self.i = 0
+            coro = self.coroutines[self.i]
+            print 'next: %s' % coro
+            if not coro.step():
+                print 'done: %s' % coro
+                del self.coroutines[self.i]
+            else:
+                self.i += 1
+
+scheduler = Scheduler()
+
+
+class Coroutine:
+
+    def __init__(self, routine, name):
+
+        self.routine = [routine]
+        self.name = name
+        self._done = False
+        scheduler.coroutines.append(self)
+
+    def __str__(self):
+
+        return 'coro %s' % self.name
+
+    def step(self):
+
+        while self._step():
+            if not self.routine:
+                self._done = True
+                return False
+        return True
+
+    def done(self):
+
+        return self._done
+
+    def _step(self):
+
+        try:
+            value = self.routine[-1].next()
+            if isinstance(value, types.GeneratorType):
+                self.routine.append(value)
+                return True
+            else:
+                return False
+        except StopIteration:
+            del self.routine[-1]
+            return True
+
+def coro_join(coro):
+
+    while not coro.done():
+        yield
 
 def debug(msg, lvl = 1):
 
@@ -284,7 +352,13 @@ class BaseNode:
 
     def build(self):
 
-        pass
+        return
+
+    def build_coro(self):
+
+        # Empty coroutine
+        return
+        yield
 
     def clean(self):
 
@@ -345,7 +419,20 @@ class Node(BaseNode):
                     raise Exception('no builder to make %s' % self)
                 return
 
-            self.builder.run()
+            for everything in self.builder.run():
+                # Execute the full coro
+                pass
+
+    def build_coro(self):
+
+        debug('Building %s.' % self, DEBUG_TRACE)
+        with indentation():
+            if self.builder is None:
+                if not self.path().exists():
+                    raise Exception('no builder to make %s' % self)
+                return
+
+            yield self.builder.run()
 
 
     def __setattr__(self, name, value):
@@ -550,21 +637,27 @@ class Builder:
                         self.add_dynsrc(f, node, None)
 
 
+        coroutines = []
+
         # Build static dependencies
         debug('Build static dependencies')
         with indentation():
             for node in self.srcs.values():
-                node.build()
+                coroutines.append(Coroutine(node.build_coro(), name = str(node)))
 
         # Build dynamic dependencies
         debug('Build dynamic dependencies')
         with indentation():
             for path in self.dynsrc:
                 try:
-                    self.dynsrc[path].build()
+                    node = self.dynsrc[path]
+                    coroutines.append(Coroutine(node.build_coro(), name = str(node)))
                 except Exception, e:
                     debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
+
+        for coro in coroutines:
+            yield coro_join(coro)
 
         # If any target is missing, we must rebuild.
         if not execute:
@@ -607,7 +700,8 @@ class Builder:
             debug('Rebuilding new dynamic dependencies', DEBUG_TRACE_PLUS)
             with indentation():
                 for node in self.dynsrc.values():
-                    node.build()
+                    for y in node.build_coro():
+                        yield y
 
             if not self.execute():
                 raise Exception('%s failed' % self)
@@ -802,6 +896,7 @@ def raw_include(path, *args, **kwargs):
 
 def dot(node, *filters):
 
+    # FIXME: coro!
     node.build()
     marks = {}
     print 'digraph'
@@ -826,7 +921,8 @@ def command_add(name, action):
 
 def build(nodes):
     for node in all_if_none(nodes):
-        node.build()
+        Coroutine(node.build_coro(), name = str(node))
+    scheduler.run()
 command_add('build', build)
 
 def clean(nodes):
