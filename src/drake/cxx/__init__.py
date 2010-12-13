@@ -374,6 +374,7 @@ class Compiler(Builder):
 
     def dependencies(self):
 
+        return
         debug('dependencies')
 
         deps = mkdeps(self.src, 0, self.config, {},

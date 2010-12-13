@@ -1,4 +1,4 @@
-import copy, os, hashlib, platform, re, subprocess, sys, time, types
+import copy, os, hashlib, platform, re, subprocess, sys, threading, time, types
 
 def clone(o):
 
@@ -25,27 +25,53 @@ SILENT = 'DRAKE_SILENT' in os.environ
 
 class Scheduler:
 
-    def __init__(self):
+    def __init__(self, jobs = 1):
 
         self.coroutines = []
-        self.i = 0
+        self.waiting_coro_lock = threading.Semaphore(0)
+        self.ncoro = 0
+        self.jobs = jobs
+
+    def add(self, coro):
+
+        self.coroutines.append(coro)
+        self.ncoro += 1
+        self.waiting_coro_lock.release()
 
     def run(self):
 
-        while True:
-            if not self.coroutines:
-                return
-            if self.i >= len(self.coroutines):
-                self.i = 0
-            coro = self.coroutines[self.i]
-            print 'next: %s' % coro
-            if not coro.step():
-                print 'done: %s' % coro
-                del self.coroutines[self.i]
-            else:
-                self.i += 1
+        sem = threading.Semaphore(1)
+        self.die = False
 
-scheduler = Scheduler()
+        def job():
+            while True:
+                with sem:
+                    if self.ncoro == 0:
+                        self.die = True
+                        for i in range(self.jobs - 1):
+                            self.waiting_coro_lock.release()
+                        return
+                self.waiting_coro_lock.acquire()
+                if self.die:
+                    return
+                with sem:
+                    coro = self.coroutines[0]
+                    del self.coroutines[0]
+                res = coro.step()
+                with sem:
+                    if res:
+                        self.coroutines.append(coro)
+                        self.waiting_coro_lock.release()
+                    else:
+                        self.ncoro -= 1
+
+        threads = [threading.Thread(target = job) for i in range(self.jobs)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+scheduler = Scheduler(2)
 
 
 class Coroutine:
@@ -55,7 +81,7 @@ class Coroutine:
         self.routine = [routine]
         self.name = name
         self._done = False
-        scheduler.coroutines.append(self)
+        scheduler.add(self)
 
     def __str__(self):
 
@@ -380,6 +406,7 @@ class Node(BaseNode):
 
     def __init__(self, path):
 
+        self._hash = None
         if path.__class__ == str:
             path = Path(path)
         BaseNode.__init__(self, path, prefix() / path)
@@ -387,7 +414,8 @@ class Node(BaseNode):
 
     def hash(self):
 
-        return hashlib.sha1(open(str(self.path())).read()).hexdigest()
+        self._hash = hashlib.sha1(open(str(self.path())).read()).hexdigest()
+        return self._hash
 
 
     def clean(self):
