@@ -811,59 +811,63 @@ def dot(node, *filters):
 
 modes_ = {}
 
+def all_if_none(nodes):
+
+    # Copy it, since it will change during iteration. This shouldn't
+    # be a problem, all newly inserted will be dependencies of the
+    # already existing nodes. Right?
+    if len(nodes):
+        return nodes
+    else:
+        return list(Node.nodes.values())
+
 def command_add(name, action):
     modes_[name] = action
 
-command_add('build', lambda n: n.build())
-command_add('clean', lambda n: n.clean())
-command_add('dot',   lambda n: dot(n))
+def build(nodes):
+    for node in all_if_none(nodes):
+        node.build()
+command_add('build', build)
+
+def clean(nodes):
+    for node in all_if_none(nodes):
+        node.clean()
+command_add('clean', clean)
+
+def dot_cmd(nodes):
+    for node in all_if_none(nodes):
+        dot(node)
+command_add('dot', dot_cmd)
+
 
 def run(args):
     args = args[1:]
 
-    mode = lambda n: n.build()
-    mode_seen = False
-    node_seen = False
+    mode = modes_['build']
     i = 0
-
-    def all():
-        # Copy it, since it will change during iteration. This shouldn't
-        # be a problem, all newly inserted will be dependencies of the
-        # already existing nodes. Right?
-        nodes = dict(Node.nodes)
-        for n in nodes:
-            mode(node(n))
-
 
     while True:
 
-        if i >= len(args):
-            if not node_seen:
-                all()
+        if i < len(args):
+            arg = args[i]
+            if arg[0:2] == '--':
+
+                arg = arg[2:]
+
+                if arg in modes_:
+                    mode = modes_[arg]
+                else:
+                    raise Exception('Unknown option: %s.' % arg)
+                i += 1
+
+        nodes = []
+        while i < len(args) and args[i][0:2] != '--':
+            nodes.append(node(args[i]))
+            i += 1
+        mode(nodes)
+
+        if i == len(args):
             break
-
-        arg = args[i]
-
-        if arg[0:2] == '--':
-            if mode_seen and not node_seen:
-                all()
-
-            node_seen = False
-            arg = arg[2:]
-
-            if arg in modes_:
-                mode = modes_[arg]
-            else:
-                raise Exception('Unknown option: %s.' % arg)
-            i += 1
-            mode_seen = True
-            continue
-
-        node_seen = True
-        while i < len(args) and arg[0:2] != '--':
-            n = node(arg)
-            mode(n)
-            i += 1
 
 # Architectures
 x86 = 0
