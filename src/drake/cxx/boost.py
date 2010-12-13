@@ -21,6 +21,18 @@ class Boost:
                 self.cfg = Config()
                 self.cfg.add_system_include_path('%s/include' % self.prefix)
 
+                self.cfg_test = Config()
+                self.cfg_test.flag('-lboost_unit_test_framework')
+
+                self.cfg_thread = Config()
+                self.cfg_thread.flag('-lboost_thread')
+
+                self.cfg_system = Config()
+                self.cfg_system.flag('-lboost_system')
+
+                self.cfg_filesystem = Config()
+                self.cfg_filesystem.flag('-lboost_filesystem')
+
                 return
 
         raise Exception('unable to find boost/version.hpp in %s' % ', '.join(test))
@@ -28,3 +40,19 @@ class Boost:
     def config(self):
 
         return self.cfg
+
+    def config_test(self):
+
+        return self.cfg_test
+
+    def config_thread(self):
+
+        return self.cfg_thread
+
+    def config_system(self):
+
+        return self.cfg_system
+
+    def config_filesystem(self):
+
+        return self.cfg_filesystem
