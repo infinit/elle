@@ -979,40 +979,54 @@ options = {
     '-j'    : jobs_set,
 }
 
-def run(args):
-    args = args[1:]
+def run(root, *cfg):
 
-    mode = modes_['build']
-    i = 0
+    try:
 
-    while True:
+        print '%s: Entering directory `%s\'' % (sys.argv[0], os.getcwd())
+        set_srctree(root)
+        root = raw_include('drakefile', *cfg)
 
-        if i < len(args):
-            arg = args[i]
+        args = sys.argv[1:]
 
-            if arg in options:
-                options[arg](args[i + 1])
-                i += 2
-                continue
+        mode = modes_['build']
+        i = 0
 
-            if arg[0:2] == '--':
+        while True:
 
-                arg = arg[2:]
+            if i < len(args):
+                arg = args[i]
 
-                if arg in modes_:
-                    mode = modes_[arg]
-                else:
-                    raise Exception('Unknown option: %s.' % arg)
+                if arg in options:
+                    options[arg](args[i + 1])
+                    i += 2
+                    continue
+
+                if arg[0:2] == '--':
+
+                    arg = arg[2:]
+
+                    if arg in modes_:
+                        mode = modes_[arg]
+                    else:
+                        raise Exception('Unknown option: %s.' % arg)
+                    i += 1
+
+            nodes = []
+            while i < len(args) and args[i][0:2] != '--':
+                nodes.append(node(args[i]))
                 i += 1
+            mode(nodes)
 
-        nodes = []
-        while i < len(args) and args[i][0:2] != '--':
-            nodes.append(node(args[i]))
-            i += 1
-        mode(nodes)
+            if i == len(args):
+                break
 
-        if i == len(args):
-            break
+    except Exception, e:
+        print '%s: %s' % (sys.argv[0], e)
+        exit(1)
+    except KeyboardInterrupt:
+        print '%s: interrupted.' % sys.argv[0]
+        exit(1)
 
 # Architectures
 x86 = 0
