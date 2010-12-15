@@ -17,10 +17,15 @@ SELF="$0"
 ROOT="$(dirname $0)"
 export PYTHONPATH="$PWD/$ROOT/../src:$PYTHONPATH"
 
-for test in $(find . -name 'drake-build.py'); do
+for test in $(find * -name 'drake-build.py' -not -path '*/.test/*'); do
     (
         echo -n "${purple}${test}:${white} "
-        cd $(dirname "$test")
+
+        dir="$(dirname "$test")/.test"
+        rm -rf "$dir"
+        mkdir "$dir"
+        cp -r "$(dirname "$test")"/* $dir
+        cd "$dir"
         ./drake-build.py > out.log 2> err.log
         rv=$?
         echo $rv > rv.log
