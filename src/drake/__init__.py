@@ -71,9 +71,6 @@ class Scheduler:
         for thread in threads:
             thread.join()
 
-scheduler = Scheduler(2)
-
-
 class Coroutine:
 
     def __init__(self, routine, name):
@@ -81,7 +78,7 @@ class Coroutine:
         self.routine = [routine]
         self.name = name
         self._done = False
-        scheduler.add(self)
+        scheduler().add(self)
 
     def __str__(self):
 
@@ -950,7 +947,7 @@ def command_add(name, action):
 def build(nodes):
     for node in all_if_none(nodes):
         Coroutine(node.build_coro(), name = str(node))
-    scheduler.run()
+    scheduler().run()
 command_add('build', build)
 
 def clean(nodes):
@@ -963,6 +960,24 @@ def dot_cmd(nodes):
         dot(node)
 command_add('dot', dot_cmd)
 
+JOBS = 1
+SCHEDULER = None
+
+def scheduler():
+    global JOBS, SCHEDULER
+    if SCHEDULER is None:
+        SCHEDULER = Scheduler(JOBS)
+    return SCHEDULER
+
+def jobs_set(n):
+    global JOBS, SCHEDULER
+    assert SCHEDULER is None
+    JOBS = int(n)
+
+options = {
+    '--jobs': jobs_set,
+    '-j'    : jobs_set,
+}
 
 def run(args):
     args = args[1:]
@@ -974,6 +989,12 @@ def run(args):
 
         if i < len(args):
             arg = args[i]
+
+            if arg in options:
+                options[arg](args[i + 1])
+                i += 2
+                continue
+
             if arg[0:2] == '--':
 
                 arg = arg[2:]
