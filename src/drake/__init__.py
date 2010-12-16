@@ -343,9 +343,27 @@ class BaseNodeType(type):
 
     __metaclass__ = BaseNodeTypeType
 
-    def __call__(*arg):
+    def __call__(c, *args):
 
-        return type.__call__(*arg)
+        print c, args
+        try:
+            return type.__call__(c, *args)
+        except NodeRedefinition, e:
+            assert e.sym in BaseNode.nodes
+            node = BaseNode.nodes[e.sym]
+            assert node.__class__ is c
+            return node
+
+class NodeRedefinition(Exception):
+
+    def __init__(self, sym):
+
+        Exception.__init__(self)
+        self.sym = sym
+
+    def __str__(self):
+
+        return 'node redefinition: %s' % self.sym
 
 class BaseNode(object):
 
@@ -357,13 +375,14 @@ class BaseNode(object):
 
     def __init__(self, sym_path, src_path):
 
+        if str(src_path) in BaseNode.nodes:
+            raise NodeRedefinition(sym_path)
         self.sym_path = sym_path
         self.src_path = src_path
         self.uid = BaseNode.uid
         BaseNode.uid += 1
         self.builder = None
         self.srctree = srctree()
-        assert (str(self.id())) not in BaseNode.nodes
         BaseNode.nodes[str(self.id())] = self
         self.consumers = []
 
