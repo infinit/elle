@@ -326,12 +326,34 @@ def path_build(path):
 def path_src(path):
     return srctree() / path_build(path)
 
+class BaseNodeTypeType(type):
 
-class BaseNode:
+    node_types = {}
+
+    def __call__(c, name, *arg):
+
+        res = type.__call__(c, name, *arg)
+        k = '%s.%s' % (res.__module__, res.__name__)
+        BaseNodeTypeType.node_types[k] = res
+        return res
+
+        return type.__call__(*arg)
+
+class BaseNodeType(type):
+
+    __metaclass__ = BaseNodeTypeType
+
+    def __call__(*arg):
+
+        return type.__call__(*arg)
+
+class BaseNode(object):
 
     nodes = {}
     uid = 0
     extensions = {}
+
+    __metaclass__ = BaseNodeType
 
     def __init__(self, sym_path, src_path):
 
@@ -614,10 +636,7 @@ class Builder:
 
     def get_type(self, tname):
 
-        parts = tname.split('.')
-        modname = '.'.join(parts[:-1])
-        cname = parts[-1]
-        return __import__(modname, globals(), locals(), [cname], -1).__dict__[cname]
+        return BaseNodeTypeType.node_types[tname]
 
     def run(self):
 
