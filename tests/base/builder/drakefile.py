@@ -1,6 +1,6 @@
 import drake
 
-drake.run = False
+run = False
 
 class FooBuilder(drake.Builder):
 
@@ -13,10 +13,11 @@ class FooBuilder(drake.Builder):
 
   def execute(self):
 
+    global run
     f = open(str(self.dst), 'w')
     print >> f, 'foo'
     f.close()
-    drake.run = True
+    run = True
     return True
 
 def configure():
