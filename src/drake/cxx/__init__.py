@@ -531,7 +531,7 @@ class Object(Node):
 
 Node.extensions['o'] = Object
 
-class Lib(Node):
+class Binary(Node):
 
     def __init__(self, path, sources, tk, cfg):
 
@@ -576,51 +576,27 @@ class Lib(Node):
                 raise Exception('invalid source for a library: %s' % source)
             self.src_add(obj, tk, cfg)
 
-class DynLib(Lib):
+class DynLib(Binary):
 
     def __init__(self, path, sources, tk, cfg):
 
-        Lib.__init__(self, tk.libname_dyn(cfg, path), sources, tk, cfg)
+        Binary.__init__(self, tk.libname_dyn(cfg, path), sources, tk, cfg)
         DynLibLinker(self.sources, self, self.tk, self.cfg)
 
-class StaticLib(Lib):
+class StaticLib(Binary):
 
     def __init__(self, path, sources, tk, cfg):
 
-        Lib.__init__(self, tk.libname_static(cfg, path), sources, tk, cfg)
+        Binary.__init__(self, tk.libname_static(cfg, path), sources, tk, cfg)
         StaticLibLinker(self.sources, self, self.tk, self.cfg)
 
-class Executable(Node):
+class Executable(Binary):
 
     def __init__(self, path, sources, tk, cfg):
 
         path = tk.exename(cfg, path)
-
-        Node.__init__(self, path)
-
-        self.toolkit = tk
-        self.config = cfg
-        self.sources = []
-
-        for source in sources:
-            self.source_add(source)
-
-        Linker(self.sources, self, tk, cfg)
-
-    def source_add(self, source):
-
-        if source.__class__ == Object:
-            self.sources.append(source)
-        elif source.__class__ == StaticLib:
-            self.sources.append(source)
-        elif source.__class__ == Source:
-            o = Object(source, self.toolkit, self.config)
-            self.source_add(o)
-        elif source.__class__ == Header:
-            pass
-        else:
-            self.builder = True # Hack to get the right path in error message
-            raise Exception('invalid source type for executable %s: %s' % (self, source))
+        Binary.__init__(self, path, sources, tk, cfg)
+        Linker(self.sources, self, self.tk, self.cfg)
 
 def deps_merge(nodes):
 
