@@ -31,6 +31,11 @@ class Scheduler:
         self.waiting_coro_lock = threading.Semaphore(0)
         self.ncoro = 0
         self.jobs = jobs
+        self.__running = False
+
+    def running(self):
+
+        return self.__running
 
     def add(self, coro):
 
@@ -40,6 +45,7 @@ class Scheduler:
 
     def run(self):
 
+        self.__running = True
         sem = threading.Semaphore(1)
         self.die = False
 
@@ -70,6 +76,7 @@ class Scheduler:
             thread.start()
         for thread in threads:
             thread.join()
+        self.__running = False
 
 class Coroutine:
 
@@ -477,15 +484,11 @@ class Node(BaseNode):
 
     def build(self):
 
-        debug('Building %s.' % self, DEBUG_TRACE)
-        with indentation():
-            if self.builder is None:
-                if not self.path().exists():
-                    raise Exception('no builder to make %s' % self)
-                return
-
-            for everything in self.builder.run():
-                # Execute the full coro
+        if not scheduler().running():
+            c = Coroutine(self.build_coro(), name = str(self))
+            scheduler().run()
+        else:
+            for everything in self.build_coro():
                 pass
 
     def build_coro(self):

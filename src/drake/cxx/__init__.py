@@ -1,3 +1,4 @@
+import re
 from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug
 
 # FIXME: Factor node and builder for executable and staticlib
@@ -374,7 +375,6 @@ class Compiler(Builder):
 
     def dependencies(self):
 
-        return
         debug('dependencies')
 
         deps = mkdeps(self.src, 0, self.config, {},
