@@ -4,5 +4,5 @@
 
 void test()
 {
-  std::cerr << "test!" << std::endl;
+  std::cout << MESSAGE << "!" << std::endl;
 }

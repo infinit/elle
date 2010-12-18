@@ -1,7 +1,6 @@
-#include "test.hh"
+void test();
 
 int main()
 {
-  test();
   test();
 }
