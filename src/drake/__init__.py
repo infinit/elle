@@ -345,7 +345,6 @@ class BaseNodeType(type):
 
     def __call__(c, *args):
 
-        print c, args
         try:
             return type.__call__(c, *args)
         except NodeRedefinition, e:
