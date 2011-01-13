@@ -77,12 +77,14 @@ class Scheduler:
                         self.waiting_coro_lock.release()
                     else:
                         self.ncoro -= 1
-
-        threads = [threading.Thread(target = job) for i in range(self.jobs)]
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
+        if JOBS == 1:
+            job()
+        else:
+            threads = [threading.Thread(target = job) for i in range(self.jobs)]
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
         self.__running = False
         if self.__exception is not None:
             raise self.__exception[1], None, self.__exception[2]
@@ -509,7 +511,11 @@ class Node(BaseNode):
                     raise Exception('no builder to make %s' % self)
                 return
 
-            yield self.builder.run()
+            if JOBS == 1:
+                for everything in self.builder.run():
+                    pass
+            else:
+                yield self.builder.run()
 
 
     def __setattr__(self, name, value):
@@ -670,6 +676,7 @@ class Builder:
 
     def run(self):
 
+        global JOBS
         debug('Running %s.' % self, DEBUG_TRACE_PLUS)
 
         # If we were already executed, just skip
@@ -717,7 +724,11 @@ class Builder:
         debug('Build static dependencies')
         with indentation():
             for node in self.srcs.values():
-                coroutines.append(Coroutine(node.build_coro(), name = str(node)))
+                if JOBS == 1:
+                    for everything in node.build_coro():
+                        pass
+                else:
+                    coroutines.append(Coroutine(node.build_coro(), name = str(node)))
 
         # Build dynamic dependencies
         debug('Build dynamic dependencies')
@@ -725,13 +736,18 @@ class Builder:
             for path in self.dynsrc:
                 try:
                     node = self.dynsrc[path]
-                    coroutines.append(Coroutine(node.build_coro(), name = str(node)))
+                    if JOBS == 1:
+                        for everything in node.build_coro():
+                            pass
+                    else:
+                        coroutines.append(Coroutine(node.build_coro(), name = str(node)))
                 except Exception, e:
                     debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
 
-        for coro in coroutines:
-            yield coro_join(coro)
+        if JOBS != 1:
+            for coro in coroutines:
+                yield coro_join(coro)
 
         # If any target is missing, we must rebuild.
         if not execute:
@@ -994,9 +1010,14 @@ def command_add(name, action):
     modes_[name] = action
 
 def build(nodes):
-    for node in all_if_none(nodes):
-        Coroutine(node.build_coro(), name = str(node))
-    scheduler().run()
+    if JOBS == 1:
+        for node in all_if_none(nodes):
+            for everything in node.build_coro():
+                pass
+    else:
+        for node in all_if_none(nodes):
+            Coroutine(node.build_coro(), name = str(node))
+        scheduler().run()
 command_add('build', build)
 
 def clean(nodes):
