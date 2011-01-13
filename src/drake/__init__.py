@@ -32,6 +32,7 @@ class Scheduler:
         self.ncoro = 0
         self.jobs = jobs
         self.__running = False
+        self.__exception = None
 
     def running(self):
 
@@ -51,6 +52,8 @@ class Scheduler:
 
         def job():
             while True:
+                if self.__exception is not None:
+                    break
                 with sem:
                     if self.ncoro == 0:
                         self.die = True
@@ -63,7 +66,11 @@ class Scheduler:
                 with sem:
                     coro = self.coroutines[0]
                     del self.coroutines[0]
-                res = coro.step()
+                res = None
+                try:
+                    res = coro.step()
+                except Exception, e:
+                    self.__exception = sys.exc_info()
                 with sem:
                     if res:
                         self.coroutines.append(coro)
@@ -77,6 +84,8 @@ class Scheduler:
         for thread in threads:
             thread.join()
         self.__running = False
+        if self.__exception is not None:
+            raise self.__exception[1], None, self.__exception[2]
 
 class Coroutine:
 
