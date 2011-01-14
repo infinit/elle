@@ -54,6 +54,7 @@ class Qt:
     def plug(self, tk):
 
         tk.hook_bin_deps_add(self.hook_bin_deps)
+        tk.hook_bin_src_add(self.hook_bin_src)
         tk.qt = self
 
     moc_re = re.compile('Q_OBJECT')
@@ -69,6 +70,15 @@ class Qt:
                     break
             if found:
                 self.moc_file(linker, header)
+
+    def hook_bin_src(self, src):
+
+        if isinstance(src, Ui):
+            p = Path(src.src_path)
+            p.extension = '%s.hh' % p.extension
+            res = Header(p)
+            Uic(self, src, res)
+            return res
 
     def moc_file(self, linker, header):
         p = Path(header.src_path)
@@ -119,3 +129,27 @@ class Moc(Builder):
 
         return self.cmd('Moc %s' % self.tgt, '%s/bin/moc %s -o %s', self.qt.prefix, self.src, self.tgt)
 
+
+class Ui(Node):
+
+    def __init__(self, path):
+
+        Node.__init__(self, path)
+
+Node.extensions['ui'] = Ui
+
+
+class Uic(Builder):
+
+    name = 'Qt UI compilation'
+
+    def __init__(self, qt, src, tgt):
+
+        Builder.__init__(self, [src], [tgt])
+        self.qt = qt
+        self.src = src
+        self.tgt = tgt
+
+    def execute(self):
+
+        return self.cmd('Uic %s' % self.tgt, '%s/bin/uic %s -o %s', self.qt.prefix, self.src, self.tgt)
