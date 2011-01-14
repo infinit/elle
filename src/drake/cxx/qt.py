@@ -86,24 +86,17 @@ class Qt:
         src = node(p)
         if src.builder is None:
             Moc(self, header, src)
-        obj_path = Path(p)
-        obj_path.extension = 'o'
-        obj = None
-        if obj_path in Node.nodes:
-            obj = node(obj_path)
-        else:
-            obj = Object(src, linker.toolkit, linker.config)
+        obj = Object(src, linker.toolkit, linker.config)
         linker.add_dynsrc(deps_handler_name, obj)
 
-def deps_handler(builder, path_obj, data):
+def deps_handler(builder, path_obj, t, data):
 
     if path_obj in Node.nodes:
         return node(path_obj)
     path_src = Path(path_obj)
-    path_src.extension = 'cc'
+    path_src.extension = 'moc.cc'
     src = node(path_src)
     path_header = Path(path_obj)
-    path_header.extension = ''
     path_header.extension = 'hh'
     header = node(path_header)
     Moc(builder.toolkit.qt, header, src)
