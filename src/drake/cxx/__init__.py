@@ -12,6 +12,7 @@ class Toolkit:
         self.includes = []
         self._hook_object_deps = []
         self._hook_bin_deps = []
+        self._hook_bin_src = []
 
     @classmethod
     def default(self):
@@ -33,6 +34,14 @@ class Toolkit:
     def hook_bin_deps(self):
 
         return self._hook_bin_deps
+
+    def hook_bin_src_add(self, f):
+
+        self._hook_bin_src.append(f)
+
+    def hook_bin_src(self):
+
+        return self._hook_bin_src
 
     # def include(self, path):
 
@@ -571,6 +580,10 @@ class Binary(Node):
             for obj in source.sources:
                 self.sources.append(obj)
         else:
+            for hook in tk.hook_bin_src():
+                res = hook(source)
+                if res is not None:
+                    self.src_add(res, tk, cfg)
             obj = source.produced_direct()
             if obj is None:
                 raise Exception('invalid source for a library: %s' % source)
