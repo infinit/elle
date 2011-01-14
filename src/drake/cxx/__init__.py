@@ -94,7 +94,7 @@ class GccToolkit(Toolkit):
 
         return '%s %s%s%s%s %s -o %s' % \
                (self.cxx,
-                concatenate(cfg.flags),
+                concatenate(cfg.ldflags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
                 concatenate(cfg.libs, '-l'),
@@ -220,6 +220,7 @@ class Config:
             self.lib_paths = {}
             self.libs = {}
             self.flags = []
+            self.ldflags = []
             self._framework = {}
             self._defines = {}
         else:
@@ -229,6 +230,7 @@ class Config:
             self.lib_paths = clone(model.lib_paths)
             self.libs = clone(model.libs)
             self.flags = clone(model.flags)
+            self.ldflags = clone(model.ldflags)
             self._framework = clone(model._framework)
             self._defines = clone(model._defines)
 
@@ -242,6 +244,10 @@ class Config:
     def flag(self, f):
 
         self.flags.append(f)
+
+    def ldflag(self, f):
+
+        self.ldflags.append(f)
 
     def framework_add(self, name):
 
@@ -305,6 +311,7 @@ class Config:
         res.lib_paths.update(rhs.lib_paths)
         res.libs.update(rhs.libs)
         res.flags += rhs.flags
+        res.ldflags += rhs.ldflags
         return res
 
 def deps_handler(builder, path, t, data):
