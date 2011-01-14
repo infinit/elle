@@ -714,7 +714,7 @@ class Builder:
                             debug('File %s is unknown, calling handler.' % path, DEBUG_DEPS)
                             node = handler(self, path, self.get_type(depfile.sha1s()[path][1]), None)
 
-                        debug('Adding %s to our sources.' % path, DEBUG_DEPS)
+                        debug('Adding %s to our sources.' % node, DEBUG_DEPS)
                         self.add_dynsrc(f, node, None)
 
 
