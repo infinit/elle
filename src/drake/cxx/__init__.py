@@ -536,7 +536,11 @@ class Object(Node):
         self.toolkit = tk
         self.cfg = cfg
         path = clone(source.sym_path)
-        path.extension = tk.object_extension()
+        path.extension_strip_last_component()
+        if len(path.extension):
+            path.extension += '.%s' % tk.object_extension()
+        else:
+            path.extension = tk.object_extension()
         Node.__init__(self, path)
 
         Compiler(source, self, tk, cfg)
