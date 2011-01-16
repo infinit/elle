@@ -42,6 +42,10 @@ class Qt:
                     self.cfg_gui.add_system_include_path(self.prefix / 'include' / subdir / 'QtGui')
                     self.cfg.lib('QtGui%s' % lib_suffix)
 
+                    self.cfg_xml = Config()
+                    self.cfg_xml.add_system_include_path(self.prefix / 'include' / subdir / 'QtXml')
+                    self.cfg.lib('QtXml%s' % lib_suffix)
+
                     return
 
         raise Exception('unable to find %s in %s' % (beacon, ', '.join(test)))
