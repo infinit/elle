@@ -1102,7 +1102,8 @@ def run(root, *cfg):
 x86 = 0
 
 # OSes
-linux = 0
-macos = 1
-windows = 2
+android = 0
+linux = 1
+macos = 2
+windows = 3
 
