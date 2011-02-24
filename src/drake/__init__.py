@@ -460,6 +460,10 @@ class BaseNode(object):
 
         return self.src_path
 
+    def __str__(self):
+
+        return str(self.path())
+
     def id(self):
 
         return self.src_path
@@ -571,11 +575,6 @@ class Node(BaseNode):
 
 
     def __repr__(self):
-
-        return str(self.path())
-
-
-    def __str__(self):
 
         return str(self.path())
 
