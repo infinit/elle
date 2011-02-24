@@ -936,11 +936,11 @@ class Expander(Builder):
 
         return self.__target
 
-def shell_escape(str):
+def shell_escape(s):
 
     # FIXME: escape only if needed
     # FIXME: complete that
-    return '"%s"' % str
+    return '"%s"' % str(s).replace('"', '\\"')
 
 _prefix = Path('.')
 
