@@ -1,5 +1,5 @@
 import re
-from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug
+from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug, Expander
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -601,6 +601,13 @@ class Binary(Node):
         elif isinstance(source, DynLib):
             self.sources.append(source)
         else:
+            for consumer in source.consumers:
+                if isinstance(consumer, Expander):
+                    try:
+                        self.src_add(consumer.target(), tk, cfg)
+                        return
+                    except Exception:
+                        pass
             for hook in tk.hook_bin_src():
                 res = hook(source)
                 if res is not None:
