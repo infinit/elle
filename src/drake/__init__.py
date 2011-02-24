@@ -617,6 +617,7 @@ class Builder:
 
         assert srcs.__class__ == list
         self.srcs = {}
+        self.__vsrcs = {}
         for src in srcs:
             self.add_src(src)
 #        self.srcs = srcs
@@ -727,7 +728,7 @@ class Builder:
         # Build static dependencies
         debug('Build static dependencies')
         with indentation():
-            for node in self.srcs.values():
+            for node in self.srcs.values() + self.__vsrcs.values():
                 if JOBS == 1:
                     for everything in node.build_coro():
                         pass
@@ -831,6 +832,12 @@ class Builder:
 
         self.srcs[str(src.path())] = src
         src.consumers.append(self)
+
+
+    def add_virtual_src(self, src):
+
+        self.__vsrcs[str(src.path())] = src
+        # src.consumers.append(self)
 
 
     def all_srcs(self):
