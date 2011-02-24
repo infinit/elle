@@ -1,8 +1,9 @@
-import copy, os, hashlib, platform, re, subprocess, sys, threading, time, types
+import os, hashlib, platform, re, subprocess, sys, threading, time, types, shutil
+from copy import deepcopy
 
 def clone(o):
 
-    return copy.deepcopy(o)
+    return deepcopy(o)
 
 
 class Exception(Exception):
@@ -469,6 +470,11 @@ class Node(BaseNode):
         if path.__class__ == str:
             path = Path(path)
         BaseNode.__init__(self, path, prefix() / path)
+
+
+    def clone(self, path):
+
+        return self.__class__(path)
 
 
     def hash(self):
@@ -1119,6 +1125,32 @@ def run(root, *cfg):
     except KeyboardInterrupt:
         print '%s: interrupted.' % sys.argv[0]
         exit(1)
+
+class CopyBuilder(Builder):
+
+    def __init__(self, fr, to):
+
+        self.__from = fr
+        self.__to = fr.clone(Path(to) / fr.src_path.basename())
+        self.__to.builder = None
+        Builder.__init__(self, [self.__from], [self.__to])
+
+    def to(self):
+
+        return self.__to
+
+    def execute(self):
+
+        self.output('Copy %s' % self.__to,
+                    'Copy %s to %s' % (self.__from, self.__to))
+        # FIXME: errors!
+        shutil.copyfile(str(self.__from), str(self.__to))
+        return True
+
+
+def copy(fr, to):
+
+    return CopyBuilder(fr, to).to()
 
 # Architectures
 x86 = 0

@@ -570,6 +570,9 @@ class Binary(Node):
         for source in sources:
             self.src_add(source, self.tk, self.cfg)
 
+    def clone(self, path):
+
+        return Binary(path, self.sources, self.tk, self.cfg)
 
     def src_add(self, source, tk, cfg):
 
