@@ -985,7 +985,15 @@ def include(path, *args, **kwargs):
     path = Path(path)
     previous_prefix = _prefix
     _prefix = _prefix / path
-    res = raw_include(str(previous_prefix / path / 'drakefile.py'), *args, **kwargs)
+    drakefile = None
+    names = ['drakefile', 'drakefile.py']
+    for name in names:
+        if path_src(name).exists():
+            drakefile = previous_prefix / path / name
+            break
+    if drakefile is None:
+        raise Exception('cannot find %s or %s in %s' % (', '.join(names[:-1]), names[-1], path))
+    res = raw_include(str(drakefile), *args, **kwargs)
     _prefix = previous_prefix
     return res
 
