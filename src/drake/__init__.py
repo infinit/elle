@@ -315,8 +315,10 @@ class DepFile:
 
     def up_to_date(self):
 
-        for path in self._sha1:
-            assert str(path) in Node.nodes
+        for path in self._sha1.keys():
+            if path not in Node.nodes:
+                del self._sha1[path]
+                continue
             h = node(path).hash()
             if self._sha1[path][0] != h:
                 debug('Execution needed because hash is outdated: %s.' % path, DEBUG_DEPS)
