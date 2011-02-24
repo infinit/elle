@@ -910,12 +910,12 @@ class Expander(Builder):
         self.matcher = matcher
         self.missing_fatal = missing_fatal
         self.source = source
-        self.target = target
+        self.__target = target
 
     def execute(self):
 
-        self.output('Expand %s to %s' % (self.source, self.target),
-                    'Expand %s' % self.target)
+        self.output('Expand %s to %s' % (self.source, self.__target),
+                    'Expand %s' % self.__target)
         vars = {}
         for d in self.dicts:
             vars.update(dict(d))
@@ -929,9 +929,12 @@ class Expander(Builder):
                     print 'Missing expansion: %s' % key
                     return False
 
-        print >> open(str(self.target.path()), 'w'), content
+        print >> open(str(self.__target.path()), 'w'), content
         return True
 
+    def target(self):
+
+        return self.__target
 
 def shell_escape(str):
 
