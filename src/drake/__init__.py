@@ -1058,6 +1058,19 @@ def dot_cmd(nodes):
         dot(node)
 command_add('dot', dot_cmd)
 
+def dot_show_cmd(nodes):
+    if not len(nodes):
+        print '%s: dot-show: give me some nodes to show.' % sys.argv[0]
+    for node in nodes:
+        p = subprocess.Popen('dot -Tpng | xv -', shell = True, stdin = subprocess.PIPE)
+        stdout = sys.stdout
+        sys.stdout = p.stdin
+        dot(node)
+        p.communicate()
+        sys.stdout = stdout
+
+command_add('dot-show', dot_show_cmd)
+
 JOBS = 1
 SCHEDULER = None
 
