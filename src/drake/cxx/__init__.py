@@ -612,10 +612,11 @@ class Binary(Node):
                 res = hook(source)
                 if res is not None:
                     self.src_add(res, tk, cfg)
-            obj = source.produced_direct()
-            if obj is None:
-                raise Exception('invalid source for a library: %s' % source)
-            self.src_add(obj, tk, cfg)
+                    return
+            # obj = source.produced_direct()
+            # if obj is None:
+            raise Exception('invalid source for a library: %s' % source)
+            # self.src_add(obj, tk, cfg)
 
 class DynLib(Binary):
 
