@@ -951,6 +951,9 @@ class Expander(Builder):
                  matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
                  missing_fatal = True):
 
+        if not isinstance(dicts, list):
+            dicts = [dicts]
+
         if target is None:
             target = Path(source.sym_path)
             target.extension_strip_last_component()
