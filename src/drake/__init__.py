@@ -25,6 +25,7 @@ if 'DRAKE_DEBUG' in os.environ:
 DEBUG_TRACE = 1
 DEBUG_TRACE_PLUS = 2
 DEBUG_DEPS = 2
+DEBUG_SCHED = 3
 
 INDENT = 0
 
@@ -42,6 +43,9 @@ class Scheduler:
         self.jobs = jobs
         self.__running = False
         self.__exception = None
+        self.__sem = threading.Semaphore(1)
+        self.__local = threading.local()
+        self.__local.i = -1
 
     def running(self):
 
@@ -49,6 +53,8 @@ class Scheduler:
 
     def add(self, coro):
 
+        with self.__sem:
+            debug('%s: new coroutine: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
         self.coroutines.append(coro)
         self.ncoro += 1
         self.waiting_coro_lock.release()
@@ -56,40 +62,58 @@ class Scheduler:
     def run(self):
 
         self.__running = True
-        sem = threading.Semaphore(1)
         self.die = False
 
-        def job():
+        def job(i):
+            self.__local.i = i
             while True:
+                # If we have a pending exception, quit
                 if self.__exception is not None:
+                    with self.__sem:
+                        debug('%s: pending exception, dying' % self.__local.i, DEBUG_SCHED)
                     break
-                with sem:
+                # If there are no more coroutines
+                with self.__sem:
                     if self.ncoro == 0:
+                        debug('%s: no more coroutine, dying' % self.__local.i, DEBUG_SCHED)
+                        # Tell all jobs they must die
                         self.die = True
+                        # Wake everyone
                         for i in range(self.jobs - 1):
                             self.waiting_coro_lock.release()
+                        # Quit
                         return
+                # Lock one coroutine slot
                 self.waiting_coro_lock.acquire()
+                # If we must die, do so
                 if self.die:
+                    with self.__sem:
+                        debug('%s: scheduler is dying, dying too' % self.__local.i, DEBUG_SCHED)
                     return
-                with sem:
+                # Fetch our coroutine
+                with self.__sem:
                     coro = self.coroutines[0]
                     del self.coroutines[0]
                 res = None
                 try:
+                    # Run one step of our coroutine
+                    with self.__sem:
+                        debug('%s: step %s' % (self.__local.i, coro.name), DEBUG_SCHED)
                     res = coro.step()
                 except Exception, e:
                     self.__exception = sys.exc_info()
-                with sem:
+                with self.__sem:
                     if res:
+                        debug('%s: pushing coroutine back: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
                         self.coroutines.append(coro)
                         self.waiting_coro_lock.release()
                     else:
+                        debug('%s: coroutine ended: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
                         self.ncoro -= 1
         if JOBS == 1:
-            job()
+            job(0)
         else:
-            threads = [threading.Thread(target = job) for i in range(self.jobs)]
+            threads = [threading.Thread(target = job, args=[i]) for i in range(self.jobs)]
             for thread in threads:
                 thread.start()
             for thread in threads:
