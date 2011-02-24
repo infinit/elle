@@ -1125,6 +1125,8 @@ def run(root, *cfg):
     except KeyboardInterrupt:
         print '%s: interrupted.' % sys.argv[0]
         exit(1)
+    print '%s: Leaving directory `%s\'' % (sys.argv[0], os.getcwd())
+
 
 class Copy(Builder):
 
