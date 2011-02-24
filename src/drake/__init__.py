@@ -397,7 +397,7 @@ class BaseNode(object):
     def __init__(self, sym_path, src_path):
 
         if str(src_path) in BaseNode.nodes:
-            raise NodeRedefinition(sym_path)
+            raise NodeRedefinition(str(src_path))
         self.sym_path = sym_path
         self.src_path = src_path
         self.uid = BaseNode.uid
