@@ -74,7 +74,7 @@ class GccToolkit(Toolkit):
             if v is None:
                 return '-D%s' % name
             else:
-                return '-D%s=%s' % (name, v)
+                return '-D%s=%s' % (name, shell_escape(v))
         defines = ' '.join(map(print_define, cfg.defines().items()))
         system_includes = ' '.join(map(lambda i: '-I %s' % shell_escape(i), cfg.system_include_path()))
         local_includes  = ' '.join(map(lambda i: '-I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.local_include_path()))
