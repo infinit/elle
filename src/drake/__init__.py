@@ -1126,12 +1126,15 @@ def run(root, *cfg):
         print '%s: interrupted.' % sys.argv[0]
         exit(1)
 
-class CopyBuilder(Builder):
+class Copy(Builder):
 
-    def __init__(self, fr, to):
+    def __init__(self, fr, to, strip_prefix = None):
 
         self.__from = fr
-        self.__to = fr.clone(Path(to) / fr.src_path.basename())
+        stripped = Path(fr.src_path)
+        if strip_prefix is not None:
+            stripped.strip_prefix(strip_prefix)
+        self.__to = fr.clone(Path(to) / stripped)
         self.__to.builder = None
         Builder.__init__(self, [self.__from], [self.__to])
 
@@ -1148,7 +1151,9 @@ class CopyBuilder(Builder):
         return True
 
 
-def copy(fr, to):
+def copy(fr, to, strip_prefix = None):
+
+    return Copy(fr, to, strip_prefix = strip_prefix).to()
 
     return CopyBuilder(fr, to).to()
 
