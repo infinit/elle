@@ -1141,8 +1141,8 @@ class CopyBuilder(Builder):
 
     def execute(self):
 
-        self.output('Copy %s' % self.__to,
-                    'Copy %s to %s' % (self.__from, self.__to))
+        self.output('Copy %s to %s' % (self.__from, self.__to),
+                    'Copy %s' % self.__to,)
         # FIXME: errors!
         shutil.copyfile(str(self.__from), str(self.__to))
         return True
