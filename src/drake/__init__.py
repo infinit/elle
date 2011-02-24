@@ -474,13 +474,27 @@ class BaseNode(object):
 
     def build(self):
 
-        return
+        if not scheduler().running():
+            c = Coroutine(self.build_coro(), name = str(self))
+            scheduler().run()
+        else:
+            for everything in self.build_coro():
+                pass
 
     def build_coro(self):
 
-        # Empty coroutine
-        return
-        yield
+        debug('Building %s.' % self, DEBUG_TRACE)
+        with indentation():
+            if self.builder is None:
+                if not self.path().exists():
+                    raise Exception('no builder to make %s' % self)
+                return
+
+            if JOBS == 1:
+                for everything in self.builder.run():
+                    pass
+            else:
+                yield self.builder.run()
 
     def clean(self):
 
@@ -1215,8 +1229,20 @@ class Rule(VirtualNode):
 
         VirtualNode.__init__(self, name)
         class RuleBuilder(Builder):
-            def execute():
-                return True
+            def run(self):
+                debug('Build static dependencies')
+                coroutines = []
+                with indentation():
+                    for node in self.srcs.values():
+                        if JOBS == 1:
+                            for everything in node.build_coro():
+                                pass
+                        else:
+                            coroutines.append(Coroutine(node.build_coro(), name = str(node)))
+                if JOBS != 1:
+                    for coro in coroutines:
+                        yield coro_join(coro)
+
         RuleBuilder([], [self])
 
     def hash(self):
