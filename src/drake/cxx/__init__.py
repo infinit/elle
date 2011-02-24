@@ -123,6 +123,10 @@ class GccToolkit(Toolkit):
         path = Path(path)
         return path.dirname() / ('lib%s.so' % str(path.basename()))
 
+    def libname_module(self, cfg, path):
+
+        path = Path(path)
+        return path.dirname() / ('%s.so' % str(path.basename()))
 
     def exename(self, cfg, path):
 
@@ -609,6 +613,13 @@ class DynLib(Binary):
     def __init__(self, path, sources, tk, cfg):
 
         Binary.__init__(self, tk.libname_dyn(cfg, path), sources, tk, cfg)
+        DynLibLinker(self.sources, self, self.tk, self.cfg)
+
+class Module(Binary):
+
+    def __init__(self, path, sources, tk, cfg):
+
+        Binary.__init__(self, tk.libname_module(cfg, path), sources, tk, cfg)
         DynLibLinker(self.sources, self, self.tk, self.cfg)
 
 class StaticLib(Binary):
