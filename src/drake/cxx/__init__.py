@@ -1,3 +1,11 @@
+# Copyright (C) 2009-2011, Quentin "mefyl" Hocquet
+#
+# This software is provided "as is" without warranty of any kind,
+# either expressed or implied, including but not limited to the
+# implied warranties of fitness for a particular purpose.
+#
+# See the LICENSE file for more information.
+
 import re
 from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug, Expander
 

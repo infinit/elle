@@ -1,5 +1,12 @@
-from .. import Builder, Node, Path, node
+# Copyright (C) 2009-2011, Quentin "mefyl" Hocquet
+#
+# This software is provided "as is" without warranty of any kind,
+# either expressed or implied, including but not limited to the
+# implied warranties of fitness for a particular purpose.
+#
+# See the LICENSE file for more information.
 
+from .. import Builder, Node, Path, node
 
 class Bison:
 
