@@ -598,6 +598,8 @@ class Binary(Node):
             # Import every object file
             for obj in source.sources:
                 self.sources.append(obj)
+        elif isinstance(source, DynLib):
+            self.sources.append(source)
         else:
             for hook in tk.hook_bin_src():
                 res = hook(source)
