@@ -1176,7 +1176,13 @@ class Copy(Builder):
 
 def copy(fr, to, strip_prefix = None):
 
-    return Copy(fr, to, strip_prefix = strip_prefix).to()
+    if isinstance(fr, list):
+        res = []
+        for node in fr:
+            res.append(copy(node, to, strip_prefix))
+        return res
+    else:
+        return Copy(fr, to, strip_prefix = strip_prefix).to()
 
 class Rule(VirtualNode):
 
