@@ -1098,13 +1098,13 @@ options = {
     '-j'    : jobs_set,
 }
 
-def run(root, *cfg):
+def run(root, *cfg, **kwcfg):
 
     try:
 
         print '%s: Entering directory `%s\'' % (sys.argv[0], os.getcwd())
         set_srctree(root)
-        root = raw_include('drakefile', *cfg)
+        root = raw_include('drakefile', *cfg, **kwcfg)
 
         args = sys.argv[1:]
 
