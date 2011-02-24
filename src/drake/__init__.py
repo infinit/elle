@@ -1157,7 +1157,27 @@ def copy(fr, to, strip_prefix = None):
 
     return Copy(fr, to, strip_prefix = strip_prefix).to()
 
-    return CopyBuilder(fr, to).to()
+class Rule(VirtualNode):
+
+    def __init__(self, name, nodes = []):
+
+        VirtualNode.__init__(self, name)
+        class RuleBuilder(Builder):
+            def execute():
+                return True
+        RuleBuilder([], [self])
+
+    def hash(self):
+
+        return ''
+
+    def __lshift__(self, nodes):
+
+        if isinstance(nodes, list):
+            for node in nodes:
+                self << node
+        else:
+            self.builder.add_src(nodes)
 
 # Architectures
 x86 = 0
