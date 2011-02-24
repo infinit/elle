@@ -261,6 +261,8 @@ class Path:
 
     def strip_prefix(self, rhs):
 
+        if (not isinstance(rhs, Path)):
+            rhs = Path(rhs)
         if self.path[0:len(rhs.path)] != rhs.path:
             raise Exception("%s is not a prefix of %s" % (rhs, self))
         self.path = self.path[len(rhs.path):]
