@@ -33,6 +33,15 @@ class Boost:
                 self.cfg_filesystem = Config()
                 self.cfg_filesystem.lib('boost_filesystem')
 
+                self.cfg_signals = Config()
+                self.cfg_signals.lib('boost_signals')
+
+                self.cfg_date = Config()
+                self.cfg_date.lib('boost_date_time')
+
+                self.cfg_regex = Config()
+                self.cfg_regex.lib('boost_regex')
+
                 return
 
         raise Exception('unable to find boost/version.hpp in %s' % ', '.join(test))
@@ -56,3 +65,15 @@ class Boost:
     def config_filesystem(self):
 
         return self.cfg_filesystem
+
+    def config_signals(self):
+
+        return self.cfg_signals
+
+    def config_date(self):
+
+        return self.cfg_date
+
+    def config_regex(self):
+
+        return self.cfg_regex
