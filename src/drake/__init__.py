@@ -1069,6 +1069,8 @@ def command_add(name, action):
     modes_[name] = action
 
 def build(nodes):
+    if not len(nodes):
+        nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
     if JOBS == 1:
         for node in all_if_none(nodes):
             for everything in node.build_coro():
