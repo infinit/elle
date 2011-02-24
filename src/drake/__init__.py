@@ -958,6 +958,8 @@ class Expander(Builder):
             target = Path(source.sym_path)
             target.extension_strip_last_component()
             target = node(target)
+        else:
+            assert isinstance(target, BaseNode)
 
         Builder.__init__(self, [source] + dicts, [target])
         self.dicts = dicts
