@@ -503,7 +503,7 @@ class Node(BaseNode):
     def path(self):
 
         if self.src_path.absolute:
-            assert self.builder is None
+#            assert self.builder is None
             return self.src_path
 
         if self.builder is None:
