@@ -527,7 +527,7 @@ class Node(BaseNode):
         if name == 'builder' and 'builder' in self.__dict__:
             del self.nodes[str(self.id())]
             self.__dict__[name] = value
-            self.nodes[str(self.path())] = self
+            self.nodes[str(self.id())] = self
         else:
             self.__dict__[name] = value
 
