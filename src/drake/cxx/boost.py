@@ -22,16 +22,16 @@ class Boost:
                 self.cfg.add_system_include_path('%s/include' % self.prefix)
 
                 self.cfg_test = Config()
-                self.cfg_test.flag('-lboost_unit_test_framework')
+                self.cfg_test.lib('boost_unit_test_framework')
 
                 self.cfg_thread = Config()
-                self.cfg_thread.flag('-lboost_thread')
+                self.cfg_thread.lib('boost_thread')
 
                 self.cfg_system = Config()
-                self.cfg_system.flag('-lboost_system')
+                self.cfg_system.lib('boost_system')
 
                 self.cfg_filesystem = Config()
-                self.cfg_filesystem.flag('-lboost_filesystem')
+                self.cfg_filesystem.lib('boost_filesystem')
 
                 return
 
