@@ -37,7 +37,7 @@ class Scheduler:
 
     def __init__(self, jobs = 1):
 
-        self.coroutines = []
+        self.__coroutines = []
         self.waiting_coro_lock = threading.Semaphore(0)
         self.ncoro = 0
         self.jobs = jobs
@@ -55,9 +55,16 @@ class Scheduler:
 
         with self.__sem:
             debug('%s: new coroutine: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
-        self.coroutines.append(coro)
+        self.__coroutines.append(coro)
         self.ncoro += 1
         self.waiting_coro_lock.release()
+
+    def woken_up(self, coro):
+        with self.__sem:
+            debug('%s: coroutine woke up: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
+        self.__coroutines.append(coro)
+        self.waiting_coro_lock.release()
+
 
     def run(self):
 
@@ -83,8 +90,12 @@ class Scheduler:
                             self.waiting_coro_lock.release()
                         # Quit
                         return
+
                 # Lock one coroutine slot
-                self.waiting_coro_lock.acquire()
+                if not self.waiting_coro_lock.acquire(False):
+                    debug('%s: no more coroutine available, sleeping' % self.__local.i, DEBUG_SCHED)
+                    self.waiting_coro_lock.acquire()
+                    debug('%s: woken up' % self.__local.i, DEBUG_SCHED)
                 # If we must die, do so
                 if self.die:
                     with self.__sem:
@@ -92,8 +103,8 @@ class Scheduler:
                     return
                 # Fetch our coroutine
                 with self.__sem:
-                    coro = self.coroutines[0]
-                    del self.coroutines[0]
+                    coro = self.__coroutines[-1]
+                    del self.__coroutines[-1]
                 res = None
                 try:
                     # Run one step of our coroutine
@@ -104,9 +115,12 @@ class Scheduler:
                     self.__exception = sys.exc_info()
                 with self.__sem:
                     if res:
-                        debug('%s: pushing coroutine back: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
-                        self.coroutines.append(coro)
-                        self.waiting_coro_lock.release()
+                        if coro.frozen():
+                            debug('%s: coroutine froze: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
+                        else:
+                            debug('%s: pushing coroutine back: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
+                            self.__coroutines.append(coro)
+                            self.waiting_coro_lock.release()
                     else:
                         debug('%s: coroutine ended: %s' % (self.__local.i, coro.name), DEBUG_SCHED)
                         self.ncoro -= 1
@@ -128,8 +142,14 @@ class Coroutine:
 
         self.routine = [routine]
         self.name = name
-        self._done = False
+        self.__done = False
+        self.__frozen = False
+        self.__waiters = []
         scheduler().add(self)
+
+    def frozen(self):
+
+        return self.__frozen
 
     def __str__(self):
 
@@ -137,15 +157,19 @@ class Coroutine:
 
     def step(self):
 
-        while self._step():
-            if not self.routine:
-                self._done = True
-                return False
+        if not self.__frozen:
+            while self._step():
+                if not self.routine:
+                    self.__done = True
+                    for coro in self.__waiters:
+                        coro.__frozen = False
+                        scheduler().woken_up(coro)
+                    return False
         return True
 
     def done(self):
 
-        return self._done
+        return self.__done
 
     def _step(self):
 
@@ -154,23 +178,25 @@ class Coroutine:
             if isinstance(value, types.GeneratorType):
                 self.routine.append(value)
                 return True
+            if isinstance(value, Coroutine) and not value.done():
+                self.__frozen = True
+                value.__waiters.append(self)
+                return False
             else:
                 return False
         except StopIteration:
             del self.routine[-1]
             return True
 
-def coro_join(coro):
-
-    while not coro.done():
-        yield
+__debug_sem = threading.Semaphore(1)
 
 def debug(msg, lvl = 1):
 
     global DEBUG
     global INDENT
     if lvl <= DEBUG:
-        print >> sys.stderr, '%s%s' % (' ' * INDENT * 2, msg)
+        with __debug_sem:
+            print >> sys.stderr, '%s%s' % (' ' * INDENT * 2, msg)
 
 class indentation:
     def __enter__(self):
@@ -486,8 +512,6 @@ class BaseNode(object):
         debug('Building %s.' % self, DEBUG_TRACE)
         with indentation():
             if self.builder is None:
-                if not self.path().exists():
-                    raise Exception('no builder to make %s' % self)
                 return
 
             if JOBS == 1:
@@ -684,7 +708,8 @@ class Builder:
 
         self._depfiles = {}
         self._depfile = DepFile(self, 'drake')
-        self.built = False
+        self.__built = False
+        self.__built_exception = None
         self.dynsrc = {}
 
 
@@ -736,7 +761,9 @@ class Builder:
         debug('Running %s.' % self, DEBUG_TRACE_PLUS)
 
         # If we were already executed, just skip
-        if self.built:
+        if self.__built:
+            if self.__built_exception is not None:
+                raise self.__built_exception
             debug('Already built in this run.', DEBUG_TRACE_PLUS)
             return
 
@@ -780,6 +807,9 @@ class Builder:
         debug('Build static dependencies')
         with indentation():
             for node in self.srcs.values() + self.__vsrcs.values():
+                if node.builder is None or \
+                        node.builder.__built:
+                    continue
                 if JOBS == 1:
                     for everything in node.build_coro():
                         pass
@@ -792,6 +822,9 @@ class Builder:
             for path in self.dynsrc:
                 try:
                     node = self.dynsrc[path]
+                    if node.builder is None or \
+                            node.builder.__built:
+                        continue
                     if JOBS == 1:
                         for everything in node.build_coro():
                             pass
@@ -803,7 +836,7 @@ class Builder:
 
         if JOBS != 1:
             for coro in coroutines:
-                yield coro_join(coro)
+                yield coro
 
         # If any target is missing, we must rebuild.
         if not execute:
@@ -850,16 +883,18 @@ class Builder:
                         yield y
 
             if not self.execute():
-                raise Exception('%s failed' % self)
+                self.__built = True
+                self.__built_exception = Exception('%s failed' % self)
+                raise self.__built_exception
             for dst in self.dsts:
                 if not dst.path().exists():
                     raise Exception('%s wasn\'t created by %s' % (dst, self))
             self._depfile.update()
             for name in self._depfiles:
                 self._depfiles[name].update()
-            self.built = True
+            self.__built = True
         else:
-            self.built = True
+            self.__built = True
             debug('Everything is up to date.', DEBUG_TRACE_PLUS)
 
 
@@ -1246,7 +1281,7 @@ class Rule(VirtualNode):
                             coroutines.append(Coroutine(node.build_coro(), name = str(node)))
                 if JOBS != 1:
                     for coro in coroutines:
-                        yield coro_join(coro)
+                        yield coro
 
         RuleBuilder([], [self])
 
