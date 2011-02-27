@@ -74,22 +74,20 @@ class Scheduler:
         def job(i):
             self.__local.i = i
             while True:
-                # If we have a pending exception, quit
-                if self.__exception is not None:
-                    with self.__sem:
-                        debug('%s: pending exception, dying' % self.__local.i, DEBUG_SCHED)
-                    break
                 # If there are no more coroutines
                 with self.__sem:
-                    if self.ncoro == 0:
-                        debug('%s: no more coroutine, dying' % self.__local.i, DEBUG_SCHED)
+                    if self.ncoro == 0 or self.__exception is not None:
+                        if self.ncoro == 0:
+                            debug('%s: no more coroutine, dying' % self.__local.i, DEBUG_SCHED)
+                        else:
+                            debug('%s: pending exception, dying' % self.__local.i, DEBUG_SCHED)
                         # Tell all jobs they must die
                         self.die = True
                         # Wake everyone
                         for i in range(self.jobs - 1):
                             self.waiting_coro_lock.release()
                         # Quit
-                        return
+                        break
 
                 # Lock one coroutine slot
                 if not self.waiting_coro_lock.acquire(False):
