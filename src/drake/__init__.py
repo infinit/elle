@@ -577,7 +577,9 @@ class Node(BaseNode):
 
     def name(self):
 
-        return self.src_path
+        res = Path(self.src_path)
+        res.strip_prefix(prefix())
+        return res
 
     def build(self):
 
