@@ -546,7 +546,7 @@ class Node(BaseNode):
 
     def clone(self, path):
 
-        return self.__class__(path)
+        return Node(path)
 
 
     def hash(self):
