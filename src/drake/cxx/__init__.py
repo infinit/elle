@@ -527,6 +527,7 @@ class Source(Node):
 
 Node.extensions['c'] = Source
 Node.extensions['cc'] = Source
+Node.extensions['cpp'] = Source
 Node.extensions['S'] = Source
 
 class Header(Node):
