@@ -455,7 +455,7 @@ class Linker(Builder):
         self.exe = exe
         self.toolkit = tk
         self.config = cfg
-        # This duplicates self.srcs, but preserves the order.
+        # This duplicates self.__sources, but preserves the order.
         self.objs = objs
         Builder.__init__(self, objs, [exe])
 
@@ -489,7 +489,7 @@ class DynLibLinker(Builder):
         self.lib = lib
         self.toolkit = tk
         self.config = cfg
-        # This duplicates self.srcs, but preserves the order.
+        # This duplicates self.__sources, but preserves the order.
         self.objs = objs
         Builder.__init__(self, objs, [lib])
 

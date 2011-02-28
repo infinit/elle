@@ -334,7 +334,7 @@ class DepFile:
 
         self.builder = builder
         self.name = name
-        builder.dsts.sort()
+        builder.targets().sort()
         self._files = {}
         self._sha1 = {}
 
@@ -689,12 +689,12 @@ class Builder:
     def __init__(self, srcs, dsts):
 
         assert srcs.__class__ == list
-        self.srcs = {}
+        self.__sources = {}
         self.__vsrcs = {}
         for src in srcs:
             self.add_src(src)
-#        self.srcs = srcs
-        self.dsts = dsts
+#        self.__sources = srcs
+        self.__targets = dsts
         for dst in dsts:
             if dst.builder is not None:
                 raise Exception('builder redefinition for %s' % dst)
@@ -710,6 +710,13 @@ class Builder:
         self.__built_exception = None
         self.dynsrc = {}
 
+    def sources(self):
+
+        return self.__sources
+
+    def targets(self):
+
+        return self.__targets
 
     def cmd(self, pretty, c, *args):
 
@@ -725,7 +732,7 @@ class Builder:
 
     def cachedir(self):
 
-        path = self.dsts[0].path()
+        path = self.__targets[0].path()
         res = prefix() / path.dirname() / CACHEDIR / path.basename()
         res.mkpath()
         return res
@@ -766,8 +773,8 @@ class Builder:
             return
 
         # The list of static dependencies is now fixed
-        for path in self.srcs:
-            self._depfile.register(self.srcs[path])
+        for path in self.__sources:
+            self._depfile.register(self.__sources[path])
 
         # See Whether we need to execute or not
         execute = False
@@ -785,7 +792,7 @@ class Builder:
                 with indentation():
                     for path in depfile.sha1s():
 
-                        if path in self.srcs or path in self.dynsrc:
+                        if path in self.__sources or path in self.dynsrc:
                             debug('File %s is already in our sources.' % path, DEBUG_DEPS)
                             continue
 
@@ -804,7 +811,7 @@ class Builder:
         # Build static dependencies
         debug('Build static dependencies')
         with indentation():
-            for node in self.srcs.values() + self.__vsrcs.values():
+            for node in self.__sources.values() + self.__vsrcs.values():
                 if node.builder is None or \
                         node.builder.__built:
                     continue
@@ -838,7 +845,7 @@ class Builder:
 
         # If any target is missing, we must rebuild.
         if not execute:
-            for dst in self.dsts:
+            for dst in self.__targets:
                 if not dst.path().exists():
                     debug('Execution needed because of missing target: %s.' % dst.path(), DEBUG_DEPS)
                     execute = True
@@ -848,8 +855,8 @@ class Builder:
 
         # If a new dependency appeared, we must rebuild.
         if not execute:
-            for p in self.srcs:
-                path = self.srcs[p].id()
+            for p in self.__sources:
+                path = self.__sources[p].id()
                 if path not in self._depfile._sha1:
                     debug('Execution needed because a new dependency appeared: %s.' % path, DEBUG_DEPS)
                     execute = True
@@ -884,7 +891,7 @@ class Builder:
                 self.__built = True
                 self.__built_exception = Exception('%s failed' % self)
                 raise self.__built_exception
-            for dst in self.dsts:
+            for dst in self.__targets:
                 if not dst.path().exists():
                     raise Exception('%s wasn\'t created by %s' % (dst, self))
             self._depfile.update()
@@ -903,8 +910,8 @@ class Builder:
 
     def clean(self):
 
-        for path in self.srcs:
-            self.srcs[path].clean()
+        for path in self.__sources:
+            self.__sources[path].clean()
 
 
     def __str__(self):
@@ -914,7 +921,7 @@ class Builder:
 
     def add_src(self, src):
 
-        self.srcs[str(src.path())] = src
+        self.__sources[str(src.path())] = src
         src.consumers.append(self)
 
 
@@ -927,7 +934,7 @@ class Builder:
     def all_srcs(self):
 
         res = []
-        for src in self.srcs.values() + self.dynsrc.values():
+        for src in self.__sources.values() + self.dynsrc.values():
             res.append(src)
             if src.builder is not None:
                 res += src.builder.all_srcs()
@@ -940,7 +947,7 @@ class Builder:
         marks[self] = None
 
         print '  builder_%s [label="%s", shape=rect]' % (self.uid, self.__class__)
-        for node in self.srcs.values() + self.dynsrc.values():
+        for node in self.__sources.values() + self.dynsrc.values():
             if node.dot(marks):
                 print '  node_%s -> builder_%s' % (node.uid, self.uid)
         return True
@@ -1271,7 +1278,7 @@ class Rule(VirtualNode):
                 debug('Build static dependencies')
                 coroutines = []
                 with indentation():
-                    for node in self.srcs.values():
+                    for node in self.sources().values():
                         if JOBS == 1:
                             for everything in node.build_coro():
                                 pass
