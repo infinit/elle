@@ -575,6 +575,10 @@ class Node(BaseNode):
         else:
             return self.src_path
 
+    def name(self):
+
+        return self.src_path
+
     def build(self):
 
         if not scheduler().running():
