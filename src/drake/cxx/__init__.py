@@ -7,7 +7,7 @@
 # See the LICENSE file for more information.
 
 import re
-from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug, Expander
+from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug, FileExpander
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -611,7 +611,7 @@ class Binary(Node):
             self.sources.append(source)
         else:
             for consumer in source.consumers:
-                if isinstance(consumer, Expander):
+                if isinstance(consumer, FileExpander):
                     try:
                         self.src_add(consumer.target(), tk, cfg)
                         return
