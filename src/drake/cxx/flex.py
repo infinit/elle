@@ -49,7 +49,7 @@ class FlexCompiler(Builder):
     self.__source = source
     self.__flex = flex
 
-    base_path = source.src_path
+    base_path = source.name()
     scanner_cc_path = Path(base_path)
     scanner_cc_path.extension = 'cc'
     self.__scanner_cc = node(scanner_cc_path)

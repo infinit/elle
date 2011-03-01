@@ -48,7 +48,7 @@ class BisonCompiler(Builder):
     self.__source = source
     self.__bison = bison
 
-    base_path = source.src_path
+    base_path = source.name()
 
     grammar_cc_path = Path(base_path)
     grammar_cc_path.extension = 'cc'

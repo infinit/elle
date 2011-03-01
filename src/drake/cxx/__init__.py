@@ -344,7 +344,7 @@ def mkdeps(n, lvl, config, marks,
         return []
     marks[str(path)] = True
 
-#    debug('%smkdeps: %s' % (idt, path))
+#    debug.debug('%smkdeps: %s' % (idt, path))
 
     res = f_init(n)
 
@@ -371,13 +371,13 @@ def mkdeps(n, lvl, config, marks,
                     # Not sure of myself though.
                     if test.exists() or node(str(test)).builder is not None:
                         found = unique(include, found, node(test))
-#                        debug('%sfound node: %s' % (idt, test))
+#                        debug.debug('%sfound node: %s' % (idt, test))
 
 
                 test = include_path / include
                 # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
                 if test.exists():
-#                    debug('%sfound file: %s' % (idt, test))
+#                    debug.debug('%sfound file: %s' % (idt, test))
                     found = unique(include, found, node(strip_srctree(test), Header))
 
             if found is not None:
@@ -404,7 +404,7 @@ class Compiler(Builder):
 
     def dependencies(self):
 
-        debug('dependencies')
+        debug.debug('dependencies')
 
         deps = mkdeps(self.src, 0, self.config, {},
                       f_init = lambda n: [n],
@@ -550,7 +550,7 @@ class Object(Node):
         self.source = source
         self.toolkit = tk
         self.cfg = cfg
-        path = deepcopy(source.sym_path)
+        path = Path(source.name())
         path.extension_strip_last_component()
         if len(path.extension):
             path.extension += '.%s' % tk.object_extension()
@@ -595,7 +595,7 @@ class Binary(Node):
             self.sources.append(source)
         elif source.__class__ == Source:
             # FIXME: factor
-            p = Path(source.sym_path)
+            p = Path(source.name())
             p.extension = 'o'
             if str(p) in Node.nodes:
                 o = Node.nodes[p]
@@ -683,7 +683,7 @@ def dot_merge(nodes):
 
     def rec(n, d, marks = {}, skip = False):
         if not skip:
-            print '  node_%s [label="%s"]' % (n.uid, n.sym_path)
+            print '  node_%s [label="%s"]' % (n.uid, n.name())
         for s in d:
             rec(s, d[s], marks)
             k = (n.uid, s.uid)
@@ -698,7 +698,7 @@ def dot_merge(nodes):
     print '  {'
     print '    rank=same'
     for n in deps:
-        print '    node_%s [label="%s"]' % (n.uid, n.sym_path)
+        print '    node_%s [label="%s"]' % (n.uid, n.name())
     print '  }'
     for n in deps:
         rec(n, deps[n], marks, True)
@@ -708,7 +708,7 @@ def dot_spread(nodes):
 
     def rec(n, d, i = 0):
         me = i
-        print '  node_%s [label="%s"]' % (me, n.sym_path)
+        print '  node_%s [label="%s"]' % (me, n.name())
         for s in d:
             si = i + 1
             i = rec(s, d[s], si)
