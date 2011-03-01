@@ -993,35 +993,25 @@ class Dictionary(VirtualNode):
 
 class Expander(Builder):
 
-    def __init__(self, dicts, source, target = None,
-                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
-                 missing_fatal = True):
+    def __init__(self, dicts, sources, target, matcher, missing_fatal):
 
         if not isinstance(dicts, list):
             dicts = [dicts]
 
-        if target is None:
-            target = Path(source.sym_path)
-            target.extension_strip_last_component()
-            target = node(target)
-        else:
-            assert isinstance(target, BaseNode)
-
-        Builder.__init__(self, [source] + dicts, [target])
-        self.dicts = dicts
+        Builder.__init__(self, sources + dicts, [target])
+        self.__dicts = dicts
         self.matcher = matcher
         self.missing_fatal = missing_fatal
-        self.source = source
         self.__target = target
 
     def execute(self):
 
-        self.output('Expand %s to %s' % (self.source, self.__target),
-                    'Expand %s' % self.__target)
+        self.output('Expand %s' % (self.__target))
+
         vars = {}
-        for d in self.dicts:
+        for d in self.__dicts:
             vars.update(dict(d))
-        content = open(str(self.source.path()), 'r').read()
+        content = self.content()
         for match in self.matcher.finditer(content):
             key = match.group(1)
             try:
@@ -1034,9 +1024,92 @@ class Expander(Builder):
         print >> open(str(self.__target.path()), 'w'), content
         return True
 
-    def target(self):
+    def dictionaries(self):
 
-        return self.__target
+        return self.__dicts
+
+
+class FileExpander(Expander):
+
+    def __init__(self, dicts, source, target = None,
+                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
+                 missing_fatal = True):
+
+        self.__source = source
+        if target is None:
+            target = Path(source.sym_path)
+            target.extension_strip_last_component()
+            target = node(target)
+        else:
+            assert isinstance(target, BaseNode)
+
+        Expander.__init__(self,
+                          dicts = dicts,
+                          sources = [source],
+                          target = target,
+                          matcher = matcher,
+                          missing_fatal = missing_fatal)
+
+    def content(self):
+
+        return open(str(self.__source.path()), 'r').read()
+
+    def source(self):
+
+        return self.__source
+
+
+class TextExpander(Expander):
+
+    def __init__(self, dicts, text, target,
+                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
+                 missing_fatal = True):
+
+        self.__text = text
+        assert isinstance(target, BaseNode)
+
+        Expander.__init__(self,
+                          dicts = dicts,
+                          sources = [],
+                          target = target,
+                          matcher = matcher,
+                          missing_fatal = missing_fatal)
+
+    def content(self):
+
+        return self.__text;
+
+    def text(self):
+
+        return self.__text
+
+class FunctionExpander(Expander):
+
+    def __init__(self, dicts, function, target,
+                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
+                 missing_fatal = True):
+
+        self.__function = function
+        assert isinstance(target, BaseNode)
+
+        Expander.__init__(self,
+                          dicts = dicts,
+                          sources = [],
+                          target = target,
+                          matcher = matcher,
+                          missing_fatal = missing_fatal)
+
+    def content(self):
+
+        res = ''
+        for d in self.dictionaries():
+            for key, value in d:
+                res += self.__function(key, value)
+        return res
+
+    def function(self):
+
+        return self.__function
 
 def shell_escape(s):
 
