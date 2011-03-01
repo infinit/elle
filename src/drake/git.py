@@ -13,41 +13,49 @@ class GitVersion(VirtualNode):
     def __init__(self):
 
         VirtualNode.__init__(self, 'git/version')
-        self._author_date = None
-        self._revision    = None
-        self._description = None
-        self._revision    = None
-        self._subject     = None
+        self.__author_date = None
+        self.__revision    = None
+        self.__description = None
+        self.__version    = None
+        self.__message     = None
 
     def hash(self):
 
         return cmd_output('git rev-parse HEAD')[:-1]
 
     def author_date(self):
-        if self._author_date is None:
-            self._author_date = cmd_output('git log --pretty=format:%%ai HEAD^..HEAD')
-        return self._author_date
+        if self.__author_date is None:
+            self.__author_date = cmd_output('git log --pretty=format:%%ai -n 1')
+        return self.__author_date
 
     def description(self):
 
-        if self._description is None:
-            self._description = cmd_output('git describe')[:-1]
-        return self._description
+        if self.__description is None:
+            self.__description = cmd_output('git describe')[:-1]
+        return self.__description
+
+    def version(self):
+
+        if self.__version is None:
+            self.__version = cmd_output('git describe --long')[:-1]
+        return self.__version
 
     def revision(self):
 
-        if self._revision is None:
-            self._revision = cmd_output('git log --pretty=format:%%h HEAD^..HEAD')
-        return self._revision
+        if self.__revision is None:
+            self.__revision = cmd_output('git log --pretty=format:%%h -n 1')
+        return self.__revision
 
-    def subject(self):
+    def message(self):
 
-        if self._subject is None:
-            self._subject = cmd_output('git log --pretty=format:%%s HEAD^..HEAD')
-        return self._subject
+        if self.__message is None:
+            self.__message = cmd_output('git log --pretty=format:%%s -n 1')
+        return self.__message
 
     def __iter__(self):
 
         yield ('git-author-date',  self.author_date())
         yield ('git-description',  self.description())
-        yield ('git-revision', self.revision())
+        yield ('git-version',      self.version())
+        yield ('git-revision',     self.revision())
+        yield ('git-message',      self.message())
