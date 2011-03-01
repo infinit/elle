@@ -8,20 +8,20 @@
 
 import os, hashlib, platform, re, subprocess, sys, threading, time, types, shutil
 from copy import deepcopy
+from debug import (     \
+    DEBUG_DEPS,         \
+    DEBUG_SCHED,        \
+    DEBUG_TRACE,        \
+    DEBUG_TRACE_PLUS,   \
+    debug,              \
+    indentation,        \
+        )               \
+
 
 class Exception(Exception):
     """Base type for any exception thrown within drake."""
     pass
 
-DEBUG = 0
-if 'DRAKE_DEBUG' in os.environ:
-    DEBUG = int(os.environ['DRAKE_DEBUG'])
-DEBUG_TRACE = 1
-DEBUG_TRACE_PLUS = 2
-DEBUG_DEPS = 2
-DEBUG_SCHED = 3
-
-INDENT = 0
 
 RAW = 'DRAKE_RAW' in os.environ
 SILENT = 'DRAKE_SILENT' in os.environ
@@ -179,24 +179,6 @@ class Coroutine:
         except StopIteration:
             del self.routine[-1]
             return True
-
-__debug_sem = threading.Semaphore(1)
-
-def debug(msg, lvl = 1):
-
-    global DEBUG
-    global INDENT
-    if lvl <= DEBUG:
-        with __debug_sem:
-            print >> sys.stderr, '%s%s' % (' ' * INDENT * 2, msg)
-
-class indentation:
-    def __enter__(self):
-        global INDENT
-        INDENT += 1
-    def __exit__(self, type, value, traceback):
-        global INDENT
-        INDENT -= 1
 
 class Path:
 
