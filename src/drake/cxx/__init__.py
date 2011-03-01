@@ -7,7 +7,8 @@
 # See the LICENSE file for more information.
 
 import re
-from .. import ShellCommand, Builder, Node, clone, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug, FileExpander
+from .. import ShellCommand, Builder, Node, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug, FileExpander
+from copy import deepcopy
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -236,15 +237,15 @@ class Config:
             self._framework = {}
             self._defines = {}
         else:
-            self._includes = clone(model._includes)
-            self._local_includes = clone(model._local_includes)
-            self._system_includes = clone(model._system_includes)
-            self.lib_paths = clone(model.lib_paths)
-            self.libs = clone(model.libs)
-            self.flags = clone(model.flags)
-            self.ldflags = clone(model.ldflags)
-            self._framework = clone(model._framework)
-            self._defines = clone(model._defines)
+            self._includes = deepcopy(model._includes)
+            self._local_includes = deepcopy(model._local_includes)
+            self._system_includes = deepcopy(model._system_includes)
+            self.lib_paths = deepcopy(model.lib_paths)
+            self.libs = deepcopy(model.libs)
+            self.flags = deepcopy(model.flags)
+            self.ldflags = deepcopy(model.ldflags)
+            self._framework = deepcopy(model._framework)
+            self._defines = deepcopy(model._defines)
 
     def define(self, name, value = None):
 
@@ -549,7 +550,7 @@ class Object(Node):
         self.source = source
         self.toolkit = tk
         self.cfg = cfg
-        path = clone(source.sym_path)
+        path = deepcopy(source.sym_path)
         path.extension_strip_last_component()
         if len(path.extension):
             path.extension += '.%s' % tk.object_extension()
