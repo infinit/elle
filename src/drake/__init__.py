@@ -1381,6 +1381,22 @@ class Rule(VirtualNode):
         else:
             self.builder.add_src(nodes)
 
+
+def re_map(f, r, s):
+
+  match = re.search(r, s)
+  while match:
+    prefix = s[:match.span()[0]]
+    suffix = s[match.span()[1]:]
+    s = '%s%s%s' % (prefix, f(match.group()), suffix)
+    match = re.search(r, s)
+  return s
+
+def camel_case(s):
+
+  return re_map(lambda s: s[1].capitalize(),
+                re.compile('-[a-zA-Z]'), s)
+
 # Architectures
 x86 = 0
 
