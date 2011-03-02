@@ -7,7 +7,9 @@
 # See the LICENSE file for more information.
 
 import re
-from .. import ShellCommand, Builder, Node, Path, node, prefix, srctree, strip_srctree, Exception, shell_escape, x86, linux, windows, strip_srctree, cmd, command_add, debug, FileExpander
+_OS = __import__('os')
+from .. import ShellCommand, Builder, Node, Path, node, prefix, srctree, Exception, arch, os, cmd, command_add, debug, Expander, FileExpander
+from .. import utils
 from copy import deepcopy
 
 # FIXME: Factor node and builder for executable and staticlib
@@ -52,21 +54,14 @@ class Toolkit:
 
         return self._hook_bin_src
 
-    # def include(self, path):
-
-    #     p = Path(path)
-    #     if not p.absolute:
-    #         p = srctree() / p
-    #     self.includes.append(p)
-
 def concatenate(chunks, prefix = ''):
 
     return ''.join(map(lambda v: ' %s%s' %(prefix, v), chunks))
 
 class GccToolkit(Toolkit):
 
-    platform = x86
-    os = linux
+    arch = arch.x86
+    os = os.linux
 
     def __init__(self, compiler = 'g++'):
 
@@ -83,10 +78,10 @@ class GccToolkit(Toolkit):
             if v is None:
                 return '-D%s' % name
             else:
-                return '-D%s=%s' % (name, shell_escape(v))
+                return '-D%s=%s' % (name, utils.shell_escape(v))
         defines = ' '.join(map(print_define, cfg.defines().items()))
-        system_includes = ' '.join(map(lambda i: '-I %s' % shell_escape(i), cfg.system_include_path()))
-        local_includes  = ' '.join(map(lambda i: '-I %s -I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.local_include_path()))
+        system_includes = ' '.join(map(lambda i: '-I %s' % utils.shell_escape(i), cfg.system_include_path()))
+        local_includes  = ' '.join(map(lambda i: '-I %s -I %s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
         return ' '.join([system_includes, local_includes, defines])
 
     def compile(self, cfg, src, obj):
@@ -144,8 +139,8 @@ class GccToolkit(Toolkit):
 
 class VisualToolkit(Toolkit):
 
-    platform = x86
-    os = windows
+    arch = arch.x86
+    os = os.windows
 
     def __init__(self):
 
@@ -175,9 +170,9 @@ class VisualToolkit(Toolkit):
         path = res[-3]
         lib = res[-2]
         include = res[-1]
-        os.environ['PATH'] = path
-        os.environ['LIB'] = lib
-        os.environ['INCLUDE'] = include
+        _OS.environ['PATH'] = path
+        _OS.environ['LIB'] = lib
+        _OS.environ['INCLUDE'] = include
         shutil.rmtree(str(tmp))
         self.flags = []
 
@@ -188,7 +183,7 @@ class VisualToolkit(Toolkit):
         return 'obj'
 
     def compile(self, cfg, src, obj):
-        includes = ''.join(map(lambda i: ' /I %s /I %s' % (shell_escape(i), shell_escape(strip_srctree(i))), cfg.include_path() + list(self.includes)))
+        includes = ''.join(map(lambda i: ' /I %s /I %s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.include_path() + list(self.includes)))
         return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc%s /Fo%s /c %s' % (' '.join(self.flags), concatenate(cfg.flags), includes, obj, src)
 
     def archive(self, cfg, objs, lib):
@@ -272,7 +267,7 @@ class Config:
 
     def add_local_include_path(self, path):
 
-        path = srctree() / prefix() / Path(path)
+        path = prefix() / Path(path)
         self._local_includes[path] = None
         self._includes[path] = None
 
@@ -351,7 +346,7 @@ def mkdeps(n, lvl, config, marks,
     def unique(include, prev, new):
 
         if prev is not None:
-            raise Exception('two node match inclusion %s: %s and %s' % (include, prev, new))
+            raise Exception('two nodes match inclusion %s: %s and %s' % (include, prev, new))
         return new
 
 
@@ -365,7 +360,8 @@ def mkdeps(n, lvl, config, marks,
             found = None
             for include_path in config.local_include_path():
 
-                test = strip_srctree(include_path) / include
+                name = include_path / include
+                test = name
                 if str(test) in Node.nodes:
                     # Check this is not an old cached dependency from cxx.inclusions.
                     # Not sure of myself though.
@@ -374,11 +370,11 @@ def mkdeps(n, lvl, config, marks,
 #                        debug.debug('%sfound node: %s' % (idt, test))
 
 
-                test = include_path / include
+                test = srctree() / test
                 # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
                 if test.exists():
 #                    debug.debug('%sfound file: %s' % (idt, test))
-                    found = unique(include, found, node(strip_srctree(test), Header))
+                    found = unique(include, found, node(name, Header))
 
             if found is not None:
                 f_add(res, found, mkdeps(found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add))
@@ -612,7 +608,7 @@ class Binary(Node):
             self.sources.append(source)
         else:
             for consumer in source.consumers:
-                if isinstance(consumer, FileExpander):
+                if isinstance(consumer, Expander):
                     try:
                         self.src_add(consumer.target(), tk, cfg)
                         return

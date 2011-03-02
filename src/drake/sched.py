@@ -126,6 +126,10 @@ class Coroutine:
   def __str__(self):
     return 'coro %s' % self.name
 
+  def run(self):
+    while self.routine:
+      self._step()
+
   def step(self):
     if not self.__frozen:
       while self._step():

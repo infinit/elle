@@ -6,7 +6,8 @@
 #
 # See the LICENSE file for more information.
 
-import os, hashlib, platform, re, subprocess, sys, threading, time, types, shutil
+_OS = __import__('os')
+import hashlib, platform, re, subprocess, sys, threading, time, types, shutil
 from copy import deepcopy
 import debug
 from sched import Coroutine, Scheduler
@@ -43,8 +44,8 @@ class NodeRedefinition(Exception):
         return self.__name
 
 
-_RAW = 'DRAKE_RAW' in os.environ
-_SILENT = 'DRAKE_SILENT' in os.environ
+_RAW = 'DRAKE_RAW' in _OS.environ
+_SILENT = 'DRAKE_SILENT' in _OS.environ
 
 
 class Path(object):
@@ -79,8 +80,49 @@ class Path(object):
                 self.__absolute = self.__path[0] == ''
 
     def absolute(self):
-        """Whether this path is absolute."""
+        """Whether this path is absolute.
+
+        >>> Path('.').absolute()
+        False
+        >>> Path('foo/bar').absolute()
+        False
+        >>> Path('/').absolute()
+        True
+        >>> Path('/foo').absolute()
+        True
+        """
         return self.__absolute
+
+    def remove(self, err = False):
+        """Remove the target file.
+
+        err -- Whether this is an error for non-existent file.
+
+        No-op if the file does not exist, unless err is true.
+
+        >>> p = Path('/tmp/.drake.foo')
+        >>> p.touch()
+        >>> p.exists()
+        True
+        >>> p.remove()
+        >>> p.exists()
+        False
+        >>> p.touch()
+        >>> p.remove(True)
+        >>> p.remove(True)
+        Traceback (most recent call last):
+        Exception: Path does not exist: /tmp/.drake.foo
+        """
+        try:
+            _OS.remove(str(self))
+        except OSError, e:
+            if e.errno == 2:
+                if err:
+                    raise Exception('Path does not exist: %s' % str(self))
+            elif e.errno == 21:
+                shutil.rmtree(str(self))
+            else:
+                raise
 
     def __extension_get(self):
         parts = self.__path[-1].split('.')
@@ -107,12 +149,41 @@ class Path(object):
 
                                The extension is the part after the first dot of the basename,
                                or the empty string if there are no dot.
+
+                               >>> Path('foo.txt').extension
+                               'txt'
+                               >>> Path('foo.tar.bz2').extension
+                               'tar.bz2'
+                               >>> Path('foo').extension
+                               ''
+                               >>> p = Path('foo')
+                               >>> p
+                               Path("foo")
+                               >>> p.extension = 'txt'
+                               >>> p
+                               Path("foo.txt")
+                               >>> p.extension = 'tar.bz2'
+                               >>> p
+                               Path("foo.tar.bz2")
                                """)
 
     def extension_strip_last_component(self):
         """Remove the last dot and what follows from the basename.
 
         Does nothing if there is no dot.
+
+        >>> p = Path('foo.tar.bz2')
+        >>> p
+        Path("foo.tar.bz2")
+        >>> p.extension_strip_last_component()
+        >>> p
+        Path("foo.tar")
+        >>> p.extension_strip_last_component()
+        >>> p
+        Path("foo")
+        >>> p.extension_strip_last_component()
+        >>> p
+        Path("foo")
         """
         self.__extension_set('.'.join(self.extension.split('.')[:-1]))
 
@@ -125,27 +196,45 @@ class Path(object):
         return 'Path(\"%s\")' % str(self)
 
     def __lt__(self, rhs):
-        """Arbitrary comparison."""
+        """Arbitrary comparison.
+
+        >>> Path('foo') < Path('foo')
+        False
+        >>> (Path('foo') < Path('bar')) ^ (Path('bar') < Path('foo'))
+        True
+        """
         return str(self) < str(rhs)
 
     def __hash__(self):
-        """Hash value."""
+        """Hash value.
+
+        >>> hash(Path('foo')) == hash(Path('foo'))
+        True
+        """
         return hash(str(self))
 
     def exists(self):
-        """Whether the designed file or directory exists."""
-        return os.path.exists(str(self))
+        """Whether the designed file or directory exists.
+
+        >>> p = Path('/tmp/.drake.foo')
+        >>> p.touch()
+        >>> p.exists()
+        True
+        >>> p.remove()
+        >>> p.exists()
+        False
+        """
+        return _OS.path.exists(str(self))
 
     def basename(self):
         """The filename part of the path.
 
-        This is the path without the dirname.
+        This is the path without the dirname. Throws if the path has
+        no components.
+
 
         >>> Path('foo/bar/baz').basename()
         Path("baz")
-
-        Throws if the path has no components.
-
         >>> Path('').basename()
         Traceback (most recent call last):
         Exception: Cannot take the basename of an empty path.
@@ -157,15 +246,13 @@ class Path(object):
     def dirname(self):
         """The directory part of the path.
 
-        This is the path without the basename.
+        This is the path without the basename. Throws if the path has
+        no components.
 
         >>> Path('foo/bar/baz').dirname()
         Path("foo/bar")
         >>> Path('foo').dirname()
         Path("")
-
-        Throws if the path has no components.
-
         >>> Path('').dirname()
         Traceback (most recent call last):
         Exception: Cannot take the dirname of an empty path.
@@ -177,17 +264,31 @@ class Path(object):
     def touch(self):
         """Create the designed file if it does not exists.
 
-        Creates the parent directories if needed first."""
+        Creates the parent directories if needed first.
+
+        >>> Path('/tmp/.drake').remove()
+        >>> p = Path('/tmp/.drake/.sub/.foo')
+        >>> p.touch()
+        >>> p.exists()
+        True
+        """
         self.dirname().mkpath()
-        if not os.path.exists(str(self)):
+        if not _OS.path.exists(str(self)):
             open(str(self), 'w').close()
 
     def mkpath(self):
         """Create the designed directory.
 
-        Creates the parent directories if needed first."""
-        if not os.path.exists(str(self)):
-            os.makedirs(str(self))
+        Creates the parent directories if needed first.
+
+        >>> Path('/tmp/.drake').remove()
+        >>> p = Path('/tmp/.drake/.sub/')
+        >>> p.mkpath()
+        >>> p.exists()
+        True
+        """
+        if not _OS.path.exists(str(self)):
+            _OS.makedirs(str(self))
 
     def __eq__(self, rhs):
         """Whether self equals rhs.
@@ -251,12 +352,20 @@ class Path(object):
         >>> p.strip_prefix("foo/bar")
         >>> p
         Path("baz/quux")
+        >>> p = Path('/foo/bar/baz')
+        >>> p.absolute()
+        True
+        >>> p.strip_prefix('/foo')
+        >>> p
+        Path("bar/baz")
+        >>> p.absolute()
+        False
 
         Throws if rhs is not a prefix of self.
 
         >>> p.strip_prefix("quux")
         Traceback (most recent call last):
-        Exception: quux is not a prefix of baz/quux
+        Exception: quux is not a prefix of bar/baz
         """
         if (not isinstance(rhs, Path)):
             rhs = Path(rhs)
@@ -265,6 +374,7 @@ class Path(object):
         self.__path = self.__path[len(rhs.__path):]
         if not self.__path:
             self.__path = ['.']
+        self.__absolute = self.__path[0] == ''
 
 _CACHEDIR = Path('.drake')
 
@@ -439,7 +549,7 @@ class BaseNode(object):
         BaseNode.uid += 1
         self.builder = None
         self.srctree = srctree()
-        BaseNode.nodes[str(self.name())] = self
+        BaseNode.nodes[str(name)] = self
         self.consumers = []
 
     def name(self):
@@ -470,7 +580,11 @@ class BaseNode(object):
 
     def __str__(self):
         """String representation."""
-        return str(self.path())
+        return str(self.name())
+
+    def __repr__(self):
+        """Python representation."""
+        return '%s(%s)' % (self.__class__.drake_type(), self.name())
 
     def hash(self):
         """Hash for this node.
@@ -489,12 +603,12 @@ class BaseNode(object):
         Take necessary action to ensure this node is up to date. That
         is, roughly, run this node runner.
         """
-        if not scheduler().running():
-            c = Coroutine(self.build_coro(), name = str(self))
-            scheduler().run()
-        else:
-            for everything in self.build_coro():
-                pass
+        # if not _scheduler().running():
+        #     c = Coroutine(self.build_coro(), name = str(self), )
+        #     _scheduler().run()
+        # else:
+        c = Coroutine(self.build_coro(), str(self), _scheduler())
+        c.run()
 
     def build_coro(self):
         """Coroutine to build this node."""
@@ -502,12 +616,7 @@ class BaseNode(object):
         with debug.indentation():
             if self.builder is None:
                 return
-
-            if _JOBS == 1:
-                for everything in self.builder.run():
-                    pass
-            else:
-                yield self.builder.run()
+            yield self.builder.run()
 
     def clean(self):
         """Clean recursively for this node sources."""
@@ -516,7 +625,7 @@ class BaseNode(object):
 
 class VirtualNode(BaseNode):
 
-    """BaseNode that do not represent a file.
+    """BaseNode that does not represent a file.
 
     These may be configuration or meta information such as the version
     system revision, used by other nodes as sources. They are also
@@ -542,7 +651,10 @@ class Node(BaseNode):
     def __init__(self, path):
         """Construct a Node with the given path."""
         self._hash = None
-        BaseNode.__init__(self, prefix() / Path(path))
+        path = Path(path)
+        if not path.absolute():
+            path = prefix() / path
+        BaseNode.__init__(self, path)
 
     def clone(self, path):
         """Clone of this node, with an other path."""
@@ -558,7 +670,7 @@ class Node(BaseNode):
         BaseNode.clean(self)
         if self.builder is not None and self.path().exists():
             print 'Deleting %s' % self
-            os.remove(str(self.path()))
+            _OS.remove(str(self.path()))
 
     def path(self):
         """Filesystem path to node file, relative to the root of the build directory."""
@@ -570,15 +682,6 @@ class Node(BaseNode):
         else:
             return self.name()
 
-    def build(self):
-        """Build this node."""
-        if not scheduler().running():
-            c = Coroutine(self.build_coro(), name = str(self))
-            scheduler().run()
-        else:
-            for everything in self.build_coro():
-                pass
-
     def build_coro(self):
         """Coroutine that builds this node."""
         debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
@@ -587,19 +690,14 @@ class Node(BaseNode):
                 if not self.path().exists():
                     raise Exception('no builder to make %s' % self)
                 return
-
-            if _JOBS == 1:
-                for everything in self.builder.run():
-                    pass
-            else:
-                yield self.builder.run()
+            yield self.builder.run()
 
     def __setattr__(self, name, value):
         """Adapt the node path is the builder is changed."""
         if name == 'builder' and 'builder' in self.__dict__:
-            del self.nodes[str(self.name())]
+            del self.nodes[self._BaseNode__name]
             self.__dict__[name] = value
-            self.nodes[str(self.name())] = self
+            self.nodes[self._BaseNode__name] = self
         else:
             self.__dict__[name] = value
 
@@ -660,7 +758,7 @@ def cmd(fmt, *args):
     Expansion handles shell escaping.
     """
     command = _cmd_escape(fmt, *args)
-    return os.system(command) == 0
+    return _OS.system(command) == 0
 
 
 def cmd_output(fmt, *args):
@@ -746,7 +844,7 @@ class Builder:
 
     def cachedir(self):
         """The cachedir that stores dependency files."""
-        path = self.__targets[0].path()
+        path = self.__targets[0].name()
         res = prefix() / path.dirname() / _CACHEDIR / path.basename()
         res.mkpath()
         return res
@@ -799,7 +897,7 @@ class Builder:
 
         # Reload dynamic dependencies
         if not execute:
-            for f in os.listdir(str(self.cachedir())):
+            for f in _OS.listdir(str(self.cachedir())):
                 if f == 'drake':
                     continue
                 debug.debug('Considering dependencies file %s' % f, debug.DEBUG_DEPS)
@@ -830,14 +928,10 @@ class Builder:
         debug.debug('Build static dependencies')
         with debug.indentation():
             for node in self.__sources.values() + self.__vsrcs.values():
-                if node.builder is None or \
-                        node.builder.__built:
-                    continue
                 if _JOBS == 1:
-                    for everything in node.build_coro():
-                        pass
+                    yield node.build_coro()
                 else:
-                    coroutines.append(Coroutine(node.build_coro(), str(node), scheduler()))
+                    coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
 
         # Build dynamic dependencies
         debug.debug('Build dynamic dependencies')
@@ -849,10 +943,9 @@ class Builder:
                             node.builder.__built:
                         continue
                     if _JOBS == 1:
-                        for everything in node.build_coro():
-                            pass
+                        yield node.build_coro()
                     else:
-                        coroutines.append(Coroutine(node.build_coro(), str(node), scheduler()))
+                        coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
                 except Exception, e:
                     debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
@@ -861,10 +954,10 @@ class Builder:
             for coro in coroutines:
                 yield coro
 
-        # If any target is missing, we must rebuild.
+        # If any non-virtual target is missing, we must rebuild.
         if not execute:
             for dst in self.__targets:
-                if not dst.path().exists():
+                if isinstance(dst, Node) and not dst.path().exists():
                     debug.debug('Execution needed because of missing target: %s.' % dst.path(), debug.DEBUG_DEPS)
                     execute = True
 
@@ -902,6 +995,7 @@ class Builder:
             debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
             with debug.indentation():
                 for node in self.dynsrc.values():
+                    # FIXME: parallelize
                     for y in node.build_coro():
                         yield y
 
@@ -909,8 +1003,10 @@ class Builder:
                 self.__built = True
                 self.__built_exception = Exception('%s failed' % self)
                 raise self.__built_exception
+
+            # Check every non-virtual target was built.
             for dst in self.__targets:
-                if not dst.path().exists():
+                if isinstance(dst, Node) and not dst.path().exists():
                     raise Exception('%s wasn\'t created by %s' % (dst, self))
             self._depfile.update()
             for name in self._depfiles:
@@ -931,8 +1027,8 @@ class Builder:
 
     def clean(self):
         """Clean source nodes recursively."""
-        for path in self.__sources:
-            self.__sources[path].clean()
+        for node in self.__sources.values() + self.__vsrcs.values():
+            node.clean()
 
 
     def __str__(self):
@@ -980,53 +1076,152 @@ class Builder:
 
 class ShellCommand(Builder):
 
-    def __init__(self, srcs, dsts, fmt, *args):
+    """A builder that runs a shell command.
 
-        Builder.__init__(self, srcs, dsts)
-        self.fmt = fmt
-        self.args = args
+    This builder is a commodity to create a builder that simply runs a
+    shell commands, or to subclass so you don't need to reimplement
+    execute.
+
+    >>> path = Path("/tmp/.drake.foo")
+    >>> n = node("/tmp/.drake.foo")
+    >>> b = ShellCommand([], [n], "touch /tmp/.drake.foo")
+    >>> path.remove()
+    >>> n.build()
+    touch /tmp/.drake.foo
+    >>> path.exists()
+    True
+    """
+
+    def __init__(self, sources, targets, command, pretty = None):
+        """Create a builder that runs command.
+
+        sources -- The list of source nodes, or the source node if there's only one.
+        targets -- The list of target nodes, or the target node if there's only one.
+        command -- The shell command to run.
+        pretty  -- Optional pretty printing.
+        """
+        Builder.__init__(self, sources, targets)
+        self.__command = command
+        self.__pretty = pretty
 
     def execute(self):
-
-        return self.cmd(self.fmt, *self.args)
+        """Run the command given at construction time."""
+        return self.cmd(self.__pretty, self.__command)
 
 
 class Dictionary(VirtualNode):
 
-    def __init__(self, name, content = {}):
+    """A virtual node that represents a dictionary.
 
-        VirtualNode.__init__(self, 'dictionaries/%s' % name)
+    This kind of node is useful to represent a set of key/value
+    association that can be used as in input source for a builder,
+    such as configuration.
+    """
+
+    def __init__(self, name, content = {}):
+        """Build a dictionary with given content.
+
+        name    -- The node name.
+        content -- The content, as a dictionary.
+        """
+        VirtualNode.__init__(self, '%s' % name)
         self.content = content
 
     def hash(self):
-
+        """Hash value."""
         # FIXME: sha1 of the string repr ain't optimal
         items = self.content.items()
         items.sort()
         return hashlib.sha1(str(items)).hexdigest()
 
     def __iter__(self):
-
+        """Iterate over the (key, value) pairs."""
         return iter(self.content.items())
 
 
 class Expander(Builder):
 
-    def __init__(self, dicts, sources, target, matcher, missing_fatal):
+    """A builder that expands content of Dictionary in text.
 
+    This class becomes useful when subclass define the content()
+    method, that returns text in which to expand values. See
+    FileExpander, TextExpander and FunctionExpander.
+
+    >>> class MyExpander(Expander):
+    ...     def __init__(self, content, *args, **kwargs):
+    ...         Expander.__init__(self, *args, **kwargs)
+    ...         self.__content = content
+    ...     def content(self):
+    ...         return self.__content
+    >>> colors  = Dictionary('colors',  { 'apple-color':  'red', 'banana-color':  'yellow' })
+    >>> lengths = Dictionary('lengths', { 'apple-length': 10,    'banana-length': 15 })
+    >>> target = Node('/tmp/.drake.expander.1')
+    >>> builder = MyExpander('Apples are @apple-color@, bananas are @banana-color@.', [colors, lengths], target)
+    >>> target.path().remove()
+    >>> target.build()
+    Expand /tmp/.drake.expander.1
+    >>> open('/tmp/.drake.expander.1').read()
+    'Apples are red, bananas are yellow.\\n'
+
+    The expanded pattern can me configured by setting a custom
+    matcher. The matcher must be a regexp that contains at least one
+    group, it is searched in the content, then the match of the first
+    group is used as a key to search source dictionaries, and the
+    whole match is replaced with the obtained value. For instance, the
+    default '@([a-zA-Z0-9_-]+)@' will match autoconf-style variables,
+    '@name@'. Here is an example with shell-style variables $name
+    (except dashes are accepted):
+
+    >>> target = Node('/tmp/.drake.expander.2')
+    >>> builder = MyExpander('Bananas are $banana-length centimeters long.',
+    ...                      [colors, lengths], target, matcher = '\\$([a-zA-Z0-9][-_a-zA-Z0-9]*)')
+    >>> target.path().remove()
+    >>> target.build()
+    Expand /tmp/.drake.expander.2
+    >>> open('/tmp/.drake.expander.2').read()
+    'Bananas are 15 centimeters long.\\n'
+
+    The behavior in case a key is not found can be adjusted with
+    missing_fatal:
+
+    >>> target = Node('/tmp/.drake.expander.3')
+    >>> builder = MyExpander('Kiwis are @kiwi-color@.',
+    ...                      [colors, lengths], target)
+    >>> target.path().remove()
+    >>> target.build()
+    Traceback (most recent call last):
+    Exception: MyExpander failed
+    >>> target.builder = None
+    >>> builder = MyExpander('Kiwis are @kiwi-color@.',
+    ...                      [colors, lengths], target, missing_fatal = False)
+    >>> target.build()
+    Expand /tmp/.drake.expander.3
+    >>> open('/tmp/.drake.expander.3').read()
+    'Kiwis are @kiwi-color@.\\n'
+    """
+
+    def __init__(self, dicts, target, sources = [],
+                 matcher = '@([a-zA-Z0-9_-]+)@', missing_fatal = True):
+        """Create and expander that expands the given dictionaries.
+
+        dicts         -- The dictionaries from which to expand keys.
+        sources       -- The list of additional source nodes, or the source node if there's only one.
+        target        -- The target Node where to store the result.
+        matcher       -- A regexp to find the patterns to expand in the content.
+        missing_fatal -- Whether a key in the content missing from the dictionaries is fatal.
+        """
         if not isinstance(dicts, list):
             dicts = [dicts]
 
         Builder.__init__(self, sources + dicts, [target])
         self.__dicts = dicts
-        self.matcher = matcher
+        self.matcher = re.compile(matcher)
         self.missing_fatal = missing_fatal
         self.__target = target
 
     def execute(self):
-
+        """Expand the keys in the content and write to target file."""
         self.output('Expand %s' % (self.__target))
-
         vars = {}
         for d in self.__dicts:
             vars.update(dict(d))
@@ -1044,84 +1239,110 @@ class Expander(Builder):
         return True
 
     def dictionaries(self):
-
+        """The list of source dictionary."""
         return self.__dicts
 
     def target(self):
+        """The target Node."""
         return self.__target
 
 class FileExpander(Expander):
+    """An Expander that takes its content from a file.
 
-    def __init__(self, dicts, source, target = None,
-                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
-                 missing_fatal = True):
+    >>> source = Node('/tmp/.drake.file.expander.source')
+    >>> print >> open(str(source.path()), 'w'), 'Expand @this@.'
+    >>> target = Node('/tmp/.drake.file.expander.target')
+    >>> builder = FileExpander(source, [Dictionary('d', { 'this': 'that' })], target)
+    >>> target.path().remove()
+    >>> target.build()
+    Expand /tmp/.drake.file.expander.target
+    >>> open('/tmp/.drake.file.expander.target').read()
+    'Expand that.\\n\\n'
+    """
+    def __init__(self, source, dicts, target = None, *args, **kwargs):
+        """Create a file expander.
 
+        source       -- The file to expand.
+        args, kwargs -- Rest of the arguments for Expander constructor.
+        """
         self.__source = source
+        assert isinstance(source, BaseNode)
         if target is None:
             target = Path(source.name())
             target.extension_strip_last_component()
             target = node(target)
         else:
             assert isinstance(target, BaseNode)
-
         Expander.__init__(self,
                           dicts = dicts,
                           sources = [source],
                           target = target,
-                          matcher = matcher,
-                          missing_fatal = missing_fatal)
+                          *args, **kwargs)
 
     def content(self):
-
+        """The content of the source file."""
         return open(str(self.__source.path()), 'r').read()
 
     def source(self):
-
+        """The source node."""
         return self.__source
 
 
 class TextExpander(Expander):
+    """An Expander with a static content.
 
-    def __init__(self, dicts, text, target,
-                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
-                 missing_fatal = True):
+    >>> target = Node('/tmp/.drake.text.expander')
+    >>> builder = TextExpander('Expand @this@.', [Dictionary('d', { 'this': 'that' })], target)
+    >>> target.path().remove()
+    >>> target.build()
+    Expand /tmp/.drake.text.expander
+    >>> open('/tmp/.drake.text.expander').read()
+    'Expand that.\\n'
+    """
+    def __init__(self, text, *args, **kwargs):
+        """Create a text expander.
 
+        text         -- The text to expand.
+        args, kwargs -- Rest of the arguments for Expander constructor.
+        """
         self.__text = text
-        assert isinstance(target, BaseNode)
-
-        Expander.__init__(self,
-                          dicts = dicts,
-                          sources = [],
-                          target = target,
-                          matcher = matcher,
-                          missing_fatal = missing_fatal)
+        Expander.__init__(self, *args, **kwargs)
 
     def content(self):
-
+        """The text."""
         return self.__text;
 
     def text(self):
-
+        """The text."""
         return self.__text
 
 class FunctionExpander(Expander):
 
-    def __init__(self, dicts, function, target,
-                 matcher = re.compile('@([a-zA-Z0-9_-]+)@'),
-                 missing_fatal = True):
+    """An Expander that maps a function on the dictionaries content.
 
+    >>> target = Node('/tmp/.drake.function.expander')
+    >>> version = Dictionary('version', { 'version_major': 4, 'version_minor': 2 })
+    >>> def define(k, v):
+    ...     return '# define %s %s\\n' % (k.upper(), v)
+    >>> builder = FunctionExpander(define, [version], target)
+    >>> target.path().remove()
+    >>> target.build()
+    Expand /tmp/.drake.function.expander
+    >>> open('/tmp/.drake.function.expander').read()
+    '# define VERSION_MINOR 2\\n# define VERSION_MAJOR 4\\n\\n'
+    """
+
+    def __init__(self, function, *args, **kwargs):
+        """Create a function expander.=
+
+        function     -- The function to apply on key, values pairs.
+        args, kwargs -- Rest of the arguments for Expander constructor.
+        """
         self.__function = function
-        assert isinstance(target, BaseNode)
-
-        Expander.__init__(self,
-                          dicts = dicts,
-                          sources = [],
-                          target = target,
-                          matcher = matcher,
-                          missing_fatal = missing_fatal)
+        Expander.__init__(self, *args, **kwargs)
 
     def content(self):
-
+        """The content obtained by mapping the function on the dictionaries."""
         res = ''
         for d in self.dictionaries():
             for key, value in d:
@@ -1129,55 +1350,46 @@ class FunctionExpander(Expander):
         return res
 
     def function(self):
-
+        """The function."""
         return self.__function
-
-def shell_escape(s):
-
-    # FIXME: escape only if needed
-    # FIXME: complete that
-    return '"%s"' % str(s).replace('"', '\\"')
 
 _prefix = Path('')
 
 def prefix():
+    """The current prefix.
+
+    The prefix is the path from the root of the build tree to the
+    current drakefile build tree. This is '.' for the root drakefile.
+    """
     return _prefix
 
 _srctree = Path('')
 
-def set_srctree(path):
-
-    global _srctree
-    _srctree = Path(path)
-
 def srctree():
-
+    """Path to the root of the source tree, from the root of the build tree."""
     global _srctree
     return _srctree
 
-def strip_srctree(path):
-
-    global _srctree
-    res = Path(path)
-    if not path.absolute():
-        res.strip_prefix(_srctree)
-    return res
-
-class Module:
+class _Module:
 
     def __init__(self, globals):
-
         self.globals = globals
 
     def __getattr__(self, name):
-
         return self.globals[name]
 
 
 def include(path, *args, **kwargs):
+    """Include a sub-drakefile.
 
+    path         -- Path to the directory where the drakefile is located.
+    args, kwargs -- Arguments for the drakefile's configure.
+
+    Load the drakefile found in the specified directory, merge its
+    graph with ours and return an object that has all variables
+    defined globally by the sub-drakefile as attributes.
+    """
     global _prefix
-
     path = Path(path)
     previous_prefix = _prefix
     _prefix = _prefix / path
@@ -1189,16 +1401,16 @@ def include(path, *args, **kwargs):
             break
     if drakefile is None:
         raise Exception('cannot find %s or %s in %s' % (', '.join(names[:-1]), names[-1], path))
-    res = raw_include(str(drakefile), *args, **kwargs)
+    res = _raw_include(str(drakefile), *args, **kwargs)
     _prefix = previous_prefix
     return res
 
 
-def raw_include(path, *args, **kwargs):
+def _raw_include(path, *args, **kwargs):
 
     g = {}
     execfile(str(srctree() / path), g)
-    res = Module(g)
+    res = _Module(g)
     res.configure(*args, **kwargs)
     return res
 
@@ -1214,81 +1426,100 @@ def dot(node, *filters):
 
 _MODES = {}
 
-def all_if_none(nodes):
-
-    # Copy it, since it will change during iteration. This shouldn't
-    # be a problem, all newly inserted will be dependencies of the
-    # already existing nodes. Right?
-    if len(nodes):
-        return nodes
-    else:
-        return list(Node.nodes.values())
-
 def command_add(name, action):
+    """Register a new command available from the command line.
+
+    name   -- The name of the command.
+    action -- The function called by the command.
+
+    Using --name node_list on the command line will call action with
+    the node list as argument.
+    """
     _MODES[name] = action
 
-def build(nodes):
-    if not len(nodes):
-        nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
-    if _JOBS == 1:
+def _register_commands():
+
+    def all_if_none(nodes):
+        # Copy it, since it will change during iteration. This shouldn't
+        # be a problem, all newly inserted will be dependencies of the
+        # already existing nodes. Right?
+        if len(nodes):
+            return nodes
+        else:
+            return list(Node.nodes.values())
+
+    def build(nodes):
+        if not len(nodes):
+            nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
+        coroutines = []
+        for node in nodes:
+            coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
+
+        if _JOBS == 1:
+            for c in coroutines:
+                c.run()
+        else:
+            _scheduler().run()
+    command_add('build', build)
+
+    def clean(nodes):
         for node in all_if_none(nodes):
-            for everything in node.build_coro():
-                pass
-    else:
+            node.clean()
+    command_add('clean', clean)
+
+    def dot_cmd(nodes):
         for node in all_if_none(nodes):
-            Coroutine(node.build_coro(), str(node), scheduler())
-        scheduler().run()
-command_add('build', build)
+            dot(node)
+    command_add('dot', dot_cmd)
 
-def clean(nodes):
-    for node in all_if_none(nodes):
-        node.clean()
-command_add('clean', clean)
+    def dot_show_cmd(nodes):
+        if not len(nodes):
+            print '%s: dot-show: give me some nodes to show.' % sys.argv[0]
+        for node in nodes:
+            p = subprocess.Popen('dot -Tpng | xv -', shell = True, stdin = subprocess.PIPE)
+            stdout = sys.stdout
+            sys.stdout = p.stdin
+            dot(node)
+            p.communicate()
+            sys.stdout = stdout
+    command_add('dot-show', dot_show_cmd)
 
-def dot_cmd(nodes):
-    for node in all_if_none(nodes):
-        dot(node)
-command_add('dot', dot_cmd)
-
-def dot_show_cmd(nodes):
-    if not len(nodes):
-        print '%s: dot-show: give me some nodes to show.' % sys.argv[0]
-    for node in nodes:
-        p = subprocess.Popen('dot -Tpng | xv -', shell = True, stdin = subprocess.PIPE)
-        stdout = sys.stdout
-        sys.stdout = p.stdin
-        dot(node)
-        p.communicate()
-        sys.stdout = stdout
-
-command_add('dot-show', dot_show_cmd)
+_register_commands()
 
 _JOBS = 1
 _SCHEDULER = None
 
-def scheduler():
+def _scheduler():
     global _JOBS, _SCHEDULER
     if _SCHEDULER is None:
         _SCHEDULER = Scheduler(_JOBS)
     return _SCHEDULER
 
-def jobs_set(n):
+def _jobs_set(n):
     global _JOBS, _SCHEDULER
     assert _SCHEDULER is None
     _JOBS = int(n)
 
 _OPTIONS = {
-    '--jobs': jobs_set,
-    '-j'    : jobs_set,
+    '--jobs': _jobs_set,
+    '-j'    : _jobs_set,
 }
 
 def run(root, *cfg, **kwcfg):
+    """Run a drakefile.
 
+    root       -- The directory where the drakefile is located.
+    cfg, kwcfg -- Arguments for the drakeile's configure.
+
+    Load the drakefile located in root, configure it with the given
+    arguments and run all action specified on the command line
+    (sys.argv).
+    """
+    global _srctree
     try:
-
-        print '%s: Entering directory `%s\'' % (sys.argv[0], os.getcwd())
-        set_srctree(root)
-        root = raw_include('drakefile', *cfg, **kwcfg)
+        print '%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd())
+        _srctree = Path(root)
+        root = _raw_include('drakefile', *cfg, **kwcfg)
 
         args = sys.argv[1:]
 
@@ -1330,72 +1561,131 @@ def run(root, *cfg, **kwcfg):
     except KeyboardInterrupt:
         print '%s: interrupted.' % sys.argv[0]
         exit(1)
-    print '%s: Leaving directory `%s\'' % (sys.argv[0], os.getcwd())
+    print '%s: Leaving directory `%s\'' % (sys.argv[0], _OS.getcwd())
 
 
 class Copy(Builder):
 
-    def __init__(self, fr, to, strip_prefix = None):
+    """Builder to copy files.
 
-        self.__from = fr
-        stripped = Path(fr.name())
-        if strip_prefix is not None:
-            stripped.strip_prefix(strip_prefix)
-        self.__to = fr.clone(Path(to) / stripped)
-        self.__to.builder = None
-        Builder.__init__(self, [self.__from], [self.__to])
+    See the convenience function copy to copy multiple files easily.
 
-    def to(self):
+    >>> source = node('/tmp/.drake.Copy.source')
+    >>> print >> open(str(source.path()), 'w'), 'Content.'
+    >>> builder = Copy(source, '/tmp/.drake.Copy.dest')
+    >>> target = builder.target()
+    >>> target
+    /tmp/.drake.Copy.dest
+    >>> target.path().remove()
+    >>> builder.target().build()
+    Copy /tmp/.drake.Copy.dest
+    >>> open(str(target.path()), 'r').read()
+    'Content.\\n'
+    """
 
-        return self.__to
+    def __init__(self, source, to):
+        """Create a copy builder.
+
+        source -- Node to copy.
+        to     -- Destination path.
+        """
+        self.__source = source
+        self.__target = source.clone(Path(to))
+        self.__target.builder = None
+        Builder.__init__(self, [self.__source], [self.__target])
+
+    def target(self):
+        """The target node."""
+        return self.__target
 
     def execute(self):
-
-        self.output('Copy %s to %s' % (self.__from, self.__to),
-                    'Copy %s' % self.__to,)
+        """Copy the source to the target."""
+        self.output('Copy %s to %s' % (self.__source.path(), self.__target.path()),
+                    'Copy %s' % self.__target,)
         # FIXME: errors!
-        shutil.copyfile(str(self.__from), str(self.__to))
+        shutil.copyfile(str(self.__source.path()), str(self.__target.path()))
         return True
 
 
-def copy(fr, to, strip_prefix = None):
+def copy(sources, to, strip_prefix = None):
+    """Convenience function to create Copy builders.
 
-    if isinstance(fr, list):
+    When copying large file trees, iterating and creating Copy
+    builders manually by computing the destination path can be a
+    hassle. This convenience function provides a condensed mean to
+    express common file trees copies, and returns the list of copied
+    nodes.
+
+    The sources nodes are copied in the to directory. The sources path
+    is kept and concatenated to the destination directory. That is,
+    copying 'foo/bar' into 'baz/quux' whill create the
+    'baz/quux/foo/bar' node.
+
+    If strip_prefix is specified, it is stripped from the source
+    pathes before copying. That is, copying 'foo/bar/baz' into 'quux'
+    with a strip prefix of 'foo' wil create the 'bar/baz/quux' node.
+
+    sources      -- List of nodes to copy, or a single node to copy.
+    to           -- Path where to copy.
+    strip_prefix -- Prefix Path stripped from source pathes.
+
+    >>> sources = [node('/tmp/.drake.copy.source/a'),
+    ...            node('/tmp/.drake.copy.source/b')]
+    >>> targets = copy(sources, '/tmp/.drake.copy.dest', strip_prefix = '/tmp')
+    >>> targets
+    [/tmp/.drake.copy.dest/.drake.copy.source/a, /tmp/.drake.copy.dest/.drake.copy.source/b]
+
+    """
+    if isinstance(sources, list):
         res = []
-        for node in fr:
+        for node in sources:
             res.append(copy(node, to, strip_prefix))
         return res
     else:
-        return Copy(fr, to, strip_prefix = strip_prefix).to()
+        path = sources.path()
+        if strip_prefix is not None:
+            path.strip_prefix(strip_prefix)
+        path = Path(to) / path
+        return Copy(sources, path).target()
 
 class Rule(VirtualNode):
 
-    def __init__(self, name, nodes = []):
+    """Virtual node that bounces to other nodes.
 
+    Since rules are virtual nodes, creating an install rule as
+    demonstrated below would enable to run `drake //install' to
+    copy files.
+
+    >>> sources = nodes('/tmp/.drake.rule1', '/tmp/.drake.rule2')
+    >>> for source in sources:
+    ...     source.path().touch()
+    >>> targets = copy(sources, '/tmp/.drake.rule.dest', strip_prefix = '/tmp')
+    >>> for target in targets:
+    ...     target.path().remove()
+    >>> rule = Rule('install', targets)
+    >>> rule.build()
+    Copy /tmp/.drake.rule.dest/.drake.rule2
+    Copy /tmp/.drake.rule.dest/.drake.rule1
+    """
+
+    def __init__(self, name, nodes = []):
+        """Create a rule.
+
+        name  -- Node name.
+        nodes -- The node to build when the rule is built
+        """
         VirtualNode.__init__(self, name)
         class RuleBuilder(Builder):
-            def run(self):
-                debug.debug('Build static dependencies')
-                coroutines = []
-                with debug.indentation():
-                    for node in self.sources().values():
-                        if _JOBS == 1:
-                            for everything in node.build_coro():
-                                pass
-                        else:
-                            coroutines.append(Coroutine(node.build_coro(), name = str(node)))
-                if _JOBS != 1:
-                    for coro in coroutines:
-                        yield coro
-
-        RuleBuilder([], [self])
+            def execute(self):
+                return True
+        RuleBuilder(nodes, [self])
 
     def hash(self):
-
+        """Hash value."""
         return ''
 
     def __lshift__(self, nodes):
-
+        """Add a node to build when the rule is built."""
         if isinstance(nodes, list):
             for node in nodes:
                 self << node
@@ -1403,27 +1693,20 @@ class Rule(VirtualNode):
             self.builder.add_src(nodes)
 
 
-def re_map(f, r, s):
-
-  match = re.search(r, s)
-  while match:
-    prefix = s[:match.span()[0]]
-    suffix = s[match.span()[1]:]
-    s = '%s%s%s' % (prefix, f(match.group()), suffix)
-    match = re.search(r, s)
-  return s
-
-def camel_case(s):
-
-  return re_map(lambda s: s[1].capitalize(),
-                re.compile('-[a-zA-Z]'), s)
-
 # Architectures
-x86 = 0
+class arch:
+
+    """Architectures enum."""
+
+    x86 = 0
 
 # OSes
-android = 0
-linux = 1
-macos = 2
-windows = 3
+class os:
+
+    """Oses enum."""
+
+    android = 0
+    linux = 1
+    macos = 2
+    windows = 3
 
