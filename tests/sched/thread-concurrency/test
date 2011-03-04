@@ -1,0 +1,45 @@
+#!/usr/bin/python
+
+# Check a node isn't built twice when threading, with a pattern like
+# this:
+#
+#       ,--- Node 1 --- Test node
+# Built<
+#       '--- Node 2 --- Test node
+
+import os
+import sys
+import threading
+import time
+
+import drake
+
+class TimedBuilder(drake.Builder):
+
+  def __init__(self, target):
+    self.__built = False
+    self.__mutex   = threading.Semaphore(1)
+    drake.Builder.__init__(self, [], [target])
+
+  def execute(self):
+    with self.__mutex:
+      assert not self.__built
+      self.__built = True
+    time.sleep(1)
+    return self.cmd('Touch %s' % self.targets()[0], 'touch %s' % self.targets()[0].path())
+
+node = drake.node('node')
+TimedBuilder(node)
+
+node.path().remove()
+
+sub1 = drake.Rule('sub1', [node])
+sub2 = drake.Rule('sub2', [node])
+
+root = drake.Rule('root', [sub1, sub2])
+
+sched = drake.sched.Scheduler(1)
+drake._SCHEDULER = sched
+drake._JOBS = 1
+drake.sched.Coroutine(root.build_coro(), 'main', sched)
+sched.run()
