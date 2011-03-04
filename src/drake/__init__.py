@@ -811,6 +811,7 @@ class Builder:
         self._depfile = DepFile(self, 'drake')
         self.__built = False
         self.__built_exception = None
+        self.__building_semaphore = None
         self.dynsrc = {}
 
     def sources(self):
@@ -876,16 +877,29 @@ class Builder:
         """Return the node type with the given name."""
         return _BaseNodeTypeType.node_types[tname]
 
+    __built_semaphore = threading.Semaphore(1)
+
     def run(self):
         """Build sources recursively, check if our target are up to date, and executed if needed."""
         global _JOBS
         debug.debug('Running %s.' % self, debug.DEBUG_TRACE_PLUS)
 
         # If we were already executed, just skip
-        if self.__built:
-            if self.__built_exception is not None:
-                raise self.__built_exception
-            debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
+        blocker = None
+        with self.__built_semaphore:
+            if self.__built:
+                if self.__built_exception is not None:
+                    debug.debug('Already built in this run, with an exception.', debug.DEBUG_TRACE_PLUS)
+                    raise self.__built_exception
+                debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
+                return
+            elif self.__building_semaphore is None:
+                self.__building_semaphore = _SCHEDULER.coroutine()
+            else:
+                blocker = self.__building_semaphore
+        if blocker is not None:
+            debug.debug('Already being built, waiting.', debug.DEBUG_TRACE_PLUS)
+            yield blocker
             return
 
         # The list of static dependencies is now fixed
@@ -1000,9 +1014,10 @@ class Builder:
                         yield y
 
             if not self.execute():
-                self.__built = True
-                self.__built_exception = Exception('%s failed' % self)
-                raise self.__built_exception
+                with self.__built_semaphore:
+                    self.__built = True
+                    self.__built_exception = Exception('%s failed' % self)
+                    raise self.__built_exception
 
             # Check every non-virtual target was built.
             for dst in self.__targets:

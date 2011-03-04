@@ -24,6 +24,7 @@ class Scheduler:
     self.__sem = threading.Semaphore(1)
     self.__local = threading.local()
     self.__local.i = -1
+    self.__local.coroutine = None
     _SCHEDULER = self
 
   def running(self):
@@ -82,8 +83,10 @@ class Scheduler:
           # Run one step of our coroutine
           with self.__sem:
             debug.debug('%s: step %s' % (self.__local.i, coro.name), debug.DEBUG_SCHED)
+          self.__local.coroutine = coro
           res = coro.step()
-        except Exception, e:
+          self.__local.coroutine = None
+        except:
           self.__exception = sys.exc_info()
         with self.__sem:
           if res:
@@ -108,6 +111,11 @@ class Scheduler:
     if self.__exception is not None:
       raise self.__exception[1], None, self.__exception[2]
 
+  def coroutine(self):
+
+    res = self.__local.coroutine
+    assert res
+    return res
 
 class Coroutine:
 
