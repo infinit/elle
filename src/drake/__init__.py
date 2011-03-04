@@ -429,10 +429,9 @@ class DepFile:
         res = []
         self.path().touch()
         for line in open(str(self.path()), 'r'):
-            sha1 = line[:40]
-            remain = line[41:-1].split(' ') # Chomp the \n
-            src = Path(remain[0])
-            self.__sha1[str(src)] = (sha1, remain[1])
+            (sha1, name, data) = line[:-1].split(' ') # Chomp the \n
+            src = Path(name)
+            self.__sha1[str(src)] = (sha1, data)
 
     def up_to_date(self):
         """Whether all registered files match the stored hash."""
