@@ -415,7 +415,7 @@ class DepFile:
 
 
     def register(self, node):
-        """Add the node's to the hashed files."""
+        """Add the node to the hashed files."""
         self.__files[str(node.name())] = node
 
 
