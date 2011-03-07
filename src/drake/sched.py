@@ -11,6 +11,9 @@ import sys
 import threading
 import types
 
+class Frozen:
+  pass
+
 class Scheduler:
 
   def __init__(self, jobs = 1):
@@ -27,21 +30,27 @@ class Scheduler:
     self.__local.coroutine = None
     _SCHEDULER = self
 
+  def current_job_id(self):
+    return self.__local.i
+
   def running(self):
     return self.__running
 
   def add(self, coro):
+    debug.debug('new coroutine: %s' % (coro.name), debug.DEBUG_SCHED)
     with self.__sem:
-      debug.debug('%s: new coroutine: %s' % (self.__local.i, coro.name), debug.DEBUG_SCHED)
-    self.__coroutines.append(coro)
-    self.ncoro += 1
-    self.waiting_coro_lock.release()
+      self.__coroutines.append(coro)
+      self.ncoro += 1
+      self.waiting_coro_lock.release()
+    debug.debug('new coroutine: released.', debug.DEBUG_SCHED)
 
-  def woken_up(self, coro):
+  def freeze(self, frozen, blocker):
     with self.__sem:
-      debug.debug('%s: coroutine woke up: %s' % (self.__local.i, coro.name), debug.DEBUG_SCHED)
-    self.__coroutines.append(coro)
-    self.waiting_coro_lock.release()
+      if not blocker.done():
+        blocker._Coroutine__waiters.append(frozen)
+        return True
+      else:
+        return False
 
   def run(self):
     self.__running = True
@@ -52,27 +61,29 @@ class Scheduler:
       while True:
         # If there are no more coroutines
         with self.__sem:
-            if self.ncoro == 0 or self.__exception is not None:
-              if self.ncoro == 0:
-                debug.debug('%s: no more coroutine, dying' % self.__local.i, debug.DEBUG_SCHED)
-              else:
-                debug.debug('%s: pending exception, dying' % self.__local.i, debug.DEBUG_SCHED)
-              # Tell all jobs they must die
-              self.die = True
-              # Wake everyone
-              for i in range(self.__jobs - 1):
-                self.waiting_coro_lock.release()
-              # Quit
-              break
+          if self.ncoro == 0 or self.__exception is not None:
+            if self.ncoro == 0:
+              debug.debug('no more coroutine, dying', debug.DEBUG_SCHED)
+            else:
+              debug.debug('pending exception %s, dying' % (self.__exception,),
+                          debug.DEBUG_SCHED)
+            # Tell all jobs they must die
+            self.die = True
+            # Wake everyone
+            debug.debug('wake up everyone.', debug.DEBUG_SCHED)
+            for i in range(self.__jobs - 1):
+              self.waiting_coro_lock.release()
+            # Quit
+            debug.debug('bye bye.', debug.DEBUG_SCHED)
+            return
         # Lock one coroutine slot
         if not self.waiting_coro_lock.acquire(False):
-          debug.debug('%s: no more coroutine available, sleeping' % self.__local.i, debug.DEBUG_SCHED)
+          debug.debug('no more coroutine available, sleeping', debug.DEBUG_SCHED)
           self.waiting_coro_lock.acquire()
-          debug.debug('%s: woken up' % self.__local.i, debug.DEBUG_SCHED)
+          debug.debug('woken up', debug.DEBUG_SCHED)
         # If we must die, do so
         if self.die:
-          with self.__sem:
-            debug.debug('%s: scheduler is dying, dying too' % self.__local.i, debug.DEBUG_SCHED)
+          debug.debug('scheduler is dying, dying too', debug.DEBUG_SCHED)
           return
         # Fetch our coroutine
         with self.__sem:
@@ -81,24 +92,30 @@ class Scheduler:
         res = None
         try:
           # Run one step of our coroutine
-          with self.__sem:
-            debug.debug('%s: step %s' % (self.__local.i, coro.name), debug.DEBUG_SCHED)
           self.__local.coroutine = coro
+          debug.debug('step %s' % (coro.name), debug.DEBUG_SCHED)
           res = coro.step()
           self.__local.coroutine = None
         except:
+          self.__local.coroutine = None
           self.__exception = sys.exc_info()
+          debug.debug('caught exception %s' % (self.__exception[1]), debug.DEBUG_SCHED)
         with self.__sem:
           if res:
-            if coro.frozen():
-              debug.debug('%s: coroutine froze: %s' % (self.__local.i, coro.name), debug.DEBUG_SCHED)
+            if res is Frozen:
+              debug.debug('coroutine froze: %s' % (coro.name), debug.DEBUG_SCHED)
             else:
-              debug.debug('%s: pushing coroutine back: %s' % (self.__local.i, coro.name), debug.DEBUG_SCHED)
+              debug.debug('pushing coroutine back: %s' % (coro.name), debug.DEBUG_SCHED)
               self.__coroutines.append(coro)
               self.waiting_coro_lock.release()
           else:
-            debug.debug('%s: coroutine ended: %s' % (self.__local.i, coro.name), debug.DEBUG_SCHED)
+            debug.debug('coroutine ended: %s' % (coro.name), debug.DEBUG_SCHED)
             self.ncoro -= 1
+            for coro in coro._Coroutine__waiters:
+              debug.debug('coroutine waking up: %s' % (coro.name), debug.DEBUG_SCHED)
+              self.__coroutines.append(coro)
+              self.waiting_coro_lock.release()
+
     if self.__jobs == 1:
       job(0)
     else:
@@ -123,45 +140,49 @@ class Coroutine:
     self.routine = [routine]
     self.name = name
     self.__done = False
-    self.__frozen = False
     self.__waiters = []
     self.__scheduler = scheduler
-    scheduler.add(self)
-
-  def frozen(self):
-    return self.__frozen
+    if scheduler is not None:
+      scheduler.add(self)
 
   def __str__(self):
     return 'coro %s' % self.name
 
   def run(self):
     while self.routine:
-      self._step()
+      self.__step()
 
   def step(self):
-    if not self.__frozen:
-      while self._step():
-        if not self.routine:
-          self.__done = True
-          for coro in self.__waiters:
-            coro.__frozen = False
-            self.__scheduler.woken_up(coro)
-          return False
+    while True:
+      res = self.__step()
+      if not res:
+        break
+      if res is Frozen:
+        return Frozen
+      if not self.routine:
+        self.__done = True
+        return False
     return True
 
   def done(self):
     return self.__done
 
-  def _step(self):
+  def __step(self):
     try:
       value = self.routine[-1].next()
       if isinstance(value, types.GeneratorType):
         self.routine.append(value)
         return True
       if isinstance(value, Coroutine) and not value.done():
-        self.__frozen = True
-        value.__waiters.append(self)
-        return False
+        if self.__scheduler is not None:
+          if self.__scheduler.freeze(self, value):
+            return Frozen
+          else:
+            return True
+        else:
+          print self
+          print value
+          assert False
       else:
         return False
     except StopIteration:
