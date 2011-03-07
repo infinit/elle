@@ -1660,7 +1660,7 @@ def copy(sources, to, strip_prefix = None):
             res.append(copy(node, to, strip_prefix))
         return res
     else:
-        path = sources.path()
+        path = sources.name()
         if strip_prefix is not None:
             path.strip_prefix(strip_prefix)
         path = Path(to) / path
