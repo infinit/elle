@@ -896,7 +896,7 @@ class Builder:
                     raise self.__built_exception
                 debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
                 return
-            elif self.__building_semaphore is None:
+            elif _JOBS > 1 and self.__building_semaphore is None:
                 self.__building_semaphore = _SCHEDULER.coroutine()
             else:
                 blocker = self.__building_semaphore
@@ -945,6 +945,9 @@ class Builder:
         debug.debug('Build static dependencies')
         with debug.indentation():
             for node in self.__sources.values() + self.__vsrcs.values():
+                if node.builder is None or \
+                        node.builder.__built:
+                    continue
                 if _JOBS == 1:
                     yield node.build_coro()
                 else:
