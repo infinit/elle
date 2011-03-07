@@ -327,7 +327,7 @@ def deps_handler(builder, path, t, data):
     return node(path, t)
 
 
-def mkdeps(n, lvl, config, marks,
+def mkdeps(res, n, lvl, config, marks,
            f_submarks, f_init, f_add):
 
     include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
@@ -336,12 +336,12 @@ def mkdeps(n, lvl, config, marks,
     idt = ' ' * lvl * 2
 
     if str(path) in marks:
-        return []
+        return
     marks[str(path)] = True
 
 #    debug.debug('%smkdeps: %s' % (idt, path))
 
-    res = f_init(n)
+    f_init(res, n)
 
     def unique(include, prev, new):
 
@@ -350,7 +350,7 @@ def mkdeps(n, lvl, config, marks,
         return new
 
 
-    n.build()
+    yield n.build_coro()
     for line in open(str(path), 'r'):
 
         line = line.strip()
@@ -377,9 +377,9 @@ def mkdeps(n, lvl, config, marks,
                     found = unique(include, found, node(name, Header))
 
             if found is not None:
-                f_add(res, found, mkdeps(found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add))
-
-    return res
+                rec = []
+                yield mkdeps(rec, found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add)
+                f_add(res, found, rec)
 
 
 class Compiler(Builder):
@@ -400,12 +400,11 @@ class Compiler(Builder):
 
     def dependencies(self):
 
-        debug.debug('dependencies')
-
-        deps = mkdeps(self.src, 0, self.config, {},
-                      f_init = lambda n: [n],
-                      f_submarks = lambda d: d,
-                      f_add = lambda res, node, sub: res.extend(sub))
+        deps = []
+        yield mkdeps(deps, self.src, 0, self.config, {},
+                     f_init = lambda res, n: res.append(n),
+                     f_submarks = lambda d: d,
+                     f_add = lambda res, node, sub: res.extend(sub))
 
         for dep in deps:
             if dep != self.src:
@@ -446,6 +445,7 @@ class Linker(Builder):
 
         for hook in self.toolkit.hook_bin_deps():
             hook(self)
+        yield
 
     def __init__(self, objs, exe, tk, cfg):
 
@@ -480,6 +480,7 @@ class DynLibLinker(Builder):
 
         for hook in self.toolkit.hook_bin_deps():
             hook(self)
+        yield
 
     def __init__(self, objs, lib, tk, cfg):
 
