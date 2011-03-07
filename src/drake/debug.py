@@ -9,6 +9,7 @@
 import os
 import sys
 import threading
+import drake
 
 DEBUG_TRACE = 1
 DEBUG_TRACE_PLUS = 2
@@ -25,7 +26,7 @@ _DEBUG_SEM = threading.Semaphore(1)
 def debug(msg, lvl = 1):
   if lvl <= _DEBUG:
     with _DEBUG_SEM:
-      print >> sys.stderr, '%s%s' % (' ' * _INDENT * 2, msg)
+      print >> sys.stderr, '%s%s: %s' % (' ' * _INDENT * 2, drake._SCHEDULER.current_job_id(), msg)
 
 
 class indentation:
