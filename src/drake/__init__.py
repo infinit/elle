@@ -1247,6 +1247,8 @@ class Expander(Builder):
     >>> target = Node('/tmp/.drake.expander.3')
     >>> builder = MyExpander('Kiwis are @kiwi-color@.',
     ...                      [colors, lengths], target)
+    >>> print builder.missing_fatal()
+    True
     >>> target.path().remove()
     >>> target.build()
     Traceback (most recent call last):
@@ -1254,6 +1256,8 @@ class Expander(Builder):
     >>> target.builder = None
     >>> builder = MyExpander('Kiwis are @kiwi-color@.',
     ...                      [colors, lengths], target, missing_fatal = False)
+    >>> builder.missing_fatal()
+    False
     >>> target.build()
     Expand /tmp/.drake.expander.3
     >>> open('/tmp/.drake.expander.3').read()
@@ -1276,8 +1280,11 @@ class Expander(Builder):
         Builder.__init__(self, sources + dicts, [target])
         self.__dicts = dicts
         self.matcher = re.compile(matcher)
-        self.missing_fatal = missing_fatal
+        self.__missing_fatal = missing_fatal
         self.__target = target
+
+    def missing_fatal(self):
+        return self.__missing_fatal
 
     def execute(self):
         """Expand the keys in the content and write to target file."""
@@ -1291,7 +1298,7 @@ class Expander(Builder):
             try:
                 content = content.replace(match.group(0), str(vars[key]))
             except KeyError:
-                if self.missing_fatal:
+                if self.__missing_fatal:
                     print 'Missing expansion: %s' % key
                     return False
 
