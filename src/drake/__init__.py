@@ -448,10 +448,10 @@ class DepFile:
 
     def update(self):
         """Rehash all files and write to the store file."""
-        f = open(str(self.path()), 'w')
-        for path in self.__files:
-            h = self.__files[path].hash()
-            print >>f, '%s %s %s' % (h, self.__files[path].name(), self.__files[path].drake_type())
+        with open(str(self.path()), 'w') as f:
+            for path in self.__files:
+                h = self.__files[path].hash()
+                print >>f, '%s %s %s' % (h, self.__files[path].name(), self.__files[path].drake_type())
 
     def __repr__(self):
         """Python representation."""
