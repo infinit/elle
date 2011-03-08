@@ -632,22 +632,16 @@ class BaseNode(object):
         """
         raise Exception('hash must be implemented by BaseNodes')
 
-#    def build(self):
-#        """Build this node.
-#
-#        Take necessary action to ensure this node is up to date. That
-#        is, roughly, run this node runner.
-#        """
-#        # if not _scheduler().running():
-#        #     c = Coroutine(self.build_coro(), name = str(self), )
-#        #     _scheduler().run()
-#        # else:
-#        if not _scheduler().running():
-#            c = Coroutine(self.build_coro(), str(self), _scheduler())
-#            c.run()
-#        else:
-#            c = Coroutine(self.build_coro(), str(self), None)
-#            c.run()
+    def build(self):
+        """Build this node.
+
+        Take necessary action to ensure this node is up to date. That
+        is, roughly, run this node runner.
+        """
+
+        assert not _scheduler().running()
+        c = Coroutine(self.build_coro(), str(self), _scheduler())
+        _scheduler().run()
 
     def build_coro(self):
         """Coroutine to build this node."""
