@@ -126,7 +126,9 @@ class Scheduler:
         thread.join()
     self.__running = False
     if self.__exception is not None:
-      raise self.__exception[1], None, self.__exception[2]
+      exn = self.__exception
+      self.__exception = None
+      raise exn[1], None, exn[2]
 
   def coroutine(self):
 
