@@ -10,7 +10,43 @@ _OS = __import__('os')
 import hashlib, platform, re, subprocess, sys, threading, time, types, shutil
 from copy import deepcopy
 import debug
+import atexit
 from sched import Coroutine, Scheduler
+
+
+class Profile:
+
+    def __init__(self, name):
+        self.__calls = 0
+        self.__lock  = threading.Semaphore(1)
+        self.__name = name
+        self.__time = 0
+        atexit.register(self.show)
+
+    def profile(self):
+        return ProfileInstance(self)
+
+    def show(self):
+        print self
+
+    def __str__(self):
+        return '%s: called %s time, %s seconds.' % (self.__name, self.__calls, self.__time)
+
+class ProfileInstance:
+
+    def __init__(self, parent):
+        self.__parent = parent
+        self.__time  = 0
+        self.__time  = None
+
+    def __enter__(self):
+        self.__time = time.time()
+
+    def __exit__(self, *args):
+        with self.__parent._Profile__lock:
+            self.__parent._Profile__calls += 1
+            t = time.time() - self.__time
+            self.__parent._Profile__time  += t
 
 
 class Exception(Exception):
@@ -653,7 +689,7 @@ class Node(BaseNode):
 
     def __init__(self, path):
         """Construct a Node with the given path."""
-        self._hash = None
+        self.__hash = None
         path = Path(path)
         if not path.absolute():
             path = prefix() / path
@@ -665,8 +701,9 @@ class Node(BaseNode):
 
     def hash(self):
         """Digest of the file as a string."""
-        self._hash = hashlib.sha1(open(str(self.path())).read()).hexdigest()
-        return self._hash
+        if self.__hash is None:
+            self.__hash = hashlib.sha1(open(str(self.path())).read()).hexdigest()
+        return self.__hash
 
     def clean(self):
         """Clean this node's file if it is generated, and recursively its sources recursively."""
@@ -1027,8 +1064,10 @@ class Builder:
 
             # Check every non-virtual target was built.
             for dst in self.__targets:
-                if isinstance(dst, Node) and not dst.path().exists():
-                    raise Exception('%s wasn\'t created by %s' % (dst, self))
+                if isinstance(dst, Node):
+                    if not dst.path().exists():
+                        raise Exception('%s wasn\'t created by %s' % (dst, self))
+                    dst._Node__hash = None
             self._depfile.update()
             for name in self._depfiles:
                 self._depfiles[name].update()
