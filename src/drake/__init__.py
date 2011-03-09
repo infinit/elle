@@ -846,6 +846,14 @@ def cmd_output(fmt, *args):
     command = _cmd_escape(fmt, *args)
     return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).communicate()[0]
 
+def _can_skip_node(node):
+    if node.builder is None:
+        if isinstance(node, Node):
+            return node.path().exists()
+        else:
+            return True
+    else:
+        return node.builder._Builder__built
 
 class Builder:
 
@@ -1019,8 +1027,7 @@ class Builder:
         debug.debug('Build static dependencies')
         with debug.indentation():
             for node in self.__sources.values() + self.__vsrcs.values():
-                if node.builder is None or \
-                        node.builder.__built:
+                if _can_skip_node(node):
                     continue
                 if _JOBS == 1:
                     yield node.build_coro()
@@ -1033,8 +1040,7 @@ class Builder:
             for path in self.dynsrc:
                 try:
                     node = self.dynsrc[path]
-                    if node.builder is None or \
-                            node.builder.__built:
+                    if _can_skip_node(node):
                         continue
                     if _JOBS == 1:
                         yield node.build_coro()
