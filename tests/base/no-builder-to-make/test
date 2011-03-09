@@ -1,0 +1,12 @@
+#!/usr/bin/python
+
+import drake
+
+source = drake.node('drake.node')
+source.path().remove()
+target = drake.copy(source, 'output')
+target.path().remove()
+try:
+  target.build()
+except drake.NoBuilder:
+  pass
