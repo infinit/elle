@@ -79,6 +79,21 @@ class NodeRedefinition(Exception):
         See Node.name_absolute."""
         return self.__name
 
+class NoBuilder(Exception):
+
+    """Node raised when a Node builder is missing.
+
+    Raised when a Nodehas no builder and its associated file does not
+    exist.
+    """
+
+    def __init__(self, node):
+        """Build a NoBuilder exception.
+
+        node -- the node whose builder is missing.
+        """
+        self.__node = node
+        Exception.__init__(self, 'no builder to make %s' % self.__node)
 
 _RAW = 'DRAKE_RAW' in _OS.environ
 _SILENT = 'DRAKE_SILENT' in _OS.environ
@@ -722,7 +737,7 @@ class Node(BaseNode):
         with debug.indentation():
             if self.builder is None:
                 if not self.path().exists():
-                    raise Exception('no builder to make %s' % self)
+                    raise NoBuilder(self)
                 return
             yield self.builder.run()
 
