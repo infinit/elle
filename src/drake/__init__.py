@@ -732,7 +732,35 @@ class Node(BaseNode):
             return self.name()
 
     def build_coro(self):
-        """Coroutine that builds this node."""
+        """Coroutine that builds this node.
+
+        Building a Node raises an error if the associated file does
+        not exist and it has no builder.
+
+        >>> n = node('/tmp/.drake.node')
+        >>> n.path().remove()
+        >>> n.build()
+        Traceback (most recent call last):
+        NoBuilder: no builder to make /tmp/.drake.node
+
+        If the file exist, drake consider it is a provided input and
+        building it does nothing.
+
+        >>> n.path().touch()
+        >>> n.build()
+
+        If a Node needs to be built and its builder is executed, it
+        must create the Node's associated file.
+
+        >>> n.path().remove()
+        >>> class EmptyBuilder(Builder):
+        ...   def execute(self):
+        ...     return True
+        >>> builder = EmptyBuilder([], [n])
+        >>> n.build()
+        Traceback (most recent call last):
+        Exception: /tmp/.drake.node wasn't created by EmptyBuilder
+        """
         debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
         with debug.indentation():
             if self.builder is None:
