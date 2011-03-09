@@ -26,3 +26,32 @@ def configure(prefix = '.'):
   python = drake.copy(sources, prefix / lib, 'src')
 
   install = drake.Rule('install', python)
+
+  tests = [
+    'base/no-builder-to-make',
+    'sched/thread-concurrency',
+    ]
+
+  class Tester(drake.Builder):
+
+    def __init__(self, name):
+      self.__name = name
+      path = drake.Path('tests') / drake.Path(name)
+      self.__exe = drake.node(path / 'test')
+      path.extension = 'tst'
+      self.__target = drake.node(path)
+      drake.Builder.__init__(self, [self.__exe] + sources, [self.__target])
+
+    def execute(self):
+      res = self.cmd('Test %s' % self.__name,
+                     str(self.__exe.path()))
+      if res:
+        self.__target.path().touch()
+      return res
+
+    def target(self):
+      return self.__target
+
+  check = drake.Rule('check')
+  for test in tests:
+    check << Tester(test).target()
