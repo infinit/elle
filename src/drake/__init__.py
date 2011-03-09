@@ -1615,6 +1615,8 @@ _OPTIONS = {
     '-j'    : _jobs_set,
 }
 
+_ARG_CONF_RE = re.compile('--(\\w+)=(.*)')
+
 def run(root, *cfg, **kwcfg):
     """Run a drakefile.
 
@@ -1629,6 +1631,17 @@ def run(root, *cfg, **kwcfg):
     try:
         print '%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd())
         _srctree = Path(root)
+
+        # Fetch configuration from the command line.
+        i = 0
+        while i < len(sys.argv):
+            match = _ARG_CONF_RE.match(sys.argv[i])
+            if match:
+                kwcfg[match.group(1)] = match.group(2)
+                del sys.argv[i]
+            else:
+                i += 1
+
         root = _raw_include('drakefile', *cfg, **kwcfg)
 
         args = sys.argv[1:]
