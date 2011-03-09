@@ -3,6 +3,11 @@ import sys
 
 def configure(prefix = '.'):
 
+  """Configure drake.
+
+  prefix -- The prefix where to install.
+  """
+
   prefix = drake.Path(prefix)
 
   sources = drake.nodes(

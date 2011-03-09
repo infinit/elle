@@ -1611,6 +1611,16 @@ def _jobs_set(n):
     assert _SCHEDULER is None
     _JOBS = int(n)
 
+_ARG_DOC_RE = re.compile('\\s*(\\w+)\\s*--\\s*(.*)')
+def _args_doc(doc):
+    res = {}
+    for line in doc.split('\n'):
+        match = _ARG_DOC_RE.match(line)
+        if match:
+            res[match.group(1)] = match.group(2)
+    return res
+
+
 def help():
     print '%s [OPTIONS] [CONFIG] [ACTIONS]' % sys.argv[0]
     print '''\
@@ -1621,8 +1631,15 @@ OPTIONS:
 '''
 
     print 'CONFIG:'
+    doc = {}
+    if _CONFIG.__doc__ is not None:
+        doc = _args_doc(_CONFIG.__doc__)
     for arg in inspect.getargspec(_CONFIG).args:
-        print '\t--%s=...' % arg
+        sys.stdout.write('\t--%s=%s' % (arg, arg.upper()))
+        if arg in doc:
+            print ': %s' % doc[arg]
+        else:
+            print
     print '''\
 
 ACTIONS:
