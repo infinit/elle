@@ -8,6 +8,7 @@
 
 _OS = __import__('os')
 import hashlib, platform, re, subprocess, sys, threading, time, types, shutil
+import inspect
 from copy import deepcopy
 import debug
 import atexit
@@ -1610,12 +1611,39 @@ def _jobs_set(n):
     assert _SCHEDULER is None
     _JOBS = int(n)
 
+def help():
+    print '%s [OPTIONS] [CONFIG] [ACTIONS]' % sys.argv[0]
+    print '''\
+
+OPTIONS:
+\t--help, -h: print this usage and exit.
+\t--jobs N, -j N: set number of concurrent jobs to N.
+'''
+
+    print 'CONFIG:'
+    for arg in inspect.getargspec(_CONFIG).args:
+        print '\t--%s=...' % arg
+    print '''\
+
+ACTIONS:
+	--build [NODES]: build NODES, or all nodes in NODES is empty.
+	--clean [NODES]: recursively delete all generated ancestors of
+	  NODES, or all generated nodes in NODES is empty.
+	--dot NODES: generate a dot dependency graph on stdout for
+	  NODES (requires dot).
+	--dot-show NODES: show a dependency graph for NODES (requires
+	  dot and xv).'''
+    exit(0)
+
 _OPTIONS = {
     '--jobs': _jobs_set,
     '-j'    : _jobs_set,
+    '--help': help,
+    '-h'    : help,
 }
 
 _ARG_CONF_RE = re.compile('--(\\w+)=(.*)')
+_CONFIG = None
 
 def run(root, *cfg, **kwcfg):
     """Run a drakefile.
@@ -1627,24 +1655,39 @@ def run(root, *cfg, **kwcfg):
     arguments and run all action specified on the command line
     (sys.argv).
     """
-    global _srctree
+    global _CONFIG, _srctree
     try:
-        print '%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd())
         _srctree = Path(root)
+
+        args = sys.argv[1:]
+
+        # Load the root drakefile
+        g = {}
+        execfile(str(srctree() / 'drakefile'), g)
+        root = _Module(g)
+        _CONFIG = root.configure
 
         # Fetch configuration from the command line.
         i = 0
-        while i < len(sys.argv):
-            match = _ARG_CONF_RE.match(sys.argv[i])
+        while i < len(args):
+            match = _ARG_CONF_RE.match(args[i])
             if match:
                 kwcfg[match.group(1)] = match.group(2)
-                del sys.argv[i]
-            else:
-                i += 1
+                del args[i]
+                continue
+            elif args[i] in _OPTIONS:
+                opt = args[i]
+                del args[i]
+                opt_args = []
+                for a in inspect.getargspec(_OPTIONS[opt]).args:
+                    opt_args.append(args[i])
+                    del args[i]
+                _OPTIONS[opt](*opt_args)
+                continue
+            i += 1
 
-        root = _raw_include('drakefile', *cfg, **kwcfg)
-
-        args = sys.argv[1:]
+        print '%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd())
+        root.configure(*cfg, **kwcfg)
 
         mode = _MODES['build']
         i = 0
@@ -1653,11 +1696,6 @@ def run(root, *cfg, **kwcfg):
 
             if i < len(args):
                 arg = args[i]
-
-                if arg in _OPTIONS:
-                    _OPTIONS[arg](args[i + 1])
-                    i += 2
-                    continue
 
                 if arg[0:2] == '--':
 
