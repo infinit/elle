@@ -1,0 +1,28 @@
+import drake
+import sys
+
+def configure(prefix = '.'):
+
+  prefix = drake.Path(prefix)
+
+  sources = drake.nodes(
+    'src/drake/__init__.py',
+    'src/drake/cxx/__init__.py',
+    'src/drake/cxx/bison.py',
+    'src/drake/cxx/boost.py',
+    'src/drake/cxx/flex.py',
+    'src/drake/cxx/opengl.py',
+    'src/drake/cxx/qt.py',
+    'src/drake/cxx/sdl.py',
+    'src/drake/debug.py',
+    'src/drake/git.py',
+    'src/drake/python/__init__.py',
+    'src/drake/sched.py',
+    'src/drake/utils.py',
+    )
+
+  lib = drake.Path('usr/lib/python%s.%s' % \
+                     (sys.version_info.major, sys.version_info.minor))
+  python = drake.copy(sources, prefix / lib, 'src')
+
+  install = drake.Rule('install', python)
