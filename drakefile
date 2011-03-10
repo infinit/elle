@@ -26,7 +26,7 @@ def configure(prefix = '.'):
     'src/drake/utils.py',
     )
 
-  lib = drake.Path('usr/lib/python%s.%s/site-packages' % \
+  lib = drake.Path('lib/python%s.%s/site-packages' % \
                      (sys.version_info[0], sys.version_info[1]))
   python = drake.copy(sources, prefix / lib, 'src')
 
