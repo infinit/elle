@@ -554,9 +554,9 @@ class _BaseNodeTypeType(type):
 
     node_types = {}
 
-    def __call__(c, name, *arg):
+    def __call__(c, name, *arg, **kwargs):
 
-        res = type.__call__(c, name, *arg)
+        res = type.__call__(c, name, *arg, **kwargs)
         k = '%s.%s' % (res.__module__, res.__name__)
         _BaseNodeTypeType.node_types[k] = res
         return res
@@ -567,10 +567,10 @@ class _BaseNodeType(type):
 
     __metaclass__ = _BaseNodeTypeType
 
-    def __call__(c, *args):
+    def __call__(c, *args, **kwargs):
 
         try:
-            return type.__call__(c, *args)
+            return type.__call__(c, *args, **kwargs)
         except NodeRedefinition, e:
             assert e.name() in BaseNode.nodes
             node = BaseNode.nodes[e.name()]
