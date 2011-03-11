@@ -1,0 +1,4 @@
+import drake
+
+def configure():
+  drake.include('sub')

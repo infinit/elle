@@ -728,9 +728,9 @@ class Node(BaseNode):
             # assert self.builder is None
             return self.name()
         if self.builder is None:
-            return self.srctree / self.name()
+            return self.srctree / self.name_absolute()
         else:
-            return self.name()
+            return self.name_absolute()
 
     def build_coro(self):
         """Coroutine that builds this node.

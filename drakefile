@@ -34,6 +34,7 @@ def configure(prefix = '.'):
 
   tests = [
     'base/no-builder-to-make',
+    'base/path',
     'sched/thread-concurrency',
     ]
 

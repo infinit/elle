@@ -1,0 +1,18 @@
+import drake
+
+class TouchBuilder(drake.Builder):
+
+  def __init__(self, target):
+    self.__target = target
+    drake.Builder.__init__(self, [], [target])
+
+  def execute(self):
+    return self.cmd('Touch %s' % self.targets()[0], 'touch %s', self.targets()[0].path())
+
+def configure():
+  n = drake.node('foo')
+  assert n.name() == 'foo'
+  assert n.name_absolute() == 'sub/foo'
+  TouchBuilder(n)
+  assert n.path() == 'sub/foo'
+
