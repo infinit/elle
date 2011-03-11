@@ -530,6 +530,9 @@ def path_build(path):
     used. However it is sometimes necessary, when generating shell
     commands for instance.
     """
+    path = Path(path)
+    if path.absolute():
+        return path
     return prefix() / path
 
 def path_src(path):
@@ -542,6 +545,9 @@ def path_src(path):
     This function is similar to path_build, except for the source
     directory.
     """
+    path = Path(path)
+    if path.absolute():
+        return path
     return srctree() / path_build(path)
 
 class _BaseNodeTypeType(type):

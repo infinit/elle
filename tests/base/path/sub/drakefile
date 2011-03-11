@@ -15,4 +15,5 @@ def configure():
   assert n.name_absolute() == 'sub/foo'
   TouchBuilder(n)
   assert n.path() == 'sub/foo'
-
+  assert drake.path_build('bar') == 'sub/bar'
+  assert drake.path_build('/bar') == '/bar'
