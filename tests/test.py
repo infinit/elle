@@ -12,8 +12,9 @@ sys.path = [myself + '/../src'] + sys.path
 
 import doctest
 import drake
+import drake.python
 import drake.utils
 
 doctest.testmod(drake)
+doctest.testmod(drake.python)
 doctest.testmod(drake.utils)
-

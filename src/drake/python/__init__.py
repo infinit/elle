@@ -6,7 +6,12 @@
 #
 # See the LICENSE file for more information.
 
-import commands, platform
+import commands
+import drake
+import platform
+import string
+import random
+
 from .. import Path, Exception, srctree
 
 def check_version(expected, effective):
@@ -16,6 +21,76 @@ def check_version(expected, effective):
         return effective in expected
     except TypeError:
         return effective == expected
+
+
+class Value(drake.Node):
+
+    """A Node whose file contain a serialized python value.
+
+    >>> path = '/tmp/.drake.value'
+    >>> with open(path, 'w') as f:
+    ...   print >> f, '42'
+    >>> n = Value(path)
+    >>> assert n.value() == 42
+    """
+
+    def value(self):
+        """The serialized python value."""
+        if not self.path().exists():
+            raise Exception('%s: python.Value node must be built first.')
+        with open(str(self.path()), 'r') as f:
+            return eval(f.read())
+
+
+class _PasswordGenerator(drake.Builder):
+
+    def __init__(self, target, length = 8):
+        assert isinstance(target, Value)
+        self.__target = target
+        self.__length = length
+        drake.Builder.__init__(self, [], [self.__target])
+
+    def execute(self):
+        self.output("password (length: %s) %s" % (self.__length, self.__target),
+                    "Password %s" % self.__target)
+        pw = ''.join([random.choice(string.letters
+                                    + string.digits
+                                    + string.punctuation)
+                      for i in range(self.__length)])
+        with open(str(self.__target.path()), 'w') as f:
+            print >> f, repr(pw)
+        return True
+
+
+class Password(Value):
+
+    """A Value storing a random password.
+
+    >>> pw = Password('/tmp/.drake.password')
+    >>> pw.path().remove()
+    >>> pw.build()
+    Password /tmp/.drake.password
+    >>> assert isinstance(pw.value(), str)
+    >>> assert len(pw.value()) == 8
+
+    Generated password can be customized.
+
+    >>> pw = Password('/tmp/.drake.password.custom', length = 12)
+    >>> pw.path().remove()
+    >>> pw.build()
+    Password /tmp/.drake.password.custom
+    >>> assert len(pw.value()) == 12
+    """
+
+    def __init__(self, name, length = 8):
+        """Construct a Password.
+
+        name   -- the node name.
+        length -- the length in characters of the generated password.
+        """
+        Value.__init__(self, name)
+        _PasswordGenerator(self, length = length)
+
 
 class Python:
 
