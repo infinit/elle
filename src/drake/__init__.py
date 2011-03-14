@@ -1877,6 +1877,17 @@ class Rule(VirtualNode):
             self.builder.add_src(nodes)
 
 
+class EmptyBuilder(Builder):
+
+    """Builder which execution does nothing.
+
+    Usefull to create dependencies between nodes.
+    """
+
+    def execute(self):
+        """Do nothing."""
+        return True
+
 # Architectures
 class arch:
 
