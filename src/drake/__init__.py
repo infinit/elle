@@ -1268,7 +1268,7 @@ class Dictionary(VirtualNode):
     def hash(self):
         """Hash value."""
         # FIXME: sha1 of the string repr ain't optimal
-        items = self.content.items()
+        items = list(self)
         items.sort()
         return hashlib.sha1(str(items)).hexdigest()
 
