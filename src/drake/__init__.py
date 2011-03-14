@@ -430,6 +430,8 @@ class Path(object):
 
 _CACHEDIR = Path('.drake')
 
+_DEPFILE_BUILDER = Path('drake.Builder')
+
 class DepFile:
 
     """File to store dependencies of a builder and their hash.
@@ -901,6 +903,7 @@ class Builder:
 
         self._depfiles = {}
         self._depfile = DepFile(self, 'drake')
+        self.__depfile_builder = DepFile(self, 'drake.Builder')
         self.__built = False
         self.__built_exception = None
         self.__building_semaphore = None
@@ -942,6 +945,10 @@ class Builder:
         res.mkpath()
         return res
 
+
+    def hash(self):
+        """A hash for this builder"""
+        return None
 
     def dependencies(self):
         """Recompute dynamic dependencies list and return them.
@@ -1004,7 +1011,7 @@ class Builder:
         # Reload dynamic dependencies
         if not execute:
             for f in _OS.listdir(str(self.cachedir())):
-                if f == 'drake':
+                if f in ['drake', 'drake.Builder']:
                     continue
                 debug.debug('Considering dependencies file %s' % f, debug.DEBUG_DEPS)
                 depfile = self.depfile(f)
@@ -1080,6 +1087,20 @@ class Builder:
                     execute = True
                     break
 
+        # Check if we are up to date wrt to the builder itself
+        self.__builder_hash = self.hash()
+        depfile_builder = self.cachedir() / _DEPFILE_BUILDER
+        if not execute:
+            if self.__builder_hash is not None:
+                if depfile_builder.exists():
+                    with open(str(depfile_builder), 'r') as f:
+                        if self.__builder_hash != f.read():
+                            debug.debug('Execution needed because the hash for the builder is outdated.', debug.DEBUG_DEPS)
+                            execute = True
+                else:
+                    debug.debug('Execution needed because the hash for the builder is unkown.', debug.DEBUG_DEPS)
+                    execute = True
+
         # Check if we are up to date wrt all dependencies
         if not execute:
             if not self._depfile.up_to_date():
@@ -1118,7 +1139,14 @@ class Builder:
                     if not dst.path().exists():
                         raise Exception('%s wasn\'t created by %s' % (dst, self))
                     dst._Node__hash = None
+
+            # Update depfiles
             self._depfile.update()
+            if self.__builder_hash is None:
+                depfile_builder.remove()
+            else:
+                with open(str(depfile_builder), 'w') as f:
+                    print >> f, self.__builder_hash,
             for name in self._depfiles:
                 self._depfiles[name].update()
             self.__built = True

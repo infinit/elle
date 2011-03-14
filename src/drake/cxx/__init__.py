@@ -417,6 +417,15 @@ class Compiler(Builder):
 
         return self.cmd('Compile %s' % self.obj, self.toolkit.compile(self.config, self.src.path(), self.obj.path()))
 
+    def hash(self):
+        flags = self.config.flags
+        flags.sort()
+        defines = self.config.defines().items()
+        defines.sort()
+        include_local = map(str, self.config.local_include_path())
+        include_system = map(str, self.config.system_include_path())
+        return '%s\n%s\n%s\n%s\n' % (defines, flags, include_local, include_system)
+
     def mkdeps(self):
 
         def add(res, node, sub):
