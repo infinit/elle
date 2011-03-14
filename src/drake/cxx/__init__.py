@@ -415,7 +415,10 @@ class Compiler(Builder):
 
     def execute(self):
 
-        return self.cmd('Compile %s' % self.obj, self.toolkit.compile(self.config, self.src.path(), self.obj.path()))
+        return self.cmd('Compile %s' % self.obj,
+                        self.toolkit.compile(self.config,
+                                             self.src.path(),
+                                             self.obj.path()))
 
     def hash(self):
         flags = self.config.flags
@@ -468,7 +471,10 @@ class Linker(Builder):
 
     def execute(self):
 
-        return self.cmd('Link %s' % self.exe, self.toolkit.link(self.config, self.objs + self.dynsrc.values(), self.exe))
+        return self.cmd('Link %s' % self.exe,
+                        self.toolkit.link(self.config,
+                                          self.objs + self.dynsrc.values(),
+                                          self.exe))
 
     def __repr__(self):
 
@@ -503,7 +509,10 @@ class DynLibLinker(Builder):
 
     def execute(self):
 
-        return self.cmd('Link %s' % self.lib, self.toolkit.dynlink(self.config, self.objs + self.dynsrc.values(), self.lib))
+        return self.cmd('Link %s' % self.lib,
+                        self.toolkit.dynlink(self.config,
+                                             self.objs + self.dynsrc.values(),
+                                             self.lib))
 
     def __repr__(self):
 
