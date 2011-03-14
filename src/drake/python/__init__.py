@@ -41,6 +41,10 @@ class Value(drake.Node):
         with open(str(self.path()), 'r') as f:
             return eval(f.read())
 
+    def write(self, value):
+        with open(str(self.path()), 'w') as f:
+            print >> f, repr(value)
+
 
 class _PasswordGenerator(drake.Builder):
 
@@ -57,8 +61,7 @@ class _PasswordGenerator(drake.Builder):
                                     + string.digits
                                     + string.punctuation)
                       for i in range(self.__length)])
-        with open(str(self.__target.path()), 'w') as f:
-            print >> f, repr(pw)
+        self.__target.write(pw)
         return True
 
 
