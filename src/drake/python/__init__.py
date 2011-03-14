@@ -83,9 +83,18 @@ class Password(Value):
     >>> pw.build()
     Password /tmp/.drake.password.custom
     >>> assert len(pw.value()) == 12
+
+    The password value can also be forced.
+
+    >>> pw = Password('/tmp/.drake.password.forced', value = '_o< COIN')
+    >>> pw.value()
+    '_o< COIN'
+    >>> pw.build()
+    >>> pw.value()
+    '_o< COIN'
     """
 
-    def __init__(self, name, length = 8):
+    def __init__(self, name, length = 8, value = None):
         """Construct a Password.
 
         name   -- the node name.
@@ -93,6 +102,8 @@ class Password(Value):
         """
         Value.__init__(self, name)
         _PasswordGenerator(self, length = length)
+        if value is not None:
+            self.write(value)
 
 
 class Python:
