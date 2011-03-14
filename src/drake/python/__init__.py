@@ -37,7 +37,7 @@ class Value(drake.Node):
     def value(self):
         """The serialized python value."""
         if not self.path().exists():
-            raise Exception('%s: python.Value node must be built first.')
+            raise Exception('%s: python.Value node must be built first.' % self)
         with open(str(self.path()), 'r') as f:
             return eval(f.read())
 
