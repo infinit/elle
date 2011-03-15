@@ -682,8 +682,29 @@ class BaseNode(object):
         debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
         with debug.indentation():
             if self.builder is None:
+                self.polish()
                 return
             yield self.builder.run()
+        self.polish()
+
+    def polish(self):
+        """A hook called with a node has been built.
+
+        Called when a node has been built, that is, when all its
+        dependencies have been built and the builder run. Default
+        implementation does nothing.
+
+        >>> class MyNode (Node):
+        ...   def polish(self):
+        ...     print 'Polishing.'
+        >>> n = MyNode('/tmp/.drake.polish')
+        >>> n.path().remove()
+        >>> b = TouchBuilder(n)
+        >>> n.build()
+        Touch /tmp/.drake.polish
+        Polishing.
+        """
+        pass
 
     def clean(self):
         """Clean recursively for this node sources."""
@@ -785,8 +806,10 @@ class Node(BaseNode):
             if self.builder is None:
                 if not self.path().exists():
                     raise NoBuilder(self)
+                self.polish()
                 return
             yield self.builder.run()
+        self.polish()
 
     def __setattr__(self, name, value):
         """Adapt the node path is the builder is changed."""
