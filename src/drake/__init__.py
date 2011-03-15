@@ -1209,7 +1209,7 @@ class Builder:
 
     def add_src(self, src):
         """Add a static source."""
-        self.__sources[str(src.name())] = src
+        self.__sources[str(src.name_absolute())] = src
         src.consumers.append(self)
 
 
