@@ -323,6 +323,16 @@ class Path(object):
         >>> p.touch()
         >>> p.exists()
         True
+
+        If the file does exist, this is a no-op.
+
+        >>> path = Path('/tmp/.drake.touch.exists')
+        >>> with open(str(path), 'w') as f:
+        ...   print >> f, 'foobar'
+        >>> path.touch()
+        >>> with open(str(path), 'r') as f:
+        ...   print f.read(),
+        foobar
         """
         self.dirname().mkpath()
         if not _OS.path.exists(str(self)):
