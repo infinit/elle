@@ -1926,6 +1926,38 @@ class EmptyBuilder(Builder):
         """Do nothing."""
         return True
 
+class TouchBuilder(Builder):
+
+    """Builder that simply creates its targets as empty files.
+
+    >>> n = node('/tmp/.drake.touchbuilder')
+    >>> n.path().remove()
+    >>> b = TouchBuilder(n)
+    >>> n.build()
+    Touch /tmp/.drake.touchbuilder
+    >>> n.path().exists()
+    True
+    """
+
+    def __init__(self, nodes):
+        """Create a TouchBuilder.
+
+        nodes -- target nodes list, or a single target node.
+        """
+        if isinstance(nodes, BaseNode):
+            nodes = [nodes]
+        for node in nodes:
+            assert isinstance(node, Node)
+        Builder.__init__(self, [], nodes)
+
+    def execute(self):
+        """Create all the non-existent target nodes as empty files."""
+        self.output('Touch %s' % ', '.join(map(str, self.targets())))
+        for node in self.targets():
+            assert isinstance(node, Node)
+            node.path().touch()
+        return True
+
 # Architectures
 class arch:
 
