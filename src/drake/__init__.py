@@ -880,13 +880,16 @@ def cmd(fmt, *args):
     return _OS.system(command) == 0
 
 
-def cmd_output(fmt, *args):
-    """Expand args in fmt, run the resulting shell command and return its standard output.
+def cmd_output(cmd, cwd = None):
+    """Run the given command and return its standard output.
 
     Expansion handles shell escaping.
     """
-    command = _cmd_escape(fmt, *args)
-    return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE).communicate()[0]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, cwd = cwd)
+    res = p.communicate()[0]
+    if p.returncode != 0:
+        raise Exception('command failed: %s' % cmd)
+    return res
 
 def _can_skip_node(node):
     if node.builder is None:

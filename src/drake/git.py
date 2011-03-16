@@ -6,12 +6,49 @@
 #
 # See the LICENSE file for more information.
 
-from . import VirtualNode, cmd_output
+from datetime import date
+import drake
+import os
+from . import VirtualNode, cmd_output, Path
 
-class GitVersion(VirtualNode):
+class Git(VirtualNode):
 
-    def __init__(self):
+    """An iterable node with information on a git repository."""
 
+    # With the following dummy git repository.
+
+    # >>> path = Path('/tmp/.drake.git')
+    # >>> path.remove()
+    # >>> git = 'git --git-dir=%s/.git --work-tree=%s' % (path, path)
+    # >>> os.environ['GIT_AUTHOR_NAME'] = 'mefyl'
+    # >>> os.environ['GIT_AUTHOR_EMAIL'] = 'mefyl@gruntech.org'
+    # >>> os.system('git init %s' % path)
+    # 0
+    # >>> (path / 'somefile').touch()
+    # >>> os.system('%s add somefile' % git)
+    # 0
+    # >>> os.system('%s commit -m "Commit message."' % git)
+    # 0
+
+
+
+    # >>> node = GitVersion(path)
+
+    # >>> d = node.author_date().split(' ')[0]
+    # >>> today = date.today()
+    # >>> assert d == '%i-%02i-%i' % (today.year, today.month, today.day)
+
+    # >>> node.description()
+
+    def __init__(self, path = None):
+        """Create a GitVersion.
+
+        path -- path to the repository; the source dir by default.
+        """
+        if path is None:
+            self.__path = drake.path_src('.')
+        else:
+            self.__path = Path(path)
         VirtualNode.__init__(self, 'git/version')
         self.__author_date = None
         self.__revision    = None
@@ -19,37 +56,55 @@ class GitVersion(VirtualNode):
         self.__version    = None
         self.__message     = None
 
-    def hash(self):
+    def __cmd(self, args):
+        cmd = ['git'] + args
+        return cmd_output(cmd, cwd = str(self.__path))[:-1]
 
-        return cmd_output('git rev-parse HEAD')[:-1]
+    def ls_files(self, *paths):
+        """Run git ls-files and return the list of Paths.
+
+        path -- the pathes to list
+        """
+        if not paths:
+            paths = [Path('.')]
+        out = self.__cmd(['ls-files'] + map(str, paths))
+        out = out.split('\n')
+        return map(drake.Path, out)
+
+    def hash(self):
+        return self.__cmd(['rev-parse', 'HEAD'])[:-1]
 
     def author_date(self):
+        """The author date, as given by git %ai format."""
         if self.__author_date is None:
-            self.__author_date = cmd_output('git log --pretty=format:%%ai -n 1')
+            self.__author_date = self.__cmd(
+                ['log', '--pretty=format:%ai', '-n', '1'])
         return self.__author_date
 
     def description(self):
-
+        """The git describe output."""
         if self.__description is None:
-            self.__description = cmd_output('git describe')[:-1]
+            self.__description = self.__cmd(['describe'])
         return self.__description
 
     def version(self):
-
+        """The git describe --long output."""
         if self.__version is None:
-            self.__version = cmd_output('git describe --long')[:-1]
+            self.__version = self.__cmd(['describe', '--long'])
         return self.__version
 
     def revision(self):
-
+        """The revision short sha1."""
         if self.__revision is None:
-            self.__revision = cmd_output('git log --pretty=format:%%h -n 1')
+            self.__revision = self.__cmd(
+                [ 'log', '--pretty=format:%h', '-n', '1'])
         return self.__revision
 
     def message(self):
-
+        """The commit message."""
         if self.__message is None:
-            self.__message = cmd_output('git log --pretty=format:%%s -n 1')
+            self.__message = self.__cmd(
+                ['log', '--pretty=format:%s', '-n', '1'])
         return self.__message
 
     def __iter__(self):
