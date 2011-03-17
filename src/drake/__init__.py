@@ -711,6 +711,14 @@ class BaseNode(object):
         if self.builder is not None:
             self.builder.clean()
 
+    def missing(self):
+        """Whether this node is missing and must be built.
+
+        Always False, so unless redefined, BaseNode are built only if
+        a dependency changed.
+        """
+        return False
+
 class VirtualNode(BaseNode):
 
     """BaseNode that does not represent a file.
@@ -771,6 +779,13 @@ class Node(BaseNode):
         else:
             return self.name_absolute()
 
+    def missing(self):
+        """Whether the associated file doesn't exist.
+
+        Nodes are built if their file does not exist.
+        """
+        return not self.path().exists()
+
     def build_coro(self):
         """Coroutine that builds this node.
 
@@ -804,7 +819,7 @@ class Node(BaseNode):
         debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
         with debug.indentation():
             if self.builder is None:
-                if not self.path().exists():
+                if self.missing():
                     raise NoBuilder(self)
                 self.polish()
                 return
@@ -894,7 +909,7 @@ def cmd_output(cmd, cwd = None):
 def _can_skip_node(node):
     if node.builder is None:
         if isinstance(node, Node):
-            return node.path().exists()
+            return not node.missing()
         else:
             return True
     else:
@@ -1107,7 +1122,7 @@ class Builder:
         # If any non-virtual target is missing, we must rebuild.
         if not execute:
             for dst in self.__targets:
-                if isinstance(dst, Node) and not dst.path().exists():
+                if dst.missing():
                     debug.debug('Execution needed because of missing target: %s.' % dst.path(), debug.DEBUG_DEPS)
                     execute = True
 
@@ -1172,7 +1187,7 @@ class Builder:
             # Check every non-virtual target was built.
             for dst in self.__targets:
                 if isinstance(dst, Node):
-                    if not dst.path().exists():
+                    if dst.missing():
                         raise Exception('%s wasn\'t created by %s' % (dst, self))
                     dst._Node__hash = None
 
