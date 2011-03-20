@@ -7,6 +7,10 @@
 # See the LICENSE file for more information.
 
 import re
+import shutil
+import subprocess
+import tempfile
+
 _OS = __import__('os')
 from .. import ShellCommand, Builder, Node, Path, node, prefix, srctree, Exception, arch, os, cmd, command_add, debug, Expander, FileExpander
 from .. import utils
@@ -182,9 +186,22 @@ class VisualToolkit(Toolkit):
     def object_extension(self):
         return 'obj'
 
+    def cppflags(self, cfg):
+
+        def print_define((name, v)):
+            if v is None:
+                return '/D%s' % name
+            else:
+                return '/D%s=%s' % (name, utils.shell_escape(v))
+
+        defines = ' '.join(map(print_define, cfg.defines().items()))
+        system_includes = ' '.join(map(lambda i: '/I%s' % utils.shell_escape(i), cfg.system_include_path()))
+        local_includes  = ' '.join(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
+        return ' '.join([system_includes, local_includes, defines])
+
     def compile(self, cfg, src, obj):
-        includes = ''.join(map(lambda i: ' /I %s /I %s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.include_path() + list(self.includes)))
-        return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc%s /Fo%s /c %s' % (' '.join(self.flags), concatenate(cfg.flags), includes, obj, src)
+        cppflags = self.cppflags(cfg)
+        return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc %s /Fo%s /c %s' % (' '.join(self.flags), concatenate(cfg.flags), cppflags, obj, src)
 
     def archive(self, cfg, objs, lib):
         return 'lib /nologo /MT %s /OUT:%s' % (' '.join(map(str, objs)), lib)
@@ -193,7 +210,7 @@ class VisualToolkit(Toolkit):
 
         # /ENTRY:main
         # /SUBSYSTEM:CONSOLE
-        return 'cl.exe /nologo /MT %s %s /link /OUT:%s /SUBSYSTEM:WINDOWS %s %s opengl32.lib' % \
+        return 'cl.exe /nologo /MT %s %s /link /OUT:%s /SUBSYSTEM:CONSOLE %s %s opengl32.lib' % \
                (' '.join(cfg.flags),
                 ' '.join(map(str, objs)),
                 exe,
