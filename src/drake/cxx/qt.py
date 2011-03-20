@@ -7,7 +7,7 @@
 # See the LICENSE file for more information.
 
 import platform, re
-from .. import Builder, Exception, Node, Path, node, srctree, CACHEDIR
+from .. import Builder, Exception, Node, Path, node, srctree, _CACHEDIR
 from .  import Config, StaticLib, Header, Object, Source
 
 #class MocBuilder:
@@ -76,7 +76,7 @@ class Qt:
         # FIXME: all_srcs should be optimized with yield
         for header in [src for src in linker.all_srcs() if src.__class__ == Header]: # FIXME: inheritance
             found = False
-            for line in open(str(header), 'r'):
+            for line in open(str(header.path()), 'r'):
                 if re.search(self.moc_re, line):
                     found = True
                     break
@@ -93,7 +93,7 @@ class Qt:
             return res
 
     def moc_file(self, linker, header):
-        p = Path(header.src_path)
+        p = Path(header.name())
         p.extension = 'moc.cc'
         src = node(p)
         if src.builder is None:
@@ -132,7 +132,9 @@ class Moc(Builder):
 
     def execute(self):
 
-        return self.cmd('Moc %s' % self.tgt, '%s/bin/moc %s -o %s', self.qt.prefix, self.src, self.tgt)
+        return self.cmd('Moc %s' % self.tgt.path(),
+                        '%s/bin/moc %s -o %s', self.qt.prefix,
+                        self.src.path(), self.tgt.path())
 
 
 class Ui(Node):
