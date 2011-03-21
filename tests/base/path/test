@@ -5,4 +5,4 @@ import sys
 
 sys.argv += ['--clean']
 
-drake.run('../tests/base/path/')
+drake.run('.')

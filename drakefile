@@ -1,5 +1,15 @@
 import drake
+import os
+import shutil
 import sys
+
+# Put ourselves in the path.
+PYTHONPATH = ''
+if 'PYTHONPATH' in os.environ:
+   PYTHONPATH = os.environ['PYTHONPATH']
+source = '%s/%s' % (os.getcwd(), drake.path_src('src'))
+PYTHONPATH = '%s:%s' % (source, PYTHONPATH)
+os.environ['PYTHONPATH'] = PYTHONPATH
 
 def configure(prefix = '.'):
 
@@ -49,8 +59,21 @@ def configure(prefix = '.'):
       drake.Builder.__init__(self, [self.__exe] + sources, [self.__target])
 
     def execute(self):
+      fr = str(self.__exe.path().dirname())
+      to = str(self.__exe.name().dirname())
+      try:
+        shutil.rmtree(to)
+      except OSError, e:
+        if e.errno == 2:
+          pass
+        else:
+          raise
+      shutil.copytree(fr, to)
       res = self.cmd('Test %s' % self.__name,
-                     str(self.__exe.path()))
+                     # Use an absolute path, because we chdir, and
+                     # "./test" isn't very helpful in backtraces.
+                     str(drake.Path(os.getcwd()) / self.__exe.path()),
+                     cwd = to)
       if res:
         self.__target.path().touch()
       return res
