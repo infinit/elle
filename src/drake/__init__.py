@@ -886,13 +886,17 @@ def _cmd_escape(fmt, *args):
     return fmt % tuple(args)
 
 
-def cmd(fmt, *args):
-    """Expand args in fmt and run the resulting shell command.
+def cmd(cmd, cwd = None):
+    """Run the shell command.
 
-    Expansion handles shell escaping.
+    cmd -- the shell command.
+    cwd -- the dir to chdir to before.
     """
-    command = _cmd_escape(fmt, *args)
-    return _OS.system(command) == 0
+    if cwd is not None:
+        cwd = str(cwd)
+    p = subprocess.Popen(cmd, shell = True, cwd = cwd)
+    p.wait()
+    return p.returncode == 0
 
 
 def cmd_output(cmd, cwd = None):
@@ -968,7 +972,7 @@ class Builder:
         """The list of target nodes."""
         return self.__targets
 
-    def cmd(self, pretty, c, *args):
+    def cmd(self, pretty, c, *args, **kwargs):
         """Run a shell command.
 
         pretty -- A pretty version for output.
@@ -981,7 +985,10 @@ class Builder:
         """
         c = _cmd_escape(c, *args)
         self.output(c, pretty)
-        return cmd(c)
+        cwd = None
+        if "cwd" in kwargs:
+            cwd = kwargs["cwd"]
+        return cmd(c, cwd = cwd)
 
     def output(self, raw, pretty = None):
         """Output pretty, or raw if drake is in raw mode."""
