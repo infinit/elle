@@ -958,7 +958,7 @@ class Builder:
         self.__built = False
         self.__built_exception = None
         self.__building_semaphore = None
-        self.dynsrc = {}
+        self.__dynsrc = {}
 
     def sources(self):
         """The list of source nodes."""
@@ -1020,7 +1020,7 @@ class Builder:
     def add_dynsrc(self, name, node, data = None):
         """Add a dynamic source node."""
         self.depfile(name).register(node)
-        self.dynsrc[str(node.path())] = node
+        self.__dynsrc[str(node.path())] = node
 
 
     def get_type(self, tname):
@@ -1072,7 +1072,7 @@ class Builder:
                 with debug.indentation():
                     for path in depfile.sha1s():
 
-                        if path in self.__sources or path in self.dynsrc:
+                        if path in self.__sources or path in self.__dynsrc:
                             debug.debug('File %s is already in our sources.' % path, debug.DEBUG_DEPS)
                             continue
 
@@ -1102,9 +1102,9 @@ class Builder:
         # Build dynamic dependencies
         debug.debug('Build dynamic dependencies')
         with debug.indentation():
-            for path in self.dynsrc:
+            for path in self.__dynsrc:
                 try:
-                    node = self.dynsrc[path]
+                    node = self.__dynsrc[path]
                     if _can_skip_node(node):
                         continue
                     if _JOBS == 1:
@@ -1165,7 +1165,7 @@ class Builder:
             debug.debug('Executing builder %s' % self, debug.DEBUG_TRACE)
 
             # Regenerate dynamic dependencies
-            self.dynsrc = {}
+            self.__dynsrc = {}
             self._depfiles = {}
             debug.debug('Recomputing dependencies', debug.DEBUG_TRACE_PLUS)
             with debug.indentation():
@@ -1173,7 +1173,7 @@ class Builder:
 
             debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
             with debug.indentation():
-                for node in self.dynsrc.values():
+                for node in self.__dynsrc.values():
                     # FIXME: parallelize
                     for y in node.build_coro():
                         yield y
@@ -1244,7 +1244,7 @@ class Builder:
     def all_srcs(self):
         """All sources, recursively."""
         res = []
-        for src in self.__sources.values() + self.dynsrc.values():
+        for src in self.__sources.values() + self.__dynsrc.values():
             res.append(src)
             if src.builder is not None:
                 res += src.builder.all_srcs()
@@ -1257,7 +1257,7 @@ class Builder:
         marks[self] = None
 
         print '  builder_%s [label="%s", shape=rect]' % (self.uid, self.__class__)
-        for node in self.__sources.values() + self.dynsrc.values():
+        for node in self.__sources.values() + self.__dynsrc.values():
             if node.dot(marks):
                 print '  node_%s -> builder_%s' % (node.uid, self.uid)
         return True
