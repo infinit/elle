@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import drake, os
 
 run = False
@@ -33,7 +35,6 @@ class DynBuilder(drake.Builder):
 
     global deps
     deps = True
-#    self.src = drake.node('src', DynNode)
     self.src = DynNode('src')
     self.add_dynsrc(depname, self.src)
 
@@ -44,8 +45,16 @@ class DynBuilder(drake.Builder):
     run = True
     return True
 
-def configure():
-
-  global builder
-  dst = drake.Node('dst')
-  builder = DynBuilder(dst)
+dst = drake.Node('dst')
+builder = DynBuilder(dst)
+dst.build()
+assert deps
+assert run
+assert not dyndeps
+drake.reset()
+deps = False
+run = False
+dst.build()
+assert dyndeps
+assert not deps
+assert not run
