@@ -2023,3 +2023,10 @@ class os:
     macos = 2
     windows = 3
 
+
+def reset():
+    for node in BaseNode.nodes.values():
+        if node.builder is not None:
+            node.builder._Builder__built = False
+            node.builder._Builder__dynsrc = {}
+    BaseNode.nodes = {}
