@@ -344,7 +344,8 @@ class Path(object):
         ...   print f.read(),
         foobar
         """
-        self.dirname().mkpath()
+        if not self.dirname().empty():
+            self.dirname().mkpath()
         if not _OS.path.exists(str(self)):
             open(str(self), 'w').close()
 
