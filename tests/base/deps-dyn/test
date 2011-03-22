@@ -2,11 +2,12 @@
 
 import drake, os
 
-run = False
-deps = False
 depname = 'drake.test.depname'
-dyndeps = False
+add = True
 builder = None
+deps = False
+dyndeps = False
+run = False
 
 class DynNode(drake.Node):
 
@@ -35,26 +36,65 @@ class DynBuilder(drake.Builder):
 
     global deps
     deps = True
-    self.src = DynNode('src')
-    self.add_dynsrc(depname, self.src)
+    if add:
+      self.src = DynNode('src')
+      self.add_dynsrc(depname, self.src)
 
   def execute(self):
 
     global run
-    os.system('cp %s %s' % (self.src, self.dst))
+    if add:
+      os.system('cp %s %s' % (self.src, self.dst))
+    else:
+      os.system('touch %s' % (self.dst))
     run = True
     return True
 
-dst = drake.Node('dst')
-builder = DynBuilder(dst)
-dst.build()
-assert deps
-assert run
-assert not dyndeps
-drake.reset()
-deps = False
-run = False
-dst.build()
-assert dyndeps
-assert not deps
-assert not run
+def test():
+
+  global add, builder, deps, dyndeps, run
+
+  add = True
+  builder = None
+  deps = False
+  dyndeps = False
+  run = False
+
+  drake.Path('src').touch()
+  drake.Path('.drake').remove()
+
+  # Check The dependency is added
+  drake.reset()
+  drake.Path('dst').remove()
+  dst = drake.Node('dst')
+  builder = DynBuilder(dst)
+  dst.build()
+  assert deps
+  deps = False
+  assert run
+  run = False
+  assert not dyndeps
+
+  # Check The dependency is restored
+  drake.reset()
+  dst = drake.Node('dst')
+  builder = DynBuilder(dst)
+  dst.build()
+  assert dyndeps
+  dyndeps = False
+  assert not deps
+  assert not run
+
+  # Check The dependency is discarded
+  drake.reset()
+  dst = drake.Node('dst')
+  builder = DynBuilder(dst)
+  assert drake.Path('src').exists()
+  drake.Path('src').remove()
+  add = False
+  dst.build()
+
+test()
+drake._SCHEDULER = drake.sched.Scheduler(2)
+test()
+

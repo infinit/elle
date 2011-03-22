@@ -1106,7 +1106,8 @@ class Builder:
                         self.add_dynsrc(f, node, None)
 
 
-        coroutines = []
+        coroutines_static = []
+        coroutines_dynamic = []
 
         # Build static dependencies
         debug.debug('Build static dependencies')
@@ -1118,7 +1119,7 @@ class Builder:
                     yield node.build_coro()
                     sched.coro_rethrow()
                 else:
-                    coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
+                    coroutines_static.append(Coroutine(node.build_coro(), str(node), _scheduler()))
 
         # Build dynamic dependencies
         debug.debug('Build dynamic dependencies')
@@ -1132,15 +1133,24 @@ class Builder:
                         yield node.build_coro()
                         sched.coro_rethrow()
                     else:
-                        coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
+                        coroutines_dynamic.append(Coroutine(node.build_coro(), str(node), _scheduler()))
                 except Exception, e:
                     debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
 
         if _SCHEDULER.jobs() != 1:
-            for coro in coroutines:
+            for coro in coroutines_static:
                 yield coro
                 sched.coro_rethrow()
+
+        if _SCHEDULER.jobs() != 1:
+            for coro in coroutines_dynamic:
+                try:
+                    yield coro
+                    sched.coro_rethrow()
+                except Exception, e:
+                    debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
+                    execute = True
 
         # If any non-virtual target is missing, we must rebuild.
         if not execute:
