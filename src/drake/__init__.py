@@ -685,6 +685,7 @@ class BaseNode(object):
                 self.polish()
                 return
             yield self.builder.run()
+            sched.coro_rethrow()
         self.polish()
 
     def polish(self):
@@ -824,6 +825,7 @@ class Node(BaseNode):
                 self.polish()
                 return
             yield self.builder.run()
+            sched.coro_rethrow()
         self.polish()
 
     def __setattr__(self, name, value):
@@ -1057,6 +1059,7 @@ class Builder:
         if blocker is not None:
             debug.debug('Already being built, waiting.', debug.DEBUG_TRACE_PLUS)
             yield blocker
+            sched.coro_rethrow()
             return
 
         # The list of static dependencies is now fixed
@@ -1103,6 +1106,7 @@ class Builder:
                     continue
                 if _JOBS == 1:
                     yield node.build_coro()
+                    sched.coro_rethrow()
                 else:
                     coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
 
@@ -1116,6 +1120,7 @@ class Builder:
                         continue
                     if _JOBS == 1:
                         yield node.build_coro()
+                        sched.coro_rethrow()
                     else:
                         coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
                 except Exception, e:
@@ -1125,6 +1130,7 @@ class Builder:
         if _JOBS != 1:
             for coro in coroutines:
                 yield coro
+                sched.coro_rethrow()
 
         # If any non-virtual target is missing, we must rebuild.
         if not execute:
@@ -1177,13 +1183,14 @@ class Builder:
             debug.debug('Recomputing dependencies', debug.DEBUG_TRACE_PLUS)
             with debug.indentation():
                 yield self.dependencies()
+                sched.coro_rethrow()
 
             debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
             with debug.indentation():
                 for node in self.__dynsrc.values():
                     # FIXME: parallelize
-                    for y in node.build_coro():
-                        yield y
+                    yield node.build_coro()
+                    sched.coro_rethrow()
 
             if not self.execute():
                 with self.__built_semaphore:

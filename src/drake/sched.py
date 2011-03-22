@@ -9,6 +9,7 @@
 import debug
 import sys
 import threading
+import traceback
 import types
 
 class Frozen:
@@ -24,6 +25,7 @@ class Scheduler:
     self.__jobs = jobs
     self.__running = False
     self.__exception = None
+    self.__traceback = None
     self.__sem = threading.Semaphore(1)
     self.__local = threading.local()
     self.__local.i = -1
@@ -95,11 +97,13 @@ class Scheduler:
           self.__local.coroutine = coro
           debug.debug('step %s' % (coro.name), debug.DEBUG_SCHED)
           res = coro.step()
-          self.__local.coroutine = None
-        except:
-          self.__local.coroutine = None
+        except Exception, e:
           self.__exception = sys.exc_info()
+          tb = traceback.extract_tb(sys.exc_info()[2])[3:][:-1]
+          self.__traceback = coro._Coroutine__traceback
           debug.debug('caught exception %s' % (self.__exception[1]), debug.DEBUG_SCHED)
+        finally:
+          self.__local.coroutine = None
         with self.__sem:
           if res:
             if res is Frozen:
@@ -113,6 +117,11 @@ class Scheduler:
             self.ncoro -= 1
             for coro in coro._Coroutine__waiters:
               debug.debug('coroutine waking up: %s' % (coro.name), debug.DEBUG_SCHED)
+              if self.__exception is not None:
+                coro._Coroutine__exception = self.__exception[1]
+                coro._Coroutine__traceback = self.__traceback
+                self.__exception = None
+                self.__traceback = None
               self.__coroutines.append(coro)
               self.waiting_coro_lock.release()
 
@@ -128,6 +137,9 @@ class Scheduler:
     if self.__exception is not None:
       exn = self.__exception
       self.__exception = None
+      # print >> sys.stderr, 'Scheduler dying because of exception:'
+      # for l in traceback.format_list(self.__traceback) + traceback.format_exception_only(*exn[0:2]):
+      #   print l,
       raise exn[1], None, exn[2]
 
   def coroutine(self):
@@ -136,14 +148,27 @@ class Scheduler:
     assert res
     return res
 
+  def run_one(self, coro):
+    try:
+      prev = self.__local.coroutine
+      self.__local.coroutine = coro
+      while coro.routine:
+        coro._Coroutine__step()
+    finally:
+      self.__local.coroutine = prev
+
+
 class Coroutine:
 
   def __init__(self, routine, name, scheduler):
     self.routine = [routine]
     self.name = name
     self.__done = False
+    self.__exception = None
+    self.__traceback = []
     self.__waiters = []
     self.__scheduler = scheduler
+    self.__joined = False
     if scheduler is not None:
       scheduler.add(self)
 
@@ -151,13 +176,13 @@ class Coroutine:
     return 'coro %s' % self.name
 
   def run(self):
-    while self.routine:
-      self.__step()
+    _SCHEDULER.run_one(self)
 
   def step(self):
     while True:
       res = self.__step()
       if not res:
+
         break
       if res is Frozen:
         return Frozen
@@ -171,7 +196,18 @@ class Coroutine:
 
   def __step(self):
     try:
-      value = self.routine[-1].next()
+      try:
+        value = self.routine[-1].next()
+      except StopIteration:
+        raise
+      except Exception, e:
+        self.__exception = e
+        tb = traceback.extract_tb(sys.exc_info()[2])[1:]
+        self.__traceback = tb + self.__traceback
+        if len(self.routine) > 1:
+          return False
+        else:
+          raise
       if isinstance(value, types.GeneratorType):
         self.routine.append(value)
         return True
@@ -190,3 +226,9 @@ class Coroutine:
     except StopIteration:
       del self.routine[-1]
       return True
+
+def coro_rethrow():
+  e = _SCHEDULER.coroutine()._Coroutine__exception
+  if e is not None:
+    _SCHEDULER.coroutine()._Coroutine__exception = None
+    raise e
