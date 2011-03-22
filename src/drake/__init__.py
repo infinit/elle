@@ -313,6 +313,16 @@ class Path(object):
             raise Exception("Cannot take the dirname of an empty path.")
         return Path(self.__path[0:-1])
 
+    def empty(self):
+        """Whether the path is empty.
+
+        >>> Path('').empty()
+        True
+        >>> Path('foo').empty()
+        False
+        """
+        return len(self.__path) == 0
+
     def touch(self):
         """Create the designed file if it does not exists.
 
