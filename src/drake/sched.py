@@ -32,6 +32,9 @@ class Scheduler:
     self.__local.coroutine = None
     _SCHEDULER = self
 
+  def jobs(self):
+    return self.__jobs
+
   def current_job_id(self):
     return self.__local.i
 

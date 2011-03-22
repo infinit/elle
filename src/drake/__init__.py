@@ -1051,7 +1051,6 @@ class Builder:
 
     def run(self):
         """Build sources recursively, check if our target are up to date, and executed if needed."""
-        global _JOBS
         debug.debug('Running %s.' % self, debug.DEBUG_TRACE_PLUS)
 
         # If we were already executed, just skip
@@ -1063,7 +1062,7 @@ class Builder:
                     raise self.__built_exception
                 debug.debug('Already built in this run.', debug.DEBUG_TRACE_PLUS)
                 return
-            elif _JOBS > 1 and self.__building_semaphore is None:
+            elif _SCHEDULER.jobs() > 1 and self.__building_semaphore is None:
                 self.__building_semaphore = _SCHEDULER.coroutine()
             else:
                 blocker = self.__building_semaphore
@@ -1115,7 +1114,7 @@ class Builder:
             for node in self.__sources.values() + self.__vsrcs.values():
                 if _can_skip_node(node):
                     continue
-                if _JOBS == 1:
+                if _SCHEDULER.jobs() == 1:
                     yield node.build_coro()
                     sched.coro_rethrow()
                 else:
@@ -1129,7 +1128,7 @@ class Builder:
                     node = self.__dynsrc[path]
                     if _can_skip_node(node):
                         continue
-                    if _JOBS == 1:
+                    if _SCHEDULER.jobs() == 1:
                         yield node.build_coro()
                         sched.coro_rethrow()
                     else:
@@ -1138,7 +1137,7 @@ class Builder:
                     debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
 
-        if _JOBS != 1:
+        if _SCHEDULER.jobs() != 1:
             for coro in coroutines:
                 yield coro
                 sched.coro_rethrow()
@@ -1676,7 +1675,7 @@ def _register_commands():
         for node in nodes:
             coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
 
-        if _JOBS == 1:
+        if _SCHEDULER.jobs() == 1:
             for c in coroutines:
                 c.run()
         else:
