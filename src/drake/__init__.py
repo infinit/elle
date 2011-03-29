@@ -899,7 +899,7 @@ def _cmd_escape(fmt, *args):
     return fmt % tuple(args)
 
 
-def cmd(cmd, cwd = None):
+def cmd(cmd, cwd = None, stdout = None):
     """Run the shell command.
 
     cmd -- the shell command.
@@ -907,7 +907,7 @@ def cmd(cmd, cwd = None):
     """
     if cwd is not None:
         cwd = str(cwd)
-    p = subprocess.Popen(cmd, shell = True, cwd = cwd)
+    p = subprocess.Popen(cmd, shell = True, cwd = cwd, stdout = stdout)
     p.wait()
     return p.returncode == 0
 
@@ -1001,7 +1001,11 @@ class Builder:
         cwd = None
         if "cwd" in kwargs:
             cwd = kwargs["cwd"]
-        return cmd(c, cwd = cwd)
+        if _RAW:
+            return cmd(c, cwd = cwd)
+        else:
+            with open(str(self.cachedir() / 'stdout'), 'w') as f:
+                return cmd(c, cwd = cwd, stdout = f)
 
     def output(self, raw, pretty = None):
         """Output pretty, or raw if drake is in raw mode."""
@@ -1082,7 +1086,7 @@ class Builder:
         # Reload dynamic dependencies
         if not execute:
             for f in _OS.listdir(str(self.cachedir())):
-                if f in ['drake', 'drake.Builder']:
+                if f in ['drake', 'drake.Builder', 'stdout']:
                     continue
                 debug.debug('Considering dependencies file %s' % f, debug.DEBUG_DEPS)
                 depfile = self.depfile(f)
