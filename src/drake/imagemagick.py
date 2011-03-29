@@ -85,3 +85,7 @@ class ConvertBuilder(drake.Builder):
     return self.cmd("Convert %s" % self.__target,
                     "%s %s %s", self.__imagemagick.convert(),
                     self.__source.path(), self.__target.path())
+
+  def target(self):
+    """The node for the converted file."""
+    return self.__target
