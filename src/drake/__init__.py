@@ -2057,3 +2057,7 @@ def reset():
             node.builder._Builder__built = False
             node.builder._Builder__dynsrc = {}
     BaseNode.nodes = {}
+
+# Configuration
+class Configuration:
+    pass
