@@ -1,0 +1,6 @@
+PROJECT(Nucleus CXX)
+
+ADD_LIBRARY(nucleus
+)
+
+TARGET_LINK_LIBRARIES(lune elle)
