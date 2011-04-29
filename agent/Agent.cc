@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue may 25 11:43:12 2010]
+// updated       julien quintard   [wed apr 27 12:00:37 2011]
 //
 
 //
@@ -38,11 +38,6 @@ namespace agent
   /// the user's identity.
   ///
   lune::Identity		Agent::Identity;
-
-  ///
-  /// the user's chain of passports.
-  ///
-  lune::Chain			Agent::Chain;
 
   ///
   /// the door to Etoile.
@@ -84,6 +79,10 @@ namespace agent
       elle::String	prompt;
       elle::String	pass;
 
+      // does the identity exist.
+      if (Agent::Identity.Exist(name) == elle::StatusFalse)
+	escape("the user identity does not seem to exist");
+
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for keypair '" + name + "': ";
       pass = elle::String(::getpass(prompt.c_str()));
@@ -102,22 +101,12 @@ namespace agent
     }
 
     //
-    // load the user's chain i.e collection of passports.
-    //
-    {
-      if (Agent::Chain.Load(Agent::Identity) == elle::StatusError)
-	escape("unable to import the user's chain of passports");
-    }
-
-    //
     // register the inward messages.
     //
     {
       elle::Callback<const elle::Report>	error(&Agent::Error);
-      elle::Callback<const elle::String,
-		     const elle::Code>		decrypt(&Agent::Decrypt);
-      elle::Callback<const elle::String,
-		     const elle::Plain>		sign(&Agent::Sign);
+      elle::Callback<const elle::Code>		decrypt(&Agent::Decrypt);
+      elle::Callback<const elle::Plain>		sign(&Agent::Sign);
 
       // register the error message.
       if (elle::Network::Register<elle::TagError>(error) == elle::StatusError)
@@ -152,11 +141,21 @@ namespace agent
   ///
   elle::Status		Agent::Clean()
   {
+    lune::Phrase	phrase;
+
     enter();
 
     // delete the channel, if present.
     if (Agent::Channel != NULL)
       delete Agent::Channel;
+
+    // does a phrase exist...
+    if (phrase.Exist(Agent::Identity.name) == elle::StatusTrue)
+      {
+	// erase the phrase.
+	if (phrase.Erase(Agent::Identity.name) == elle::StatusError)
+	  escape("unable to erase the phrase");
+      }
 
     leave();
   }
@@ -233,7 +232,7 @@ namespace agent
 	escape("unable to create the phrase");
 
       // store the phrase.
-      if (phrase.Store() == elle::StatusError)
+      if (phrase.Store(Agent::Identity.name) == elle::StatusError)
 	escape("unable to store the phrase");
     }
 
@@ -267,20 +266,14 @@ namespace agent
   /// this callback is triggered whenever Etoile needs to decrypt
   /// a code with the agent's private key.
   ///
-  elle::Status		Agent::Decrypt(const elle::String&	universe,
-				       const elle::Code&	code)
+  elle::Status		Agent::Decrypt(const elle::Code&	code)
   {
-    lune::Passport*	passport;
     elle::Clear		clear;
 
     enter();
 
-    // retrieve the universe.
-    if (Agent::Chain.Lookup(universe, passport) == elle::StatusError)
-      escape("unable to retrieve the passport for this universe");
-
     // perform the cryptographic operation.
-    if (passport->pair->k.Decrypt(code, clear) == elle::StatusError)
+    if (Agent::Identity.pair.k.Decrypt(code, clear) == elle::StatusError)
       escape("unable to perform the decryption");
 
     // reply to the caller.
@@ -294,20 +287,14 @@ namespace agent
   ///
   /// this callback is triggered whenever Etoile needs to perform a signature.
   ///
-  elle::Status		Agent::Sign(const elle::String&		universe,
-				    const elle::Plain&		plain)
+  elle::Status		Agent::Sign(const elle::Plain&		plain)
   {
-    lune::Passport*	passport;
     elle::Signature	signature;
 
     enter();
 
-    // retrieve the universe.
-    if (Agent::Chain.Lookup(universe, passport) == elle::StatusError)
-      escape("unable to retrieve the passport for this universe");
-
     // perform the cryptographic operation.
-    if (passport->pair->k.Sign(plain, signature) == elle::StatusError)
+    if (Agent::Identity.pair.k.Sign(plain, signature) == elle::StatusError)
       escape("unable to perform the signature");
 
     // reply to the caller.
@@ -380,10 +367,6 @@ namespace agent
     if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
-    // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize Lune");
-
     // allocate a new parser.
     parser = new elle::Parser(argc, argv);
 
@@ -440,6 +423,10 @@ namespace agent
 	    }
 	  }
       }
+
+    // initialize the Lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize Lune");
 
     // check the name.
     if (name.empty() == true)

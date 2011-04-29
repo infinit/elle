@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [mon may 24 21:56:39 2010]
+// updated       julien quintard   [wed apr 27 11:07:16 2011]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -60,10 +60,8 @@ namespace agent
     //
     static elle::Status		Start();
 
-    static elle::Status		Decrypt(const elle::String&,
-					const elle::Code&);
-    static elle::Status		Sign(const elle::String&,
-				     const elle::Plain&);
+    static elle::Status		Decrypt(const elle::Code&);
+    static elle::Status		Sign(const elle::Plain&);
 
     static elle::Status		Error(const elle::Report&);
     static elle::Status		Error(const elle::String&);
@@ -72,7 +70,6 @@ namespace agent
     // static attributes
     //
     static lune::Identity	Identity;
-    static lune::Chain		Chain;
 
     static elle::Door*		Channel;
   };
