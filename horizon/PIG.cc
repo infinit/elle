@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [tue may 25 12:09:49 2010]
+// updated       julien quintard   [thu apr 28 17:38:41 2011]
 //
 
 //
@@ -70,7 +70,7 @@ namespace pig
   /// this varaible contains the mappings between local user/group
   /// identities and Infinit identities.
   ///
-  lune::Associat			PIG::Associat;
+  lune::Dictionary			PIG::Dictionary;
 
 //
 // ---------- callbacks -------------------------------------------------------
@@ -100,7 +100,8 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      skip(ENOENT);
+      error(ENOENT);
+      // XXX skip(ENOENT);
 
     // set the identifier in the fuse_file_info structure.
     info.fh = (uint64_t)&identifier;
@@ -150,8 +151,8 @@ namespace pig
     // found, the 'somebody' user is used instead, indicating that the
     // file belongs to someone, with the given permissions, but cannot
     // be mapped to a local user name.
-    if (PIG::Associat.users.Lookup(status.keys.owner,
-				   name) == elle::StatusTrue)
+    if (PIG::Dictionary.users.Lookup(status.keys.owner,
+				     name) == elle::StatusTrue)
       {
 	//
 	// in this case, the object's owner is known locally.
@@ -1220,11 +1221,15 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, directory);
 
+    printf("XXX\n");
+
     // store the directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(directory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
+
+    printf("XXX\n");
 
     // finally, the file is reopened.
     if (PIG::Channel.Call(
@@ -1695,11 +1700,10 @@ namespace pig
   /// this method initializes the system module.
   ///
   elle::Status		PIG::Initialize(const elle::String&	user,
-					const elle::String&	universe)
+					const elle::String&	network)
   {
     lune::Authority	authority;
     lune::Identity	identity;
-    lune::Passport	passport;
     lune::Phrase	phrase;
 
     enter();
@@ -1726,6 +1730,10 @@ namespace pig
       elle::String	prompt;
       elle::String	pass;
 
+      // does the identity exist.
+      if (identity.Exist(user) == elle::StatusFalse)
+	escape("the user identity does not seem to exist");
+
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for keypair '" + user + "': ";
       pass = elle::String(::getpass(prompt.c_str()));
@@ -1744,23 +1752,6 @@ namespace pig
     }
 
     //
-    // load the user's passport for the given universe.
-    //
-    {
-      // load the passport.
-      if (passport.Load(user, universe) == elle::StatusError)
-	escape("unable to load the passport");
-
-      // validate the passport.
-      if (passport.Validate(authority) == elle::StatusError)
-	escape("unable to validate the passport");
-
-      // decrypt the passport.
-      if (passport.Decrypt(identity) == elle::StatusError)
-	escape("unable to decrypt the passport");
-    }
-
-    //
     // create a subject representing the current user.
     //
     {
@@ -1768,7 +1759,7 @@ namespace pig
       PIG::Subject = new etoile::kernel::Subject;
 
       // create the subject.
-      if (PIG::Subject->Create(passport.pair->K) == elle::StatusError)
+      if (PIG::Subject->Create(identity.pair.K) == elle::StatusError)
 	escape("unable to create the user's subject");
     }
 
@@ -1776,7 +1767,13 @@ namespace pig
     // load the phrase.
     //
     {
-      if (phrase.Load() == elle::StatusError)
+      // does the phrase exist.
+      if (phrase.Exist(user) == elle::StatusFalse)
+	escape("the agent does not seem to have been launched since "
+	       "the phrase has not been located");
+
+      // load the phrase file.
+      if (phrase.Load(user) == elle::StatusError)
 	escape("unable to load the phrase");
     }
 
@@ -1796,7 +1793,8 @@ namespace pig
       // connect to etoile by providing the phrase which links the
       // application to the agent.
       if (PIG::Channel.Call(
-	    elle::Inputs<etoile::TagWallConnect>(phrase, universe),
+	    elle::Inputs<etoile::TagWallConnect>(phrase.string
+						 /* XXX , network */),
 	    elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	escape("unable to connect to etoile");
     }
@@ -1821,9 +1819,9 @@ namespace pig
     // user/group identifiers into local identifiers.
     //
     {
-      // load the associat file.
-      if (PIG::Associat.Load() == elle::StatusError)
-	escape("unable to load the associat");
+      // load the dictionary file.
+      if (PIG::Dictionary.Load(user) == elle::StatusError)
+	escape("unable to load the dictionary");
     }
 
     // initialize the fuse operations.
@@ -1904,7 +1902,8 @@ namespace pig
     elle::Parser*	parser;
     elle::Character	option;
     elle::String	user;
-    elle::String	universe;
+    elle::String	network;
+    elle::String	mountpoint;
 
     enter();
 
@@ -1916,10 +1915,6 @@ namespace pig
     if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
-    // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize Lune");
-
     // allocate a new parser.
     parser = new elle::Parser(argc, argv);
 
@@ -1930,9 +1925,21 @@ namespace pig
 			 elle::Parser::TypeNone) == elle::StatusError)
       escape("unable to register the option");
 
-    if (parser->Register('n',
-			 "name",
+    if (parser->Register('u',
+			 "user",
 			 "specifies the name of the user",
+			 elle::Parser::TypeRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('n',
+			 "network",
+			 "specifies the name of the network",
+			 elle::Parser::TypeRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('m',
+			 "mountpoint",
+			 "specifies the mount point",
 			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
@@ -1956,10 +1963,17 @@ namespace pig
 
 	      break;
 	    }
-	  case 'v':
+	  case 'n':
 	    {
-	      // retrieve the universe name.
-	      universe.assign(optarg);
+	      // retrieve the network name.
+	      network.assign(optarg);
+
+	      break;
+	    }
+	  case 'm':
+	    {
+	      // retrieve the mountpoint.
+	      mountpoint.assign(optarg);
 
 	      break;
 	    }
@@ -1984,6 +1998,10 @@ namespace pig
 	  }
       }
 
+    // initialize the Lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize Lune");
+
     // check the user.
     if (user.empty() == true)
       {
@@ -1993,22 +2011,45 @@ namespace pig
 	escape("please specify a user name");
       }
 
-    // check the universe
-    if (universe.empty() == true)
+    // check the network.
+    if (network.empty() == true)
       {
 	// display the usage.
 	parser->Usage();
 
-	escape("please specify a universe name");
+	escape("please specify a network name");
+      }
+
+    // check the mountpoint.
+    if (mountpoint.empty() == true)
+      {
+	// display the usage.
+	parser->Usage();
+
+	escape("please specify a mountpoint");
       }
 
     // initialize PIG.
-    if (PIG::Initialize(user, universe) == elle::StatusError)
+    if (PIG::Initialize(user, network) == elle::StatusError)
       escape("unable to initialize PIG");
 
-    printf("// XXX passer les bons arguments\n");
+    // build the arguments.
+    //
+    // note that the -h option can be passed in order to display all
+    // the available options including the threaded, debug, file system
+    // name, file system type etc.
+    const char*		arguments[] =
+      {
+	"-s",
+	"-d",
+	mountpoint.c_str()
+      };
+
     // launch fuse.
-    if (fuse_main((int)argc, (char**)argv, &operations, NULL) != 0)
+    if (fuse_main((int)(sizeof(arguments) / sizeof(elle::Character*)),
+		  (char**)arguments,
+		  &operations,
+		  NULL) != 0)
       escape("an error occured in FUSE");
 
     // clean PIG.
