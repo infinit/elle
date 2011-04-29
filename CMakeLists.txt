@@ -1,0 +1,9 @@
+PROJECT(Comet CXX)
+
+ADD_LIBRARY(comet
+  BN.cc
+  RAND.cc
+  RSA.cc
+)
+
+TARGET_LINK_LIBRARIES(comet)
