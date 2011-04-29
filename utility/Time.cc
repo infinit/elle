@@ -5,24 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Time.cc
+// file          /home/mycure/infinit/elle/utility/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [fri may 28 12:18:29 2010]
+// updated       julien quintard   [fri mar 18 16:13:18 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/util/Time.hh>
+#include <elle/utility/Time.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 namespace elle
 {
-  namespace util
+  namespace utility
   {
 
 //

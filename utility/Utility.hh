@@ -5,21 +5,21 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Util.hh
+// file          /home/mycure/infinit/elle/utility/Utility.hh
 //
 // created       julien quintard   [fri apr  2 12:55:50 2010]
-// updated       julien quintard   [sun may  2 21:15:08 2010]
+// updated       julien quintard   [fri mar 18 16:11:49 2011]
 //
 
-#ifndef ELLE_UTIL_UTIL_HH
-#define ELLE_UTIL_UTIL_HH
+#ifndef ELLE_UTILITY_UTILITY_HH
+#define ELLE_UTILITY_UTILITY_HH
 
 namespace elle
 {
   ///
   /// this namespace contains additional utilities.
   ///
-  namespace util
+  namespace utility
   {
 
     // nothing
@@ -31,10 +31,10 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/util/Base64.hh>
-#include <elle/util/Hexadecimal.hh>
-#include <elle/util/Parser.hh>
-#include <elle/util/Settings.hh>
-#include <elle/util/Time.hh>
+#include <elle/utility/Base64.hh>
+#include <elle/utility/Hexadecimal.hh>
+#include <elle/utility/Parser.hh>
+#include <elle/utility/Settings.hh>
+#include <elle/utility/Time.hh>
 
 #endif

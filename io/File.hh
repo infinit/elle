@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/File.hh
 //
 // created       julien quintard   [thu may 27 16:17:26 2010]
-// updated       julien quintard   [thu may 27 17:24:35 2010]
+// updated       julien quintard   [tue apr 26 15:50:09 2011]
 //
 
 #ifndef ELLE_IO_FILE_HH
@@ -18,15 +18,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/String.hh>
-
 #include <elle/standalone/Region.hh>
 
 #include <elle/radix/Status.hh>
 
+#include <elle/io/Path.hh>
+
 namespace elle
 {
-  using namespace core;
   using namespace standalone;
   using namespace radix;
 
@@ -46,11 +45,13 @@ namespace elle
       //
       // static methods
       //
-      static Status	Read(const String&,
+      static Status	Read(const Path&,
 			     Region&);
-      static Status	Write(const String&,
+      static Status	Write(const Path&,
 			      const Region&);
-      static Status	Erase(const String&);
+      static Status	Erase(const Path&);
+      static Status	Exist(const Path&);
+      static Status	Dig(const Path&);
     };
 
   }

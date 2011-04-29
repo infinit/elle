@@ -5,24 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Hexadecimal.cc
+// file          /home/mycure/infinit/elle/utility/Hexadecimal.cc
 //
 // created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [sun may  2 21:19:05 2010]
+// updated       julien quintard   [fri mar 18 16:12:42 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/util/Hexadecimal.hh>
+#include <elle/utility/Hexadecimal.hh>
 
 #include <elle/core/Character.hh>
 #include <elle/core/Byte.hh>
 
 namespace elle
 {
-  namespace util
+  namespace utility
   {
 
 //

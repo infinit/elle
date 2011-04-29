@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hxx
 //
 // created       julien quintard   [sun may  2 13:22:46 2010]
-// updated       julien quintard   [tue may  4 13:25:34 2010]
+// updated       julien quintard   [fri mar 18 16:22:34 2011]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HXX
@@ -18,12 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/util/Hexadecimal.hh>
-#include <elle/util/Base64.hh>
+#include <elle/utility/Hexadecimal.hh>
+#include <elle/utility/Base64.hh>
 
 namespace elle
 {
-  using namespace util;
+  using namespace utility;
 
   namespace io
   {

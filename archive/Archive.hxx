@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun may  2 13:11:58 2010]
+// updated       julien quintard   [thu apr 28 14:18:54 2011]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -437,7 +437,7 @@ namespace elle
       enter();
 
       std::cout << alignment << "[Region] "
-		<< element.contents << " :: "
+		<< (Void*)element.contents << " :: "
 		<< element.size << "/" << element.capacity << std::endl;
 
       leave();

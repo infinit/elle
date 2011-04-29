@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Hexadecimal.hh
+// file          /home/mycure/infinit/elle/utility/Hexadecimal.hh
 //
 // created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [tue may  4 10:52:59 2010]
+// updated       julien quintard   [fri mar 18 16:12:13 2011]
 //
 
-#ifndef ELLE_UTIL_HEXADECIMAL_HH
-#define ELLE_UTIL_HEXADECIMAL_HH
+#ifndef ELLE_UTILITY_HEXADECIMAL_HH
+#define ELLE_UTILITY_HEXADECIMAL_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -33,7 +33,7 @@ namespace elle
   using namespace radix;
   using namespace archive;
 
-  namespace util
+  namespace utility
   {
 
 //
@@ -209,6 +209,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/util/Hexadecimal.hxx>
+#include <elle/utility/Hexadecimal.hxx>
 
 #endif

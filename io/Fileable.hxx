@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hxx
 //
 // created       julien quintard   [fri apr 30 17:43:29 2010]
-// updated       julien quintard   [fri may 28 13:28:38 2010]
+// updated       julien quintard   [tue apr 26 13:15:20 2011]
 //
 
 #ifndef ELLE_IO_FILEABLE_HXX
@@ -18,23 +18,24 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/core/Byte.hh>
 #include <elle/core/Natural.hh>
 #include <elle/core/String.hh>
-#include <elle/core/Byte.hh>
 
 #include <elle/standalone/Region.hh>
 
 #include <elle/archive/Archivable.hh>
 #include <elle/archive/Archive.hh>
 
-#include <elle/util/Base64.hh>
-#include <elle/util/Hexadecimal.hh>
+#include <elle/utility/Base64.hh>
+#include <elle/utility/Hexadecimal.hh>
 
 #include <elle/io/File.hh>
+#include <elle/io/Path.hh>
 
 namespace elle
 {
-  using namespace util;
+  using namespace utility;
 
   namespace io
   {
@@ -54,7 +55,7 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const String&			path)
+      virtual Status	Load(const Path&			path)
       {
 	Archive		archive;
 	Region		region;
@@ -80,7 +81,7 @@ namespace elle
 	leave();
       }
 
-      virtual Status	Store(const String&			path) const
+      virtual Status	Store(const Path&			path) const
       {
 	Archive		archive;
 
@@ -100,6 +101,22 @@ namespace elle
 
 	leave();
       }
+
+      virtual Status	Erase(const Path&			path) const
+      {
+	enter();
+
+	// erase the file.
+	if (File::Erase(path) == StatusError)
+	  escape("unable to erase the file");
+
+	leave();
+      }
+
+      virtual Status	Exist(const Path&			path) const
+      {
+	return (File::Exist(path));
+      }
     };
 
 //
@@ -117,7 +134,7 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const String&			path)
+      virtual Status	Load(const Path&			path)
       {
 	Region		region;
 	String		string;
@@ -136,7 +153,7 @@ namespace elle
 	leave();
       }
 
-      virtual Status	Store(const String&			path) const
+      virtual Status	Store(const Path&			path) const
       {
 	String		string;
 	Region		region;
@@ -158,6 +175,22 @@ namespace elle
 
 	leave();
       }
+
+      virtual Status	Erase(const Path&			path) const
+      {
+	enter();
+
+	// erase the file.
+	if (File::Erase(path) == StatusError)
+	  escape("unable to erase the file");
+
+	leave();
+      }
+
+      virtual Status	Exist(const Path&			path) const
+      {
+	return (File::Exist(path));
+      }
     };
 
 //
@@ -175,7 +208,7 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const String&			path)
+      virtual Status	Load(const Path&			path)
       {
 	Region		region;
 	String		string;
@@ -194,7 +227,7 @@ namespace elle
 	leave();
       }
 
-      virtual Status	Store(const String&			path) const
+      virtual Status	Store(const Path&			path) const
       {
 	String		string;
 	Region		region;
@@ -216,6 +249,22 @@ namespace elle
 
 	leave();
       }
+
+      virtual Status	Erase(const Path&			path) const
+      {
+	enter();
+
+	// erase the file.
+	if (File::Erase(path) == StatusError)
+	  escape("unable to erase the file");
+
+	leave();
+      }
+
+      virtual Status	Exist(const Path&			path) const
+      {
+	return (File::Exist(path));
+      }
     };
 
 //
@@ -233,14 +282,28 @@ namespace elle
       //
       // methods
       //
-      virtual Status	Load(const String&)
+      virtual Status	Load(const Path&)
       {
 	enter();
 
 	escape("this method should never have been called");
       }
 
-      virtual Status	Store(const String&) const
+      virtual Status	Store(const Path&) const
+      {
+	enter();
+
+	escape("this method should never have been called");
+      }
+
+      virtual Status	Erase(const Path&) const
+      {
+	enter();
+
+	escape("this method should never have been called");
+      }
+
+      virtual Status	Exist(const Path&) const
       {
 	enter();
 

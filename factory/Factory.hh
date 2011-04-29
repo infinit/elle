@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [mon may  3 21:14:50 2010]
+// updated       julien quintard   [mon apr 25 11:06:59 2011]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HH

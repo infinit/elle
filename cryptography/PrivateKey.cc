@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [fri may 28 12:19:24 2010]
+// updated       julien quintard   [wed mar 23 14:07:18 2011]
 //
 
 //
@@ -18,6 +18,8 @@
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/OneWay.hh>
 #include <elle/cryptography/SecretKey.hh>
+
+#include <comet/Comet.hh>
 
 namespace elle
 {
@@ -46,6 +48,7 @@ namespace elle
       // initialize the contexts.
       contexts.decrypt = NULL;
       contexts.sign = NULL;
+      contexts.encrypt = NULL;
     }
 
     ///
@@ -72,6 +75,9 @@ namespace elle
 
       if (this->contexts.sign != NULL)
 	::EVP_PKEY_CTX_free(this->contexts.sign);
+
+      if (this->contexts.encrypt != NULL)
+	::EVP_PKEY_CTX_free(this->contexts.encrypt);
     }
 
 //
@@ -170,11 +176,34 @@ namespace elle
       if (::EVP_PKEY_sign_init(this->contexts.sign) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
+      if (::EVP_PKEY_CTX_ctrl(this->contexts.sign,
+			      EVP_PKEY_RSA,
+			      -1,
+			      EVP_PKEY_CTRL_RSA_PADDING,
+			      RSA_PKCS1_PADDING,
+			      NULL) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // create and initialize a encrypt context.
+      if ((this->contexts.encrypt = ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      if (::EVP_PKEY_sign_init(this->contexts.encrypt) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      if (::EVP_PKEY_CTX_ctrl(this->contexts.encrypt,
+			      EVP_PKEY_RSA,
+			      -1,
+			      EVP_PKEY_CTRL_RSA_PADDING,
+			      RSA_PKCS1_PADDING,
+			      NULL) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
       leave();
     }
 
     ///
-    /// this method decrypts a plain text which should actually be
+    /// this method decrypts a code which should actually be
     /// an archive containing both a secret key and some data.
     ///
     /// this method starts by (i) extracting the key and data
@@ -301,6 +330,159 @@ namespace elle
 
       // set the code size.
       signature.region.size = size;
+
+      leave();
+    }
+
+    ///
+    /// this method encrypts the given data with the private key.
+    ///
+    /// although unusual, the private key can very well be used for
+    /// encrypting in which case the public key would be used for
+    /// decrypting.
+    ///
+    /// since (i) the private key size limits the size of the data that
+    /// can be encrypted and (ii) raising large data to large exponent
+    /// is very slow; the algorithm below consists in (i) generating
+    /// a secret key, (ii) ciphering the plain text with this key,
+    /// (iii) encrypting the secret key with the private key and finally
+    /// (iv) returning an archive containing the asymetrically-encrypted
+    /// secret key with the symmetrically-encrypted data.
+    ///
+    Status		PrivateKey::Encrypt(const Plain&	plain,
+					    Code&		code) const
+    {
+      SecretKey		secret;
+
+      Code		key;
+      Cipher		data;
+
+      enter();
+
+      // (i)
+      {
+	// generate a secret key.
+	if (secret.Generate() == StatusError)
+	  escape("unable to generate the secret key");
+      }
+
+      // (ii)
+      {
+	// cipher the plain text with the secret key.
+	if (secret.Encrypt(plain, data) == StatusError)
+	  escape("unable to cipher the plain text with the secret key");
+      }
+
+      // (iii)
+      {
+	Archive		archive;
+	size_t		size;
+
+	// first, create an archive.
+	if (archive.Create() == StatusError)
+	  escape("unable to create an achive");
+
+	// then, serialize the secret key.
+	if (archive.Serialize(secret) == StatusError)
+	  escape("unable to serialize the secret key");
+
+	// compute the size of the archived symmetric key.
+	if (::EVP_PKEY_sign(this->contexts.encrypt,
+			    NULL,
+			    &size,
+			    (const unsigned char*)archive.contents,
+			    archive.size) <= 0)
+	  escape(::ERR_error_string(ERR_get_error(), NULL));
+
+	// allocate memory so the key can receive the upcoming
+	// encrypted portion.
+	if (key.region.Prepare(size) == StatusError)
+	  escape("unable to prepare the key");
+
+	// actually encrypt the secret key's archive, storing the encrypted
+	// portion directly into the key object, without any re-copy.
+	//
+	// note that since the encryption is performed with the private key,
+	// the operation is equivalent to a signature.
+	if (::EVP_PKEY_sign(this->contexts.encrypt,
+			    (unsigned char*)key.region.contents,
+			    &size,
+			    (const unsigned char*)archive.contents,
+			    archive.size) <= 0)
+	  escape(::ERR_error_string(ERR_get_error(), NULL));
+
+	// set the key size.
+	key.region.size = size;
+      }
+
+      // (iv)
+      {
+	Archive		archive;
+
+	// create the main archive.
+	if (archive.Create() == StatusError)
+	  escape("unable to create the archive");
+
+	// serialize the key.
+	if (archive.Serialize(key, data) == StatusError)
+	  escape("unable to serialize the asymetrically-encrypted secret key "
+		 "and the symetrically-encrypted data");
+
+	// wrap and return into the code.
+	if (code.region.Acquire(archive.contents, archive.size) == StatusError)
+	  escape("unable to wrap and return the archive's contents");
+
+	// detach the data from the archive so that the data does not get
+	// released.
+	if (archive.Detach() == StatusError)
+	  escape("unable to detach the data from the archive");
+      }
+
+      leave();
+    }
+
+    ///
+    /// this method derives a public key according to (i) its complementary
+    /// private key and (ii) the seed used for rotating this key pair.
+    ///
+    Status		PrivateKey::Derive(const Seed&		seed,
+					   PublicKey&		K) const
+    {
+      ::EVP_PKEY*	key;
+      ::RSA*		rsa;
+
+      enter(slab(key, ::EVP_PKEY_free),
+	    slab(rsa, ::RSA_free));
+
+      // create an EVP key.
+      key = ::EVP_PKEY_new();
+
+      // create a new RSA key.
+      rsa = ::RSA_new();
+
+      // derive the RSA key.
+      if (comet::RSA_derive(rsa,
+			    this->key->pkey.rsa->n,
+			    seed.region.contents,
+			    seed.region.size) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // assign the RSA key to the EVP's.
+      if (::EVP_PKEY_assign_RSA(key, rsa) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // stop tracking.
+      waive(rsa);
+
+      // create the rotated public key according to the EVP structure.
+      if (K.Create(key) == StatusError)
+	escape("unable to create the public key");
+
+      // release the EVP key.
+      ::EVP_PKEY_free(key);
+
+      // stop tracking.
+      waive(key);
 
       leave();
     }

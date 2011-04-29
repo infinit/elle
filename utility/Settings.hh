@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Settings.hh
+// file          /home/mycure/infinit/elle/utility/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [fri may 28 12:31:35 2010]
+// updated       julien quintard   [tue apr 26 13:11:14 2011]
 //
 
-#ifndef ELLE_UTIL_SETTINGS_HH
-#define ELLE_UTIL_SETTINGS_HH
+#ifndef ELLE_UTILITY_SETTINGS_HH
+#define ELLE_UTILITY_SETTINGS_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -39,7 +39,7 @@ namespace elle
   using namespace radix;
   using namespace io;
 
-  namespace util
+  namespace utility
   {
 
 //
@@ -141,7 +141,6 @@ namespace elle
       //
       // methods
       //
-      Status		Exist(const String&);
       Status		Add(const String&);
       Status		Lookup(const String&,
 			       Section*&);
@@ -167,8 +166,10 @@ namespace elle
       Status		Dump(const Natural32 = 0) const;
 
       // fileable
-      Status		Load(const String&);
-      Status		Store(const String&) const;
+      Status		Load(const Path&);
+      Status		Store(const Path&) const;
+      Status		Erase(const Path&) const;
+      Status		Exist(const Path&) const;
 
       //
       // attributes

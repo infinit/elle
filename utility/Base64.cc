@@ -5,24 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Base64.cc
+// file          /home/mycure/infinit/elle/utility/Base64.cc
 //
 // created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [tue may  4 13:26:25 2010]
+// updated       julien quintard   [fri mar 18 16:12:47 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/util/Base64.hh>
+#include <elle/utility/Base64.hh>
 
 #include <elle/core/Character.hh>
 #include <elle/core/Byte.hh>
 
 namespace elle
 {
-  namespace util
+  namespace utility
   {
 
 //

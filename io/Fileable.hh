@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hh
 //
 // created       julien quintard   [fri apr 30 17:35:00 2010]
-// updated       julien quintard   [thu may 27 16:24:28 2010]
+// updated       julien quintard   [tue apr 26 12:51:39 2011]
 //
 
 #ifndef ELLE_IO_FILEABLE_HH
@@ -24,6 +24,7 @@
 #include <elle/radix/Status.hh>
 
 #include <elle/io/Format.hh>
+#include <elle/io/Path.hh>
 
 namespace elle
 {
@@ -53,7 +54,7 @@ namespace elle
       ///
       /// this method loads an object and reconstructs it in memory.
       ///
-      Status		Load(const String&)
+      Status		Load(const Path&)
       {
 	enter();
 
@@ -63,7 +64,27 @@ namespace elle
       ///
       /// this method stores the object in the given file.
       ///
-      Status		Store(const String&)
+      Status		Store(const Path&) const
+      {
+	enter();
+
+	escape("this method should never have been called");
+      }
+
+      ///
+      /// this method erases the given file.
+      ///
+      Status		Erase(const Path&) const
+      {
+	enter();
+
+	escape("this method should never have been called");
+      }
+
+      ///
+      /// this method returns true if the given file exists.
+      ///
+      Status		Exist(const Path&) const
       {
 	enter();
 

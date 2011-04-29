@@ -23,8 +23,12 @@ ADD_LIBRARY(elle
   radix/Radix.cc
   radix/Trace.cc
 
+  io/Directory.cc
   io/Dumpable.cc
   io/File.cc
+  io/Pattern.cc
+  io/Piece.cc
+  io/Path.cc
 
   archive/Archive.cc
   archive/Archivable.cc
@@ -55,6 +59,7 @@ ADD_LIBRARY(elle
   cryptography/PrivateKey.cc
   cryptography/PublicKey.cc
   cryptography/SecretKey.cc
+  cryptography/Seed.cc
   cryptography/Signature.cc
 
   network/Address.cc
@@ -69,16 +74,18 @@ ADD_LIBRARY(elle
   network/Slot.cc
   network/Socket.cc
 
-  util/Base64.cc
-  util/Hexadecimal.cc
-  util/Parser.cc
-  util/Settings.cc
-  util/Time.cc
+  utility/Base64.cc
+  utility/Hexadecimal.cc
+  utility/Parser.cc
+  utility/Settings.cc
+  utility/Time.cc
 
   Elle.cc
 
   ${elle_MOCS}
 )
+
+TARGET_LINK_LIBRARIES(elle comet)
 
 ADD_SUBDIRECTORY(test)
 ADD_SUBDIRECTORY(benchmark)

@@ -5,24 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Parser.cc
+// file          /home/mycure/infinit/elle/utility/Parser.cc
 //
 // created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [sun may  2 21:41:32 2010]
+// updated       julien quintard   [mon apr 25 11:05:38 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/util/Parser.hh>
+#include <elle/utility/Parser.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 namespace elle
 {
-  namespace util
+  namespace utility
   {
 
 //

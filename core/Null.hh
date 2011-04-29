@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.hh
 //
 // created       julien quintard   [wed feb 18 15:20:44 2009]
-// updated       julien quintard   [fri apr 30 17:10:29 2010]
+// updated       julien quintard   [wed mar 23 14:08:58 2011]
 //
 
 #ifndef ELLE_CORE_NULL_HH
@@ -32,7 +32,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this enumeration is used for specifying that nothing is
+    /// to be expected.
     ///
     enum Null
       {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [mon mar 29 10:42:15 2010]
+// updated       julien quintard   [wed mar 23 10:37:46 2011]
 //
 
 #ifndef ELLE_TEST_CRYPTOGRAPHY_TEST_HH
@@ -45,7 +45,9 @@ namespace elle
 	{
 	  TypeKeys,
 	  TypeEncryption,
+	  TypeNoitpyrcne,
 	  TypeSignature,
+	  TypeRotation,
 	  TypeCipher
 	};
 
@@ -60,6 +62,9 @@ namespace elle
 
       static const Natural32		MinimumKeyLength;
       static const Natural32		MaximumKeyLength;
+
+      static const Natural32		MinimumKeyRotations;
+      static const Natural32		MaximumKeyRotations;
 
       //
       // methods

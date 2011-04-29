@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [fri may 28 12:17:18 2010]
+// updated       julien quintard   [tue mar 22 20:45:54 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -31,6 +31,7 @@
 #include <elle/cryptography/Code.hh>
 #include <elle/cryptography/Signature.hh>
 #include <elle/cryptography/Clear.hh>
+#include <elle/cryptography/Seed.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/rsa.h>
@@ -49,6 +50,15 @@ namespace elle
 
   namespace cryptography
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// the Seed must be forward declared to prevent conflicts.
+    ///
+    class Seed;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -90,6 +100,10 @@ namespace elle
 				Clear&) const;
       Status		Sign(const Plain&,
 			     Signature&) const;
+      Status		Encrypt(const Plain&,
+				Code&) const;
+      Status		Derive(const Seed&,
+			       PublicKey&) const;
 
       template <typename T,
 		typename... TT>
@@ -121,6 +135,7 @@ namespace elle
       {
 	::EVP_PKEY_CTX*	decrypt;
 	::EVP_PKEY_CTX*	sign;
+	::EVP_PKEY_CTX*	encrypt;
       }			contexts;
 
       //
@@ -145,6 +160,12 @@ namespace elle
 			     Signature&			signature) const
       {
 	return (this->Sign((Plain&)archive, signature));
+      }
+
+      Status		Encrypt(const Archive&		archive,
+				Code&			code) const
+      {
+	return (this->Encrypt((Plain&)archive, code));
       }
 
       //
@@ -251,6 +272,107 @@ namespace elle
 			     const T8&,
 			     const T9&,
 			     Signature&) const;
+
+      // encrypt
+      template <typename T1>
+      Status		Encrypt(const T1&,
+				Code&) const;
+      template <typename T1,
+		typename T2>
+      Status		Encrypt(const T1&,
+				const T2&,
+				Code&) const;
+      template <typename T1,
+		typename T2,
+		typename T3>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				Code&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				Code&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				Code&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
+				Code&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
+				const T7&,
+				Code&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
+				const T7&,
+				const T8&,
+				Code&) const;
+      template <typename T1,
+		typename T2,
+		typename T3,
+		typename T4,
+		typename T5,
+		typename T6,
+		typename T7,
+		typename T8,
+		typename T9>
+      Status		Encrypt(const T1&,
+				const T2&,
+				const T3&,
+				const T4&,
+				const T5&,
+				const T6&,
+				const T7&,
+				const T8&,
+				const T9&,
+				Code&) const;
     };
 
   }

@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Time.hh
+// file          /home/mycure/infinit/elle/utility/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [fri may 28 12:18:24 2010]
+// updated       julien quintard   [fri mar 18 16:13:13 2011]
 //
 
-#ifndef ELLE_UTIL_TIME_HH
-#define ELLE_UTIL_TIME_HH
+#ifndef ELLE_UTILITY_TIME_HH
+#define ELLE_UTILITY_TIME_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -36,7 +36,7 @@ namespace elle
   using namespace radix;
   using namespace archive;
 
-  namespace util
+  namespace utility
   {
 
 //
