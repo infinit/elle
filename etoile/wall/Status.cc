@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Status.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [fri may 28 17:50:18 2010]
+// updated       julien quintard   [tue apr 26 11:56:56 2011]
 //
 
 //
@@ -32,6 +32,17 @@ namespace etoile
     /// this defines a empty, unused hence null status.
     ///
     const Status			Status::Null;
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Status::Status()
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

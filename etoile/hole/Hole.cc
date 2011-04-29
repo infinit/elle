@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [thu may 27 16:05:30 2010]
+// updated       julien quintard   [thu apr 28 16:27:48 2011]
 //
 
 //
@@ -33,8 +33,7 @@ namespace etoile
     /// this method takes a live block and stores its data into the storage
     /// layer.
     ///
-    elle::Status	Hole::Put(const elle::String&		universe,
-				  const Address&		address,
+    elle::Status	Hole::Put(const Address&		address,
 				  const Block*			block)
     {
       enter();
@@ -110,7 +109,7 @@ namespace etoile
       */
 
       // store the block in the given universe.
-      if (block->Store(universe) == elle::StatusError)
+      if (block->Store(address) == elle::StatusError)
 	escape("unable to store the block");
 
       leave();
@@ -134,15 +133,18 @@ namespace etoile
     ///    verifying. the storage layer (Hole) should be able to understand
     ///    Address and Block!
     ///
-    elle::Status	Hole::Get(const elle::String&		universe,
-				  const Address&		address,
+    elle::Status	Hole::Get(const Address&		address,
 				  Block*&			block)
     {
       enter();
 
-      // load the block from the given universe.
-      if (block->Load(universe) != elle::StatusTrue)
-	false();
+      // does the block exist.
+      if (block->Exist(address) == elle::StatusFalse)
+	escape("the block does not seem to exist");
+
+      // load the block.
+      if (block->Load(address) == elle::StatusError)
+	escape("unable to load the block");
 
       /*
       // verify the block's validity, depending on the block component.
@@ -213,7 +215,7 @@ namespace etoile
 	  }
 	}
       */
-      true();
+      leave();
     }
 
     ///
@@ -223,8 +225,7 @@ namespace etoile
     ///   data, whose should challenge our clients, proving that we are
     ///   the owner.
     ///
-    elle::Status	Hole::Erase(const elle::String&		universe,
-				    const Address&		address)
+    elle::Status	Hole::Erase(const Address&		address)
     {
       /*
       elle::String	path =

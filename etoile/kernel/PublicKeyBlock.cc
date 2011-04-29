@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [fri may 28 19:07:54 2010]
+// updated       julien quintard   [thu apr 28 18:08:24 2011]
 //
 
 //
@@ -54,13 +54,15 @@ namespace etoile
     ///
     /// this method computes the block's address.
     ///
-    elle::Status	PublicKeyBlock::Bind(const hole::Universe& universe)
+    elle::Status	PublicKeyBlock::Bind(hole::Address&	address)
+      const
     {
       enter();
 
       // compute the address.
-      if (this->address.Create(universe, this->family,
-			       this->component, this->K) == elle::StatusError)
+      if (address.Create(this->family,
+			 this->component,
+			 this->K) == elle::StatusError)
 	escape("unable to compute the PKB's address");
 
       leave();
@@ -70,8 +72,6 @@ namespace etoile
     /// this method verifies the block's validity.
     ///
     elle::Status	PublicKeyBlock::Validate(const
-						   hole::Universe& universe,
-						 const
 						   hole::Address& address)
       const
     {
@@ -85,12 +85,13 @@ namespace etoile
       //
 
       // compute the address.
-      if (self.Create(universe, this->family,
-		      this->component, this->K) == elle::StatusError)
+      if (self.Create(this->family,
+		      this->component,
+		      this->K) == elle::StatusError)
 	escape("unable to compute the PKB's address");
 
       // verify with the recorded address.
-      if (this->address != self)
+      if (address != self)
 	escape("the address does not correspond to the block's public key");
 
       //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [fri may 28 19:10:59 2010]
+// updated       julien quintard   [thu apr 28 14:35:46 2011]
 //
 
 //
@@ -356,8 +356,7 @@ namespace etoile
     /// signature (iv) retrieves the author's public key (v) verifies
     /// the data signature.
     ///
-    elle::Status	Object::Validate(const hole::Universe&	universe,
-					 const hole::Address&	address,
+    elle::Status	Object::Validate(const hole::Address&	address,
 					 const Access*		access)
       const
     {
@@ -368,7 +367,7 @@ namespace etoile
       // (i)
       {
 	// call the parent class.
-	if (PublicKeyBlock::Validate(universe, address) == elle::StatusFalse)
+	if (PublicKeyBlock::Validate(address) == elle::StatusFalse)
 	  flee("unable to verify the underlying PKB");
       }
 
@@ -636,7 +635,17 @@ namespace etoile
     ///
     elle::Status	Object::Extract(elle::Archive&		archive)
     {
+      elle::String	name;
+
       enter();
+
+      // extract the component name.
+      if (archive.Extract(name) == elle::StatusError)
+	escape("unable to extract the component identifier");
+
+      // compare the name.
+      if (Object::Name != name)
+	escape("the archive does not seem to contain an object");
 
       // call the parent class.
       if (PublicKeyBlock::Extract(archive) == elle::StatusError)

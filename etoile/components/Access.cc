@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [mon may  3 17:40:00 2010]
+// updated       julien quintard   [thu apr 28 18:11:40 2011]
 //
 
 //
@@ -577,6 +577,8 @@ namespace etoile
 	}
       else
 	{
+	  hole::Address	address;
+
 	  //
 	  // otherwise, compute the address of the new access block and
 	  // update the object accordingly.
@@ -593,12 +595,12 @@ namespace etoile
 
 	  // bind the access as, since the block has changed, its address
 	  // is going to be different.
-	  if (context->access->Bind() == elle::StatusError)
+	  if (context->access->Bind(address) == elle::StatusError)
 	    escape("unable to bind the access");
 
 	  // register the block as needed to be published.
 	  if (context->bucket.Push(
-		context->access->address,
+		address,
 		context->access) == elle::StatusError)
 	    escape("unable to record the access block in the bucket");
 
@@ -608,7 +610,7 @@ namespace etoile
 	  // finally, update the object's meta section with the new address.
 	  if (context->object->Administrate(
 		context->object->meta.attributes,
-   	        context->access->address,
+   	        address,
 		context->object->meta.owner.permissions,
 		context->object->meta.owner.token) == elle::StatusError)
 	    escape("unable to update the object's meta section");

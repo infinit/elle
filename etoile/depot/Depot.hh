@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [mon may  3 13:06:13 2010]
+// updated       julien quintard   [thu apr 28 16:44:34 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -20,8 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/hole/Address.hh>
-#include <etoile/hole/Block.hh>
+#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {
@@ -59,6 +58,8 @@ namespace etoile
       // templates
       //
 
+      // XXX a mettre dans Depot.hxx
+
       ///
       /// this method has been introduced because the C++ typing system
       /// seems unable to implicitly cast an kernel::Object* for instance
@@ -68,28 +69,33 @@ namespace etoile
       static elle::Status	Put(const hole::Address&	address,
 				    T*				block)
       {
-	// just forward the call to the appropriate method with the correct
-	// types.
-	return (Depot::Put(address, (hole::Block*)block));
+	enter();
+
+	// store in the hole.
+	if (hole::Hole::Put(address, (hole::Block*)block) == elle::StatusError)
+	  escape("unable to put the block in the hole");
+
+	leave();
       }
 
       template <typename T>
       static elle::Status	Get(const hole::Address&	address,
 				    T*&				block)
       {
-	// just forward the call to the appropriate method with the correct
-	// types.
-	return (Depot::Get(address, (hole::Block*&)block));
-      }
+	enter();
 
-    private:
-      //
-      // static methods
-      //
-      static elle::Status	Put(const hole::Address&,
-				    hole::Block*);
-      static elle::Status	Get(const hole::Address&,
-				    hole::Block*&);
+	// XXX look in the cache etc.
+
+	// since the block has not been found in the cache, allocate
+	// one which will retrieved from the hole.
+	block = new T;
+
+	// finally, look in the hole.
+	if (hole::Hole::Get(address, (hole::Block*&)block) == elle::StatusOk)
+	  leave();
+
+	escape("unable to locate the block");
+      }
     };
 
   }

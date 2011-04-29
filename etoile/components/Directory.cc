@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [mon may  3 12:41:25 2010]
+// updated       julien quintard   [thu apr 28 18:14:54 2011]
 //
 
 //
@@ -54,11 +54,8 @@ namespace etoile
 	escape("unable to create the directory object");
 
       // bind the object.
-      if (context->object->Bind() == elle::StatusError)
+      if (context->object->Bind(context->address) == elle::StatusError)
 	escape("unable to bind the object");
-
-      // set the address.
-      context->address = context->object->address;
 
       leave();
     }
@@ -80,6 +77,9 @@ namespace etoile
       // check that the object is a directory.
       if (context->object->meta.genre != kernel::GenreDirectory)
 	escape("this object is not a directory");
+
+      // XXX
+      context->Dump();
 
       leave();
     }
@@ -108,7 +108,7 @@ namespace etoile
 	escape("unable to open the contents");
 
       // allocate a new entry.
-      entry = new kernel::Entry(name, subdirectory->object->address);
+      entry = new kernel::Entry(name, subdirectory->address);
 
       // add the entry in the directory.
       if (directory->contents->content->Add(entry) == elle::StatusError)

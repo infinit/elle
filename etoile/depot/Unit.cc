@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [tue may  4 10:43:50 2010]
+// updated       julien quintard   [thu apr 28 18:25:15 2011]
 //
 
 //
@@ -54,9 +54,11 @@ namespace etoile
       printf("TO REVIEW: this->path n'a pas de sens ici\n");
       escape("XXX");
 
+      /* XXX ici on devrait recevoir l'adresse plutot que de la recalculer.
       // create the path based on the block's address.
       if (block->address.Save(this->path) == elle::StatusError)
 	escape("unable to save the address' unique");
+      */
 
       // create an archive.
       if (archive.Create() == elle::StatusError)
@@ -153,9 +155,11 @@ namespace etoile
       if (block->Extract(archive) == elle::StatusError)
         escape("unable to extract the given block");
 
+      /* XXX
       // bind so that the internal address is computed.
       if (block->Bind() == elle::StatusError)
 	escape("unable to bind the block");
+      */
 
       leave();
     }

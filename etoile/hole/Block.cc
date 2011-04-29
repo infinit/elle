@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [fri may 28 18:01:15 2010]
+// updated       julien quintard   [thu apr 28 18:06:47 2011]
 //
 
 //
@@ -55,7 +55,7 @@ namespace etoile
     ///
     /// this method computes the address of the block.
     ///
-    elle::Status	Block::Bind()
+    elle::Status	Block::Bind(Address&) const
     {
       enter();
 
@@ -71,75 +71,6 @@ namespace etoile
       enter();
 
       fail("this method should never have been called");
-    }
-
-    ///
-    /// this method loads the block.
-    ///
-    elle::Status	Block::Load()
-    {
-      elle::String	path;
-      elle::Unique	unique;
-      elle::Region	region;
-
-      enter();
-
-      // first, turns the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
-
-      // compute the path.
-      path =
-	lune::User::Hole + elle::System::Path::Separator +
-	unique + Block::Extension;
-
-      // read the file's content.
-      if (File::Read(path, region) == StatusError)
-	escape("unable to read the file's content");
-
-      // decode and extract the object.
-      if (Hexadecimal::Decode(String((char*)region.contents, region.size),
-			      *this) == StatusError)
-	escape("unable to decode the object");
-
-      leave();
-    }
-
-    ///
-    /// this method stores the block in its file format in the given universe.
-    ///
-    elle::Status	Block::Store() const
-    {
-      elle::String	path;
-      elle::Unique	unique;
-      elle::Region	region;
-      elle::String	string;
-
-      enter();
-
-      // first, turns the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
-
-      // compute the path.
-      path =
-	lune::User::Hole + elle::System::Path::Separator +
-	unique + Block::Extension;
-
-      // encode in hexadecimal.
-      if (Hexadecimal::Encode(*this, string) == StatusError)
-	escape("unable to encode the object in hexadecimal");
-
-      // wrap the string.
-      if (region.Wrap((Byte*)string.c_str(),
-		      string.length()) == StatusError)
-	escape("unable to wrap the string in a region");
-
-      // write the file's content.
-      if (File::Write(path, region) == StatusError)
-	escape("unable to write the file's content");
-
-      leave();
     }
 
 //
@@ -165,10 +96,6 @@ namespace etoile
       enter();
 
       std::cout << alignment << "[Block]" << std::endl;
-
-      // dump the block address.
-      if (this->address.Dump(margin + 2 ) == elle::StatusError)
-	escape("unable to dump the address");
 
       // dump the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
@@ -213,6 +140,132 @@ namespace etoile
 			  (elle::Natural8&)this->component) ==
 	  elle::StatusError)
 	escape("unable to extract the block's attributes");
+
+      leave();
+    }
+
+//
+// ---------- fileable --------------------------------------------------------
+//
+
+    ///
+    /// this method loads the block.
+    ///
+    elle::Status	Block::Load(const Address&		address)
+    {
+      elle::Path	path;
+      elle::Unique	unique;
+      elle::Region	region;
+
+      enter();
+
+      // first, turn the block's address into a string.
+      if (address.Save(unique) == elle::StatusError)
+	escape("unable to save the address' unique");
+
+      // create a path.
+      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
+		      unique + Block::Extension) == elle::StatusError)
+	escape("unable to create a path");
+
+      // read the file's content.
+      if (elle::File::Read(path, region) == elle::StatusError)
+	escape("unable to read the file's content");
+
+      // decode and extract the object.
+      if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
+						 region.size),
+				    *this) == elle::StatusError)
+	escape("unable to decode the object");
+
+      leave();
+    }
+
+    ///
+    /// this method stores the block in its file format.
+    ///
+    elle::Status	Block::Store(const Address&		address) const
+    {
+      elle::Path	path;
+      elle::Unique	unique;
+      elle::Region	region;
+      elle::String	string;
+
+      enter();
+
+      // first, turn the block's address into a string.
+      if (address.Save(unique) == elle::StatusError)
+	escape("unable to save the address' unique");
+
+      // create a path.
+      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
+		      unique + Block::Extension) == elle::StatusError)
+	escape("unable to create a path");
+
+      // encode in hexadecimal.
+      if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
+	escape("unable to encode the object in hexadecimal");
+
+      // wrap the string.
+      if (region.Wrap((elle::Byte*)string.c_str(),
+		      string.length()) == elle::StatusError)
+	escape("unable to wrap the string in a region");
+
+      // write the file's content.
+      if (elle::File::Write(path, region) == elle::StatusError)
+	escape("unable to write the file's content");
+
+      leave();
+    }
+
+    ///
+    /// this method erases a block.
+    ///
+    elle::Status	Block::Erase(const Address&		address) const
+    {
+      elle::Path	path;
+      elle::Unique	unique;
+
+      enter();
+
+      // first, turn the block's address into a string.
+      if (address.Save(unique) == elle::StatusError)
+	escape("unable to save the address' unique");
+
+      // create a path.
+      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
+		      unique + Block::Extension) == elle::StatusError)
+	escape("unable to create a path");
+
+      // erase the file.
+      if (elle::File::Erase(path) == elle::StatusError)
+	escape("unable to erase the file");
+
+      leave();
+    }
+
+    ///
+    /// this method returns true if the block exists.
+    ///
+    elle::Status	Block::Exist(const Address&		address) const
+    {
+      elle::Path	path;
+      elle::Unique	unique;
+
+      enter();
+
+      // first, turn the block's address into a string.
+      if (address.Save(unique) == elle::StatusError)
+	escape("unable to save the address' unique");
+
+      // create a path.
+      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
+		      unique + Block::Extension) == elle::StatusError)
+	escape("unable to create a path");
+
+      // test the file.
+      if (elle::File::Exist(path) == elle::StatusError)
+	escape("unable to test the file");
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [fri may 28 18:01:33 2010]
+// updated       julien quintard   [tue mar  1 14:33:18 2011]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -20,7 +20,6 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/hole/Universe.hh>
 #include <etoile/hole/Family.hh>
 #include <etoile/hole/Component.hh>
 #include <etoile/hole/Universe.hh>
@@ -59,15 +58,14 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create(const Universe&,
-			       const Family,
+      elle::Status	Create(const Family,
 			       const Component,
 			       const elle::Archivable&);
 
       //
       // attributes
       //
-      Universe		universe;
+      // XXX Universe		universe;
       Family		family;
       Component		component;
       elle::Digest*	digest;

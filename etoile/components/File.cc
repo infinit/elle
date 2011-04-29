@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/File.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [mon may  3 12:42:26 2010]
+// updated       julien quintard   [thu apr 28 18:18:39 2011]
 //
 
 //
@@ -54,11 +54,8 @@ namespace etoile
 	escape("unable to create the file object");
 
       // bind the object.
-      if (context->object->Bind() == elle::StatusError)
+      if (context->object->Bind(context->address) == elle::StatusError)
 	escape("unable to bind the object");
-
-      // set the address.
-      context->address = context->object->address;
 
       leave();
     }
@@ -106,7 +103,8 @@ namespace etoile
 	escape("unable to open the contents");
 
       // write the file.
-      if (context->contents->content->Write(offset, region) == elle::StatusError)
+      if (context->contents->content->Write(offset,
+					    region) == elle::StatusError)
 	escape("unable to write the file");
 
       leave();

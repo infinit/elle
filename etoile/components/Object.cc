@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [tue may  4 11:01:03 2010]
+// updated       julien quintard   [thu apr 28 18:20:05 2011]
 //
 
 //
@@ -97,7 +97,7 @@ namespace etoile
 
 	  // record the object in the bucket.
 	  if (context->bucket.Push(
-		context->object->address,
+		context->address,
 		context->object) == elle::StatusError)
 	    escape("unable to record the object block in the bucket");
 	}
@@ -143,7 +143,7 @@ namespace etoile
 
       // record the object in the bucket.
       if (context->bucket.Destroy(
-	    context->object->address) == elle::StatusError)
+	    context->address) == elle::StatusError)
 	escape("unable to record the object block in the bucket");
 
       // record the context in the journal.

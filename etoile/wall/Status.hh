@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Status.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [fri may 28 17:50:12 2010]
+// updated       julien quintard   [tue apr 26 11:56:28 2011]
 //
 
 #ifndef ETOILE_WALL_STATUS_HH
@@ -60,6 +60,11 @@ namespace etoile
       // constants
       //
       static const Status		Null;
+
+      //
+      // constructors & destructors
+      //
+      Status();
 
       //
       // method

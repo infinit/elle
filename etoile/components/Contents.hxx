@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [mon may  3 17:42:55 2010]
+// updated       julien quintard   [thu apr 28 18:17:51 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -195,6 +195,7 @@ namespace etoile
 	    // the object must be updated accordingly.
 	    //
 	    elle::Digest	fingerprint;
+	    hole::Address	address;
 
 	    // delete the previous data block, should one exist.
 	    if (context->object->data.contents != hole::Address::Null)
@@ -218,7 +219,7 @@ namespace etoile
 	      escape("unable to encrypt the contents");
 
 	    // bind the contents i.e seal it by computing its address.
-	    if (context->contents->Bind() == elle::StatusError)
+	    if (context->contents->Bind(address) == elle::StatusError)
 	      escape("unable to bind the contents");
 
 	    // set the contents as clean.
@@ -226,14 +227,14 @@ namespace etoile
 
 	    // record the contents so that it is published.
 	    if (context->bucket.Push(
-		  context->contents->address,
+		  address,
 		  context->contents) == elle::StatusError)
 	      escape("unable to record the contents block in the bucket");
 
 	    // update the object data section.
 	    if (context->object->Update(
                   *context->author,
-		  context->contents->address,
+		  address,
 		  size,
 		  fingerprint) == elle::StatusError)
 	      escape("unable to update the object data section");

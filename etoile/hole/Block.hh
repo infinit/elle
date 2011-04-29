@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [fri may 28 19:05:19 2010]
+// updated       julien quintard   [thu apr 28 18:06:53 2011]
 //
 
 #ifndef ETOILE_HOLE_BLOCK_HH
@@ -41,7 +41,8 @@ namespace etoile
     /// note that every block is identified by an address.
     ///
     class Block:
-      public elle::Object
+      public elle::Object,
+      public virtual elle::Fileable<elle::FormatCustom>
     {
     public:
       //
@@ -59,12 +60,8 @@ namespace etoile
       //
       // methods
       //
-      virtual elle::Status	Bind(const Universe&);
-      virtual elle::Status	Validate(const Universe&,
-					 const Address&) const;
-
-      elle::Status	Load();
-      elle::Status	Store() const;
+      virtual elle::Status	Bind(Address&) const;
+      virtual elle::Status	Validate(const Address&) const;
 
       //
       // interfaces
@@ -80,16 +77,17 @@ namespace etoile
       elle::Status	Serialize(elle::Archive&) const;
       elle::Status	Extract(elle::Archive&);
 
+      // fileable
+      elle::Status	Load(const Address&);
+      elle::Status	Store(const Address&) const;
+      elle::Status	Erase(const Address&) const;
+      elle::Status	Exist(const Address&) const;
+
       //
       // attributes
       //
       Family		family;
       Component		component;
-
-      ///
-      /// note that this address is never serialized.
-      ///
-      Address		address;
     };
 
   }

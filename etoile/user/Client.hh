@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.hh
 //
 // created       julien quintard   [thu mar  4 11:56:54 2010]
-// updated       julien quintard   [mon may 31 07:47:03 2010]
+// updated       julien quintard   [sat feb 26 15:03:57 2011]
 //
 
 #ifndef ETOILE_USER_CLIENT_HH
@@ -134,7 +134,7 @@ namespace etoile
       //
       // attributes
       //
-      hole::User		user;
+      // XXX hole::User		user;
 
       Agent*			agent;
       A::Container		applications;

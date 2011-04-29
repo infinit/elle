@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Link.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [mon may  3 12:43:12 2010]
+// updated       julien quintard   [thu apr 28 18:19:15 2011]
 //
 
 //
@@ -54,11 +54,8 @@ namespace etoile
 	escape("unable to create the link object");
 
       // bind the object.
-      if (context->object->Bind() == elle::StatusError)
+      if (context->object->Bind(context->address) == elle::StatusError)
 	escape("unable to bind the object");
-
-      // set the address.
-      context->address = context->object->address;
 
       leave();
     }

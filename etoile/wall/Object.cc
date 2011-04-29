@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [tue may  4 11:00:18 2010]
+// updated       julien quintard   [thu apr 28 16:03:31 2011]
 //
 
 //
@@ -64,8 +64,8 @@ namespace etoile
 	escape("unable to create a route");
 
       // resolve the route in an object address.
-      if (path::Path::Resolve(context->route, context->address) ==
-	  elle::StatusError)
+      if (path::Path::Resolve(context->route,
+			      context->address) == elle::StatusError)
 	escape("unable to resolve the given route into an object's address");
 
       // load the object in the given context.

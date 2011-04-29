@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [mon may  3 17:40:29 2010]
+// updated       julien quintard   [tue mar  1 14:29:34 2011]
 //
 
 #ifndef ETOILE_DEPOT_UNIT_HH
@@ -21,6 +21,10 @@
 #include <elle/Elle.hh>
 
 #include <etoile/hole/Block.hh>
+
+#include <elle/idiom/Close.hh>
+# include <sys/stat.h>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [fri may 28 17:42:11 2010]
+// updated       julien quintard   [thu apr 28 14:03:00 2011]
 //
 
 //
@@ -53,7 +53,6 @@ namespace etoile
       // copy the digest, if present.
       if (address.digest != NULL)
 	{
-	  this->universe = address.universe;
 	  this->family = address.family;
 	  this->component = address.component;
 
@@ -62,7 +61,6 @@ namespace etoile
 	}
       else
 	{
-	  this->universe = Universe::Null;
 	  this->family = FamilyUnknown;
 	  this->component = ComponentUnknown;
 	  this->digest = NULL;
@@ -87,15 +85,11 @@ namespace etoile
     /// create the address based on an object by serializing it before
     /// hashing it.
     ///
-    elle::Status	Address::Create(const Universe&		universe,
-					const Family		family,
+    elle::Status	Address::Create(const Family		family,
 					const Component		component,
 					const elle::Archivable&	object)
     {
       enter();
-
-      // set the universe.
-      this->universe = universe;
 
       // set the family.
       this->family = family;
@@ -141,8 +135,7 @@ namespace etoile
 	}
       else
 	{
-	  if ((this->universe != element.universe) ||
-	      (this->family != element.family) ||
+	  if ((this->family != element.family) ||
 	      (this->component != element.component) ||
 	      (*this->digest != *element.digest))
 	    false();
@@ -178,10 +171,6 @@ namespace etoile
 	    true();
 	  else if (this->digest->region.size > element.digest->region.size)
 	    false();
-
-	  // compare the universe.
-	  if (this->universe < element.universe)
-	    true();
 
 	  // compare the family.
 	  if (this->family < element.family)
@@ -235,10 +224,6 @@ namespace etoile
 	{
 	  std::cout << alignment << "[Address] " << std::endl;
 
-	  // dump the universe.
-	  if (this->universe->Dump(margin + 2) == elle::StatusError)
-	    escape("unable to dump the universe");
-
 	  // dump the family.
 	  std::cout << alignment << elle::Dumpable::Shift
 		    << "[Family] " << std::dec
@@ -271,8 +256,7 @@ namespace etoile
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
-	  if (archive.Serialize(this->universe,
-				(elle::Natural8&)this->family,
+	  if (archive.Serialize((elle::Natural8&)this->family,
 				(elle::Natural8&)this->component,
 				*this->digest) == elle::StatusError)
 	    escape("unable to serialize the digest");
@@ -312,8 +296,7 @@ namespace etoile
 	  this->digest = new elle::Digest;
 
 	  // extract the internal digest.
-	  if (archive.Extract(this->universe,
-			      (elle::Natural8&)this->family,
+	  if (archive.Extract((elle::Natural8&)this->family,
 			      (elle::Natural8&)this->component,
 			      *this->digest) == elle::StatusError)
 	    escape("unable to extract the digest");

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [mon may  3 17:45:31 2010]
+// updated       julien quintard   [thu apr 28 13:22:10 2011]
 //
 
 //
@@ -35,17 +35,18 @@ namespace etoile
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize the Elle library");
 
-    // initialize the lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize the Lune library");
-
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
+    // initialize the lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize the Lune library");
+
     // XXX
     {
       // XXX[hack for the /]
+      /*
       {
 	int		fd;
 
@@ -69,7 +70,21 @@ namespace etoile
 
 	std::cout << "[root] " << root << std::endl;
       }
+      */
+
+      // XXX[hack for kapoue]
+      {
+	lune::Descriptor descriptor;
+
+	if (descriptor.Load("kapoue") == elle::StatusError)
+	  escape("unable to load the descriptor");
+
+	root = descriptor.root;
+
+	std::cout << "[root] " << root << std::endl;
+      }
     }
+
 
     // initialize etoile.
     if (Etoile::Initialize(root) == elle::StatusError)

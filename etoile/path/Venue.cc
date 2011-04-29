@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [fri may 28 17:49:34 2010]
+// updated       julien quintard   [tue apr 26 11:55:57 2011]
 //
 
 //
@@ -30,6 +30,17 @@ namespace etoile
     /// this constant is used a null definition.
     ///
     const Venue			Venue::Null;
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Venue::Venue()
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
