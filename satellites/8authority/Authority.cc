@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon may 10 07:34:14 2010]
+// updated       julien quintard   [tue apr 26 14:00:58 2011]
 //
 
 //
@@ -81,12 +81,15 @@ namespace application
   ///
   elle::Status		Authority::Destroy()
   {
-    struct ::stat	status;
+    elle::String	prompt;
+    elle::KeyPair	pair;
+    lune::Authority	authority;
 
     enter();
 
-    // XXX soit une method supplementaire dans Fileable soit a la main :(
-    // vu qu'on ne connait pas l'extension.
+    // erase the authority file.
+    if (authority.Erase() == elle::StatusError)
+      escape("unable to erase the authority");
 
     leave();
   }
@@ -102,6 +105,10 @@ namespace application
     elle::Unique	unique;
 
     enter();
+
+    // check if the authority exists.
+    if (authority.Exist() == elle::StatusFalse)
+      escape("unable to locate the authority file");
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
@@ -119,7 +126,6 @@ namespace application
     if (authority.Dump() == elle::StatusError)
       escape("unable to dump the authority");
 
-    // XXX
     // retrive the public key's unique.
     if (authority.K.Save(unique) == elle::StatusError)
       escape("unable to save the authority's public key");
@@ -154,14 +160,6 @@ namespace application
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
-
-    // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize Lune");
-
-    // initialize the Etoile.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
-      escape("unable to initialize Etoile");
 
     // initialize the operation.
     operation = Authority::OperationUnknown;
@@ -275,6 +273,14 @@ namespace application
 	    }
 	  }
       }
+
+    // initialize the Lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize Lune");
+
+    // initialize the Etoile.
+    if (etoile::Etoile::Initialize() == elle::StatusError)
+      escape("unable to initialize Etoile");
 
     // trigger the operation.
     switch (operation)

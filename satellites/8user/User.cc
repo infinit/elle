@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon may 24 11:05:19 2010]
+// updated       julien quintard   [tue apr 26 19:31:07 2011]
 //
 
 //
@@ -51,6 +51,14 @@ namespace application
     if (name.empty() == true)
       escape("unable to create a user without a user name");
 
+    // check if the user already exists.
+    if (identity.Exist(name) == elle::StatusTrue)
+      escape("this user seems to already exist");
+
+    // check if the authority exists.
+    if (authority.Exist() == elle::StatusFalse)
+      escape("unable to locate the authority file");
+
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority: ";
     pass = elle::String(::getpass(prompt.c_str()));
@@ -62,20 +70,6 @@ namespace application
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::StatusError)
       escape("unable to decrypt the authority");
-
-    // create the user's directory.
-    if (::mkdir((lune::Lune::Users +
-		 elle::System::Path::Separator +
-		 name).c_str(), 0700) == -1)
-      escape(::strerror(errno));
-
-    // create the passports directory.
-    if (::mkdir((lune::Lune::Users +
-		 elle::System::Path::Separator +
-		 name +
-		 elle::System::Path::Separator +
-		 lune::Lune::Passports).c_str(), 0700) == -1)
-      escape(::strerror(errno));
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
@@ -111,7 +105,73 @@ namespace application
   {
     enter();
 
-    // XXX
+    //
+    // remove the identity.
+    //
+    {
+      lune::Identity	identity;
+
+      // check if the user already exists.
+      if (identity.Exist(name) == elle::StatusFalse)
+	escape("this user does not seem to exist");
+
+      // destroy the identity.
+      if (identity.Erase(name) == elle::StatusFalse)
+	escape("unable to erase the identity file");
+    }
+
+    //
+    // remove the dictionary, if necessary.
+    //
+    {
+      lune::Dictionary	dictionary;
+
+      // if the dictionary exists...
+      if (dictionary.Exist(name) == elle::StatusTrue)
+	{
+	  // remove it.
+	  if (dictionary.Erase(name) == elle::StatusError)
+	    escape("unable to erase the dictionary");
+	}
+    }
+
+    //
+    // remove the phrase, if necessary.
+    //
+    {
+      lune::Phrase	phrase;
+
+      // if the phrase exists...
+      if (phrase.Exist(name) == elle::StatusTrue)
+	{
+	  // remove it.
+	  if (phrase.Erase(name) == elle::StatusError)
+	    escape("unable to erase the phrase");
+	}
+    }
+
+    //
+    // remove the user directory.
+    //
+    {
+      elle::Path	path;
+
+      // create the user path.
+      if (path.Create(lune::Lune::User) == elle::StatusError)
+	escape("unable to create the path");
+
+      // complete the path with the user name.
+      if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
+	escape("unable to complete the path");
+
+      // clear the user directory content.
+      if (elle::Directory::Clear(path) == elle::StatusError)
+	escape("unable to clear the directory");
+
+      // remove the directory.
+      if (elle::Directory::Remove(path) == elle::StatusError)
+	escape("unable to erase the directory");
+    }
 
     leave();
   }
@@ -133,6 +193,10 @@ namespace application
     // check the argument.
     if (name.empty() == true)
       escape("unable to create a user without a user name");
+
+    // check if the user already exists.
+    if (identity.Exist(name) == elle::StatusFalse)
+      escape("this user does not seem to exist");
 
     // restore the authority's public key.
     if (K.Restore(Infinit::Authority) == elle::StatusError)
@@ -167,8 +231,7 @@ namespace application
       escape("unable to save the public key's unique");
 
     // display the unique.
-    std::cout << std::endl
-	      << "[Unique] " << unique << std::endl;
+    std::cout << "[Unique] " << unique << std::endl;
 
     leave();
   }
@@ -199,14 +262,6 @@ namespace application
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
-
-    // initialize the Lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize Lune");
-
-    // initialize the Etoile.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
-      escape("unable to initialize Etoile");
 
     // initialize the operation.
     operation = User::OperationUnknown;
@@ -241,7 +296,7 @@ namespace application
 
     if (parser->Register('n',
 			 "name",
-			 "specifies a user name",
+			 "specifies a unique user name",
 			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
@@ -333,6 +388,14 @@ namespace application
 	    }
 	  }
       }
+
+    // initialize the Lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize Lune");
+
+    // initialize the Etoile.
+    if (etoile::Etoile::Initialize() == elle::StatusError)
+      escape("unable to initialize Etoile");
 
     // trigger the operation.
     switch (operation)

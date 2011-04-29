@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon may 10 09:55:08 2010]
+// updated       julien quintard   [mon apr 25 21:35:06 2011]
 //
 
 #ifndef SETUP_SETUP_HH
@@ -50,18 +50,14 @@ namespace application
 	OperationUnknown = 0,
 
 	OperationInitialize,
-	OperationClean,
-	OperationCheck
+	OperationClean
       };
 
     //
     // static methods
     //
-    static elle::Status		Empty(const elle::String&);
-
     static elle::Status		Initialize();
     static elle::Status		Clean();
-    static elle::Status		Check();
   };
 
 }
