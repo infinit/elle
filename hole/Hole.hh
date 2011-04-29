@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [tue apr 13 16:54:57 2010]
+// updated       julien quintard   [tue mar  1 18:39:38 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -30,6 +30,17 @@ namespace hole
 //
 // ---------- classes ---------------------------------------------------------
 //
+
+/// XXX host = device, node = virtual entity in the network
+
+/// XXX quand on join, le noeud contacte le precedent et recupere ce qu'il
+/// doit desormais gerer. il contacte les clusters de nodes reponsables des
+/// repliques de ces blocks de maniere a maintenir consistency et detecter
+/// leur depart pour maintenir le facteur de replication.
+
+/// si hole recoit une version plus ancienne, en background, un message lui ait
+/// envoye pour lui dire de se mettre a jour (en lui fournissant la version
+/// le plus a jour + un noeud a jour)
 
   ///
   /// this is the base Hole class.
