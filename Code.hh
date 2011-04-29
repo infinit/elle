@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Code.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [fri may 28 12:16:55 2010]
+// updated       julien quintard   [tue apr 26 11:45:09 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CODE_HH
@@ -54,6 +54,16 @@ namespace elle
       // constants
       //
       static const Code		Null;
+
+      //
+      // constructors & destructors
+      //
+      Code();
+
+      //
+      // methods
+      //
+      Status		Create(const Region&);
 
       //
       // interfaces

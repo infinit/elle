@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Digest.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [fri may 28 12:17:28 2010]
+// updated       julien quintard   [tue apr 26 11:45:59 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_DIGEST_HH
@@ -54,6 +54,11 @@ namespace elle
       // constants
       //
       static const Digest		Null;
+
+      //
+      // constructors & destructors
+      //
+      Digest();
 
       //
       // interfaces

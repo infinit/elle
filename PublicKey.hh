@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [fri may 28 12:17:38 2010]
+// updated       julien quintard   [sun mar 20 18:50:24 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
@@ -29,6 +29,7 @@
 
 #include <elle/cryptography/Plain.hh>
 #include <elle/cryptography/Code.hh>
+#include <elle/cryptography/Clear.hh>
 #include <elle/cryptography/Signature.hh>
 
 #include <elle/idiom/Close.hh>
@@ -81,12 +82,19 @@ namespace elle
 				Code&) const;
       Status		Verify(const Signature&,
 			       const Plain&) const;
+      Status		Decrypt(const Code&,
+				Clear&) const;
 
       template <typename T,
 		typename... TT>
       Status		Verify(const Signature&,
 			       const T&,
 			       const TT&...) const;
+      template <typename T,
+		typename... TT>
+      Status		Decrypt(const Code&,
+				T&,
+				TT&...) const;
 
       //
       // interfaces
@@ -112,6 +120,7 @@ namespace elle
       {
 	::EVP_PKEY_CTX*	encrypt;
 	::EVP_PKEY_CTX*	verify;
+	::EVP_PKEY_CTX*	decrypt;
       }			contexts;
 
       ///

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Signature.hh
 //
 // created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [fri may 28 12:17:32 2010]
+// updated       julien quintard   [tue apr 26 11:48:02 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SIGNATURE_HH
@@ -57,6 +57,11 @@ namespace elle
       // constants
       //
       static const Signature		Null;
+
+      //
+      // constructors & destructors
+      //
+      Signature();
 
       //
       // interfaces

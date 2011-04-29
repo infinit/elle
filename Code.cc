@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Code.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [fri may 28 12:19:38 2010]
+// updated       julien quintard   [tue apr 26 11:45:31 2011]
 //
 
 //
@@ -35,6 +35,34 @@ namespace elle
     /// this defines a null code.
     ///
     const Code			Code::Null;
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Code::Code()
+    {
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method creates a code based on the given region.
+    ///
+    Status		Code::Create(const Region&	region)
+    {
+      enter();
+
+      // set the region.
+      this->region = region;
+
+      leave();
+    }
 
 //
 // ---------- object ----------------------------------------------------------

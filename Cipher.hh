@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cipher.hh
 //
 // created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [fri may 28 12:14:54 2010]
+// updated       julien quintard   [tue apr 26 11:44:24 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CIPHER_HH
@@ -54,6 +54,11 @@ namespace elle
       // constants
       //
       static const Cipher		Null;
+
+      //
+      // constructors & destructors
+      //
+      Cipher();
 
       //
       // interfaces

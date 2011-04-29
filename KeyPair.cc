@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [fri may 28 12:19:33 2010]
+// updated       julien quintard   [tue apr 26 13:14:10 2011]
 //
 
 //
@@ -25,6 +25,11 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/io/File.hh>
+#include <elle/io/Path.hh>
+#include <elle/io/Pattern.hh>
+#include <elle/io/Piece.hh>
+
+#include <comet/Comet.hh>
 
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
@@ -36,6 +41,7 @@
 namespace elle
 {
   using namespace standalone;
+  using namespace io;
 
   namespace cryptography
   {
@@ -63,6 +69,17 @@ namespace elle
     /// this string defines the key pair files extension.
     ///
     const String		KeyPair::Extension = ".pair";
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    KeyPair::KeyPair()
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -165,6 +182,59 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method rotates a key pair based on a given seed.
+    ///
+    /// this seed will then be used---by people having access to it,
+    /// and to the key modulus---in order to retrieve the public key.
+    /// for more information, please refer to PrivateKey::Derive().
+    ///
+    Status		KeyPair::Rotate(const Seed&		seed,
+					KeyPair&		kp) const
+    {
+      ::EVP_PKEY*	key;
+      ::RSA*		rsa;
+
+      enter(slab(key, ::EVP_PKEY_free),
+	    slab(rsa, ::RSA_free));
+
+      // create an EVP key.
+      key = ::EVP_PKEY_new();
+
+      // create a new RSA key.
+      rsa = ::RSA_new();
+
+      // rotate the RSA key.
+      if (comet::RSA_rotate(rsa,
+			    ::BN_num_bits(this->K.key->pkey.rsa->n),
+			    seed.region.contents,
+			    seed.region.size) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // assign the RSA key to the EVP's.
+      if (::EVP_PKEY_assign_RSA(key, rsa) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // stop tracking.
+      waive(rsa);
+
+      // create the rotated public key according to the EVP structure.
+      if (kp.K.Create(key) == StatusError)
+	escape("unable to create the public key");
+
+      // create the rotated private key according to the EVP structure.
+      if (kp.k.Create(key) == StatusError)
+	escape("unable to create the private key");
+
+      // release the EVP key.
+      ::EVP_PKEY_free(key);
+
+      // stop tracking.
+      waive(key);
+
+      leave();
+    }
+
 //
 // ---------- object ----------------------------------------------------------
 //
@@ -257,10 +327,9 @@ namespace elle
     ///
     /// this method loads a key pair from a file.
     ///
-    Status		KeyPair::Load(const String&		name,
+    Status		KeyPair::Load(const Path&		path,
 				      const String&		pass)
     {
-      String		path = name + KeyPair::Extension;
       Region		region;
       Cipher		cipher;
       SecretKey		key;
@@ -287,10 +356,9 @@ namespace elle
     /// this method stores a key pair in a file, taking care to encrypt
     /// it with the given pass.
     ///
-    Status		KeyPair::Store(const String&		name,
+    Status		KeyPair::Store(const Path&		path,
 				       const String&		pass) const
     {
-      String		path = name + KeyPair::Extension;
       Cipher		cipher;
       String		string;
       SecretKey		key;
@@ -319,6 +387,28 @@ namespace elle
 	escape("unable to write the file");
 
       leave();
+    }
+
+    ///
+    /// this method erases the key pair file.
+    ///
+    Status		KeyPair::Erase(const Path&		path) const
+    {
+      enter();
+
+      // erase the file.
+      if (elle::File::Erase(path) == elle::StatusError)
+	escape("unable to erase the file");
+
+      leave();
+    }
+
+    ///
+    /// this method tests the key pair file.
+    ///
+    Status		KeyPair::Exist(const Path&		path) const
+    {
+      return (elle::File::Exist(path));
     }
 
   }

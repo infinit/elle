@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.hh
 //
 // created       julien quintard   [tue oct 30 12:15:12 2007]
-// updated       julien quintard   [mon may  3 21:17:18 2010]
+// updated       julien quintard   [sat mar 19 13:41:34 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CRYPTOGRAPHYGRAPHY_HH
@@ -86,6 +86,7 @@ namespace elle
 #include <elle/cryptography/PrivateKey.hh>
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Seed.hh>
 #include <elle/cryptography/Signature.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [fri may 28 12:17:46 2010]
+// updated       julien quintard   [tue apr 26 11:47:01 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
@@ -75,6 +75,11 @@ namespace elle
       };
 
       static const SecretKey		Null;
+
+      //
+      // constructors & destructors
+      //
+      SecretKey();
 
       //
       // methods

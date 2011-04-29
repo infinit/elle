@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun may  2 18:44:57 2010]
+// updated       julien quintard   [sun mar 20 13:37:37 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
@@ -339,6 +339,46 @@ namespace elle
 	flee("unable to verify the signature against the object's archive");
 
       true();
+    }
+
+    //
+    // decrypt
+    //
+
+    ///
+    /// this method decrypts a code and returns a pretty newly created
+    /// object.
+    ///
+    template <typename T,
+	      typename... TT>
+    Status		PublicKey::Decrypt(const Code&		code,
+					   T&			parameter,
+					   TT&...		parameters)
+      const
+    {
+      Archive		archive;
+      Clear		clear;
+
+      enter();
+
+      // decrypt the code.
+      if (this->Decrypt(code, clear) == StatusError)
+	escape("unable to decrypt the code");
+
+      // wrap the clear into an archive.
+      if (archive.Prepare(clear) == StatusError)
+	escape("unable to prepare the archive");
+
+      // detach the data so that not both the clear and archive
+      // release the data.
+      if (clear.Detach() == StatusError)
+	escape("unable to detach the clear's data");
+
+      // extract the item.
+      if (archive.Extract(parameter, parameters...) == StatusError)
+	escape("unable to extract the items");
+
+      leave();
     }
 
   }

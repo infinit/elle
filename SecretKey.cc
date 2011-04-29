@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [fri may 28 12:18:58 2010]
+// updated       julien quintard   [tue apr 26 11:47:29 2011]
 //
 
 //
@@ -35,9 +35,9 @@ namespace elle
     const Character		SecretKey::Magic[] = "Salted__";
 
     ///
-    /// this is the default length used when generating passwords.
+    /// this is the default length used when generating passwords, in bits.
     ///
-    const Natural32		SecretKey::Default::Length = 256;
+    const Natural32		SecretKey::Default::Length = 512;
 
     ///
     /// this is the encryption algorithm used by the SecretKey class.
@@ -55,6 +55,17 @@ namespace elle
     /// this defines a null secret key.
     ///
     const SecretKey		SecretKey::Null;
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    SecretKey::SecretKey()
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
