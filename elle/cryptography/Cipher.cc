@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cipher.cc
 //
 // created       julien quintard   [mon feb  2 22:22:12 2009]
-// updated       julien quintard   [fri may 28 12:19:04 2010]
+// updated       julien quintard   [tue apr 26 11:44:48 2011]
 //
 
 //
@@ -37,6 +37,17 @@ namespace elle
     /// this defines a null cipher.
     ///
     const Cipher		Cipher::Null;
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Cipher::Cipher()
+    {
+    }
 
 //
 // ---------- object ----------------------------------------------------------

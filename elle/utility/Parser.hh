@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Parser.hh
+// file          /home/mycure/infinit/elle/utility/Parser.hh
 //
 // created       julien quintard   [wed apr 28 11:11:05 2010]
-// updated       julien quintard   [mon may  3 21:23:40 2010]
+// updated       julien quintard   [fri mar 18 16:12:30 2011]
 //
 
-#ifndef ELLE_UTIL_PARSER_HH
-#define ELLE_UTIL_PARSER_HH
+#ifndef ELLE_UTILITY_PARSER_HH
+#define ELLE_UTILITY_PARSER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -36,7 +36,7 @@ namespace elle
   using namespace core;
   using namespace radix;
 
-  namespace util
+  namespace utility
   {
 
 //

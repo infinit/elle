@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Hexadecimal.hxx
+// file          /home/mycure/infinit/elle/utility/Hexadecimal.hxx
 //
 // created       julien quintard   [sun apr 18 15:34:47 2010]
-// updated       julien quintard   [sun may  2 21:18:36 2010]
+// updated       julien quintard   [thu apr 28 13:46:50 2011]
 //
 
-#ifndef ELLE_UTIL_HEXADECIMAL_HXX
-#define ELLE_UTIL_HEXADECIMAL_HXX
+#ifndef ELLE_UTILITY_HEXADECIMAL_HXX
+#define ELLE_UTILITY_HEXADECIMAL_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -23,7 +23,7 @@
 
 namespace elle
 {
-  namespace util
+  namespace utility
   {
 
 //

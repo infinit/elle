@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [wed may  5 22:14:37 2010]
+// updated       julien quintard   [wed mar 23 15:11:50 2011]
 //
 
 //
@@ -103,6 +103,10 @@ namespace elle
 				     Natural64			size)
     {
       enter();
+
+      // check if the operation is valid.
+      if (this->type != Region::TypeUnknown)
+	escape("region already in use");
 
       // set the type.
       this->type = Region::TypeChunk;
@@ -329,7 +333,7 @@ namespace elle
     ///
     /// this method dumps the region's contents in hexadecimal.
     ///
-    /// note that the Hexadecimal util class is not used to avoid
+    /// note that the Hexadecimal utility class is not used to avoid
     /// dependencies since this class is critical.
     ///
     Status		Region::Dump(const Natural32		margin) const

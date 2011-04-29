@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Base64.hh
+// file          /home/mycure/infinit/elle/utility/Base64.hh
 //
 // created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [tue may  4 10:52:33 2010]
+// updated       julien quintard   [fri mar 18 16:11:58 2011]
 //
 
-#ifndef ELLE_UTIL_BASE64_HH
-#define ELLE_UTIL_BASE64_HH
+#ifndef ELLE_UTILITY_BASE64_HH
+#define ELLE_UTILITY_BASE64_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -33,7 +33,7 @@ namespace elle
   using namespace radix;
   using namespace archive;
 
-  namespace util
+  namespace utility
   {
 
 //
@@ -209,6 +209,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/util/Base64.hxx>
+#include <elle/utility/Base64.hxx>
 
 #endif

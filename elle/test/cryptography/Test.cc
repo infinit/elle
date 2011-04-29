@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon may  3 21:25:52 2010]
+// updated       julien quintard   [wed mar 23 15:23:22 2011]
 //
 
 //
@@ -34,6 +34,9 @@ namespace elle
 
     const Natural32		Test::MinimumKeyLength = 1024;
     const Natural32		Test::MaximumKeyLength = 2048;
+
+    const Natural32		Test::MinimumKeyRotations = 1;
+    const Natural32		Test::MaximumKeyRotations = 10;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -167,6 +170,36 @@ namespace elle
 
 		break;
 	      }
+	    case Test::TypeNoitpyrcne:
+	      {
+		PublicKey	K;
+		PrivateKey	k;
+		Plain		plain;
+		Code		code;
+		Clear		clear;
+
+		// test the key assignment.
+		K = kp->K;
+		k = kp->k;
+
+		// generate an input.
+		if (Test::Generate(plain) == StatusError)
+		  escape("unable to generate a plain");
+
+		// encrypt the input with the private key.
+		if (k.Encrypt(plain, code) == StatusError)
+		  escape("unable to encrypt the plain");
+
+		// decrypt it with the public key.
+		if (K.Decrypt(code, clear) == StatusError)
+		  escape("unable to decrypt the code");
+
+		// compare the input and output.
+		if (plain != clear)
+		  escape("the clear differs from the plain");
+
+		break;
+	      }
 	    case Test::TypeSignature:
 	      {
 		PublicKey	K;
@@ -218,6 +251,83 @@ namespace elle
 		// compare the clear with the initial plain.
 		if (plain != clear)
 		  escape("the clear differs from the plain");
+
+		break;
+	      }
+	    case Test::TypeRotation:
+	      {
+		Seed		seed;
+		KeyPair		initial;
+		Natural32	rotations;
+		Natural32	i;
+		Seed		s;
+		KeyPair		p;
+		PrivateKey	k;
+		PublicKey	K;
+
+		// generate the initial seed.
+		if (seed.Generate() == StatusError)
+		  escape("unable to generate the seed");
+
+		// rotate the key pair once in order to be truly random
+		// i.e without a small exponent 'e' such as 3.
+		if (kp->Rotate(seed, initial) == StatusError)
+		  escape("unable to rotate the initial key pair");
+
+		// generate a random number of rotations to apply.
+		rotations = Random::Generate(Test::MinimumKeyRotations,
+					     Test::MaximumKeyRotations);
+
+		// assign the current seed and key pair.
+		s = seed;
+		p = initial;
+
+		// perform the key rotations.
+		for (i = 0; i < rotations; i++)
+		  {
+		    Seed	_s;
+		    KeyPair	_p;
+
+		    // rotate the seed.
+		    if (s.Rotate(kp->k, _s) == StatusError)
+		      escape("unable to rotate the seed");
+
+		    // assign the seed.
+		    s = _s;
+
+		    // rotate the key pair.
+		    if (p.Rotate(s, _p) == StatusError)
+		      escape("unable to rotate the key pair");
+
+		    // assign the key pair.
+		    p = _p;
+		  }
+
+		// assign the necessary for the derivation.
+		s = s;
+		k = initial.k;
+
+		// perform the key derivations.
+		for (i = 0; i < rotations; i++)
+		  {
+		    Seed	_s;
+
+		    // derive the seed.
+		    if (s.Derive(kp->K, _s) == StatusError)
+		      escape("unable to derive the seed");
+
+		    // assign the seed.
+		    s = _s;
+		  }
+
+		// derive the key from the seed.
+		if (k.Derive(s, K) == StatusError)
+		  escape("unable to derive the key");
+
+		// finally, compare the public and private key
+		// with the initial.
+		if ((initial.K != K) || (initial.k != k))
+		  escape("the keys differ from the initial");
 
 		break;
 	      }

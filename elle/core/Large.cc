@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Large.cc
 //
 // created       julien quintard   [thu feb  5 15:37:07 2009]
-// updated       julien quintard   [sun may  2 10:51:22 2010]
+// updated       julien quintard   [tue mar 22 14:51:52 2011]
 //
 
 //

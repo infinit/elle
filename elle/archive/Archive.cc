@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sun may  2 15:31:03 2010]
+// updated       julien quintard   [thu apr 28 14:17:04 2011]
 //
 
 //
@@ -956,7 +956,7 @@ namespace elle
       enter();
 
       // call the super-method.
-      if (Archive::operator==(element) == false)
+      if (Region::operator==(element) == false)
 	false();
 
       true();

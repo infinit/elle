@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.hh
 //
 // created       julien quintard   [sat oct 27 18:00:55 2007]
-// updated       julien quintard   [fri may 28 12:31:41 2010]
+// updated       julien quintard   [tue apr 26 13:24:16 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_KEYPAIR_HH
@@ -31,6 +31,7 @@
 
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/PrivateKey.hh>
+#include <elle/cryptography/Seed.hh>
 
 namespace elle
 {
@@ -76,6 +77,11 @@ namespace elle
       static const String		Extension;
 
       //
+      // constructors & destructors
+      //
+      KeyPair();
+
+      //
       // methods
       //
       Status		Generate();
@@ -83,6 +89,9 @@ namespace elle
 
       Status		Create(const PublicKey&,
 			       const PrivateKey&);
+
+      Status		Rotate(const Seed&,
+			       KeyPair&) const;
 
       //
       // interfaces
@@ -100,10 +109,12 @@ namespace elle
       Status		Extract(Archive&);
 
       // fileable
-      Status		Load(const String&,
+      Status		Load(const Path&,
 			     const String&);
-      Status		Store(const String&,
+      Status		Store(const Path&,
 			      const String&) const;
+      Status		Erase(const Path&) const;
+      Status		Exist(const Path&) const;
 
       //
       // attributes

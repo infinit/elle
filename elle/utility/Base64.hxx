@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Base64.hxx
+// file          /home/mycure/infinit/elle/utility/Base64.hxx
 //
 // created       julien quintard   [sun apr 18 15:34:47 2010]
-// updated       julien quintard   [sun may  2 21:16:02 2010]
+// updated       julien quintard   [fri mar 18 16:12:04 2011]
 //
 
-#ifndef ELLE_UTIL_BASE64_HXX
-#define ELLE_UTIL_BASE64_HXX
+#ifndef ELLE_UTILITY_BASE64_HXX
+#define ELLE_UTILITY_BASE64_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -23,7 +23,7 @@
 
 namespace elle
 {
-  namespace util
+  namespace utility
   {
 
 //

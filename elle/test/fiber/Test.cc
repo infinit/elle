@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon may  3 21:25:58 2010]
+// updated       julien quintard   [mon apr 25 20:10:11 2011]
 //
 
 //
@@ -92,6 +92,10 @@ namespace elle
       printf("[Fiber3] /Wait(ResourceC)\n");
 
       printf("[Fiber3] End\n");
+
+      // exit.
+      if (Program::Exit() == StatusError)
+	escape("unable to exit from the program");
 
       leave();
     }

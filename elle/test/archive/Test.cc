@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/archive/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon may  3 21:25:46 2010]
+// updated       julien quintard   [mon apr 25 19:57:22 2011]
 //
 
 //

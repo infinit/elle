@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [fri may 28 12:19:08 2010]
+// updated       julien quintard   [tue mar 22 20:33:26 2011]
 //
 
 //
@@ -47,6 +47,7 @@ namespace elle
       // initialize the contexts.
       this->contexts.encrypt = NULL;
       this->contexts.verify = NULL;
+      this->contexts.decrypt = NULL;
     }
 
     ///
@@ -73,6 +74,9 @@ namespace elle
 
       if (this->contexts.verify != NULL)
 	::EVP_PKEY_CTX_free(this->contexts.verify);
+
+      if (this->contexts.decrypt != NULL)
+	::EVP_PKEY_CTX_free(this->contexts.decrypt);
     }
 
 //
@@ -156,19 +160,47 @@ namespace elle
       if (::EVP_PKEY_verify_init(this->contexts.verify) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
+      if (::EVP_PKEY_CTX_ctrl(this->contexts.verify,
+			      EVP_PKEY_RSA,
+			      -1,
+			      EVP_PKEY_CTRL_RSA_PADDING,
+			      RSA_PKCS1_PADDING,
+			      NULL) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // create and initialize the decrypt context.
+      if ((this->contexts.decrypt = ::EVP_PKEY_CTX_new(this->key, NULL)) ==
+	  NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      if (::EVP_PKEY_verify_recover_init(this->contexts.decrypt) <= 0)
+        escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      if (::EVP_PKEY_CTX_ctrl(this->contexts.decrypt,
+			      EVP_PKEY_RSA,
+			      -1,
+			      EVP_PKEY_CTRL_RSA_PADDING,
+			      RSA_PKCS1_PADDING,
+			      NULL) <= 0)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
+
       leave();
     }
 
     ///
     /// this method encrypts the given data with the public key.
     ///
-    /// since (i) the public key size limits the size of the data that
-    /// can be encrypted (ii) raising large data to large exponent
+    /// since the public key size limits the size of the data that
+    /// can be encrypted and raising large data to large exponent
     /// is very slow; the algorithm below consists in (i) generating
     /// a secret key, (ii) ciphering the plain text with this key,
     /// (iii) encrypting the secret key with the public key and finally
     /// (iv) returning an archive containing the asymetrically-encrypted
     /// secret key with the symmetrically-encrypted data.
+    ///
+    /// note however that should the plain be small enough, (1) a direct
+    /// computation is performed. otherwise, (2) the data is symmetrically
+    /// encrypted.
     ///
     Status		PublicKey::Encrypt(const Plain&		plain,
 					   Code&		code) const
@@ -196,8 +228,8 @@ namespace elle
 
       // (iii)
       {
-	Archive		archive;
-	size_t		size;
+	Archive	archive;
+	size_t	size;
 
 	// first, create an archive.
 	if (archive.Create() == StatusError)
@@ -235,7 +267,7 @@ namespace elle
 
       // (iv)
       {
-	Archive		archive;
+	Archive	archive;
 
 	// create the main archive.
 	if (archive.Create() == StatusError)
@@ -287,6 +319,108 @@ namespace elle
         flee(::ERR_error_string(ERR_get_error(), NULL));
 
       true();
+    }
+
+    ///
+    /// this method decrypts a code which should actually be
+    /// an archive containing both a secret key and some data.
+    ///
+    /// note that, although it may sound strange to 'decrypt' with a
+    /// public key, it does not matter as both keys act as the other's
+    /// opposite.
+    ///
+    /// therefore the public key can be used to encrypt in which case
+    /// the private key will be used for decrypting or the other way
+    /// around, which is what this function is for.
+    ///
+    /// this method starts by (i) extracting the key and data
+    /// in their encrypted forms (ii) decrypt the symmetric key
+    /// with the public key and (iii) decipher the data with the
+    /// symmetric key.
+    ///
+    Status		PublicKey::Decrypt(const Code&		code,
+					   Clear&		clear) const
+    {
+      SecretKey		secret;
+
+      Archive		archive;
+      Code		key;
+      Cipher		data;
+
+      enter();
+
+      // (i)
+      {
+	// wrap the code into an archive.
+	if (archive.Prepare(code.region) == StatusError)
+	  escape("unable to prepare the archive");
+
+	// detach the data from the archive so that the archive
+	// does not release the memory belonging to the code.
+	if (archive.Detach() == StatusError)
+	  escape("unable to detach the ownership from the archive");
+
+	// extract the secret key and data, in their encrypted form.
+	if (archive.Extract(key, data) == StatusError)
+	  escape("unable to extract the asymetrically-encrypted secret key "
+		 "and the symetrically-encrypted data");
+      }
+
+      // (ii)
+      {
+	Archive		archive;
+	Region		region;
+	size_t		size;
+
+	// compute the size of the decrypted portion to come.
+	if (::EVP_PKEY_verify_recover(this->contexts.decrypt,
+				      NULL,
+				      &size,
+				      (const unsigned char*)key.region.contents,
+				      key.region.size) <= 0)
+	  escape(::ERR_error_string(ERR_get_error(), NULL));
+
+	// allocate the required memory for the region object.
+	if (region.Prepare(size) == StatusError)
+	  escape("unable to allocate the required memory");
+
+	// perform the decrypt operation.
+	//
+	// note that since the encryption with the private key relies
+	// upon the sign() EVP functionality, the verify_recover()
+	// function is used here.
+	if (::EVP_PKEY_verify_recover(this->contexts.decrypt,
+				      (unsigned char*)region.contents,
+				      &size,
+				      (const unsigned char*)key.region.contents,
+				      key.region.size) <= 0)
+	  escape(::ERR_error_string(ERR_get_error(), NULL));
+
+	// set the region size.
+	region.size = size;
+
+	// detach the data from the region so that the data
+	// is not release twice by both 'region' and 'archive'.
+	if (region.Detach() == StatusError)
+	  escape("unable to detach the data from the region");
+
+	// prepare the archive.
+	if (archive.Prepare(region) == StatusError)
+	  escape("unable to prepare the archive");
+
+	// extract the secret key.
+	if (archive.Extract(secret) == StatusError)
+	  escape("unable to extract the secret key from the archive");
+      }
+
+      // (iii)
+      {
+	// finally, decrypt the data with the secret key.
+	if (secret.Decrypt(data, clear) == StatusError)
+	  escape("unable to decrypt the data with the secret key");
+      }
+
+      leave();
     }
 
 //

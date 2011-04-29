@@ -5,24 +5,24 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/util/Settings.cc
+// file          /home/mycure/infinit/elle/utility/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [fri may 28 12:18:35 2010]
+// updated       julien quintard   [tue apr 26 13:18:12 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/util/Settings.hh>
+#include <elle/utility/Settings.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
 namespace elle
 {
-  namespace util
+  namespace utility
   {
 
 //
@@ -121,16 +121,6 @@ namespace elle
 //
 
     ///
-    /// this method returns true if an assignment exists with the given
-    /// name.
-    ///
-    Status		Settings::Section::Exist(const String&	name)
-    {
-      // try to locate the entry.
-      return (this->Locate(name));
-    }
-
-    ///
     /// this method adds a assignment to the section.
     ///
     Status		Settings::Section::Add(const String&	name,
@@ -141,7 +131,7 @@ namespace elle
       enter(instance(assignment));
 
       // check if another assignment with that name already exists.
-      if (this->Exist(name) == StatusTrue)
+      if (this->Locate(name) == StatusTrue)
 	escape("an assignment with this name already exists");
 
       // allocate the assignment.
@@ -240,15 +230,6 @@ namespace elle
     }
 
     ///
-    /// this method returns true if a section exists with the given identifier.
-    ///
-    Status		Settings::Exist(const String&		identifier)
-    {
-      // try to locate the entry.
-      return (this->Locate(identifier));
-    }
-
-    ///
     /// this method adds a section to the settings.
     ///
     Status		Settings::Add(const String&		identifier)
@@ -258,7 +239,7 @@ namespace elle
       enter(instance(section));
 
       // check if another section with that identifier already exists.
-      if (this->Exist(identifier) == StatusTrue)
+      if (this->Locate(identifier) == StatusTrue)
 	escape("a section with this identifier already exists");
 
       // allocate the section.
@@ -363,7 +344,7 @@ namespace elle
       enter();
 
       // check if the section exists.
-      if (this->Exist(identifier) != StatusTrue)
+      if (this->Locate(identifier) != StatusTrue)
 	{
 	  // create the section.
 	  if (this->Add(identifier) == StatusError)
@@ -393,7 +374,7 @@ namespace elle
       enter();
 
       // check if the section exists.
-      if (this->Exist(identifier) != StatusTrue)
+      if (this->Locate(identifier) != StatusTrue)
 	escape("this section does not seem to exist");
 
       // retrieve the section.
@@ -468,9 +449,9 @@ namespace elle
     ///
     /// this method loads a settings file.
     ///
-    Status		Settings::Load(const String&		path)
+    Status		Settings::Load(const Path&		path)
     {
-      std::ifstream		file(path.c_str());
+      std::ifstream		file(path.string.c_str());
       String			line;
       Settings::Section*	section;
 
@@ -546,9 +527,9 @@ namespace elle
     ///
     /// this method stores a setting into the given file.
     ///
-    Status		Settings::Store(const String&		path) const
+    Status		Settings::Store(const Path&		path) const
     {
-      std::ofstream	file(path.c_str());
+      std::ofstream	file(path.string.c_str());
       Settings::Scoutor	i;
 
       enter();
@@ -578,6 +559,28 @@ namespace elle
 	}
 
       leave();
+    }
+
+    ///
+    /// this method erases the settings file.
+    ///
+    Status		Settings::Erase(const Path&		path) const
+    {
+      enter();
+
+      // erase the file.
+      if (elle::File::Erase(path) == elle::StatusError)
+	escape("unable to erase the file");
+
+      leave();
+    }
+
+    ///
+    /// this method tests the settings file.
+    ///
+    Status		Settings::Exist(const Path&		path) const
+    {
+      return (elle::File::Exist(path));
     }
 
   }

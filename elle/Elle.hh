@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [mon may  3 21:24:18 2010]
+// updated       julien quintard   [fri mar 18 16:11:18 2011]
 //
 
 #ifndef ELLE_ELLE_HH
@@ -73,7 +73,7 @@ namespace elle
 #include <elle/cryptography/Cryptography.hh>
 #include <elle/concurrency/Concurrency.hh>
 #include <elle/network/Network.hh>
-#include <elle/util/Util.hh>
+#include <elle/utility/Utility.hh>
 #include <elle/idiom/Idom.hh>
 
 #include <elle/Manifest.hh>
@@ -94,7 +94,7 @@ namespace elle
   using namespace cryptography;
   using namespace concurrency;
   using namespace network;
-  using namespace util;
+  using namespace utility;
 }
 
 #endif
