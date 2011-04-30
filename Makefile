@@ -1,52 +1,104 @@
-all:
+#
+# ---------- header -----------------------------------------------------------
+#
+# project       infinit
+#
+# license       infinit
+#
+# file          /home/mycure/repositories/XXX/infinit/Makefile
+#
+# created       julien quintard   [wed oct  6 12:58:36 2010]
+# updated       julien quintard   [fri apr 29 23:28:33 2011]
+#
 
-BUILDDIR = build
-MAKEOPT = --quiet
-GIT_REPO = git@repositories.passeism.org:
+#
+# ---------- variables --------------------------------------------------------
+#
 
--include config.mk
+BUILD		:=		build
 
-all:
-	test -d $(BUILDDIR) || ./configure --build-dir=$(BUILDDIR)
-	make $(MAKEOPT) -C $(BUILDDIR)
+REPOSITORY	:=		ssh://git@repositories.passeism.org
 
-install: all
-	make $(MAKEOPT) -C $(BUILDDIR) install
+CONFIG		:=		config.mk
 
-doc:
-#	$(DOXYGEN) doc/Doxyfile && cp doc/tabs.css doc/html/
+MAKE		:=		make
+TEST		:=		test
+RM		:=		rm -Rf
+GIT		:=		git
+GREP		:=		grep -v
+WC		:=		wc -l
 
-check: install
-	@echo
-	@echo "    ---------------------------------"
-	@echo "    |          TEST SUITE           |"
-	@echo "    ---------------------------------"
-	@echo
+CONFIGURE	:=		./configure
+
+COMPONENTS	:=		elle					\
+				comet					\
+				nucleus					\
+				etoile					\
+				agent					\
+				pig					\
+				applications				\
+				lune					\
+				hole
+
+#
+# ---------- includes ---------------------------------------------------------
+#
+
+-include $(CONFIG)
+
+#
+# ---------- rules ------------------------------------------------------------
+#
+
+all:			build
+
+build:
+	$(TEST) -d $(BUILD) || $(CONFIGURE) --build-dir=$(BUILD)
+	$(MAKE) -C $(BUILD)
+
+install:		build
+	$(MAKE) -C $(BUILD) install
+
+documentation:
+#	$(DOXYGEN) doc/Doxyfile
 
 clean:
-	make $(MAKEOPT) -C $(BUILDDIR) clean
-	find . \( -name '*~' \) -exec rm -f {} \;
-
-distclean:
-	rm -rf $(BUILDDIR) config.mk
-
-.PHONY: doc help
-
-help:
-	@echo "build		build the project"
-	@echo "check		check the project"
-	@echo "clean		clean the project"
-	@echo "distclean	distclean the project"
-	@echo "doc		generate the doxygen html documentation"
-	@echo "pull             will pull or clone the repository"
+	$(MAKE) -C $(BUILD) clean
+	$(RM) $(BUILD) $(CONFIG)
 
 pull:
-	git pull
-	for i in elle etoile agent pig applications hole; \
-do \
-  if [[ -d $$i ]] ; then \
-    (cd $$i && git pull) \
-  else \
-    git clone $(GIT_REPO)/$$i.git; \
-  fi; \
-done
+	@echo "---[ infinit"
+	@$(GIT) pull
+
+	@for component in $(COMPONENTS); do				\
+	  echo "---[ $${component}"					&& \
+	  if [ -d $${component} ] ; then				\
+	    cd $${component}						&& \
+	    $(GIT) pull							&& \
+	    cd ..							; \
+	  else								\
+	    $(GIT) clone $(REPOSITORY)/$${component}			; \
+	  fi								\
+	done
+
+status:
+	@echo "---[ infinit"
+	@$(GIT) status
+
+	@for component in $(COMPONENTS); do				\
+	  echo "---[ $${component}"					&& \
+	  cd $${component}						&& \
+	  $(GIT) status							&& \
+	  cd ..								; \
+	done
+
+push:
+	@echo "---[ infinit"
+	@$(GIT) commit -a && $(GIT) push
+
+	@for component in $(COMPONENTS); do				\
+	  echo "---[ $${component}"					&& \
+	  cd $${component}						&& \
+	  $(GIT) commit -a && $(GIT) push				&& \
+	  cd ..								; \
+	done

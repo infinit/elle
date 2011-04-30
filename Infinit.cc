@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.cc
 //
 // created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [sun may 23 22:10:13 2010]
+// updated       julien quintard   [tue apr 26 14:08:06 2011]
 //
 
 //
@@ -26,4 +26,4 @@
 /// can be used to verify the authenticity of the various certificates
 /// populating the Infinit system.
 ///
-const elle::String		Infinit::Authority("RUxMAQ0AAAAAAgAAumjzfCwP039n1xBMgORHnWaC-1Du7vVFDrrGSmOREVoVU5p3UvoRaHzSB4d9O9mZcpB4g4ix4O0BltAc+I+xV9Yx+Q-Fp5Ch9zqOd7LWRGMWYzlGJbXK7Gvi2aMwf1vHzk0Muf8kGrlWzHnkXjAZpDIVVuNR1xurJZ187GdQ4xdmVCdExYwaTbiiuR2ESqz46TcudQ3K4XKSPo5sJ+mGHyhxaYCkCSCmZO5jBMCLt-4dg3qiA85ZXc7q28c8xju+wiJfEoH7aU-cCpgQmnhvgO9dmy18PNZBul9BHCUT0qZ0YAbxlYTK+XYPtBs+SNRL1YeOnJWc1eyRNGdL+iXu-b3n20C9QITsU3RB6t3mOQ8ekvHX7mvb6Zk8jHLNemUjT0w0ce6-ClpqA1n+PMR2Cn3Dke8WIS1mT5xXUTZno0-HWG8aLJneBBpFIVaMRCPo-BnE0OMzfBHlMRbDlAs23Gw3uN2W0QT+sEhDe8Dk1xJ-MLsUy4i-lBt8UxVC3vFdFZQM5Cx9rs8pb5mTK4P2NRw0gZHrnpNTnUFZ6QSsTre1q5BY70weuBlgkw+3Oiy4eDrnG0y4tbveNxqC62R7PjJ8qtjBTUuGAyV3EgSL9VXc9yz4--NswfiNVqEDZobjruoY6jzfRNTdoIozI1l41r7ALSRPzMaCHzypwW3C1aUNAAAAAwAAAAEAAQ==");
+const elle::String		Infinit::Authority("RUxMAQ0AAAAAAgAAsKKVNXszNo9F2vug8A-TcYCn4mVUeZorx5vGN6OACFSh18COd1e8+Iu0j-0+Ja0e52b9qKeEQ3UHZUJ1+1bKxmOsQTvUOLFkgBXbmwnOtqg1KDNpFaHqtzAgVN3uQEcYKlBWnA-26otBZTgTxXMOMgLWog+s0wqhTwhiZ1YkUygy+Ld8ljvOOccyVxHyLOxhx8NKybnuPvBKz6JvSEUvmk4tLLyx82japPu0ck3HQCRQGaIliAnFWG70M02ME8+80RO3zMkkmxhQiI5z8GIo0uvWwXlA7Cv4DEh9ej74XvbyXQ0iaO0Evo1zG79xoCJ8XNdZeyL+DmHFf65D8mLxq9GL8lAipImuBrJVcueNrKNqIDCwvpnJM9pLQ0ZKKTiumjPQH9rLTVTzKxONPlHXdVw-okniAmFtCZTpo1sYF4q-Tnb0yLOfL5YVq+y8GNGUp-6P9hoDhLUTU5CoWyrV1UznK4PhT-TtUkqi8KfnrNY8jZBYhmD2ChUa+7YCBvCgRu4VIcVynUvHCPYKAVhgCH9DAWkGkZbPMv5uB7HGGxQVtmv2JHkZKtK+BxvkTY2roLGm9sJPozwQblfPD24G-ASgHmyakkvINR8S4j1Di6VTpErw4IUKe9IXRHOWsFx2v4Wh9CUQjmE0cu4jRvHYUvSMKXvKYP+jMs7UdCtmk2kNAAAAAwAAAAEAAQ==");
