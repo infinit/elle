@@ -5,10 +5,10 @@
 #
 # license       infinit
 #
-# file          /home/mycure/repositories/XXX/infinit/Makefile
+# file          /home/mycure/repositories/infinit/Makefile
 #
 # created       julien quintard   [wed oct  6 12:58:36 2010]
-# updated       julien quintard   [fri apr 29 23:28:33 2011]
+# updated       julien quintard   [sat apr 30 12:10:07 2011]
 #
 
 #
@@ -83,22 +83,28 @@ pull:
 
 status:
 	@echo "---[ infinit"
-	@$(GIT) status
+	@$(GIT) status --porcelain
 
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) status							&& \
+	  $(GIT) status --porcelain					&& \
 	  cd ..								; \
 	done
 
 push:
 	@echo "---[ infinit"
-	@$(GIT) commit -a && $(GIT) push
+	@$(GIT) status
+	@if [ $${?} -eq 0 ] ; then					\
+	  $(GIT) commit -a && $(GIT) push				; \
+	fi
 
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) commit -a && $(GIT) push				&& \
+	  $(GIT) status							&& \
+	  if [ $${?} -eq 0 ] ; then					\
+	    $(GIT) commit -a && $(GIT) push				; \
+	  fi								; \
 	  cd ..								; \
 	done
