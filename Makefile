@@ -8,7 +8,7 @@
 # file          /home/mycure/repositories/infinit/Makefile
 #
 # created       julien quintard   [wed oct  6 12:58:36 2010]
-# updated       julien quintard   [sat apr 30 12:10:07 2011]
+# updated       julien quintard   [sat apr 30 12:20:37 2011]
 #
 
 #
@@ -102,7 +102,7 @@ push:
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) status							&& \
+	  @$(GIT) status							&& \
 	  if [ $${?} -eq 0 ] ; then					\
 	    $(GIT) commit -a && $(GIT) push				; \
 	  fi								; \
