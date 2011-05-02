@@ -8,7 +8,7 @@
 # file          /home/mycure/repositories/infinit/Makefile
 #
 # created       julien quintard   [wed oct  6 12:58:36 2010]
-# updated       julien quintard   [sat apr 30 12:26:53 2011]
+# updated       julien quintard   [sat apr 30 12:27:43 2011]
 #
 
 #
@@ -26,7 +26,7 @@ MAKE		:=		make
 TEST		:=		test
 RM		:=		rm -Rf
 GIT		:=		git
-GREP		:=		grep -v
+GREP		:=		grep
 WC		:=		wc -l
 
 CONFIGURE	:=		./configure
@@ -95,7 +95,7 @@ status:
 
 push:
 	@echo "---[ infinit"
-	@$(GIT) status --porcelain | grep -v "?" | grep ".*"
+	@$(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"
 	@if [ $${?} -eq 0 ] ; then					\
 	  $(GIT) commit -a && $(GIT) push				; \
 	fi
@@ -103,7 +103,7 @@ push:
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) status --porcelain | grep -v "?" | grep ".*"		&& \
+	  $(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	&& \
 	  if [ $${?} -eq 0 ] ; then					\
 	    $(GIT) commit -a && $(GIT) push				; \
 	  fi								; \
