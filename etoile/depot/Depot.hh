@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [thu apr 28 16:44:34 2011]
+// updated       julien quintard   [mon may  2 12:13:49 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -95,6 +95,19 @@ namespace etoile
 	  leave();
 
 	escape("unable to locate the block");
+      }
+
+      static elle::Status	Erase(const hole::Address&	address)
+      {
+	enter();
+
+	// XXX look in the cache etc.
+
+	// finally, erase the block from the hole.
+	if (hole::Hole::Erase(address) == elle::StatusOk)
+	  leave();
+
+	escape("unable to erase the block");
       }
     };
 

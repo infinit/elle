@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu apr 28 18:14:54 2011]
+// updated       julien quintard   [sat apr 30 16:50:55 2011]
 //
 
 //
@@ -77,9 +77,6 @@ namespace etoile
       // check that the object is a directory.
       if (context->object->meta.genre != kernel::GenreDirectory)
 	escape("this object is not a directory");
-
-      // XXX
-      context->Dump();
 
       leave();
     }

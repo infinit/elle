@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [thu apr 28 16:03:31 2011]
+// updated       julien quintard   [sat apr 30 14:55:16 2011]
 //
 
 //
@@ -175,7 +175,7 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Object::Discard(%qu)\n", identifier.value);
+      printf("[XXX] Object::Discard()\n");
 
       // load the current user.
       if (user::User::Instance(user) == elle::StatusError)

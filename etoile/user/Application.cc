@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.cc
 //
 // created       julien quintard   [thu mar 11 17:09:58 2010]
-// updated       julien quintard   [mon may  3 20:54:47 2010]
+// updated       julien quintard   [sat apr 30 15:28:51 2011]
 //
 
 //

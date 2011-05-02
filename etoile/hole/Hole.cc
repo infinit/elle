@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [thu apr 28 16:27:48 2011]
+// updated       julien quintard   [mon may  2 12:25:32 2011]
 //
 
 //
@@ -37,76 +37,6 @@ namespace etoile
 				  const Block*			block)
     {
       enter();
-      /*
-      // verify the block's validity, depending on the block component.
-      switch (block->component)
-	{
-	case ComponentData:
-	case ComponentCatalog:
-	case ComponentReference:
-	case ComponentAccess:
-	  {
-	    // validate the block.
-	    if (block->Validate(address) != elle::StatusTrue)
-	      {
-		printf("[XXX] unable to validate the retrieved block");
-		while (true)
-		  ;
-	      }
-
-	    break;
-	  }
-	case ComponentObject:
-	  {
-	    const kernel::Object*	object =
-	      static_cast<const kernel::Object*>(block);
-	    kernel::Access*		access;
-
-	    // retrieve the access block, if present.
-	    if (object->meta.access != Address::Null)
-	      {
-		if (Hole::Get(object->meta.access,
-			      (Block*&)access) != elle::StatusTrue)
-		  {
-		    printf("[XXX] unable to retrieve the access block");
-		    while (true)
-		      ;
-		  }
-	      }
-	    else
-	      access = NULL;
-
-	    // validate the block the normal way.
-	    if (object->Validate(address, access) != elle::StatusTrue)
-	      {
-		printf("[XXX] unable to validate the retrieved block");
-		while (true)
-		  ;
-	      }
-
-	    // XXX[debug] retrieve the data block just to make sure it exists.
-	    if (object->data.contents != Address::Null)
-	      {
-		Block*			b;
-
-		if (Hole::Get(object->data.contents, b) != elle::StatusTrue)
-		  {
-		    printf("unable to retrieve the data block");
-		    while (true)
-		      ;
-		  }
-
-		delete b;
-	      }
-
-	    // XXX[delete the temporary stuff]
-	    if (access != NULL)
-	      delete access;
-
-	    break;
-	  }
-	}
-      */
 
       // store the block in the given universe.
       if (block->Store(address) == elle::StatusError)
@@ -146,75 +76,6 @@ namespace etoile
       if (block->Load(address) == elle::StatusError)
 	escape("unable to load the block");
 
-      /*
-      // verify the block's validity, depending on the block component.
-      switch (block->component)
-	{
-	case ComponentData:
-	case ComponentCatalog:
-	case ComponentReference:
-	case ComponentAccess:
-	  {
-	    // validate the block.
-	    if (block->Validate(address) != elle::StatusTrue)
-	      {
-		printf("[XXX] unable to validate the retrieved block");
-		while (true)
-		  ;
-	      }
-
-	    break;
-	  }
-	case ComponentObject:
-	  {
-	    kernel::Object*	object = static_cast<kernel::Object*>(block);
-	    kernel::Access*	access;
-
-	    // retrieve the access block, if present.
-	    if (object->meta.access != Address::Null)
-	      {
-		if (Hole::Get(object->meta.access,
-			      (Block*&)access) != elle::StatusTrue)
-		  {
-		    printf("[XXX] unable to retrieve the access block");
-		    while (true)
-		      ;
-		  }
-	      }
-	    else
-	      access = NULL;
-
-	    // validate the block the normal way.
-	    if (object->Validate(address, access) != elle::StatusTrue)
-	      {
-		printf("unable to validate the retrieved block");
-		while (true)
-		  ;
-	      }
-
-	    // XXX[debug] retrieve the data block just to make sure it exists.
-	    if (object->data.contents != Address::Null)
-	      {
-		Block*			b;
-
-		if (Hole::Get(object->data.contents, b) != elle::StatusTrue)
-		  {
-		    printf("unable to retrieve the data block");
-		    while (true)
-		      ;
-		  }
-
-		delete b;
-	      }
-
-	    // XXX[delete the temporary stuff]
-	    if (access != NULL)
-	      delete access;
-
-	    break;
-	  }
-	}
-      */
       leave();
     }
 
@@ -227,28 +88,14 @@ namespace etoile
     ///
     elle::Status	Hole::Erase(const Address&		address)
     {
-      /*
-      elle::String	path =
-	lune::Lune::Universes +
-	elle::System::Path::Separator +
-	universe +
-	elle::System::Path::Separator +
-	lune::Lune::Hole +
-	elle::System::Path::Separator;
-      elle::String	unique;
-      */
+      hole::Block	block;
+
       enter();
-      /*
-      // identify the address.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
 
-      // complete the path.
-      path += unique;
+      // erase the block.
+      if (block.Erase(address) == elle::StatusError)
+	escape("unable to erase the block");
 
-      // remove the path.
-      ::unlink(path.c_str());
-      */
       leave();
     }
 

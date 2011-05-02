@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [tue mar  1 14:33:18 2011]
+// updated       julien quintard   [sat apr 30 12:39:19 2011]
 //
 
 #ifndef ETOILE_HOLE_ADDRESS_HH
@@ -22,7 +22,6 @@
 
 #include <etoile/hole/Family.hh>
 #include <etoile/hole/Component.hh>
-#include <etoile/hole/Universe.hh>
 
 #include <ostream>
 #include <sstream>

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [thu apr 28 17:23:46 2011]
+// updated       julien quintard   [mon may  2 12:17:13 2011]
 //
 
 //
@@ -81,12 +81,6 @@ namespace etoile
 	    {
 	    case OperationPush:
 	      {
-		/* XXX
-		if (hole::Hole::Put(item->address,
-				    item->block) == elle::StatusError)
-		  escape("unable to publish the block through hole");
-		*/
-
 		if (depot::Depot::Put(item->address,
 				      item->block) == elle::StatusError)
 		  escape("unable to publish the block");
@@ -95,10 +89,9 @@ namespace etoile
 	      }
 	    case OperationDestroy:
 	      {
-		/* XXX
-		if (hole::Hole::Erase(item->address) == elle::StatusError)
+		if (depot::Depot::Erase(item->address) == elle::StatusError)
 		  escape("unable to erase the block through hole");
-		*/
+
 		break;
 	      }
 	    }

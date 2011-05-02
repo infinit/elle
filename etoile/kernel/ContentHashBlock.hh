@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [thu apr 28 18:07:02 2011]
+// updated       julien quintard   [sat apr 30 12:43:05 2011]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTHASHBLOCK_HH
@@ -22,7 +22,6 @@
 
 #include <etoile/hole/Address.hh>
 #include <etoile/hole/Block.hh>
-#include <etoile/hole/Universe.hh>
 
 namespace etoile
 {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [mon may  3 13:28:40 2010]
+// updated       julien quintard   [sun may  1 12:19:26 2011]
 //
 
 //
@@ -21,6 +21,9 @@
 #include <etoile/context/Context.hh>
 
 #include <etoile/components/Directory.hh>
+
+// XXX
+#include <etoile/components/Contents.hh>
 
 namespace etoile
 {
@@ -181,7 +184,7 @@ namespace etoile
       address = venue.elements[venue.elements.size() - 1];
 
       //printf("[XXX] /Path::Resolve()\n");
-      //address.Dump();
+      //std::cout << address << std::endl;
 
       leave();
     }

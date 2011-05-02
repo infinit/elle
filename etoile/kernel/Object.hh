@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [tue mar  1 14:23:48 2011]
+// updated       julien quintard   [sat apr 30 13:40:58 2011]
 //
 
 #ifndef ETOILE_KERNEL_OBJECT_HH
@@ -33,7 +33,6 @@
 #include <etoile/kernel/Role.hh>
 
 #include <etoile/hole/Address.hh>
-#include <etoile/hole/Universe.hh>
 
 namespace etoile
 {

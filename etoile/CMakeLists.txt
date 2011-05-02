@@ -77,7 +77,6 @@ ADD_LIBRARY(etoile
   hole/Hole.cc
   hole/Address.cc
   hole/Block.cc
-  hole/Universe.cc
 
   Etoile.cc
 )

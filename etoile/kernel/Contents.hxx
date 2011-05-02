@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/kernel/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [fri may 28 17:46:39 2010]
+// updated       julien quintard   [sat apr 30 15:10:24 2011]
 //
 
 #ifndef ETOILE_KERNEL_CONTENTS_HXX
@@ -245,7 +245,17 @@ namespace etoile
     template <typename T>
     elle::Status	Contents<T>::Extract(elle::Archive&	archive)
     {
+      elle::String	name;
+
       enter();
+
+      // extract the component name.
+      if (archive.Extract(name) == elle::StatusError)
+	escape("unable to extract the component identifier");
+
+      // compare the name.
+      if (Contents<T>::Name != name)
+	escape("the archive does not seem to contain a contents");
 
       // allocate a new cipher.
       this->cipher = new elle::Cipher;

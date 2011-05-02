@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon may  3 18:56:18 2010]
+// updated       julien quintard   [mon may  2 10:29:30 2011]
 //
 
 //
@@ -88,7 +88,7 @@ namespace etoile
 
       enter(instance(context));
 
-      printf("[XXX] Directory::Load()\n");
+      printf("[XXX] Directory::Load(%s)\n", way.path.c_str());
 
       // load the current user.
       if (user::User::Instance(user) == elle::StatusError)
@@ -125,8 +125,6 @@ namespace etoile
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
-
-      printf("[XXX] /Directory::Load(%qu)\n", context->identifier.value);
 
       // waive.
       waive(context);
@@ -355,7 +353,8 @@ namespace etoile
 	escape("non-applications cannot authenticate");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) == elle::StatusError)
+      if (user->application->Retrieve(identifier,
+				      context) == elle::StatusError)
 	escape("unable to retrieve the directory context");
 
       // check if the context is directory.
