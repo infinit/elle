@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue apr 26 19:31:07 2011]
+// updated       julien quintard   [sat apr 30 14:40:35 2011]
 //
 
 //
@@ -44,6 +44,7 @@ namespace application
     elle::KeyPair	pair;
     lune::Authority	authority;
     lune::Identity	identity;
+    lune::Dictionary	dictionary;
 
     enter();
 
@@ -94,6 +95,10 @@ namespace application
     // store the identity.
     if (identity.Store(name) == elle::StatusError)
       escape("unable to store the identity");
+
+    // store an empty dictionary.
+    if (dictionary.Store(name) == elle::StatusError)
+      escape("unable to store the dictionary");
 
     leave();
   }

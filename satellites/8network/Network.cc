@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu apr 28 18:28:16 2011]
+// updated       julien quintard   [sat apr 30 16:15:01 2011]
 //
 
 //
@@ -358,7 +358,7 @@ namespace application
     elle::Character		option;
     elle::String		name;
     elle::String		owner;
-    elle::Address		network;
+    elle::Address		boot;
 
     enter();
 
@@ -498,7 +498,7 @@ namespace application
 	  case 'b':
 	    {
 	      // create the node.
-	      if (network.Create(optarg) == elle::StatusError)
+	      if (boot.Create(optarg) == elle::StatusError)
 		escape("unable to create the bootstrap address");
 
 	      break;
@@ -528,6 +528,9 @@ namespace application
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
+    // XXX initializing etoile will remove the network socket and therefore
+    // make the current instance unreachable.
+
     // initialize the Etoile.
     if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
@@ -538,7 +541,7 @@ namespace application
       case Network::OperationCreate:
 	{
 	  // create the network.
-	  if (Network::Create(name, network, owner) == elle::StatusError)
+	  if (Network::Create(name, boot, owner) == elle::StatusError)
 	    escape("unable to create the network");
 
 	  // display a message.
