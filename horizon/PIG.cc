@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/repositories/infinit/pig/PIG.cc
+// file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [sat apr 30 11:03:36 2011]
+// updated       julien quintard   [mon may  2 15:12:25 2011]
 //
 
 //
@@ -100,10 +100,12 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
-      // XXX skip(ENOENT);
+      skip(ENOENT);
 
     // set the identifier in the fuse_file_info structure.
+    //
+    // be careful, the address is local but it is alright since it is
+    // used in Fgetattr() only.
     info.fh = (uint64_t)&identifier;
 
     // call the Fgetattr() method.
@@ -114,6 +116,10 @@ namespace pig
           elle::Inputs<etoile::TagObjectDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
+
+    printf("[/XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, stat);
 
     return (result);
   }
@@ -280,6 +286,10 @@ namespace pig
 	}
       }
 
+    printf("[/XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, stat);
+
     return (0);
   }
 
@@ -296,6 +306,10 @@ namespace pig
     //
     // not supported
     //
+
+    printf("[/XXX] %s(%s, ...)\n",
+	   __FUNCTION__,
+	   path);
 
     return (0);
   }
@@ -341,6 +355,10 @@ namespace pig
     // duplicate the identifier and save it in the info structure's file
     // handle.
     info->fh = (uint64_t)new etoile::context::Identifier(identifier);
+
+    printf("[XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, info);
 
     return (0);
   }
@@ -420,6 +438,10 @@ namespace pig
 	  break;
       }
 
+    printf("[/XXX] %s(%s, 0x%x, 0x%x, %qu, 0x%x)\n",
+	   __FUNCTION__,
+	   path, buffer, filler, offset, info);
+
     return (0);
   }
 
@@ -450,6 +472,10 @@ namespace pig
 
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
+
+    printf("[/XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, info);
 
     return (0);
   }
@@ -517,6 +543,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
+    printf("[/XXX] %s(%s, 0%o)\n",
+	   __FUNCTION__,
+	   path, mode);
+
     return (0);
   }
 
@@ -566,6 +596,10 @@ namespace pig
 	  elle::Inputs<etoile::TagDirectoryDestroy>(subdirectory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
+
+    printf("[/XXX] %s(%s)\n",
+	   __FUNCTION__,
+	   path);
 
     return (0);
   }
@@ -682,6 +716,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
+    printf("[/XXX] %s(%s, 0%o)\n",
+	   __FUNCTION__,
+	   path, mask);
+
     return (0);
   }
 
@@ -781,6 +819,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
+    printf("[/XXX] %s(%s, 0%o)\n",
+	   __FUNCTION__,
+	   path, mode);
+
     return (0);
   }
 
@@ -816,6 +858,10 @@ namespace pig
 
     // XXX
     error(EINTR);
+
+    printf("[/XXX] %s(%s, %u, %u)\n",
+	   __FUNCTION__,
+	   path, uid, gid);
 
     return (0);
   }
@@ -859,6 +905,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
+    printf("[/XXX] %s(%s, %s, 0x%x, %u, 0x%x)\n",
+	   __FUNCTION__,
+	   path, name, value, size, flags);
+
     return (0);
   }
 
@@ -901,7 +951,11 @@ namespace pig
 
     // test if a trait has been found.
     if (trait == etoile::kernel::Trait::Null)
-      error(ENOATTR);
+      skip(ENOATTR);
+
+    printf("[/XXX] %s(%s, %s, 0x%x, %u)\n",
+	   __FUNCTION__,
+	   path, name, value, size);
 
     // if the size is null, it means that this call must be considered
     // as a request for the size required to store the value.
@@ -955,6 +1009,10 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
+
+    printf("[/XXX] %s(%s, 0x%x, %u)\n",
+	   __FUNCTION__,
+	   path, list, size);
 
     // if the size is zero, this call must return the size required to
     // store the list.
@@ -1026,6 +1084,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
+    printf("[/XXX] %s(%s, %s)\n",
+	   __FUNCTION__,
+	   path, name);
+
     return (0);
   }
 
@@ -1042,6 +1104,10 @@ namespace pig
 	   path, info, command, flags);
 
     // XXX: to implement
+
+    printf("[/XXX] %s(%s, 0x%x, %u, 0x%x)\n",
+	   __FUNCTION__,
+	   path, info, command, flags);
 
     return (0);
   }
@@ -1099,6 +1165,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
 
+    printf("[/XXX] %s(%s, %s)\n",
+	   __FUNCTION__,
+	   target, source);
+
     return (0);
   }
 
@@ -1142,6 +1212,10 @@ namespace pig
 	      (target.path.length() + 1) < size ?
 	        target.path.length() + 1 :
 	        size);
+
+    printf("[/XXX] %s(%s, 0x%x, %u)\n",
+	   __FUNCTION__,
+	   path, buffer, size);
 
     return (0);
   }
@@ -1221,15 +1295,11 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR, directory);
 
-    printf("XXX\n");
-
     // store the directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(directory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
-
-    printf("XXX\n");
 
     // finally, the file is reopened.
     if (PIG::Channel.Call(
@@ -1239,6 +1309,10 @@ namespace pig
 
     // store the identifier in the file handle.
     info->fh = (uint64_t)new etoile::context::Identifier(file);
+
+    printf("[/XXX] %s(%s, 0%o, 0x%x)\n",
+	   __FUNCTION__,
+	   path, mode, info);
 
     return (0);
   }
@@ -1265,6 +1339,10 @@ namespace pig
 
     // store the identifier in the file handle.
     info->fh = (uint64_t)new etoile::context::Identifier(identifier);
+
+    printf("[/XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, info);
 
     return (0);
   }
@@ -1300,6 +1378,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EACCES);
 
+    printf("[/XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
+	   __FUNCTION__,
+	   path, buffer, size, offset, info);
+
     return (size);
   }
 
@@ -1332,6 +1414,10 @@ namespace pig
 
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
+
+    printf("[/XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
+	   __FUNCTION__,
+	   path, buffer, size, offset, info);
 
     return ((int)region.size);
   }
@@ -1370,6 +1456,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
+    printf("[/XXX] %s(%s, %qu)\n",
+	   __FUNCTION__,
+	   path, size);
+
     return (result);
   }
 
@@ -1394,6 +1484,10 @@ namespace pig
 	  elle::Inputs<etoile::TagFileAdjust>(*identifier, size),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(ENOENT);
+
+    printf("[/XXX] %s(%s, %qu, info)\n",
+	   __FUNCTION__,
+	   path, size, info);
 
     return (0);
   }
@@ -1425,6 +1519,10 @@ namespace pig
 
     // reset the file handle.
     info->fh = 0;
+
+    printf("[/XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, info);
 
     return (0);
   }
@@ -1546,6 +1644,10 @@ namespace pig
 	  error(ENOENT);
       }
 
+    printf("[/XXX] %s(%s, %s)\n",
+	   __FUNCTION__,
+	   source, target);
+
     return (0);
   }
 
@@ -1646,6 +1748,10 @@ namespace pig
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EINTR);
 
+    printf("[/XXX] %s(%s)\n",
+	   __FUNCTION__,
+	   path);
+
     return (0);
   }
 
@@ -1661,6 +1767,10 @@ namespace pig
 	   path, datasync, info);
 
     // XXX Publish blocs: Journal::Load(), Journal::Publish()
+
+    printf("[/XXX] %s(%s, %u, 0x%x)\n",
+	   __FUNCTION__,
+	   path, datasync, info);
 
     return (0);
   }
@@ -1678,6 +1788,10 @@ namespace pig
 
     // XXX Publish blocs: Journal::Load(), Journal::Publish()
 
+    printf("[/XXX] %s(%s, %u, 0x%x)\n",
+	   __FUNCTION__,
+	   path, datasync, info);
+
     return (0);
   }
 
@@ -1689,7 +1803,13 @@ namespace pig
 	   __FUNCTION__,
 	   path, info);
 
-    return (EINTR);
+    // XXX
+
+    printf("[/XXX] %s(%s, 0x%x)\n",
+	   __FUNCTION__,
+	   path, info);
+
+    return (0);
   }
 
 //
@@ -2038,10 +2158,17 @@ namespace pig
     // note that the -h option can be passed in order to display all
     // the available options including the threaded, debug, file system
     // name, file system type etc.
+    //
+    // for example the -d option could be used instead of -f in order
+    // to activate the debug mode.
+    elle::String	ofsname("-ofsname='" + network + "'");
     const char*		arguments[] =
       {
+	argv[0],
 	"-s",
-	"-d",
+	"-f",
+	"-osubtype='infinit'",
+	ofsname.c_str(),
 	mountpoint.c_str()
       };
 

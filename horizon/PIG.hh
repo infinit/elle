@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [wed apr 27 11:54:05 2011]
+// updated       julien quintard   [sun may  1 22:42:13 2011]
 //
 
 #ifndef PIG_PIG_HH
@@ -223,6 +223,9 @@ namespace pig
   do									\
     {									\
       show();								\
+									\
+      std::cerr << __FILE__ << ":" << __LINE__ << " # "			\
+		<< __FUNCTION__ << std::endl;				\
 									\
       PIG::Release(_identifiers_);					\
 									\
