@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [tue apr 13 16:51:16 2010]
+// updated       julien quintard   [fri may  6 14:19:15 2011]
 //
 
 //
@@ -131,6 +131,8 @@ namespace hole
     // initialize the Elle library.
     if (Elle::Initialize() == StatusError)
       escape("unable to initialize the Elle library");
+
+    // XXX init/clean nucleus
 
     // set up the program.
     if (Program::Setup(argc, argv) == StatusError)
