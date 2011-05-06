@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [sun may  1 22:42:13 2011]
+// updated       julien quintard   [fri may  6 14:10:39 2011]
 //
 
 #ifndef PIG_PIG_HH
@@ -26,6 +26,7 @@
 
 #include <Infinit.hh>
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
 
@@ -54,7 +55,7 @@ namespace pig
     //
     static const elle::String		Line;
 
-    static const etoile::kernel::Size	Range;
+    static const nucleus::Size		Range;
 
     //
     // callbacks
@@ -204,7 +205,7 @@ namespace pig
     //
     static elle::Door				Channel;
 
-    static etoile::kernel::Subject*		Subject;
+    static nucleus::Subject*			Subject;
 
     struct					Somebody
     {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [mon may  2 15:12:25 2011]
+// updated       julien quintard   [fri may  6 14:23:43 2011]
 //
 
 //
@@ -47,12 +47,12 @@ namespace pig
   ///
   /// the subject representing the current user.
   ///
-  etoile::kernel::Subject*		PIG::Subject;
+  nucleus::Subject*			PIG::Subject;
 
   ///
   /// this defines the number of directories entries fetched from Etoile.
   ///
-  const etoile::kernel::Size		PIG::Range = 32;
+  const nucleus::Size			PIG::Range = 32;
 
   ///
   /// this variable contains the UID of the 'somebody' user, user which
@@ -208,41 +208,37 @@ namespace pig
     // set the mode and permissions.
     switch (status.genre)
       {
-      case etoile::kernel::GenreDirectory:
+      case nucleus::GenreDirectory:
 	{
 	  // set the object as being a directory.
 	  stat->st_mode = S_IFDIR;
 
 	  // if the user has the read permission, allow her to access
 	  // and read the directory.
-	  if ((status.permissions.owner &
-	       etoile::kernel::PermissionRead) != 0)
+	  if ((status.permissions.owner & nucleus::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the directory content.
-	  if ((status.permissions.owner &
-	       etoile::kernel::PermissionWrite) != 0)
+	  if ((status.permissions.owner & nucleus::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
 	  break;
 	}
-      case etoile::kernel::GenreFile:
+      case nucleus::GenreFile:
 	{
-	  etoile::kernel::Trait	trait;
+	  nucleus::Trait	trait;
 
 	  stat->st_mode = S_IFREG;
 
 	  // if the user has the read permission, allow her to read
 	  // the file.
-	  if ((status.permissions.owner &
-	       etoile::kernel::PermissionRead) != 0)
+	  if ((status.permissions.owner & nucleus::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the file content.
-	  if ((status.permissions.owner &
-	       etoile::kernel::PermissionWrite) != 0)
+	  if ((status.permissions.owner & nucleus::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
 	  // retrieve the attribute.
@@ -262,22 +258,20 @@ namespace pig
 
 	  break;
 	}
-      case etoile::kernel::GenreLink:
+      case nucleus::GenreLink:
 	{
 	  stat->st_mode = S_IFLNK;
 
 	  // if the user has the read permission, allow her to read and
 	  // search the linked object.
-	  if ((status.permissions.owner &
-	       etoile::kernel::PermissionRead) != 0)
+	  if ((status.permissions.owner & nucleus::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the link.
-	  if ((status.permissions.owner &
-	       etoile::kernel::PermissionWrite) != 0)
+	  if ((status.permissions.owner & nucleus::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
-
+ 
 	  break;
 	}
       default:
@@ -322,7 +316,7 @@ namespace pig
   {
     etoile::context::Identifier	identifier;
     etoile::path::Way		way(path);
-    etoile::kernel::Record	record;
+    nucleus::Record		record;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -345,11 +339,11 @@ namespace pig
       error(EINTR, identifier);
 
     // check the record.
-    if (record == etoile::kernel::Record::Null)
+    if (record == nucleus::Record::Null)
       error(EACCES, identifier);
 
     // check if the user has the right to read the directory.
-    if ((record.permissions & etoile::kernel::PermissionRead) == 0)
+    if ((record.permissions & nucleus::PermissionRead) == 0)
       error(EACCES, identifier);
 
     // duplicate the identifier and save it in the info structure's file
@@ -404,13 +398,13 @@ namespace pig
 
     while (true)
       {
-	etoile::kernel::Range<etoile::kernel::Entry>		range;
-	etoile::kernel::Range<etoile::kernel::Entry>::Scoutor	scoutor;
+	nucleus::Range<nucleus::Entry>		range;
+	nucleus::Range<nucleus::Entry>::Scoutor	scoutor;
 
 	// read the directory entries.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryConsult>(*identifier,
-					  (etoile::kernel::Offset)offset,
+					  (nucleus::Offset)offset,
 					  PIG::Range),
 	      elle::Outputs<etoile::TagDirectoryRange>(range)) ==
 	    elle::StatusError)
@@ -421,7 +415,7 @@ namespace pig
 	     scoutor != range.container.end();
 	     scoutor++)
 	  {
-	    etoile::kernel::Entry*	entry = *scoutor;
+	    nucleus::Entry*	entry = *scoutor;
 
 	    // fill the buffer with filler().
 	    if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
@@ -490,7 +484,7 @@ namespace pig
     etoile::path::Way		way(etoile::path::Way(path), name);
     etoile::context::Identifier	directory;
     etoile::context::Identifier	subdirectory;
-    etoile::kernel::Permissions	permissions;
+    nucleus::Permissions	permissions;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -512,10 +506,10 @@ namespace pig
 
     // compute the permissions.
     if ((mode & S_IRUSR) != 0)
-      permissions |= etoile::kernel::PermissionRead;
+      permissions |= nucleus::PermissionRead;
 
     if ((mode & S_IWUSR) != 0)
-      permissions |= etoile::kernel::PermissionWrite;
+      permissions |= nucleus::PermissionWrite;
 
     // set the owner permissions.
     if (PIG::Channel.Call(
@@ -614,7 +608,7 @@ namespace pig
     etoile::context::Identifier	identifier;
     etoile::wall::Status	status;
     etoile::path::Way		way(path);
-    etoile::kernel::Record	record;
+    nucleus::Record		record;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -640,7 +634,7 @@ namespace pig
       error(ENOENT, identifier);
 
     // check the record.
-    if (record == etoile::kernel::Record::Null)
+    if (record == nucleus::Record::Null)
       error(EACCES, identifier);
 
     // check if the permissions match the mask for execution.
@@ -648,18 +642,18 @@ namespace pig
       {
 	switch (status.genre)
 	  {
-	  case etoile::kernel::GenreDirectory:
+	  case nucleus::GenreDirectory:
 	    {
 	      // check if the user has the read permission meaning the
 	      // exec bit
-	      if ((record.permissions & etoile::kernel::PermissionRead) == 0)
+	      if ((record.permissions & nucleus::PermissionRead) == 0)
 		error(EACCES, identifier);
 
 	      break;
 	    }
-	  case etoile::kernel::GenreFile:
+	  case nucleus::GenreFile:
 	    {
-	      etoile::kernel::Trait	trait;
+	      nucleus::Trait	trait;
 
 	      // get the posix::exec attribute
 	      if (PIG::Channel.Call(
@@ -675,9 +669,9 @@ namespace pig
 
 	      break;
 	    }
-	  case etoile::kernel::GenreLink:
+	  case nucleus::GenreLink:
 	    {
-	      etoile::kernel::Trait	trait;
+	      nucleus::Trait	trait;
 
 	      // get the posix::exec attribute
 	      if (PIG::Channel.Call(
@@ -699,14 +693,14 @@ namespace pig
     // check if the permissions match the mask for reading.
     if ((mask & R_OK) != 0)
       {
-	if ((record.permissions & etoile::kernel::PermissionRead) == 0)
+	if ((record.permissions & nucleus::PermissionRead) == 0)
 	  error(EACCES, identifier);
       }
 
     // check if the permissions match the mask for writing.
     if ((mask & W_OK) != 0)
       {
-	if ((record.permissions & etoile::kernel::PermissionWrite) == 0)
+	if ((record.permissions & nucleus::PermissionWrite) == 0)
 	  error(EACCES, identifier);
       }
 
@@ -731,7 +725,7 @@ namespace pig
   {
     etoile::context::Identifier	identifier;
     etoile::path::Way		way(path);
-    etoile::kernel::Permissions	permissions;
+    nucleus::Permissions	permissions;
     etoile::wall::Status	status;
 
     printf("[XXX] %s(%s, 0%o)\n",
@@ -760,10 +754,10 @@ namespace pig
 
     // compute the permissions.
     if ((mode & S_IRUSR) != 0)
-      permissions |= etoile::kernel::PermissionRead;
+      permissions |= nucleus::PermissionRead;
 
     if ((mode & S_IWUSR) != 0)
-      permissions |= etoile::kernel::PermissionWrite;
+      permissions |= nucleus::PermissionWrite;
 
    // load the object.
     if (PIG::Channel.Call(
@@ -793,7 +787,7 @@ namespace pig
     // file genre.
     switch (status.genre)
       {
-      case etoile::kernel::GenreFile:
+      case nucleus::GenreFile:
 	{
 	  // set the posix::exec attribute
 	  if (PIG::Channel.Call(
@@ -805,8 +799,8 @@ namespace pig
 
 	  break;
 	}
-      case etoile::kernel::GenreDirectory:
-      case etoile::kernel::GenreLink:
+      case nucleus::GenreDirectory:
+      case nucleus::GenreLink:
 	{
 	  // nothing to do for the other genres.
 	  break;
@@ -922,7 +916,7 @@ namespace pig
   {
     etoile::context::Identifier	identifier;
     etoile::path::Way		way(path);
-    etoile::kernel::Trait	trait;
+    nucleus::Trait		trait;
 
     printf("[XXX] %s(%s, %s, 0x%x, %u)\n",
 	   __FUNCTION__,
@@ -950,7 +944,7 @@ namespace pig
       error(ENOENT);
 
     // test if a trait has been found.
-    if (trait == etoile::kernel::Trait::Null)
+    if (trait == nucleus::Trait::Null)
       skip(ENOATTR);
 
     printf("[/XXX] %s(%s, %s, 0x%x, %u)\n",
@@ -980,11 +974,11 @@ namespace pig
 				       char*			list,
 				       size_t			size)
   {
-    etoile::context::Identifier					identifier;
-    etoile::path::Way						way(path);
-    etoile::kernel::Range<etoile::kernel::Trait>		range;
-    etoile::kernel::Range<etoile::kernel::Trait>::Scoutor	scoutor;
-    size_t							offset;
+    etoile::context::Identifier			identifier;
+    etoile::path::Way				way(path);
+    nucleus::Range<nucleus::Trait>		range;
+    nucleus::Range<nucleus::Trait>::Scoutor	scoutor;
+    size_t					offset;
 
     printf("[XXX] %s(%s, 0x%x, %u)\n",
 	   __FUNCTION__,
@@ -1022,7 +1016,7 @@ namespace pig
 	     scoutor != range.container.end();
 	     scoutor++)
 	  {
-	    etoile::kernel::Trait*	trait = *scoutor;
+	    nucleus::Trait*	trait = *scoutor;
 
 	    // compute the size.
 	    size = size + trait->name.length() + 1;
@@ -1037,7 +1031,7 @@ namespace pig
 	     scoutor != range.container.end();
 	     scoutor++)
 	  {
-	    etoile::kernel::Trait*	trait = *scoutor;
+	    nucleus::Trait*	trait = *scoutor;
 
 	    // concatenate the name.
 	    ::strcpy(list + offset,
@@ -1231,7 +1225,7 @@ namespace pig
     etoile::path::Way		way(etoile::path::Way(path), name);
     etoile::context::Identifier	directory;
     etoile::context::Identifier	file;
-    etoile::kernel::Permissions	permissions;
+    nucleus::Permissions	permissions;
 
     printf("[XXX] %s(%s, 0%o, 0x%x)\n",
 	   __FUNCTION__,
@@ -1252,10 +1246,10 @@ namespace pig
 
     // compute the permissions.
     if ((mode & S_IRUSR) != 0)
-      permissions |= etoile::kernel::PermissionRead;
+      permissions |= nucleus::PermissionRead;
 
     if ((mode & S_IWUSR) != 0)
-      permissions |= etoile::kernel::PermissionWrite;
+      permissions |= nucleus::PermissionWrite;
 
     // set the owner permissions.
     if (PIG::Channel.Call(
@@ -1373,7 +1367,7 @@ namespace pig
     // write the file.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileWrite>(*identifier,
-			       (etoile::kernel::Offset)offset,
+			       (nucleus::Offset)offset,
 			       region),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
       error(EACCES);
@@ -1407,8 +1401,8 @@ namespace pig
     // read the file.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileRead>(*identifier,
-			      (etoile::kernel::Offset)offset,
-			      (etoile::kernel::Size)size),
+			      (nucleus::Offset)offset,
+			      (nucleus::Size)size),
 	  elle::Outputs<etoile::TagFileRegion>(region)) == elle::StatusError)
       error(EACCES);
 
@@ -1702,7 +1696,7 @@ namespace pig
     // remove the object according to its type: file or link.
     switch (status.genre)
       {
-      case etoile::kernel::GenreFile:
+      case nucleus::GenreFile:
 	{
 	  // load the object.
 	  if (PIG::Channel.Call(
@@ -1719,7 +1713,7 @@ namespace pig
 
 	  break;
 	}
-      case etoile::kernel::GenreLink:
+      case nucleus::GenreLink:
 	{
 	  // load the link
 	  if (PIG::Channel.Call(
@@ -1736,7 +1730,7 @@ namespace pig
 
 	  break;
 	}
-      case etoile::kernel::GenreDirectory:
+      case nucleus::GenreDirectory:
 	{
 	  error(EINTR);
 	}
@@ -1876,7 +1870,7 @@ namespace pig
     //
     {
       // allocate a new subject.
-      PIG::Subject = new etoile::kernel::Subject;
+      PIG::Subject = new nucleus::Subject;
 
       // create the subject.
       if (PIG::Subject->Create(identity.pair.K) == elle::StatusError)
@@ -2118,6 +2112,10 @@ namespace pig
 	  }
       }
 
+    // initialize the nucleus library.
+    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+      escape("unable to initialize Nucleus");
+
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
@@ -2189,6 +2187,10 @@ namespace pig
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
+
+    // clean the nucleus library.
+    if (nucleus::Nucleus::Clean() == elle::StatusError)
+      escape("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
