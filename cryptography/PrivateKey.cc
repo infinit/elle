@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [wed mar 23 14:07:18 2011]
+// updated       julien quintard   [fri may  6 13:33:21 2011]
 //
 
 //
