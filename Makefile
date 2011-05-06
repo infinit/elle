@@ -8,7 +8,7 @@
 # file          /home/mycure/infinit/Makefile
 #
 # created       julien quintard   [wed oct  6 12:58:36 2010]
-# updated       julien quintard   [mon may  2 16:55:13 2011]
+# updated       julien quintard   [fri may  6 14:39:58 2011]
 #
 
 #
