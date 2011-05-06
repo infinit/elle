@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [wed apr 27 12:00:37 2011]
+// updated       julien quintard   [fri may  6 14:23:49 2011]
 //
 
 //
@@ -424,6 +424,10 @@ namespace agent
 	  }
       }
 
+    // initialize the nucleus library.
+    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+      escape("unable to initialize Nucleus");
+
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
@@ -455,6 +459,10 @@ namespace agent
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
+
+    // clean the nucleus library.
+    if (nucleus::Nucleus::Clean() == elle::StatusError)
+      escape("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
