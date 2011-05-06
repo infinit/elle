@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Dictionary.cc
 //
 // created       julien quintard   [mon may 10 16:14:02 2010]
-// updated       julien quintard   [tue apr 26 16:30:07 2011]
+// updated       julien quintard   [thu may  5 16:13:15 2011]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <lune/Dictionary.hh>
+#include <lune/Lune.hh>
 
 namespace lune
 {

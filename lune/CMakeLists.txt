@@ -9,4 +9,4 @@ ADD_LIBRARY(lune
   Phrase.cc
 )
 
-TARGET_LINK_LIBRARIES(lune elle etoile)
+TARGET_LINK_LIBRARIES(lune elle nucleus)

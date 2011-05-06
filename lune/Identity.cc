@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Identity.cc
 //
 // created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [tue apr 26 13:33:40 2011]
+// updated       julien quintard   [fri may  6 14:29:25 2011]
 //
 
 //

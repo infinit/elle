@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.cc
 //
 // created       julien quintard   [sat may  1 21:19:13 2010]
-// updated       julien quintard   [tue apr 26 18:26:56 2011]
+// updated       julien quintard   [thu may  5 16:13:07 2011]
 //
 
 //
@@ -37,10 +37,9 @@ namespace lune
   ///
   /// this method creates a descriptor.
   ///
-  elle::Status		Descriptor::Create(
-			  const elle::String&			name,
-			  const etoile::hole::Address&		root,
-			  const elle::Address&			boot)
+  elle::Status		Descriptor::Create(const elle::String&	name,
+					   const nucleus::Address& root,
+					   const elle::Address&	boot)
   {
     enter();
 

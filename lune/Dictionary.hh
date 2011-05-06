@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Dictionary.hh
 //
 // created       julien quintard   [mon may 10 15:52:06 2010]
-// updated       julien quintard   [thu apr 28 16:09:52 2011]
+// updated       julien quintard   [thu may  5 16:12:47 2011]
 //
 
 #ifndef LUNE_DICTIONARY_HH
@@ -19,11 +19,9 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/hole/Address.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <lune/Map.hh>
-#include <lune/Lune.hh>
 
 namespace lune
 {
@@ -71,7 +69,7 @@ namespace lune
     // attributes
     //
     Map<elle::PublicKey>	users;
-    Map<etoile::hole::Address>	groups;
+    Map<nucleus::Address>	groups;
   };
 
 }
