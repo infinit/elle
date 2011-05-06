@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.hh
 //
 // created       julien quintard   [thu dec  3 03:07:53 2009]
-// updated       julien quintard   [mon may  3 12:58:30 2010]
+// updated       julien quintard   [thu may  5 16:37:39 2011]
 //
 
 #ifndef ETOILE_DEPOT_RECORD_HH
@@ -19,8 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/hole/Address.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/depot/Cell.hh>
 #include <etoile/depot/Unit.hh>
@@ -63,7 +62,7 @@ namespace etoile
       //
       Location		location;
 
-      hole::Address	address;
+      nucleus::Address	address;
 
       union
       {
@@ -76,7 +75,7 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create(const hole::Address&);
+      elle::Status	Create(const nucleus::Address&);
       elle::Status	Monitor();
       elle::Status	Destroy();
 

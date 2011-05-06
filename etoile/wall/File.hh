@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [mon may  3 17:44:53 2010]
+// updated       julien quintard   [thu may  5 16:31:51 2011]
 //
 
 #ifndef ETOILE_WALL_FILE_HH
@@ -19,13 +19,11 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Way.hh>
 
 #include <etoile/context/Identifier.hh>
-
-#include <etoile/kernel/Offset.hh>
-#include <etoile/kernel/Size.hh>
 
 #include <etoile/components/File.hh>
 
@@ -52,13 +50,13 @@ namespace etoile
       static elle::Status	Lock(const context::Identifier&);
       static elle::Status	Release(const context::Identifier&);
       static elle::Status	Write(const context::Identifier&,
-				      const kernel::Offset&,
+				      const nucleus::Offset&,
 				      const elle::Region&);
       static elle::Status	Read(const context::Identifier&,
-				     const kernel::Offset&,
-				     const kernel::Size&);
+				     const nucleus::Offset&,
+				     const nucleus::Size&);
       static elle::Status	Adjust(const context::Identifier&,
-				       const kernel::Size&);
+				       const nucleus::Size&);
       static elle::Status	Discard(const context::Identifier&);
       static elle::Status	Store(const context::Identifier&);
       static elle::Status	Destroy(const context::Identifier&);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon may  2 10:29:30 2011]
+// updated       julien quintard   [fri may  6 14:01:03 2011]
 //
 
 //
@@ -23,6 +23,8 @@
 #include <etoile/user/User.hh>
 
 #include <etoile/path/Path.hh>
+
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -225,7 +227,7 @@ namespace etoile
     {
       context::Directory*	context;
       user::User*		user;
-      kernel::Entry*		entry;
+      nucleus::Entry*		entry;
 
       enter();
 
@@ -260,7 +262,7 @@ namespace etoile
 	{
 	  // return a null entry.
 	  if (user->application->channel->Reply(
-	        elle::Inputs<TagDirectoryEntry>(kernel::Entry::Null)) ==
+	        elle::Inputs<TagDirectoryEntry>(nucleus::Entry::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
 	}
@@ -282,13 +284,13 @@ namespace etoile
     elle::Status	Directory::Consult(const
 					     context::Identifier& identifier,
 					   const
-					     kernel::Offset&	offset,
+					     nucleus::Offset&	offset,
 					   const
-					     kernel::Offset&	size)
+					     nucleus::Offset&	size)
     {
       context::Directory*		context;
       user::User*			user;
-      kernel::Range<kernel::Entry>	range;
+      nucleus::Range<nucleus::Entry>	range;
 
       enter();
 

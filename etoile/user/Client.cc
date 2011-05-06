@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.cc
 //
 // created       julien quintard   [thu mar 11 16:21:11 2010]
-// updated       julien quintard   [mon may  3 20:54:30 2010]
+// updated       julien quintard   [fri may  6 13:54:06 2011]
 //
 
 //
@@ -102,7 +102,7 @@ namespace etoile
       enter();
 
       // destroy the mapping for the agent.
-      if (Map::Remove(this->agent->remote->channel) == elle::StatusError)
+      if (Map::Remove(this->agent->channel) == elle::StatusError)
 	escape("unable to remove the agent mapping");
 
       // destroy the agent.
@@ -137,7 +137,7 @@ namespace etoile
       this->agent = agent;
 
       // add a mapping between the agent's channel and the client.
-      if (Map::Add(this->agent->remote->channel, this) == elle::StatusError)
+      if (Map::Add(this->agent->channel, this) == elle::StatusError)
 	escape("unable to add a mapping between the agent and the client");
 
       // create the subject in order to makes manipulating the user

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon may  3 18:58:41 2010]
+// updated       julien quintard   [fri may  6 14:01:16 2011]
 //
 
 //
@@ -23,6 +23,8 @@
 #include <etoile/user/User.hh>
 
 #include <etoile/path/Path.hh>
+
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {

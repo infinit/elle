@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Bucket.cc
 //
 // created       julien quintard   [mon apr  5 21:33:25 2010]
-// updated       julien quintard   [mon may  3 13:11:02 2010]
+// updated       julien quintard   [thu may  5 16:04:53 2011]
 //
 
 //
@@ -52,15 +52,15 @@ namespace etoile
     ///
     /// this method records a block to be pushed to the hole.
     ///
-    elle::Status	Bucket::Push(const hole::Address&	address,
-				     hole::Block*		block)
+    elle::Status	Bucket::Push(const nucleus::Address&	address,
+				     nucleus::Block*		block)
     {
       Item*		item;
 
       enter(instance(item));
 
       // check the address.
-      if (address == hole::Address::Null)
+      if (address == nucleus::Address::Null)
 	escape("a block cannot be pushed with a null address");
 
       // allocate and create an item.
@@ -78,14 +78,14 @@ namespace etoile
     ///
     /// this method records a block to be poped from the hole.
     ///
-    elle::Status	Bucket::Destroy(const hole::Address&	address)
+    elle::Status	Bucket::Destroy(const nucleus::Address&	address)
     {
       Item*		item;
 
       enter(instance(item));
 
       // check the address.
-      if (address == hole::Address::Null)
+      if (address == nucleus::Address::Null)
 	escape("a null-address-referenced block cannot be destroyed");
 
       // allocate and create an item.

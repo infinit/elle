@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [sat apr 30 14:51:13 2011]
+// updated       julien quintard   [thu may  5 16:26:35 2011]
 //
 
 #ifndef ETOILE_CONTEXT_OBJECT_HH
@@ -18,14 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
+
 #include <etoile/context/Context.hh>
-
-#include <etoile/kernel/Object.hh>
-#include <etoile/kernel/Access.hh>
-#include <etoile/kernel/Author.hh>
-#include <etoile/kernel/Genre.hh>
-
-#include <etoile/hole/Address.hh>
 
 #include <etoile/path/Route.hh>
 
@@ -70,13 +66,13 @@ namespace etoile
       // attributes
       //
       path::Route		route;
-      hole::Address		address;
+      nucleus::Address		address;
 
-      kernel::Object*		object;
-      kernel::Access*		access;
+      nucleus::Object*		object;
+      nucleus::Access*		access;
 
       Rights*			rights;
-      kernel::Author*		author;
+      nucleus::Author*		author;
     };
 
   }

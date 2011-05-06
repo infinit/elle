@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [thu apr 28 18:17:51 2011]
+// updated       julien quintard   [thu may  5 16:24:05 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -17,6 +17,8 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/components/Author.hh>
 #include <etoile/components/Access.hh>
@@ -42,7 +44,7 @@ namespace etoile
 	leave();
 
       // check if there exists a contents. if so, load the block.
-      if (context->object->data.contents != hole::Address::Null)
+      if (context->object->data.contents != nucleus::Address::Null)
 	{
 	  // load the block.
 	  if (depot::Depot::Get(context->object->data.contents,
@@ -55,7 +57,7 @@ namespace etoile
 
 	  // verify that the user has the read permission.
 	  if ((context->rights->record.permissions &
-	       kernel::PermissionRead) == 0)
+	       nucleus::PermissionRead) == 0)
 	    escape("the user does not have the right to read the contents");
 
 	  // decrypt the contents i.e the contents.
@@ -66,7 +68,7 @@ namespace etoile
       else
 	{
 	  // otherwise create a new contents.
-	  context->contents = new kernel::Contents<typename T::Content>;
+	  context->contents = new nucleus::Contents<typename T::Content>;
 
 	  // create the contents.
 	  if (context->contents->Create() == elle::StatusError)
@@ -85,7 +87,7 @@ namespace etoile
       enter();
 
       // if the block is present.
-      if (context->object->data.contents != hole::Address::Null)
+      if (context->object->data.contents != nucleus::Address::Null)
 	{
 	  // forge the author which will be attached to the modified object.
 	  if (Author::Forge(context) == elle::StatusError)
@@ -99,7 +101,7 @@ namespace etoile
 	  // update the object's data section with the null address.
 	  if (context->object->Update(
 	        *context->author,
-		hole::Address::Null,
+		nucleus::Address::Null,
 		0,
 		elle::Digest::Null) == elle::StatusError)
 	    escape("unable to update the object's data section");
@@ -138,7 +140,7 @@ namespace etoile
     elle::Status	Contents::Close(T*			context)
     {
       elle::SecretKey	key;
-      kernel::Size	size;
+      nucleus::Size	size;
 
       enter();
 
@@ -151,7 +153,7 @@ namespace etoile
 	  leave();
 
 	// if the contents has not changed, delete it.
-	if (context->contents->content->state == kernel::StateClean)
+	if (context->contents->content->state == nucleus::StateClean)
 	  {
 	    // release the contents's memory.
 	    delete context->contents;
@@ -195,10 +197,10 @@ namespace etoile
 	    // the object must be updated accordingly.
 	    //
 	    elle::Digest	fingerprint;
-	    hole::Address	address;
+	    nucleus::Address	address;
 
 	    // delete the previous data block, should one exist.
-	    if (context->object->data.contents != hole::Address::Null)
+	    if (context->object->data.contents != nucleus::Address::Null)
 	      {
 		// record the contents so that it is destroyed.
 		if (context->bucket.Destroy(
@@ -223,7 +225,7 @@ namespace etoile
 	      escape("unable to bind the contents");
 
 	    // set the contents as clean.
-	    context->contents->content->state = kernel::StateClean;
+	    context->contents->content->state = nucleus::StateClean;
 
 	    // record the contents so that it is published.
 	    if (context->bucket.Push(

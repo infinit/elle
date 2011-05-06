@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.cc
 //
 // created       julien quintard   [tue jan 26 14:07:29 2010]
-// updated       julien quintard   [mon may  3 20:50:49 2010]
+// updated       julien quintard   [thu may  5 16:00:34 2011]
 //
 
 //
@@ -45,7 +45,7 @@ namespace etoile
     /// note that if the pointer of the current and new blocks are identical,
     /// nothing is done as the block has already been modified in place.
     ///
-    elle::Status	Cell::Set(hole::Block*			block)
+    elle::Status	Cell::Set(nucleus::Block*		block)
     {
       enter();
 
@@ -85,7 +85,7 @@ namespace etoile
     ///
     /// this method returns the block's content.
     ///
-    elle::Status	Cell::Get(hole::Block*&			block)
+    elle::Status	Cell::Get(nucleus::Block*&		block)
     {
       enter();
 

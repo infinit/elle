@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [thu mar  3 11:45:36 2011]
+// updated       julien quintard   [thu may  5 15:56:50 2011]
 //
 
 //
@@ -20,8 +20,6 @@
 #include <etoile/depot/Unit.hh>
 
 #include <etoile/configuration/Configuration.hh>
-
-#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {
@@ -35,7 +33,7 @@ namespace etoile
     ///
     /// the expiration delays for blocks depending on their family.
     ///
-    elle::Time*				Repository::Delays[hole::Families];
+    elle::Time*				Repository::Delays[nucleus::Families];
 
     ///
     /// the data container.
@@ -87,11 +85,11 @@ namespace etoile
       //
       {
 	// set the content hash block to NULL since such blocks never expire.
-	Repository::Delays[hole::FamilyContentHashBlock] = NULL;
+	Repository::Delays[nucleus::FamilyContentHashBlock] = NULL;
 
 	// set the public key blocks delay.
-	Repository::Delays[hole::FamilyPublicKeyBlock] = new elle::Time;
-	Repository::Delays[hole::FamilyPublicKeyBlock]->minute = 5;
+	Repository::Delays[nucleus::FamilyPublicKeyBlock] = new elle::Time;
+	Repository::Delays[nucleus::FamilyPublicKeyBlock]->minute = 5;
       }
 
       leave();
@@ -130,7 +128,7 @@ namespace etoile
       Repository::Reserve::Queue.clear();
 
       // delete the delay for the public key block family.
-      delete Repository::Delays[hole::FamilyPublicKeyBlock];
+      delete Repository::Delays[nucleus::FamilyPublicKeyBlock];
 
       leave();
     }
@@ -138,8 +136,8 @@ namespace etoile
     ///
     /// this method updates the repository by storing a new block.
     ///
-    elle::Status	Repository::Put(const hole::Address&	address,
-					hole::Block*		block)
+    elle::Status	Repository::Put(const nucleus::Address&	address,
+					nucleus::Block*		block)
     {
       std::pair<Repository::Data::Iterator, elle::Boolean>	result;
       Repository::Data::Iterator				iterator;
@@ -305,8 +303,8 @@ namespace etoile
     /// this method retrieve a data block, possibly from the cache or the
     /// reserve.
     ///
-    elle::Status	Repository::Get(const hole::Address&	address,
-					hole::Block*&		block)
+    elle::Status	Repository::Get(const nucleus::Address&	address,
+					nucleus::Block*&	block)
     {
       Record*		record;
 
@@ -412,7 +410,7 @@ namespace etoile
     ///
     /// this method removes the given block from repository.
     ///
-    elle::Status	Repository::Discard(const hole::Address& address)
+    elle::Status	Repository::Discard(const nucleus::Address& address)
     {
       Repository::Data::Iterator	iterator;
       Record*				record;
@@ -509,7 +507,7 @@ namespace etoile
 	{
 	  Record*			record;
 	  Repository::Data::Iterator	iterator;
-	  hole::Block*			block;
+	  nucleus::Block*		block;
 
 	  // retrieve the record at the front i.e the least recently accessed.
 	  record = access->front();

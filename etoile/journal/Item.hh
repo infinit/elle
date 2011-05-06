@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Item.hh
 //
 // created       julien quintard   [mon apr  5 21:15:34 2010]
-// updated       julien quintard   [mon may  3 17:19:23 2010]
+// updated       julien quintard   [thu may  5 16:03:29 2011]
 //
 
 #ifndef ETOILE_JOURNAL_ITEM_HH
@@ -19,8 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/hole/Block.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/journal/Operation.hh>
 
@@ -43,9 +42,9 @@ namespace etoile
       //
       // constructors & destructors
       //
-      Item(const hole::Address&,
-	   hole::Block*);
-      Item(const hole::Address&);
+      Item(const nucleus::Address&,
+	   nucleus::Block*);
+      Item(const nucleus::Address&);
 
       //
       // interfaces
@@ -59,9 +58,9 @@ namespace etoile
       //
       Operation		operation;
 
-      hole::Address	address;
+      nucleus::Address	address;
 
-      hole::Block*	block;
+      nucleus::Block*	block;
     };
 
   }

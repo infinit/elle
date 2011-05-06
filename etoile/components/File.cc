@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/File.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [sat apr 30 14:51:08 2011]
+// updated       julien quintard   [thu may  5 16:17:37 2011]
 //
 
 //
@@ -46,10 +46,10 @@ namespace etoile
 	escape("unable to load the user");
 
       // allocate a new file object.
-      context->object = new kernel::Object;
+      context->object = new nucleus::Object;
 
       // create the irectory.
-      if (context->object->Create(kernel::GenreFile,
+      if (context->object->Create(nucleus::GenreFile,
 				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the file object");
 
@@ -65,7 +65,7 @@ namespace etoile
     /// address in the context.
     ///
     elle::Status	File::Load(context::File*		context,
-				   const hole::Address&		address)
+				   const nucleus::Address&	address)
 					
     {
       enter();
@@ -75,7 +75,7 @@ namespace etoile
 	escape("unable to load the object");
 
       // check that the object is a file.
-      if (context->object->meta.genre != kernel::GenreFile)
+      if (context->object->meta.genre != nucleus::GenreFile)
 	escape("this object is not a file");
 
       leave();
@@ -85,7 +85,7 @@ namespace etoile
     /// this method write a specific region of the file.
     ///
     elle::Status	File::Write(context::File*		context,
-				    const kernel::Offset&	offset,
+				    const nucleus::Offset&	offset,
 				    const elle::Region&		region)
     {
       enter();
@@ -95,7 +95,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the data.
-      if (!(context->rights->record.permissions & kernel::PermissionWrite))
+      if (!(context->rights->record.permissions & nucleus::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -114,8 +114,8 @@ namespace etoile
     /// this method returns a specific region of the file.
     ///
     elle::Status	File::Read(context::File*		context,
-				   const kernel::Offset&	offset,
-				   const kernel::Size&		size,
+				   const nucleus::Offset&	offset,
+				   const nucleus::Size&		size,
 				   elle::Region&		region)
     {
       enter();
@@ -125,7 +125,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the data.
-      if (!(context->rights->record.permissions & kernel::PermissionRead))
+      if (!(context->rights->record.permissions & nucleus::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -145,7 +145,7 @@ namespace etoile
     /// this method adjusts the size of the file's contents.
     ///
     elle::Status	File::Adjust(context::File*		context,
-				     const kernel::Size&	size)
+				     const nucleus::Size&	size)
     {
       enter();
 
@@ -154,7 +154,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the data.
-      if (!(context->rights->record.permissions & kernel::PermissionRead))
+      if (!(context->rights->record.permissions & nucleus::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -208,7 +208,7 @@ namespace etoile
     elle::Status	File::Destroy(context::File*		context)
     {
       user::User*	user;
-      kernel::Size	size;
+      nucleus::Size	size;
 
       enter();
 
@@ -217,7 +217,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context->rights->role != kernel::RoleOwner)
+      if (context->rights->role != nucleus::RoleOwner)
 	escape("unable to destroy a not-owned object");
 
       // destroy the contents.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [mon may  2 12:25:32 2011]
+// updated       julien quintard   [fri may  6 14:13:19 2011]
 //
 
 //
@@ -16,9 +16,6 @@
 //
 
 #include <etoile/hole/Hole.hh>
-
-#include <etoile/kernel/Object.hh>
-#include <etoile/kernel/Access.hh>
 
 namespace etoile
 {
@@ -33,12 +30,12 @@ namespace etoile
     /// this method takes a live block and stores its data into the storage
     /// layer.
     ///
-    elle::Status	Hole::Put(const Address&		address,
-				  const Block*			block)
+    elle::Status	Hole::Put(const nucleus::Address&	address,
+				  const nucleus::Block*		block)
     {
       enter();
 
-      // store the block in the given universe.
+      // store the block.
       if (block->Store(address) == elle::StatusError)
 	escape("unable to store the block");
 
@@ -63,8 +60,8 @@ namespace etoile
     ///    verifying. the storage layer (Hole) should be able to understand
     ///    Address and Block!
     ///
-    elle::Status	Hole::Get(const Address&		address,
-				  Block*&			block)
+    elle::Status	Hole::Get(const nucleus::Address&	address,
+				  nucleus::Block*&		block)
     {
       enter();
 
@@ -86,9 +83,9 @@ namespace etoile
     ///   data, whose should challenge our clients, proving that we are
     ///   the owner.
     ///
-    elle::Status	Hole::Erase(const Address&		address)
+    elle::Status	Hole::Erase(const nucleus::Address&	address)
     {
-      hole::Block	block;
+      nucleus::Block	block;
 
       enter();
 

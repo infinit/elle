@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Record.cc
 //
 // created       julien quintard   [thu dec  3 03:11:13 2009]
-// updated       julien quintard   [mon may  3 18:46:39 2010]
+// updated       julien quintard   [thu may  5 16:50:50 2011]
 //
 
 //
@@ -47,13 +47,13 @@ namespace etoile
     /// this method allocates a timer for blocks which can expires, i.e
     /// mutable blocks, such as PKBs.
     ///
-    elle::Status	Record::Create(const hole::Address&	address)
+    elle::Status	Record::Create(const nucleus::Address&	address)
     {
       enter();
 
       // set the record address.
       this->address = address;
-
+      /* XXX
       // check if this family of block expires.
       if (Repository::Delays[address.family] != NULL)
 	{
@@ -70,7 +70,7 @@ namespace etoile
 	  // note that the timer is not started yet. it will be launched
 	  // once the Timer() method has been called.
 	}
-
+      */
       leave();
     }
 
@@ -92,10 +92,10 @@ namespace etoile
       // stop a potentially already existing timer.
       if (this->timer->Stop() == elle::StatusError)
 	escape("unable to stop the timer");
-
+      /* XXX
       // retrieve the time.
       time = Repository::Delays[this->address.family];
-
+      */
       // compute the number of seconds. note that day, minute and year
       // are grossly computed.
       expiration = time->second + time->minute * 60 + time->hour * 3600 +

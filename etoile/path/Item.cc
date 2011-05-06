@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.cc
 //
 // created       julien quintard   [fri aug  7 21:44:49 2009]
-// updated       julien quintard   [mon may  3 20:54:16 2010]
+// updated       julien quintard   [thu may  5 16:06:19 2011]
 //
 
 //
@@ -89,7 +89,7 @@ namespace etoile
     /// XXX
     ///
     elle::Status	Item::Update(const Slice&		name,
-				     const hole::Address&	address)
+				     const nucleus::Address&	address)
     {
       std::pair<Item::Iterator, elle::Boolean>	result;
       Item::Scoutor				scoutor;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Link.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu apr 28 18:19:15 2011]
+// updated       julien quintard   [thu may  5 16:42:20 2011]
 //
 
 //
@@ -46,10 +46,10 @@ namespace etoile
 	escape("unable to load the user");
 
       // allocate a new link object.
-      context->object = new kernel::Object;
+      context->object = new nucleus::Object;
 
       // create the irectory.
-      if (context->object->Create(kernel::GenreLink,
+      if (context->object->Create(nucleus::GenreLink,
 				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the link object");
 
@@ -65,7 +65,7 @@ namespace etoile
     /// address in the context.
     ///
     elle::Status	Link::Load(context::Link*		context,
-				   const hole::Address&		address)
+				   const nucleus::Address&	address)
 					
     {
       enter();
@@ -75,7 +75,7 @@ namespace etoile
 	escape("unable to load the object");
 
       // check that the object is a link.
-      if (context->object->meta.genre != kernel::GenreLink)
+      if (context->object->meta.genre != nucleus::GenreLink)
 	escape("this object is not a link");
 
       leave();
@@ -94,7 +94,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the reference.
-      if (!(context->rights->record.permissions & kernel::PermissionWrite))
+      if (!(context->rights->record.permissions & nucleus::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -102,7 +102,7 @@ namespace etoile
 	escape("unable to open the contents");
 
       // bind the link.
-      if (context->contents->content->Bind(way) == elle::StatusError)
+      if (context->contents->content->Bind(way.path) == elle::StatusError)
 	escape("unable to bind the link");
 
       leave();
@@ -121,7 +121,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the reference.
-      if (!(context->rights->record.permissions & kernel::PermissionRead))
+      if (!(context->rights->record.permissions & nucleus::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -129,7 +129,7 @@ namespace etoile
 	escape("unable to open the contents");
 
       // resolve the link.
-      if (context->contents->content->Resolve(way) == elle::StatusError)
+      if (context->contents->content->Resolve(way.path) == elle::StatusError)
 	escape("unable to resolve the link");
 
       leave();
@@ -175,7 +175,7 @@ namespace etoile
     elle::Status	Link::Destroy(context::Link*		context)
     {
       user::User*	user;
-      kernel::Size	size;
+      nucleus::Size	size;
 
       enter();
 
@@ -184,7 +184,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context->rights->role != kernel::RoleOwner)
+      if (context->rights->role != nucleus::RoleOwner)
 	escape("unable to destroy a not-owned object");
 
       // destroy the contents.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [sat apr 30 16:50:55 2011]
+// updated       julien quintard   [thu may  5 16:15:44 2011]
 //
 
 //
@@ -46,10 +46,10 @@ namespace etoile
 	escape("unable to load the user");
 
       // allocate a new directory object.
-      context->object = new kernel::Object;
+      context->object = new nucleus::Object;
 
       // create the irectory.
-      if (context->object->Create(kernel::GenreDirectory,
+      if (context->object->Create(nucleus::GenreDirectory,
 				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the directory object");
 
@@ -65,7 +65,7 @@ namespace etoile
     /// address in the context.
     ///
     elle::Status	Directory::Load(context::Directory*	context,
-					const hole::Address&	address)
+					const nucleus::Address&	address)
 					
     {
       enter();
@@ -75,7 +75,7 @@ namespace etoile
 	escape("unable to load the object");
 
       // check that the object is a directory.
-      if (context->object->meta.genre != kernel::GenreDirectory)
+      if (context->object->meta.genre != nucleus::GenreDirectory)
 	escape("this object is not a directory");
 
       leave();
@@ -88,7 +88,7 @@ namespace etoile
 				       const path::Slice&	name,
 				       context::Directory*	subdirectory)
     {
-      kernel::Entry*	entry;
+      nucleus::Entry*	entry;
 
       enter(instance(entry));
 
@@ -97,7 +97,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if (!(directory->rights->record.permissions & kernel::PermissionWrite))
+      if (!(directory->rights->record.permissions & nucleus::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -105,7 +105,7 @@ namespace etoile
 	escape("unable to open the contents");
 
       // allocate a new entry.
-      entry = new kernel::Entry(name, subdirectory->address);
+      entry = new nucleus::Entry(name, subdirectory->address);
 
       // add the entry in the directory.
       if (directory->contents->content->Add(entry) == elle::StatusError)
@@ -122,7 +122,7 @@ namespace etoile
     ///
     elle::Status	Directory::Lookup(context::Directory*	context,
 					  const path::Slice&	name,
-					  kernel::Entry*&	entry)
+					  nucleus::Entry*&	entry)
     {
       enter();
 
@@ -131,7 +131,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context->rights->record.permissions & kernel::PermissionRead))
+      if (!(context->rights->record.permissions & nucleus::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -149,9 +149,10 @@ namespace etoile
     /// this method returns a subset of the directory entries.
     ///
     elle::Status	Directory::Consult(context::Directory*	context,
-					   const kernel::Index&	index,
-					   const kernel::Size&	size,
-					   kernel::Range<kernel::Entry>& range)
+					   const nucleus::Index& index,
+					   const nucleus::Size&	size,
+					   nucleus::Range<nucleus::Entry>&
+					     range)
     {
       enter();
 
@@ -160,7 +161,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context->rights->record.permissions & kernel::PermissionRead))
+      if (!(context->rights->record.permissions & nucleus::PermissionRead))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -190,7 +191,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if (!(context->rights->record.permissions & kernel::PermissionWrite))
+      if (!(context->rights->record.permissions & nucleus::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -217,7 +218,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if (!(context->rights->record.permissions & kernel::PermissionWrite))
+      if (!(context->rights->record.permissions & nucleus::PermissionWrite))
 	escape("unable to perform the operation without the permission");
 
       // open the contents.
@@ -275,7 +276,7 @@ namespace etoile
     elle::Status	Directory::Destroy(context::Directory*	context)
     {
       user::User*	user;
-      kernel::Size	size;
+      nucleus::Size	size;
 
       enter();
 
@@ -284,7 +285,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user is the object owner.
-      if (context->rights->role != kernel::RoleOwner)
+      if (context->rights->role != nucleus::RoleOwner)
 	escape("unable to destroy a not-owned object");
 
       // destroy the contents.

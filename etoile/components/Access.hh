@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [mon may  3 17:39:48 2010]
+// updated       julien quintard   [thu may  5 16:22:39 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_ACCESS_HH
@@ -19,10 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/kernel/Permissions.hh>
-#include <etoile/kernel/Subject.hh>
-#include <etoile/kernel/Token.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/context/Object.hh>
 
@@ -47,22 +44,22 @@ namespace etoile
       //
       static elle::Status	Open(context::Object*);
       static elle::Status	Grant(context::Object*,
-				      const kernel::Subject&,
-				      const kernel::Permissions&);
+				      const nucleus::Subject&,
+				      const nucleus::Permissions&);
       static elle::Status	Lookup(context::Object*,
-				       const kernel::Subject&,
-				       kernel::Record*&);
+				       const nucleus::Subject&,
+				       nucleus::Record*&);
       static elle::Status	Consult(context::Object*,
-					const kernel::Index&,
-					const kernel::Size&,
-					kernel::Range<kernel::Record>&);
+					const nucleus::Index&,
+					const nucleus::Size&,
+					nucleus::Range<nucleus::Record>&);
       static elle::Status	Update(context::Object*,
-				       const kernel::Subject&,
-				       const kernel::Permissions&);
+				       const nucleus::Subject&,
+				       const nucleus::Permissions&);
       static elle::Status	Block(context::Object*,
-				      const kernel::Subject&);
+				      const nucleus::Subject&);
       static elle::Status	Revoke(context::Object*,
-				       const kernel::Subject&);
+				       const nucleus::Subject&);
       static elle::Status	Upgrade(context::Object*,
 					const elle::SecretKey&);
       static elle::Status	Destroy(context::Object*);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sun may  1 12:19:26 2011]
+// updated       julien quintard   [thu may  5 16:28:48 2011]
 //
 
 //
@@ -22,9 +22,6 @@
 
 #include <etoile/components/Directory.hh>
 
-// XXX
-#include <etoile/components/Contents.hh>
-
 namespace etoile
 {
   namespace path
@@ -37,7 +34,7 @@ namespace etoile
     ///
     /// this variable contains the address of the root directory object.
     ///
-    hole::Address*		Path::Root = NULL;
+    nucleus::Address*		Path::Root = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -46,12 +43,12 @@ namespace etoile
     ///
     /// this method initialises the path component.
     ///
-    elle::Status	Path::Initialize(const hole::Address&	address)
+    elle::Status	Path::Initialize(const nucleus::Address& address)
     {
       enter();
 
       // initialize the root address.
-      Path::Root = new hole::Address(address);
+      Path::Root = new nucleus::Address(address);
 
       // initialize the cache.
       if (Cache::Initialize() == elle::StatusError)
@@ -86,7 +83,7 @@ namespace etoile
     /// objects and explore them.
     ///
     elle::Status	Path::Resolve(const Route&		route,
-				      hole::Address&		address)
+				      nucleus::Address&		address)
     {
       Venue		venue;
       Route::Scoutor	scoutor;
@@ -137,7 +134,7 @@ namespace etoile
 	  //
 
 	  context::Directory*	context;
-	  kernel::Entry*	entry;
+	  nucleus::Entry*	entry;
 
 	  // allocate a new context.
 	  if (context::Context::New(context) == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Status.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [tue apr 26 11:56:56 2011]
+// updated       julien quintard   [fri may  6 14:01:48 2011]
 //
 
 //
@@ -17,7 +17,7 @@
 
 #include <etoile/wall/Status.hh>
 
-#include <etoile/kernel/Role.hh>
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -51,7 +51,7 @@ namespace etoile
     ///
     /// this method generates the status according to the given object.
     ///
-    elle::Status	Status::Create(const kernel::Object&	object)
+    elle::Status	Status::Create(const nucleus::Object&	object)
     {
       enter();
 
@@ -71,7 +71,7 @@ namespace etoile
       // set the author depending on the mode.
       switch (object.author.role)
 	{
-	case kernel::RoleOwner:
+	case nucleus::RoleOwner:
 	  {
 	    this->keys.author = object.owner.K;
 

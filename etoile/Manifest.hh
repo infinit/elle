@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [mon may 24 22:22:25 2010]
+// updated       julien quintard   [thu may  5 16:34:47 2011]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Way.hh>
 #include <etoile/path/Slice.hh>
@@ -26,14 +27,6 @@
 #include <etoile/context/Identifier.hh>
 
 #include <etoile/wall/Status.hh>
-
-#include <etoile/kernel/Size.hh>
-#include <etoile/kernel/Index.hh>
-#include <etoile/kernel/Offset.hh>
-#include <etoile/kernel/Range.hh>
-#include <etoile/kernel/Entry.hh>
-#include <etoile/kernel/Record.hh>
-#include <etoile/kernel/Trait.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -198,13 +191,13 @@ inward(etoile::TagDirectoryLookup,
        parameters(const etoile::context::Identifier,
 		  const etoile::path::Slice));
 outward(etoile::TagDirectoryEntry,
-	parameters(const etoile::kernel::Entry));
+	parameters(const nucleus::Entry));
 inward(etoile::TagDirectoryConsult,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Index,
-		  const etoile::kernel::Size));
+		  const nucleus::Index,
+		  const nucleus::Size));
 outward(etoile::TagDirectoryRange,
-	parameters(const etoile::kernel::Range<etoile::kernel::Entry>));
+	parameters(const nucleus::Range<nucleus::Entry>));
 inward(etoile::TagDirectoryRename,
        parameters(const etoile::context::Identifier,
 		  const etoile::path::Slice,
@@ -227,17 +220,17 @@ inward(etoile::TagFileLoad,
        parameters(const etoile::path::Way));
 inward(etoile::TagFileWrite,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Offset,
+		  const nucleus::Offset,
 		  const elle::Region));
 inward(etoile::TagFileRead,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Offset,
-		  const etoile::kernel::Size));
+		  const nucleus::Offset,
+		  const nucleus::Size));
 outward(etoile::TagFileRegion,
 	parameters(const elle::Region));
 inward(etoile::TagFileAdjust,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Size));
+		  const nucleus::Size));
 inward(etoile::TagFileDiscard,
        parameters(const etoile::context::Identifier));
 inward(etoile::TagFileStore,
@@ -269,29 +262,29 @@ inward(etoile::TagLinkDestroy,
 // access
 inward(etoile::TagAccessLookup,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Subject));
+		  const nucleus::Subject));
 outward(etoile::TagAccessRecord,
-	parameters(const etoile::kernel::Record));
+	parameters(const nucleus::Record));
 inward(etoile::TagAccessConsult,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Index,
-		  const etoile::kernel::Size));
+		  const nucleus::Index,
+		  const nucleus::Size));
 outward(etoile::TagAccessRange,
-	parameters(const etoile::kernel::Range<etoile::kernel::Record>));
+	parameters(const nucleus::Range<nucleus::Record>));
 inward(etoile::TagAccessGrant,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Subject,
-		  const etoile::kernel::Permissions));
+		  const nucleus::Subject,
+		  const nucleus::Permissions));
 inward(etoile::TagAccessUpdate,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Subject,
-		  const etoile::kernel::Permissions));
+		  const nucleus::Subject,
+		  const nucleus::Permissions));
 inward(etoile::TagAccessBlock,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Subject));
+		  const nucleus::Subject));
 inward(etoile::TagAccessRevoke,
        parameters(const etoile::context::Identifier,
-		  const etoile::kernel::Subject));
+		  const nucleus::Subject));
 
 // attributes
 inward(etoile::TagAttributesSet,
@@ -302,11 +295,11 @@ inward(etoile::TagAttributesGet,
        parameters(const etoile::context::Identifier,
 		  const elle::String));
 outward(etoile::TagAttributesTrait,
-	parameters(const etoile::kernel::Trait));
+	parameters(const nucleus::Trait));
 inward(etoile::TagAttributesFetch,
        parameters(const etoile::context::Identifier));
 outward(etoile::TagAttributesRange,
-	parameters(const etoile::kernel::Range<etoile::kernel::Trait>));
+	parameters(const nucleus::Range<nucleus::Trait>));
 inward(etoile::TagAttributesOmit,
        parameters(const etoile::context::Identifier,
 		  const elle::String));

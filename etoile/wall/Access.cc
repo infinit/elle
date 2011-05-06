@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [mon may  3 13:51:58 2010]
+// updated       julien quintard   [fri may  6 13:57:39 2011]
 //
 
 //
@@ -17,14 +17,14 @@
 
 #include <etoile/wall/Access.hh>
 
-#include <etoile/kernel/Permissions.hh>
-
 #include <etoile/context/Object.hh>
 #include <etoile/context/Format.hh>
 
 #include <etoile/components/Access.hh>
 
 #include <etoile/user/User.hh>
+
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -42,11 +42,11 @@ namespace etoile
     elle::Status	Access::Lookup(const
 				         context::Identifier&	identifier,
 				       const
-				         kernel::Subject&	subject)
+				         nucleus::Subject&	subject)
     {
       context::Object*	context;
       user::User*	user;
-      kernel::Record*	record;
+      nucleus::Record*	record;
 
       enter();
 
@@ -80,7 +80,7 @@ namespace etoile
 	{
 	  // return the null record.
 	  if (user->application->channel->Reply(
-	        elle::Inputs<TagAccessRecord>(kernel::Record::Null)) ==
+	        elle::Inputs<TagAccessRecord>(nucleus::Record::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
 	}
@@ -101,13 +101,13 @@ namespace etoile
     elle::Status	Access::Consult(const
 				          context::Identifier&	identifier,
 					const
-					  kernel::Index&	index,
+					  nucleus::Index&	index,
 					const
-					  kernel::Size&		size)
+					  nucleus::Size&		size)
     {
       context::Object*			context;
       user::User*			user;
-      kernel::Range<kernel::Record>	range;
+      nucleus::Range<nucleus::Record>	range;
 
       enter();
 
@@ -153,9 +153,9 @@ namespace etoile
     elle::Status	Access::Grant(const
 				        context::Identifier&	identifier,
 				      const
-				        kernel::Subject&	subject,
+				        nucleus::Subject&	subject,
 				      const
-				        kernel::Permissions&	permissions)
+				        nucleus::Permissions&	permissions)
     {
       context::Object*	context;
       user::User*	user;
@@ -202,9 +202,9 @@ namespace etoile
     elle::Status	Access::Update(const
 				         context::Identifier&	identifier,
 				       const
-				         kernel::Subject&	subject,
+				         nucleus::Subject&	subject,
 				       const
-				         kernel::Permissions&	permissions)
+				         nucleus::Permissions&	permissions)
     {
       context::Object*	context;
       user::User*	user;
@@ -251,7 +251,7 @@ namespace etoile
     elle::Status	Access::Block(const
 				        context::Identifier&	identifier,
 				      const
-				        kernel::Subject&	subject)
+				        nucleus::Subject&	subject)
     {
       context::Object*	context;
       user::User*	user;
@@ -269,7 +269,7 @@ namespace etoile
     elle::Status	Access::Revoke(const
 				         context::Identifier&	identifier,
 				       const
-				         kernel::Subject&	subject)
+				         nucleus::Subject&	subject)
     {
       context::Object*	context;
       user::User*	user;

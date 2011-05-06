@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.hh
 //
 // created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [tue apr 26 11:53:28 2011]
+// updated       julien quintard   [thu may  5 16:06:35 2011]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH
@@ -19,8 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/hole/Address.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <vector>
 
@@ -51,7 +50,7 @@ namespace etoile
       //
       // types
       //
-      typedef std::vector<hole::Address>	Container;
+      typedef std::vector<nucleus::Address>	Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
@@ -63,7 +62,7 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Record(const hole::Address&);
+      elle::Status	Record(const nucleus::Address&);
 
       //
       // interfaces

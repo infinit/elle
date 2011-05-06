@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [thu apr 28 16:40:42 2011]
+// updated       julien quintard   [thu may  5 15:59:57 2011]
 //
 
 //
@@ -16,8 +16,6 @@
 //
 
 #include <etoile/depot/Depot.hh>
-
-#include <etoile/hole/Hole.hh>
 
 namespace etoile
 {

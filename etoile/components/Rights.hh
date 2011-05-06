@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:54:18 2010]
-// updated       julien quintard   [mon may  3 12:44:22 2010]
+// updated       julien quintard   [thu may  5 16:17:44 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_RIGHTS_HH
@@ -43,7 +43,7 @@ namespace etoile
       //
       static elle::Status	Determine(context::Object*);
       static elle::Status	Update(context::Object*,
-				       const kernel::Permissions&);
+				       const nucleus::Permissions&);
     };
 
   }

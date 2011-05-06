@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [mon may  3 18:54:58 2010]
+// updated       julien quintard   [thu may  5 16:33:27 2011]
 //
 
 //
@@ -18,6 +18,8 @@
 #include <etoile/wall/Interface.hh>
 #include <etoile/wall/Wall.hh>
 #include <etoile/wall/Object.hh>
+
+#include <nucleus/Nucleus.hh>
 
 namespace etoile
 {
@@ -92,8 +94,8 @@ namespace etoile
       InterfaceRegister(etoile::TagDirectoryConsult,
 			Directory::Consult,
 			parameters(const context::Identifier,
-				   const kernel::Index,
-				   const kernel::Size));
+				   const nucleus::Index,
+				   const nucleus::Size));
       InterfaceRegister(etoile::TagDirectoryRename,
 			Directory::Rename,
 			parameters(const context::Identifier,
@@ -123,17 +125,17 @@ namespace etoile
       InterfaceRegister(etoile::TagFileWrite,
 			File::Write,
 			parameters(const context::Identifier,
-				   const kernel::Offset,
+				   const nucleus::Offset,
 				   const elle::Region));
       InterfaceRegister(etoile::TagFileRead,
 			File::Read,
 			parameters(const context::Identifier,
-				   const kernel::Offset,
-				   const kernel::Size));
+				   const nucleus::Offset,
+				   const nucleus::Size));
       InterfaceRegister(etoile::TagFileAdjust,
 			File::Adjust,
 			parameters(const context::Identifier,
-				   const kernel::Size));
+				   const nucleus::Size));
       InterfaceRegister(etoile::TagFileDiscard,
 			File::Discard,
 			parameters(const context::Identifier));
@@ -172,30 +174,30 @@ namespace etoile
       InterfaceRegister(etoile::TagAccessLookup,
 			Access::Lookup,
 			parameters(const context::Identifier,
-				   const kernel::Subject));
+				   const nucleus::Subject));
       InterfaceRegister(etoile::TagAccessConsult,
 			Access::Consult,
 			parameters(const context::Identifier,
-				   const kernel::Index,
-				   const kernel::Size));
+				   const nucleus::Index,
+				   const nucleus::Size));
       InterfaceRegister(etoile::TagAccessGrant,
 			Access::Grant,
 			parameters(const context::Identifier,
-				   const kernel::Subject,
-				   const kernel::Permissions));
+				   const nucleus::Subject,
+				   const nucleus::Permissions));
       InterfaceRegister(etoile::TagAccessUpdate,
 			Access::Update,
 			parameters(const context::Identifier,
-				   const kernel::Subject,
-				   const kernel::Permissions));
+				   const nucleus::Subject,
+				   const nucleus::Permissions));
       InterfaceRegister(etoile::TagAccessBlock,
 			Access::Block,
 			parameters(const context::Identifier,
-				   const kernel::Subject));
+				   const nucleus::Subject));
       InterfaceRegister(etoile::TagAccessRevoke,
 			Access::Revoke,
 			parameters(const context::Identifier,
-				   const kernel::Subject));
+				   const nucleus::Subject));
 
       // attributes
       InterfaceRegister(etoile::TagAttributesSet,

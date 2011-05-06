@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [wed apr 27 12:15:42 2011]
+// updated       julien quintard   [fri may  6 13:56:12 2011]
 //
 
 //
@@ -193,7 +193,7 @@ namespace etoile
 	escape("unable to encrypt the phrase");
 
       // send the challenge to the agent.
-      if (c->agent->remote->channel->Reply(
+      if (c->agent->channel->Reply(
 	    elle::Inputs<TagWallChallenge>(code)) == elle::StatusError)
 	escape("unable to send the challenge to the agent");
 
@@ -223,7 +223,7 @@ namespace etoile
 	escape("non-agents cannot authenticate");
 
       // check if the agent is not already authenticated.
-      if (user->agent->remote->state == user::Agent::StateAuthenticated)
+      if (user->agent->state == user::Agent::StateAuthenticated)
 	escape("this agent seems to be authenticated already");
 
       // compute the phrase digest.
@@ -239,7 +239,7 @@ namespace etoile
 	escape("unable to set the agent as authenticated");
 
       // acknowledge the authentication.
-      if (user->agent->remote->channel->Reply(elle::Inputs<TagOk>()) ==
+      if (user->agent->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to acknowledge the authentication");
 
@@ -284,7 +284,7 @@ namespace etoile
 	escape("unable to locate the agent making use of the given phrase");
 
       // check if the agent is authenticated.
-      if (client->agent->remote->state != user::Agent::StateAuthenticated)
+      if (client->agent->state != user::Agent::StateAuthenticated)
 	escape("this agent seems not to be authenticated");
 
       // detach the channel from the guest so that it does not get lost.

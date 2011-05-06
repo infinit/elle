@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [mon may  3 15:57:40 2010]
+// updated       julien quintard   [thu may  5 16:32:55 2011]
 //
 
 #ifndef ETOILE_WALL_LINK_HH
@@ -19,13 +19,11 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Way.hh>
 
 #include <etoile/context/Identifier.hh>
-
-#include <etoile/kernel/Offset.hh>
-#include <etoile/kernel/Size.hh>
 
 #include <etoile/components/Link.hh>
 

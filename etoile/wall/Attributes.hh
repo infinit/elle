@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [mon may  3 17:44:16 2010]
+// updated       julien quintard   [thu may  5 16:30:12 2011]
 //
 
 #ifndef ETOILE_WALL_ATTRIBUTES_HH
@@ -19,11 +19,9 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/context/Identifier.hh>
-
-#include <etoile/kernel/Index.hh>
-#include <etoile/kernel/Size.hh>
 
 namespace etoile
 {

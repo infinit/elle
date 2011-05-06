@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Cell.hh
 //
 // created       julien quintard   [tue jan 26 14:00:35 2010]
-// updated       julien quintard   [mon may  3 17:40:12 2010]
+// updated       julien quintard   [thu may  5 16:00:14 2011]
 //
 
 #ifndef ETOILE_DEPOT_CELL_HH
@@ -19,8 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/hole/Block.hh>
+#include <nucleus/Nucleus.hh>
 
 namespace etoile
 {
@@ -46,8 +45,8 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Set(hole::Block*);
-      elle::Status	Get(hole::Block*&);
+      elle::Status	Set(nucleus::Block*);
+      elle::Status	Get(nucleus::Block*&);
       elle::Status	Destroy();
 
       //
@@ -58,7 +57,7 @@ namespace etoile
       //
       // attributes
       //
-      hole::Block*	block;
+      nucleus::Block*	block;
     };
 
   }

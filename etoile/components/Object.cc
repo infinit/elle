@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [sun may  1 11:47:03 2011]
+// updated       julien quintard   [fri may  6 13:49:12 2011]
 //
 
 //
@@ -39,7 +39,7 @@ namespace etoile
     /// this method loads an object in the given context.
     ///
     elle::Status	Object::Load(context::Object*		context,
-				     const hole::Address&	address)
+				     const nucleus::Address&	address)
     {
       enter();
 
@@ -87,8 +87,8 @@ namespace etoile
 	escape("unable to close the access");
 
       // if the object has been modified, seal it and record it.
-      if ((context->object->data.state != kernel::StateClean) ||
-	  (context->object->meta.state != kernel::StateClean))
+      if ((context->object->data.state != nucleus::StateClean) ||
+	  (context->object->meta.state != nucleus::StateClean))
 	{
 	  // seal the object.
 	  if (context->object->Seal(*user->client->agent,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [thu apr 28 13:22:10 2011]
+// updated       julien quintard   [fri may  6 14:23:37 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace etoile
   elle::Status		Main(const elle::Natural32		argc,
 			     const elle::Character*		argv[])
   {
-    hole::Address	root;
+    nucleus::Address	root;
 
     enter();
 
@@ -39,39 +39,16 @@ namespace etoile
     if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
+    // initialize the nucleus library.
+    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+      escape("unable to initialize Nucleus");
+
     // initialize the lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize the Lune library");
 
     // XXX
     {
-      // XXX[hack for the /]
-      /*
-      {
-	int		fd;
-
-	fd = ::open("/home/mycure/.infinit/hole/.root", O_RDONLY);
-
-	elle::Region	region;
-
-	region.Prepare(4096);
-
-	region.size = read(fd, region.contents, region.capacity);
-
-	region.Detach();
-
-	elle::Archive	archive;
-
-	archive.Prepare(region);
-
-	archive.Extract(root);
-
-	expose();
-
-	std::cout << "[root] " << root << std::endl;
-      }
-      */
-
       // XXX[hack for kapoue]
       {
 	lune::Descriptor descriptor;
@@ -101,6 +78,10 @@ namespace etoile
     // clean the Lune library.
     if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean the Lune library");
+
+    // clean the nucleus library.
+    if (nucleus::Nucleus::Clean() == elle::StatusError)
+      escape("unable to clean Nucleus");
 
     // clean the Elle library.
     if (elle::Elle::Clean() == elle::StatusError)

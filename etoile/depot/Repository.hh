@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [mon may  3 17:39:25 2010]
+// updated       julien quintard   [thu may  5 15:56:06 2011]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH
@@ -19,11 +19,8 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
-
-#include <etoile/hole/Address.hh>
-#include <etoile/hole/Block.hh>
-#include <etoile/hole/Family.hh>
 
 #include <etoile/depot/Record.hh>
 #include <etoile/depot/Location.hh>
@@ -74,8 +71,8 @@ namespace etoile
 	//
 	// types
 	//
-	typedef std::map<hole::Address, Record*>	Container;
-	typedef std::pair<hole::Address, Record*>	Value;
+	typedef std::map<nucleus::Address, Record*>	Container;
+	typedef std::pair<nucleus::Address, Record*>	Value;
 	typedef Container::iterator			Iterator;
 	typedef Container::const_iterator		Scoutor;
       };
@@ -96,20 +93,20 @@ namespace etoile
       static elle::Status	Initialize();
       static elle::Status	Clean();
 
-      static elle::Status	Put(const hole::Address&,
-				    hole::Block*);
-      static elle::Status	Get(const hole::Address&,
-				    hole::Block*&);
+      static elle::Status	Put(const nucleus::Address&,
+				    nucleus::Block*);
+      static elle::Status	Get(const nucleus::Address&,
+				    nucleus::Block*&);
       static elle::Status	Evict(const Location,
 				      const elle::Natural32);
-      static elle::Status	Discard(const hole::Address&);
+      static elle::Status	Discard(const nucleus::Address&);
 
       static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // static attributes
       //
-      static elle::Time*		Delays[hole::Families];
+      static elle::Time*		Delays[nucleus::Families];
 
       static Data::Container		Container;
 

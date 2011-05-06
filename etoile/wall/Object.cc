@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [sat apr 30 14:55:16 2011]
+// updated       julien quintard   [fri may  6 14:01:39 2011]
 //
 
 //
@@ -23,6 +23,8 @@
 #include <etoile/components/Object.hh>
 
 #include <etoile/path/Path.hh>
+
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {

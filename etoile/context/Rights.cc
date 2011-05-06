@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.cc
 //
 // created       julien quintard   [sun mar 21 16:55:17 2010]
-// updated       julien quintard   [mon may  3 19:46:46 2010]
+// updated       julien quintard   [thu may  5 16:24:23 2011]
 //
 
 //
@@ -30,7 +30,7 @@ namespace etoile
     /// default constructor.
     ///
     Rights::Rights():
-      role(kernel::RoleUnknown)
+      role(nucleus::RoleUnknown)
     {
     }
 

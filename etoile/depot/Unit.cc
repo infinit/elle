@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [thu apr 28 18:25:15 2011]
+// updated       julien quintard   [thu may  5 15:58:10 2011]
 //
 
 //
@@ -44,7 +44,7 @@ namespace etoile
     /// this method sets or updates the unit by serializing the block
     /// and storing its content on the disk.
     ///
-    elle::Status	Unit::Set(hole::Block*			block)
+    elle::Status	Unit::Set(nucleus::Block*		block)
     {
       elle::Archive	archive;
       elle::Natural32	fd;
@@ -96,7 +96,7 @@ namespace etoile
     ///
     /// this method extracts the on-disk unit and returns a live block.
     ///
-    elle::Status	Unit::Get(hole::Block*			block)
+    elle::Status	Unit::Get(nucleus::Block*		block)
     {
       elle::Archive	archive;
       elle::Region	region;

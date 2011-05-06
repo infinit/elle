@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [sat apr 30 16:14:24 2011]
+// updated       julien quintard   [thu may  5 16:51:55 2011]
 //
 
 //
@@ -39,17 +39,13 @@ namespace etoile
   /// XXX \todo virer le code temporaire + mettre chaque valeur dans la
   /// XXX       configuration (root, pair et path)
   ///
-  elle::Status		Etoile::Initialize(const hole::Address&	address)
+  elle::Status		Etoile::Initialize(const nucleus::Address& address)
   {
     enter();
 
     // initialize the configuration.
     if (configuration::Configuration::Initialize() == elle::StatusError)
       escape("unable to initialize the configuration");
-
-    // initialize the kernel.
-    if (kernel::Kernel::Initialize() == elle::StatusError)
-      escape("unable to initialize the kernel");
 
     // initialize the depot.
     if (depot::Depot::Initialize() == elle::StatusError)
@@ -100,10 +96,6 @@ namespace etoile
     // clean the depot.
     if (depot::Depot::Clean() == elle::StatusError)
       escape("unable to clean the depot");
-
-    // clean the kernel.
-    if (kernel::Kernel::Clean() == elle::StatusError)
-      escape("unable to clean the kernel");
 
     // clean the configuration.
     if (configuration::Configuration::Clean() == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:59:43 2010]
-// updated       julien quintard   [mon may  3 17:37:19 2010]
+// updated       julien quintard   [thu may  5 16:24:17 2011]
 //
 
 #ifndef ETOILE_CONTEXT_RIGHTS_HH
@@ -19,9 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/kernel/Role.hh>
-#include <etoile/kernel/Record.hh>
+#include <nucleus/Nucleus.hh>
 
 namespace etoile
 {
@@ -55,8 +53,8 @@ namespace etoile
       //
       // attributes
       //
-      kernel::Role		role;
-      kernel::Record		record;
+      nucleus::Role		role;
+      nucleus::Record		record;
       elle::SecretKey		key;
     };
 

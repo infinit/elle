@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [mon may  2 12:17:13 2011]
+// updated       julien quintard   [thu may  5 16:05:32 2011]
 //
 
 //
@@ -16,9 +16,6 @@
 //
 
 #include <etoile/journal/Journal.hh>
-
-#include <etoile/hole/Address.hh>
-#include <etoile/hole/Block.hh>
 
 #include <etoile/depot/Depot.hh>
 
@@ -108,8 +105,8 @@ namespace etoile
     /// this method is called by Depot whenever looking for a particular
     /// block.
     ///
-    elle::Status	Journal::Get(const hole::Address&	address,
-				     hole::Block*&		block)
+    elle::Status	Journal::Get(const nucleus::Address&	address,
+				     nucleus::Block*&		block)
     {
       enter();
 

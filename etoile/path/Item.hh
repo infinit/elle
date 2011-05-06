@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Item.hh
 //
 // created       julien quintard   [fri aug  7 21:41:33 2009]
-// updated       julien quintard   [mon may  3 17:43:23 2010]
+// updated       julien quintard   [thu may  5 16:06:12 2011]
 //
 
 #ifndef ETOILE_PATH_ITEM_HH
@@ -19,13 +19,14 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Slice.hh>
 
-#include <etoile/hole/Address.hh>
-
-#include <map>
-#include <utility>
+#include <elle/idiom/Close.hh>
+# include <map>
+# include <utility>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -72,7 +73,7 @@ namespace etoile
       elle::Status	Resolve(const Slice&,
 				Item*&);
       elle::Status	Update(const Slice&,
-			       const hole::Address&);
+			       const nucleus::Address&);
       elle::Status	Destroy();
 
       //
@@ -86,7 +87,7 @@ namespace etoile
       // attributes
       //
       Slice		name;
-      hole::Address	address;
+      nucleus::Address	address;
 
       Item*		directory;
 

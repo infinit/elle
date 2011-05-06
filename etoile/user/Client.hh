@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Client.hh
 //
 // created       julien quintard   [thu mar  4 11:56:54 2010]
-// updated       julien quintard   [sat feb 26 15:03:57 2011]
+// updated       julien quintard   [thu may  5 16:29:22 2011]
 //
 
 #ifndef ETOILE_USER_CLIENT_HH
@@ -19,8 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/kernel/Subject.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/user/Agent.hh>
 #include <etoile/user/Application.hh>
@@ -134,14 +133,12 @@ namespace etoile
       //
       // attributes
       //
-      // XXX hole::User		user;
-
       Agent*			agent;
       A::Container		applications;
 
       elle::String		phrase;
 
-      kernel::Subject		subject;
+      nucleus::Subject		subject;
     };
 
   }

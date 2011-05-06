@@ -3,25 +3,6 @@ PROJECT(Etoile CXX)
 ADD_LIBRARY(etoile
   configuration/Configuration.cc
 
-  kernel/Access.cc
-  kernel/Attributes.cc
-  kernel/Author.cc
-  kernel/Catalog.cc
-  kernel/ContentHashBlock.cc
-  kernel/Contents.cc
-  kernel/Data.cc
-  kernel/Entry.cc
-  kernel/Kernel.cc
-  kernel/Object.cc
-  kernel/Proof.cc
-  kernel/PublicKeyBlock.cc
-  kernel/Record.cc
-  kernel/Reference.cc
-  kernel/Subject.cc
-  kernel/Token.cc
-  kernel/Trait.cc
-  kernel/Voucher.cc
-
   context/Context.cc
   context/Directory.cc
   context/File.cc
@@ -75,8 +56,6 @@ ADD_LIBRARY(etoile
   wall/Attributes.cc
 
   hole/Hole.cc
-  hole/Address.cc
-  hole/Block.cc
 
   Etoile.cc
 )
@@ -85,8 +64,8 @@ ADD_EXECUTABLE(Etoile
   etoile.cc
 )
 
-TARGET_LINK_LIBRARIES(etoile elle lune)
+TARGET_LINK_LIBRARIES(etoile elle nucleus lune)
 
-TARGET_LINK_LIBRARIES(Etoile elle lune etoile crypto ssl dl
+TARGET_LINK_LIBRARIES(Etoile elle nucleus lune etoile crypto ssl dl
 		             ${QT_QTNETWORK_LIBRARIES}
 			     ${QT_QTKERNEL_LIBRARIES})

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Attributes.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [mon may  3 17:56:24 2010]
+// updated       julien quintard   [thu may  5 16:16:17 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_ATTRIBUTES_HH
@@ -19,10 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/kernel/Permissions.hh>
-#include <etoile/kernel/Subject.hh>
-#include <etoile/kernel/Token.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/context/Object.hh>
 
@@ -49,9 +46,9 @@ namespace etoile
 				    const elle::String&);
       static elle::Status	Get(context::Object*,
 				    const elle::String&,
-				    kernel::Trait*&);
+				    nucleus::Trait*&);
       static elle::Status	Fetch(context::Object*,
-				      kernel::Range<kernel::Trait>&);
+				      nucleus::Range<nucleus::Trait>&);
       static elle::Status	Omit(context::Object*,
 				     const elle::String&);
     };

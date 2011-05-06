@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Author.cc
 //
 // created       julien quintard   [sun aug 23 15:33:40 2009]
-// updated       julien quintard   [mon may  3 12:39:28 2010]
+// updated       julien quintard   [thu may  5 16:34:04 2011]
 //
 
 //
@@ -49,12 +49,12 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // allocate a new author.
-      context->author = new kernel::Author;
+      context->author = new nucleus::Author;
 
       // build the author object according to the subject's role.
       switch (context->rights->role)
 	{
-	case kernel::RoleOwner:
+	case nucleus::RoleOwner:
 	  {
 	    // create an owner author.
 	    if (context->author->Create() == elle::StatusError)
@@ -62,9 +62,9 @@ namespace etoile
 
 	    break;
 	  }
-	case kernel::RoleDelegate:
+	case nucleus::RoleDelegate:
 	  {
-	    kernel::Index	index;
+	    nucleus::Index	index;
 
 	    // retrieve the record index.
 	    if (context->access->Locate(user->client->subject,

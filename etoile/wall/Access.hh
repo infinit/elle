@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [mon may  3 13:50:01 2010]
+// updated       julien quintard   [thu may  5 16:32:15 2011]
 //
 
 #ifndef ETOILE_WALL_ACCESS_HH
@@ -19,13 +19,9 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/context/Identifier.hh>
-
-#include <etoile/kernel/Subject.hh>
-#include <etoile/kernel/Permissions.hh>
-#include <etoile/kernel/Index.hh>
-#include <etoile/kernel/Size.hh>
 
 namespace etoile
 {
@@ -47,20 +43,20 @@ namespace etoile
       // static methods
       //
       static elle::Status	Lookup(const context::Identifier&,
-				       const kernel::Subject&);
+				       const nucleus::Subject&);
       static elle::Status	Consult(const context::Identifier&,
-					const kernel::Index&,
-					const kernel::Size&);
+					const nucleus::Index&,
+					const nucleus::Size&);
       static elle::Status	Grant(const context::Identifier&,
-				      const kernel::Subject&,
-				      const kernel::Permissions&);
+				      const nucleus::Subject&,
+				      const nucleus::Permissions&);
       static elle::Status	Update(const context::Identifier&,
-				       const kernel::Subject&,
-				       const kernel::Permissions&);
+				       const nucleus::Subject&,
+				       const nucleus::Permissions&);
       static elle::Status	Block(const context::Identifier&,
-				      const kernel::Subject&);
+				      const nucleus::Subject&);
       static elle::Status	Revoke(const context::Identifier&,
-				       const kernel::Subject&);
+				       const nucleus::Subject&);
     };
 
   }

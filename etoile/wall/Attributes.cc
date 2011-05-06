@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [mon may  3 18:59:13 2010]
+// updated       julien quintard   [fri may  6 14:01:28 2011]
 //
 
 //
@@ -22,6 +22,8 @@
 #include <etoile/components/Attributes.hh>
 
 #include <etoile/user/User.hh>
+
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -89,7 +91,7 @@ namespace etoile
     {
       context::Object*	context;
       user::User*	user;
-      kernel::Trait*	trait;
+      nucleus::Trait*	trait;
 
       enter();
 
@@ -123,7 +125,7 @@ namespace etoile
 	{
 	  // return the null trait.
 	  if (user->application->channel->Reply(
-	        elle::Inputs<TagAttributesTrait>(kernel::Trait::Null)) ==
+	        elle::Inputs<TagAttributesTrait>(nucleus::Trait::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
 	}
@@ -146,7 +148,7 @@ namespace etoile
     {
       context::Object*			context;
       user::User*			user;
-      kernel::Range<kernel::Trait>	range;
+      nucleus::Range<nucleus::Trait>	range;
 
       enter();
 

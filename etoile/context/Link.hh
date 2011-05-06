@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Link.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [mon may  3 12:52:26 2010]
+// updated       julien quintard   [thu may  5 16:25:37 2011]
 //
 
 #ifndef ETOILE_CONTEXT_LINK_HH
@@ -18,10 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/context/Object.hh>
+#include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
-#include <etoile/kernel/Contents.hh>
-#include <etoile/kernel/Catalog.hh>
+#include <etoile/context/Object.hh>
 
 namespace etoile
 {
@@ -43,7 +43,7 @@ namespace etoile
       //
       // types
       //
-      typedef kernel::Reference		Content;
+      typedef nucleus::Reference	Content;
 
       //
       // constructors & destructors
@@ -61,7 +61,7 @@ namespace etoile
       //
       // attributes
       //
-      kernel::Contents<Content>*	contents;
+      nucleus::Contents<Content>*	contents;
     };
 
   }

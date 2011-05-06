@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Status.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [tue apr 26 11:56:28 2011]
+// updated       julien quintard   [thu may  5 16:31:04 2011]
 //
 
 #ifndef ETOILE_WALL_STATUS_HH
@@ -19,28 +19,10 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/kernel/Genre.hh>
-#include <etoile/kernel/Offset.hh>
-#include <etoile/kernel/Version.hh>
-#include <etoile/kernel/Permissions.hh>
+#include <nucleus/Nucleus.hh>
 
 namespace etoile
 {
-
-  namespace kernel
-  {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    class Object;
-
-  }
 
   namespace wall
   {
@@ -69,7 +51,7 @@ namespace etoile
       //
       // method
       //
-      elle::Status	Create(const kernel::Object&);
+      elle::Status	Create(const nucleus::Object&);
 
       //
       // interfaces
@@ -89,7 +71,7 @@ namespace etoile
       //
       // attributes
       //
-      kernel::Genre		genre;
+      nucleus::Genre		genre;
 
       struct
       {
@@ -97,7 +79,7 @@ namespace etoile
 	elle::Time		modification;
       }				stamps;
 
-      kernel::Offset		size;
+      nucleus::Offset		size;
 
       struct
       {
@@ -107,23 +89,17 @@ namespace etoile
 
       struct
       {
-	kernel::Permissions	owner;
+	nucleus::Permissions	owner;
       }				permissions;
 
       struct
       {
-	kernel::Version		data;
-	kernel::Version		meta;
+	nucleus::Version	data;
+	nucleus::Version	meta;
       }				versions;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/kernel/Object.hh>
 
 #endif

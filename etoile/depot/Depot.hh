@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [mon may  2 12:13:49 2011]
+// updated       julien quintard   [thu may  5 16:36:49 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/hole/Hole.hh>
 
@@ -62,24 +63,25 @@ namespace etoile
 
       ///
       /// this method has been introduced because the C++ typing system
-      /// seems unable to implicitly cast an kernel::Object* for instance
+      /// seems unable to implicitly cast an nucleus::Object* for instance
       /// to a hole::Block*& or to const-equivalents.
       ///
       template <typename T>
-      static elle::Status	Put(const hole::Address&	address,
+      static elle::Status	Put(const nucleus::Address&	address,
 				    T*				block)
       {
 	enter();
 
 	// store in the hole.
-	if (hole::Hole::Put(address, (hole::Block*)block) == elle::StatusError)
+	if (hole::Hole::Put(address,
+			    (nucleus::Block*)block) == elle::StatusError)
 	  escape("unable to put the block in the hole");
 
 	leave();
       }
 
       template <typename T>
-      static elle::Status	Get(const hole::Address&	address,
+      static elle::Status	Get(const nucleus::Address&	address,
 				    T*&				block)
       {
 	enter();
@@ -91,13 +93,14 @@ namespace etoile
 	block = new T;
 
 	// finally, look in the hole.
-	if (hole::Hole::Get(address, (hole::Block*&)block) == elle::StatusOk)
+	if (hole::Hole::Get(address,
+			    (nucleus::Block*&)block) == elle::StatusOk)
 	  leave();
 
 	escape("unable to locate the block");
       }
 
-      static elle::Status	Erase(const hole::Address&	address)
+      static elle::Status	Erase(const nucleus::Address&	address)
       {
 	enter();
 

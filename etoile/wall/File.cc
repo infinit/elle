@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon may  3 18:57:22 2010]
+// updated       julien quintard   [fri may  6 14:01:09 2011]
 //
 
 //
@@ -23,6 +23,8 @@
 #include <etoile/user/User.hh>
 
 #include <etoile/path/Path.hh>
+
+#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -170,7 +172,7 @@ namespace etoile
     /// this method writes a region of the file.
     ///
     elle::Status	File::Write(const context::Identifier& identifier,
-				    const kernel::Offset&	offset,
+				    const nucleus::Offset&	offset,
 				    const elle::Region&		region)
     {
       context::File*	context;
@@ -215,8 +217,8 @@ namespace etoile
     /// this method reads a region of the file.
     ///
     elle::Status	File::Read(const context::Identifier&	identifier,
-				   const kernel::Offset&	offset,
-				   const kernel::Size&		size)
+				   const nucleus::Offset&	offset,
+				   const nucleus::Size&		size)
     {
       context::File*	context;
       user::User*	user;
@@ -256,7 +258,7 @@ namespace etoile
     /// this method adjusts the size of a file.
     ///
     elle::Status	File::Adjust(const context::Identifier&	identifier,
-				     const kernel::Size&	size)
+				     const nucleus::Size&	size)
     {
       context::File*	context;
       user::User*	user;

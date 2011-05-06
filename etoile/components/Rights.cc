@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [mon may  3 17:55:52 2010]
+// updated       julien quintard   [fri may  6 13:50:28 2011]
 //
 
 //
@@ -19,8 +19,6 @@
 #include <etoile/components/Access.hh>
 
 #include <etoile/user/User.hh>
-
-#include <etoile/kernel/Token.hh>
 
 namespace etoile
 {
@@ -61,13 +59,13 @@ namespace etoile
 	  //
 
 	  // set the role.
-	  context->rights->role = kernel::RoleOwner;
+	  context->rights->role = nucleus::RoleOwner;
 
 	  // set the record.
 	  context->rights->record = context->object->meta.owner.record;
 
 	  // if a token is present, decrypt it.
-	  if (context->rights->record.token != kernel::Token::Null)
+	  if (context->rights->record.token != nucleus::Token::Null)
 	    {
 	      elle::Digest	fingerprint;
 
@@ -109,7 +107,7 @@ namespace etoile
 	  if (context->access->Exist(user->client->subject) ==
 	      elle::StatusTrue)
 	    {
-	      kernel::Record*	record;
+	      nucleus::Record*	record;
 
 	      // retrieve the complete access record.
 	      if (context->access->Lookup(user->client->subject,
@@ -117,13 +115,13 @@ namespace etoile
 		escape("unable to retrieve the access record");
 
 	      // set the role.
-	      context->rights->role = kernel::RoleDelegate;
+	      context->rights->role = nucleus::RoleDelegate;
 
 	      // set the record.
 	      context->rights->record = *record;
 
 	      // decrypt the token and verify the key, if present.
-	      if (context->rights->record.token != kernel::Token::Null)
+	      if (context->rights->record.token != nucleus::Token::Null)
 		{
 		  elle::Digest	fingerprint;
 
@@ -155,8 +153,8 @@ namespace etoile
 
 	      // therefore, at this point, the user is considered as having no
 	      // right over the object.
-	      context->rights->role = kernel::RoleUnknown;
-	      context->rights->record.permissions = kernel::PermissionNone;
+	      context->rights->role = nucleus::RoleUnknown;
+	      context->rights->record.permissions = nucleus::PermissionNone;
 	    }
 	}
 
@@ -168,7 +166,7 @@ namespace etoile
     ///
     elle::Status	Rights::Update(context::Object*		context,
 				       const
-				         kernel::Permissions&	permissions)
+				         nucleus::Permissions&	permissions)
     {
       enter();
 

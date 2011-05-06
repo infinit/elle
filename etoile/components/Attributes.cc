@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Attributes.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [mon may  3 17:56:12 2010]
+// updated       julien quintard   [thu may  5 16:16:47 2011]
 //
 
 //
@@ -17,8 +17,6 @@
 
 #include <etoile/components/Attributes.hh>
 #include <etoile/components/Rights.hh>
-
-#include <etoile/kernel/State.hh>
 
 #include <etoile/depot/Depot.hh>
 
@@ -47,7 +45,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context->rights->role != kernel::RoleOwner)
+      if (context->rights->role != nucleus::RoleOwner)
 	escape("the object's owner only can modify the attributes");
 
       // test if the attribute already exists.
@@ -60,13 +58,13 @@ namespace etoile
 	}
       else
 	{
-	  kernel::Trait*	trait;
+	  nucleus::Trait*	trait;
 
 	  // otherwise, create a new track, hence track it.
 	  enter(instance(trait));
 
 	  // allocate a new trait.
-	  trait = new kernel::Trait(name, value);
+	  trait = new nucleus::Trait(name, value);
 
 	  // add the trait to the attributes.
 	  if (context->object->meta.attributes.Add(trait) == elle::StatusError)
@@ -96,7 +94,7 @@ namespace etoile
     ///
     elle::Status	Attributes::Get(context::Object*	context,
 					const elle::String&	name,
-					kernel::Trait*&		trait)
+					nucleus::Trait*&	trait)
     {
       enter();
 
@@ -112,13 +110,14 @@ namespace etoile
     /// this method returns the attributes.
     ///
     elle::Status	Attributes::Fetch(context::Object*	context,
-					  kernel::Range<kernel::Trait>& range)
+					  nucleus::Range<nucleus::Trait>&
+					    range)
     {
       enter();
 
       // consult the attributes.
-      if (context->object->meta.attributes.Consult(kernel::IndexFirst,
-						   kernel::SizeMaximum,
+      if (context->object->meta.attributes.Consult(nucleus::IndexFirst,
+						   nucleus::SizeMaximum,
 						   range) == elle::StatusError)
 	escape("unable to fetch the attributes");
 
@@ -140,7 +139,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // verify that the user can modify the attributes.
-      if (context->rights->role != kernel::RoleOwner)
+      if (context->rights->role != nucleus::RoleOwner)
 	escape("the object's owner only can modify the attributes");
 
       // remove the trait associated with the given name.

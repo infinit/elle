@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Link.hh
 //
 // created       julien quintard   [fri aug 14 18:57:08 2009]
-// updated       julien quintard   [mon may  3 17:55:10 2010]
+// updated       julien quintard   [thu may  5 16:16:56 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_ETOILE_HH
@@ -19,14 +19,11 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/components/Object.hh>
 
 #include <etoile/context/Link.hh>
-
-#include <etoile/hole/Address.hh>
-
-#include <etoile/kernel/Catalog.hh>
 
 namespace etoile
 {
@@ -49,7 +46,7 @@ namespace etoile
       //
       static elle::Status	Create(context::Link*);
       static elle::Status	Load(context::Link*,
-				     const hole::Address&);
+				     const nucleus::Address&);
       static elle::Status	Bind(context::Link*,
 				     const path::Way&);
       static elle::Status	Resolve(context::Link*,

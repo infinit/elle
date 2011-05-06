@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.cc
 //
 // created       julien quintard   [fri aug  7 20:51:38 2009]
-// updated       julien quintard   [mon may  3 13:26:25 2010]
+// updated       julien quintard   [thu may  5 16:07:22 2011]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/path/Cache.hh>
+
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/configuration/Configuration.hh>
 
@@ -102,7 +104,7 @@ namespace etoile
 	   (r != route.elements.end()) && (v != venue.elements.end());
 	   r++, v++)
 	{
-	  hole::Address	address;
+	  nucleus::Address address;
 
 	  // update the item with the new address.
 	  if (item->Update(*r, *v) == elle::StatusError)
