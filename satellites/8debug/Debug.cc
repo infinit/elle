@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8debug/Debug.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu apr 29 13:52:32 2010]
+// updated       julien quintard   [fri may  6 14:16:29 2011]
 //
 
 //
@@ -170,6 +170,8 @@ namespace application
     // initialize the Elle library.
     if (Elle::Initialize() == StatusError)
       escape("unable to initialize the Elle library");
+
+    // XXX init/clean nucleus
 
     // set up the program.
     if (Program::Setup() == StatusError)

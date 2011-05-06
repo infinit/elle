@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon apr 25 21:53:01 2011]
+// updated       julien quintard   [fri may  6 14:24:22 2011]
 //
 
 //
@@ -172,6 +172,10 @@ namespace application
 	  }
       }
 
+    // initialize the nucleus library.
+    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+      escape("unable to initialize Nucleus");
+
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
@@ -229,6 +233,10 @@ namespace application
     // clean Lune.
     if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
+
+    // clean the nucleus library.
+    if (nucleus::Nucleus::Clean() == elle::StatusError)
+      escape("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)

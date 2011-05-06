@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat apr 30 16:15:01 2011]
+// updated       julien quintard   [fri may  6 14:24:16 2011]
 //
 
 //
@@ -41,11 +41,11 @@ namespace application
 					const elle::Address&	network,
 					const elle::String&	owner)
   {
-    lune::Authority		authority;
-    lune::Descriptor		descriptor;
-    lune::Identity		identity;
-    etoile::kernel::Object	directory;
-    etoile::hole::Address	address;
+    lune::Authority	authority;
+    lune::Descriptor	descriptor;
+    lune::Identity	identity;
+    nucleus::Object	directory;
+    nucleus::Address	address;
 
     enter();
 
@@ -122,21 +122,13 @@ namespace application
     // create the root directory.
     //
     {
-      etoile::user::Agent	agent;
-
-      // create the agent based on the owner's key pair.
-      //
-      // this agent will be used to sign the root directory's object.
-      if (agent.Create(identity.pair) == elle::StatusError)
-	escape("unable to create the agent");
-
       // create directory object, setting the user's as the owner.
-      if (directory.Create(etoile::GenreDirectory,
-			   agent.K) == elle::StatusError)
+      if (directory.Create(nucleus::GenreDirectory,
+			   identity.pair.K) == elle::StatusError)
 	escape("unable to create the object directory");
 
       // seal the directory.
-      if (directory.Seal(agent) == elle::StatusError)
+      if (directory.Seal(identity.pair.k) == elle::StatusError)
 	escape("unable to seal the object");
 
       // compute the directory's address.
@@ -167,11 +159,9 @@ namespace application
     // store the root directory block now that the network exists.
     //
     {
-      // store the object.
-      if (etoile::hole::Hole::Put(// XXX name,
-				  address,
-				  &directory) == elle::StatusError)
-	escape("unable to store the directory block");
+      // store the block.
+      if (directory.Store(address) == elle::StatusError)
+	escape("unable to store the block");
     }
 
     leave();
@@ -524,16 +514,13 @@ namespace application
 	  }
       }
 
+    // initialize the nucleus library.
+    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+      escape("unable to initialize Nucleus");
+
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
-
-    // XXX initializing etoile will remove the network socket and therefore
-    // make the current instance unreachable.
-
-    // initialize the Etoile.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
-      escape("unable to initialize Etoile");
 
     // trigger the operation.
     switch (operation)
@@ -583,13 +570,13 @@ namespace application
     // delete the parser.
     delete parser;
 
-    // clean the Etoile.
-    if (etoile::Etoile::Clean() == elle::StatusError)
-      escape("unable to clean Etoile");
-
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
+
+    // clean the nucleus library.
+    if (nucleus::Nucleus::Clean() == elle::StatusError)
+      escape("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)

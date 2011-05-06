@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8dictionary/Dictionary.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue apr 26 21:22:04 2011]
+// updated       julien quintard   [fri may  6 14:26:02 2011]
 //
 
 //
@@ -96,7 +96,7 @@ namespace application
 	}
       case Dictionary::TypeGroup:
 	{
-	  etoile::hole::Address	address;
+	  nucleus::Address	address;
 
 	  // restore the address from the identifier.
 	  if (address.Restore(identifier) == elle::StatusError)
@@ -260,14 +260,14 @@ namespace application
 	}
       case Dictionary::TypeGroup:
 	{
-	  lune::Map<etoile::hole::Address>::Scoutor scoutor;
+	  lune::Map<nucleus::Address>::Scoutor scoutor;
 
 	  // go through the group dictionary.
 	  for (scoutor = dictionary.groups.container.begin();
 	       scoutor != dictionary.groups.container.end();
 	       scoutor++)
 	    {
-	      lune::Map<etoile::hole::Address>::Entry* entry = *scoutor;
+	      lune::Map<nucleus::Address>::Entry* entry = *scoutor;
 
 	      std::cout << entry->name << " :: "
 			<< entry->value << std::endl;
@@ -329,8 +329,8 @@ namespace application
       {
       case Dictionary::TypeUser:
 	{
-	  elle::PublicKey*		K;
-	  elle::Unique			unique;
+	  elle::PublicKey*	K;
+	  elle::Unique		unique;
 
 	  // retrieve the entry.
 	  if (dictionary.users.Lookup(name, K) != elle::StatusTrue)
@@ -348,8 +348,8 @@ namespace application
 	}
       case Dictionary::TypeGroup:
 	{
-	  etoile::hole::Address*	address;
-	  elle::Unique			unique;
+	  nucleus::Address*	address;
+	  elle::Unique		unique;
 
 	  // retrieve the entry.
 	  if (dictionary.groups.Lookup(name, address) != elle::StatusTrue)
@@ -627,6 +627,10 @@ namespace application
 	  }
       }
 
+    // initialize the nucleus library.
+    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+      escape("unable to initialize Nucleus");
+
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
@@ -706,6 +710,10 @@ namespace application
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
+
+    // clean the nucleus library.
+    if (nucleus::Nucleus::Clean() == elle::StatusError)
+      escape("unable to clean Nucleus");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
