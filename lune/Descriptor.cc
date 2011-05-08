@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.cc
 //
 // created       julien quintard   [sat may  1 21:19:13 2010]
-// updated       julien quintard   [thu may  5 16:13:07 2011]
+// updated       julien quintard   [sun may  8 10:32:07 2011]
 //
 
 //
@@ -181,7 +181,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -213,7 +213,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -246,7 +246,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -270,7 +270,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Descriptor) == elle::StatusError)
+    if (path.Create(Lune::Network::Descriptor) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.

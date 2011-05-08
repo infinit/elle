@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.hh
 //
 // created       julien quintard   [fri apr 30 12:55:13 2010]
-// updated       julien quintard   [tue apr 26 15:10:43 2011]
+// updated       julien quintard   [sun may  8 10:56:10 2011]
 //
 
 //
@@ -49,14 +49,35 @@ namespace lune
     // static attributes
     //
     static elle::Pattern	Authority;
-    static elle::Pattern	User;
-    static elle::Pattern	Identity;
-    static elle::Pattern	Dictionary;
-    static elle::Pattern	Phrase;
-    static elle::Pattern	Network;
-    static elle::Pattern	Descriptor;
-    static elle::Pattern	Reserve;
-    static elle::Pattern	Shelter;
+
+    static elle::Pattern	Users;
+    static elle::Pattern	Networks;
+
+    struct			User
+    {
+      static elle::Pattern	Root;
+      static elle::Pattern	Identity;
+      static elle::Pattern	Dictionary;
+      static elle::Pattern	Phrase;
+    };
+
+    struct			Network
+    {
+      static elle::Pattern	Root;
+      static elle::Pattern	Descriptor;
+
+      struct			Reserve
+      {
+	static elle::Pattern	Root;
+	static elle::Pattern	Block;
+      };
+
+      struct			Shelter
+      {
+	static elle::Pattern	Root;
+	static elle::Pattern	Block;
+      };
+    };
   };
 
 }

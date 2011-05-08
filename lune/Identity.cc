@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Identity.cc
 //
 // created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [fri may  6 14:29:25 2011]
+// updated       julien quintard   [sun may  8 10:38:15 2011]
 //
 
 //
@@ -265,7 +265,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Identity) == elle::StatusError)
+    if (path.Create(Lune::User::Identity) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -297,7 +297,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Identity) == elle::StatusError)
+    if (path.Create(Lune::User::Identity) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -330,7 +330,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Identity) == elle::StatusError)
+    if (path.Create(Lune::User::Identity) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -354,7 +354,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Identity) == elle::StatusError)
+    if (path.Create(Lune::User::Identity) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.

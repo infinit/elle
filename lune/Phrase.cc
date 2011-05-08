@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Phrase.cc
 //
 // created       julien quintard   [tue may  4 20:49:38 2010]
-// updated       julien quintard   [tue apr 26 13:36:56 2011]
+// updated       julien quintard   [sun may  8 10:38:30 2011]
 //
 
 //
@@ -121,7 +121,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Phrase) == elle::StatusError)
+    if (path.Create(Lune::User::Phrase) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -153,7 +153,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Phrase) == elle::StatusError)
+    if (path.Create(Lune::User::Phrase) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -186,7 +186,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Phrase) == elle::StatusError)
+    if (path.Create(Lune::User::Phrase) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -210,7 +210,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Phrase) == elle::StatusError)
+    if (path.Create(Lune::User::Phrase) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.

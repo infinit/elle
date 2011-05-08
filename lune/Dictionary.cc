@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Dictionary.cc
 //
 // created       julien quintard   [mon may 10 16:14:02 2010]
-// updated       julien quintard   [thu may  5 16:13:15 2011]
+// updated       julien quintard   [sun may  8 10:36:00 2011]
 //
 
 //
@@ -112,7 +112,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -144,7 +144,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -177,7 +177,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
@@ -201,7 +201,7 @@ namespace lune
     enter();
 
     // create the path.
-    if (path.Create(Lune::Dictionary) == elle::StatusError)
+    if (path.Create(Lune::User::Dictionary) == elle::StatusError)
       escape("unable to create the path");
 
     // complete the path's pattern.
