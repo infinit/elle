@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Interface.cc
 //
 // created       julien quintard   [wed mar  3 18:30:05 2010]
-// updated       julien quintard   [thu may  5 16:33:27 2011]
+// updated       julien quintard   [sun may  8 02:13:42 2011]
 //
 
 //
@@ -59,7 +59,8 @@ namespace etoile
 			parameters(const elle::Digest));
       InterfaceRegister(etoile::TagWallConnect,
 			Wall::Connect,
-			parameters(const elle::String));
+			parameters(const elle::String,
+				   const nucleus::Network));
 
       // object
       InterfaceRegister(etoile::TagObjectLoad,

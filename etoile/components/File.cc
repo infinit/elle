@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/File.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu may  5 16:17:37 2011]
+// updated       julien quintard   [sun may  8 12:34:11 2011]
 //
 
 //
@@ -48,7 +48,12 @@ namespace etoile
       // allocate a new file object.
       context->object = new nucleus::Object;
 
-      // create the irectory.
+      // place the block in the application's network.
+      if (context->object->Place(user->application->network) ==
+	  elle::StatusError)
+	escape("unable to place the object");
+
+      // create the file.
       if (context->object->Create(nucleus::GenreFile,
 				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the file object");

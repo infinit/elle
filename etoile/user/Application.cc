@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.cc
 //
 // created       julien quintard   [thu mar 11 17:09:58 2010]
-// updated       julien quintard   [sat apr 30 15:28:51 2011]
+// updated       julien quintard   [sun may  8 02:17:58 2011]
 //
 
 //
@@ -53,13 +53,16 @@ namespace etoile
     ///
     /// this method creates the channel.
     ///
-    elle::Status	Application::Create(elle::Channel*	channel)
+    elle::Status	Application::Create(const
+					      nucleus::Network&	network,
+					    elle::Channel*	channel)
     {
       elle::Callback<const elle::String> error(&Application::Error, this);
 
       enter();
 
       // set the attributes.
+      this->network = network;
       this->channel = channel;
 
       // register the error callback to the deletion.

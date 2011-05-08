@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [thu may  5 16:36:49 2011]
+// updated       julien quintard   [sun may  8 12:25:38 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -67,13 +67,15 @@ namespace etoile
       /// to a hole::Block*& or to const-equivalents.
       ///
       template <typename T>
-      static elle::Status	Put(const nucleus::Address&	address,
+      static elle::Status	Put(const nucleus::Network&	network,
+				    const nucleus::Address&	address,
 				    T*				block)
       {
 	enter();
 
 	// store in the hole.
-	if (hole::Hole::Put(address,
+	if (hole::Hole::Put(network,
+			    address,
 			    (nucleus::Block*)block) == elle::StatusError)
 	  escape("unable to put the block in the hole");
 
@@ -81,7 +83,8 @@ namespace etoile
       }
 
       template <typename T>
-      static elle::Status	Get(const nucleus::Address&	address,
+      static elle::Status	Get(const nucleus::Network&	network,
+				    const nucleus::Address&	address,
 				    T*&				block)
       {
 	enter();
@@ -93,21 +96,24 @@ namespace etoile
 	block = new T;
 
 	// finally, look in the hole.
-	if (hole::Hole::Get(address,
+	if (hole::Hole::Get(network,
+			    address,
 			    (nucleus::Block*&)block) == elle::StatusOk)
 	  leave();
 
 	escape("unable to locate the block");
       }
 
-      static elle::Status	Erase(const nucleus::Address&	address)
+      static elle::Status	Erase(const nucleus::Network&	network,
+				      const nucleus::Address&	address)
       {
 	enter();
 
 	// XXX look in the cache etc.
 
 	// finally, erase the block from the hole.
-	if (hole::Hole::Erase(address) == elle::StatusOk)
+	if (hole::Hole::Erase(network,
+			      address) == elle::StatusOk)
 	  leave();
 
 	escape("unable to erase the block");

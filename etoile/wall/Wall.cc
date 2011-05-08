@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [fri may  6 13:56:12 2011]
+// updated       julien quintard   [sun may  8 02:20:34 2011]
 //
 
 //
@@ -252,7 +252,8 @@ namespace etoile
     /// considered as a valid application and will therefore be allowed
     /// to issue requests on behalf of the agent.
     ///
-    elle::Status	Wall::Connect(const elle::String&	phrase)
+    elle::Status	Wall::Connect(const elle::String&	phrase,
+				      const nucleus::Network&	network)
     {
       elle::Session*		session;
       user::Application*	application;
@@ -295,7 +296,8 @@ namespace etoile
       application = new user::Application;
 
       // create a new application
-      if (application->Create(guest->channel) == elle::StatusError)
+      if (application->Create(network,
+			      guest->channel) == elle::StatusError)
 	escape("unable to create the application");
 
       // register the application.

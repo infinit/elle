@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [fri may  6 13:53:26 2011]
+// updated       julien quintard   [sat may  7 22:32:02 2011]
 //
 
 //
@@ -241,8 +241,6 @@ namespace etoile
       Client*			client;
 
       enter();
-
-      printf("[XXX] Agent:Error()\n");
 
       // retrieve the client related to this agent's channel.
       if (Client::Retrieve(this->channel, client) != elle::StatusTrue)

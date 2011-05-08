@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [fri may  6 14:23:37 2011]
+// updated       julien quintard   [sun may  8 11:20:56 2011]
 //
 
 //
@@ -48,6 +48,7 @@ namespace etoile
       escape("unable to initialize the Lune library");
 
     // XXX
+    /* XXX
     {
       // XXX[hack for kapoue]
       {
@@ -61,6 +62,7 @@ namespace etoile
 	std::cout << "[root] " << root << std::endl;
       }
     }
+    */
 
 
     // initialize etoile.

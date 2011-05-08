@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [thu may  5 16:24:05 2011]
+// updated       julien quintard   [sun may  8 12:37:57 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -37,17 +37,24 @@ namespace etoile
     template <typename T>
     elle::Status	Contents::Open(T*			context)
     {
+      user::User*	user;
+
       enter();
 
       // if the contents is already opened, return.
       if (context->contents != NULL)
 	leave();
 
+      // load the current user.
+      if (user::User::Instance(user) == elle::StatusError)
+	escape("unable to load the user");
+
       // check if there exists a contents. if so, load the block.
       if (context->object->data.contents != nucleus::Address::Null)
 	{
 	  // load the block.
-	  if (depot::Depot::Get(context->object->data.contents,
+	  if (depot::Depot::Get(user->application->network,
+				context->object->data.contents,
 				context->contents) == elle::StatusError)
 	    escape("unable to load the contents");
 
@@ -69,6 +76,11 @@ namespace etoile
 	{
 	  // otherwise create a new contents.
 	  context->contents = new nucleus::Contents<typename T::Content>;
+
+	  // place the block in the application's network.
+	  if (context->contents->Place(user->application->network) ==
+	      elle::StatusError)
+	    escape("unable to place the object");
 
 	  // create the contents.
 	  if (context->contents->Create() == elle::StatusError)

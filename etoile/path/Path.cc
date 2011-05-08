@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [thu may  5 16:28:48 2011]
+// updated       julien quintard   [sun may  8 11:39:35 2011]
 //
 
 //
@@ -22,19 +22,13 @@
 
 #include <etoile/components/Directory.hh>
 
+// XXX
+#include <lune/Lune.hh>
+
 namespace etoile
 {
   namespace path
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this variable contains the address of the root directory object.
-    ///
-    nucleus::Address*		Path::Root = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -46,9 +40,6 @@ namespace etoile
     elle::Status	Path::Initialize(const nucleus::Address& address)
     {
       enter();
-
-      // initialize the root address.
-      Path::Root = new nucleus::Address(address);
 
       // initialize the cache.
       if (Cache::Initialize() == elle::StatusError)
@@ -67,9 +58,6 @@ namespace etoile
       // clean the cache.
       if (Cache::Clean() == elle::StatusError)
 	escape("unable to clean the cache");
-
-      // delete the root address.
-      delete Path::Root;
 
       leave();
     }
@@ -100,8 +88,22 @@ namespace etoile
       // if the cache did not resolve anything.
       if (venue == Venue::Null)
 	{
-	  // start with the root directory.
-	  address = *Path::Root;
+	  // XXX
+	  user::User*		user;
+	  lune::Descriptor	descriptor;
+
+	  // load the current user.
+	  if (user::User::Instance(user) == elle::StatusError)
+	    escape("unable to load the user");
+
+	  if (descriptor.Load(user->application->network.name) ==
+	      elle::StatusError)
+	    escape("unable to load the descriptor");
+
+	  address = descriptor.root;
+
+	  std::cout << address << std::endl;
+	  // XXX
 	}
       else
 	{

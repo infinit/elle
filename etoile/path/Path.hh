@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [thu may  5 16:07:50 2011]
+// updated       julien quintard   [sun may  8 11:18:52 2011]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -50,11 +50,6 @@ namespace etoile
 
       static elle::Status	Resolve(const Route&,
 					nucleus::Address&);
-
-      //
-      // static attributes
-      //
-      static nucleus::Address*	Root;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [thu may  5 16:38:16 2011]
+// updated       julien quintard   [sun may  8 12:34:36 2011]
 //
 
 //
@@ -44,15 +44,33 @@ namespace etoile
       // check if there exists an access block. if so, load the block.
       if (context->object->meta.access != nucleus::Address::Null)
 	{
+	  user::User*	user;
+
+	  // load the current user.
+	  if (user::User::Instance(user) == elle::StatusError)
+	    escape("unable to load the user");
+
 	  // load the block.
-	  if (depot::Depot::Get(context->object->meta.access,
+	  if (depot::Depot::Get(user->application->network,
+				context->object->meta.access,
 				context->access) == elle::StatusError)
 	    escape("unable to load the access");
 	}
       else
 	{
+	  user::User*	user;
+
+	  // load the current user.
+	  if (user::User::Instance(user) == elle::StatusError)
+	    escape("unable to load the user");
+
 	  // otherwise create a new access.
 	  context->access = new nucleus::Access;
+
+	  // place the block in the application's network.
+	  if (context->access->Place(user->application->network) ==
+	      elle::StatusError)
+	    escape("unable to place the object");
 	}
 
       leave();

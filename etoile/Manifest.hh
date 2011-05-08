@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [thu may  5 16:34:47 2011]
+// updated       julien quintard   [sun may  8 02:13:34 2011]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -163,7 +163,8 @@ outward(etoile::TagWallChallenge,
 inward(etoile::TagWallAuthenticate,
        parameters(const elle::Digest));
 inward(etoile::TagWallConnect,
-       parameters(const elle::String));
+       parameters(const elle::String,
+		  const nucleus::Network));
 
 // object
 inward(etoile::TagObjectLoad,

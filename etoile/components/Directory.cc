@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [thu may  5 16:15:44 2011]
+// updated       julien quintard   [sun may  8 09:53:34 2011]
 //
 
 //
@@ -48,7 +48,12 @@ namespace etoile
       // allocate a new directory object.
       context->object = new nucleus::Object;
 
-      // create the irectory.
+      // place the block in the application's network.
+      if (context->object->Place(user->application->network) ==
+	  elle::StatusError)
+	escape("unable to place the object");
+
+      // create the directory.
       if (context->object->Create(nucleus::GenreDirectory,
 				  user->client->agent->K) == elle::StatusError)
 	escape("unable to create the directory object");

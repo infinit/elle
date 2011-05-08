@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [fri may  6 13:49:12 2011]
+// updated       julien quintard   [sun may  8 12:24:47 2011]
 //
 
 //
@@ -41,13 +41,21 @@ namespace etoile
     elle::Status	Object::Load(context::Object*		context,
 				     const nucleus::Address&	address)
     {
+      user::User*	user;
+
       enter();
+
+      // load the current user.
+      if (user::User::Instance(user) == elle::StatusError)
+	escape("unable to load the user");
 
       // set the object address.
       context->address = address;
 
       // get the block.
-      if (depot::Depot::Get(address, context->object) == elle::StatusError)
+      if (depot::Depot::Get(user->application->network,
+			    address,
+			    context->object) == elle::StatusError)
 	escape("unable to retrieve the block");
 
       leave();

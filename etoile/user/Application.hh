@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hh
 //
 // created       julien quintard   [thu mar 11 17:09:50 2010]
-// updated       julien quintard   [thu may  5 16:08:55 2011]
+// updated       julien quintard   [sun may  8 02:15:44 2011]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/context/Identifier.hh>
 
@@ -70,7 +71,8 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create(elle::Channel*);
+      elle::Status	Create(const nucleus::Network&,
+			       elle::Channel*);
       elle::Status	Destroy();
 
       template <typename T>
@@ -97,6 +99,8 @@ namespace etoile
       //
       // attributes
       //
+      nucleus::Network	network;
+
       elle::Channel*	channel;
 
       Container		contexts;

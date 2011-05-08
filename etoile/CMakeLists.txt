@@ -67,5 +67,6 @@ ADD_EXECUTABLE(Etoile
 TARGET_LINK_LIBRARIES(etoile elle nucleus lune)
 
 TARGET_LINK_LIBRARIES(Etoile elle nucleus lune etoile crypto ssl dl
+		             ${QT_QTCORE_LIBRARIES}
 		             ${QT_QTNETWORK_LIBRARIES}
 			     ${QT_QTKERNEL_LIBRARIES})

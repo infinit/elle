@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [thu may  5 16:05:32 2011]
+// updated       julien quintard   [sun may  8 12:38:28 2011]
 //
 
 //
@@ -58,8 +58,13 @@ namespace etoile
     elle::Status	Journal::Record(context::Context*	context)
     {
       Bucket::Scoutor	scoutor;
+      user::User*	user;
 
       enter();
+
+      // load the current user.
+      if (user::User::Instance(user) == elle::StatusError)
+	escape("unable to load the user");
 
       // first, remove the exportation so that the application cannot
       // use this context anymore.
@@ -78,7 +83,8 @@ namespace etoile
 	    {
 	    case OperationPush:
 	      {
-		if (depot::Depot::Put(item->address,
+		if (depot::Depot::Put(user->application->network,
+				      item->address,
 				      item->block) == elle::StatusError)
 		  escape("unable to publish the block");
 
@@ -86,7 +92,8 @@ namespace etoile
 	      }
 	    case OperationDestroy:
 	      {
-		if (depot::Depot::Erase(item->address) == elle::StatusError)
+		if (depot::Depot::Erase(user->application->network,
+					item->address) == elle::StatusError)
 		  escape("unable to erase the block through hole");
 
 		break;

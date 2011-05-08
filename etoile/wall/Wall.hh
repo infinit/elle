@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.hh
 //
 // created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [tue may  4 10:59:01 2010]
+// updated       julien quintard   [sun may  8 02:20:38 2011]
 //
 
 #ifndef ETOILE_WALL_WALL_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/Manifest.hh>
 
@@ -52,7 +53,8 @@ namespace etoile
 
       static elle::Status	Identify(const elle::PublicKey&);
       static elle::Status	Authenticate(const elle::Digest&);
-      static elle::Status	Connect(const elle::String&);
+      static elle::Status	Connect(const elle::String&,
+					const nucleus::Network&);
 
       //
       // callbacks

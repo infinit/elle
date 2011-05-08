@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/hole/Hole.cc
 //
 // created       julien quintard   [sun aug  9 16:47:38 2009]
-// updated       julien quintard   [fri may  6 14:13:19 2011]
+// updated       julien quintard   [sun may  8 12:28:07 2011]
 //
 
 //
@@ -30,13 +30,14 @@ namespace etoile
     /// this method takes a live block and stores its data into the storage
     /// layer.
     ///
-    elle::Status	Hole::Put(const nucleus::Address&	address,
+    elle::Status	Hole::Put(const nucleus::Network&	network,
+				  const nucleus::Address&	address,
 				  const nucleus::Block*		block)
     {
       enter();
 
       // store the block.
-      if (block->Store(address) == elle::StatusError)
+      if (block->Store(network, address) == elle::StatusError)
 	escape("unable to store the block");
 
       leave();
@@ -60,18 +61,23 @@ namespace etoile
     ///    verifying. the storage layer (Hole) should be able to understand
     ///    Address and Block!
     ///
-    elle::Status	Hole::Get(const nucleus::Address&	address,
+    elle::Status	Hole::Get(const nucleus::Network&	network,
+				  const nucleus::Address&	address,
 				  nucleus::Block*&		block)
     {
       enter();
 
       // does the block exist.
-      if (block->Exist(address) == elle::StatusFalse)
+      if (block->Exist(network, address) == elle::StatusFalse)
 	escape("the block does not seem to exist");
 
       // load the block.
-      if (block->Load(address) == elle::StatusError)
+      if (block->Load(network, address) == elle::StatusError)
 	escape("unable to load the block");
+
+      // validate the block.
+      if (block->Validate(address) == elle::StatusFalse)
+	escape("the block seems to be invalid");
 
       leave();
     }
@@ -83,14 +89,15 @@ namespace etoile
     ///   data, whose should challenge our clients, proving that we are
     ///   the owner.
     ///
-    elle::Status	Hole::Erase(const nucleus::Address&	address)
+    elle::Status	Hole::Erase(const nucleus::Network&	network,
+				    const nucleus::Address&	address)
     {
       nucleus::Block	block;
 
       enter();
 
       // erase the block.
-      if (block.Erase(address) == elle::StatusError)
+      if (block.Erase(network, address) == elle::StatusError)
 	escape("unable to erase the block");
 
       leave();
