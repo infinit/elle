@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri may  6 14:30:01 2011]
+// updated       julien quintard   [sun may  8 10:47:19 2011]
 //
 
 //
@@ -166,7 +166,7 @@ namespace application
       elle::Path	path;
 
       // create the user path.
-      if (path.Create(lune::Lune::User) == elle::StatusError)
+      if (path.Create(lune::Lune::User::Root) == elle::StatusError)
 	escape("unable to create the path");
 
       // complete the path with the user name.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri may  6 14:24:16 2011]
+// updated       julien quintard   [sun may  8 12:42:34 2011]
 //
 
 //
@@ -38,7 +38,7 @@ namespace application
   /// initial user.
   ///
   elle::Status		Network::Create(const elle::String&	name,
-					const elle::Address&	network,
+					const elle::Address&	boot,
 					const elle::String&	owner)
   {
     lune::Authority	authority;
@@ -46,6 +46,7 @@ namespace application
     lune::Identity	identity;
     nucleus::Object	directory;
     nucleus::Address	address;
+    nucleus::Network	network;
 
     enter();
 
@@ -62,7 +63,7 @@ namespace application
 	escape("this network seems to already exist");
 
       // test the network argument.
-      if (network == elle::Address::Null)
+      if (boot == elle::Address::Null)
 	escape("unable to create a network without a bootstrap node");
 
       // test the owner argument.
@@ -122,6 +123,14 @@ namespace application
     // create the root directory.
     //
     {
+      // create the network object.
+      if (network.Create(name) == elle::StatusError)
+	escape("unable to create the network object");
+
+      // place the block in the given network.
+      if (directory.Place(network) == elle::StatusError)
+	escape("unable to place the directory");
+
       // create directory object, setting the user's as the owner.
       if (directory.Create(nucleus::GenreDirectory,
 			   identity.pair.K) == elle::StatusError)
@@ -140,10 +149,10 @@ namespace application
     // create the network's memento.
     //
     {
-      // create the descripto.
+      // create the descriptor.
       if (descriptor.Create(name,
 			    address,
-			    network) == elle::StatusError)
+			    boot) == elle::StatusError)
 	escape("unable to create the network's descriptor");
 
       // seal the descriptor.
@@ -160,7 +169,7 @@ namespace application
     //
     {
       // store the block.
-      if (directory.Store(address) == elle::StatusError)
+      if (directory.Store(network, address) == elle::StatusError)
 	escape("unable to store the block");
     }
 
@@ -197,7 +206,7 @@ namespace application
       elle::Path	path;
 
       // create the reserve path.
-      if (path.Create(lune::Lune::Reserve) == elle::StatusError)
+      if (path.Create(lune::Lune::Network::Reserve::Root) == elle::StatusError)
 	escape("unable to create the path");
 
       // complete the path with the network name.
@@ -224,7 +233,7 @@ namespace application
       elle::Path	path;
 
       // create the shelter path.
-      if (path.Create(lune::Lune::Shelter) == elle::StatusError)
+      if (path.Create(lune::Lune::Network::Shelter::Root) == elle::StatusError)
 	escape("unable to create the path");
 
       // complete the path with the network name.
@@ -251,7 +260,7 @@ namespace application
       elle::Path	path;
 
       // create the network path.
-      if (path.Create(lune::Lune::Network) == elle::StatusError)
+      if (path.Create(lune::Lune::Network::Root) == elle::StatusError)
 	escape("unable to create the path");
 
       // complete the path with the network name.
