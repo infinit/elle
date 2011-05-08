@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri may  6 14:23:49 2011]
+// updated       julien quintard   [fri may  6 18:57:13 2011]
 //
 
 //
@@ -272,6 +272,8 @@ namespace agent
 
     enter();
 
+    printf("[XXX] Agent::Decrypt()\n");
+
     // perform the cryptographic operation.
     if (Agent::Identity.pair.k.Decrypt(code, clear) == elle::StatusError)
       escape("unable to perform the decryption");
@@ -292,6 +294,8 @@ namespace agent
     elle::Signature	signature;
 
     enter();
+
+    printf("[XXX] Agent::Sign()\n");
 
     // perform the cryptographic operation.
     if (Agent::Identity.pair.k.Sign(plain, signature) == elle::StatusError)
