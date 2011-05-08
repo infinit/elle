@@ -8,7 +8,7 @@
 # file          /home/mycure/infinit/Makefile
 #
 # created       julien quintard   [wed oct  6 12:58:36 2010]
-# updated       julien quintard   [fri may  6 14:41:24 2011]
+# updated       julien quintard   [sun may  8 13:37:14 2011]
 #
 
 #
@@ -95,8 +95,8 @@ status:
 
 push:
 	@echo "---[ infinit"
-	@$(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"
-	@if [ $${?} -eq 0 ] ; then					\
+	@$(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
+	if [ $${?} -eq 0 ] ; then					\
 	  $(GIT) commit -a && $(GIT) push				; \
 	fi
 
