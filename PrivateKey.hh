@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [tue mar 22 20:45:54 2011]
+// updated       julien quintard   [sat may  7 22:26:02 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -67,6 +67,10 @@ namespace elle
     ///
     /// this class represents a private key based on the RSA cryptosystem.
     ///
+    /// note that the cryptographic methods are set as virtual because
+    /// some classes may wish to override it, as it is the case in the
+    /// Etoile's agent.
+    ///
     class PrivateKey:
       public Object
     {
@@ -96,13 +100,13 @@ namespace elle
 			       Large*,
 			       Large*);
 
-      Status		Decrypt(const Code&,
+      virtual Status	Decrypt(const Code&,
 				Clear&) const;
-      Status		Sign(const Plain&,
+      virtual Status	Sign(const Plain&,
 			     Signature&) const;
-      Status		Encrypt(const Plain&,
+      virtual Status	Encrypt(const Plain&,
 				Code&) const;
-      Status		Derive(const Seed&,
+      virtual Status	Derive(const Seed&,
 			       PublicKey&) const;
 
       template <typename T,
