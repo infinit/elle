@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [fri may  6 14:23:43 2011]
+// updated       julien quintard   [sun may  8 02:13:17 2011]
 //
 
 //
@@ -115,7 +115,8 @@ namespace pig
     if (PIG::Channel.Call(
           elle::Inputs<etoile::TagObjectDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR);
+      error("unable to discard the object",
+	    EINTR);
 
     printf("[/XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -151,7 +152,8 @@ namespace pig
     if (PIG::Channel.Call(
           elle::Inputs<etoile::TagObjectInformation>(*identifier),
 	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
-      error(EINTR);
+      error("unable to retrieve information on the object",
+	    EINTR);
 
     // set the uid by first looking into the users map. if no local user is
     // found, the 'somebody' user is used instead, indicating that the
@@ -199,11 +201,13 @@ namespace pig
 
     if (status.stamps.creation.Convert(stat->st_ctime) ==
 	elle::StatusError)
-      error(EINTR);
+      error("unable to convert the time stamps",
+	    EINTR);
 
     if (status.stamps.modification.Convert(stat->st_mtime) ==
 	elle::StatusError)
-      error(EINTR);
+      error("unable to convert the time stamps",
+	    EINTR);
 
     // set the mode and permissions.
     switch (status.genre)
@@ -247,7 +251,8 @@ namespace pig
 						       "posix::exec"),
 		elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
 	      elle::StatusError)
-	    error(ENOENT);
+	    error("unable to retrieve an attribute",
+		  ENOENT);
 
 	  // check the trait.
 	  if (trait.value == "true")
@@ -276,7 +281,8 @@ namespace pig
 	}
       default:
 	{
-	  error(EINTR);
+	  error("unknown genre",
+		EINTR);
 	}
       }
 
@@ -327,7 +333,8 @@ namespace pig
 	  elle::Inputs<etoile::TagDirectoryLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the directory",
+	    ENOENT);
 
     // XXX est-ce necessaire de checker, si ca se trouve c'est deja fait
     // par FUSE
@@ -336,15 +343,21 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagAccessLookup>(identifier, *PIG::Subject),
 	  elle::Outputs<etoile::TagAccessRecord>(record)) == elle::StatusError)
-      error(EINTR, identifier);
+      error("unable to retrieve the access record",
+	    EINTR,
+	    identifier);
 
     // check the record.
     if (record == nucleus::Record::Null)
-      error(EACCES, identifier);
+      error("the subject does not seem to have been granted an access",
+	    EACCES,
+	    identifier);
 
     // check if the user has the right to read the directory.
     if ((record.permissions & nucleus::PermissionRead) == 0)
-      error(EACCES, identifier);
+      error("the subject does not have the right permission",
+	    EACCES,
+	    identifier);
 
     // duplicate the identifier and save it in the info structure's file
     // handle.
@@ -408,7 +421,8 @@ namespace pig
 					  PIG::Range),
 	      elle::Outputs<etoile::TagDirectoryRange>(range)) ==
 	    elle::StatusError)
-	  error(EINTR);
+	  error("unable to retrieve some directory entries",
+		EINTR);
 
 	// add the entries by using the filler() function.
 	for (scoutor = range.container.begin();
@@ -459,7 +473,8 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryDiscard>(*identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR);
+      error("unable to discard the directory",
+	    EINTR);
 
     // delete the identifier.
     delete identifier;
@@ -495,14 +510,17 @@ namespace pig
 	  elle::Inputs<etoile::TagDirectoryLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the directory",
+	    ENOENT);
 
     // create the subdirectory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryCreate>(),
 	  elle::Outputs<etoile::TagIdentifier>(subdirectory)) ==
 	elle::StatusError)
-      error(EINTR, directory);
+      error("unable to create the directory",
+	    EINTR,
+	    directory);
 
     // compute the permissions.
     if ((mode & S_IRUSR) != 0)
@@ -517,25 +535,32 @@ namespace pig
 					*PIG::Subject,
 					permissions),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR, subdirectory, directory);
+      error("unable to update the access record",
+	    EINTR,
+	    subdirectory, directory);
 
     // add the subdirectory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryAdd>(directory, name, subdirectory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR, subdirectory, directory);
+      error("unable to add an entry to the parent directory",
+	    EINTR,
+	    subdirectory, directory);
 
     // store the subdirectory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(subdirectory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR, directory);
+      error("unable to store the directory",
+	    EINTR,
+	    directory);
 
     // store the directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(directory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR);
+      error("unable to store the directory",
+	    EINTR);
 
     printf("[/XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -564,32 +589,40 @@ namespace pig
 	  elle::Inputs<etoile::TagDirectoryLoad>(parent),
 	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the directory",
+	    ENOENT);
 
     // load the subdirectory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryLoad>(child),
 	  elle::Outputs<etoile::TagIdentifier>(subdirectory)) ==
 	elle::StatusError)
-      error(ENOENT, directory);
+      error("unable to load the directory",
+	    ENOENT,
+	    directory);
 
     // remove the entry.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryRemove>(directory, name),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EACCES, subdirectory, directory);
+      error("unable to remove a directory entry",
+	    EACCES,
+	    subdirectory, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(directory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR, subdirectory);
+      error("unable to store the directory",
+	    EINTR,
+	    subdirectory);
 
     // destroy the subdirectory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryDestroy>(subdirectory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR);
+      error("unable to destroy the directory",
+	    EINTR);
 
     printf("[/XXX] %s(%s)\n",
 	   __FUNCTION__,
@@ -619,23 +652,30 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the object",
+	    ENOENT);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectInformation>(identifier),
 	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
-      error(EINTR, identifier);
+      error("unable to retrieve information on the object",
+	    EINTR,
+	    identifier);
 
     // retrieve the user's permissions on the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagAccessLookup>(identifier, *PIG::Subject),
 	  elle::Outputs<etoile::TagAccessRecord>(record)) == elle::StatusError)
-      error(ENOENT, identifier);
+      error("unable to retrieve the access record",
+	    ENOENT,
+	    identifier);
 
     // check the record.
     if (record == nucleus::Record::Null)
-      error(EACCES, identifier);
+      error("the subject does not seem to have been granted access",
+	    EACCES,
+	    identifier);
 
     // check if the permissions match the mask for execution.
     if ((mask & X_OK) != 0)
@@ -647,7 +687,9 @@ namespace pig
 	      // check if the user has the read permission meaning the
 	      // exec bit
 	      if ((record.permissions & nucleus::PermissionRead) == 0)
-		error(EACCES, identifier);
+		error("the subject does not have the right to access",
+		      EACCES,
+		      identifier);
 
 	      break;
 	    }
@@ -661,11 +703,15 @@ namespace pig
 							   "posix::exec"),
 		    elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
 		  elle::StatusError)
-		error(ENOENT, identifier);
+		error("unable to retrieve the attribute",
+		      ENOENT,
+		      identifier);
 
 	      // check the trait.
 	      if (trait.value != "true")
-		error(EACCES, identifier);
+		error("the subject does not have the right to execute",
+		      EACCES,
+		      identifier);
 
 	      break;
 	    }
@@ -679,11 +725,15 @@ namespace pig
 							   "posix::exec"),
 		    elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
 		  elle::StatusError)
-		error(ENOENT, identifier);
+		error("unable ti retrive the attribute",
+		      ENOENT,
+		      identifier);
 
 	      // check the trait.
 	      if (trait.value != "true")
-		error(EACCES, identifier);
+		error("the subject does not have the right to access",
+		      EACCES,
+		      identifier);
 
 	      break;
 	    }
@@ -694,21 +744,26 @@ namespace pig
     if ((mask & R_OK) != 0)
       {
 	if ((record.permissions & nucleus::PermissionRead) == 0)
-	  error(EACCES, identifier);
+	  error("the subject does not have the right to read",
+		EACCES,
+		identifier);
       }
 
     // check if the permissions match the mask for writing.
     if ((mask & W_OK) != 0)
       {
 	if ((record.permissions & nucleus::PermissionWrite) == 0)
-	  error(EACCES, identifier);
+	  error("the subject does not have the right to write",
+		EACCES,
+		identifier);
       }
 
     // discard the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to discard the object",
+	    ENOENT);
 
     printf("[/XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -764,7 +819,8 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the object",
+	    ENOENT);
 
     // update the accesses.
     //
@@ -775,13 +831,17 @@ namespace pig
 					*PIG::Subject,
 					permissions),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT, identifier);
+      error("unable to update the access records",
+	    ENOENT,
+	    identifier);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectInformation>(identifier),
 	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
-      error(EINTR, identifier);
+      error("unable to retrieve information on the object",
+	    EINTR,
+	    identifier);
 
     // set the posix::exec attribute if necessary i.e depending on the
     // file genre.
@@ -795,7 +855,9 @@ namespace pig
 					       "posix::exec",
 					       "true"),
 		elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	    error(EACCES, identifier);
+	    error("unable to set the attribute",
+		  EACCES,
+		  identifier);
 
 	  break;
 	}
@@ -811,7 +873,8 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectStore>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to store the object",
+	    ENOENT);
 
     printf("[/XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -851,7 +914,8 @@ namespace pig
     //
 
     // XXX
-    error(EINTR);
+    error("NYI",
+	  EINTR);
 
     printf("[/XXX] %s(%s, %u, %u)\n",
 	   __FUNCTION__,
@@ -883,7 +947,8 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the object",
+	    ENOENT);
 
     // set the attribute.
     if (PIG::Channel.Call(
@@ -891,13 +956,16 @@ namespace pig
 						 elle::String(name),
 						 elle::String(value, size)),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT, identifier);
+      error("unable to set the attribute",
+	    ENOENT,
+	    identifier);
 
     // store the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectStore>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to store the object",
+	    ENOENT);
 
     printf("[/XXX] %s(%s, %s, 0x%x, %u, 0x%x)\n",
 	   __FUNCTION__,
@@ -927,7 +995,8 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the object",
+	    ENOENT);
 
     // get the attribute.
     if (PIG::Channel.Call(
@@ -935,13 +1004,16 @@ namespace pig
 						 elle::String(name)),
 	  elle::Outputs<etoile::TagAttributesTrait>(trait)) ==
 	elle::StatusError)
-      error(ENOENT, identifier);
+      error("unable to retrieve an attribute",
+	    ENOENT,
+	    identifier);
 
     // discard the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to discard the object",
+	    ENOENT);
 
     // test if a trait has been found.
     if (trait == nucleus::Trait::Null)
@@ -989,20 +1061,24 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the object",
+	    ENOENT);
 
     // fetch the attributes.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagAttributesFetch>(identifier),
 	  elle::Outputs<etoile::TagAttributesRange>(range)) ==
 	elle::StatusError)
-      error(ENOENT, identifier);
+      error("unable to fetch the attributes",
+	    ENOENT,
+	    identifier);
 
     // discard the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to discard the object",
+	    ENOENT);
 
     printf("[/XXX] %s(%s, 0x%x, %u)\n",
 	   __FUNCTION__,
@@ -1063,20 +1139,24 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the object",
+	    ENOENT);
 
     // omit the attribute.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagAttributesOmit>(identifier,
 						  elle::String(name)),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT, identifier);
+      error("unable to omit the attributes",
+	    ENOENT,
+	    identifier);
 
     // store the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectStore>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to store the object",
+	    ENOENT);
 
     printf("[/XXX] %s(%s, %s)\n",
 	   __FUNCTION__,
@@ -1127,37 +1207,47 @@ namespace pig
 	  elle::Inputs<etoile::TagDirectoryLoad>(from),
 	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the directory",
+	    ENOENT);
 
     // create a link
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagLinkCreate>(),
 	  elle::Outputs<etoile::TagIdentifier>(link)) == elle::StatusError)
-      error(ENOENT, directory);
+      error("unable to create a link",
+	    ENOENT,
+	    directory);
 
     // bind the link.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagLinkBind>(link, to),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT, link, directory);
+      error("unable to bind the link",
+	    ENOENT,
+	    link, directory);
 
     // add an entry for the link.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryAdd>(directory, name, link),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT, link, directory);
+      error("unable to add an entry to the directory",
+	    ENOENT,
+	    link, directory);
 
     // store the link.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagLinkStore>(link),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT, directory);
+      error("unable to store the link",
+	    ENOENT,
+	    directory);
 
     // store the modified directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(directory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to store the directory",
+	    ENOENT);
 
     printf("[/XXX] %s(%s, %s)\n",
 	   __FUNCTION__,
@@ -1186,19 +1276,23 @@ namespace pig
 	  elle::Inputs<etoile::TagLinkLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the link",
+	    ENOENT);
 
     // resolve the link.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagLinkResolve>(identifier),
 	  elle::Outputs<etoile::TagLinkWay>(target)) == elle::StatusError)
-      error(ENOENT, identifier);
+      error("unable to resolve the link",
+	    ENOENT,
+	    identifier);
 
     // discard the link.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagLinkDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to discard the link",
+	    ENOENT);
 
     // copy as much as possible of the target into the output buffer.
     ::strncpy(buffer,
@@ -1236,13 +1330,16 @@ namespace pig
 	  elle::Inputs<etoile::TagDirectoryLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the directory",
+	    ENOENT);
 
     // create the file.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileCreate>(),
 	  elle::Outputs<etoile::TagIdentifier>(file)) == elle::StatusError)
-      error(EINTR, directory);
+      error("unable to create a file",
+	    EINTR,
+	    directory);
 
     // compute the permissions.
     if ((mode & S_IRUSR) != 0)
@@ -1257,7 +1354,9 @@ namespace pig
 						*PIG::Subject,
 						permissions),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR, file, directory);
+      error("unable to update the access records",
+	    EINTR,
+	    file, directory);
 
     // if the file has the exec bit, add the posix::exec attribute.
     if ((mode & S_IXUSR) != 0)
@@ -1268,14 +1367,18 @@ namespace pig
 						     "posix::exec",
 						     "true"),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(EACCES, file, directory);
+	  error("unable to set the attributes",
+		EACCES,
+		file, directory);
       }
 
     // add the file to the directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryAdd>(directory, name, file),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR, file, directory);
+      error("unable to add an entry to the directory",
+	    EINTR,
+	    file, directory);
 
     // store the file, ensuring the file system consistency.
     //
@@ -1287,19 +1390,22 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileStore>(file),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR, directory);
+      error("unable to store the file",
+	    EINTR, directory);
 
     // store the directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(directory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR);
+      error("unable to store the directory",
+	    EINTR);
 
     // finally, the file is reopened.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileLoad>(etoile::path::Way(path)),
 	  elle::Outputs<etoile::TagIdentifier>(file)) == elle::StatusError)
-      error(ENOENT);
+      error("unable to load the file",
+	    ENOENT);
 
     // store the identifier in the file handle.
     info->fh = (uint64_t)new etoile::context::Identifier(file);
@@ -1329,7 +1435,8 @@ namespace pig
 	  elle::Inputs<etoile::TagFileLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the file",
+	    ENOENT);
 
     // store the identifier in the file handle.
     info->fh = (uint64_t)new etoile::context::Identifier(identifier);
@@ -1362,7 +1469,8 @@ namespace pig
 
     // wrap the buffer.
     if (region.Wrap((elle::Byte*)buffer, size) == elle::StatusError)
-      error(EINTR);
+      error("unable to wrap the buffer",
+	    EINTR);
 
     // write the file.
     if (PIG::Channel.Call(
@@ -1370,7 +1478,8 @@ namespace pig
 			       (nucleus::Offset)offset,
 			       region),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EACCES);
+      error("unable to write the file",
+	    EACCES);
 
     printf("[/XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
 	   __FUNCTION__,
@@ -1404,7 +1513,8 @@ namespace pig
 			      (nucleus::Offset)offset,
 			      (nucleus::Size)size),
 	  elle::Outputs<etoile::TagFileRegion>(region)) == elle::StatusError)
-      error(EACCES);
+      error("unable to read the file",
+	    EACCES);
 
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
@@ -1436,7 +1546,8 @@ namespace pig
 	  elle::Inputs<etoile::TagFileLoad>(way),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the file",
+	    ENOENT);
 
     // set the identifier in the fuse_file_info structure.
     info.fh = (uint64_t)&identifier;
@@ -1448,7 +1559,8 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileStore>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR);
+      error("unable to store the file",
+	    EINTR);
 
     printf("[/XXX] %s(%s, %qu)\n",
 	   __FUNCTION__,
@@ -1477,7 +1589,8 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileAdjust>(*identifier, size),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to adjust the size of the file",
+	    ENOENT);
 
     printf("[/XXX] %s(%s, %qu, info)\n",
 	   __FUNCTION__,
@@ -1506,7 +1619,8 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagFileStore>(*identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to store the file",
+	    ENOENT);
 
     // delete the identifier.
     delete identifier;
@@ -1558,19 +1672,23 @@ namespace pig
 	      elle::Inputs<etoile::TagDirectoryLoad>(from),
 	      elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	    elle::StatusError)
-	  error(ENOENT);
+	  error("unable to load the directory",
+		ENOENT);
 
 	// rename the entry from _f_ to _t_.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryRename>(directory, f, t),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(ENOENT, directory);
+	  error("unable to rename a directory entry",
+		ENOENT,
+		directory);
 
 	// store the directory.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryStore>(directory),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(ENOENT);
+	  error("unable to store the directory",
+		ENOENT);
       }
     else
       {
@@ -1591,51 +1709,65 @@ namespace pig
 	      elle::Inputs<etoile::TagObjectLoad>(way),
 	      elle::Outputs<etoile::TagIdentifier>(object)) ==
 	    elle::StatusError)
-	  error(ENOENT);
+	  error("unable to load the object",
+		ENOENT);
 
 	// load the _to_ directory.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryLoad>(to),
 	      elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	    elle::StatusError)
-	  error(ENOENT, object);
+	  error("unable to load the directory",
+		ENOENT,
+		object);
 
 	// add an entry.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryAdd>(directory, t, object),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(EACCES, directory, object);
+	  error("unable to add an entry to the directory",
+		EACCES,
+		directory, object);
 
 	// store the _to_ directory.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryStore>(directory),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(ENOENT, object);
+	  error("unable to store the directory",
+		ENOENT,
+		object);
 
 	// load the _from_ directory.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryLoad>(from),
 	      elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	    elle::StatusError)
-	  error(ENOENT, object);
+	  error("unable to load the directory",
+		ENOENT,
+		object);
 
 	// remove the entry.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryRemove>(directory, f),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(EACCES, directory, object);
+	  error("unable to remove a directory entry",
+		EACCES,
+		directory, object);
 
 	// store the _from_ directory.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagDirectoryStore>(directory),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(ENOENT, object);
+	  error("unable to store the directory",
+		ENOENT,
+		object);
 
 	// store the object.
 	if (PIG::Channel.Call(
 	      elle::Inputs<etoile::TagObjectStore>(object),
 	      elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	  error(ENOENT);
+	  error("unable to store the object",
+		ENOENT);
       }
 
     printf("[/XXX] %s(%s, %s)\n",
@@ -1666,32 +1798,39 @@ namespace pig
 	  elle::Inputs<etoile::TagObjectLoad>(child),
 	  elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the object",
+	    ENOENT);
 
     // retrieve information on the object.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectInformation>(identifier),
 	  elle::Outputs<etoile::TagObjectStatus>(status)) == elle::StatusError)
-      error(EINTR, identifier);
+      error("unable to retrieve information on the object",
+	    EINTR,
+	    identifier);
 
     // discard the object, as no longer needed.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagObjectDiscard>(identifier),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(ENOENT);
+      error("unable to discard the object",
+	    ENOENT);
 
     // load the directory.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryLoad>(parent),
 	  elle::Outputs<etoile::TagIdentifier>(directory)) ==
 	elle::StatusError)
-      error(ENOENT);
+      error("unable to load the directory",
+	    ENOENT);
 
     // remove the entry.
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryRemove>(directory, name),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EACCES, directory);
+      error("unable to remove a directory entry",
+	    EACCES,
+	    directory);
 
     // remove the object according to its type: file or link.
     switch (status.genre)
@@ -1703,13 +1842,17 @@ namespace pig
 	        elle::Inputs<etoile::TagFileLoad>(child),
 		elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	      elle::StatusError)
-	    error(ENOENT, directory);
+	    error("unable to load the file",
+		  ENOENT,
+		  directory);
 
 	  // destroy the file.
 	  if (PIG::Channel.Call(
 	        elle::Inputs<etoile::TagFileDestroy>(identifier),
 		elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	    error(EINTR, directory);
+	    error("unable to destroy the file",
+		  EINTR,
+		  directory);
 
 	  break;
 	}
@@ -1720,19 +1863,24 @@ namespace pig
 	        elle::Inputs<etoile::TagLinkLoad>(child),
 		elle::Outputs<etoile::TagIdentifier>(identifier)) ==
 	      elle::StatusError)
-	    error(ENOENT, directory);
+	    error("unable to load the link",
+		  ENOENT,
+		  directory);
 
 	  // destroy the link.
 	  if (PIG::Channel.Call(
 	        elle::Inputs<etoile::TagLinkDestroy>(identifier),
 		elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-	    error(EINTR, directory);
+	    error("unable to destroy the link",
+		  EINTR,
+		  directory);
 
 	  break;
 	}
       case nucleus::GenreDirectory:
 	{
-	  error(EINTR);
+	  error("meaningless operation",
+		EINTR);
 	}
       };
 
@@ -1740,7 +1888,8 @@ namespace pig
     if (PIG::Channel.Call(
 	  elle::Inputs<etoile::TagDirectoryStore>(directory),
 	  elle::Outputs<etoile::TagOk>()) == elle::StatusError)
-      error(EINTR);
+      error("unable to store the directory",
+	    EINTR);
 
     printf("[/XXX] %s(%s)\n",
 	   __FUNCTION__,
@@ -1895,6 +2044,12 @@ namespace pig
     // connect the application to etoile.
     //
     {
+      nucleus::Network	nw;
+
+      // create the network.
+      if (nw.Create(network) == elle::StatusError)
+	escape("unable to create the network object");
+
       // create the door.
       if (PIG::Channel.Create(elle::Socket::ModeSynchronous) ==
 	  elle::StatusError)
@@ -1907,8 +2062,8 @@ namespace pig
       // connect to etoile by providing the phrase which links the
       // application to the agent.
       if (PIG::Channel.Call(
-	    elle::Inputs<etoile::TagWallConnect>(phrase.string
-						 /* XXX , network */),
+	    elle::Inputs<etoile::TagWallConnect>(phrase.string,
+						 nw),
 	    elle::Outputs<etoile::TagOk>()) == elle::StatusError)
 	escape("unable to connect to etoile");
     }
@@ -2164,7 +2319,7 @@ namespace pig
       {
 	argv[0],
 	"-s",
-	"-f",
+	"-d",
 	"-osubtype='infinit'",
 	ofsname.c_str(),
 	mountpoint.c_str()

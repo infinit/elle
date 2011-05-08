@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [fri may  6 14:10:39 2011]
+// updated       julien quintard   [fri may  6 17:58:20 2011]
 //
 
 #ifndef PIG_PIG_HH
@@ -220,13 +220,12 @@ namespace pig
 // ---------- macro-functions -------------------------------------------------
 //
 
-#define error(_errno_, _identifiers_...)				\
+#define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      show();								\
+      report(elle::standalone::Report::TypeError, _text_);		\
 									\
-      std::cerr << __FILE__ << ":" << __LINE__ << " # "			\
-		<< __FUNCTION__ << std::endl;				\
+      show();								\
 									\
       PIG::Release(_identifiers_);					\
 									\
