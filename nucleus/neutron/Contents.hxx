@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [thu may  5 13:36:22 2011]
+// updated       julien quintard   [sun may  8 09:09:15 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
@@ -36,6 +36,8 @@ namespace nucleus
     ///
     template <typename T>
     Contents<T>::Contents():
+      proton::ContentHashBlock(),
+
       cipher(NULL),
       content(NULL)
     {
@@ -65,7 +67,7 @@ namespace nucleus
     /// and encrypts the archive.
     ///
     template <typename T>
-    elle::Status	Contents<T>::Encrypt(const elle::SecretKey&	key)
+    elle::Status	Contents<T>::Encrypt(const elle::SecretKey& key)
     {
       elle::Archive	archive;
 
@@ -102,7 +104,7 @@ namespace nucleus
     /// given key, creating a new block.
     ///
     template <typename T>
-    elle::Status	Contents<T>::Decrypt(const elle::SecretKey&	key)
+    elle::Status	Contents<T>::Decrypt(const elle::SecretKey& key)
     {
       elle::Archive	archive;
       elle::Clear	clear;

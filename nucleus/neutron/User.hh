@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/User.hh
 //
 // created       julien quintard   [thu apr 29 19:34:10 2010]
-// updated       julien quintard   [thu may  5 15:35:57 2011]
+// updated       julien quintard   [fri may  6 15:58:16 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_USER_HH
@@ -19,6 +19,7 @@
 //
 
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/PublicKeyBlock.hh>
 
 namespace nucleus
 {

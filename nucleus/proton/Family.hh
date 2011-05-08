@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Family.hh
 //
 // created       julien quintard   [fri dec 18 13:40:40 2009]
-// updated       julien quintard   [wed may  4 15:12:12 2011]
+// updated       julien quintard   [sat may  7 23:41:53 2011]
 //
 
 #ifndef NUCLEUS_PROTON_FAMILY_HH
@@ -32,8 +32,10 @@ namespace nucleus
 
 	FamilyContentHashBlock,
 	FamilyPublicKeyBlock,
+	FamilyOwnerKeyBlock,
+	FamilyImprintBlock,
 
-	Families = FamilyPublicKeyBlock + 1
+	Families = FamilyImprintBlock + 1
       };
 
   }

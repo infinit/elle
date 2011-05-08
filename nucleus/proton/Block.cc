@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [mon may  2 23:35:11 2011]
+// updated       julien quintard   [sun may  8 12:43:27 2011]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <nucleus/proton/Block.hh>
+
+#include <lune/Lune.hh>
 
 namespace nucleus
 {
@@ -48,6 +50,19 @@ namespace nucleus
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method places the block in a given network.
+    ///
+    elle::Status	Block::Place(const Network&		network)
+    {
+      enter();
+
+      // set the network.
+      this->network = network;
+
+      leave();
+    }
 
     ///
     /// this method computes the address of the block.
@@ -94,6 +109,10 @@ namespace nucleus
 
       std::cout << alignment << "[Block]" << std::endl;
 
+      // dump the network.
+      if (this->network.Dump() == elle::StatusError)
+	escape("unable to dump the network");
+
       // dump the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
 		<< (elle::Natural32)this->family << std::endl;
@@ -113,7 +132,8 @@ namespace nucleus
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize((elle::Natural8&)this->family) ==
+      if (archive.Serialize(this->network,
+			    (elle::Natural8&)this->family) ==
 	  elle::StatusError)
 	escape("unable to serialize the block's attributes");
 
@@ -128,7 +148,8 @@ namespace nucleus
       enter();
 
       // extracts the attributes.
-      if (archive.Extract((elle::Natural8&)this->family) ==
+      if (archive.Extract(this->network,
+			  (elle::Natural8&)this->family) ==
 	  elle::StatusError)
 	escape("unable to extract the block's attributes");
 
@@ -142,7 +163,8 @@ namespace nucleus
     ///
     /// this method loads the block.
     ///
-    elle::Status	Block::Load(const Address&		address)
+    elle::Status	Block::Load(const Network&		network,
+				    const Address&		address)
     {
       elle::Path	path;
       elle::Unique	unique;
@@ -154,10 +176,17 @@ namespace nucleus
       if (address.Save(unique) == elle::StatusError)
 	escape("unable to save the address' unique");
 
-      // create a path.
-      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
-		      unique + Block::Extension) == elle::StatusError)
-	escape("unable to create a path");
+      // create the shelter path.
+      if (path.Create(lune::Lune::Network::Shelter::Block) ==
+	  elle::StatusError)
+	escape("unable to create the path");
+
+      // complete the path with the network name.
+      if (path.Complete(elle::Piece("%NETWORK%",
+				    network.name),
+			elle::Piece("%ADDRESS%",
+				    unique)) == elle::StatusError)
+	escape("unable to complete the path");
 
       // read the file's content.
       if (elle::File::Read(path, region) == elle::StatusError)
@@ -175,7 +204,8 @@ namespace nucleus
     ///
     /// this method stores the block in its file format.
     ///
-    elle::Status	Block::Store(const Address&		address) const
+    elle::Status	Block::Store(const Network&		network,
+				     const Address&		address) const
     {
       elle::Path	path;
       elle::Unique	unique;
@@ -188,10 +218,17 @@ namespace nucleus
       if (address.Save(unique) == elle::StatusError)
 	escape("unable to save the address' unique");
 
-      // create a path.
-      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
-		      unique + Block::Extension) == elle::StatusError)
-	escape("unable to create a path");
+      // create the shelter path.
+      if (path.Create(lune::Lune::Network::Shelter::Block) ==
+	  elle::StatusError)
+	escape("unable to create the path");
+
+      // complete the path with the network name.
+      if (path.Complete(elle::Piece("%NETWORK%",
+				    network.name),
+			elle::Piece("%ADDRESS%",
+				    unique)) == elle::StatusError)
+	escape("unable to complete the path");
 
       // encode in hexadecimal.
       if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
@@ -212,7 +249,8 @@ namespace nucleus
     ///
     /// this method erases a block.
     ///
-    elle::Status	Block::Erase(const Address&		address) const
+    elle::Status	Block::Erase(const Network&		network,
+				     const Address&		address) const
     {
       elle::Path	path;
       elle::Unique	unique;
@@ -223,10 +261,17 @@ namespace nucleus
       if (address.Save(unique) == elle::StatusError)
 	escape("unable to save the address' unique");
 
-      // create a path.
-      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
-		      unique + Block::Extension) == elle::StatusError)
-	escape("unable to create a path");
+      // create the shelter path.
+      if (path.Create(lune::Lune::Network::Shelter::Block) ==
+	  elle::StatusError)
+	escape("unable to create the path");
+
+      // complete the path with the network name.
+      if (path.Complete(elle::Piece("%NETWORK%",
+				    network.name),
+			elle::Piece("%ADDRESS%",
+				    unique)) == elle::StatusError)
+	escape("unable to complete the path");
 
       // erase the file.
       if (elle::File::Erase(path) == elle::StatusError)
@@ -238,7 +283,8 @@ namespace nucleus
     ///
     /// this method returns true if the block exists.
     ///
-    elle::Status	Block::Exist(const Address&		address) const
+    elle::Status	Block::Exist(const Network&		network,
+				     const Address&		address) const
     {
       elle::Path	path;
       elle::Unique	unique;
@@ -249,10 +295,17 @@ namespace nucleus
       if (address.Save(unique) == elle::StatusError)
 	escape("unable to save the address' unique");
 
-      // create a path.
-      if (path.Create(elle::String("/home/mycure/.infinit/HOLE/") +
-		      unique + Block::Extension) == elle::StatusError)
-	escape("unable to create a path");
+      // create the shelter path.
+      if (path.Create(lune::Lune::Network::Shelter::Block) ==
+	  elle::StatusError)
+	escape("unable to create the path");
+
+      // complete the path with the network name.
+      if (path.Complete(elle::Piece("%NETWORK%",
+				    network.name),
+			elle::Piece("%ADDRESS%",
+				    unique)) == elle::StatusError)
+	escape("unable to complete the path");
 
       // test the file.
       if (elle::File::Exist(path) == elle::StatusError)

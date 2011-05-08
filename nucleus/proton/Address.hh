@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [thu may  5 13:36:31 2011]
+// updated       julien quintard   [sun may  8 09:26:34 2011]
 //
 
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
@@ -57,12 +57,14 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const elle::Archivable&);
+      template <typename T,
+		typename... TT>
+      elle::Status	Create(const T&,
+			       const TT&...);
 
       //
       // attributes
       //
-      // XXX Universe		universe;
       elle::Digest*	digest;
 
       //
@@ -84,5 +86,11 @@ namespace nucleus
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <nucleus/proton/Address.hxx>
 
 #endif

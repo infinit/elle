@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [thu may  5 13:42:43 2011]
+// updated       julien quintard   [sun may  8 02:01:14 2011]
 //
 
 //
@@ -67,32 +67,6 @@ namespace nucleus
       // release the resources.
       if (this->digest != NULL)
 	delete this->digest;
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// create the address based on an object by serializing it before
-    /// hashing it.
-    ///
-    elle::Status	Address::Create(const elle::Archivable&	object)
-    {
-      enter();
-
-      // release the previous digest.
-      if (this->digest != NULL)
-	delete this->digest;
-
-      // allocate the digest object.
-      this->digest = new elle::Digest;
-
-      // compute the digest based on the object's archive.
-      if (elle::OneWay::Hash(object, *this->digest) == elle::StatusError)
-	escape("unable to hash the given object");
-
-      leave();
     }
 
 //

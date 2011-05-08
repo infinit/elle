@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Proton.hh
 //
 // created       julien quintard   [mon may  2 20:10:46 2011]
-// updated       julien quintard   [thu may  5 15:34:04 2011]
+// updated       julien quintard   [sun may  8 02:06:10 2011]
 //
 
 #ifndef NUCLEUS_PROTON_PROTON_HH
@@ -44,6 +44,9 @@ namespace nucleus
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/Family.hh>
+#include <nucleus/proton/ImprintBlock.hh>
+#include <nucleus/proton/Network.hh>
+#include <nucleus/proton/OwnerKeyBlock.hh>
 #include <nucleus/proton/PublicKeyBlock.hh>
 
 #endif

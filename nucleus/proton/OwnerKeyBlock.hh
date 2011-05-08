@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.hh
+// file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.hh
 //
-// created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [sun may  8 09:07:31 2011]
+// created       julien quintard   [fri may  6 14:45:42 2011]
+// updated       julien quintard   [sun may  8 09:07:45 2011]
 //
 
-#ifndef NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
-#define NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
+#ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
+#define NUCLEUS_PROTON_OWNERKEYBLOCK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,6 +22,8 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
+
+#include <nucleus/neutron/Subject.hh>
 
 namespace nucleus
 {
@@ -33,27 +35,22 @@ namespace nucleus
 //
 
     ///
-    /// this class represents a public key block i.e a mutable block.
+    /// this class represents a mutable block which is statically linked
+    /// to a specific user i.e the block owner.
     ///
-    /// indeed, a key pair is generated whenever such a block is created.
-    /// then, since the address of such a block is computed by applying
-    /// a one-way function on the generated public key, and since this
-    /// public key never changes, the block's content can be modified without
-    /// implied the creation of a new block as for content hash blocks.
+    /// this construct is interesting because, given multiple such blocks,
+    /// the owner only has to remember her personal key pair in order to
+    /// update them rather than keeping the private key associated with
+    /// with every mutable block as for PKBs.
     ///
-    /// note that the version which every PKB should embed is left to
-    /// the logical block to provide. likewise, no signature is provided
-    /// in this class because the logical block built upon the PKB may
-    /// need multiple signatures.
-    ///
-    class PublicKeyBlock:
+    class OwnerKeyBlock:
       public Block
     {
     public:
       //
       // constructors & destructors
       //
-      PublicKeyBlock();
+      OwnerKeyBlock();
 
       //
       // methods
@@ -78,6 +75,15 @@ namespace nucleus
       // attributes
       //
       elle::PublicKey	K;
+
+      struct
+      {
+	elle::PublicKey		K;
+
+	elle::Signature		signature;
+
+	neutron::Subject	subject;
+      }				owner;
     };
 
   }

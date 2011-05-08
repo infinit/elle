@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.cc
 //
 // created       julien quintard   [thu jan 28 22:01:03 2010]
-// updated       julien quintard   [thu may  5 15:37:50 2011]
+// updated       julien quintard   [sun may  8 09:01:28 2011]
 //
 
 //
@@ -33,6 +33,7 @@ namespace nucleus
     enter();
 
     // register the component types.
+    /* XXX
     elle::Factory::Register< neutron::Object >
       (neutron::Object::Name);
     elle::Factory::Register< neutron::Contents<neutron::Data> >
@@ -41,6 +42,7 @@ namespace nucleus
       (neutron::Contents<neutron::Catalog>::Name);
     elle::Factory::Register< neutron::Contents<neutron::Reference> >
       (neutron::Contents<neutron::Reference>::Name);
+    */
 
     leave();
   }

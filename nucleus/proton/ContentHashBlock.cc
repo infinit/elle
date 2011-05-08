@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu may  5 13:41:27 2011]
+// updated       julien quintard   [sun may  8 09:07:22 2011]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [mon may  2 23:35:26 2011]
+// updated       julien quintard   [sun may  8 12:30:14 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BLOCK_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Network.hh>
 #include <nucleus/proton/Family.hh>
 
 namespace nucleus
@@ -52,10 +53,12 @@ namespace nucleus
       //
       Block();
       Block(const Family&);
-
+	    
       //
       // methods
       //
+      elle::Status		Place(const Network&);
+
       virtual elle::Status	Bind(Address&) const;
       virtual elle::Status	Validate(const Address&) const;
 
@@ -74,14 +77,20 @@ namespace nucleus
       elle::Status	Extract(elle::Archive&);
 
       // fileable
-      elle::Status	Load(const Address&);
-      elle::Status	Store(const Address&) const;
-      elle::Status	Erase(const Address&) const;
-      elle::Status	Exist(const Address&) const;
+      elle::Status	Load(const Network&,
+			     const Address&);
+      elle::Status	Store(const Network&,
+			      const Address&) const;
+      elle::Status	Erase(const Network&,
+			      const Address&) const;
+      elle::Status	Exist(const Network&,
+			      const Address&) const;
 
       //
       // attributes
       //
+      Network		network;
+
       Family		family;
     };
 

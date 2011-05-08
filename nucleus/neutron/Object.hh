@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [thu may  5 15:35:07 2011]
+// updated       julien quintard   [sun may  8 09:08:42 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/PublicKeyBlock.hh>
+#include <nucleus/proton/ImprintBlock.hh>
 
 #include <nucleus/neutron/Genre.hh>
 #include <nucleus/neutron/Author.hh>
@@ -50,7 +50,7 @@ namespace nucleus
     /// sont ici juste pour simplifier le processus de gestion des access
     ///
     class Object:
-      public proton::PublicKeyBlock
+      public proton::ImprintBlock
     {
     public:
       //
@@ -78,7 +78,8 @@ namespace nucleus
 				     const Permissions&,
 				     const Token&);
 
-      elle::Status	Seal(const elle::PrivateKey&,
+      template <typename T>
+      elle::Status	Seal(const T&,
 			     const Access* = NULL);
 
       elle::Status	Validate(const proton::Address&,
@@ -101,16 +102,6 @@ namespace nucleus
       //
       // attributes
       //
-
-      struct
-      {
-	elle::PublicKey		K;
-
-	elle::Signature		signature;
-
-	Subject			subject;
-      }				owner;
-
       Author			author;
 
       struct
@@ -154,5 +145,11 @@ namespace nucleus
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <nucleus/neutron/Object.hxx>
 
 #endif

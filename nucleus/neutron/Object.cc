@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [thu may  5 15:39:29 2011]
+// updated       julien quintard   [sun may  8 09:08:51 2011]
 //
 
 //
@@ -39,7 +39,7 @@ namespace nucleus
     /// this method initializes the object.
     ///
     Object::Object():
-      PublicKeyBlock()
+      ImprintBlock()
     {
       //
       // the attributes below are initialized in the constructor body
@@ -64,52 +64,22 @@ namespace nucleus
     /// genre of the object to create.
     ///
     /// the method (i) starts by initializing the underlying public key block
-    /// (ii) records the owner's public key and signs it with the short-lived
-    /// block private key (iii) sets the meta data, and finally (iv)
-    /// initializes the data part by setting the owner as the author.
+    /// (ii) sets the meta data, and finally (iv) /// initializes the data
+    /// part by setting the owner as the author.
     ///
     elle::Status	Object::Create(const Genre		genre,
 				       const elle::PublicKey&	owner)
     {
-      elle::KeyPair	pair;
-
       enter();
 
       // (i)
       {
-	// generate a key pair for the PKB.
-	if (pair.Generate() == elle::StatusError)
-	  escape("unable to generate a key pair");
-
-	// create the underlying public key block.
-	if (PublicKeyBlock::Create(pair.K) == elle::StatusError)
-	  escape("unable to create the underlying public key block");
+	// create the underlying owner key block.
+	if (ImprintBlock::Create(owner) == elle::StatusError)
+	  escape("unable to create the underlying owner key block");
       }
 
       // (ii)
-      {
-	// record the owner's public key and then, sign the owner's public
-	// key with the PKB's private key.
-	this->owner.K = owner;
-
-	// since this private key will be lost soon (because it is not
-	// serialized like the other attributes), the owner's private
-	// key will be used on behalf of the block's private key since
-	// a link is now made through this signature between the block
-	// and the owner.
-	if (pair.k.Sign(this->owner.K, this->owner.signature) ==
-	    elle::StatusError)
-	  escape("unable to sign the owner public key with the PKB "
-		 "private key");
-
-	// create a subject corresponding to the user. note that this
-	// subject will never be serialized hence is not really part of
-	// the object but is used to ease the process of access control.
-	if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
-	  escape("unable to create the owner subject");
-      }
-
-      // (iii)
       {
 	// set the meta genre.
 	this->meta.genre = genre;
@@ -122,7 +92,7 @@ namespace nucleus
 	  escape("unable to set the initial meta data");
       }
 
-      // (iv)
+      // (iii)
       {
 	elle::Digest	fingerprint;
 	Author		author;
@@ -243,114 +213,12 @@ namespace nucleus
     }
 
     ///
-    /// this method seals the data and meta data by signing them.
-    ///
-    elle::Status	Object::Seal(const elle::PrivateKey&	k,
-				     const Access*		access)
-    {
-      enter();
-
-      // re-sign the data if required.
-      if (this->data.state == StateDirty)
-	{
-	  // increase the data version.
-	  this->data.version += 1;
-
-	  // sign the archive with the author key.
-	  if (k.Sign(this->data.contents,
-		     this->data.size,
-		     this->data.stamp,
-		     this->data.fingerprint,
-		     this->data.version,
-
-		     this->meta.owner.token,
-		     this->meta.access,
-
-		     this->data.signature) == elle::StatusError)
-	    escape("unable to sign the data archive");
-
-	  // mark the section as clean.
-	  this->data.state = StateClean;
-	}
-
-      // re-sign the meta data if required.
-      if (this->meta.state == StateDirty)
-	{
-
-	  // increase the meta version.
-	  this->meta.version += 1;
-
-	  // perform the meta signature depending on the presence of a
-	  // reference to an access block.
-	  if (this->meta.access != proton::Address::Null)
-	    {
-	      //
-	      // if an access block is referenced, the identities and
-	      // permissions of the delegates must be included in the meta
-	      // signature.
-	      //
-	      // in practical terms, a digest of the (subject, permissions)
-	      // access records is computed which is then included in
-	      // the meta signature.
-	      //
-	      elle::Digest	fingerprint;
-
-	      // test if there is an access block.
-	      if (access == NULL)
-		escape("the Seal() method must take the object's "
-		       "access block");
-
-	      // compute the fingerprint of the access (subject, permissions)
-	      // tuples.
-	      if (access->Fingerprint(fingerprint) == elle::StatusError)
-		escape("unable to compute the access block fingerprint");
-
-	      // sign the meta data, making sure to include the access
-	      // fingerprint.
-	      if (k.Sign(this->meta.owner.permissions,
-			 this->meta.genre,
-			 this->meta.stamp,
-			 this->meta.attributes,
-			 this->meta.version,
-
-			 fingerprint,
-
-			 this->meta.signature) == elle::StatusError)
-		escape("unable to sign the meta archive");
-	    }
-	  else
-	    {
-	      //
-	      // otherwise, only the meta attributes are included in
-	      // the signature.
-	      //
-
-	      // sign the meta data.
-	      if (k.Sign(this->meta.owner.permissions,
-			 this->meta.genre,
-			 this->meta.stamp,
-			 this->meta.attributes,
-			 this->meta.version,
-
-			 this->meta.signature) == elle::StatusError)
-		escape("unable to sign the meta archive");
-	    }
-
-	  // mark the section as clean.
-	  this->meta.state = StateClean;
-	}
-
-      leave();
-    }
-
-    ///
     /// this method verifies that the object has been properly created
     /// i.e that every signature has been produced by legitimate users.
     ///
-    /// the method (i) calls the parent class for validation (ii)
-    /// verifies the owner part's signature (iii) verifies the meta part's
-    /// signature (iv) retrieves the author's public key (v) verifies
-    /// the data signature.
+    /// the method (i) calls the parent class for validation (iii) verifies
+    /// the meta part's signature (iv) retrieves the author's public key
+    /// (v) verifies the data signature.
     ///
     elle::Status	Object::Validate(const proton::Address&	address,
 					 const Access*		access)
@@ -363,19 +231,11 @@ namespace nucleus
       // (i)
       {
 	// call the parent class.
-	if (PublicKeyBlock::Validate(address) == elle::StatusFalse)
-	  flee("unable to verify the underlying PKB");
+	if (ImprintBlock::Validate(address) == elle::StatusFalse)
+	  flee("unable to verify the underlying OKB");
       }
 
       // (ii)
-      {
-	// verify the owner's key signature with the block's public key.
-	if (this->K.Verify(this->owner.signature,
-			   this->owner.K) != elle::StatusTrue)
-	  flee("unable to verify the owner's signature");
-      }
-
-      // (iii)
       {
 	if (this->meta.access != proton::Address::Null)
 	  {
@@ -416,7 +276,7 @@ namespace nucleus
 	  }
       }
 
-      // (iv)
+      // (iii)
       {
 	switch (this->author.role)
 	  {
@@ -434,7 +294,7 @@ namespace nucleus
 	  }
       }
 
-      // (v)
+      // (iv)
       {
 	// verify the signature.
 	if (author->Verify(this->data.signature,
@@ -478,22 +338,8 @@ namespace nucleus
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent class.
-      if (PublicKeyBlock::Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the underlying public key block");
-
-      // dump the owner part.
-      std::cout << alignment << elle::Dumpable::Shift << "[Owner]"
-		<< std::endl;
-
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[K]" << std::endl;
-      if (this->owner.K.Dump(margin + 6) == elle::StatusError)
-	escape("unable to dump the owner's public key");
-
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Signature]" << std::endl;
-      if (this->owner.signature.Dump(margin + 6) == elle::StatusError)
-	escape("unable to dump the owner's signature");
+      if (ImprintBlock::Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the underlying owner key block");
 
       // dump the author part.
       if (this->author.Dump(margin + 2) == elle::StatusError)
@@ -591,13 +437,8 @@ namespace nucleus
 	escape("unable to serialize the component identifier");
 
       // call the parent class.
-      if (PublicKeyBlock::Serialize(archive) == elle::StatusError)
-	escape("unable to serialize the underlying PKB");
-
-      // serialize the owner part.
-      if (archive.Serialize(this->owner.K,
-			    this->owner.signature) == elle::StatusError)
-	escape("unable to serialize the owner part");
+      if (ImprintBlock::Serialize(archive) == elle::StatusError)
+	escape("unable to serialize the underlying OKB");
 
       // serialize the author part.
       if (archive.Serialize(this->author) == elle::StatusError)
@@ -644,13 +485,8 @@ namespace nucleus
 	escape("the archive does not seem to contain an object");
 
       // call the parent class.
-      if (PublicKeyBlock::Extract(archive) == elle::StatusError)
-	escape("unable to extract the underyling PKB");
-
-      // extract the owner part.
-      if (archive.Extract(this->owner.K,
-			  this->owner.signature) == elle::StatusError)
-	escape("unable to extract the owner part");
+      if (ImprintBlock::Extract(archive) == elle::StatusError)
+	escape("unable to extract the underyling OKB");
 
       // extract the author part.
       if (archive.Extract(this->author) == elle::StatusError)
@@ -675,10 +511,6 @@ namespace nucleus
 			  this->data.version,
 			  this->data.signature) == elle::StatusError)
 	escape("unable to extract the data part");
-
-      // compute the owner subject.
-      if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
-	escape("unable to create the owner subject");
 
       // compute the owner record.
       if (this->meta.owner.record.Update(this->owner.subject,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [thu may  5 13:38:51 2011]
+// updated       julien quintard   [sun may  8 09:08:29 2011]
 //
 
 //
@@ -32,6 +32,8 @@ namespace nucleus
     /// default constructor.
     ///
     Access::Access():
+      proton::ContentHashBlock(),
+
       state(StateClean)
     {
     }
