@@ -4,6 +4,6 @@ ADD_EXECUTABLE(8setup
   Setup.cc
 )
 
-TARGET_LINK_LIBRARIES(8setup elle etoile lune crypto ssl dl
+TARGET_LINK_LIBRARIES(8setup elle etoile lune
 		             ${QT_QTNETWORK_LIBRARIES}
 			     ${QT_QTCORE_LIBRARIES})
