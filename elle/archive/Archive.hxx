@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/archive/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu apr 28 14:18:54 2011]
+// updated       julien quintard   [sat may 14 12:32:13 2011]
 //
 
 #ifndef ELLE_ARCHIVE_ARCHIVE_HXX
@@ -66,7 +66,7 @@ namespace elle
   };
 
     ///
-    /// this macro-function link the type to a name.
+    /// this macro-function links the type to a name.
     ///
 #define ArchiveName(_type_)						\
   template <>								\

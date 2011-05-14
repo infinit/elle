@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/factory/Factory.cc
+// file          /home/mycure/infinit/elle/factory/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [tue apr 27 13:36:03 2010]
+// updated       julien quintard   [thu may 12 13:24:47 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace elle
 //
 
     ///
-    /// this container holds the mappings between a string identifier
+    /// this container holds the mappings between a natural identifier
     /// and a functionoid capable of generating an object of the
     /// corresponding type.
     ///

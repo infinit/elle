@@ -5,6 +5,6 @@ ADD_EXECUTABLE(test-archive
   Test.cc
 )
 
-TARGET_LINK_LIBRARIES(test-archive elle ssl crypto
+TARGET_LINK_LIBRARIES(test-archive elle
 				   ${QT_QTNETWORK_LIBRARIES}
 				   ${QT_QTCORE_LIBRARIES})

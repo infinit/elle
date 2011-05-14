@@ -5,6 +5,6 @@ ADD_EXECUTABLE(test-network-slot
   Table.cc
 )
 
-TARGET_LINK_LIBRARIES(test-network-slot elle crypto ssl dl
+TARGET_LINK_LIBRARIES(test-network-slot elle
 					${QT_QTNETWORK_LIBRARIES}
 					${QT_QTCORE_LIBRARIES})
