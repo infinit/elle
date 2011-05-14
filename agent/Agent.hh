@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [fri may  6 14:03:53 2011]
+// updated       julien quintard   [wed may 11 16:06:11 2011]
 //
 
 #ifndef AGENT_AGENT_HH

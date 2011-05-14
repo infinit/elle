@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:34:08 2010]
-// updated       julien quintard   [wed apr 27 11:08:14 2011]
+// updated       julien quintard   [thu may 12 00:04:44 2011]
 //
 
 #ifndef AGENT_MANIFEST_HH
@@ -37,7 +37,7 @@ namespace agent
   ///
   /// XXX
   ///
-  const elle::Natural32		Tags = 2;
+  const elle::Natural32		Tags = 10;
 
 }
 
