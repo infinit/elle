@@ -6,6 +6,6 @@ ADD_EXECUTABLE(PIG
   PIG.cc
 )
 
-TARGET_LINK_LIBRARIES(PIG infinit elle nucleus lune etoile fuse ssl crypto
+TARGET_LINK_LIBRARIES(PIG infinit elle nucleus lune etoile fuse
 		          ${QT_QTNETWORK_LIBRARIES}
 			  ${QT_QTCORE_LIBRARIES})
