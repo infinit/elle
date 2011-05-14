@@ -85,7 +85,7 @@ ADD_LIBRARY(elle
   ${elle_MOCS}
 )
 
-TARGET_LINK_LIBRARIES(elle comet)
+TARGET_LINK_LIBRARIES(elle comet crypto ssl dl)
 
 ADD_SUBDIRECTORY(test)
 ADD_SUBDIRECTORY(benchmark)

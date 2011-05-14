@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/network/Network.cc
+// file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [tue apr 27 17:07:19 2010]
+// updated       julien quintard   [thu may 12 10:55:40 2011]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [sun may  2 18:22:30 2010]
+// updated       julien quintard   [sat may 14 12:52:10 2011]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HXX
@@ -34,7 +34,7 @@ namespace elle
     /// a default constructor in order to keep the identifier.
     ///
     template <typename T>
-    Factory::Generator<T>::Generator(const String&		identifier):
+    Factory::Generator<T>::Generator(const Identifier&		identifier):
       identifier(identifier)
     {
     }
@@ -58,15 +58,19 @@ namespace elle
 //
 
     ///
-    /// this method registers a new type associated with a identifier string.
+    /// this method registers a new type associated with a identifier.
     ///
     template <typename T>
-    Status		Factory::Register(const String&		identifier)
+    Status		Factory::Register(const Identifier&	identifier)
     {
       Factory::Generator<T>*			generator;
       std::pair<Factory::Iterator, Boolean>	result;
 
       enter(instance(generator));
+
+      // reject the zero identifier.
+      if (identifier == 0)
+	escape("unable to use the zero identifier for registration");
 
       // check if there is already such an identifier registerd.
       if (Factory::Map.find(identifier) != Factory::Map.end())
@@ -80,7 +84,7 @@ namespace elle
       {
 	// insert the generator in the container.
 	result = Factory::Map.insert(
-		   std::pair<const String,
+		   std::pair<const Identifier,
 		             Factory::Functionoid*>(identifier,
 						    generator));
       }
@@ -101,7 +105,7 @@ namespace elle
     /// corresponding type.
     ///
     template <typename U>
-    Status		Factory::Build(const String&		identifier,
+    Status		Factory::Build(const Identifier&	identifier,
 				       U*&			object)
     {
       Factory::Scoutor	scoutor;

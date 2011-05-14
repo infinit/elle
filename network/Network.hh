@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [mon may 24 11:11:10 2010]
+// updated       julien quintard   [fri may 13 13:05:36 2011]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -140,6 +140,7 @@ namespace elle
 #include <elle/network/Arguments.hh>
 #include <elle/network/Bridge.hh>
 #include <elle/network/Data.hh>
+#include <elle/network/Derivable.hh>
 #include <elle/network/Door.hh>
 #include <elle/network/Gate.hh>
 #include <elle/network/Header.hh>

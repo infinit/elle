@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/factory/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [mon apr 25 11:06:59 2011]
+// updated       julien quintard   [fri may 13 12:44:58 2011]
 //
 
 #ifndef ELLE_FACTORY_FACTORY_HH
@@ -19,7 +19,6 @@
 //
 
 #include <elle/core/Natural.hh>
-#include <elle/core/String.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
@@ -53,6 +52,11 @@ namespace elle
     class Factory
     {
     public:
+      //
+      // types
+      //
+      typedef Natural32		Identifier;
+
       //
       // classes
       //
@@ -97,7 +101,7 @@ namespace elle
 	//
 	// constructors & destructors
 	//
-	Generator(const String&);
+	Generator(const Identifier&);
 
 	//
 	// methods
@@ -107,13 +111,13 @@ namespace elle
 	//
 	// attributes
 	//
-	String		identifier;
+	Identifier	identifier;
       };
 
       //
       // types
       //
-      typedef std::map<const String,
+      typedef std::map<const Identifier,
 		       Functionoid*>		Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
@@ -125,13 +129,13 @@ namespace elle
       static Status	Clean();
 
       template <typename T>
-      static Status	Register(const String&);
+      static Status	Register(const Identifier&);
 
       template <typename U>
-      static Status	Build(const String&,
+      static Status	Build(const Identifier&,
 			      U*&);
 
-      static Status	Show(const Natural32 = 0);
+      static Status	Show(const Identifier = 0);
 
       //
       // attributes
