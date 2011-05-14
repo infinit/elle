@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sun may  8 09:07:22 2011]
+// updated       julien quintard   [sat may 14 12:24:27 2011]
 //
 
 //
@@ -31,7 +31,15 @@ namespace nucleus
     /// default constructor.
     ///
     ContentHashBlock::ContentHashBlock():
-      Block(FamilyContentHashBlock)
+      Block()
+    {
+    }
+
+    ///
+    /// specific constructor.
+    ///
+    ContentHashBlock::ContentHashBlock(const neutron::Component	component):
+      Block(FamilyContentHashBlock, component)
     {
     }
 
@@ -48,7 +56,8 @@ namespace nucleus
       enter();
 
       // compute the address.
-      if (address.Create(*this) == elle::StatusError)
+      if (address.Create(this->family, this->component,
+			 *this) == elle::StatusError)
 	escape("unable to compute the CHB's address");
 
       leave();
@@ -66,7 +75,21 @@ namespace nucleus
       enter();
 
       // compute the address of this object.
-      if (self.Create(*this) == elle::StatusError)
+      //
+      // note that compared to the other physical blocks such as PKB, OWB,
+      // IB, the address of this block is computed by applying a hash on
+      // its content. however, since its content contains, at least, the
+      // network identifier, family and component (Block.hh), the process
+      // is similar to other blocks which specifically embed these components
+      // in the address.
+      //
+      // indeed, the address of a CHB becomes hash(content) which happens
+      // to be hash(network, family, component, ...). on the other hand,
+      // the address of a PKB is computed this way: hash(network, family,
+      // component, K). therefore, all the blocks embed the network,
+      // family and component in the address which helps prevent conflits.
+      if (self.Create(this->family, this->component,
+		      *this) == elle::StatusError)
 	escape("unable to compute the CHB's address");
 
       // compare the address with the given one.

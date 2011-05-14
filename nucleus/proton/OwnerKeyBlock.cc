@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.cc
 //
 // created       julien quintard   [fri may  6 15:34:18 2011]
-// updated       julien quintard   [sun may  8 09:29:46 2011]
+// updated       julien quintard   [sat may 14 12:24:50 2011]
 //
 
 //
@@ -31,7 +31,15 @@ namespace nucleus
     /// default constructor.
     ///
     OwnerKeyBlock::OwnerKeyBlock():
-      Block(FamilyOwnerKeyBlock)
+      Block()
+    {
+    }
+
+    ///
+    /// specific constructor.
+    ///
+    OwnerKeyBlock::OwnerKeyBlock(const neutron::Component	component):
+      Block(FamilyOwnerKeyBlock, component)
     {
     }
 
@@ -81,7 +89,10 @@ namespace nucleus
       enter();
 
       // compute the address.
-      if (address.Create(this->network,
+      if (address.Create(this->family, this->component,
+			 this->network,
+			 (elle::Natural8&)this->family,
+			 (elle::Natural8&)this->component,
 			 this->K) == elle::StatusError)
 	escape("unable to compute the OKB's address");
 
@@ -104,7 +115,10 @@ namespace nucleus
       //
 
       // compute the address.
-      if (self.Create(this->network,
+      if (self.Create(this->family, this->component,
+		      this->network,
+		      (elle::Natural8&)this->family,
+		      (elle::Natural8&)this->component,
 		      this->K) == elle::StatusError)
 	escape("unable to compute the OKB's address");
 

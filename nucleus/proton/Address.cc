@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sun may  8 02:01:14 2011]
+// updated       julien quintard   [fri may 13 14:20:47 2011]
 //
 
 //
@@ -39,6 +39,8 @@ namespace nucleus
     /// this method initializes the object.
     ///
     Address::Address():
+      family(FamilyUnknown),
+      component(neutron::ComponentUnknown),
       digest(NULL)
     {
     }
@@ -48,6 +50,10 @@ namespace nucleus
     ///
     Address::Address(const Address&				address)
     {
+      // set the family/component;
+      this->family = address.family;
+      this->component = address.component;
+
       // copy the digest, if present.
       if (address.digest != NULL)
 	{
@@ -162,15 +168,25 @@ namespace nucleus
 
       enter();
 
+      // display the name.
+      std::cout << alignment << "[Address] " << std::endl;
+
+      // display the family.
+      std::cout << alignment << elle::Dumpable::Shift << "[Family] "
+		<< (elle::Natural32)this->family << std::endl;
+
+      // display the component.
+      std::cout << alignment << elle::Dumpable::Shift << "[Component] "
+		<< (elle::Natural32)this->component << std::endl;
+
       // display the address depending on its value.
       if (*this == Address::Null)
 	{
-	  std::cout << alignment << "[Address] " << elle::none << std::endl;
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Digest] " << elle::none << std::endl;
 	}
       else
 	{
-	  std::cout << alignment << "[Address] " << std::endl;
-
 	  // dump the digest.
 	  if (this->digest->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the digest");
@@ -193,7 +209,9 @@ namespace nucleus
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
-	  if (archive.Serialize(*this->digest) == elle::StatusError)
+	  if (archive.Serialize((elle::Natural8&)this->family,
+				(elle::Natural8&)this->component,
+				*this->digest) == elle::StatusError)
 	    escape("unable to serialize the digest");
 	}
       else
@@ -231,7 +249,9 @@ namespace nucleus
 	  this->digest = new elle::Digest;
 
 	  // extract the internal digest.
-	  if (archive.Extract(*this->digest) == elle::StatusError)
+	  if (archive.Extract((elle::Natural8&)this->family,
+			      (elle::Natural8&)this->component,
+			      *this->digest) == elle::StatusError)
 	    escape("unable to extract the digest");
 	}
 

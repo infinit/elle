@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [sun may  8 09:08:29 2011]
+// updated       julien quintard   [thu may 12 13:09:33 2011]
 //
 
 //
@@ -32,7 +32,7 @@ namespace nucleus
     /// default constructor.
     ///
     Access::Access():
-      proton::ContentHashBlock(),
+      proton::ContentHashBlock(ComponentAccess),
 
       state(StateClean)
     {
@@ -345,6 +345,10 @@ namespace nucleus
     {
       enter();
 
+      // call the parent class.
+      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
+	escape("unable to serialize the underlying CHB");
+
       // serialize the range.
       if (archive.Serialize(this->range) == elle::StatusError)
 	escape("unable to serialize the range");
@@ -358,6 +362,14 @@ namespace nucleus
     elle::Status	Access::Extract(elle::Archive&		archive)
     {
       enter();
+
+      // call the parent class.
+      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
+	escape("unable to extract the underlying CHB");
+
+      // compare the component.
+      if (this->component != ComponentAccess)
+	escape("the archive does not seem to contain an access");
 
       // extract the range.
       if (archive.Extract(this->range) == elle::StatusError)

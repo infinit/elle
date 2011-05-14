@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/User.cc
 //
 // created       julien quintard   [thu apr 29 19:56:29 2010]
-// updated       julien quintard   [thu may  5 13:33:15 2011]
+// updated       julien quintard   [thu may 12 13:00:35 2011]
 //
 
 //
@@ -21,15 +21,6 @@ namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the component identifier.
-    ///
-    const elle::String		User::Name = "User";
 
 //
 // ---------- methods ---------------------------------------------------------

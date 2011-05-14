@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sun may  8 09:08:51 2011]
+// updated       julien quintard   [fri may 13 13:18:56 2011]
 //
 
 //
@@ -17,19 +17,12 @@
 
 #include <nucleus/neutron/Object.hh>
 
+#include <nucleus/neutron/Component.hh>
+
 namespace nucleus
 {
   namespace neutron
   {
-
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// the component identifier.
-    ///
-    const elle::String			Object::Name = "Object";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -39,7 +32,7 @@ namespace nucleus
     /// this method initializes the object.
     ///
     Object::Object():
-      ImprintBlock()
+      proton::ImprintBlock(ComponentObject)
     {
       //
       // the attributes below are initialized in the constructor body
@@ -75,7 +68,7 @@ namespace nucleus
       // (i)
       {
 	// create the underlying owner key block.
-	if (ImprintBlock::Create(owner) == elle::StatusError)
+	if (proton::ImprintBlock::Create(owner) == elle::StatusError)
 	  escape("unable to create the underlying owner key block");
       }
 
@@ -231,8 +224,8 @@ namespace nucleus
       // (i)
       {
 	// call the parent class.
-	if (ImprintBlock::Validate(address) == elle::StatusFalse)
-	  flee("unable to verify the underlying OKB");
+	if (proton::ImprintBlock::Validate(address) == elle::StatusFalse)
+	  flee("unable to verify the underlying physical block");
       }
 
       // (ii)
@@ -327,7 +320,7 @@ namespace nucleus
 //
 
     ///
-    /// this function dumps an object object.
+    /// this function dumps an object.
     ///
     elle::Status	Object::Dump(elle::Natural32		margin) const
     {
@@ -338,7 +331,7 @@ namespace nucleus
       std::cout << alignment << "[Object]" << std::endl;
 
       // dump the parent class.
-      if (ImprintBlock::Dump(margin + 2) == elle::StatusError)
+      if (proton::ImprintBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying owner key block");
 
       // dump the author part.
@@ -426,19 +419,15 @@ namespace nucleus
 //
 
     ///
-    /// this method serializes the object object.
+    /// this method serializes the object.
     ///
     elle::Status	Object::Serialize(elle::Archive&	archive) const
     {
       enter();
 
-      // serialize the component name.
-      if (archive.Serialize(Object::Name) == elle::StatusError)
-	escape("unable to serialize the component identifier");
-
       // call the parent class.
-      if (ImprintBlock::Serialize(archive) == elle::StatusError)
-	escape("unable to serialize the underlying OKB");
+      if (proton::ImprintBlock::Serialize(archive) == elle::StatusError)
+	escape("unable to serialize the underlying physical block");
 
       // serialize the author part.
       if (archive.Serialize(this->author) == elle::StatusError)
@@ -468,25 +457,19 @@ namespace nucleus
     }
 
     ///
-    /// this method extracts the object object.
+    /// this method extracts the object.
     ///
     elle::Status	Object::Extract(elle::Archive&		archive)
     {
-      elle::String	name;
-
       enter();
 
-      // extract the component name.
-      if (archive.Extract(name) == elle::StatusError)
-	escape("unable to extract the component identifier");
-
-      // compare the name.
-      if (Object::Name != name)
-	escape("the archive does not seem to contain an object");
-
       // call the parent class.
-      if (ImprintBlock::Extract(archive) == elle::StatusError)
-	escape("unable to extract the underyling OKB");
+      if (proton::ImprintBlock::Extract(archive) == elle::StatusError)
+	escape("unable to extract the underyling physical block");
+
+      // compare the component.
+      if (this->component != ComponentObject)
+	escape("the archive does not seem to contain an object");
 
       // extract the author part.
       if (archive.Extract(this->author) == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.hh
 //
 // created       julien quintard   [fri may  6 14:45:42 2011]
-// updated       julien quintard   [sun may  8 09:07:45 2011]
+// updated       julien quintard   [sat may 14 12:24:44 2011]
 //
 
 #ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
@@ -23,6 +23,7 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 
+#include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Subject.hh>
 
 namespace nucleus
@@ -51,6 +52,7 @@ namespace nucleus
       // constructors & destructors
       //
       OwnerKeyBlock();
+      OwnerKeyBlock(const neutron::Component);
 
       //
       // methods

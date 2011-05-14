@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [sun may  8 09:09:05 2011]
+// updated       julien quintard   [sat may 14 12:09:08 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HH
@@ -50,11 +50,6 @@ namespace nucleus
       public proton::ContentHashBlock
     {
     public:
-      //
-      // identifier
-      //
-      static const elle::String		Name;
-
       //
       // constructors & destructors
       //

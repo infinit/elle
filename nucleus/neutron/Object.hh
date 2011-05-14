@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [sun may  8 09:08:42 2011]
+// updated       julien quintard   [fri may 13 12:54:23 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
@@ -53,11 +53,6 @@ namespace nucleus
       public proton::ImprintBlock
     {
     public:
-      //
-      // identifier
-      //
-      static const elle::String		Name;
-
       //
       // constructors & destructors
       //

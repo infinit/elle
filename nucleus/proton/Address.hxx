@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.hxx
 //
 // created       julien quintard   [sun may  8 00:10:37 2011]
-// updated       julien quintard   [sun may  8 09:26:24 2011]
+// updated       julien quintard   [fri may 13 11:30:09 2011]
 //
 
 #ifndef NUCLEUS_PROTON_ADDRESS_HXX
@@ -29,10 +29,19 @@ namespace nucleus
     ///
     template <typename T,
 	      typename... TT>
-    elle::Status	Address::Create(const T&		parameter,
+    elle::Status	Address::Create(const Family&		family,
+					const
+					  neutron::Component&	component,
+					const T&		parameter,
 					const TT&...		parameters)
     {
       enter();
+
+      // set the family.
+      this->family = family;
+
+      // set the component.
+      this->component = component;
 
       // release the previous digest.
       if (this->digest != NULL)
@@ -41,7 +50,7 @@ namespace nucleus
       // allocate the digest object.
       this->digest = new elle::Digest;
 
-      // compute the digest based on the parameters.
+      // compute the digest based on the parameters including the family.
       if (elle::OneWay::Hash(parameter, parameters...,
 			     *this->digest) == elle::StatusError)
 	escape("unable to hash the given parameter(s)");

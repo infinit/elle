@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [sun may  8 12:30:14 2011]
+// updated       julien quintard   [sat may 14 12:24:03 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BLOCK_HH
@@ -23,6 +23,8 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/Family.hh>
+
+#include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -52,8 +54,9 @@ namespace nucleus
       // constructors & destructors
       //
       Block();
-      Block(const Family&);
-	    
+      Block(const Family,
+	    const neutron::Component);
+
       //
       // methods
       //
@@ -89,9 +92,9 @@ namespace nucleus
       //
       // attributes
       //
-      Network		network;
-
-      Family		family;
+      Network			network;
+      Family			family;
+      neutron::Component	component;
     };
 
   }

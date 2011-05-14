@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [sun may  8 09:07:31 2011]
+// updated       julien quintard   [sat may 14 12:24:31 2011]
 //
 
 #ifndef NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
@@ -22,6 +22,8 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
+
+#include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -52,8 +54,9 @@ namespace nucleus
     public:
       //
       // constructors & destructors
-      //
+      // 
       PublicKeyBlock();
+      PublicKeyBlock(const neutron::Component);
 
       //
       // methods

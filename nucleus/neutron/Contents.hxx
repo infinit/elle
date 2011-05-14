@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [sun may  8 09:09:15 2011]
+// updated       julien quintard   [sat may 14 12:41:26 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
@@ -21,11 +21,43 @@
 #include <nucleus/neutron/Data.hh>
 #include <nucleus/neutron/Catalog.hh>
 #include <nucleus/neutron/Reference.hh>
+#include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
   namespace neutron
   {
+
+//
+// ---------- types -----------------------------------------------------------
+//
+
+    ///
+    /// this base template allows for specialized-template.
+    ///
+    template <typename T>
+    struct ContentsMap
+    {
+    };
+
+    ///
+    /// XXX
+    ///
+#define ContentsDeclare(_type_)						\
+  template <>								\
+  struct ContentsMap<_type_>						\
+  {									\
+    static const enum Component		Component =			\
+      Component ## _type_;						\
+  };
+
+    ///
+    /// these macro-function calls actually generate the specialized-templates
+    /// for content type.
+    ///
+    ContentsDeclare(Data);
+    ContentsDeclare(Catalog);
+    ContentsDeclare(Reference);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -36,7 +68,7 @@ namespace nucleus
     ///
     template <typename T>
     Contents<T>::Contents():
-      proton::ContentHashBlock(),
+      proton::ContentHashBlock(ContentsMap<T>::Component),
 
       cipher(NULL),
       content(NULL)
@@ -181,7 +213,7 @@ namespace nucleus
       std::cout << alignment << "[Contents]" << std::endl;
 
       // dump the parent class.
-      if (ContentHashBlock::Dump(margin + 2) == elle::StatusError)
+      if (proton::ContentHashBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       // if present, dump the content.
@@ -225,9 +257,9 @@ namespace nucleus
       if (this->cipher == NULL)
 	escape("unable to serialize an unciphered content");
 
-      // serialize the component name.
-      if (archive.Serialize(Contents<T>::Name) == elle::StatusError)
-	escape("unable to serialize the component identifier");
+      // call the parent class.
+      if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
+	escape("unable to serialize the underlying CHB");
 
       // just serialize the cipher in the archive.
       if (archive.Serialize(*this->cipher) == elle::StatusError)
@@ -243,17 +275,15 @@ namespace nucleus
     template <typename T>
     elle::Status	Contents<T>::Extract(elle::Archive&	archive)
     {
-      elle::String	name;
-
       enter();
 
-      // extract the component name.
-      if (archive.Extract(name) == elle::StatusError)
-	escape("unable to extract the component identifier");
+      // call the parent class.
+      if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
+	escape("unable to extract the underlying CHB");
 
-      // compare the name.
-      if (Contents<T>::Name != name)
-	escape("the archive does not seem to contain a contents");
+      // compare the component.
+      if (this->component != ContentsMap<T>::Component)
+	escape("the archive does not seem to contain a content");
 
       // allocate a new cipher.
       this->cipher = new elle::Cipher;

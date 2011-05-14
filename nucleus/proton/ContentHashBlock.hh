@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [sun may  8 09:07:14 2011]
+// updated       julien quintard   [sat may 14 12:24:19 2011]
 //
 
 #ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
@@ -22,6 +22,8 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
+
+#include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -49,6 +51,7 @@ namespace nucleus
       // constructors & destructors
       //
       ContentHashBlock();
+      ContentHashBlock(const neutron::Component);
 
       //
       // methods

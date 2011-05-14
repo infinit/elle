@@ -15,7 +15,6 @@ ADD_LIBRARY(nucleus
   neutron/Attributes.cc
   neutron/Author.cc
   neutron/Catalog.cc
-  neutron/Contents.cc
   neutron/Data.cc
   neutron/Entry.cc
   neutron/Object.cc

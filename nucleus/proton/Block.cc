@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [sun may  8 12:43:27 2011]
+// updated       julien quintard   [sat may 14 12:24:12 2011]
 //
 
 //
@@ -38,12 +38,15 @@ namespace nucleus
 //
 
     Block::Block():
-      family(FamilyUnknown)
+      family(FamilyUnknown),
+      component(neutron::ComponentUnknown)
     {
     }
 
-    Block::Block(const Family&					family):
-      family(family)
+    Block::Block(const Family					family,
+		 const neutron::Component			component):
+      family(family),
+      component(component)
     {
     }
 
@@ -110,12 +113,16 @@ namespace nucleus
       std::cout << alignment << "[Block]" << std::endl;
 
       // dump the network.
-      if (this->network.Dump() == elle::StatusError)
+      if (this->network.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the network");
 
       // dump the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
 		<< (elle::Natural32)this->family << std::endl;
+
+      // dump the component.
+      std::cout << alignment << elle::Dumpable::Shift << "[Component] "
+		<< (elle::Natural32)this->component << std::endl;
 
       leave();
     }
@@ -133,7 +140,8 @@ namespace nucleus
 
       // serialize the attributes.
       if (archive.Serialize(this->network,
-			    (elle::Natural8&)this->family) ==
+			    (elle::Natural8&)this->family,
+			    (elle::Natural8&)this->component) ==
 	  elle::StatusError)
 	escape("unable to serialize the block's attributes");
 
@@ -149,7 +157,8 @@ namespace nucleus
 
       // extracts the attributes.
       if (archive.Extract(this->network,
-			  (elle::Natural8&)this->family) ==
+			  (elle::Natural8&)this->family,
+			  (elle::Natural8&)this->component) ==
 	  elle::StatusError)
 	escape("unable to extract the block's attributes");
 

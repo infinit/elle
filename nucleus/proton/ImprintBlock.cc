@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [sun may  8 09:30:07 2011]
+// updated       julien quintard   [sat may 14 12:24:57 2011]
 //
 
 //
@@ -31,7 +31,15 @@ namespace nucleus
     /// default constructor.
     ///
     ImprintBlock::ImprintBlock():
-      Block(FamilyImprintBlock)
+      Block()
+    {
+    }
+
+    ///
+    /// specific constructor.
+    ///
+    ImprintBlock::ImprintBlock(const neutron::Component		component):
+      Block(FamilyImprintBlock, component)
     {
     }
 
@@ -74,10 +82,12 @@ namespace nucleus
       enter();
 
       // compute the address.
-      if (address.Create(this->network,
-			 this->seed.stamp,
-			 this->seed.salt,
-			 this->owner.K) == elle::StatusError)
+      if (address.Create(this->family, this->component,
+			 this->network,
+			 (elle::Natural8&)this->family,
+			 (elle::Natural8&)this->component,
+			 this->seed.stamp, this->seed.salt, this->owner.K) ==
+	  elle::StatusError)
 	escape("unable to compute the OKB's address");
 
       leave();
@@ -99,10 +109,12 @@ namespace nucleus
       //
 
       // compute the address.
-      if (self.Create(this->network,
-		      this->seed.stamp,
-		      this->seed.salt,
-		      this->owner.K) == elle::StatusError)
+      if (self.Create(this->family, this->component,
+		      this->network,
+		      (elle::Natural8&)this->family,
+		      (elle::Natural8&)this->component,
+		      this->seed.stamp, this->seed.salt, this->owner.K) ==
+	  elle::StatusError)
 	escape("unable to compute the OKB's address");
 
       // verify with the recorded address.
@@ -136,7 +148,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Stamp]" << std::endl;
 
-      if (this->seed.stamp.Dump() == elle::StatusError)
+      if (this->seed.stamp.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the stamp");
 
       // dump the salt.
