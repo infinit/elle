@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Manifest.hh
 //
 // created       julien quintard   [tue apr 13 15:27:49 2010]
-// updated       julien quintard   [tue apr 13 15:33:28 2010]
+// updated       julien quintard   [fri may 13 14:48:44 2011]
 //
 
 #ifndef HOLE_MANIFEST_HH
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/Manifest.hh>
+#include <agent/Manifest.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -32,12 +32,12 @@ namespace hole
   ///
   /// XXX
   ///
-  extern const Character	Component[];
+  extern const elle::Character	Component[];
 
   ///
   /// XXX
   ///
-  const Natural32		Tags = 10;
+  const elle::Natural32		Tags = 10;
 
 }
 
@@ -48,7 +48,7 @@ namespace hole
 ///
 /// XXX
 ///
-range(::hole::Component, ::hole::Tags, ::etoile::Component);
+range(hole::Component, hole::Tags, agent::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -62,13 +62,15 @@ namespace hole
   //
   enum Tag
     {
-      TagOk,
+      TagOk = elle::Range<Component>::First,
       TagBoolean,
 
+      TagJoin,
+      TagLeave,
       TagPut,
       TagGet,
-      TagData,
-      TagDestroy
+      TagBlock,
+      TagErase
     };
 
 }
@@ -81,19 +83,27 @@ namespace hole
 /// below are the definitions of the inward and outward messages.
 ///
 
-outward(::hole::TagOk,
+outward(hole::TagOk,
 	parameters());
-outward(::hole::TagBoolean,
-	parameters(const ::elle::core::Boolean));
+outward(hole::TagBoolean,
+	parameters(const elle::core::Boolean));
 
-inward(::hole::TagPut,
-       parameters(const ::hole::Address,
-		  const ::hole::Data));
-inward(::hole::TagGet,
-       parameters(const ::hole::Address));
-outward(::hole::TagData,
-	parameters(const ::hole::Data));
-inward(::hole::TagDestroy,
-       parameters(const ::hole::Address));
+inward(hole::TagJoin,
+       parameters(const nucleus::Network));
+inward(hole::TagLeave,
+       parameters(const nucleus::Network));
+
+inward(hole::TagPut,
+       parameters(const nucleus::Network,
+		  const nucleus::Address,
+		  const elle::Derivable<nucleus::Block>));
+inward(hole::TagGet,
+       parameters(const nucleus::Network,
+		  const nucleus::Address));
+outward(hole::TagBlock,
+	parameters(const elle::Derivable<nucleus::Block>));
+inward(hole::TagErase,
+       parameters(const nucleus::Network,
+		  const nucleus::Address));
 
 #endif

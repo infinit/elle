@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [tue mar  1 18:39:38 2011]
+// updated       julien quintard   [fri may 13 14:27:30 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -18,8 +18,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/Address.hh>
-#include <hole/Data.hh>
+#include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
+
+#include <hole/Holeable.hh>
+
+#include <elle/idiom/Close.hh>
+# include <map>
+#include <elle/idiom/Open.hh>
 
 ///
 /// this namespace is used by the hole storage abstraction.
@@ -31,46 +37,53 @@ namespace hole
 // ---------- classes ---------------------------------------------------------
 //
 
-/// XXX host = device, node = virtual entity in the network
-
-/// XXX quand on join, le noeud contacte le precedent et recupere ce qu'il
-/// doit desormais gerer. il contacte les clusters de nodes reponsables des
-/// repliques de ces blocks de maniere a maintenir consistency et detecter
-/// leur depart pour maintenir le facteur de replication.
-
-/// si hole recoit une version plus ancienne, en background, un message lui ait
-/// envoye pour lui dire de se mettre a jour (en lui fournissant la version
-/// le plus a jour + un noeud a jour)
-
   ///
-  /// this is the base Hole class.
+  /// this class represents the abstract Hole component.
+  ///
+  /// XXX protect communication between hole and etoile! use a phrase-like
+  /// controller.
   ///
   class Hole
   {
   public:
     //
-    // static attributes
+    // constants
     //
-    static Hole*	Implementation;
+    static const elle::String&		Line;
+
+    //
+    // types
+    //
+    typedef std::map<const nucleus::Network,
+		     Holeable*>			Container;
+    typedef Container::iterator			Iterator;
+    typedef Container::const_iterator		Scoutor;
 
     //
     // static methods
     //
-    static Status	Initialize(const String&);
-    static Status	Clean();
+    static elle::Status		Initialize();
+    static elle::Status		Clean();
 
-    static Status	Put(const Address&,
-			    const Data&);
-    static Status	Get(const Address&);
-    static Status	Destroy(const Address&);
+    static elle::Status		Join(const nucleus::Network&);
+    static elle::Status		Leave(const nucleus::Network&);
+
+    static elle::Status		Put(const nucleus::Network&,
+				    const nucleus::Address&,
+				    const elle::Derivable<nucleus::Block>&);
+    static elle::Status		Get(const nucleus::Network&,
+				    const nucleus::Address&);
+    static elle::Status		Erase(const nucleus::Network&,
+				      const nucleus::Address&);
+
+    static elle::Status		Connection(elle::Door*&);
+    static elle::Status		Error(const elle::String&);
 
     //
-    // interface
+    // static attributes
     //
-    virtual Status	Put(const Address&,
-			    const Data&) = 0;
-    virtual Status	Get(const Address&) = 0;
-    virtual Status	Destroy(const Address&) = 0;
+    static Container		Networks;
+    static elle::Channel*	Channel;
   };
 
 }
@@ -79,6 +92,6 @@ namespace hole
 // ---------- includes --------------------------------------------------------
 //
 
-#include <local/Local.hh>
+#include <hole/local/Local.hh>
 
 #endif
