@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [fri may  6 18:55:02 2011]
+// updated       julien quintard   [thu may 12 14:48:10 2011]
 //
 
 //
@@ -36,10 +36,7 @@ namespace etoile
   ///
   /// this method initializes Etoile.
   ///
-  /// XXX \todo virer le code temporaire + mettre chaque valeur dans la
-  /// XXX       configuration (root, pair et path)
-  ///
-  elle::Status		Etoile::Initialize(const nucleus::Address& address)
+  elle::Status		Etoile::Initialize()
   {
     enter();
 
@@ -56,7 +53,7 @@ namespace etoile
       escape("unable to initialize the journal");
 
     // initialize the path.
-    if (path::Path::Initialize(address) == elle::StatusError)
+    if (path::Path::Initialize() == elle::StatusError)
       escape("unable to initialize the path");
 
     // initialize the wall.

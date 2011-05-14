@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [fri may  6 14:01:39 2011]
+// updated       julien quintard   [fri may 13 10:22:49 2011]
 //
 
 //
@@ -71,8 +71,8 @@ namespace etoile
 	escape("unable to resolve the given route into an object's address");
 
       // load the object in the given context.
-      if (components::Object::Load(context, context->address) ==
-	  elle::StatusError)
+      if (components::Object::Load(context,
+				   context->address) == elle::StatusError)
 	escape("unable to load the object in the given context");
 
       // return the context identifier to the caller.

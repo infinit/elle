@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.cc
 //
 // created       julien quintard   [thu mar 11 17:09:58 2010]
-// updated       julien quintard   [sun may  8 02:17:58 2011]
+// updated       julien quintard   [thu may 12 14:44:58 2011]
 //
 
 //
@@ -18,6 +18,8 @@
 #include <etoile/user/Application.hh>
 #include <etoile/user/Client.hh>
 #include <etoile/user/Map.hh>
+
+#include <etoile/depot/Hole.hh>
 
 namespace etoile
 {
@@ -69,6 +71,10 @@ namespace etoile
       if (this->channel->Monitor(error) == elle::StatusError)
 	escape("unable to monitor the callback");
 
+      // join the network.
+      if (depot::Hole::Join(this->network) == elle::StatusError)
+	escape("unable to join the network");
+
       leave();
     }
 
@@ -85,6 +91,9 @@ namespace etoile
 
       // XXX go through the contexts: delete them and delete the associated
       // fibers
+
+      // XXX leave the network, though this method does not seem to
+      // be called by Client::Remove etc.
 
       leave();
     }

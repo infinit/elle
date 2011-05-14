@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [sun may  8 02:20:34 2011]
+// updated       julien quintard   [thu may 12 11:00:11 2011]
 //
 
 //
@@ -295,7 +295,7 @@ namespace etoile
       // allocate a new application.
       application = new user::Application;
 
-      // create a new application
+      // create a new application.
       if (application->Create(network,
 			      guest->channel) == elle::StatusError)
 	escape("unable to create the application");
@@ -321,10 +321,6 @@ namespace etoile
 
       leave();
     }
-
-//
-// ---------- callbacks -------------------------------------------------------
-//
 
     ///
     /// this callback is triggered whenever a connection is made to etoile

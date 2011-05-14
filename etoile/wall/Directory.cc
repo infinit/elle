@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [fri may  6 14:01:03 2011]
+// updated       julien quintard   [fri may 13 17:23:20 2011]
 //
 
 //
@@ -109,8 +109,8 @@ namespace etoile
 	escape("unable to create a route");
 
       // resolve the route in a directory address.
-      if (path::Path::Resolve(context->route, context->address) ==
-	  elle::StatusError)
+      if (path::Path::Resolve(context->route,
+			      context->address) == elle::StatusError)
 	escape("unable to resolve the given route into an directory address");
 
       // load the directory in the given context.

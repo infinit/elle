@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [sun may  8 12:25:38 2011]
+// updated       julien quintard   [fri may 13 10:26:49 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/hole/Hole.hh>
+#include <etoile/depot/Hole.hh>
 
 namespace etoile
 {
@@ -56,68 +56,17 @@ namespace etoile
       static elle::Status	Clean();
 
       //
-      // templates
+      // methods
       //
+      static elle::Status	Put(const nucleus::Network&,
+				    const nucleus::Address&,
+				    const nucleus::Block&);
+      static elle::Status	Get(const nucleus::Network&,
+				    const nucleus::Address&,
+				    nucleus::Block&);
+      static elle::Status	Erase(const nucleus::Network&,
+				      const nucleus::Address&);
 
-      // XXX a mettre dans Depot.hxx
-
-      ///
-      /// this method has been introduced because the C++ typing system
-      /// seems unable to implicitly cast an nucleus::Object* for instance
-      /// to a hole::Block*& or to const-equivalents.
-      ///
-      template <typename T>
-      static elle::Status	Put(const nucleus::Network&	network,
-				    const nucleus::Address&	address,
-				    T*				block)
-      {
-	enter();
-
-	// store in the hole.
-	if (hole::Hole::Put(network,
-			    address,
-			    (nucleus::Block*)block) == elle::StatusError)
-	  escape("unable to put the block in the hole");
-
-	leave();
-      }
-
-      template <typename T>
-      static elle::Status	Get(const nucleus::Network&	network,
-				    const nucleus::Address&	address,
-				    T*&				block)
-      {
-	enter();
-
-	// XXX look in the cache etc.
-
-	// since the block has not been found in the cache, allocate
-	// one which will retrieved from the hole.
-	block = new T;
-
-	// finally, look in the hole.
-	if (hole::Hole::Get(network,
-			    address,
-			    (nucleus::Block*&)block) == elle::StatusOk)
-	  leave();
-
-	escape("unable to locate the block");
-      }
-
-      static elle::Status	Erase(const nucleus::Network&	network,
-				      const nucleus::Address&	address)
-      {
-	enter();
-
-	// XXX look in the cache etc.
-
-	// finally, erase the block from the hole.
-	if (hole::Hole::Erase(network,
-			      address) == elle::StatusOk)
-	  leave();
-
-	escape("unable to erase the block");
-      }
     };
 
   }
@@ -129,6 +78,7 @@ namespace etoile
 
 #include <etoile/depot/Cell.hh>
 #include <etoile/depot/Location.hh>
+#include <etoile/depot/Hole.hh>
 #include <etoile/depot/Record.hh>
 #include <etoile/depot/Repository.hh>
 #include <etoile/depot/Unit.hh>

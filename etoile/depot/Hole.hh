@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/hole/Hole.hh
+// file          /home/mycure/infinit/etoile/depot/Hole.hh
 //
-// created       julien quintard   [sun aug  9 16:44:42 2009]
-// updated       julien quintard   [sun may  8 12:26:22 2011]
+// created       julien quintard   [thu may 12 14:43:26 2011]
+// updated       julien quintard   [fri may 13 10:29:47 2011]
 //
 
-#ifndef ETOILE_HOLE_HOLE_HH
-#define ETOILE_HOLE_HOLE_HH
+#ifndef ETOILE_DEPOT_HOLE_HH
+#define ETOILE_DEPOT_HOLE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -23,7 +23,7 @@
 
 namespace etoile
 {
-  namespace hole
+  namespace depot
   {
 
 //
@@ -37,16 +37,35 @@ namespace etoile
     {
     public:
       //
+      // constants
+      //
+      static const elle::String		Line;
+
+      //
       // static methods
       //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
+
+      static elle::Status	Join(const nucleus::Network&);
+      static elle::Status	Leave(const nucleus::Network&);
+
       static elle::Status	Put(const nucleus::Network&,
 				    const nucleus::Address&,
-				    const nucleus::Block*);
+				    const nucleus::Block&);
       static elle::Status	Get(const nucleus::Network&,
 				    const nucleus::Address&,
-				    nucleus::Block*&);
+				    nucleus::Block&);
       static elle::Status	Erase(const nucleus::Network&,
 				      const nucleus::Address&);
+
+      static elle::Status	Error(const elle::Report&);
+      static elle::Status	Error(const elle::String&);
+
+      //
+      // static attributes
+      //
+      static elle::Door*		Channel;
     };
 
   }

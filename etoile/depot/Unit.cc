@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Unit.cc
 //
 // created       julien quintard   [tue jan 26 14:23:34 2010]
-// updated       julien quintard   [thu may  5 15:58:10 2011]
+// updated       julien quintard   [thu may 12 13:45:46 2011]
 //
 
 //
@@ -142,7 +142,7 @@ namespace etoile
       // prepare the archive.
       if (archive.Prepare(region) == elle::StatusError)
         escape("unable to prepare the archive");
-
+      /* XXX
       // extract the component identifier.
       if (archive.Extract(identifier) == elle::StatusError)
         escape("unable to extract the component identifier");
@@ -150,7 +150,7 @@ namespace etoile
       // build the block according to the component type.
       if (elle::Factory::Build(identifier, block) == elle::StatusError)
 	escape("unable to build the block");
-
+      */
       // extract the archive.
       if (block->Extract(archive) == elle::StatusError)
         escape("unable to extract the given block");

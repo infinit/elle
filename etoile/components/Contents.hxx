@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [sun may  8 12:37:57 2011]
+// updated       julien quintard   [sat may 14 11:31:03 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -49,13 +49,16 @@ namespace etoile
       if (user::User::Instance(user) == elle::StatusError)
 	escape("unable to load the user");
 
+      // otherwise create a new contents.
+      context->contents = new nucleus::Contents<typename T::Content>;
+
       // check if there exists a contents. if so, load the block.
       if (context->object->data.contents != nucleus::Address::Null)
 	{
 	  // load the block.
 	  if (depot::Depot::Get(user->application->network,
 				context->object->data.contents,
-				context->contents) == elle::StatusError)
+				*context->contents) == elle::StatusError)
 	    escape("unable to load the contents");
 
 	  // determine the rights the current user has on this object.
@@ -74,9 +77,6 @@ namespace etoile
 	}
       else
 	{
-	  // otherwise create a new contents.
-	  context->contents = new nucleus::Contents<typename T::Content>;
-
 	  // place the block in the application's network.
 	  if (context->contents->Place(user->application->network) ==
 	      elle::StatusError)
@@ -235,6 +235,9 @@ namespace etoile
 	    // bind the contents i.e seal it by computing its address.
 	    if (context->contents->Bind(address) == elle::StatusError)
 	      escape("unable to bind the contents");
+
+	    // XXX
+	    address.Dump();
 
 	    // set the contents as clean.
 	    context->contents->content->state = nucleus::StateClean;

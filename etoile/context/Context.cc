@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/context/Context.cc
 //
 // created       julien quintard   [wed mar 31 02:37:45 2010]
-// updated       julien quintard   [mon may  3 19:46:54 2010]
+// updated       julien quintard   [fri may 13 17:36:07 2011]
 //
 
 //
@@ -113,20 +113,8 @@ namespace etoile
 	escape("unable to dump the identifier");
 
       // dump the bucket
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Bucket]" << std::endl;
-
-      // go through the bucket.
-      for (scoutor = this->bucket.container.begin();
-	   scoutor != this->bucket.container.end();
-	   scoutor++)
-	{
-	  journal::Item*	item = *scoutor;
-
-	  // dump the item.
-	  if (item->Dump(margin + 4) == elle::StatusError)
-	    escape("unable to dump the item");
-	}
+      if (this->bucket.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the bucket");
 
       leave();
     }

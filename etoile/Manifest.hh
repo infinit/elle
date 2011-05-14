@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sun may  8 02:13:34 2011]
+// updated       julien quintard   [thu may 12 00:04:37 2011]
 //
 
 #ifndef ETOILE_MANIFEST_HH
@@ -43,7 +43,7 @@ namespace etoile
   ///
   /// XXX
   ///
-  const elle::Natural32		Tags = 100;
+  const elle::Natural32		Tags = 200;
 
 }
 

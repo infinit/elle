@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [sun may  8 12:38:28 2011]
+// updated       julien quintard   [fri may 13 17:38:48 2011]
 //
 
 //
@@ -85,7 +85,7 @@ namespace etoile
 	      {
 		if (depot::Depot::Put(user->application->network,
 				      item->address,
-				      item->block) == elle::StatusError)
+				      *item->block) == elle::StatusError)
 		  escape("unable to publish the block");
 
 		break;

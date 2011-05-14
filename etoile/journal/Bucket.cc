@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Bucket.cc
 //
 // created       julien quintard   [mon apr  5 21:33:25 2010]
-// updated       julien quintard   [thu may  5 16:04:53 2011]
+// updated       julien quintard   [fri may 13 17:38:52 2011]
 //
 
 //
@@ -96,6 +96,37 @@ namespace etoile
 
       // stop tracking.
       waive(item);
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the bucket.
+    ///
+    elle::Status	Bucket::Dump(const elle::Natural32	margin) const
+    {
+      elle::String	alignment(margin, ' ');
+      Bucket::Scoutor	scoutor;
+
+      enter();
+
+      std::cout << alignment << "[Bucket] " << std::endl;
+
+      // go through the items.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  Item*		item = *scoutor;
+
+	  // dump the item.
+	  if (item->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the item");
+	}
 
       leave();
     }

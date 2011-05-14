@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [sun may  8 12:24:47 2011]
+// updated       julien quintard   [fri may 13 10:39:44 2011]
 //
 
 //
@@ -52,10 +52,13 @@ namespace etoile
       // set the object address.
       context->address = address;
 
+      // allocate a new Object block.
+      context->object = new nucleus::Object;
+
       // get the block.
       if (depot::Depot::Get(user->application->network,
 			    address,
-			    context->object) == elle::StatusError)
+			    *context->object) == elle::StatusError)
 	escape("unable to retrieve the block");
 
       leave();

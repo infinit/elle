@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sun may  8 11:39:35 2011]
+// updated       julien quintard   [sat may 14 12:52:44 2011]
 //
 
 //
@@ -37,7 +37,7 @@ namespace etoile
     ///
     /// this method initialises the path component.
     ///
-    elle::Status	Path::Initialize(const nucleus::Address& address)
+    elle::Status	Path::Initialize()
     {
       enter();
 
@@ -88,7 +88,7 @@ namespace etoile
       // if the cache did not resolve anything.
       if (venue == Venue::Null)
 	{
-	  // XXX
+	  // XXX[to change]
 	  user::User*		user;
 	  lune::Descriptor	descriptor;
 
@@ -101,8 +101,6 @@ namespace etoile
 	    escape("unable to load the descriptor");
 
 	  address = descriptor.root;
-
-	  std::cout << address << std::endl;
 	  // XXX
 	}
       else
@@ -143,8 +141,8 @@ namespace etoile
 	    escape("unable to allocate a new context");
 
 	  // load the directory referenced by address.
-	  if (components::Directory::Load(context, address) ==
-	      elle::StatusError)
+	  if (components::Directory::Load(context,
+					  address) == elle::StatusError)
 	    escape("unable to load one of the route's directories");
 
 	  // look up for the name.

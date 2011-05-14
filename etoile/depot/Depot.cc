@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [thu may  5 15:59:57 2011]
+// updated       julien quintard   [fri may 13 11:45:20 2011]
 //
 
 //
@@ -31,7 +31,17 @@ namespace etoile
     ///
     elle::Status	Depot::Initialize()
     {
-      return (Repository::Initialize());
+      enter();
+
+      // initialize the repository.
+      if (Repository::Initialize() == elle::StatusError)
+	escape("unable to initialize the repository");
+
+      // initialize the hole.
+      if (Hole::Initialize() == elle::StatusError)
+	escape("unable to initialize the hole");
+
+      leave();
     }
 
     ///
@@ -39,55 +49,69 @@ namespace etoile
     ///
     elle::Status	Depot::Clean()
     {
-      return (Repository::Clean());
-    }
-
-    ///
-    /// this method stores a block by updating the repository.
-    ///
-    /*
-    elle::Status	Depot::Put(const hole::Address&		address,
-				   hole::Block*			block)
-    {
       enter();
 
-      // update in the repository.
-      //if (Repository::Put(address, block) == elle::StatusError)
-      //escape("unable to put the block in the repository");
+      // clean the hole.
+      if (Hole::Clean() == elle::StatusError)
+	escape("unable to clean the hole");
 
-      // XXX move put in Depot::Put() template
+      // clean the repository.
+      if (Repository::Clean() == elle::StatusError)
+	escape("unable to clean the repository");
 
       leave();
     }
-    */
 
     ///
-    /// this method retrieves a block from the storage layer.
+    /// XXX
     ///
-    /* XXX
-    elle::Status	Depot::Get(const hole::Address&		address,
-				   hole::Block*&		block)
+    elle::Status	Depot::Put(const nucleus::Network&	network,
+				   const nucleus::Address&	address,
+				   const nucleus::Block&	block)
     {
       enter();
 
-      // look in the journal.
-      // XXX
+      // store in the hole.
+      if (Hole::Put(network, address, block) == elle::StatusError)
+	escape("unable to put the block in the hole");
 
-      // look in the repository.
-      //if (Repository::Get(address, block) == elle::StatusTrue)
-      //leave();
+      leave();
+    }
 
-      // XXX
-      std::cout << address << std::endl;
-      printf("0x%x\n", block);
+    ///
+    /// XXX
+    ///
+    elle::Status	Depot::Get(const nucleus::Network&	network,
+				   const nucleus::Address&	address,
+				   nucleus::Block&		block)
+    {
+      enter();
+
+      // XXX look in the cache etc.
 
       // finally, look in the hole.
-      if (hole::Hole::Get(address, block) == elle::StatusTrue)
-	leave();
+      if (Hole::Get(network, address, block) == elle::StatusError)
+	escape("unable to retrieve the block from the hole");
 
-      escape("unable to find the block");
+      leave();
     }
-    */
+
+    ///
+    /// XXX
+    ///
+    elle::Status	Depot::Erase(const nucleus::Network&	network,
+				     const nucleus::Address&	address)
+    {
+      enter();
+
+      // XXX look in the cache etc.
+
+      // finally, erase the block from the hole.
+      if (Hole::Erase(network, address) == elle::StatusError)
+	escape("unable to erase the block from the hole");
+
+      leave();
+    }
 
   }
 }

@@ -40,6 +40,7 @@ ADD_LIBRARY(etoile
 
   depot/Cell.cc
   depot/Depot.cc
+  depot/Hole.cc
   depot/Record.cc
   depot/Repository.cc
   depot/Unit.cc
@@ -55,8 +56,6 @@ ADD_LIBRARY(etoile
   wall/Status.cc
   wall/Attributes.cc
 
-  hole/Hole.cc
-
   Etoile.cc
 )
 
@@ -66,7 +65,7 @@ ADD_EXECUTABLE(Etoile
 
 TARGET_LINK_LIBRARIES(etoile elle nucleus lune)
 
-TARGET_LINK_LIBRARIES(Etoile elle nucleus lune etoile crypto ssl dl
+TARGET_LINK_LIBRARIES(Etoile etoile
 		             ${QT_QTCORE_LIBRARIES}
 		             ${QT_QTNETWORK_LIBRARIES}
 			     ${QT_QTKERNEL_LIBRARIES})
