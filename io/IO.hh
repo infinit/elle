@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/IO.hh
 //
 // created       julien quintard   [mon feb  9 21:34:30 2009]
-// updated       julien quintard   [tue apr 26 15:50:41 2011]
+// updated       julien quintard   [sun may 22 13:15:58 2011]
 //
 
 #ifndef ELLE_IO_IO_HH
@@ -36,6 +36,7 @@ namespace elle
 #include <elle/io/File.hh>
 #include <elle/io/Fileable.hh>
 #include <elle/io/Format.hh>
+#include <elle/io/Link.hh>
 #include <elle/io/Path.hh>
 #include <elle/io/Pattern.hh>
 #include <elle/io/Piece.hh>

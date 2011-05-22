@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Directory.hh
+// file          /home/mycure/infinit/elle/io/Link.hh
 //
-// created       julien quintard   [thu may 27 16:17:26 2010]
-// updated       julien quintard   [sun may 22 13:07:57 2011]
+// created       julien quintard   [sun may 22 13:07:04 2011]
+// updated       julien quintard   [sun may 22 13:17:41 2011]
 //
 
-#ifndef ELLE_IO_DIRECTORY_HH
-#define ELLE_IO_DIRECTORY_HH
+#ifndef ELLE_IO_LINK_HH
+#define ELLE_IO_LINK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -37,19 +37,19 @@ namespace elle
 //
 
     ///
-    /// this class abstracts the local directory operations.
+    /// this class abstracts the local link operations.
     ///
-    class Directory
+    class Link
     {
     public:
       //
       // static methods
       //
-      static Status	Create(const Path&);
-      static Status	Remove(const Path&);
+      static Status	Create(const Path&,
+			       const Path&);
+      static Status	Erase(const Path&);
       static Status	Exist(const Path&);
       static Status	Dig(const Path&);
-      static Status	Clear(const Path&);
     };
 
   }
