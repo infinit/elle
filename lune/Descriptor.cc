@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.cc
 //
 // created       julien quintard   [sat may  1 21:19:13 2010]
-// updated       julien quintard   [sun may  8 10:32:07 2011]
+// updated       julien quintard   [fri may 20 21:50:23 2011]
 //
 
 //
@@ -31,6 +31,18 @@ namespace lune
   const elle::String		Descriptor::Extension = ".dsc";
 
 //
+// ---------- constructors & destructors --------------------------------------
+//
+
+  ///
+  /// default constructor.
+  ///
+  Descriptor::Descriptor():
+    model(hole::ModelUnknown)
+  {
+  }
+
+//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -38,6 +50,7 @@ namespace lune
   /// this method creates a descriptor.
   ///
   elle::Status		Descriptor::Create(const elle::String&	name,
+					   const hole::Model&	model,
 					   const nucleus::Address& root,
 					   const elle::Address&	boot)
   {
@@ -45,6 +58,7 @@ namespace lune
 
     // set the attributes.
     this->name = name;
+    this->model = model;
     this->root = root;
     this->boot = boot;
 
@@ -59,7 +73,10 @@ namespace lune
     enter();
 
     // sign the attributesr with the authority.
-    if (authority.k->Sign(this->name, this->root, this->boot,
+    if (authority.k->Sign(this->name,
+			  (elle::Natural8&)this->model,
+			  this->root,
+			  this->boot,
 			  this->signature) == elle::StatusError)
       escape("unable to sign the attributes with the authority");
 
@@ -76,8 +93,10 @@ namespace lune
 
     // verify the signature.
     if (authority.K.Verify(this->signature,
-			   this->name, this->root, this->boot) !=
-	elle::StatusTrue)
+			   this->name,
+			   (elle::Natural8&)this->model,
+			   this->root,
+			   this->boot) != elle::StatusTrue)
       false();
 
     true();
@@ -111,6 +130,10 @@ namespace lune
     std::cout << alignment << elle::Dumpable::Shift
 	      << "[Name] " << this->name << std::endl;
 
+    // dump the model.
+    std::cout << alignment << elle::Dumpable::Shift
+	      << "[Model] " << (elle::Natural8)this->model << std::endl;
+
     // dump the root directory.
     std::cout << alignment << elle::Dumpable::Shift << "[Root] " << std::endl;
 
@@ -141,6 +164,7 @@ namespace lune
 
     // serialize the attributes.
     if (archive.Serialize(this->name,
+			  (elle::Natural8&)this->model,
 			  this->root,
 			  this->boot,
 			  this->signature) == elle::StatusError)
@@ -158,6 +182,7 @@ namespace lune
 
     // extract the attributes.
     if (archive.Extract(this->name,
+			(elle::Natural8&)this->model,
 			this->root,
 			this->boot,
 			this->signature) == elle::StatusError)
