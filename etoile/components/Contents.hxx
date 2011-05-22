@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [sat may 14 11:31:03 2011]
+// updated       julien quintard   [sun may 22 14:43:38 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_CONTENTS_HXX
@@ -56,9 +56,10 @@ namespace etoile
       if (context->object->data.contents != nucleus::Address::Null)
 	{
 	  // load the block.
-	  if (depot::Depot::Get(user->application->network,
-				context->object->data.contents,
-				*context->contents) == elle::StatusError)
+	  if (depot::Depot::Pull(user->application->network,
+				 context->object->data.contents,
+				 nucleus::Version::Last,
+				 *context->contents) == elle::StatusError)
 	    escape("unable to load the contents");
 
 	  // determine the rights the current user has on this object.
@@ -106,7 +107,7 @@ namespace etoile
 	    escape("unable to forge an author");
 
 	  // record the block as needed to be removed.
-	  if (context->bucket.Destroy(
+	  if (context->bucket.Wipe(
 	        context->object->data.contents) == elle::StatusError)
 	    escape("unable to record the block in the bucket");
 
@@ -215,7 +216,7 @@ namespace etoile
 	    if (context->object->data.contents != nucleus::Address::Null)
 	      {
 		// record the contents so that it is destroyed.
-		if (context->bucket.Destroy(
+		if (context->bucket.Wipe(
 		      context->object->data.contents) == elle::StatusError)
 		  escape("unable to record the contents block in the bucket");
 	      }
@@ -235,9 +236,6 @@ namespace etoile
 	    // bind the contents i.e seal it by computing its address.
 	    if (context->contents->Bind(address) == elle::StatusError)
 	      escape("unable to bind the contents");
-
-	    // XXX
-	    address.Dump();
 
 	    // set the contents as clean.
 	    context->contents->content->state = nucleus::StateClean;

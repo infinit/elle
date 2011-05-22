@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Guest.cc
 //
 // created       julien quintard   [wed mar 17 22:13:51 2010]
-// updated       julien quintard   [mon may  3 18:41:24 2010]
+// updated       julien quintard   [fri may 20 19:36:35 2011]
 //
 
 //

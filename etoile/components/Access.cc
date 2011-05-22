@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [fri may 13 10:47:11 2011]
+// updated       julien quintard   [sun may 22 14:43:52 2011]
 //
 
 //
@@ -54,9 +54,10 @@ namespace etoile
       if (context->object->meta.access != nucleus::Address::Null)
 	{
 	  // load the block.
-	  if (depot::Depot::Get(user->application->network,
-				context->object->meta.access,
-				*context->access) == elle::StatusError)
+	  if (depot::Depot::Pull(user->application->network,
+				 context->object->meta.access,
+				 nucleus::Version::Last,
+				 *context->access) == elle::StatusError)
 	    escape("unable to load the access");
 	}
       else
@@ -516,7 +517,7 @@ namespace etoile
       if (context->object->meta.access != nucleus::Address::Null)
 	{
 	  // record the block as needed to be removed.
-	  if (context->bucket.Destroy(
+	  if (context->bucket.Wipe(
 	        context->object->meta.access) == elle::StatusError)
 	    escape("unable to record the block in the bucket");
 
@@ -599,10 +600,10 @@ namespace etoile
 	  if (context->object->meta.access != nucleus::Address::Null)
 	    {
 	      // record the access so that it is destroyed.
-	      if (context->bucket.Destroy(
+	      if (context->bucket.Wipe(
 		    context->object->meta.access) == elle::StatusError)
 		  escape("unable to record the access block in the bucket");
-	      }
+	    }
 
 	  // bind the access as, since the block has changed, its address
 	  // is going to be different.

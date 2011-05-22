@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [fri may 13 10:26:49 2011]
+// updated       julien quintard   [fri may 20 21:00:13 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -58,15 +58,15 @@ namespace etoile
       //
       // methods
       //
-      static elle::Status	Put(const nucleus::Network&,
-				    const nucleus::Address&,
-				    const nucleus::Block&);
-      static elle::Status	Get(const nucleus::Network&,
-				    const nucleus::Address&,
-				    nucleus::Block&);
-      static elle::Status	Erase(const nucleus::Network&,
-				      const nucleus::Address&);
-
+      static elle::Status	Push(const nucleus::Network&,
+				     const nucleus::Address&,
+				     const nucleus::Block&);
+      static elle::Status	Pull(const nucleus::Network&,
+				     const nucleus::Address&,
+				     const nucleus::Version&,
+				     nucleus::Block&);
+      static elle::Status	Wipe(const nucleus::Network&,
+				     const nucleus::Address&);
     };
 
   }

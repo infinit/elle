@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Item.cc
 //
 // created       julien quintard   [mon apr  5 21:26:41 2010]
-// updated       julien quintard   [thu may  5 16:03:44 2011]
+// updated       julien quintard   [fri may 20 20:42:43 2011]
 //
 
 //
@@ -41,7 +41,7 @@ namespace etoile
     /// constructor.
     ///
     Item::Item(const nucleus::Address&				address):
-      operation(OperationDestroy),
+      operation(OperationWipe),
       address(address),
       block(NULL)
     {
@@ -81,7 +81,7 @@ namespace etoile
 
 	    break;
 	  }
-	case OperationDestroy:
+	case OperationWipe:
 	  {
 	    // nothing more.
 

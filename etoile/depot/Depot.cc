@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [fri may 13 11:45:20 2011]
+// updated       julien quintard   [fri may 20 21:00:30 2011]
 //
 
 //
@@ -65,14 +65,14 @@ namespace etoile
     ///
     /// XXX
     ///
-    elle::Status	Depot::Put(const nucleus::Network&	network,
-				   const nucleus::Address&	address,
-				   const nucleus::Block&	block)
+    elle::Status	Depot::Push(const nucleus::Network&	network,
+				    const nucleus::Address&	address,
+				    const nucleus::Block&	block)
     {
       enter();
 
       // store in the hole.
-      if (Hole::Put(network, address, block) == elle::StatusError)
+      if (Hole::Push(network, address, block) == elle::StatusError)
 	escape("unable to put the block in the hole");
 
       leave();
@@ -81,16 +81,18 @@ namespace etoile
     ///
     /// XXX
     ///
-    elle::Status	Depot::Get(const nucleus::Network&	network,
-				   const nucleus::Address&	address,
-				   nucleus::Block&		block)
+    elle::Status	Depot::Pull(const nucleus::Network&	network,
+				    const nucleus::Address&	address,
+				    const nucleus::Version&	version,
+				    nucleus::Block&		block)
     {
       enter();
 
       // XXX look in the cache etc.
 
       // finally, look in the hole.
-      if (Hole::Get(network, address, block) == elle::StatusError)
+      if (Hole::Pull(network, address, version,
+		     block) == elle::StatusError)
 	escape("unable to retrieve the block from the hole");
 
       leave();
@@ -99,15 +101,15 @@ namespace etoile
     ///
     /// XXX
     ///
-    elle::Status	Depot::Erase(const nucleus::Network&	network,
-				     const nucleus::Address&	address)
+    elle::Status	Depot::Wipe(const nucleus::Network&	network,
+				    const nucleus::Address&	address)
     {
       enter();
 
       // XXX look in the cache etc.
 
       // finally, erase the block from the hole.
-      if (Hole::Erase(network, address) == elle::StatusError)
+      if (Hole::Wipe(network, address) == elle::StatusError)
 	escape("unable to erase the block from the hole");
 
       leave();

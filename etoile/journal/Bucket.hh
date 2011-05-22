@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Bucket.hh
 //
 // created       julien quintard   [sat jan 30 16:26:50 2010]
-// updated       julien quintard   [fri may 13 17:37:21 2011]
+// updated       julien quintard   [fri may 20 20:16:34 2011]
 //
 
 #ifndef ETOILE_JOURNAL_BUCKET_HH
@@ -61,7 +61,7 @@ namespace etoile
       //
       elle::Status	Push(const nucleus::Address&,
 			     nucleus::Block*);
-      elle::Status	Destroy(const nucleus::Address&);
+      elle::Status	Wipe(const nucleus::Address&);
 
       //
       // interfaces

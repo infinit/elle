@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/components/Object.cc
 //
 // created       julien quintard   [fri aug 14 19:16:10 2009]
-// updated       julien quintard   [fri may 13 10:39:44 2011]
+// updated       julien quintard   [sat may 21 15:40:31 2011]
 //
 
 //
@@ -56,9 +56,10 @@ namespace etoile
       context->object = new nucleus::Object;
 
       // get the block.
-      if (depot::Depot::Get(user->application->network,
-			    address,
-			    *context->object) == elle::StatusError)
+      if (depot::Depot::Pull(user->application->network,
+			     address,
+			     nucleus::Version::Last,
+			     *context->object) == elle::StatusError)
 	escape("unable to retrieve the block");
 
       leave();
@@ -153,7 +154,7 @@ namespace etoile
 	escape("unable to destroy the access");
 
       // record the object in the bucket.
-      if (context->bucket.Destroy(
+      if (context->bucket.Wipe(
 	    context->address) == elle::StatusError)
 	escape("unable to record the object block in the bucket");
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Hole.cc
 //
 // created       julien quintard   [thu may 12 14:43:49 2011]
-// updated       julien quintard   [sat may 14 13:10:03 2011]
+// updated       julien quintard   [sun may 22 13:20:58 2011]
 //
 
 //
@@ -158,9 +158,9 @@ namespace etoile
     ///
     /// XXX
     ///
-    elle::Status	Hole::Put(const nucleus::Network&	network,
-				  const nucleus::Address&	address,
-				  const nucleus::Block&		block)
+    elle::Status	Hole::Push(const nucleus::Network&	network,
+				   const nucleus::Address&	address,
+				   const nucleus::Block&	block)
     {
       elle::Derivable<nucleus::Block>	derivable(address.component, block);
 
@@ -168,15 +168,9 @@ namespace etoile
 
       // request hole to put the block.
       if (Hole::Channel->Call(
-	    elle::Inputs<hole::TagPut>(network, address, derivable),
+	    elle::Inputs<hole::TagPush>(network, address, derivable),
 	    elle::Outputs<hole::TagOk>()) == elle::StatusError)
 	escape("unable to put the block in the network");
-
-      /* XXX
-      if (block.Store(network,
-		      address) == elle::StatusError)
-	escape("unable to store the block");
-      */
 
       leave();
     }
@@ -184,9 +178,10 @@ namespace etoile
     ///
     /// XXX
     ///
-    elle::Status	Hole::Get(const nucleus::Network&	network,
-				  const nucleus::Address&	address,
-				  nucleus::Block&		block)
+    elle::Status	Hole::Pull(const nucleus::Network&	network,
+				   const nucleus::Address&	address,
+				   const nucleus::Version&	version,
+				   nucleus::Block&		block)
     {
       elle::Derivable<nucleus::Block>	derivable(block);
       nucleus::Block*			object;
@@ -196,7 +191,7 @@ namespace etoile
       // request hole to get the block associated with the given
       // network and address.
       if (Hole::Channel->Call(
-	    elle::Inputs<hole::TagGet>(network, address),
+	    elle::Inputs<hole::TagPull>(network, address, version),
 	    elle::Outputs<hole::TagBlock>(derivable)) == elle::StatusError)
 	escape("unable to get the block from the network");
 
@@ -204,39 +199,22 @@ namespace etoile
       if (derivable.Infer(object) == elle::StatusError)
 	escape("unable to infer the block from the derivable");
 
-      /* XXX
-      if (block.Exist(network,
-		      address) == elle::StatusFalse)
-	escape("the block does not seem to exist");
-      if (block.Load(network,
-		     address) == elle::StatusError)
-	escape("unable to load the block");
-      if (block.Validate(address) == elle::StatusFalse)
-	escape("the block seems to be invalid");
-      */
-
       leave();
     }
 
     ///
     /// XXX
     ///
-    elle::Status	Hole::Erase(const nucleus::Network&	network,
-				    const nucleus::Address&	address)
+    elle::Status	Hole::Wipe(const nucleus::Network&	network,
+				   const nucleus::Address&	address)
     {
       enter();
 
       // request hole to erase the block from the network.
       if (Hole::Channel->Call(
-	    elle::Inputs<hole::TagErase>(network, address),
+	    elle::Inputs<hole::TagWipe>(network, address),
 	    elle::Outputs<hole::TagOk>()) == elle::StatusError)
 	escape("unable to erase the block from the network");
-
-      /* XXX
-      nucleus::Block	block;
-      if (block.Erase(network, address) == elle::StatusError)
-	escape("unable to erase the block");
-      */
 
       leave();
     }

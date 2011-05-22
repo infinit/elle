@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [sat jan 30 15:22:54 2010]
-// updated       julien quintard   [fri may 13 17:38:48 2011]
+// updated       julien quintard   [fri may 20 20:43:06 2011]
 //
 
 //
@@ -83,17 +83,17 @@ namespace etoile
 	    {
 	    case OperationPush:
 	      {
-		if (depot::Depot::Put(user->application->network,
-				      item->address,
-				      *item->block) == elle::StatusError)
+		if (depot::Depot::Push(user->application->network,
+				       item->address,
+				       *item->block) == elle::StatusError)
 		  escape("unable to publish the block");
 
 		break;
 	      }
-	    case OperationDestroy:
+	    case OperationWipe:
 	      {
-		if (depot::Depot::Erase(user->application->network,
-					item->address) == elle::StatusError)
+		if (depot::Depot::Wipe(user->application->network,
+				       item->address) == elle::StatusError)
 		  escape("unable to erase the block through hole");
 
 		break;
@@ -112,8 +112,8 @@ namespace etoile
     /// this method is called by Depot whenever looking for a particular
     /// block.
     ///
-    elle::Status	Journal::Get(const nucleus::Address&	address,
-				     nucleus::Block*&		block)
+    elle::Status	Journal::Pull(const nucleus::Address&	address,
+				      nucleus::Block*&		block)
     {
       enter();
 

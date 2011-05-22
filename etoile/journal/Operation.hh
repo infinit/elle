@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Operation.hh
 //
 // created       julien quintard   [mon apr  5 21:21:30 2010]
-// updated       julien quintard   [fri apr 16 14:13:23 2010]
+// updated       julien quintard   [fri may 20 20:16:04 2011]
 //
 
 #ifndef ETOILE_JOURNAL_OPERATION_HH
@@ -30,7 +30,7 @@ namespace etoile
     enum Operation
       {
 	OperationPush,
-	OperationDestroy
+	OperationWipe
       };
 
   }
