@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.hh
 //
 // created       julien quintard   [sat may  7 23:26:59 2011]
-// updated       julien quintard   [sat may 14 12:25:03 2011]
+// updated       julien quintard   [sat may 21 15:25:16 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/MutableBlock.hh>
 
 #include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Subject.hh>
@@ -39,7 +39,7 @@ namespace nucleus
     /// XXX
     ///
     class ImprintBlock:
-      public Block
+      public MutableBlock
     {
     public:
       //

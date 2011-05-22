@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat may 14 12:24:27 2011]
+// updated       julien quintard   [sat may 21 21:55:10 2011]
 //
 
 //
@@ -17,6 +17,8 @@
 
 #include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/Family.hh>
+
+#include <lune/Lune.hh>
 
 namespace nucleus
 {
@@ -31,7 +33,7 @@ namespace nucleus
     /// default constructor.
     ///
     ContentHashBlock::ContentHashBlock():
-      Block()
+      ImmutableBlock()
     {
     }
 
@@ -39,7 +41,7 @@ namespace nucleus
     /// specific constructor.
     ///
     ContentHashBlock::ContentHashBlock(const neutron::Component	component):
-      Block(FamilyContentHashBlock, component)
+      ImmutableBlock(FamilyContentHashBlock, component)
     {
     }
 
@@ -100,6 +102,21 @@ namespace nucleus
     }
 
 //
+// ---------- operators -------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    elle::Boolean	ContentHashBlock::operator<(const Block&	block)
+      const
+    {
+      enter();
+
+      flee("CHBs cannot be updated since they are immutable");
+    }
+
+//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -116,7 +133,7 @@ namespace nucleus
       std::cout << alignment << "[ContentHashBlock]" << std::endl;
 
       // dump the parent class.
-      if (Block::Dump(margin + 2) == elle::StatusError)
+      if (ImmutableBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       leave();
@@ -135,7 +152,7 @@ namespace nucleus
       enter();
 
       // serialize the parent class.
-      if (Block::Serialize(archive) == elle::StatusError)
+      if (ImmutableBlock::Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the underlying block");
 
       leave();
@@ -149,7 +166,7 @@ namespace nucleus
       enter();
 
       // extract the parent class.
-      if (Block::Extract(archive) == elle::StatusError)
+      if (ImmutableBlock::Extract(archive) == elle::StatusError)
 	escape("unable to extract the underlying block");
 
       // check the family.

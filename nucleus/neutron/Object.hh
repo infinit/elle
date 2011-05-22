@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [fri may 13 12:54:23 2011]
+// updated       julien quintard   [sat may 21 22:05:44 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
@@ -22,6 +22,7 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/ImprintBlock.hh>
+#include <nucleus/proton/Version.hh>
 
 #include <nucleus/neutron/Genre.hh>
 #include <nucleus/neutron/Author.hh>
@@ -32,7 +33,6 @@
 #include <nucleus/neutron/Attributes.hh>
 #include <nucleus/neutron/Access.hh>
 #include <nucleus/neutron/Role.hh>
-#include <nucleus/neutron/Version.hh>
 
 namespace nucleus
 {
@@ -81,6 +81,11 @@ namespace nucleus
 				 const Access* = NULL) const;
 
       //
+      // operators
+      //
+      elle::Boolean	operator<(const Block&) const;
+
+      //
       // interfaces
       //
 
@@ -116,7 +121,7 @@ namespace nucleus
 
 	proton::Address		access;
 
-	Version			version;
+	proton::Version		version;
 	elle::Signature		signature;
 
 	State			state;
@@ -131,7 +136,7 @@ namespace nucleus
 
 	elle::Digest		fingerprint;
 
-	Version			version;
+	proton::Version		version;
 	elle::Signature		signature;
 
 	State			state;

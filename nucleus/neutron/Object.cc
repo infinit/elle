@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [fri may 13 13:18:56 2011]
+// updated       julien quintard   [sat may 21 23:49:11 2011]
 //
 
 //
@@ -211,7 +211,8 @@ namespace nucleus
     ///
     /// the method (i) calls the parent class for validation (iii) verifies
     /// the meta part's signature (iv) retrieves the author's public key
-    /// (v) verifies the data signature.
+    /// (v) verifies the data signature and (vi) verify that the mutable
+    /// block's general version number matches the object's versions.
     ///
     elle::Status	Object::Validate(const proton::Address&	address,
 					 const Access*		access)
@@ -236,7 +237,8 @@ namespace nucleus
 
 	    // test if there is an access block.
 	    if (access == NULL)
-	      escape("the Seal() method must take the object's access block");
+	      escape("the Validate() method must take the object's "
+		     "access block");
 
 	    // compute the fingerprint of the access (subject, permissions)
 	    // tuples.
@@ -303,6 +305,41 @@ namespace nucleus
 	  flee("unable to verify the data signature");
       }
 
+      // (v)
+      {
+	// check the mutable block's general version.
+	if (this->version != (this->data.version + this->meta.version))
+	  flee("invalid version number");
+      }
+
+      true();
+    }
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    elle::Boolean	Object::operator<(const Block&		block) const
+    {
+      const Object*	object =
+	dynamic_cast<const Object*>(&block);
+
+      enter();
+
+      // check the cast.
+      if (object == NULL)
+	flee("unable to cast the block into an Object");
+
+      // check the versions.
+      if ((object->meta.version >= this->meta.version) ||
+	  (object->data.version >= this->data.version))
+	false();
+
+      // XXX check the data/meta base.
+
       true();
     }
 
@@ -368,8 +405,8 @@ namespace nucleus
       if (this->meta.access.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the meta access address");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Version] " << this->meta.version << std::endl;
+      if (this->meta.version.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the meta version");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Signature]" << std::endl;
@@ -400,8 +437,8 @@ namespace nucleus
       if (this->data.fingerprint.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the fingerprint");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Version] " << this->data.version << std::endl;
+      if (this->data.version.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the data version");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Signature]" << std::endl;

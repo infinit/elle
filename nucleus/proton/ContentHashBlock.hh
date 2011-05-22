@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [sat may 14 12:24:19 2011]
+// updated       julien quintard   [sat may 21 21:54:06 2011]
 //
 
 #ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/ImmutableBlock.hh>
 
 #include <nucleus/neutron/Component.hh>
 
@@ -44,7 +44,7 @@ namespace nucleus
     /// creating a new block.
     ///
     class ContentHashBlock:
-      public Block
+      public ImmutableBlock
     {
     public:
       //
@@ -58,6 +58,11 @@ namespace nucleus
       //
       elle::Status	Bind(Address&) const;
       elle::Status	Validate(const Address&) const;
+
+      //
+      // operators
+      //
+      elle::Boolean	operator<(const Block&) const;
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.cc
 //
 // created       julien quintard   [fri may  6 15:34:18 2011]
-// updated       julien quintard   [sat may 14 12:24:50 2011]
+// updated       julien quintard   [sat may 21 15:23:39 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace nucleus
     /// default constructor.
     ///
     OwnerKeyBlock::OwnerKeyBlock():
-      Block()
+      MutableBlock()
     {
     }
 
@@ -39,7 +39,7 @@ namespace nucleus
     /// specific constructor.
     ///
     OwnerKeyBlock::OwnerKeyBlock(const neutron::Component	component):
-      Block(FamilyOwnerKeyBlock, component)
+      MutableBlock(FamilyOwnerKeyBlock, component)
     {
     }
 
@@ -151,7 +151,7 @@ namespace nucleus
       std::cout << alignment << "[OwnerKeyBlock]" << std::endl;
 
       // dump the parent class.
-      if (Block::Dump(margin + 2) == elle::StatusError)
+      if (MutableBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       // dump the OKB's public key.
@@ -191,7 +191,7 @@ namespace nucleus
       enter();
 
       // serialize the parent class.
-      if (Block::Serialize(archive) == elle::StatusError)
+      if (MutableBlock::Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the underlying block");
 
       // serialize the owner part.
@@ -211,7 +211,7 @@ namespace nucleus
       enter();
 
       // extract the parent class.
-      if (Block::Extract(archive) == elle::StatusError)
+      if (MutableBlock::Extract(archive) == elle::StatusError)
 	escape("unable to extract the underlying block");
 
       // check the family.

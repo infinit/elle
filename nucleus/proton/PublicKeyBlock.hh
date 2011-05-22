@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [sat may 14 12:24:31 2011]
+// updated       julien quintard   [sat may 21 15:27:30 2011]
 //
 
 #ifndef NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/MutableBlock.hh>
 
 #include <nucleus/neutron/Component.hh>
 
@@ -49,7 +49,7 @@ namespace nucleus
     /// need multiple signatures.
     ///
     class PublicKeyBlock:
-      public Block
+      public MutableBlock
     {
     public:
       //
@@ -69,6 +69,9 @@ namespace nucleus
       //
       // interfaces
       //
+
+      // object
+      declare(Block);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

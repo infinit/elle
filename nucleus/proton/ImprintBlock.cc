@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [sat may 14 12:24:57 2011]
+// updated       julien quintard   [sat may 21 17:02:36 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace nucleus
     /// default constructor.
     ///
     ImprintBlock::ImprintBlock():
-      Block()
+      MutableBlock()
     {
     }
 
@@ -39,7 +39,7 @@ namespace nucleus
     /// specific constructor.
     ///
     ImprintBlock::ImprintBlock(const neutron::Component		component):
-      Block(FamilyImprintBlock, component)
+      MutableBlock(FamilyImprintBlock, component)
     {
     }
 
@@ -141,7 +141,7 @@ namespace nucleus
       std::cout << alignment << "[ImprintBlock]" << std::endl;
 
       // dump the parent class.
-      if (Block::Dump(margin + 2) == elle::StatusError)
+      if (MutableBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       // dump the stamp.
@@ -177,7 +177,7 @@ namespace nucleus
       enter();
 
       // serialize the parent class.
-      if (Block::Serialize(archive) == elle::StatusError)
+      if (MutableBlock::Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the underlying block");
 
       // serialize the owner part.
@@ -197,7 +197,7 @@ namespace nucleus
       enter();
 
       // extract the parent class.
-      if (Block::Extract(archive) == elle::StatusError)
+      if (MutableBlock::Extract(archive) == elle::StatusError)
 	escape("unable to extract the underlying block");
 
       // check the family.

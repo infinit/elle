@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [sat may 14 12:24:03 2011]
+// updated       julien quintard   [sat may 21 21:53:52 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BLOCK_HH
@@ -66,6 +66,11 @@ namespace nucleus
       virtual elle::Status	Validate(const Address&) const;
 
       //
+      // operators
+      //
+      virtual elle::Boolean	operator<(const Block&) const;
+
+      //
       // interfaces
       //
 
@@ -73,21 +78,15 @@ namespace nucleus
       declare(Block);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status		Serialize(elle::Archive&) const;
+      elle::Status		Extract(elle::Archive&);
 
       // fileable
-      elle::Status	Load(const Network&,
-			     const Address&);
-      elle::Status	Store(const Network&,
-			      const Address&) const;
-      elle::Status	Erase(const Network&,
-			      const Address&) const;
-      elle::Status	Exist(const Network&,
-			      const Address&) const;
+      virtual elle::Status	Erase(const Network&,
+				      const Address&) const;
 
       //
       // attributes

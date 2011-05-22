@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Neutron.hh
 //
 // created       julien quintard   [wed may  4 15:40:00 2011]
-// updated       julien quintard   [thu may  5 15:34:16 2011]
+// updated       julien quintard   [sat may 21 13:37:07 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_HH
@@ -55,7 +55,6 @@ namespace nucleus
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Trait.hh>
 #include <nucleus/neutron/User.hh>
-#include <nucleus/neutron/Version.hh>
 #include <nucleus/neutron/Voucher.hh>
 
 #endif

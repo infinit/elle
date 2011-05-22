@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hxx
 //
 // created       julien quintard   [sat may  7 22:11:14 2011]
-// updated       julien quintard   [sat may  7 22:18:47 2011]
+// updated       julien quintard   [sat may 21 19:28:31 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HXX
@@ -125,6 +125,9 @@ namespace nucleus
 	  // mark the section as clean.
 	  this->meta.state = StateClean;
 	}
+
+      // set the mutable block's version.
+      this->version = this->meta.version + this->data.version;
 
       leave();
     }

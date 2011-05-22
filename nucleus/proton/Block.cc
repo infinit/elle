@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [sat may 14 12:24:12 2011]
+// updated       julien quintard   [sat may 21 21:57:12 2011]
 //
 
 //
@@ -16,8 +16,6 @@
 //
 
 #include <nucleus/proton/Block.hh>
-
-#include <lune/Lune.hh>
 
 namespace nucleus
 {
@@ -82,6 +80,21 @@ namespace nucleus
     /// otherwise.
     ///
     elle::Status	Block::Validate(const Address&) const
+    {
+      enter();
+
+      fail("this method should never have been called");
+    }
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+    ///
+    /// this operator returns StatusTrue if the given block represents
+    /// a valid update of the current block.
+    ///
+    elle::Boolean	Block::operator<(const Block&) const
     {
       enter();
 
@@ -170,157 +183,14 @@ namespace nucleus
 //
 
     ///
-    /// this method loads the block.
+    /// XXX
     ///
-    elle::Status	Block::Load(const Network&		network,
-				    const Address&		address)
+    elle::Status	Block::Erase(const Network&,
+				     const Address&) const
     {
-      elle::Path	path;
-      elle::Unique	unique;
-      elle::Region	region;
-
       enter();
 
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Block) ==
-	  elle::StatusError)
-	escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%",
-				    network.name),
-			elle::Piece("%ADDRESS%",
-				    unique)) == elle::StatusError)
-	escape("unable to complete the path");
-
-      // read the file's content.
-      if (elle::File::Read(path, region) == elle::StatusError)
-	escape("unable to read the file's content");
-
-      // decode and extract the object.
-      if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
-						 region.size),
-				    *this) == elle::StatusError)
-	escape("unable to decode the object");
-
-      leave();
-    }
-
-    ///
-    /// this method stores the block in its file format.
-    ///
-    elle::Status	Block::Store(const Network&		network,
-				     const Address&		address) const
-    {
-      elle::Path	path;
-      elle::Unique	unique;
-      elle::Region	region;
-      elle::String	string;
-
-      enter();
-
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Block) ==
-	  elle::StatusError)
-	escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%",
-				    network.name),
-			elle::Piece("%ADDRESS%",
-				    unique)) == elle::StatusError)
-	escape("unable to complete the path");
-
-      // encode in hexadecimal.
-      if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-	escape("unable to encode the object in hexadecimal");
-
-      // wrap the string.
-      if (region.Wrap((elle::Byte*)string.c_str(),
-		      string.length()) == elle::StatusError)
-	escape("unable to wrap the string in a region");
-
-      // write the file's content.
-      if (elle::File::Write(path, region) == elle::StatusError)
-	escape("unable to write the file's content");
-
-      leave();
-    }
-
-    ///
-    /// this method erases a block.
-    ///
-    elle::Status	Block::Erase(const Network&		network,
-				     const Address&		address) const
-    {
-      elle::Path	path;
-      elle::Unique	unique;
-
-      enter();
-
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Block) ==
-	  elle::StatusError)
-	escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%",
-				    network.name),
-			elle::Piece("%ADDRESS%",
-				    unique)) == elle::StatusError)
-	escape("unable to complete the path");
-
-      // erase the file.
-      if (elle::File::Erase(path) == elle::StatusError)
-	escape("unable to erase the file");
-
-      leave();
-    }
-
-    ///
-    /// this method returns true if the block exists.
-    ///
-    elle::Status	Block::Exist(const Network&		network,
-				     const Address&		address) const
-    {
-      elle::Path	path;
-      elle::Unique	unique;
-
-      enter();
-
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
-
-      // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Block) ==
-	  elle::StatusError)
-	escape("unable to create the path");
-
-      // complete the path with the network name.
-      if (path.Complete(elle::Piece("%NETWORK%",
-				    network.name),
-			elle::Piece("%ADDRESS%",
-				    unique)) == elle::StatusError)
-	escape("unable to complete the path");
-
-      // test the file.
-      if (elle::File::Exist(path) == elle::StatusError)
-	escape("unable to test the file");
-
-      leave();
+      escape("this method should never have been called");
     }
 
   }

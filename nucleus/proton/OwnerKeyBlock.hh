@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.hh
 //
 // created       julien quintard   [fri may  6 14:45:42 2011]
-// updated       julien quintard   [sat may 14 12:24:44 2011]
+// updated       julien quintard   [sat may 21 15:27:37 2011]
 //
 
 #ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/MutableBlock.hh>
 
 #include <nucleus/neutron/Component.hh>
 #include <nucleus/neutron/Subject.hh>
@@ -45,7 +45,7 @@ namespace nucleus
     /// with every mutable block as for PKBs.
     ///
     class OwnerKeyBlock:
-      public Block
+      public MutableBlock
     {
     public:
       //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [sat may 14 12:24:37 2011]
+// updated       julien quintard   [sat may 21 15:33:12 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace nucleus
     /// default constructor.
     ///
     PublicKeyBlock::PublicKeyBlock():
-      Block()
+      MutableBlock()
     {
     }
 
@@ -39,7 +39,7 @@ namespace nucleus
     /// specific constructor.
     ///
     PublicKeyBlock::PublicKeyBlock(const neutron::Component	component):
-      Block(FamilyPublicKeyBlock, component)
+      MutableBlock(FamilyPublicKeyBlock, component)
     {
     }
 
@@ -131,7 +131,7 @@ namespace nucleus
       std::cout << alignment << "[PublicKeyBlock]" << std::endl;
 
       // dump the parent class.
-      if (Block::Dump(margin + 2) == elle::StatusError)
+      if (MutableBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
@@ -155,7 +155,7 @@ namespace nucleus
       enter();
 
       // serialize the parent class.
-      if (Block::Serialize(archive) == elle::StatusError)
+      if (MutableBlock::Serialize(archive) == elle::StatusError)
 	escape("unable to serialize the underlying block");
 
       // serialize the public key.
@@ -173,7 +173,7 @@ namespace nucleus
       enter();
 
       // extract the parent class.
-      if (Block::Extract(archive) == elle::StatusError)
+      if (MutableBlock::Extract(archive) == elle::StatusError)
 	escape("unable to extract the underlying block");
 
       // check the family.

@@ -6,10 +6,13 @@ ADD_LIBRARY(nucleus
   proton/Address.cc
   proton/Block.cc
   proton/ContentHashBlock.cc
+  proton/ImmutableBlock.cc
   proton/ImprintBlock.cc
+  proton/MutableBlock.cc
   proton/Network.cc
   proton/OwnerKeyBlock.cc
   proton/PublicKeyBlock.cc
+  proton/Version.cc
 
   neutron/Access.cc
   neutron/Attributes.cc
