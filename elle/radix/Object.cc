@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.cc
 //
 // created       julien quintard   [sun may  2 12:21:39 2010]
-// updated       julien quintard   [fri may 28 12:26:37 2010]
+// updated       julien quintard   [sat may 21 15:30:29 2011]
 //
 
 //

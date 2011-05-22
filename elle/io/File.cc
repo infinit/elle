@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/File.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [thu apr 28 18:30:24 2011]
+// updated       julien quintard   [sun may 22 13:14:20 2011]
 //
 
 //
@@ -59,7 +59,7 @@ namespace elle
       if (File::Exist(path) == StatusFalse)
 	escape("the file does not seem to exist");
 
-      // retrieve information on the associat.
+      // retrieve information.
       if (::stat(path.string.c_str(), &status) == -1)
 	escape(::strerror(errno));
 

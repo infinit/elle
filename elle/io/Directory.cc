@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Directory.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [tue apr 26 19:13:39 2011]
+// updated       julien quintard   [sun may 22 13:32:10 2011]
 //
 
 //
@@ -17,6 +17,7 @@
 
 #include <elle/io/Directory.hh>
 #include <elle/io/File.hh>
+#include <elle/io/Link.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -200,6 +201,14 @@ namespace elle
 		// remove the file.
 		if (File::Erase(target) == StatusError)
 		  escape("unable to remove the file");
+
+		break;
+	      }
+	    case DT_LNK:
+	      {
+		// remove the link.
+		if (Link::Erase(target) == StatusError)
+		  escape("unable to remove the link");
 
 		break;
 	      }

@@ -26,6 +26,7 @@ ADD_LIBRARY(elle
   io/Directory.cc
   io/Dumpable.cc
   io/File.cc
+  io/Link.cc
   io/Pattern.cc
   io/Piece.cc
   io/Path.cc
