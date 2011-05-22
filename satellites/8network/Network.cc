@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sun may  8 12:42:34 2011]
+// updated       julien quintard   [sun may 22 13:36:50 2011]
 //
 
 //
@@ -38,6 +38,7 @@ namespace application
   /// initial user.
   ///
   elle::Status		Network::Create(const elle::String&	name,
+					const hole::Model&	model,
 					const elle::Address&	boot,
 					const elle::String&	owner)
   {
@@ -61,6 +62,10 @@ namespace application
       // does the network already exist.
       if (descriptor.Exist(name) == elle::StatusTrue)
 	escape("this network seems to already exist");
+
+      // check the model.
+      if (model == hole::ModelUnknown)
+	escape("please specify the model of the network");
 
       // test the network argument.
       if (boot == elle::Address::Null)
@@ -151,6 +156,7 @@ namespace application
     {
       // create the descriptor.
       if (descriptor.Create(name,
+			    model,
 			    address,
 			    boot) == elle::StatusError)
 	escape("unable to create the network's descriptor");
@@ -169,7 +175,8 @@ namespace application
     //
     {
       // store the block.
-      if (directory.Store(network, address) == elle::StatusError)
+      if (directory.Store(network,
+			  address) == elle::StatusError)
 	escape("unable to store the block");
     }
 
@@ -191,12 +198,12 @@ namespace application
       elle::Path	path;
 
       // does the network exist.
-      if (descriptor.Exist(name) == elle::StatusFalse)
-	escape("this network does not seem to exist");
-
-      // remove the descriptor.
-      if (descriptor.Erase(name) == elle::StatusError)
-	escape("unable to erase the descriptor");
+      if (descriptor.Exist(name) == elle::StatusTrue)
+	{
+	  // remove the descriptor.
+	  if (descriptor.Erase(name) == elle::StatusError)
+	    escape("unable to erase the descriptor");
+	}
     }
 
     //
@@ -356,6 +363,7 @@ namespace application
     Network::Operation		operation;
     elle::Character		option;
     elle::String		name;
+    hole::Model			model;
     elle::String		owner;
     elle::Address		boot;
 
@@ -371,6 +379,9 @@ namespace application
 
     // initialize the operation.
     operation = Network::OperationUnknown;
+
+    // initialize the model.
+    model = hole::ModelUnknown;
 
     // allocate a new parser.
     parser = new elle::Parser(argc, argv);
@@ -403,6 +414,13 @@ namespace application
     if (parser->Register('n',
 			 "name",
 			 "specifies the network name",
+			 elle::Parser::TypeRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    if (parser->Register('m',
+			 "model",
+			 "specifies the network model: local, remote, kool "
+			 "etc.",
 			 elle::Parser::TypeRequired) == elle::StatusError)
       escape("unable to register the option");
 
@@ -487,6 +505,22 @@ namespace application
 
 	      break;
 	    }
+	  case 'm':
+	    {
+	      elle::String	m(optarg);
+
+	      // assign the model.
+	      if (m == "local")
+		model = hole::ModelLocal;
+	      else if (m == "remote")
+		model = hole::ModelRemote;
+	      else if (m == "kool")
+		model = hole::ModelKool;
+	      else
+		escape("unknown model");
+
+	      break;
+	    }
 	  case 'o':
 	    {
 	      // assign the owner.
@@ -537,7 +571,7 @@ namespace application
       case Network::OperationCreate:
 	{
 	  // create the network.
-	  if (Network::Create(name, boot, owner) == elle::StatusError)
+	  if (Network::Create(name, model, boot, owner) == elle::StatusError)
 	    escape("unable to create the network");
 
 	  // display a message.
