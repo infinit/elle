@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [fri may 13 15:27:42 2011]
+// updated       julien quintard   [sun may 22 14:29:47 2011]
 //
 
 //
@@ -65,17 +65,17 @@ namespace hole
     // register the messages.
     //
     {
-      elle::Callback<const elle::String>	error(&Hole::Error);
       elle::Callback<const nucleus::Network>	join(&Hole::Join);
       elle::Callback<const nucleus::Network>	leav(&Hole::Leave);
       elle::Callback<const nucleus::Network,
 		     const nucleus::Address,
 		     const elle::Derivable
-		       <nucleus::Block> >	put(&Hole::Put);
+		       <nucleus::Block> >	push(&Hole::Push);
       elle::Callback<const nucleus::Network,
-		     const nucleus::Address>	get(&Hole::Get);
+		     const nucleus::Address,
+		     const nucleus::Version>	pull(&Hole::Pull);
       elle::Callback<const nucleus::Network,
-		     const nucleus::Address>	erase(&Hole::Erase);
+		     const nucleus::Address>	wipe(&Hole::Wipe);
 
       // register the join message.
       if (elle::Network::Register<TagJoin>(join) == elle::StatusError)
@@ -85,16 +85,16 @@ namespace hole
       if (elle::Network::Register<TagLeave>(leav) == elle::StatusError)
 	escape("unable to register the callback");
 
-      // register the put message.
-      if (elle::Network::Register<TagPut>(put) == elle::StatusError)
+      // register the push message.
+      if (elle::Network::Register<TagPush>(push) == elle::StatusError)
 	escape("unable to register the callback");
 
-      // register the get message.
-      if (elle::Network::Register<TagGet>(get) == elle::StatusError)
+      // register the pull message.
+      if (elle::Network::Register<TagPull>(pull) == elle::StatusError)
 	escape("unable to register the callback");
 
-      // register the erase message.
-      if (elle::Network::Register<TagErase>(erase) == elle::StatusError)
+      // register the wipe message.
+      if (elle::Network::Register<TagWipe>(wipe) == elle::StatusError)
 	escape("unable to register the callback");
     }
 
@@ -143,8 +143,10 @@ namespace hole
     if (Hole::Networks.find(network) == Hole::Networks.end())
       {
 	Holeable*					holeable;
-	nucleus::Address				address;
+	nucleus::Address				root;
+	elle::Address					boot;
 	std::pair<Hole::Iterator, elle::Boolean>	result;
+	Model						model;
 
 	// XXX[to change: contact the meta disciple]
 	{
@@ -153,15 +155,44 @@ namespace hole
 	  if (descriptor.Load(network.name) == elle::StatusError)
 	    escape("unable to load the descriptor");
 
-	  address = descriptor.root;
+	  model = descriptor.model;
+	  root = descriptor.root;
+	  boot = descriptor.boot;
 	}
 	// XXX
 
 	// create the holeable depending on the implementation.
-	holeable = new local::Local(network);
+	switch (model)
+	  {
+	  case ModelLocal:
+	    {
+	      // allocate the instance.
+	      holeable = new local::Local(network);
+
+	      break;
+	    }
+	  case ModelRemote:
+	    {
+	      remote::Remote*	remote;
+
+	      // allocate the instance.
+	      remote = new remote::Remote(network);
+
+	      // set remote host.
+	      if (remote->Host(boot) == elle::StatusError)
+		escape("unable to set the host");
+
+	      // set the holeable.
+	      holeable = remote;
+
+	      break;
+	    }
+	  default:
+	    escape("unknown model");
+	  }
 
 	// set the root address.
-	if (holeable->Root(address) == elle::StatusError)
+	if (holeable->Root(root) == elle::StatusError)
 	  escape("unable to set the root address");
 
 	// insert the network in the container.
@@ -199,15 +230,18 @@ namespace hole
   ///
   /// XXX
   ///
-  elle::Status		Hole::Put(const nucleus::Network&	network,
-				  const nucleus::Address&	address,
-				  const
-				    elle::Derivable<nucleus::Block>& derivable)
+  elle::Status		Hole::Push(const nucleus::Network&	network,
+				   const nucleus::Address&	address,
+				   const
+				     elle::Derivable
+				       <nucleus::Block>&	derivable)
   {
     Hole::Scoutor	scoutor;
     nucleus::Block*	object;
 
     enter();
+
+    printf("[XXX] Hole::Push()\n");
 
     // locate the network.
     if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
@@ -217,9 +251,43 @@ namespace hole
     if (derivable.Infer(object) == elle::StatusError)
       escape("unable to infer the block from the derivable");
 
-    // forward the put request to the implementation.
-    if (scoutor->second->Put(address, *object) == elle::StatusError)
-      escape("unable to put the block");
+    // forward the request depending on the nature of the block which
+    // the addres indicates.
+    switch (address.family)
+      {
+      case nucleus::FamilyContentHashBlock:
+	{
+	  nucleus::ImmutableBlock*	ib;
+
+	  // cast to an immutable block.
+	  ib = static_cast<nucleus::ImmutableBlock*>(object);
+
+	  // store the immutable block.
+	  if (scoutor->second->Put(address, *ib) == elle::StatusError)
+	    escape("unable to put the block");
+
+	  break;
+	}
+      case nucleus::FamilyPublicKeyBlock:
+      case nucleus::FamilyOwnerKeyBlock:
+      case nucleus::FamilyImprintBlock:
+	{
+	  nucleus::MutableBlock*	mb;
+
+	  // cast to a mutable block.
+	  mb = static_cast<nucleus::MutableBlock*>(object);
+
+	  // store the mutable block.
+	  if (scoutor->second->Put(address, *mb) == elle::StatusError)
+	    escape("unable to put the block");
+
+	  break;
+	}
+      default:
+	{
+	  escape("unknown block family");
+	}
+      }
 
     // answer to the caller.
     if (Hole::Channel->Reply(
@@ -232,13 +300,16 @@ namespace hole
   ///
   /// XXX
   ///
-  elle::Status		Hole::Get(const nucleus::Network&	network,
-				  const nucleus::Address&	address)
+  elle::Status		Hole::Pull(const nucleus::Network&	network,
+				   const nucleus::Address&	address,
+				   const nucleus::Version&	version)
   {
     Hole::Scoutor	scoutor;
     nucleus::Block*	block;
 
     enter(instance(block));
+
+    printf("[XXX] Hole::Pull()\n");
 
     // locate the network.
     if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
@@ -252,24 +323,35 @@ namespace hole
     // the addres indicates.
     switch (address.family)
       {
-	case nucleus::FamilyContentHashBlock:
-	  {
-	    // retrieve the immutable block.
-	    if (scoutor->second->Get(address, *block) == elle::StatusError)
-	      escape("unable to get the block");
+      case nucleus::FamilyContentHashBlock:
+	{
+	  nucleus::ImmutableBlock*	ib;
 
-	    break;
-	  }
-	case nucleus::FamilyPublicKeyBlock:
-	case nucleus::FamilyOwnerKeyBlock:
-	case nucleus::FamilyImprintBlock:
-	  {
-	    // retrieve the mutable block.
-	    if (scoutor->second->Gather(address, *block) == elle::StatusError)
-	      escape("unable to gather the block");
+	  // cast to an immutable block.
+	  ib = static_cast<nucleus::ImmutableBlock*>(block);
 
-	    break;
-	  }
+	  // retrieve the immutable block.
+	  if (scoutor->second->Get(address, *ib) == elle::StatusError)
+	    escape("unable to get the block");
+
+	  break;
+	}
+      case nucleus::FamilyPublicKeyBlock:
+      case nucleus::FamilyOwnerKeyBlock:
+      case nucleus::FamilyImprintBlock:
+	{
+	  nucleus::MutableBlock*	mb;
+
+	  // cast to a mutable block.
+	  mb = static_cast<nucleus::MutableBlock*>(block);
+
+	  // retrieve the mutable block.
+	  if (scoutor->second->Get(address, version,
+				   *mb) == elle::StatusError)
+	    escape("unable to get the block");
+
+	  break;
+	}
       default:
 	{
 	  escape("unknown block family");
@@ -295,19 +377,21 @@ namespace hole
   ///
   /// XXX
   ///
-  elle::Status		Hole::Erase(const nucleus::Network&	network,
-				    const nucleus::Address&	address)
+  elle::Status		Hole::Wipe(const nucleus::Network&	network,
+				   const nucleus::Address&	address)
   {
     Hole::Scoutor	scoutor;
 
     enter();
 
+    printf("[XXX] Hole::Wipe()\n");
+
     // locate the network.
     if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
       escape("hole does not seem to be connected to this network");
 
-    // forward the erase request to the implementation.
-    if (scoutor->second->Erase(address) == elle::StatusError)
+    // forward the kill request to the implementation.
+    if (scoutor->second->Kill(address) == elle::StatusError)
       escape("unable to erase the block");
 
     // answer the caller.
@@ -323,6 +407,8 @@ namespace hole
   ///
   elle::Status		Hole::Connection(elle::Door*&		door)
   {
+    elle::Callback<const elle::String>	error(&Hole::Error);
+
     enter();
 
     // if Etoile is already considered to be connected, reject any
@@ -339,6 +425,10 @@ namespace hole
     // otherwise, accept the connection.
     Hole::Channel = door;
 
+    // register the error callback.
+    if (Hole::Channel->Monitor(error) == elle::StatusError)
+      escape("unable to monitor the callback");
+
     leave();
   }
 
@@ -349,14 +439,8 @@ namespace hole
   {
     enter();
 
-    // report the error.
-    report(elle::Report::TypeError, error);
-
-    // display the errors.
-    show();
-
-    // quit the program.
-    elle::Program::Exit();
+    // reset the channel.
+    Hole::Channel = NULL;
 
     leave();
   }

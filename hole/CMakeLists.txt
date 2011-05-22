@@ -3,6 +3,8 @@ PROJECT(Hole CXX)
 ADD_EXECUTABLE(Hole
   local/Local.cc
 
+  remote/Remote.cc
+
   Hole.cc
   Holeable.cc
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.hh
 //
 // created       julien quintard   [wed may 11 14:55:32 2011]
-// updated       julien quintard   [fri may 13 11:39:04 2011]
+// updated       julien quintard   [sun may 22 11:35:59 2011]
 //
 
 #ifndef HOLE_HOLEABLE_HH
@@ -48,12 +48,15 @@ namespace hole
     virtual elle::Status	Leave() = 0;
 
     virtual elle::Status	Put(const nucleus::Address&,
-				    const nucleus::Block&) = 0;
+				    const nucleus::ImmutableBlock&) = 0;
+    virtual elle::Status	Put(const nucleus::Address&,
+				    const nucleus::MutableBlock&) = 0;
     virtual elle::Status	Get(const nucleus::Address&,
-				    nucleus::Block&) = 0;
-    virtual elle::Status	Gather(const nucleus::Address&,
-				       nucleus::Block&) = 0;
-    virtual elle::Status	Erase(const nucleus::Address&) = 0;
+				    nucleus::ImmutableBlock&) = 0;
+    virtual elle::Status	Get(const nucleus::Address&,
+				    const nucleus::Version&,
+				    nucleus::MutableBlock&) = 0;
+    virtual elle::Status	Kill(const nucleus::Address&) = 0;
 
     //
     // attributes

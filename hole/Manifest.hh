@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Manifest.hh
 //
 // created       julien quintard   [tue apr 13 15:27:49 2010]
-// updated       julien quintard   [fri may 13 14:48:44 2011]
+// updated       julien quintard   [fri may 20 20:46:41 2011]
 //
 
 #ifndef HOLE_MANIFEST_HH
@@ -67,10 +67,10 @@ namespace hole
 
       TagJoin,
       TagLeave,
-      TagPut,
-      TagGet,
+      TagPush,
+      TagPull,
       TagBlock,
-      TagErase
+      TagWipe
     };
 
 }
@@ -93,16 +93,17 @@ inward(hole::TagJoin,
 inward(hole::TagLeave,
        parameters(const nucleus::Network));
 
-inward(hole::TagPut,
+inward(hole::TagPush,
        parameters(const nucleus::Network,
 		  const nucleus::Address,
 		  const elle::Derivable<nucleus::Block>));
-inward(hole::TagGet,
+inward(hole::TagPull,
        parameters(const nucleus::Network,
-		  const nucleus::Address));
+		  const nucleus::Address,
+		  const nucleus::Version));
 outward(hole::TagBlock,
 	parameters(const elle::Derivable<nucleus::Block>));
-inward(hole::TagErase,
+inward(hole::TagWipe,
        parameters(const nucleus::Network,
 		  const nucleus::Address));
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [fri may 13 14:27:30 2011]
+// updated       julien quintard   [fri may 20 20:02:32 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -68,13 +68,14 @@ namespace hole
     static elle::Status		Join(const nucleus::Network&);
     static elle::Status		Leave(const nucleus::Network&);
 
-    static elle::Status		Put(const nucleus::Network&,
-				    const nucleus::Address&,
-				    const elle::Derivable<nucleus::Block>&);
-    static elle::Status		Get(const nucleus::Network&,
-				    const nucleus::Address&);
-    static elle::Status		Erase(const nucleus::Network&,
-				      const nucleus::Address&);
+    static elle::Status		Push(const nucleus::Network&,
+				     const nucleus::Address&,
+				     const elle::Derivable<nucleus::Block>&);
+    static elle::Status		Pull(const nucleus::Network&,
+				     const nucleus::Address&,
+				     const nucleus::Version&);
+    static elle::Status		Wipe(const nucleus::Network&,
+				     const nucleus::Address&);
 
     static elle::Status		Connection(elle::Door*&);
     static elle::Status		Error(const elle::String&);
@@ -92,6 +93,10 @@ namespace hole
 // ---------- includes --------------------------------------------------------
 //
 
+#include <hole/Manifest.hh>
+#include <hole/Model.hh>
+
 #include <hole/local/Local.hh>
+#include <hole/remote/Remote.hh>
 
 #endif

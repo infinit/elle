@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/local/Local.hh
+// file          /home/mycure/infinit/hole/remote/Remote.hh
 //
-// created       julien quintard   [tue apr 13 16:05:04 2010]
-// updated       julien quintard   [sun may 22 11:40:14 2011]
+// created       julien quintard   [fri may 20 19:31:08 2011]
+// updated       julien quintard   [sun may 22 11:36:22 2011]
 //
 
-#ifndef HOLE_LOCAL_LOCAL_HH
-#define HOLE_LOCAL_LOCAL_HH
+#ifndef HOLE_LOCAL_REMOTE_HH
+#define HOLE_LOCAL_REMOTE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,7 +22,7 @@
 
 namespace hole
 {
-  namespace local
+  namespace remote
   {
 
 //
@@ -30,17 +30,22 @@ namespace hole
 //
 
     ///
-    /// the local hole implementation stores data on the local node's
-    /// operating system storage.
+    /// the remote hole implementation stores data on a remote host's
+    /// storage.
     ///
-    class Local:
+    class Remote:
       public Holeable
     {
     public:
       //
       // constructors & destructors
       //
-      Local(const nucleus::Network&);
+      Remote(const nucleus::Network&);
+
+      //
+      // methods
+      //
+      elle::Status	Host(const elle::Address&);
 
       //
       // interfaces
@@ -60,6 +65,11 @@ namespace hole
 			    const nucleus::Version&,
 			    nucleus::MutableBlock&);
       elle::Status	Kill(const nucleus::Address&);
+
+      //
+      // attributes
+      //
+      elle::Address	host;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [sat may 14 12:55:34 2011]
+// updated       julien quintard   [sun may 22 14:44:31 2011]
 //
 
 //
@@ -66,13 +66,55 @@ namespace hole
     /// XXX
     ///
     elle::Status	Local::Put(const nucleus::Address&	address,
-				   const nucleus::Block&	block)
+				   const nucleus::ImmutableBlock& block)
     {
       enter();
 
+      // does the block already exist.
+      if (block.Exist(this->network, address) == elle::StatusTrue)
+	escape("this immutable block seems to already exist");
+
       // store the block.
-      if (block.Store(this->network,
-		      address) == elle::StatusError)
+      if (block.Store(this->network, address) == elle::StatusError)
+	escape("unable to store the block");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    elle::Status	Local::Put(const nucleus::Address&	address,
+				   const nucleus::MutableBlock&	block)
+    {
+      enter();
+
+      // does the block already exist.
+      if (block.Exist(this->network,
+		      address,
+		      nucleus::Version::Last) == elle::StatusTrue)
+	{
+	  nucleus::MutableBlock*	current;
+
+	  // build a block according to the component.
+	  if (elle::Factory::Build(address.component,
+				   current) == elle::StatusError)
+	    escape("unable to build the block");
+
+	  // load the latest version.
+	  if (current->Load(this->network,
+			    address,
+			    nucleus::Version::Last) == elle::StatusError)
+	    escape("unable to load the current version");
+
+	  // does the given block derive the current version.
+	  if (*current >= block)
+	    escape("the block to store does not seem to derive the current "
+		   "version");
+	}
+
+      // store the block.
+      if (block.Store(this->network, address) == elle::StatusError)
 	escape("unable to store the block");
 
       leave();
@@ -82,18 +124,16 @@ namespace hole
     /// XXX
     ///
     elle::Status	Local::Get(const nucleus::Address&	address,
-				   nucleus::Block&		block)
+				   nucleus::ImmutableBlock&	block)
     {
       enter();
 
       // does the block exist.
-      if (block.Exist(this->network,
-		      address) == elle::StatusFalse)
+      if (block.Exist(this->network, address) == elle::StatusFalse)
 	escape("the block does not seem to exist");
 
       // load the block.
-      if (block.Load(this->network,
-		     address) == elle::StatusError)
+      if (block.Load(this->network, address) == elle::StatusError)
 	escape("unable to load the block");
 
       // validate the block.
@@ -106,25 +146,40 @@ namespace hole
     ///
     /// XXX
     ///
-    elle::Status	Local::Gather(const nucleus::Address&	address,
-				      nucleus::Block&		block)
+    elle::Status	Local::Get(const nucleus::Address&	address,
+				   const nucleus::Version&	version,
+				   nucleus::MutableBlock&	block)
     {
-      // forward the call to Get().
-      return (this->Get(address, block));
+      enter();
+
+      // does the block exist.
+      if (block.Exist(this->network, address, version) == elle::StatusFalse)
+	escape("the block does not seem to exist");
+
+      // load the block.
+      if (block.Load(this->network, address, version) == elle::StatusError)
+	escape("unable to load the block");
+
+      // validate the block.
+      if (block.Validate(address) == elle::StatusFalse)
+	escape("the block seems to be invalid");
+
+      leave();
     }
 
     ///
     /// XXX
     ///
-    elle::Status	Local::Erase(const nucleus::Address&	address)
+    elle::Status	Local::Kill(const nucleus::Address&	address)
     {
       nucleus::Block	block;
 
       enter();
 
       // erase the block.
-      if (block.Erase(network, address) == elle::StatusError)
-	escape("unable to erase the block");
+      // XXX history -> no deletion
+      //if (block.Erase(network, address) == elle::StatusError)
+      //escape("unable to erase the block");
 
       leave();
     }
