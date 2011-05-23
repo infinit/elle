@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8debug/Debug.hh
+// file          /home/mycure/infinit/applications/8shell/Shell.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [thu apr 29 13:42:10 2010]
+// updated       julien quintard   [mon may 23 11:26:39 2011]
 //
 
 #ifndef DEBUG_DEBUG_HH
@@ -23,6 +23,8 @@
 
 #include <elle/idiom/Close.hh>
 # include <sys/stat.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 #include <elle/idiom/Open.hh>
 
 namespace application
@@ -35,26 +37,28 @@ namespace application
   ///
   /// this class implements the 8debug application.
   ///
-  class Debug
+  class Shell
   {
   public:
     //
-    // enumerations
+    // types
     //
-    enum Operation
-      {
-	OperationUnknown = 0,
-
-	OperationResolve,
-	OperationDump
-      };
+    typedef struct
+    {
+      const elle::Character*	name;
+      elle::Status		(*function)(const elle::String&);
+    }				Command;
 
     //
-    // static methods
+    // methods
     //
-    static Status	Dump(const etoile::hole::Address&,
-			     const KeyPair&,
-			     const etoile::kernel::Token&);
+    static elle::Status		Help(const elle::String&);
+    static elle::Status		Quit(const elle::String&);
+
+    //
+    // attributes
+    //
+    static nucleus::Address	Address;
   };
 
 }
