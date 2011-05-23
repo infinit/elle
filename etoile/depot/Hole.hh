@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Hole.hh
 //
 // created       julien quintard   [thu may 12 14:43:26 2011]
-// updated       julien quintard   [fri may 20 20:48:25 2011]
+// updated       julien quintard   [mon may 23 13:56:23 2011]
 //
 
 #ifndef ETOILE_DEPOT_HOLE_HH
@@ -49,6 +49,9 @@ namespace etoile
 
       static elle::Status	Join(const nucleus::Network&);
       static elle::Status	Leave(const nucleus::Network&);
+
+      static elle::Status	Origin(const nucleus::Network&,
+				       nucleus::Address&);
 
       static elle::Status	Push(const nucleus::Network&,
 				     const nucleus::Address&,

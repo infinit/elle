@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [fri may 20 21:00:30 2011]
+// updated       julien quintard   [mon may 23 13:56:40 2011]
 //
 
 //
@@ -58,6 +58,23 @@ namespace etoile
       // clean the repository.
       if (Repository::Clean() == elle::StatusError)
 	escape("unable to clean the repository");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    elle::Status	Depot::Origin(const nucleus::Network&	network,
+				      nucleus::Address&		address)
+    {
+      enter();
+
+      // XXX
+
+      // request the hole.
+      if (Hole::Origin(network, address) == elle::StatusError)
+	escape("unable to retrieve the origin");
 
       leave();
     }

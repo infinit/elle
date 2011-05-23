@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Hole.cc
 //
 // created       julien quintard   [thu may 12 14:43:49 2011]
-// updated       julien quintard   [sun may 22 13:20:58 2011]
+// updated       julien quintard   [mon may 23 13:58:29 2011]
 //
 
 //
@@ -151,6 +151,25 @@ namespace etoile
 	    elle::Inputs<hole::TagLeave>(network),
 	    elle::Outputs<hole::TagOk>()) == elle::StatusError)
 	escape("unable to join the network");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    elle::Status	Hole::Origin(const nucleus::Network&	network,
+				     nucleus::Address&		address)
+    {
+      enter();
+
+      // XXX
+
+      // request the hole component.
+      if (Hole::Channel->Call(
+	    elle::Inputs<hole::TagOrigin>(network),
+	    elle::Outputs<hole::TagAddress>(address)) == elle::StatusError)
+	escape("unable to retrieve the network's origin");
 
       leave();
     }

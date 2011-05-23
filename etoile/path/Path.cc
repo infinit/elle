@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sat may 14 12:52:44 2011]
+// updated       julien quintard   [mon may 23 14:03:18 2011]
 //
 
 //
@@ -17,13 +17,13 @@
 
 #include <etoile/path/Path.hh>
 
+#include <etoile/user/User.hh>
+#include <etoile/depot/Depot.hh>
+
 #include <etoile/context/Directory.hh>
 #include <etoile/context/Context.hh>
 
 #include <etoile/components/Directory.hh>
-
-// XXX
-#include <lune/Lune.hh>
 
 namespace etoile
 {
@@ -88,20 +88,16 @@ namespace etoile
       // if the cache did not resolve anything.
       if (venue == Venue::Null)
 	{
-	  // XXX[to change]
-	  user::User*		user;
-	  lune::Descriptor	descriptor;
+	  user::User*	user;
 
 	  // load the current user.
 	  if (user::User::Instance(user) == elle::StatusError)
 	    escape("unable to load the user");
 
-	  if (descriptor.Load(user->application->network.name) ==
-	      elle::StatusError)
-	    escape("unable to load the descriptor");
-
-	  address = descriptor.root;
-	  // XXX
+	  // retrieve the root directory's address.
+	  if (depot::Depot::Origin(user->application->network,
+				   address) == elle::StatusError)
+	    escape("unable to retrieve the address of the root directory");
 	}
       else
 	{
