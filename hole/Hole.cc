@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [sun may 22 14:29:47 2011]
+// updated       julien quintard   [mon may 23 14:01:39 2011]
 //
 
 //
@@ -67,6 +67,7 @@ namespace hole
     {
       elle::Callback<const nucleus::Network>	join(&Hole::Join);
       elle::Callback<const nucleus::Network>	leav(&Hole::Leave);
+      elle::Callback<const nucleus::Network>	origin(&Hole::Origin);
       elle::Callback<const nucleus::Network,
 		     const nucleus::Address,
 		     const elle::Derivable
@@ -83,6 +84,10 @@ namespace hole
 
       // register the leave message.
       if (elle::Network::Register<TagLeave>(leav) == elle::StatusError)
+	escape("unable to register the callback");
+
+      // register the origin message.
+      if (elle::Network::Register<TagOrigin>(origin) == elle::StatusError)
 	escape("unable to register the callback");
 
       // register the push message.
@@ -223,6 +228,30 @@ namespace hole
     // reply to the caller.
     if (Hole::Channel->Reply(elle::Inputs<TagOk>()) == elle::StatusError)
       escape("unable to reply to the caller");
+
+    leave();
+  }
+
+  ///
+  /// XXX
+  ///
+  elle::Status		Hole::Origin(const nucleus::Network&	network)
+  {
+    Hole::Scoutor	scoutor;
+
+    enter();
+
+    printf("[XXX] Hole::Origin()\n");
+
+    // locate the network.
+    if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
+      escape("hole does not seem to be connected to this network");
+
+    // answer to the caller.
+    if (Hole::Channel->Reply(
+	  elle::Inputs<TagAddress>(scoutor->second->root)) ==
+	elle::StatusError)
+      escape("unable to answer to the caller");
 
     leave();
   }
