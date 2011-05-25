@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [mon may  3 21:21:46 2010]
+// updated       julien quintard   [wed may 25 15:41:17 2011]
 //
 
 ///
@@ -39,6 +39,7 @@
 #include <elle/concurrency/Event.hh>
 
 #include <elle/network/Channel.hh>
+#include <elle/network/Packet.hh>
 #include <elle/network/Parcel.hh>
 
 #include <elle/idiom/Close.hh>
@@ -85,33 +86,31 @@ namespace elle
       // constructors & destructors
       //
       Door();
+      Door(const Socket::Mode);
       ~Door();
 
       //
       // methods
       //
-      Status		Create(const Socket::Mode = Socket::ModeAsynchronous);
-      Status		Create(::QLocalSocket*,
-			       const Socket::Mode);
+      Status		Create();
+      Status		Create(::QLocalSocket*);
 
       Status		Connect(const String&);
       Status		Disconnect();
 
+      Status		Write(const Packet&);
       Status		Read(Parcel*&);
 
       template <typename I>
       Status		Send(const I,
 			     const Event& = Event::Null);
-      template <typename I>
-      Status		Transmit(const I,
-				 const Event& = Event::Null);
+      template <typename O>
+      Status		Receive(const Event&,
+				O);
       template <typename I,
 		typename O>
       Status		Call(const I,
 			     O);
-      template <typename O>
-      Status		Receive(const Event&,
-				O);
       template <typename I>
       Status		Reply(const I);
 
@@ -131,6 +130,7 @@ namespace elle
       //
       // attributes
       //
+      String		name;
       ::QLocalSocket*	socket;
 
       Region*		buffer;

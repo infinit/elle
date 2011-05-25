@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [mon may  3 21:22:53 2010]
+// updated       julien quintard   [wed may 25 15:42:54 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -28,7 +28,9 @@
 #include <elle/concurrency/Event.hh>
 
 #include <elle/network/Socket.hh>
+#include <elle/network/Packet.hh>
 #include <elle/network/Parcel.hh>
+#include <elle/network/Port.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -65,6 +67,7 @@ namespace elle
       // constructors & destructors
       //
       Slot();
+      Slot(const Socket::Mode);
       ~Slot();
 
       //
@@ -73,6 +76,8 @@ namespace elle
       Status		Create();
       Status		Create(const Port);
 
+      Status		Write(const Address&,
+			      const Packet&);
       Status		Read(Parcel*&);
 
       template <typename I>

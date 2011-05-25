@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sun may  2 21:12:52 2010]
+// updated       julien quintard   [wed may 25 15:37:00 2011]
 //
 
 //
@@ -34,6 +34,17 @@ namespace elle
     ///
     Slot::Slot():
       Socket::Socket(Socket::TypeSlot, Socket::ModeUnknown),
+
+      socket(NULL),
+      port(0)
+    {
+    }
+
+    ///
+    /// specific mode constructor.
+    ///
+    Slot::Slot(const Socket::Mode				mode):
+      Socket::Socket(Socket::TypeSlot, mode),
 
       socket(NULL),
       port(0)
@@ -71,17 +82,36 @@ namespace elle
       // retrieve the port.
       this->port = this->socket->localPort();
 
-      // connect the signals.
-      if (this->connect(this->socket, SIGNAL(readyRead()),
-			this, SLOT(_fetch())) == false)
-	escape("unable to connect the signal");
+      // connect the signals, depending on the mode.
+      switch (this->mode)
+	{
+	case Socket::ModeAsynchronous:
+	  {
+	    if (this->connect(this->socket, SIGNAL(readyRead()),
+			      this, SLOT(_fetch())) == false)
+	      escape("unable to connect the signal");
 
-      if (this->connect(this->socket,
-			SIGNAL(error(const QAbstractSocket::SocketError)),
-			this,
-			SLOT(_error(const QAbstractSocket::SocketError))) ==
-	  false)
-	escape("unable to connect to signal");
+	    if (this->connect(
+		  this->socket,
+		  SIGNAL(error(const QAbstractSocket::SocketError)),
+		  this,
+		  SLOT(_error(const QAbstractSocket::SocketError))) == false)
+	      escape("unable to connect to signal");
+
+	    break;
+	  }
+	case Socket::ModeSynchronous:
+	  {
+	    // nothing to do.
+
+	    break;
+	  }
+	case Socket::ModeUnknown:
+	default:
+	  {
+	    escape("unknown mode");
+	  }
+	}
 
       leave();
     }
@@ -105,6 +135,25 @@ namespace elle
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(Fetch())) == false)
 	escape("unable to connect the signal");
+
+      leave();
+    }
+
+    ///
+    /// this method writes a packet on the socket so that it gets sent
+    /// to the given address.
+    ///
+    Status		Slot::Write(const Address&		address,
+				    const Packet&		packet)
+    {
+      enter();
+
+      // push the datagram into the socket.
+      if (this->socket->writeDatagram((char*)packet.contents,
+				      packet.size,
+				      address.host.location,
+				      address.port) != packet.size)
+	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
     }

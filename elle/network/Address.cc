@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [fri may 28 12:18:50 2010]
+// updated       julien quintard   [wed may 25 16:24:43 2011]
 //
 
 //

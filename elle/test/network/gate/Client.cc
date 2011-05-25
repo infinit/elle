@@ -5,22 +5,34 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/door/Client.cc
+// file          /home/mycure/infinit/elle/test/network/gate/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [wed may 25 14:10:44 2011]
+// updated       julien quintard   [wed may 25 18:02:28 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/door/Client.hh>
+#include <elle/test/network/gate/Client.hh>
 
 namespace elle
 {
   namespace test
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Client::Client():
+      gate(Socket::ModeAsynchronous)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -33,8 +45,9 @@ namespace elle
     {
       enter();
 
-      // set the line.
-      this->line = line;
+      // create the address.
+      if (this->address.Create(line) == StatusError)
+	escape("unable to create the address");
 
       leave();
     }
@@ -48,18 +61,16 @@ namespace elle
 
       enter();
 
-      std::cout << "[bridge] " << this->line << std::endl;
-
       // register the message.
       if (Network::Register<TagChallenge>(challenge) == StatusError)
 	escape("unable to register the challenge message");
 
-      // create the door.
-      if (this->door.Create() == StatusError)
-	escape("unable to create the slot");
+      // create the gate.
+      if (this->gate.Create() == StatusError)
+	escape("unable to create the gate");
 
-      // connect the door.
-      if (this->door.Connect(this->line) == StatusError)
+      // connect the gate.
+      if (this->gate.Connect(this->address) == StatusError)
 	escape("unable to connect to the bridge");
 
       leave();
@@ -82,7 +93,7 @@ namespace elle
       std::cout << "[Challenge] " << text << std::endl;
 
       // respond.
-      if (this->door.Reply(Inputs<TagResponse>(response)) == StatusError)
+      if (this->gate.Reply(Inputs<TagResponse>(response)) == StatusError)
 	escape("unable to reply to the challenge");
 
       leave();

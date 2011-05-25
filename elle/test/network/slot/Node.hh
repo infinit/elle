@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [sun may  2 21:58:51 2010]
+// updated       julien quintard   [wed may 25 16:09:55 2011]
 //
 
-#ifndef ELLE_TEST_NETWORK_NODE_HH
-#define ELLE_TEST_NETWORK_NODE_HH
+#ifndef ELLE_TEST_NETWORK_SLOT_NODE_HH
+#define ELLE_TEST_NETWORK_SLOT_NODE_HH
 
 //
 // ---------- includes --------------------------------------------------------

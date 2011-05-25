@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Door.cc
+// file          /home/mycure/infinit/elle/network/Gate.cc
 //
-// created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [wed may 25 15:36:23 2011]
+// created       julien quintard   [wed may 25 11:01:56 2011]
+// updated       julien quintard   [wed may 25 16:14:04 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Door.hh>
+#include <elle/network/Gate.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Raw.hh>
 #include <elle/network/Inputs.hh>
@@ -31,17 +31,17 @@ namespace elle
 //
 
     ///
-    /// this value defines the time to wait for a door to connect to
-    /// a lane after which the connection is assumed to have failed.
+    /// this value defines the time to wait for a gate to connect to
+    /// a bridge after which the connection is assumed to have failed.
     ///
     /// this value is set by default to 1 second.
     ///
-    const Natural32		Door::Timeout = 1000;
+    const Natural32		Gate::Timeout = 1000;
 
     ///
     /// this value defines the maximum capacity of a buffered packed, in bytes.
     ///
-    const Natural64		Door::Capacity = 524288;
+    const Natural64		Gate::Capacity = 524288;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -50,10 +50,11 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    Door::Door():
-      Channel::Channel(Socket::TypeDoor, Socket::ModeUnknown),
+    Gate::Gate():
+      Channel::Channel(Socket::TypeGate, Socket::ModeUnknown),
 
       socket(NULL),
+      port(0),
       buffer(NULL),
       offset(0)
     {
@@ -62,10 +63,11 @@ namespace elle
     ///
     /// specific mode constructor.
     ///
-    Door::Door(const Socket::Mode				mode):
-      Channel::Channel(Socket::TypeDoor, mode),
+    Gate::Gate(const Socket::Mode				mode):
+      Channel::Channel(Socket::TypeGate, mode),
 
       socket(NULL),
+      port(0),
       buffer(NULL),
       offset(0)
     {
@@ -74,7 +76,7 @@ namespace elle
     ///
     /// the destructor releases the socket.
     ///
-    Door::~Door()
+    Gate::~Gate()
     {
       // check the socket presence.
       if (this->socket != NULL)
@@ -90,35 +92,33 @@ namespace elle
 //
 
     ///
-    /// this method creates a new door by allocating and setting up a new
+    /// this method creates a new gate by allocating and setting up a new
     /// socket.
     ///
-    /// note that this door is not attached to any lane.
+    /// note that at this stage, the gate is not attached to a bridge.
     ///
-    Status		Door::Create()
+    Status		Gate::Create()
     {
-      ::QLocalSocket*	socket;
+      ::QTcpSocket*	socket;
 
       // note that the following socket is not tracked for automatic
       // deletion because the next Create() method should take care of it.
       enter();
 
       // allocate a new socket.
-      socket = new ::QLocalSocket;
+      socket = new ::QTcpSocket;
 
-      // create the door.
+      // create the gate.
       if (this->Create(socket) == StatusError)
-	escape("unable to create the door");
+	escape("unable to create the gate");
 
       leave();
     }
 
     ///
-    /// this method creates a door based on the given socket.
+    /// this method creates a gate based on the given socket.
     ///
-    /// thus this door is already attached to a lane.
-    ///
-    Status		Door::Create(::QLocalSocket*		socket)
+    Status		Gate::Create(::QTcpSocket*		socket)
     {
       enter();
 
@@ -136,9 +136,9 @@ namespace elle
 
 	    if (this->connect(
 		  this->socket,
-		  SIGNAL(error(const QLocalSocket::LocalSocketError)),
+		  SIGNAL(error(const QAbstractSocket::SocketError)),
 		  this,
-		  SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
+		  SLOT(_error(const QAbstractSocket::SocketError))) == false)
 	      escape("unable to connect to signal");
 
 	    break;
@@ -160,20 +160,17 @@ namespace elle
     }
 
     ///
-    /// this method connects the door i.e attaches the socket to a specific
-    /// lane.
+    /// this method connects the gate.
     ///
-    Status		Door::Connect(const String&		name)
+    Status		Gate::Connect(const Address&		address)
     {
       enter();
 
-      /// XXX \todo ca segfault si le client est lance sans serveur...???
-
       // connect the socket to the server.
-      this->socket->connectToServer(name.c_str());
+      this->socket->connectToHost(address.host.location, address.port);
 
       // wait for the socket to connect.
-      if (this->socket->waitForConnected(Door::Timeout) == false)
+      if (this->socket->waitForConnected(Gate::Timeout) == false)
 	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
@@ -182,20 +179,20 @@ namespace elle
     ///
     /// this method disconnects the socket.
     ///
-    Status		Door::Disconnect()
+    Status		Gate::Disconnect()
     {
       enter();
 
       // disconnect the socket from the server.
-      this->socket->disconnectFromServer();
+      this->socket->disconnectFromHost();
 
       leave();
     }
 
     ///
-    /// this method writes a packet to the socket.
+    /// this method writes the given packet to the socket.
     ///
-    Status		Door::Write(const Packet&		packet)
+    Status		Gate::Write(const Packet&		packet)
     {
       enter();
 
@@ -215,14 +212,14 @@ namespace elle
     /// has been constructed or false if not enough data has been received
     /// to complete a parcel.
     ///
-    /// note that since doors are stream-based socket, the data fetched
+    /// note that since gates are stream-based socket, the data fetched
     /// may be incomplete. in such a case, the data should be stored in
     /// a buffer, waiting for the completing data.
     ///
     /// note however that in order to prevent clients from sending huge
-    /// meaningless data the size of a meaningfull packet is limited.
+    /// meaningless data, the size of a meaningfull packet is limited.
     ///
-    Status		Door::Read(Parcel*&			parcel)
+    Status		Gate::Read(Parcel*&			parcel)
     {
       Address		address;
 
@@ -296,7 +293,7 @@ namespace elle
 	  {
 	    // if the offset is too far, first move the existing data to the
 	    // beginning of the buffer.
-	    if (this->offset >= Door::Capacity)
+	    if (this->offset >= Gate::Capacity)
 	      {
 		// move the data.
 		::memmove(this->buffer->contents,
@@ -364,7 +361,7 @@ namespace elle
 	      // test if we exceeded the buffer capacity meaning that the
 	      // waiting packet will probably never come. therefore just
 	      // discard everything!
-	      if ((this->buffer->size - this->offset) > Door::Capacity)
+	      if ((this->buffer->size - this->offset) > Gate::Capacity)
 		{
 		  // delete the buffer.
 		  delete this->buffer;
@@ -443,27 +440,17 @@ namespace elle
 //
 
     ///
-    /// this method dumps the door state.
+    /// this method dumps the gate state.
     ///
-    Status		Door::Dump(const Natural32		margin) const
+    Status		Gate::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Door]" << std::endl;
+      std::cout << alignment << "[Gate]" << std::endl;
 
-      // dump the state.
-      std::cout << alignment << Dumpable::Shift << "[Valid] "
-		<< this->socket->isValid() << std::endl;
-
-      // dump the full socket path name.
-      std::cout << alignment << Dumpable::Shift << "[Path] "
-		<< this->socket->fullServerName().toStdString() << std::endl;
-
-      // dump the peer name.
-      std::cout << alignment << Dumpable::Shift << "[Peer] "
-		<< this->socket->serverName().toStdString() << std::endl;
+      // XXX
 
       leave();
     }
@@ -475,7 +462,7 @@ namespace elle
     ///
     /// this entrance is triggered whenever an error occurs.
     ///
-    Status		Door::Error(const String&		text)
+    Status		Gate::Error(const String&		text)
     {
       enter();
 
@@ -493,7 +480,7 @@ namespace elle
     ///
     /// this entrance fetches packets from the socket.
     ///
-    Status		Door::Fetch()
+    Status		Gate::Fetch()
     {
       Parcel*		parcel;
 
@@ -544,14 +531,14 @@ namespace elle
     ///
     /// this slot is triggered whenever an error occurs.
     ///
-    /// note here that the type QLocalSocket::LocalSocketError cannot be
-    /// written completely ::QLocalSocket::LocalSocketError because the
+    /// note here that the type QAbstractSocket::SocketError cannot be
+    /// written completely ::QAbstractSocket::SocketError because the
     /// QT parser is incapable of recognising the type.
     ///
-    void		Door::_error(const QLocalSocket::LocalSocketError)
+    void		Gate::_error(const QAbstractSocket::SocketError)
     {
       String		text(this->socket->errorString().toStdString());
-      Entrance<const String>	entrance(&Door::Error, this);
+      Entrance<const String>	entrance(&Gate::Error, this);
       Closure<const String>	closure(entrance, text);
 
       enter();
@@ -566,9 +553,9 @@ namespace elle
     ///
     /// this slot fetches packets from the socket.
     ///
-    void		Door::_fetch()
+    void		Gate::_fetch()
     {
-      Entrance<>	entrance(&Door::Fetch, this);
+      Entrance<>	entrance(&Gate::Fetch, this);
       Closure<>		closure(entrance);
 
       enter();

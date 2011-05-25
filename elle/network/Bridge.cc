@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Lane.cc
+// file          /home/mycure/infinit/elle/network/Bridge.cc
 //
-// created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [wed may 25 15:55:11 2011]
+// created       julien quintard   [wed may 25 15:55:16 2011]
+// updated       julien quintard   [wed may 25 16:02:28 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Lane.hh>
+#include <elle/network/Bridge.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -32,12 +32,12 @@ namespace elle
     ///
     /// definition of the container.
     ///
-    Lane::Container		Lane::Porters;
+    Bridge::Container		Bridge::Porters;
 
     ///
-    /// this variable control the access to the lane.
+    /// this variable control the access to the bridge.
     ///
-    Accord			Lane::Control;
+    Accord			Bridge::Control;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -46,7 +46,7 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    LanePorter::LanePorter(const Callback<Door*>&		callback):
+    BridgePorter::BridgePorter(const Callback<Gate*>&		callback):
       server(NULL),
       callback(callback)
     {
@@ -55,7 +55,7 @@ namespace elle
     ///
     /// the destructor.
     ///
-    LanePorter::~LanePorter()
+    BridgePorter::~BridgePorter()
     {
       // if there is a server, release it.
       if (this->server != NULL)
@@ -71,17 +71,17 @@ namespace elle
     //
 
     ///
-    /// this method starts listening on the given name.
+    /// this method starts listening on the given address.
     ///
-    Status		LanePorter::Listen(const String&		name)
+    Status		BridgePorter::Listen(const Address&	address)
     {
       enter();
 
       // allocate a new server.
-      this->server = new ::QLocalServer;
+      this->server = new ::QTcpServer;
 
       // start listening.
-      if (this->server->listen(name.c_str()) == false)
+      if (this->server->listen(address.host.location, address.port) == false)
 	escape(this->server->errorString().toStdString().c_str());
 
       // connect the signals.
@@ -93,13 +93,13 @@ namespace elle
     }
 
     //
-    // lane
+    // bridge
     //
 
     ///
-    /// this method initializes the lane.
+    /// this method initializes the bridge.
     ///
-    Status		Lane::Initialize()
+    Status		Bridge::Initialize()
     {
       enter();
 
@@ -109,20 +109,20 @@ namespace elle
     }
 
     ///
-    /// this method cleans the lane.
+    /// this method cleans the bridge.
     ///
-    Status		Lane::Clean()
+    Status		Bridge::Clean()
     {
-      Lane::Scoutor	scoutor;
+      Bridge::Scoutor	scoutor;
 
       enter();
 
       // go through the porters.
-      for (scoutor = Lane::Porters.begin();
-	   scoutor != Lane::Porters.end();
+      for (scoutor = Bridge::Porters.begin();
+	   scoutor != Bridge::Porters.end();
 	   scoutor++)
 	{
-	  LanePorter*	porter = *scoutor;
+	  BridgePorter*	porter = *scoutor;
 
 	  // delete the porter.
 	  delete porter;
@@ -134,34 +134,34 @@ namespace elle
     ///
     /// this method starts a server and waits for new connection. for
     /// every new connection, the Accept signal is generated which, in turn,
-    /// creates a new door.
+    /// creates a new gate.
     ///
     /// note that callbacks are used because only a specific handler must
     /// be called. by relying on QT signals/slots (though it is not possible
-    /// since the Lane class is static), all the slots registered on the
+    /// since the Bridge class is static), all the slots registered on the
     /// signal would be triggered which is not want we want.
     ///
-    Status		Lane::Listen(const String&		name,
-				     const Callback<Door*>&	callback)
+    Status		Bridge::Listen(const Address&		address,
+				       const Callback<Gate*>&	callback)
     {
-      LanePorter*	porter;
+      BridgePorter*	porter;
 
       enter(instance(porter));
 
       // allocate a new porter.
-      porter = new LanePorter(callback);
+      porter = new BridgePorter(callback);
 
       // start listening.
-      if (porter->Listen(name) == StatusError)
-	escape("unable to listen on the lane");
+      if (porter->Listen(address) == StatusError)
+	escape("unable to listen on the bridge");
 
       // lock in writing.
-      Lane::Control.Lock(ModeWrite);
+      Bridge::Control.Lock(ModeWrite);
       {
 	// add the porter to the container.
-	Lane::Porters.push_back(porter);
+	Bridge::Porters.push_back(porter);
       }
-      Lane::Control.Unlock();
+      Bridge::Control.Unlock();
 
       // stop tracking porter.
       waive(porter);
@@ -180,7 +180,7 @@ namespace elle
     ///
     /// this method dumps the internals of a porter.
     ///
-    Status		LanePorter::Dump(const Natural32	margin) const
+    Status		BridgePorter::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
 
@@ -192,9 +192,7 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Server] "
 		<< std::hex << this->server << std::endl;
 
-      // dump the platform-specific path.
-      std::cout << alignment << Dumpable::Shift << "[Path] "
-		<< this->server->fullServerName().toStdString() << std::endl;
+      // XXX
 
       // dump the callback.
       if (this->callback.Dump(margin + 2) == StatusError)
@@ -204,27 +202,27 @@ namespace elle
     }
 
     //
-    // lane
+    // bridge
     //
 
     ///
     /// this method dumps the table of porters.
     ///
-    Status		Lane::Show(const Natural32		margin)
+    Status		Bridge::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      Lane::Scoutor	scoutor;
+      Bridge::Scoutor	scoutor;
 
       enter();
 
-      std::cout << alignment << "[Lane]" << std::endl;
+      std::cout << alignment << "[Bridge]" << std::endl;
 
       // lock in reading.
-      Lane::Control.Lock(ModeRead);
+      Bridge::Control.Lock(ModeRead);
       {
 	// dump the porters table.
-	for (scoutor = Lane::Porters.begin();
-	     scoutor != Lane::Porters.end();
+	for (scoutor = Bridge::Porters.begin();
+	     scoutor != Bridge::Porters.end();
 	     scoutor++)
 	  {
 	    // dump the porter.
@@ -232,7 +230,7 @@ namespace elle
 	      escape("unable to dump the porter");
 	  }
       }
-      Lane::Control.Unlock();
+      Bridge::Control.Unlock();
 
       leave();
     }
@@ -244,30 +242,30 @@ namespace elle
     ///
     /// this callback is triggered whenever a new conncetion is made.
     ///
-    Status		LanePorter::Accept()
+    Status		BridgePorter::Accept()
     {
-      ::QLocalSocket*	socket;
-      Door*		door;
+      ::QTcpSocket*	socket;
+      Gate*		gate;
 
-      enter(instance(door));
+      enter(instance(gate));
 
       // retrieve the socket from the server.
       if ((socket = this->server->nextPendingConnection()) == NULL)
 	escape(this->server->errorString().toStdString().c_str());
 
-      // allocate a new door to this lane.
-      door = new Door(Socket::ModeAsynchronous); // XXX
+      // allocate a new gate to this bridge.
+      gate = new Gate(Socket::ModeAsynchronous); // XXX
 
-      // create a door with the specific socket.
-      if (door->Create(socket) == StatusError)
-	escape("unable to create the door");
+      // create a gate with the specific socket.
+      if (gate->Create(socket) == StatusError)
+	escape("unable to create the gate");
 
       // trigger the callback.
-      if (this->callback.Trigger(door) == StatusError)
+      if (this->callback.Trigger(gate) == StatusError)
 	escape("an error occured in the callback");
 
-      // stop tracking door as it has been handed to the callback.
-      waive(door);
+      // stop tracking gate as it has been handed to the callback.
+      waive(gate);
 
       leave();
     }
@@ -276,9 +274,9 @@ namespace elle
 // ---------- slots -----------------------------------------------------------
 //
 
-    void		LanePorter::_accept()
+    void		BridgePorter::_accept()
     {
-      Entrance<>	entrance(&LanePorter::Accept, this);
+      Entrance<>	entrance(&BridgePorter::Accept, this);
       Closure<>		closure(entrance);
 
       enter();

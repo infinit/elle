@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [mon may  3 21:22:35 2010]
+// updated       julien quintard   [wed may 25 15:53:06 2011]
 //
 
 ///
