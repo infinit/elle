@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Door.hxx
+// file          /home/mycure/infinit/elle/network/Gate.hxx
 //
-// created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [wed may 25 15:41:58 2011]
+// created       julien quintard   [wed may 25 14:20:06 2011]
+// updated       julien quintard   [wed may 25 15:39:59 2011]
 //
 
-#ifndef ELLE_NETWORK_DOOR_HXX
-#define ELLE_NETWORK_DOOR_HXX
+#ifndef ELLE_NETWORK_GATE_HXX
+#define ELLE_NETWORK_GATE_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -38,7 +38,7 @@ namespace elle
     /// this method sends a packet.
     ///
     template <typename I>
-    Status		Door::Send(const I			inputs,
+    Status		Gate::Send(const I			inputs,
 				   const Event&			event)
     {
       Packet		packet;
@@ -88,7 +88,7 @@ namespace elle
 
       // write the socket.
       if (this->Write(packet) == StatusError)
-	escape("unable to write the packet");
+	escape("unable to write the socket");
 
       leave();
     }
@@ -102,7 +102,7 @@ namespace elle
     /// with and using which socket.
     ///
     template <typename O>
-    Status		Door::Receive(const Event&		event,
+    Status		Gate::Receive(const Event&		event,
 				      O				outputs)
     {
       Report		report;
@@ -187,7 +187,7 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		Door::Call(const I			inputs,
+    Status		Gate::Call(const I			inputs,
 				   O				outputs)
     {
       Event		event;
@@ -213,7 +213,7 @@ namespace elle
     /// XXX
     ///
     template <typename I>
-    Status		Door::Reply(const I			inputs)
+    Status		Gate::Reply(const I			inputs)
     {
       Session*		session;
 

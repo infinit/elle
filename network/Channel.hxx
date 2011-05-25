@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hxx
 //
 // created       julien quintard   [thu mar 18 21:23:33 2010]
-// updated       julien quintard   [sun may  2 19:48:06 2010]
+// updated       julien quintard   [wed may 25 15:30:26 2011]
 //
 
 #ifndef ELLE_NETWORK_CHANNEL_HXX
@@ -72,11 +72,11 @@ namespace elle
     }
 
     ///
-    /// this method sends a packet in a synchronous way.
+    /// this method receives a packet by blocking.
     ///
-    template <typename I>
-    Status		Channel::Transmit(const I		inputs,
-					  const Event&		event)
+    template <typename O>
+    Status		Channel::Receive(const Event&		event,
+					 O			outputs)
     {
       enter();
 
@@ -86,13 +86,13 @@ namespace elle
 	  {
 	    Door*	channel = static_cast<Door*>(this);
 
-	    return (channel->Transmit(inputs, event));
+	    return (channel->Receive(event, outputs));
 	  }
 	case Socket::TypeGate:
 	  {
 	    Gate*	channel = static_cast<Gate*>(this);
 
-	    return (channel->Transmit(inputs, event));
+	    return (channel->Receive(event, outputs));
 	  }
 	}
 
@@ -123,34 +123,6 @@ namespace elle
 	    Gate*	channel = static_cast<Gate*>(this);
 
 	    return (channel->Call(inputs, outputs));
-	  }
-	}
-
-      leave();
-    }
-
-    ///
-    /// this method receives a packet by blocking.
-    ///
-    template <typename O>
-    Status		Channel::Receive(const Event&		event,
-					 O			outputs)
-    {
-      enter();
-
-      switch (this->type)
-	{
-	case Socket::TypeDoor:
-	  {
-	    Door*	channel = static_cast<Door*>(this);
-
-	    return (channel->Receive(event, outputs));
-	  }
-	case Socket::TypeGate:
-	  {
-	    Gate*	channel = static_cast<Gate*>(this);
-
-	    return (channel->Receive(event, outputs));
 	  }
 	}
 

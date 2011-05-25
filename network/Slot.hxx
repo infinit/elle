@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [sun may  2 21:12:21 2010]
+// updated       julien quintard   [wed may 25 15:42:17 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -87,27 +87,9 @@ namespace elle
       if (packet.Update(offset, header) == StatusError)
 	escape("unable to update the header");
 
-      // push the datagram into the socket.
-      if (this->socket->writeDatagram((char*)packet.contents,
-				      packet.size,
-				      address.host.location,
-				      address.port) != packet.size)
-	escape(this->socket->errorString().toStdString().c_str());
-
-      leave();
-    }
-
-    ///
-    /// XXX synchronous (wait until received before returning.
-    ///
-    template <typename I>
-    Status		Slot::Transmit(const Address&		address,
-				       const I&			inputs,
-				       const Event&		event)
-    {
-      enter();
-
-      // XXX
+      // write the datagram to the socket.
+      if (this->Write(address, packet) == StatusError)
+	escape("unable to write the packet");
 
       leave();
     }

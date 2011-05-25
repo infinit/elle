@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/door/Server.hh
+// file          /home/mycure/infinit/elle/test/network/gate/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed may 25 16:08:56 2011]
+// updated       julien quintard   [wed may 25 18:03:45 2011]
 //
 
-#ifndef ELLE_TEST_NETWORK_DOOR_SERVER_HH
-#define ELLE_TEST_NETWORK_DOOR_SERVER_HH
+#ifndef ELLE_TEST_NETWORK_GATE_CLIENT_HH
+#define ELLE_TEST_NETWORK_GATE_CLIENT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <elle/test/network/door/Manifest.hh>
+#include <elle/test/network/gate/Manifest.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -35,9 +35,14 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
-    class Server
+    class Client
     {
     public:
+      //
+      // constructors & destructors
+      //
+      Client();
+
       //
       // methods
       //
@@ -47,13 +52,13 @@ namespace elle
       //
       // callbacks
       //
-      Status		Connection(Door*&);
+      Status		Challenge(const String&);
 
       //
       // attributes
       //
-      String		line;
-      std::list<Door*>	doors;
+      Address		address;
+      Gate		gate;
     };
 
   }

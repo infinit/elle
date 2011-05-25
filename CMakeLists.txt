@@ -1,9 +1,11 @@
 PROJECT(Elle CXX)
 
 QT4_WRAP_CPP(elle_MOCS
-  network/Slot.hh
-  network/Lane.hh
+  network/Bridge.hh
   network/Door.hh
+  network/Gate.hh
+  network/Lane.hh
+  network/Slot.hh
 
   concurrency/Timer.hh
 )
@@ -64,8 +66,10 @@ ADD_LIBRARY(elle
   cryptography/Signature.cc
 
   network/Address.cc
+  network/Bridge.cc
   network/Channel.cc
   network/Door.cc
+  network/Gate.cc
   network/Header.cc
   network/Host.cc
   network/Lane.cc

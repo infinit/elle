@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [fri may 28 12:18:41 2010]
+// updated       julien quintard   [wed may 25 17:46:21 2011]
 //
 
 //
@@ -93,7 +93,7 @@ namespace elle
       this->type = Host::TypeIP;
 
       // set the address.
-      if (this->location.setAddress(::QString(string.c_str())) == false)
+      if (this->location.setAddress(string.c_str()) == false)
 	escape("unable to set the location");
 
       leave();
