@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [sat may 14 12:48:34 2011]
+// updated       julien quintard   [wed may 25 18:22:04 2011]
 //
 
 //
@@ -42,7 +42,8 @@ namespace pig
   ///
   /// the door to Etoile.
   ///
-  elle::Door				PIG::Channel;
+  elle::Door				PIG::Channel(
+					  elle::Socket::ModeSynchronous);
 
   ///
   /// the subject representing the current user.
@@ -2051,8 +2052,7 @@ namespace pig
 	escape("unable to create the network object");
 
       // create the door.
-      if (PIG::Channel.Create(elle::Socket::ModeSynchronous) ==
-	  elle::StatusError)
+      if (PIG::Channel.Create() == elle::StatusError)
 	escape("unable to create the door");
 
       // connect the door.
