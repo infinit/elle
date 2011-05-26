@@ -100,25 +100,26 @@ class GccToolkit(Toolkit):
 
     def link(self, cfg, objs, exe):
 
-        return '%s %s%s%s%s %s -o %s' % \
+        return '%s %s%s%s %s -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.ldflags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
-                concatenate(cfg.libs, '-l'),
                 concatenate(objs),
-                exe)
+                exe,
+                concatenate(cfg.libs, '-l'))
 
     def dynlink(self, cfg, objs, exe):
 
-        return '%s %s%s%s%s %s -shared -o %s' % \
+        return '%s %s%s%s %s -shared -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.flags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
-                concatenate(cfg.libs, '-l'),
                 concatenate(objs),
-                exe)
+                exe,
+                concatenate(cfg.libs, '-l'),
+               )
 
 
     def libname_static(self, cfg, path):
