@@ -28,6 +28,7 @@ class Boost:
 
                 self.cfg = Config()
                 self.cfg.add_system_include_path('%s/include' % self.prefix)
+                self.cfg.lib_path('%s/lib' % self.prefix)
 
                 self.cfg_test = Config()
                 self.cfg_test.lib('boost_unit_test_framework')
