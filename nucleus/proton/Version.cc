@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.cc
 //
 // created       julien quintard   [sat may 21 13:41:42 2011]
-// updated       julien quintard   [sat may 21 19:47:43 2011]
+// updated       julien quintard   [thu may 26 11:30:08 2011]
 //
 
 //
@@ -36,6 +36,13 @@ namespace nucleus
     ///
     const Version		Version::Last(
                                   elle::Type<elle::Natural64>::Maximum);
+
+    ///
+    /// this constant represents any version and is useful whenever
+    /// dealing with immutable blocks for which version do not make any
+    /// sense.
+    ///
+    const Version		Version::Any(Version::Last);
 
 //
 // ---------- constructors & destructors --------------------------------------
