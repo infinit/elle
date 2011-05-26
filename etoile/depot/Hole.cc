@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Hole.cc
 //
 // created       julien quintard   [thu may 12 14:43:49 2011]
-// updated       julien quintard   [mon may 23 13:58:29 2011]
+// updated       julien quintard   [thu may 26 14:50:00 2011]
 //
 
 //
@@ -52,7 +52,7 @@ namespace etoile
       enter();
 
       // allocate a door.
-      Hole::Channel = new elle::Door;
+      Hole::Channel = new elle::Door(elle::Socket::ModeAsynchronous);
 
       // create the door.
       if (Hole::Channel->Create() == elle::StatusError)
@@ -203,7 +203,6 @@ namespace etoile
 				   nucleus::Block&		block)
     {
       elle::Derivable<nucleus::Block>	derivable(block);
-      nucleus::Block*			object;
 
       enter();
 
@@ -213,10 +212,6 @@ namespace etoile
 	    elle::Inputs<hole::TagPull>(network, address, version),
 	    elle::Outputs<hole::TagBlock>(derivable)) == elle::StatusError)
 	escape("unable to get the block from the network");
-
-      // retrieve the derivable's object.
-      if (derivable.Infer(object) == elle::StatusError)
-	escape("unable to infer the block from the derivable");
 
       leave();
     }
