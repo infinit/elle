@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [wed may 25 10:22:10 2011]
+// updated       julien quintard   [thu may 26 14:51:39 2011]
 //
 
 //
@@ -176,7 +176,7 @@ namespace agent
       elle::Callback<const elle::String>	error(&Agent::Error);
 
       // allocate a door.
-      Agent::Channel = new elle::Door;
+      Agent::Channel = new elle::Door(elle::Socket::ModeAsynchronous);
 
       // create the door.
       if (Agent::Channel->Create() == elle::StatusError)
