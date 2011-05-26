@@ -90,7 +90,7 @@ class Qt:
     def hook_bin_src(self, src):
 
         if isinstance(src, Ui):
-            p = Path(src.src_path)
+            p = Path(src.name())
             p.extension = '%s.hh' % p.extension
             res = Header(p)
             Uic(self, src, res)
@@ -163,4 +163,4 @@ class Uic(Builder):
 
     def execute(self):
 
-        return self.cmd('Uic %s' % self.tgt, '%s/bin/uic %s -o %s', self.qt.prefix, self.src, self.tgt)
+        return self.cmd('Uic %s' % self.tgt, '%s/bin/uic %s -o %s', self.qt.prefix, self.src.path(), self.tgt.path())
