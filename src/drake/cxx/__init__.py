@@ -637,6 +637,8 @@ class Binary(Node):
 
         if source.__class__ == Object:
             self.sources.append(source)
+        elif source.__class__ == StaticLib:
+            self.sources.append(source)
         elif source.__class__ == Source:
             # FIXME: factor
             p = Path(source.name())
@@ -648,10 +650,6 @@ class Binary(Node):
             self.sources.append(o)
         elif source.__class__ == Header:
             pass
-        elif source.__class__ == StaticLib:
-            # Import every object file
-            for obj in source.sources:
-                self.sources.append(obj)
         elif isinstance(source, DynLib):
             self.sources.append(source)
         else:
