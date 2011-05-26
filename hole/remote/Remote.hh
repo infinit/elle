@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/remote/Remote.hh
 //
 // created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [thu may 26 13:08:47 2011]
+// updated       julien quintard   [thu may 26 15:02:39 2011]
 //
 
 #ifndef HOLE_LOCAL_REMOTE_HH
@@ -27,6 +27,18 @@
 
 namespace hole
 {
+  ///
+  /// this namespace contains the remote hole implementation.
+  ///
+  /// note that for this implementation, hole can be run alone so as to
+  /// join a network at startup.
+  ///
+  /// if this network relies on a remote model, the implementation starts
+  /// by trying to connect to the host. should this step fail, a server
+  /// is spawn in order to wait for connections.
+  ///
+  /// this way a single implementation emulates both the client and server.
+  ///
   namespace remote
   {
 
