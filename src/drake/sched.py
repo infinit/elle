@@ -18,11 +18,14 @@ class Frozen:
 class Scheduler:
 
   def __init__(self, jobs = 1):
+    self.__jobs = jobs
+    self.reset()
+
+  def reset(self):
     global _SCHEDULER
     self.__coroutines = []
     self.waiting_coro_lock = threading.Semaphore(0)
     self.ncoro = 0
-    self.__jobs = jobs
     self.__running = False
     self.__exception = None
     self.__traceback = None
@@ -63,6 +66,7 @@ class Scheduler:
 
     def job(i):
       self.__local.i = i
+      debug.debug('created.', debug.DEBUG_SCHED)
       while True:
         # If there are no more coroutines
         with self.__sem:
@@ -152,6 +156,8 @@ class Scheduler:
     return res
 
   def run_one(self, coro):
+    assert not self.running()
+    self.reset()
     try:
       prev = self.__local.coroutine
       self.__local.coroutine = coro
