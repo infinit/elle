@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [wed may 25 18:02:28 2011]
+// updated       julien quintard   [thu may 26 10:33:26 2011]
 //
 
 //

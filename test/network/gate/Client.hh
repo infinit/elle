@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed may 25 18:03:45 2011]
+// updated       julien quintard   [thu may 26 10:28:18 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_GATE_CLIENT_HH
