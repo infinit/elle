@@ -3,7 +3,10 @@ PROJECT(Hole CXX)
 ADD_EXECUTABLE(Hole
   local/Local.cc
 
+  remote/Client.cc
+  remote/Node.cc
   remote/Remote.cc
+  remote/Server.cc
 
   Hole.cc
   Holeable.cc

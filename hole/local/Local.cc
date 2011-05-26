@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [wed may 25 10:19:56 2011]
+// updated       julien quintard   [thu may 26 14:47:25 2011]
 //
 
 //
@@ -39,7 +39,7 @@ namespace hole
 //
 
     ///
-    /// XXX
+    /// this method joins the network.
     ///
     elle::Status	Local::Join()
     {
@@ -51,7 +51,7 @@ namespace hole
     }
 
     ///
-    /// XXX
+    /// this method leaves the network.
     ///
     elle::Status	Local::Leave()
     {
@@ -63,7 +63,7 @@ namespace hole
     }
 
     ///
-    /// XXX
+    /// this method stores an immutable block.
     ///
     elle::Status	Local::Put(const nucleus::Address&	address,
 				   const nucleus::ImmutableBlock& block)
@@ -82,7 +82,7 @@ namespace hole
     }
 
     ///
-    /// XXX
+    /// this method stores a mutable block.
     ///
     elle::Status	Local::Put(const nucleus::Address&	address,
 				   const nucleus::MutableBlock&	block)
@@ -121,7 +121,7 @@ namespace hole
     }
 
     ///
-    /// XXX
+    /// this method retrieves an immutable block.
     ///
     elle::Status	Local::Get(const nucleus::Address&	address,
 				   nucleus::ImmutableBlock&	block)
@@ -144,7 +144,7 @@ namespace hole
     }
 
     ///
-    /// XXX
+    /// this method retrieves a mutable block.
     ///
     elle::Status	Local::Get(const nucleus::Address&	address,
 				   const nucleus::Version&	version,
@@ -168,7 +168,7 @@ namespace hole
     }
 
     ///
-    /// XXX
+    /// this method removes a block.
     ///
     elle::Status	Local::Kill(const nucleus::Address&	address)
     {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [wed may 25 09:53:08 2011]
+// updated       julien quintard   [thu may 26 14:22:15 2011]
 //
 
 //
@@ -138,16 +138,19 @@ namespace hole
 //
 
   ///
-  /// XXX
+  /// this method joins the given network.
   ///
   elle::Status		Hole::Join(const nucleus::Network&	network)
   {
-    enter();
+    Holeable*		holeable;
+
+    enter(instance(holeable));
+
+    printf("[XXX] Hole::Join()\n");
 
     // check if this network has already been joined. if not, join it.
     if (Hole::Networks.find(network) == Hole::Networks.end())
       {
-	Holeable*					holeable;
 	nucleus::Address				root;
 	elle::Address					boot;
 	std::pair<Hole::Iterator, elle::Boolean>	result;
@@ -200,6 +203,10 @@ namespace hole
 	if (holeable->Root(root) == elle::StatusError)
 	  escape("unable to set the root address");
 
+	// join the network.
+	if (holeable->Join() == elle::StatusError)
+	  escape("unable to join the network");
+
 	// insert the network in the container.
 	result = Hole::Networks.insert(
 		   std::pair<nucleus::Network, Holeable*>(network, holeable));
@@ -207,6 +214,9 @@ namespace hole
 	// check if the insertion was successful.
 	if (result.second == false)
 	  escape("unable to insert the network in the container");
+
+	// waive the tracking.
+	waive(holeable);
       }
 
     // reply to the caller.
@@ -217,11 +227,14 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this method leaves the given network if no other application uses
+  /// it.
   ///
   elle::Status		Hole::Leave(const nucleus::Network&	network)
   {
     enter();
+
+    printf("[XXX] Hole::Leave()\n");
 
     // XXX use a refcount to be sure to destroy it when it is no longer used.
 
@@ -233,7 +246,7 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this method returns the address of the root block.
   ///
   elle::Status		Hole::Origin(const nucleus::Network&	network)
   {
@@ -257,7 +270,7 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this method stores the given block.
   ///
   elle::Status		Hole::Push(const nucleus::Network&	network,
 				   const nucleus::Address&	address,
@@ -327,7 +340,7 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this method returns the block associated with the given address.
   ///
   elle::Status		Hole::Pull(const nucleus::Network&	network,
 				   const nucleus::Address&	address,
@@ -404,7 +417,7 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this method removes the block associated with the given address.
   ///
   elle::Status		Hole::Wipe(const nucleus::Network&	network,
 				   const nucleus::Address&	address)
@@ -432,7 +445,7 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this callback is triggered whenever a client connects to the hole.
   ///
   elle::Status		Hole::Connection(elle::Door*&		door)
   {
@@ -456,19 +469,19 @@ namespace hole
 
     // register the error callback.
     if (Hole::Channel->Monitor(error) == elle::StatusError)
-      escape("unable to monitor the callback");
+      escape("unable to monitor the connection");
 
     leave();
   }
 
   ///
-  /// XXX
+  /// this callback is triggered whenever the connection is shut down.
   ///
   elle::Status		Hole::Error(const elle::String&		error)
   {
     enter();
 
-    // reset the channel.
+    // set the channel to null.
     Hole::Channel = NULL;
 
     leave();

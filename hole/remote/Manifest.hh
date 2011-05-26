@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/Manifest.hh
+// file          /home/mycure/infinit/hole/remote/Manifest.hh
 //
-// created       julien quintard   [tue apr 13 15:27:49 2010]
-// updated       julien quintard   [thu may 26 13:05:19 2011]
+// created       julien quintard   [thu may 26 12:59:43 2011]
+// updated       julien quintard   [thu may 26 13:16:06 2011]
 //
 
-#ifndef HOLE_MANIFEST_HH
-#define HOLE_MANIFEST_HH
+#ifndef HOLE_REMOTE_MANIFEST_HH
+#define HOLE_REMOTE_MANIFEST_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <agent/Manifest.hh>
+#include <hole/Manifest.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -28,17 +28,20 @@
 
 namespace hole
 {
+  namespace remote
+  {
 
-  ///
-  /// XXX
-  ///
-  extern const elle::Character	Component[];
+    ///
+    /// XXX
+    ///
+    extern const elle::Character	Component[];
 
-  ///
-  /// XXX
-  ///
-  const elle::Natural32		Tags = 10;
+    ///
+    /// XXX
+    ///
+    const elle::Natural32		Tags = 10;
 
+  }
 }
 
 //
@@ -48,7 +51,7 @@ namespace hole
 ///
 /// XXX
 ///
-range(hole::Component, hole::Tags, agent::Component);
+range(hole::remote::Component, hole::remote::Tags, hole::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -56,24 +59,23 @@ range(hole::Component, hole::Tags, agent::Component);
 
 namespace hole
 {
+  namespace remote
+  {
 
-  //
-  // enumerations
-  //
-  enum Tag
-    {
-      TagOk = elle::Range<Component>::First,
+    //
+    // enumerations
+    //
+    enum Tag
+      {
+	TagRemoteOk = elle::Range<Component>::First,
 
-      TagJoin,
-      TagLeave,
-      TagOrigin,
-      TagAddress,
-      TagPush,
-      TagPull,
-      TagBlock,
-      TagWipe
-    };
+	TagRemotePush,
+	TagRemotePull,
+	TagRemoteBlock,
+	TagRemoteWipe
+      };
 
+  }
 }
 
 //
@@ -84,30 +86,20 @@ namespace hole
 /// below are the definitions of the inward and outward messages.
 ///
 
-outward(hole::TagOk,
+outward(hole::remote::TagRemoteOk,
 	parameters());
 
-inward(hole::TagJoin,
-       parameters(const nucleus::Network));
-inward(hole::TagLeave,
-       parameters(const nucleus::Network));
-
-inward(hole::TagOrigin,
-       parameters(const nucleus::Network));
-outward(hole::TagAddress,
-	parameters(const nucleus::Address));
-
-inward(hole::TagPush,
+inward(hole::remote::TagRemotePush,
        parameters(const nucleus::Network,
 		  const nucleus::Address,
 		  const elle::Derivable<nucleus::Block>));
-inward(hole::TagPull,
+inward(hole::remote::TagRemotePull,
        parameters(const nucleus::Network,
 		  const nucleus::Address,
 		  const nucleus::Version));
-outward(hole::TagBlock,
+outward(hole::remote::TagRemoteBlock,
 	parameters(const elle::Derivable<nucleus::Block>));
-inward(hole::TagWipe,
+inward(hole::remote::TagRemoteWipe,
        parameters(const nucleus::Network,
 		  const nucleus::Address));
 

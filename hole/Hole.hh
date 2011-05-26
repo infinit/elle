@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [mon may 23 14:05:17 2011]
+// updated       julien quintard   [thu may 26 12:48:38 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -65,6 +65,9 @@ namespace hole
     static elle::Status		Initialize();
     static elle::Status		Clean();
 
+    //
+    // static callbacks
+    //
     static elle::Status		Join(const nucleus::Network&);
     static elle::Status		Leave(const nucleus::Network&);
 

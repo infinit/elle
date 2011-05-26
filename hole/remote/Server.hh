@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/remote/Remote.hh
+// file          /home/mycure/infinit/hole/remote/Server.hh
 //
-// created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [thu may 26 13:08:47 2011]
+// created       julien quintard   [wed may 25 19:20:52 2011]
+// updated       julien quintard   [thu may 26 14:42:25 2011]
 //
 
-#ifndef HOLE_LOCAL_REMOTE_HH
-#define HOLE_LOCAL_REMOTE_HH
+#ifndef HOLE_REMOTE_SERVER_HH
+#define HOLE_REMOTE_SERVER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,8 +20,6 @@
 
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
-
-#include <hole/Holeable.hh>
 
 #include <hole/remote/Node.hh>
 
@@ -35,31 +33,26 @@ namespace hole
 //
 
     ///
-    /// the remote hole implementation stores data on a remote host's
-    /// storage.
+    /// XXX
     ///
-    class Remote:
-      public Holeable
+    class Server:
+      public Node
     {
     public:
       //
       // constructors & destructors
       //
-      Remote(const nucleus::Network&);
-      ~Remote();
-
-      //
-      // methods
-      //
-      elle::Status	Host(const elle::Address&);
+      Server(const nucleus::Network&,
+	     const elle::Address&);
+      ~Server();
 
       //
       // interfaces
       //
 
-      // holeable
-      elle::Status	Join();
-      elle::Status	Leave();
+      // node
+      elle::Status	Initialize();
+      elle::Status	Clean();
 
       elle::Status	Put(const nucleus::Address&,
 			    const nucleus::ImmutableBlock&);
@@ -73,22 +66,27 @@ namespace hole
       elle::Status	Kill(const nucleus::Address&);
 
       //
+      // callbacks
+      //
+      elle::Status	Push(const nucleus::Network&,
+			     const nucleus::Address&,
+			     const elle::Derivable<nucleus::Block>&);
+      elle::Status	Pull(const nucleus::Network&,
+			     const nucleus::Address&,
+			     const nucleus::Version&);
+      elle::Status	Wipe(const nucleus::Network&,
+			     const nucleus::Address&);
+
+      elle::Status	Connection(elle::Gate*&);
+      elle::Status	Error(const elle::String&);
+
+      //
       // attributes
       //
-      elle::Address	host;
-
-      Node*		node;
+      elle::Gate*	gate;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <hole/remote/Client.hh>
-#include <hole/remote/Manifest.hh>
-#include <hole/remote/Server.hh>
 
 #endif

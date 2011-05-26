@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/hole.cc
 //
 // created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [wed may 25 10:16:06 2011]
+// updated       julien quintard   [thu may 26 11:09:35 2011]
 //
 
 //
@@ -187,6 +187,10 @@ namespace hole
 	    // set the root address.
 	    if (holeable->Root(root) == elle::StatusError)
 	      escape("unable to set the root address");
+
+	    // join the network.
+	    if (holeable->Join() == elle::StatusError)
+	      escape("unable to join the network");
 
 	    // insert the network in the container.
 	    result = Hole::Networks.insert(
