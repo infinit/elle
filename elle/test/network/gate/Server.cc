@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed may 25 18:14:09 2011]
+// updated       julien quintard   [thu may 26 10:51:36 2011]
 //
 
 //
@@ -32,6 +32,16 @@ namespace elle
     Server::Server():
       gate(NULL)
     {
+    }
+
+    ///
+    /// destructor.
+    ///
+    Server::~Server()
+    {
+      // if present, delete the gate.
+      if (this->gate != NULL)
+	delete this->gate;
     }
 
 //
