@@ -84,7 +84,7 @@ class GccToolkit(Toolkit):
             else:
                 return '-D%s=%s' % (name, utils.shell_escape(v))
         defines = ' '.join(map(print_define, cfg.defines().items()))
-        system_includes = ' '.join(map(lambda i: '-I %s' % utils.shell_escape(i), cfg.system_include_path()))
+        system_includes = ' '.join(map(lambda i: '-isystem %s' % utils.shell_escape(i), cfg.system_include_path()))
         local_includes  = ' '.join(map(lambda i: '-I %s -I %s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
         return ' '.join([system_includes, local_includes, defines])
 
