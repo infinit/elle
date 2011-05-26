@@ -977,6 +977,10 @@ class Builder:
         self.__building_semaphore = None
         self.__dynsrc = {}
 
+    def sources_dynamic(self):
+        """The list of dynamic source nodes."""
+        return self.__dynsrc.values()
+
     def sources(self):
         """The list of source nodes."""
         return self.__sources

@@ -490,7 +490,7 @@ class Linker(Builder):
 
         return self.cmd('Link %s' % self.exe,
                         self.toolkit.link(self.config,
-                                          self.objs + self.dynsrc.values(),
+                                          self.objs + self.sources_dynamic(),
                                           self.exe))
 
     def __repr__(self):
@@ -528,7 +528,7 @@ class DynLibLinker(Builder):
 
         return self.cmd('Link %s' % self.lib,
                         self.toolkit.dynlink(self.config,
-                                             self.objs + self.dynsrc.values(),
+                                             self.objs + self.sources_dynamic(),
                                              self.lib))
 
     def __repr__(self):
