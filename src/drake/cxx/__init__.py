@@ -578,7 +578,18 @@ Node.extensions['hxx'] = Header
 
 class Object(Node):
 
-    def __init__(self, source, tk, cfg):
+    def __init__(self, *args, **kwargs):
+
+        if len(args) + len(kwargs) == 1:
+            self.__init_node__(*args, **kwargs)
+        else:
+            self.__init_object__(*args, **kwargs)
+
+    def __init_node__(self, path):
+
+        Node.__init__(self, path)
+
+    def __init_object__(self, source, tk, cfg):
 
         self.source = source
         self.toolkit = tk
