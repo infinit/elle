@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [sun may  2 17:34:40 2010]
+// updated       julien quintard   [mon may 30 22:11:08 2011]
 //
 
 //
@@ -166,6 +166,8 @@ namespace elle
 		program->accord.Unlock();
 
 		// sleep.
+		/// XXX \todo peut-on eviter de dormir? normalement c'est
+		/// a ca que sert un select() justement.
 		::usleep(10000);
 	      }
 	    else
@@ -200,6 +202,50 @@ namespace elle
 	    ::exit(EXIT_FAILURE);
 	  }
 	}
+    }
+
+    ///
+    /// this method attaches a broker to the program's event loop.
+    ///
+    Status		Program::Attach(Broker&			broker)
+    {
+      ::QAbstractEventDispatcher*	dispatcher;
+
+      enter();
+
+#include <elle/idiom/Close.hh>
+
+      // retrieve the event dispatcher instance.
+      dispatcher = ::QAbstractEventDispatcher::instance();
+
+#include <elle/idiom/Open.hh>
+
+      // register the socket notifier.
+      dispatcher->registerSocketNotifier(&broker.notifier);
+
+      leave();
+    }
+
+    ///
+    /// this method detaches a broker from the program's event loop.
+    ///
+    Status		Program::Detach(Broker&			broker)
+    {
+      ::QAbstractEventDispatcher*	dispatcher;
+
+      enter();
+
+#include <elle/idiom/Close.hh>
+
+      // retrieve the event dispatcher instance.
+      dispatcher = ::QAbstractEventDispatcher::instance();
+
+#include <elle/idiom/Open.hh>
+
+      // unregister the socket notifier.
+      dispatcher->unregisterSocketNotifier(&broker.notifier);
+
+      leave();
     }
 
 //
