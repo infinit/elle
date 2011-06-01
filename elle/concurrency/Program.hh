@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [mon may  3 21:13:15 2010]
+// updated       julien quintard   [mon may 30 22:10:43 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -23,9 +23,11 @@
 
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Accord.hh>
+#include <elle/concurrency/Broker.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QCoreApplication>
+# include <QAbstractEventDispatcher>
 # include <list>
 # include <signal.h>
 #include <elle/idiom/Open.hh>
@@ -69,6 +71,9 @@ namespace elle
       static Status		Launch();
       static Void		Signal(int);
       static Status		Exit();
+
+      static Status		Attach(Broker&);
+      static Status		Detach(Broker&);
 
       //
       // constructors & destructors

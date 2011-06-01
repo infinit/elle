@@ -8,6 +8,7 @@ QT4_WRAP_CPP(elle_MOCS
   network/Slot.hh
 
   concurrency/Timer.hh
+  concurrency/Broker.hh
 )
 
 ADD_LIBRARY(elle
@@ -39,6 +40,7 @@ ADD_LIBRARY(elle
   system/System.cc
 
   concurrency/Accord.cc
+  concurrency/Broker.cc
   concurrency/Concurrency.cc
   concurrency/Environment.cc
   concurrency/Event.cc
