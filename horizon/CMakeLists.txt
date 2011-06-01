@@ -3,7 +3,11 @@ PROJECT(PIG CXX)
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
 ADD_EXECUTABLE(PIG
+  Crux.cc
+  FUSE.cc
   PIG.cc
+
+  pig.cc
 )
 
 TARGET_LINK_LIBRARIES(PIG infinit elle nucleus lune etoile fuse
