@@ -278,6 +278,25 @@ class Path(object):
         """
         return _OS.path.exists(str(self))
 
+    def is_file(self):
+        """Whether the designed file exists and is a regular file.
+
+        >>> p = Path('/tmp/.drake.foo')
+        >>> p.touch()
+        >>> p.is_file()
+        True
+        >>> p.remove()
+        >>> p.is_file()
+        False
+        >>> p.mkpath()
+        >>> p.exists()
+        True
+        >>> p.is_file()
+        False
+        >>> p.remove()
+        """
+        return _OS.path.isfile(str(self))
+
     def basename(self):
         """The filename part of the path.
 
