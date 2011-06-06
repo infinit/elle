@@ -47,6 +47,7 @@ def configure(prefix = '.'):
     'base/no-builder-to-make',
     'base/path',
     'base/deps-dyn',
+    'cxx/dependency-directory-clash',
     'sched/exceptions',
     'sched/thread-concurrency',
     ]

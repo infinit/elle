@@ -392,14 +392,14 @@ def mkdeps(res, n, lvl, config, marks,
                 if str(test) in Node.nodes:
                     # Check this is not an old cached dependency from cxx.inclusions.
                     # Not sure of myself though.
-                    if test.exists() or node(str(test)).builder is not None:
+                    if test.is_file() or node(str(test)).builder is not None:
                         found = unique(include, found, node(test))
 #                        debug.debug('%sfound node: %s' % (idt, test))
 
 
                 test = srctree() / test
                 # FIXME: this assumes every -I $srcdir/foo has its -I $buildir/foo
-                if test.exists():
+                if test.is_file():
 #                    debug.debug('%sfound file: %s' % (idt, test))
                     found = unique(include, found, node(name, Header))
 
