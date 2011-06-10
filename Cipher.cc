@@ -24,7 +24,7 @@ namespace elle
 {
   using namespace core;
   using namespace standalone;
-  using namespace archive;
+  using namespace package;
 
   namespace cryptography
   {
