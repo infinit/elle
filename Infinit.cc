@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.cc
 //
 // created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [wed jun  1 10:00:25 2011]
+// updated       julien quintard   [thu jun  2 15:55:45 2011]
 //
 
 //
@@ -32,3 +32,102 @@ const elle::String		Infinit::Authority("RUxMAQ0AAAAAAgAAsKKVNXszNo9F2vug8A-TcYCn
 /// this constant contains the version string.
 ///
 const elle::String		Infinit::Version("Infinit[alpha]");
+
+///
+/// this variable contains the network descriptor.
+///
+lune::Descriptor		Infinit::Descriptor;
+
+///
+/// this variable contains the user identity.
+///
+lune::Identity			Infinit::Identity;
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+///
+/// this method initializes Infinit.
+///
+elle::Status		Infinit::Initialize(const elle::String&	user,
+					    const elle::String&	network)
+{
+  lune::Authority	authority;
+
+  enter();
+
+  //
+  // load the authority.
+  //
+  {
+    elle::PublicKey	K;
+
+    // restore the authority's public key.
+    if (K.Restore(Infinit::Authority) == elle::StatusError)
+      escape("unable to restore the authority's public key");
+
+    // create the authority based on the hard-coded public key.
+    if (authority.Create(K) == elle::StatusError)
+      escape("unable to create the authority");
+  }
+
+  //
+  // load the user identity.
+  //
+  {
+    elle::String	prompt;
+    elle::String	pass;
+
+    // does the identity exist.
+    if (Infinit::Identity.Exist(user) == elle::StatusFalse)
+      escape("the user identity does not seem to exist");
+
+    // prompt the user for the passphrase.
+    prompt = "Enter passphrase for keypair '" + user + "': ";
+    pass = elle::String(::getpass(prompt.c_str()));
+
+    // load the identity.
+    if (Infinit::Identity.Load(user) == elle::StatusError)
+      escape("unable to load the identity");
+
+    // verify the identity.
+    if (Infinit::Identity.Validate(authority) != elle::StatusTrue)
+      escape("the identity seems to be invalid");
+
+    // decrypt the identity.
+    if (Infinit::Identity.Decrypt(pass) == elle::StatusError)
+      escape("unable to decrypt the identity");
+  }
+
+  //
+  // retrieve the descriptor.
+  //
+  {
+    // does the network exist.
+    if (Infinit::Descriptor.Exist(network) == elle::StatusFalse)
+      escape("this network does not seem to exist");
+
+    // load the descriptor.
+    if (Infinit::Descriptor.Load(network) == elle::StatusError)
+      escape("unable to load the descriptor");
+
+    // validate the descriptor.
+    if (Infinit::Descriptor.Validate(authority) != elle::StatusTrue)
+      escape("unable to validate the descriptor");
+  }
+
+  leave();
+}
+
+///
+/// this method cleans Infinit.
+///
+elle::Status		Infinit::Clean()
+{
+  enter();
+
+  // nothing to do.
+
+  leave();
+}
