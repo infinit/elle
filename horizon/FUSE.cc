@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [wed jun  1 10:04:13 2011]
+// updated       julien quintard   [thu jun  2 15:51:18 2011]
 //
 
 //
@@ -74,9 +74,7 @@ namespace pig
   ///
   /// this method initializes the FUSE component.
   ///
-  elle::Status		FUSE::Initialize(const elle::String&	user,
-					 const elle::String&	network,
-					 const elle::String&	mountpoint)
+  elle::Status		FUSE::Initialize(const elle::String&	mountpoint)
   {
     //
     // build the arguments.
@@ -88,7 +86,9 @@ namespace pig
     // for example the -d option could be used instead of -f in order
     // to activate the debug mode.
     //
-    elle::String	ofsname("-ofsname='" + network + "'");
+    elle::String	ofsname("-ofsname='" +
+				Infinit::Descriptor.name +
+				"'");
     const char*		arguments[] =
       {
 	"PIG",

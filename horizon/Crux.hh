@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.hh
 //
 // created       julien quintard   [wed jun  1 09:19:13 2011]
-// updated       julien quintard   [wed jun  1 10:04:38 2011]
+// updated       julien quintard   [wed jun  1 12:08:11 2011]
 //
 
 #ifndef PIG_CRUX_HH
@@ -152,16 +152,16 @@ namespace pig
     //
     // static methods
     //
-    elle::Void		Release();
+    static elle::Void	Release();
 
     //
     // static template methods
     //
     template <typename T>
-    elle::Void		Release(T&);
+    static elle::Void	Release(T&);
     template <typename T,
 	      typename... TT>
-    elle::Void		Release(T&,
+    static elle::Void	Release(T&,
 				TT&...);
   };
 

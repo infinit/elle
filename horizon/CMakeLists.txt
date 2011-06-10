@@ -2,14 +2,10 @@ PROJECT(PIG CXX)
 
 ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
-ADD_EXECUTABLE(PIG
+ADD_LIBRARY(pig
   Crux.cc
   FUSE.cc
   PIG.cc
-
-  pig.cc
 )
 
-TARGET_LINK_LIBRARIES(PIG infinit elle nucleus lune etoile fuse
-		          ${QT_QTNETWORK_LIBRARIES}
-			  ${QT_QTCORE_LIBRARIES})
+TARGET_LINK_LIBRARIES(pig elle nucleus lune etoile fuse)

@@ -8,8 +8,14 @@
 // file          /home/mycure/infinit/pig/Crux.hxx
 //
 // created       julien quintard   [wed jun  1 09:50:53 2011]
-// updated       julien quintard   [wed jun  1 09:57:15 2011]
+// updated       julien quintard   [wed jun  1 14:05:23 2011]
 //
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/Etoile.hh>
 
 namespace pig
 {
@@ -25,7 +31,7 @@ namespace pig
   template <typename T>
   elle::Void		Crux::Release(T&		identifier)
   {
-    // XXX etoile::wall::Object::Discard(identifier);
+    etoile::wall::Object::Discard(identifier);
   }
 
   ///

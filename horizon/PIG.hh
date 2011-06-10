@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [tue may 31 10:32:37 2011]
-// updated       julien quintard   [wed jun  1 10:01:29 2011]
+// updated       julien quintard   [thu jun  2 15:47:49 2011]
 //
 
 #ifndef PIG_PIG_HH
@@ -44,9 +44,7 @@ namespace pig
     //
     // static methods
     //
-    static elle::Status		Initialize(const elle::String&,
-					   const elle::String&,
-					   const elle::String&);
+    static elle::Status		Initialize(const elle::String&);
     static elle::Status		Clean();
 
     //

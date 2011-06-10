@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [wed jun  1 10:03:24 2011]
+// updated       julien quintard   [thu jun  2 15:50:35 2011]
 //
 
 #ifndef PIG_FUSE_HH
@@ -50,9 +50,7 @@ namespace pig
     //
     // static methods
     //
-    static elle::Status		Initialize(const elle::String&,
-					   const elle::String&,
-					   const elle::String&);
+    static elle::Status		Initialize(const elle::String&);
     static elle::Status		Clean();
 
     //
@@ -76,34 +74,6 @@ namespace pig
       static struct ::fuse_operations	Operations;
     };
   };
-
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
-#define error(_text_, _errno_, _identifiers_...)			\
-  do									\
-    {									\
-      report(elle::standalone::Report::TypeError, _text_);		\
-									\
-      show();								\
-									\
-      FUSE::Release(_identifiers_);					\
-									\
-      purge();								\
-									\
-      return (-(_errno_));						\
-    } while (false)
-
-#define skip(_errno_, _identifiers_...)					\
-  do									\
-    {									\
-      FUSE::Release(_identifiers_);					\
-									\
-      purge();								\
-									\
-      return (-(_errno_));						\
-    } while (false)
 
 }
 
