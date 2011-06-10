@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/context/Link.hh
+// file          /home/mycure/infinit/etoile/gear/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [thu may  5 16:25:37 2011]
+// updated       julien quintard   [fri jun  3 11:55:08 2011]
 //
 
-#ifndef ETOILE_CONTEXT_LINK_HH
-#define ETOILE_CONTEXT_LINK_HH
+#ifndef ETOILE_GEAR_OBJECT_HH
+#define ETOILE_GEAR_OBJECT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,11 +21,11 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/context/Object.hh>
+#include <etoile/gear/Context.hh>
 
 namespace etoile
 {
-  namespace context
+  namespace gear
   {
 
 //
@@ -33,35 +33,39 @@ namespace etoile
 //
 
     ///
-    /// this context represents a link object as it embeds
-    /// a reference along with inherited object-related stuff.
+    /// this class represents an object context and is therefore used
+    /// to perform sequential operations on objects.
     ///
-    class Link:
-      public Object
+    /// note that when the object is loaded or created, the rights the
+    /// subject has over the object are computed.
+    ///
+    class Object:
+      public Context
     {
     public:
       //
-      // types
-      //
-      typedef nucleus::Reference	Content;
-
-      //
       // constructors & destructors
       //
-      Link();
-      ~Link();
+      Object();
+      Object(const Format&);
+      ~Object();
 
       //
       // interfaces
       //
 
+      // XXX object
+
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
+
+      // XXX archivable
 
       //
       // attributes
       //
-      nucleus::Contents<Content>*	contents;
+      nucleus::Object*		object;
+      nucleus::Access*		access;
     };
 
   }

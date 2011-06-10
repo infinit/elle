@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Status.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [fri may  6 14:01:48 2011]
+// updated       julien quintard   [wed jun  1 12:03:16 2011]
 //
 
 //
@@ -16,8 +16,6 @@
 //
 
 #include <etoile/wall/Status.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {

@@ -5,26 +5,31 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/context/Identifier.cc
+// file          /home/mycure/infinit/etoile/gear/Identifier.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [fri may 28 17:40:31 2010]
+// updated       julien quintard   [fri jun  3 11:49:25 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/context/Identifier.hh>
+#include <etoile/gear/Identifier.hh>
 
 namespace etoile
 {
-  namespace context
+  namespace gear
   {
 
 //
 // ---------- definitions -----------------------------------------------------
 //
+
+    ///
+    /// this variable holds the current identifier counter.
+    ///
+    const elle::Natural64		Identifier::Zero = 0;
 
     ///
     /// this variable defines an unused hence null Identifier.
@@ -34,7 +39,8 @@ namespace etoile
     ///
     /// this variable holds the current identifier counter.
     ///
-    elle::Natural64			Identifier::Counter = 0;
+    elle::Natural64			Identifier::Counter =
+      Identifier::Zero + 1;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -44,7 +50,7 @@ namespace etoile
     /// default constructor.
     ///
     Identifier::Identifier():
-      value(0)
+      value(Identifer::Zero)
     {
     }
 
@@ -60,7 +66,7 @@ namespace etoile
       enter();
 
       // increments the counter.
-      this->value = ++Identifier::Counter;
+      this->value = Identifier::Counter++;
 
       leave();
     }

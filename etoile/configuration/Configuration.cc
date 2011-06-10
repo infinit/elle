@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/configuration/Configuration.cc
 //
 // created       julien quintard   [mon aug 10 16:46:56 2009]
-// updated       julien quintard   [mon may  3 12:46:02 2010]
+// updated       julien quintard   [wed jun  1 11:31:54 2011]
 //
 
 //
@@ -40,11 +40,6 @@ namespace etoile
     /// reserve-specific configuration attributes.
     ///
     const elle::Natural64	Configuration::Reserve::Capacity = 1073741824;
-
-    ///
-    /// wall-specific configuration attributes
-    ///
-    const elle::String		Configuration::Wall::Line("etoile");
 
 //
 // ---------- methods ---------------------------------------------------------

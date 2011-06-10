@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [fri may 13 10:22:49 2011]
+// updated       julien quintard   [wed jun  1 11:45:16 2011]
 //
 
 //
@@ -24,8 +24,6 @@
 
 #include <etoile/path/Path.hh>
 
-#include <etoile/Manifest.hh>
-
 namespace etoile
 {
   namespace wall
@@ -39,23 +37,12 @@ namespace etoile
     /// this method loads an object in a context and returns the context
     /// identifier.
     ///
-    elle::Status	Object::Load(const
-				       path::Way&		way)
+    elle::Status	Object::Load(const path::Way&		way,
+				     context::Identifier&	identifier)
     {
       context::Object*		context;
-      user::User*		user;
 
       enter(instance(context));
-
-      printf("[XXX] Object::Load()\n");
-
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
 
       // create a new context.
       if (context::Context::New(context) == elle::StatusError)
@@ -76,10 +63,7 @@ namespace etoile
 	escape("unable to load the object in the given context");
 
       // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagIdentifier>(context->identifier)) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      identifier = context->identifier;
 
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
@@ -157,12 +141,12 @@ namespace etoile
       if (components::Object::Information(context,
 					  status) == elle::StatusError)
 	escape("unable to retrieve information on the object");
-
+      /* XXX
       // return the status to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagObjectStatus>(status)) == elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -200,12 +184,12 @@ namespace etoile
       // discard the context.
       if (components::Object::Discard(context) == elle::StatusError)
 	escape("unable to discard the object's modifications");
-
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -243,12 +227,12 @@ namespace etoile
       // store the context.
       if (components::Object::Store(context) == elle::StatusError)
 	escape("unable to store the object context");
-
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 

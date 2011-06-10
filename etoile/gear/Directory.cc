@@ -5,22 +5,22 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/context/Directory.cc
+// file          /home/mycure/infinit/etoile/gear/Directory.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [mon may  3 18:00:02 2010]
+// updated       julien quintard   [fri jun  3 11:45:40 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Format.hh>
+#include <etoile/gear/Directory.hh>
+#include <etoile/gear/Nature.hh>
 
 namespace etoile
 {
-  namespace context
+  namespace gear
   {
 
 //
@@ -31,7 +31,7 @@ namespace etoile
     /// the constructor
     ///
     Directory::Directory():
-      Object::Object(FormatDirectory),
+      Object(NatureDirectory),
 
       contents(NULL)
     {
@@ -60,7 +60,7 @@ namespace etoile
 
       enter();
 
-      std::cout << alignment << "[Context] Directory" << std::endl;
+      std::cout << alignment << "[Directory]" << std::endl;
 
       // dump the inherited object.
       if (Object::Dump(margin + 2) == elle::StatusError)
@@ -68,8 +68,15 @@ namespace etoile
 
       // dump the contents.
       if (this->contents != NULL)
-	if (this->contents->Dump(margin + 4) == elle::StatusError)
-	  escape("unable to dump the contents");
+	{
+	  if (this->contents->Dump(margin + 4) == elle::StatusError)
+	    escape("unable to dump the contents");
+	}
+      else
+	{
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Contents] " << none << std::endl;
+	}
 
       leave();
     }

@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/context/File.hh
+// file          /home/mycure/infinit/etoile/gear/Link.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [thu may  5 16:25:01 2011]
+// updated       julien quintard   [fri jun  3 11:38:39 2011]
 //
 
-#ifndef ETOILE_CONTEXT_FILE_HH
-#define ETOILE_CONTEXT_FILE_HH
+#ifndef ETOILE_GEAR_LINK_HH
+#define ETOILE_GEAR_LINK_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,11 +21,11 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/context/Object.hh>
+#include <etoile/gear/Object.hh>
 
 namespace etoile
 {
-  namespace context
+  namespace gear
   {
 
 //
@@ -33,30 +33,34 @@ namespace etoile
 //
 
     ///
-    /// this context represents a file object as it embeds
+    /// this context represents a link object as it embeds
     /// a reference along with inherited object-related stuff.
     ///
-    class File:
+    class Link:
       public Object
     {
     public:
       //
       // types
       //
-      typedef nucleus::Data		Content;
+      typedef nucleus::Reference	Content;
 
       //
       // constructors & destructors
       //
-      File();
-      ~File();
+      Link();
+      ~Link();
 
       //
       // interfaces
       //
 
+      // XXX object
+
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
+
+      // XXX archivable
 
       //
       // attributes

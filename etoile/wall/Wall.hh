@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.hh
 //
 // created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [thu may 12 00:16:29 2011]
+// updated       julien quintard   [wed jun  1 11:33:02 2011]
 //
 
 #ifndef ETOILE_WALL_WALL_HH
@@ -20,8 +20,6 @@
 
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -41,26 +39,10 @@ namespace etoile
     {
     public:
       //
-      // constants
-      //
-      static const elle::String&		Line;
-
-      //
       // static methods
       //
       static elle::Status	Initialize();
       static elle::Status	Clean();
-
-      static elle::Status	Identify(const elle::PublicKey&);
-      static elle::Status	Authenticate(const elle::Digest&);
-      static elle::Status	Connect(const elle::String&,
-					const nucleus::Network&);
-
-      //
-      // callbacks
-      //
-      static elle::Status	Error(const elle::Report&);
-      static elle::Status	Connection(elle::Door*&);
     };
 
   }
@@ -74,7 +56,6 @@ namespace etoile
 #include <etoile/wall/Attributes.hh>
 #include <etoile/wall/Directory.hh>
 #include <etoile/wall/File.hh>
-#include <etoile/wall/Interface.hh>
 #include <etoile/wall/Link.hh>
 #include <etoile/wall/Object.hh>
 #include <etoile/wall/Status.hh>

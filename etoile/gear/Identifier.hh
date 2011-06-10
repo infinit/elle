@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/context/Identifier.hh
+// file          /home/mycure/infinit/etoile/gear/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [fri may 28 17:40:25 2010]
+// updated       julien quintard   [fri jun  3 11:48:52 2011]
 //
 
-#ifndef ETOILE_CONCURRENCY_IDENTIFIER_HH
-#define ETOILE_CONCURRENCY_IDENTIFIER_HH
+#ifndef ETOILE_GEAR_IDENTIFIER_HH
+#define ETOILE_GEAR_IDENTIFIER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,7 +22,7 @@
 
 namespace etoile
 {
-  namespace context
+  namespace gear
   {
 
 //
@@ -39,6 +39,8 @@ namespace etoile
       //
       // constants
       //
+      static const elle::Natural64	Zero;
+
       static const Identifier		Null;
 
       //

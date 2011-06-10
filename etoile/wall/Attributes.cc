@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [fri may  6 14:01:28 2011]
+// updated       julien quintard   [wed jun  1 12:04:21 2011]
 //
 
 //
@@ -22,8 +22,6 @@
 #include <etoile/components/Attributes.hh>
 
 #include <etoile/user/User.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -73,10 +71,12 @@ namespace etoile
 				      value) == elle::StatusError)
 	escape("unable to set the attribute");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -123,18 +123,22 @@ namespace etoile
       // answer the caller, depending on the result.
       if (trait == NULL)
 	{
+	  /* XXX
 	  // return the null trait.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAttributesTrait>(nucleus::Trait::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
+	  */
 	}
       else
 	{
+	  /* XXX
 	  // return the trait.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAttributesTrait>(*trait)) == elle::StatusError)
 	    escape("unable to reply to the application");
+	  */
 	}
 
       leave();
@@ -177,10 +181,12 @@ namespace etoile
 					range) == elle::StatusError)
 	escape("unable to fetch the attributes list");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagAttributesRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -222,10 +228,12 @@ namespace etoile
 				       name) == elle::StatusError)
 	escape("unable to remove the attribute");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }

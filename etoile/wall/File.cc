@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [fri may  6 14:01:09 2011]
+// updated       julien quintard   [wed jun  1 12:00:26 2011]
 //
 
 //
@@ -23,8 +23,6 @@
 #include <etoile/user/User.hh>
 
 #include <etoile/path/Path.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -62,13 +60,13 @@ namespace etoile
       // create a new file.
       if (components::File::Create(context) == elle::StatusError)
 	escape("unable to create the file");
-
+      /* XXX
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -116,13 +114,13 @@ namespace etoile
       if (components::File::Load(context,
 				      context->address) == elle::StatusError)
 	escape("unable to load the file in the given context");
-
+      /* XXX
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -204,12 +202,12 @@ namespace etoile
       if (components::File::Write(context, offset, region) ==
 	  elle::StatusError)
 	escape("unable to write the file");
-
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -245,12 +243,12 @@ namespace etoile
       if (components::File::Read(context, offset, size, region) ==
 	  elle::StatusError)
 	escape("unable to read the file");
-
+      /* XXX
       // reply to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagFileRegion>(region)) == elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -288,12 +286,12 @@ namespace etoile
       // adjust the file.
       if (components::File::Adjust(context, size) == elle::StatusError)
 	escape("unable to adjust the file size");
-
+      /* XXX
       // return the set to the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -330,12 +328,12 @@ namespace etoile
       // discard the context.
       if (components::File::Discard(context) == elle::StatusError)
 	escape("unable to discard the file's modifications");
-
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -373,12 +371,12 @@ namespace etoile
       // store the context.
       if (components::File::Store(context) == elle::StatusError)
 	escape("unable to store the file context");
-
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -415,12 +413,12 @@ namespace etoile
       // destroy the context.
       if (components::File::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the file context");
-
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 

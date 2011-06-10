@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Hole.cc
 //
 // created       julien quintard   [thu may 12 14:43:49 2011]
-// updated       julien quintard   [thu may 26 14:50:00 2011]
+// updated       julien quintard   [wed jun  1 11:43:39 2011]
 //
 
 //
@@ -16,8 +16,6 @@
 //
 
 #include <etoile/depot/Hole.hh>
-
-#include <hole/Manifest.hh>
 
 namespace etoile
 {
@@ -129,13 +127,13 @@ namespace etoile
     elle::Status	Hole::Join(const nucleus::Network&	network)
     {
       enter();
-
+      /* XXX
       // request hole to join the network.
       if (Hole::Channel->Call(
 	    elle::Inputs<hole::TagJoin>(network),
 	    elle::Outputs<hole::TagOk>()) == elle::StatusError)
 	escape("unable to join the network");
-
+      */
       leave();
     }
 
@@ -145,13 +143,13 @@ namespace etoile
     elle::Status	Hole::Leave(const nucleus::Network&	network)
     {
       enter();
-
+      /* XXX
       // request hole to leave the network.
       if (Hole::Channel->Call(
 	    elle::Inputs<hole::TagLeave>(network),
 	    elle::Outputs<hole::TagOk>()) == elle::StatusError)
 	escape("unable to join the network");
-
+      */
       leave();
     }
 
@@ -164,13 +162,13 @@ namespace etoile
       enter();
 
       // XXX
-
+      /* XXX
       // request the hole component.
       if (Hole::Channel->Call(
 	    elle::Inputs<hole::TagOrigin>(network),
 	    elle::Outputs<hole::TagAddress>(address)) == elle::StatusError)
 	escape("unable to retrieve the network's origin");
-
+      */
       leave();
     }
 
@@ -184,13 +182,13 @@ namespace etoile
       elle::Derivable<nucleus::Block>	derivable(address.component, block);
 
       enter();
-
+      /* XXX
       // request hole to put the block.
       if (Hole::Channel->Call(
 	    elle::Inputs<hole::TagPush>(network, address, derivable),
 	    elle::Outputs<hole::TagOk>()) == elle::StatusError)
 	escape("unable to put the block in the network");
-
+      */
       leave();
     }
 
@@ -205,14 +203,14 @@ namespace etoile
       elle::Derivable<nucleus::Block>	derivable(block);
 
       enter();
-
+      /* XXX
       // request hole to get the block associated with the given
       // network and address.
       if (Hole::Channel->Call(
 	    elle::Inputs<hole::TagPull>(network, address, version),
 	    elle::Outputs<hole::TagBlock>(derivable)) == elle::StatusError)
 	escape("unable to get the block from the network");
-
+      */
       leave();
     }
 
@@ -223,13 +221,13 @@ namespace etoile
 				   const nucleus::Address&	address)
     {
       enter();
-
+      /* XXX
       // request hole to erase the block from the network.
       if (Hole::Channel->Call(
 	    elle::Inputs<hole::TagWipe>(network, address),
 	    elle::Outputs<hole::TagOk>()) == elle::StatusError)
 	escape("unable to erase the block from the network");
-
+      */
       leave();
     }
 

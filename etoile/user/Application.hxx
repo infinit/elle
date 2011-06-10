@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Application.hxx
 //
 // created       julien quintard   [wed apr 21 20:59:52 2010]
-// updated       julien quintard   [mon may  3 17:19:35 2010]
+// updated       julien quintard   [thu jun  2 16:16:25 2011]
 //
 
 #ifndef ETOILE_USER_APPLICATION_HXX

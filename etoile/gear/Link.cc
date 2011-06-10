@@ -5,22 +5,22 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/context/File.cc
+// file          /home/mycure/infinit/etoile/gear/Link.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [mon may  3 18:00:42 2010]
+// updated       julien quintard   [fri jun  3 11:47:37 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/context/File.hh>
-#include <etoile/context/Format.hh>
+#include <etoile/gear/Link.hh>
+#include <etoile/gear/Nature.hh>
 
 namespace etoile
 {
-  namespace context
+  namespace gear
   {
 
 //
@@ -30,8 +30,8 @@ namespace etoile
     ///
     /// the constructor
     ///
-    File::File():
-      Object::Object(FormatFile),
+    Link::Link():
+      Object(NatureLink),
 
       contents(NULL)
     {
@@ -40,7 +40,7 @@ namespace etoile
     ///
     /// the destructor
     ///
-    File::~File()
+    Link::~Link()
     {
       // release the contents.
       if (this->contents != NULL)
@@ -54,13 +54,13 @@ namespace etoile
     ///
     /// this method dumps the contents along the the inherited object context.
     ///
-    elle::Status	File::Dump(const elle::Natural32	margin) const
+    elle::Status	Link::Dump(const elle::Natural32	margin) const
     {
       elle::String	alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Context] File" << std::endl;
+      std::cout << alignment << "[Link]" << std::endl;
 
       // dump the inherited object.
       if (Object::Dump(margin + 2) == elle::StatusError)
@@ -68,8 +68,15 @@ namespace etoile
 
       // dump the contents.
       if (this->contents != NULL)
-	if (this->contents->Dump(margin + 4) == elle::StatusError)
-	  escape("unable to dump the contents");
+	{
+	  if (this->contents->Dump(margin + 4) == elle::StatusError)
+	    escape("unable to dump the contents");
+	}
+      else
+	{
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Contents] " << none << std::endl;
+	}
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [thu may 12 14:47:14 2011]
+// updated       julien quintard   [fri jun 10 13:29:49 2011]
 //
 
 #ifndef ETOILE_ETOILE_HH
@@ -50,19 +50,20 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/components/Components.hh>
-#include <etoile/configuration/Configuration.hh>
-#include <etoile/context/Context.hh>
-#include <etoile/depot/Depot.hh>
-#include <etoile/journal/Journal.hh>
-#include <etoile/path/Path.hh>
-#include <etoile/wall/User.hh>
-#include <etoile/wall/Wall.hh>
+// XXX #include <etoile/components/Components.hh>
+// XXX #include <etoile/configuration/Configuration.hh>
+// XXX #include <etoile/context/Context.hh>
+// XXX #include <etoile/depot/Depot.hh>
+// XXX #include <etoile/journal/Journal.hh>
+// XXX #include <etoile/path/Path.hh>
+// XXX #include <etoile/wall/User.hh>
+// XXX #include <etoile/wall/Wall.hh>
 
 //
 // ---------- namespace -------------------------------------------------------
 //
 
+/* XXX
 namespace etoile
 {
   using namespace components;
@@ -71,8 +72,9 @@ namespace etoile
   using namespace depot;
   using namespace journal;
   using namespace path;
-  using namespace user;
+  // XXX using namespace user;
   using namespace wall;
 }
+*/
 
 #endif

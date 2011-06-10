@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/user/Agent.cc
 //
 // created       julien quintard   [thu mar 11 17:01:29 2010]
-// updated       julien quintard   [wed may 25 10:31:24 2011]
+// updated       julien quintard   [wed jun  1 11:42:05 2011]
 //
 
 //
@@ -18,8 +18,6 @@
 #include <etoile/user/Agent.hh>
 #include <etoile/user/Client.hh>
 #include <etoile/user/User.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -142,7 +140,7 @@ namespace etoile
 				       elle::Clear&		clear) const
     {
       enter();
-
+      /* XXX
       // check if the user is authenticated.
       if (this->state != Agent::StateAuthenticated)
 	escape("the agent seems not to have been authenticated");
@@ -153,7 +151,7 @@ namespace etoile
 	    elle::Outputs<agent::TagDecrypted>(clear)) ==
 	  elle::StatusError)
 	escape("unable to call the agent for decrypting a code");
-
+      */
       leave();
     }
 
@@ -165,7 +163,7 @@ namespace etoile
       const
     {
       enter();
-
+      /* XXX
       // check if the user is authenticated.
       if (this->state != Agent::StateAuthenticated)
 	escape("the agent seems not to have been authenticated");
@@ -176,7 +174,7 @@ namespace etoile
 	    elle::Outputs<agent::TagSigned>(signature)) ==
 	  elle::StatusError)
 	escape("unable to call the agent for performing a signature");
-
+      */
       leave();
     }
 

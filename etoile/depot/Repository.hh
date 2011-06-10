@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.hh
 //
 // created       julien quintard   [tue jan 26 13:24:04 2010]
-// updated       julien quintard   [thu may  5 15:56:06 2011]
+// updated       julien quintard   [fri jun  3 12:13:35 2011]
 //
 
 #ifndef ETOILE_DEPOT_REPOSITORY_HH

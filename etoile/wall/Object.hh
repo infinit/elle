@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [mon may  3 15:59:35 2010]
+// updated       julien quintard   [wed jun  1 11:44:03 2011]
 //
 
 #ifndef ETOILE_WALL_OBJECT_HH
@@ -19,8 +19,6 @@
 //
 
 #include <elle/Elle.hh>
-
-#include <etoile/Manifest.hh>
 
 #include <etoile/path/Way.hh>
 
@@ -47,7 +45,8 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Load(const path::Way&);
+      static elle::Status	Load(const path::Way&,
+				     context::Identifier&);
       static elle::Status	Lock(const context::Identifier&);
       static elle::Status	Release(const context::Identifier&);
       static elle::Status	Information(const context::Identifier&);

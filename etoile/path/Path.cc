@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [mon may 23 14:03:18 2011]
+// updated       julien quintard   [fri jun  3 09:52:29 2011]
 //
 
 //
@@ -126,10 +126,10 @@ namespace etoile
 	  // local from external contexts through their identifiers. indeed,
 	  // external contexts have proper identifiers and have been allocated,
 	  // hence need deletion, while local contexts are allocated on the
-	  // stack, hence need no deletion and use the identifier Null.
+	  // stack, hence need no deletion and use the Null identifier.
 	  //
 
-	  context::Directory*	context;
+	  context::Directory	context;
 	  nucleus::Entry*	entry;
 
 	  // allocate a new context.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon may 23 14:27:12 2011]
+// updated       julien quintard   [wed jun  1 12:01:22 2011]
 //
 
 //
@@ -23,8 +23,6 @@
 #include <etoile/user/User.hh>
 
 #include <etoile/path/Path.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -62,13 +60,13 @@ namespace etoile
       // create a new directory.
       if (components::Directory::Create(context) == elle::StatusError)
 	escape("unable to create the directory");
-
+      /* XXX
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -117,13 +115,13 @@ namespace etoile
       if (components::Directory::Load(context,
 				      context->address) == elle::StatusError)
 	escape("unable to load the directory in the given context");
-
+      /* XXX
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -173,12 +171,12 @@ namespace etoile
 				     name,
 				     subdirectory) == elle::StatusError)
 	escape("unable to add the entry");
-
+      /* XXX
       // reply to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
-
+      */
       leave();
     }
 
@@ -260,18 +258,22 @@ namespace etoile
       // return the status to the caller.
       if (entry == NULL)
 	{
+	  /* XXX
 	  // return a null entry.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagDirectoryEntry>(nucleus::Entry::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
+	  */
 	}
       else
 	{
+	  /* XXX
 	  // return the entry.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagDirectoryEntry>(*entry)) == elle::StatusError)
 	    escape("unable to reply to the application");
+	  */
 	}
 
       leave();
@@ -321,10 +323,12 @@ namespace etoile
 					 range) == elle::StatusError)
 	escape("unable to consult the directory");
 
+      /* XXX
       // return the set to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagDirectoryRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -370,10 +374,12 @@ namespace etoile
 					to) == elle::StatusError)
 	escape("unable to rename the entry");
 
+      /* XXX
       // return the set to the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -410,10 +416,12 @@ namespace etoile
 					name) == elle::StatusError)
 	escape("unable to create the subdirectory");
 
+      /* XXX
       // reply to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -453,10 +461,12 @@ namespace etoile
       if (components::Directory::Discard(context) == elle::StatusError)
 	escape("unable to discard the directory's modifications");
 
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -497,10 +507,12 @@ namespace etoile
       if (components::Directory::Store(context) == elle::StatusError)
 	escape("unable to store the directory context");
 
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -540,10 +552,12 @@ namespace etoile
       if (components::Directory::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the directory context");
 
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }

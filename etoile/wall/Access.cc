@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [fri may  6 13:57:39 2011]
+// updated       julien quintard   [wed jun  1 14:07:34 2011]
 //
 
 //
@@ -23,8 +23,6 @@
 #include <etoile/components/Access.hh>
 
 #include <etoile/user/User.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -42,7 +40,8 @@ namespace etoile
     elle::Status	Access::Lookup(const
 				         context::Identifier&	identifier,
 				       const
-				         nucleus::Subject&	subject)
+				         nucleus::Subject&	subject,
+				       nucleus::Record&		record)
     {
       context::Object*	context;
       user::User*	user;
@@ -52,13 +51,7 @@ namespace etoile
 
       printf("[XXX] Access::Lookup()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // XXX retrieve context
 
       // retrieve the context.
       if (user->application->Retrieve(identifier, context) ==
@@ -78,18 +71,22 @@ namespace etoile
       // answer the caller, depending on the result.
       if (record == NULL)
 	{
+	  /* XXX
 	  // return the null record.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAccessRecord>(nucleus::Record::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
+	  */
 	}
       else
 	{
+	  /* XXX
 	  // return the record.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAccessRecord>(*record)) == elle::StatusError)
 	    escape("unable to reply to the application");
+	  */
 	}
 
       leave();
@@ -138,10 +135,12 @@ namespace etoile
 				      range) == elle::StatusError)
 	escape("unable to consult the access list");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagAccessRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -188,10 +187,12 @@ namespace etoile
 				    permissions) == elle::StatusError)
 	escape("unable to grant access to the subject");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -237,10 +238,12 @@ namespace etoile
 				     permissions) == elle::StatusError)
 	escape("unable to update the access list");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -301,10 +304,12 @@ namespace etoile
 				     subject) == elle::StatusError)
 	escape("unable to revoke the subject's permissions");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [fri may  6 14:01:16 2011]
+// updated       julien quintard   [wed jun  1 12:02:55 2011]
 //
 
 //
@@ -23,8 +23,6 @@
 #include <etoile/user/User.hh>
 
 #include <etoile/path/Path.hh>
-
-#include <etoile/Manifest.hh>
 
 namespace etoile
 {
@@ -63,11 +61,13 @@ namespace etoile
       if (components::Link::Create(context) == elle::StatusError)
 	escape("unable to create the link");
 
+      /* XXX
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
@@ -117,11 +117,13 @@ namespace etoile
 				 context->address) == elle::StatusError)
 	escape("unable to load the link in the given context");
 
+      /* XXX
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
@@ -201,10 +203,12 @@ namespace etoile
       if (components::Link::Bind(context, way) == elle::StatusError)
 	escape("unable to bind the target to the link");
 
+      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -244,10 +248,12 @@ namespace etoile
       if (components::Link::Resolve(context, way) == elle::StatusError)
 	escape("unable to consult the link");
 
+      /* XXX
       // return the way to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagLinkWay>(way)) == elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -286,10 +292,12 @@ namespace etoile
       if (components::Link::Discard(context) == elle::StatusError)
 	escape("unable to discard the link's modifications");
 
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -329,10 +337,12 @@ namespace etoile
       if (components::Link::Store(context) == elle::StatusError)
 	escape("unable to store the link context");
 
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
@@ -371,10 +381,12 @@ namespace etoile
       if (components::Link::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the link context");
 
+      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
+      */
 
       leave();
     }
