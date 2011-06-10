@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.cc
 //
 // created       julien quintard   [thu jan 28 22:01:03 2010]
-// updated       julien quintard   [fri may 13 10:54:47 2011]
+// updated       julien quintard   [fri jun 10 13:09:05 2011]
 //
 
 //
@@ -19,6 +19,16 @@
 
 namespace nucleus
 {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+  ///
+  /// the nucleus factory which enables one to generate nucleus instances
+  /// based on its component identifier.
+  ///
+  elle::Factory			Nucleus::Factory;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -33,15 +43,15 @@ namespace nucleus
     enter();
 
     // register the component types.
-    elle::Factory::Register< neutron::Object >
+    Nucleus::Factory.Register< neutron::Object >
       (neutron::ComponentObject);
-    elle::Factory::Register< neutron::Contents<neutron::Data> >
+    Nucleus::Factory.Register< neutron::Contents<neutron::Data> >
       (neutron::ComponentData);
-    elle::Factory::Register< neutron::Contents<neutron::Catalog> >
+    Nucleus::Factory.Register< neutron::Contents<neutron::Catalog> >
       (neutron::ComponentCatalog);
-    elle::Factory::Register< neutron::Contents<neutron::Reference> >
+    Nucleus::Factory.Register< neutron::Contents<neutron::Reference> >
       (neutron::ComponentReference);
-    elle::Factory::Register< neutron::Access >
+    Nucleus::Factory.Register< neutron::Access >
       (neutron::ComponentAccess);
 
     leave();

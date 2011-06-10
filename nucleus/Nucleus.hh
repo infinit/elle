@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [thu may  5 15:52:53 2011]
+// updated       julien quintard   [fri jun 10 13:08:43 2011]
 //
 
 #ifndef NUCLEUS_NUCLEUS_HH
@@ -42,6 +42,11 @@ namespace nucleus
     //
     static elle::Status		Initialize();
     static elle::Status		Clean();
+
+    //
+    // static attributes
+    //
+    static elle::Factory	Factory;
   };
 
 }
