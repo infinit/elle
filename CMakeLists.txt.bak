@@ -1,7 +1,7 @@
 PROJECT(Elle CXX)
 
 ADD_LIBRARY(elle
-  archive/Archive.cc
+  package/Archive.cc
   core/Large.cc
   core/Null.cc
   cryptography/Cipher.cc
@@ -21,10 +21,10 @@ ADD_LIBRARY(elle
 )
 
 ADD_EXECUTABLE(archive
-  test/archive/Generator.cc
-  test/archive/Pack.cc
-  test/archive/Referee.cc
-  test/archive/Test.cc
+  test/package/Generator.cc
+  test/package/Pack.cc
+  test/package/Referee.cc
+  test/package/Test.cc
 )
 
 ADD_EXECUTABLE(crypto2
@@ -43,9 +43,9 @@ INSTALL(FILES
   DESTINATION ${INFINIT_INCLUDEDIR}/elle)
 
 INSTALL(FILES
-  archive/Archivable.hh
-  archive/Archive.hh
-  archive/Archive.hxx
+  package/Archivable.hh
+  package/Archive.hh
+  package/Archive.hxx
   DESTINATION ${INFINIT_INCLUDEDIR}/elle/archive)
 
 INSTALL(FILES

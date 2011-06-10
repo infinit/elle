@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [mon may  3 00:17:48 2010]
+// updated       julien quintard   [sun jun  5 23:01:21 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -43,8 +43,9 @@ namespace elle
       //printf("[XXX 0x%x] Fiber::Launch()\n",
       //Fiber::Current);
 
-      // trigger the closure.
-      closure->Trigger();
+      // trigger the closure and, should there are errors, display them.
+      if (closure->Trigger() == elle::StatusError)
+	show();
 
       // set the fiber state.
       Fiber::Current->state = Fiber::StateCompleted;

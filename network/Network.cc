@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [thu may 12 10:55:40 2011]
+// updated       julien quintard   [fri jun 10 11:54:38 2011]
 //
 
 //
@@ -29,12 +29,7 @@ namespace elle
     ///
     /// this container holds the list of registered callbacks.
     ///
-    Network::Container		Network::Callbacks;
-
-    ///
-    /// this variable control the access to the network.
-    ///
-    Accord			Network::Control;
+    Registrar<Tag>			Network::Bureau;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -51,7 +46,9 @@ namespace elle
       if (Lane::Initialize() == StatusError)
 	escape("unable to initialize the lane");
 
-      // XXX bridge
+      // initialize the bridge.
+      if (Bridge::Initialize() == StatusError)
+	escape("unable to initialize the bridge");
 
       // initialize the session.
       if (Session::Initialize() == StatusError)
@@ -65,30 +62,19 @@ namespace elle
     ///
     Status		Network::Clean()
     {
-      Network::Scoutor	scoutor;
-
       enter();
 
       // clean the session.
       if (Session::Clean() == StatusError)
 	escape("unable to clean the session");
 
+      // clean the bridge.
+      if (Bridge::Clean() == StatusError)
+	escape("unable to clean the bridge");
+
       // clean the lane
       if (Lane::Clean() == StatusError)
 	escape("unable to clean the lane");
-
-      // XXX bridge
-
-      // go through the callbacks.
-      for (scoutor = Network::Callbacks.begin();
-	   scoutor != Network::Callbacks.end();
-	   scoutor++)
-	{
-	  Network::Functionoid*		functionoid = scoutor->second;
-
-	  // delete the functionoid.
-	  delete functionoid;
-	}
 
       leave();
     }
@@ -101,16 +87,12 @@ namespace elle
     ///
     Status		Network::Dispatch(Parcel*		p)
     {
-      Network::Scoutor		scoutor;
       Parcel*			parcel;
 
       enter(instance(parcel));
 
       // retrieve the argument and takes over the tracking.
       parcel = p;
-
-      //printf("[XXX] Network::Dispatch(tag[%u] event[%qu])\n",
-      //parcel->header->tag, parcel->header->event.identifier);
 
       //
       // first, try to  wake up a waiting slot.
@@ -130,43 +112,20 @@ namespace elle
       // if no slot is waiting for this event, dispatch it right away.
       //
       {
-	// lock in reading.
-	Network::Control.Lock(ModeRead);
-	{
-	  // retrieve the callback associated to the header's tag.
-	  if ((scoutor = Network::Callbacks.find(parcel->header->tag)) ==
-	      Network::Callbacks.end())
-	    {
-	      Network::Control.Unlock();
-
-	      // unable to locate the callback, just ignore the message.
-	      delete parcel;
-
-	      // stop tracking the parcel since it has just been deleted.
-	      waive(parcel);
-
-	      leave();
-	    }
-
-	  // note that, at this point, the lock is release though the
-	  // scoutor is still going to be used.
-	  //
-	  // this is necessary since the callbacks triggered may need to
-	  // access the network and, for instance, register new callbacks
-	  // etc.
-	  //
-	  // this should not be a problem since callbacks are, theoretically,
-	  // never unregistered.
-	}
-	Network::Control.Unlock();
-
 	// assign the new session.
 	if (Session::Assign(parcel->session) == StatusError)
 	  escape("unable to assign the session");
 
-	// trigger the callback.
-	if (scoutor->second->Call(*parcel->data) == StatusError)
-	  escape("an error occured while processing the event");
+	// dispatch the call.
+	if (Network::Bureau.Dispatch(parcel->header->tag,
+				     *parcel->data) == StatusError)
+	  {
+	    // clear the session.
+	    if (Session::Clear() == StatusError)
+	      escape("unable to clear the session");
+
+	    escape("unable to dispatch the event through the registrar");
+	  }
 
 	// clear the session.
 	if (Session::Clear() == StatusError)
@@ -183,38 +142,19 @@ namespace elle
     }
 
     ///
-    /// this method dumps the table of callbacks.
+    /// this method dumps the bureau.
     ///
     Status		Network::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      Network::Scoutor	scoutor;
 
       enter();
 
       std::cout << alignment << "[Network]" << std::endl;
 
-      // lock in reading.
-      Network::Control.Lock(ModeRead);
-      {
-	// dump the callbacks table.
-	for (scoutor = Network::Callbacks.begin();
-	     scoutor != Network::Callbacks.end();
-	     scoutor++)
-	  {
-	    // dump the tag.
-	    std::cout << alignment << Dumpable::Shift << "[Tag] "
-		      << std::dec << scoutor->first << std::endl;
-
-	    // dump the functionoid.
-	    if (scoutor->second->Dump(margin + 2) == StatusError)
-	      {
-		Network::Control.Unlock();
-		escape("unable to dump the functionoid");
-	      }
-	  }
-      }
-      Network::Control.Unlock();
+      // dump the registrar.
+      if (Network::Bureau.Dump(margin + 2) == StatusError)
+	escape("unable to dump the registrar");
 
       leave();
     }

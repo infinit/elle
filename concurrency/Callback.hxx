@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [fri may 28 12:16:32 2010]
+// updated       julien quintard   [mon jun  6 23:36:35 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -36,7 +36,7 @@ namespace elle
     /// default constructor.
     ///
     template <typename... T>
-    Callback<T...>::Callback():
+    Callback< Parameters<T...> >::Callback():
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeUnknown)
@@ -47,8 +47,8 @@ namespace elle
     /// function-based constructor.
     ///
     template <typename... T>
-    Callback<T...>::Callback(typename
-			       Function<T&...>::Handler		handler):
+    Callback< Parameters<T...> >::Callback(typename
+					     Function<T&...>::Handler handler):
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeFunction),
@@ -61,10 +61,11 @@ namespace elle
     ///
     template <typename... T>
     template <typename C>
-    Callback<T...>::Callback(typename
-			       Method<T&...>::
-			         template Wrap<C>::Handler	handler,
-			     C*					object):
+    Callback< Parameters<T...> >::Callback(typename
+ 					     Method<T&...>::
+					       template Wrap<C>::Handler
+					         handler,
+					   C*			object):
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeMethod),
@@ -76,7 +77,7 @@ namespace elle
     /// copy constructor.
     ///
     template <typename... T>
-    Callback<T...>::Callback(const Callback&			callback):
+    Callback< Parameters<T...> >::Callback(const Callback&	callback):
       scheme(callback.scheme)
     {
       enter();
@@ -107,7 +108,7 @@ namespace elle
     /// destructor.
     ///
     template <typename... T>
-    Callback<T...>::~Callback()
+    Callback< Parameters<T...> >::~Callback()
     {
       // release the the content.
       switch (this->scheme)
@@ -136,7 +137,7 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Callback<T...>, _(template <typename... T>));
+    embed(Callback< Parameters<T...> >, _(template <typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -146,7 +147,8 @@ namespace elle
     /// this method dumps the callback.
     ///
     template <typename... T>
-    Status		Callback<T...>::Dump(const Natural32	margin) const
+    Status	Callback< Parameters<T...> >::Dump(const Natural32 margin)
+      const
     {
       String		alignment(margin, ' ');
 
@@ -190,7 +192,7 @@ namespace elle
     /// this method calls the callback implementation.
     ///
     template <typename... T>
-    Status		Callback<T...>::Trigger(T&...		arguments)
+    Status	Callback< Parameters<T...> >::Trigger(T&...	arguments)
       const
     {
       enter();

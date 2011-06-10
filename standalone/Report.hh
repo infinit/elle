@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [mon may  3 20:59:33 2010]
+// updated       julien quintard   [fri jun  3 15:21:40 2011]
 //
 
 #ifndef ELLE_STANDALONE_REPORT_HH
@@ -24,7 +24,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Meta.hh>
 
-#include <elle/archive/Archivable.hh>
+#include <elle/package/Archivable.hh>
 
 #include <elle/io/Dumpable.hh>
 
@@ -45,7 +45,7 @@
 namespace elle
 {
 
-  namespace archive
+  namespace package
   {
 
 //
@@ -73,7 +73,7 @@ namespace elle
 
   using namespace core;
   using namespace radix;
-  using namespace archive;
+  using namespace package;
   using namespace io;
   using namespace concurrency;
 

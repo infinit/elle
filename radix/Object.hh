@@ -24,7 +24,7 @@
 #include <elle/radix/Meta.hh>
 #include <elle/radix/Status.hh>
 
-#include <elle/archive/Archivable.hh>
+#include <elle/package/Archivable.hh>
 
 #include <elle/io/Dumpable.hh>
 #include <elle/io/Format.hh>
@@ -33,7 +33,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace archive;
+  using namespace package;
   using namespace io;
 
   namespace radix

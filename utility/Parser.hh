@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.hh
 //
 // created       julien quintard   [wed apr 28 11:11:05 2010]
-// updated       julien quintard   [fri mar 18 16:12:30 2011]
+// updated       julien quintard   [wed jun  1 10:19:50 2011]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HH
@@ -98,6 +98,8 @@ namespace elle
       //
       // methods
       //
+      Status		Description(const String&);
+
       Status		Register(const Character&,
 				 const String&,
 				 const String&,
@@ -112,6 +114,8 @@ namespace elle
       //
       Natural32		argc;
       Character**	argv;
+
+      String		description;
 
       Container		options;
 

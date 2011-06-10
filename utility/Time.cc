@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [fri mar 18 16:13:18 2011]
+// updated       julien quintard   [thu jun  9 21:41:39 2011]
 //
 
 //
@@ -48,7 +48,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method fills the instance with the current time.
     ///
     Status		Time::Current()
     {

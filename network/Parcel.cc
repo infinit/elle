@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [sun may  2 20:43:18 2010]
+// updated       julien quintard   [tue jun  7 06:48:47 2011]
 //
 
 //

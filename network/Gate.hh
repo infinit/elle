@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [wed may 25 16:13:05 2011]
+// updated       julien quintard   [sun jun  5 23:38:33 2011]
 //
 
 ///
@@ -107,7 +107,7 @@ namespace elle
       Status		Reply(const I);
 
       //
-      // entrances
+      // callbacks
       //
       Status		Error(const String&);
       Status		Fetch();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [fri may 28 12:16:38 2010]
+// updated       julien quintard   [fri jun 10 00:01:56 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HH
@@ -22,6 +22,7 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
+#include <elle/radix/Base.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -29,6 +30,7 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
+  using namespace package;
 
   namespace concurrency
   {
@@ -42,7 +44,8 @@ namespace elle
     ///
     template <typename... T>
     class Function:
-      public Object
+      public Object,
+      public Base<Function>
     {
     public:
       //

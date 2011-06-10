@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sun may  2 20:55:34 2010]
+// updated       julien quintard   [fri jun 10 11:49:51 2011]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -23,10 +23,11 @@
 
 #include <elle/standalone/Report.hh>
 
+#include <elle/radix/Parameters.hh>
+
 #include <elle/network/Tag.hh>
 #include <elle/network/Range.hh>
 #include <elle/network/Message.hh>
-#include <elle/network/Parameters.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -85,6 +86,13 @@ namespace elle
 
 // Error
 outward(elle::TagError,
-	parameters(const elle::standalone::Report));
+	parameters(elle::standalone::Report));
+
+/* XXX
+procedure(inward(elle::TagHello,
+		 parameters()),
+	  outward(elle::TagWorld,
+		  parameters(elle::core::String)))
+*/
 
 #endif

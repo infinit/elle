@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [wed may 25 14:10:44 2011]
+// updated       julien quintard   [tue jun  7 07:54:51 2011]
 //
 
 //
@@ -44,7 +44,8 @@ namespace elle
     ///
     Status		Client::Run()
     {
-      Callback<const String>	challenge(&Client::Challenge, this);
+      Callback< Parameters<const String> >	challenge(&Client::Challenge,
+							  this);
 
       enter();
 

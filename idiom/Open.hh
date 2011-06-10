@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [fri may 28 12:14:44 2010]
+// updated       julien quintard   [fri jun 10 11:48:55 2011]
 //
 
 //
@@ -428,7 +428,6 @@
       {									\
       public:								\
         typedef Parameters< _parameters_ >	P;			\
-	typedef Callback< _parameters_ >	C;			\
       };								\
     }									\
   }
@@ -451,7 +450,6 @@
       {									\
       public:								\
         typedef Parameters< _parameters_ >	P;			\
-	typedef Callback< _parameters_ >	C;			\
       };								\
     }									\
   }
@@ -485,3 +483,49 @@
       };								\
     }									\
   }
+
+//
+// ---------- XXX -------------------------------------------------------------
+//
+
+/* XXX
+
+Stub:
+template <const Tag G, typename... I>
+Status		Stub(Bundle<G, Parameters<const I...> >& inputs)
+{
+
+}
+
+Skeleton:
+
+Procedure:
+template <const Tag G, typename... I, typename... O>
+Status		Stub(Bundle<G, Parameters<const I...> >& inputs,
+                     Bundle<G, Parameters<O...> >& outputs)
+{
+
+}
+
+Function:
+
+procedure(&Object::Load,
+	  inward(TagPath,
+		 parameters(const Path)))
+Status		Object::Load(const Path&		path, // input
+			     Identifer&			identifier) // output
+{
+}
+
+Stub: 
+  client.Send(path)
+  client.Receive(identifier)
+
+=> Message<Path>
+<= Message(Identifier)
+
+Skeleton:
+  server.Receive(path)
+  server.Send(identifier)
+
+ */

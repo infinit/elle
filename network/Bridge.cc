@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [wed may 25 16:02:28 2011]
+// updated       julien quintard   [tue jun  7 06:08:13 2011]
 //
 
 //
@@ -34,11 +34,6 @@ namespace elle
     ///
     Bridge::Container		Bridge::Porters;
 
-    ///
-    /// this variable control the access to the bridge.
-    ///
-    Accord			Bridge::Control;
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -46,7 +41,9 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    BridgePorter::BridgePorter(const Callback<Gate*>&		callback):
+    BridgePorter::BridgePorter(const
+			         Callback<
+				   Parameters<Gate*> >&		callback):
       server(NULL),
       callback(callback)
     {
@@ -142,7 +139,9 @@ namespace elle
     /// signal would be triggered which is not want we want.
     ///
     Status		Bridge::Listen(const Address&		address,
-				       const Callback<Gate*>&	callback)
+				       const
+				         Callback<
+					   Parameters<Gate*> >&	callback)
     {
       BridgePorter*	porter;
 
@@ -155,13 +154,8 @@ namespace elle
       if (porter->Listen(address) == StatusError)
 	escape("unable to listen on the bridge");
 
-      // lock in writing.
-      Bridge::Control.Lock(ModeWrite);
-      {
-	// add the porter to the container.
-	Bridge::Porters.push_back(porter);
-      }
-      Bridge::Control.Unlock();
+      // add the porter to the container.
+      Bridge::Porters.push_back(porter);
 
       // stop tracking porter.
       waive(porter);
@@ -217,20 +211,15 @@ namespace elle
 
       std::cout << alignment << "[Bridge]" << std::endl;
 
-      // lock in reading.
-      Bridge::Control.Lock(ModeRead);
-      {
-	// dump the porters table.
-	for (scoutor = Bridge::Porters.begin();
-	     scoutor != Bridge::Porters.end();
-	     scoutor++)
-	  {
-	    // dump the porter.
-	    if ((*scoutor)->Dump(margin + 2) == StatusError)
-	      escape("unable to dump the porter");
-	  }
-      }
-      Bridge::Control.Unlock();
+      // dump the porters table.
+      for (scoutor = Bridge::Porters.begin();
+	   scoutor != Bridge::Porters.end();
+	   scoutor++)
+	{
+	  // dump the porter.
+	  if ((*scoutor)->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the porter");
+	}
 
       leave();
     }
@@ -276,8 +265,8 @@ namespace elle
 
     void		BridgePorter::_accept()
     {
-      Entrance<>	entrance(&BridgePorter::Accept, this);
-      Closure<>		closure(entrance);
+      Callback< Parameters<> >	callback(&BridgePorter::Accept, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 

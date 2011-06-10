@@ -24,14 +24,14 @@
 
 #include <elle/standalone/Region.hh>
 
-#include <elle/archive/Archive.hh>
+#include <elle/package/Archive.hh>
 
 namespace elle
 {
   using namespace core;
   using namespace standalone;
   using namespace radix;
-  using namespace archive;
+  using namespace package;
 
   namespace utility
   {

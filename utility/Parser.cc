@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.cc
 //
 // created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [mon apr 25 11:05:38 2011]
+// updated       julien quintard   [wed jun  1 10:23:32 2011]
 //
 
 //
@@ -75,6 +75,19 @@ namespace elle
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method adds a description to the parser.
+    ///
+    Status		Parser::Description(const String&	description)
+    {
+      enter();
+
+      // set the description.
+      this->description = description;
+
+      leave();
+    }
 
     ///
     /// this method adds an option to the parser.
@@ -225,6 +238,9 @@ namespace elle
     Void		Parser::Usage()
     {
       Natural32		i;
+
+      // display the program description.
+      std::cerr << this->description;
 
       // display the general usage.
       std::cerr << "[Usage] " << this->argv[0] << " {options...}"

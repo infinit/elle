@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [wed may 25 15:36:23 2011]
+// updated       julien quintard   [tue jun  7 07:28:15 2011]
 //
 
 //
@@ -469,29 +469,29 @@ namespace elle
     }
 
 //
-// ---------- entrances -------------------------------------------------------
+// ---------- callbacks -------------------------------------------------------
 //
 
     ///
-    /// this entrance is triggered whenever an error occurs.
+    /// this callback is triggered whenever an error occurs.
     ///
     Status		Door::Error(const String&		text)
     {
       enter();
 
-      // only process the error if a monitor entrance has been registered.
+      // only process the error if a monitor callback has been registered.
       if (this->callback != NULL)
 	{
-	  // trigger the entrance.
+	  // trigger the callback.
 	  if (this->callback->Trigger(text) == StatusError)
-	    escape("an error occured in the entrance");
+	    escape("an error occured in the callback");
 	}
 
       leave();
     }
 
     ///
-    /// this entrance fetches packets from the socket.
+    /// this callback fetches packets from the socket.
     ///
     Status		Door::Fetch()
     {
@@ -551,8 +551,8 @@ namespace elle
     void		Door::_error(const QLocalSocket::LocalSocketError)
     {
       String		text(this->socket->errorString().toStdString());
-      Entrance<const String>	entrance(&Door::Error, this);
-      Closure<const String>	closure(entrance, text);
+      Callback< Parameters<const String> >	callback(&Door::Error, this);
+      Closure< Parameters<const String> >	closure(callback, text);
 
       enter();
 
@@ -568,8 +568,8 @@ namespace elle
     ///
     void		Door::_fetch()
     {
-      Entrance<>	entrance(&Door::Fetch, this);
-      Closure<>		closure(entrance);
+      Callback< Parameters<> >	callback(&Door::Fetch, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 

@@ -25,7 +25,7 @@
 
 #include <elle/radix/Status.hh>
 
-#include <elle/archive/Archivable.hh>
+#include <elle/package/Archivable.hh>
 
 #include <elle/io/Format.hh>
 #include <elle/io/Unique.hh>
@@ -34,7 +34,7 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
-  using namespace archive;
+  using namespace package;
 
   namespace io
   {

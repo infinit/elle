@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [fri may 28 12:15:30 2010]
+// updated       julien quintard   [fri jun 10 00:02:17 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HH
@@ -23,6 +23,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
 #include <elle/radix/Entity.hh>
+#include <elle/radix/Base.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -30,6 +31,7 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
+  using namespace package;
 
   namespace concurrency
   {
@@ -39,7 +41,8 @@ namespace elle
     ///
     template <typename... T>
     class Method:
-      public Object
+      public Object,
+      public Base<Method>
     {
     public:
       //
