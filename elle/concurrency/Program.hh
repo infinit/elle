@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [mon may 30 22:10:43 2011]
+// updated       julien quintard   [tue jun  7 06:03:23 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -20,9 +20,9 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/concurrency/Callback.hh>
-#include <elle/concurrency/Accord.hh>
 #include <elle/concurrency/Broker.hh>
 
 #include <elle/idiom/Close.hh>
@@ -66,8 +66,8 @@ namespace elle
       static Status		Initialize();
       static Status		Clean();
 
-      static Status		Setup(Callback<>* = NULL,
-				      Callback<>* = NULL);
+      static Status		Setup(Callback< Parameters<> >* = NULL,
+				      Callback< Parameters<> >* = NULL);
       static Status		Launch();
       static Void		Signal(int);
       static Status		Exit();
@@ -84,14 +84,12 @@ namespace elle
       //
       // attributes
       //
-      Accord			accord;
-
       ::QCoreApplication*	core;
 
       State			state;
 
-      Callback<>*		prolog;
-      Callback<>*		epilog;
+      Callback< Parameters<> >*	prolog;
+      Callback< Parameters<> >*	epilog;
     };
 
 //

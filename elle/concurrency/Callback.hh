@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [fri may 28 12:16:26 2010]
+// updated       julien quintard   [fri jun 10 00:00:34 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -21,6 +21,8 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/radix/Status.hh>
+#include <elle/radix/Parameters.hh>
+#include <elle/radix/Base.hh>
 
 #include <elle/concurrency/Routine.hh>
 #include <elle/concurrency/Function.hh>
@@ -39,13 +41,26 @@ namespace elle
 //
 
     ///
-    /// this class represents an callback i.e a reference-based routine.
+    /// Callback generic class.
     ///
     template <typename... T>
-    class Callback:
-      public Routine
+    class Callback;
+
+    ///
+    /// this class represents a callback i.e a reference-based routine
+    /// according to the given types.
+    ///
+    template <typename... T>
+    class Callback< Parameters<T...> >:
+      public Routine,
+      public Base<Callback>
     {
     public:
+      //
+      // types
+      //
+      typedef Parameters<T...>		P;
+
       //
       // constructors & destructors
       //
@@ -67,7 +82,7 @@ namespace elle
       //
 
       // object
-      declare(Callback<T...>);
+      declare(Callback< Parameters<T...> >);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

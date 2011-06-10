@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [wed may 25 16:14:04 2011]
+// updated       julien quintard   [tue jun  7 07:28:20 2011]
 //
 
 //
@@ -456,29 +456,29 @@ namespace elle
     }
 
 //
-// ---------- entrances -------------------------------------------------------
+// ---------- callbacks -------------------------------------------------------
 //
 
     ///
-    /// this entrance is triggered whenever an error occurs.
+    /// this callback is triggered whenever an error occurs.
     ///
     Status		Gate::Error(const String&		text)
     {
       enter();
 
-      // only process the error if a monitor entrance has been registered.
+      // only process the error if a monitor callback has been registered.
       if (this->callback != NULL)
 	{
-	  // trigger the entrance.
+	  // trigger the callback.
 	  if (this->callback->Trigger(text) == StatusError)
-	    escape("an error occured in the entrance");
+	    escape("an error occured in the callback");
 	}
 
       leave();
     }
 
     ///
-    /// this entrance fetches packets from the socket.
+    /// this callback fetches packets from the socket.
     ///
     Status		Gate::Fetch()
     {
@@ -538,8 +538,8 @@ namespace elle
     void		Gate::_error(const QAbstractSocket::SocketError)
     {
       String		text(this->socket->errorString().toStdString());
-      Entrance<const String>	entrance(&Gate::Error, this);
-      Closure<const String>	closure(entrance, text);
+      Callback< Parameters<const String> >	callback(&Gate::Error, this);
+      Closure< Parameters<const String> >	closure(callback, text);
 
       enter();
 
@@ -555,8 +555,8 @@ namespace elle
     ///
     void		Gate::_fetch()
     {
-      Entrance<>	entrance(&Gate::Fetch, this);
-      Closure<>		closure(entrance);
+      Callback< Parameters<> >	callback(&Gate::Fetch, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 

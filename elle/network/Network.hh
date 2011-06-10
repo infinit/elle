@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [wed may 25 15:55:54 2011]
+// updated       julien quintard   [fri jun 10 11:51:10 2011]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -22,14 +22,15 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
+#include <elle/radix/Trait.hh>
 
-#include <elle/archive/Archive.hh>
-
-#include <elle/concurrency/Accord.hh>
+#include <elle/package/Archive.hh>
 
 #include <elle/network/Tag.hh>
 #include <elle/network/Parcel.hh>
 #include <elle/network/Message.hh>
+
+#include <elle/utility/Registrar.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -37,8 +38,8 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
-  using namespace archive;
-  using namespace concurrency;
+  using namespace package;
+  using namespace utility;
 
   ///
   /// XXX
@@ -57,60 +58,18 @@ namespace elle
     {
     public:
       //
-      // constants
-      //
-      static const Natural32		Timeout = 0;
-
-      //
-      // classes
-      //
-
-      ///
-      /// this class represents the functionoid used to dispatch the
-      /// network event.
-      ///
-      class Functionoid:
-	public Entity
-      {
-      public:
-	//
-	// constructors & destructors
-	//
-	virtual ~Functionoid()
-	{
-	}
-
-	//
-	// methods
-	//
-	virtual Status	Call(Data&) const = 0;
-      };
-
-      ///
-      /// this implementation takes an archive, extracts a number of
-      /// arguments depending on the selectionoid and triggers the callback.
-      ///
-      template <const Tag G, const Natural32 N>
-      class Selectionoid:
-	public Functionoid
-      {
-      };
-
-      //
-      // types
-      //
-      typedef std::map<const Tag, Functionoid*>		Container;
-      typedef Container::iterator			Iterator;
-      typedef Container::const_iterator			Scoutor;
-
-      //
       // static methods
       //
       static Status	Initialize();
       static Status	Clean();
 
       template <const Tag G>
-      static Status	Register(const typename Message<G>::C&);
+      static Status	Register(
+			  const Callback<
+			    typename Trait::Constant<
+			      typename Message<G>::P
+			      >::Type
+			    >&);
       static Status	Dispatch(Parcel*);
 
       static Status	Show(const Natural32 = 0);
@@ -118,9 +77,7 @@ namespace elle
       //
       // static attributes
       //
-      static Accord	Control;
-
-      static Container	Callbacks;
+      static Registrar<Tag>	Bureau;
     };
 
   }
@@ -137,10 +94,8 @@ namespace elle
 //
 
 #include <elle/network/Address.hh>
-#include <elle/network/Arguments.hh>
 #include <elle/network/Bridge.hh>
 #include <elle/network/Data.hh>
-#include <elle/network/Derivable.hh>
 #include <elle/network/Door.hh>
 #include <elle/network/Gate.hh>
 #include <elle/network/Header.hh>
@@ -150,7 +105,6 @@ namespace elle
 #include <elle/network/Message.hh>
 #include <elle/network/Outputs.hh>
 #include <elle/network/Packet.hh>
-#include <elle/network/Parameters.hh>
 #include <elle/network/Parcel.hh>
 #include <elle/network/Port.hh>
 #include <elle/network/Range.hh>

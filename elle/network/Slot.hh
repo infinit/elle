@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [mon may 30 21:40:52 2011]
+// updated       julien quintard   [sun jun  5 23:38:20 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HH
@@ -90,7 +90,7 @@ namespace elle
 				 const Event& = Event::Null);
 
       //
-      // entrances
+      // callbacks
       //
       Status		Error(const String&);
       Status		Fetch();

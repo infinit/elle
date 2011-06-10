@@ -34,8 +34,8 @@ ADD_LIBRARY(elle
   io/Piece.cc
   io/Path.cc
 
-  archive/Archive.cc
-  archive/Archivable.cc
+  package/Archivable.cc
+  package/Archive.cc
 
   system/System.cc
 
@@ -52,8 +52,6 @@ ADD_LIBRARY(elle
   concurrency/Semaphore.cc
   concurrency/Thread.cc
   concurrency/Timer.cc
-
-  factory/Factory.cc
 
   cryptography/Cipher.cc
   cryptography/Code.cc
@@ -82,6 +80,7 @@ ADD_LIBRARY(elle
   network/Socket.cc
 
   utility/Base64.cc
+  utility/Factory.cc
   utility/Hexadecimal.cc
   utility/Parser.cc
   utility/Settings.cc

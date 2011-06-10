@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [wed may 25 15:55:11 2011]
+// updated       julien quintard   [tue jun  7 06:09:06 2011]
 //
 
 //
@@ -34,11 +34,6 @@ namespace elle
     ///
     Lane::Container		Lane::Porters;
 
-    ///
-    /// this variable control the access to the lane.
-    ///
-    Accord			Lane::Control;
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -46,7 +41,7 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    LanePorter::LanePorter(const Callback<Door*>&		callback):
+    LanePorter::LanePorter(const Callback< Parameters<Door*> >&	callback):
       server(NULL),
       callback(callback)
     {
@@ -142,7 +137,9 @@ namespace elle
     /// signal would be triggered which is not want we want.
     ///
     Status		Lane::Listen(const String&		name,
-				     const Callback<Door*>&	callback)
+				     const
+				       Callback<
+					 Parameters<Door*> >&	callback)
     {
       LanePorter*	porter;
 
@@ -155,13 +152,8 @@ namespace elle
       if (porter->Listen(name) == StatusError)
 	escape("unable to listen on the lane");
 
-      // lock in writing.
-      Lane::Control.Lock(ModeWrite);
-      {
-	// add the porter to the container.
-	Lane::Porters.push_back(porter);
-      }
-      Lane::Control.Unlock();
+      // add the porter to the container.
+      Lane::Porters.push_back(porter);
 
       // stop tracking porter.
       waive(porter);
@@ -219,20 +211,15 @@ namespace elle
 
       std::cout << alignment << "[Lane]" << std::endl;
 
-      // lock in reading.
-      Lane::Control.Lock(ModeRead);
-      {
-	// dump the porters table.
-	for (scoutor = Lane::Porters.begin();
-	     scoutor != Lane::Porters.end();
-	     scoutor++)
-	  {
-	    // dump the porter.
-	    if ((*scoutor)->Dump(margin + 2) == StatusError)
-	      escape("unable to dump the porter");
-	  }
-      }
-      Lane::Control.Unlock();
+      // dump the porters table.
+      for (scoutor = Lane::Porters.begin();
+	   scoutor != Lane::Porters.end();
+	   scoutor++)
+	{
+	  // dump the porter.
+	  if ((*scoutor)->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the porter");
+	}
 
       leave();
     }
@@ -278,8 +265,8 @@ namespace elle
 
     void		LanePorter::_accept()
     {
-      Entrance<>	entrance(&LanePorter::Accept, this);
-      Closure<>		closure(entrance);
+      Callback< Parameters<> >	callback(&LanePorter::Accept, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 

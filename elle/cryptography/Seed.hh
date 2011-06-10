@@ -23,7 +23,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
 
-#include <elle/archive/Archive.hh>
+#include <elle/package/Archive.hh>
 
 #include <elle/cryptography/PublicKey.hh>
 #include <elle/cryptography/PrivateKey.hh>
@@ -32,7 +32,7 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
-  using namespace archive;
+  using namespace package;
 
   namespace cryptography
   {

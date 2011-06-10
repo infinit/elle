@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [mon may 30 20:34:35 2011]
+// updated       julien quintard   [tue jun  7 07:28:29 2011]
 //
 
 //
@@ -323,30 +323,30 @@ namespace elle
     }
 
 //
-// ---------- entrances -------------------------------------------------------
+// ---------- callbacks -------------------------------------------------------
 //
 
     ///
-    /// this entrance is triggered whenever the socket changes state or
+    /// this callback is triggered whenever the socket changes state or
     /// if an error occurs.
     ///
     Status		Slot::Error(const String&		text)
     {
       enter();
 
-      // only process the error if a monitor entrance has been registered.
+      // only process the error if a monitor callback has been registered.
       if (this->callback != NULL)
 	{
-	  // trigger the entrance.
+	  // trigger the callback.
 	  if (this->callback->Trigger(text) == StatusError)
-	    escape("an error occured in the entrance");
+	    escape("an error occured in the callback");
 	}
 
       leave();
     }
 
     ///
-    /// this entrance fetches packets from the socket.
+    /// this callback fetches packets from the socket.
     ///
     Status		Slot::Fetch()
     {
@@ -412,8 +412,8 @@ namespace elle
     void		Slot::_error(const QAbstractSocket::SocketError)
     {
       String		text(this->socket->errorString().toStdString());
-      Entrance<const String>	entrance(&Slot::Error, this);
-      Closure<const String>	closure(entrance, text);
+      Callback< Parameters<const String> >	callback(&Slot::Error, this);
+      Closure< Parameters<const String> >	closure(callback, text);
 
       enter();
 
@@ -429,8 +429,8 @@ namespace elle
     ///
     void		Slot::_fetch()
     {
-      Entrance<>	entrance(&Slot::Fetch, this);
-      Closure<>		closure(entrance);
+      Callback< Parameters<> >	callback(&Slot::Fetch, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 

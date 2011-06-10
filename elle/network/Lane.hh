@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [wed may 25 15:53:06 2011]
+// updated       julien quintard   [tue jun  7 06:08:40 2011]
 //
 
 ///
@@ -35,7 +35,6 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 
-#include <elle/concurrency/Accord.hh>
 #include <elle/concurrency/Callback.hh>
 
 #include <elle/network/Door.hh>
@@ -85,7 +84,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      LanePorter(const Callback<Door*>&);
+      LanePorter(const Callback< Parameters<Door*> >&);
       ~LanePorter();
 
       //
@@ -108,8 +107,8 @@ namespace elle
       //
       // attributes
       //
-      ::QLocalServer*	server;
-      Callback<Door*>	callback;
+      ::QLocalServer*			server;
+      Callback< Parameters<Door*> >	callback;
 
       //
       // slots
@@ -140,15 +139,13 @@ namespace elle
       static Status	Clean();
 
       static Status	Listen(const String&,
-			       const Callback<Door*>&);
+			       const Callback< Parameters<Door*> >&);
 
       static Status	Show(const Natural32 = 0);
 
       //
       // static attributes
       //
-      static Accord	Control;
-
       static Container	Porters;
     };
 

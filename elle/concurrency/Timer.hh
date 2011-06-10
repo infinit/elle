@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [mon may  3 21:14:29 2010]
+// updated       julien quintard   [tue jun  7 06:06:14 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -22,6 +22,7 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/concurrency/Callback.hh>
 
@@ -73,23 +74,23 @@ namespace elle
       // methods
       //
       Status		Create(const Mode,
-			       const Callback<>&);
+			       const Callback< Parameters<> >&);
       Status		Start(Natural32 = 0);
       Status		Stop();
       Status		Restart(Natural32 = 0);
 
       //
-      // entrances
+      // callbacks
       //
       Status		Timeout();
 
       //
       // attributes
       //
-      ::QTimer*		timer;
+      ::QTimer*			timer;
 
-      Mode		mode;
-      Callback<>	callback;
+      Mode			mode;
+      Callback< Parameters<> >	callback;
 
     private slots:
       //

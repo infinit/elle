@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [mon may  3 21:11:49 2010]
+// updated       julien quintard   [tue jun  7 06:04:55 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -23,6 +23,7 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Meta.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Closure.hh>
@@ -103,6 +104,7 @@ namespace elle
 	  StateCompleted
 	};
 
+
       enum Type
 	{
 	  TypeNone,
@@ -130,9 +132,11 @@ namespace elle
 
       struct P
       {
-	typedef std::vector< Callback<const Phase, Fiber*>* >	Container;
-	typedef Container::iterator				Iterator;
-	typedef Container::const_iterator			Scoutor;
+	typedef std::vector<
+	  Callback<
+	    Parameters<const Phase, Fiber*> >* >	Container;
+	typedef Container::iterator			Iterator;
+	typedef Container::const_iterator		Scoutor;
       };
 
       //
@@ -174,7 +178,9 @@ namespace elle
       static Status	Awaken(const Resource*,
 			       T* = (T*)NULL);
 
-      static Status	Register(const Callback<const Phase, Fiber*>);
+      static Status	Register(const
+				 Callback<
+				   Parameters<const Phase, Fiber*> >&);
       static Status	Trigger(const Phase&);
 
       static Status	Schedule();

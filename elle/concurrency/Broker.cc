@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.cc
 //
 // created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [tue may 31 13:01:34 2011]
+// updated       julien quintard   [mon jun  6 23:31:46 2011]
 //
 
 //
@@ -17,7 +17,7 @@
 
 #include <elle/concurrency/Broker.hh>
 
-#include <elle/concurrency/Entrance.hh>
+#include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Closure.hh>
 #include <elle/concurrency/Fiber.hh>
 
@@ -34,7 +34,8 @@ namespace elle
     /// default constructor.
     ///
     Broker::Broker(const Natural16				descriptor,
-		   const Callback<const Natural16>&		callback):
+		   const Callback<
+		     Parameters<const Natural16> >&		callback):
       descriptor(descriptor),
       callback(callback),
       notifier(descriptor, ::QSocketNotifier::Read)
@@ -74,7 +75,7 @@ namespace elle
     }
 
 //
-// ---------- entrances -------------------------------------------------------
+// ---------- callbacks -------------------------------------------------------
 //
 
     ///
@@ -103,8 +104,8 @@ namespace elle
     ///
     void		Broker::_trigger()
     {
-      Entrance<>	entrance(&Broker::Trigger, this);
-      Closure<>		closure(entrance);
+      Callback< Parameters<> >	callback(&Broker::Trigger, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 

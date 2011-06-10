@@ -24,8 +24,8 @@
 
 #include <elle/standalone/Region.hh>
 
-#include <elle/archive/Archivable.hh>
-#include <elle/archive/Archive.hh>
+#include <elle/package/Archivable.hh>
+#include <elle/package/Archive.hh>
 
 #include <elle/utility/Base64.hh>
 #include <elle/utility/Hexadecimal.hh>

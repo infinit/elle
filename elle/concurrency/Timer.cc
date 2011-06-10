@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [mon may 30 20:37:54 2011]
+// updated       julien quintard   [tue jun  7 06:06:41 2011]
 //
 
 //
@@ -56,7 +56,9 @@ namespace elle
     /// this method sets up the timer by recording the callback.
     ///
     Status		Timer::Create(const Mode		mode,
-				      const Callback<>&		callback)
+				      const
+				        Callback<
+					  Parameters<> >&	callback)
     {
       enter();
 
@@ -121,7 +123,7 @@ namespace elle
     }
 
 //
-// ---------- entrances -------------------------------------------------------
+// ---------- callbacks -------------------------------------------------------
 //
 
     ///
@@ -148,12 +150,12 @@ namespace elle
     ///
     void		Timer::_timeout()
     {
-      Entrance<>	entrance(&Timer::Timeout, this);
-      Closure<>		closure(entrance);
+      Callback< Parameters<> >	callback(&Timer::Timeout, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 
-      // trigger the entrance in a new fiber.
+      // trigger the callback in a new fiber.
       if (Fiber::Spawn(closure) == StatusError)
 	alert("unable to spawn a fiber");
 

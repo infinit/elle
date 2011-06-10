@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [mon may 30 22:11:08 2011]
+// updated       julien quintard   [tue jun  7 06:03:42 2011]
 //
 
 //
@@ -68,8 +68,8 @@ namespace elle
     ///
     /// this method sets up the program for startup.
     ///
-    Status		Program::Setup(Callback<>*		prolog,
-				       Callback<>*		epilog)
+    Status		Program::Setup(Callback< Parameters<> >* prolog,
+				       Callback< Parameters<> >* epilog)
     {
       int		n;
 
@@ -104,13 +104,8 @@ namespace elle
     {
       enter();
 
-      // lock in writing.
-      program->accord.Lock(ModeWrite);
-      {
-	// set the exit state.
-	program->state = Program::StateStopped;
-      }
-      program->accord.Unlock();
+      // set the exit state.
+      program->state = Program::StateStopped;
 
       leave();
     }
@@ -130,14 +125,9 @@ namespace elle
       // process the events.
       while (true)
 	{
-	  // lock in reading.
-	  program->accord.Lock(ModeRead);
-	  {
-	    // check if the program must be stopped.
-	    if (program->state == Program::StateStopped)
-	      break;
-	  }
-	  program->accord.Unlock();
+	  // check if the program must be stopped.
+	  if (program->state == Program::StateStopped)
+	    break;
 
 	  // call the prolog, if provided.
 	  if (program->prolog != NULL)
@@ -156,23 +146,15 @@ namespace elle
 		escape("an error occured in the epilog");
 	    }
 
-	  // lock in reading.
-	  program->accord.Lock(ModeRead);
-	  {
-	    // if there are no events left to process, sleep a bit in order
-	    // to prevent using 100% of the CPU.
-	    if (program->core->hasPendingEvents() == false)
-	      {
-		program->accord.Unlock();
-
-		// sleep.
-		/// XXX \todo peut-on eviter de dormir? normalement c'est
-		/// a ca que sert un select() justement.
-		::usleep(10000);
-	      }
-	    else
-	      program->accord.Unlock();
-	  }
+	  // if there are no events left to process, sleep a bit in order
+	  // to prevent using 100% of the CPU.
+	  if (program->core->hasPendingEvents() == false)
+	    {
+	      // sleep.
+	      /// XXX \todo peut-on eviter de dormir? normalement c'est
+	      /// a ca que sert un select() justement.
+	      ::usleep(10000);
+	    }
 	}
 
       leave();

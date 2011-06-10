@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [mon may  3 00:16:25 2010]
+// updated       julien quintard   [tue jun  7 06:05:40 2011]
 //
 
 //
@@ -123,7 +123,7 @@ namespace elle
 	     scoutor != Fiber::Phases.end();
 	     scoutor++)
 	  {
-	    Callback<const Phase, Fiber*>*	callback = *scoutor;
+	    Callback< Parameters<const Phase, Fiber*> >* callback = *scoutor;
 
 	    // delete the callback.
 	    delete callback;
@@ -193,13 +193,16 @@ namespace elle
     /// this method registers a callback to be trigger should a fiber
     /// need to be saved or restored, depending on the given phase.
     ///
-    Status		Fiber::Register(const Callback<const Phase,
-					               Fiber*>	callback)
+    Status		Fiber::Register(const
+					  Callback<
+					    Parameters<const Phase,
+						       Fiber*> >& callback)
     {
       enter();
 
       // store in the container.
-      Fiber::Phases.push_back(new Callback<const Phase, Fiber*>(callback));
+      Fiber::Phases.push_back(
+        new Callback< Parameters<const Phase, Fiber*> >(callback));
 
       leave();
     }

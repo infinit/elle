@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [sun may  2 20:35:21 2010]
+// updated       julien quintard   [tue jun  7 06:37:16 2011]
 //
 
 //
@@ -45,7 +45,8 @@ namespace elle
     ///
     Status		Session::Initialize()
     {
-      Callback<const Phase, Fiber*>	govern(&Session::Govern);
+      Callback<
+	Parameters<const Phase, Fiber*> >	govern(&Session::Govern);
 
       enter();
 

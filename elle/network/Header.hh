@@ -24,7 +24,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
 
-#include <elle/archive/Archive.hh>
+#include <elle/package/Archive.hh>
 
 #include <elle/concurrency/Event.hh>
 
@@ -36,7 +36,7 @@ namespace elle
 {
   using namespace core;
   using namespace radix;
-  using namespace archive;
+  using namespace package;
   using namespace concurrency;
 
   namespace network

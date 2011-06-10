@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Outputs.hxx
 //
 // created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [sun may  2 20:29:24 2010]
+// updated       julien quintard   [tue jun  7 06:59:11 2011]
 //
 
 #ifndef ELLE_NETWORK_OUTPUTS_HXX
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Arguments.hh>
+#include <elle/network/Bundle.hh>
 
 namespace elle
 {
@@ -30,15 +30,17 @@ namespace elle
 //
 
     ///
-    /// this function generates an Arguments instance.
+    /// this function generates a Bundle instance.
     ///
     /// this function is being inlined in order to avoid copying the
-    /// Arguments instance for nothing.
+    /// Bundle instance for nothing.
     ///
-    template <const Tag G, typename... T>
-    inline Arguments<G, T...>	Outputs(T&...			objects)
+    template <const Tag G,
+	      typename... T>
+    inline
+    Bundle<G, Parameters<T...> >	Outputs(T&...		objects)
     {
-      return (Arguments<G, T...>(objects...));
+      return (Bundle<G, Parameters<T...> >(objects...));
     }
 
   }

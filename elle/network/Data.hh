@@ -18,11 +18,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/archive/Archive.hh>
+#include <elle/package/Archive.hh>
 
 namespace elle
 {
-  using namespace archive;
+  using namespace package;
 
   namespace network
   {

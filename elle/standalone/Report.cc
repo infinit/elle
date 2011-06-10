@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [tue may  4 13:11:41 2010]
+// updated       julien quintard   [mon jun  6 23:28:59 2011]
 //
 
 //
@@ -19,7 +19,7 @@
 #include <elle/standalone/Region.hh>
 #include <elle/standalone/Maid.hh>
 
-#include <elle/archive/Archive.hh>
+#include <elle/package/Archive.hh>
 
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Fiber.hh>
@@ -27,7 +27,7 @@
 namespace elle
 {
   using namespace core;
-  using namespace archive;
+  using namespace package;
   using namespace concurrency;
 
   namespace standalone
@@ -52,7 +52,8 @@ namespace elle
     ///
     Status		Report::Initialize()
     {
-      Callback<const Phase, Fiber*>	govern(&Report::Govern);
+      Callback<
+	Parameters<const Phase, Fiber*> >	govern(&Report::Govern);
 
       enter();
 
