@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [thu jun  2 15:51:18 2011]
+// updated       julien quintard   [fri jun 17 17:07:23 2011]
 //
 
 //
@@ -18,6 +18,8 @@
 #include <pig/FUSE.hh>
 
 #include <pig/Crux.hh>
+
+#include <hole/Hole.hh>
 
 namespace pig
 {
@@ -87,7 +89,7 @@ namespace pig
     // to activate the debug mode.
     //
     elle::String	ofsname("-ofsname='" +
-				Infinit::Descriptor.name +
+				hole::Hole::Descriptor.name +
 				"'");
     const char*		arguments[] =
       {
@@ -197,8 +199,10 @@ namespace pig
     // create the FUSE event broker.
     //
     {
-      elle::Callback<const elle::Natural16>	callback(&FUSE::Event);
-      int					fd;
+      elle::Callback<
+	elle::Parameters<
+	  const elle::Natural16> >	callback(&FUSE::Event);
+      int				fd;
 
       // retrieve the file descriptor.
       fd = ::fuse_chan_fd(FUSE::System::Channel);

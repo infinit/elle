@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [wed jun  1 14:46:47 2011]
+// updated       julien quintard   [tue jun 14 15:01:11 2011]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <pig/Crux.hh>
+#include <pig/PIG.hh>
 
 #include <etoile/Etoile.hh>
 
@@ -70,7 +71,7 @@ namespace pig
   int			Crux::Getattr(const char*		path,
 				      struct stat*		stat)
   {
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     struct ::fuse_file_info	info;
     int				result;
@@ -115,8 +116,8 @@ namespace pig
 				       struct stat*		stat,
 				       struct ::fuse_file_info*	info)
   {
-    etoile::context::Identifier*	identifier;
-    etoile::wall::Status		status;
+    etoile::gear::Identifier*		identifier;
+    etoile::miscellaneous::Information	information;
     etoile::path::Way			way(path);
     elle::String*			name;
 
@@ -128,11 +129,11 @@ namespace pig
     ::memset(stat, 0x0, sizeof(struct stat));
 
     // retrieve the identifier.
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (etoile::gear::Identifier*)info->fh;
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(*identifier,
-					  status) == elle::StatusError)
+					  information) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR);
 
@@ -140,7 +141,7 @@ namespace pig
     // found, the 'somebody' user is used instead, indicating that the
     // file belongs to someone, with the given permissions, but cannot
     // be mapped to a local user name.
-    if (PIG::Dictionary.users.Lookup(status.keys.owner,
+    if (PIG::Dictionary.users.Lookup(information.keys.owner,
 				     name) == elle::StatusTrue)
       {
 	//
@@ -175,23 +176,23 @@ namespace pig
     stat->st_gid = PIG::Somebody::GID;
 
     // set the size.
-    stat->st_size = (off_t)status.size;
+    stat->st_size = (off_t)information.size;
 
     // convert the times into time_t structures.
     stat->st_atime = time(NULL);
 
-    if (status.stamps.creation.Convert(stat->st_ctime) ==
+    if (information.stamps.creation.Convert(stat->st_ctime) ==
 	elle::StatusError)
       error("unable to convert the time stamps",
 	    EINTR);
 
-    if (status.stamps.modification.Convert(stat->st_mtime) ==
+    if (information.stamps.modification.Convert(stat->st_mtime) ==
 	elle::StatusError)
       error("unable to convert the time stamps",
 	    EINTR);
 
     // set the mode and permissions.
-    switch (status.genre)
+    switch (information.genre)
       {
       case nucleus::GenreDirectory:
 	{
@@ -200,12 +201,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to access
 	  // and read the directory.
-	  if ((status.permissions.owner & nucleus::PermissionRead) != 0)
+	  if ((information.permissions.owner & nucleus::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the directory content.
-	  if ((status.permissions.owner & nucleus::PermissionWrite) != 0)
+	  if ((information.permissions.owner & nucleus::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
 	  break;
@@ -218,12 +219,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read
 	  // the file.
-	  if ((status.permissions.owner & nucleus::PermissionRead) != 0)
+	  if ((information.permissions.owner & nucleus::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the file content.
-	  if ((status.permissions.owner & nucleus::PermissionWrite) != 0)
+	  if ((information.permissions.owner & nucleus::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
 
 	  // retrieve the attribute.
@@ -248,12 +249,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read and
 	  // search the linked object.
-	  if ((status.permissions.owner & nucleus::PermissionRead) != 0)
+	  if ((information.permissions.owner & nucleus::PermissionRead) != 0)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the link.
-	  if ((status.permissions.owner & nucleus::PermissionWrite) != 0)
+	  if ((information.permissions.owner & nucleus::PermissionWrite) != 0)
 	    stat->st_mode |= S_IWUSR;
  
 	  break;
@@ -299,7 +300,7 @@ namespace pig
   int			Crux::Opendir(const char*		path,
 				      struct ::fuse_file_info*	info)
   {
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     nucleus::Record		record;
 
@@ -317,7 +318,7 @@ namespace pig
 
     // retrieve the user's permissions on the object.
     if (etoile::wall::Access::Lookup(identifier,
-				     *FUSE::Subject,
+				     *PIG::Subject,
 				     record) == elle::StatusError)
       error("unable to retrieve the access record",
 	    EINTR,
@@ -337,7 +338,7 @@ namespace pig
 
     // duplicate the identifier and save it in the info structure's file
     // handle.
-    info->fh = (uint64_t)new etoile::context::Identifier(identifier);
+    info->fh = (uint64_t)new etoile::gear::Identifier(identifier);
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -355,10 +356,9 @@ namespace pig
 				      off_t			offset,
 				      struct ::fuse_file_info*	info)
   {
-    etoile::path::Way		way(path);
-    etoile::context::Identifier*identifier;
-    etoile::wall::Status	status;
-    off_t			next;
+    etoile::path::Way			way(path);
+    etoile::gear::Identifier*		identifier;
+    off_t				next;
 
     printf("[XXX] %s(%s, 0x%x, 0x%x, %qu, 0x%x)\n",
 	   __FUNCTION__,
@@ -366,7 +366,7 @@ namespace pig
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (etoile::gear::Identifier*)info->fh;
 
     // fill the . and .. entries.
     if (offset == 0)
@@ -393,7 +393,7 @@ namespace pig
 	// read the directory entries.
 	if (etoile::wall::Directory::Consult(*identifier,
 					     (nucleus::Offset)offset,
-					     FUSE::Range,
+					     Crux::Range,
 					     range) == elle::StatusError)
 	  error("unable to retrieve some directory entries",
 		EINTR);
@@ -416,7 +416,7 @@ namespace pig
 	    offset++;
 	  }
 
-	if (range.container.size() < FUSE::Range)
+	if (range.container.size() < Crux::Range)
 	  break;
       }
 
@@ -433,7 +433,7 @@ namespace pig
   int			Crux::Releasedir(const char*		path,
 					 struct ::fuse_file_info* info)
   {
-    etoile::context::Identifier*	identifier;
+    etoile::gear::Identifier*	identifier;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -441,7 +441,7 @@ namespace pig
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (etoile::gear::Identifier*)info->fh;
 
     // discard the object.
     if (etoile::wall::Directory::Discard(*identifier) == elle::StatusError)
@@ -469,8 +469,8 @@ namespace pig
   {
     etoile::path::Slice		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
-    etoile::context::Identifier	directory;
-    etoile::context::Identifier	subdirectory;
+    etoile::gear::Identifier	directory;
+    etoile::gear::Identifier	subdirectory;
     nucleus::Permissions	permissions;
 
     printf("[XXX] %s(%s, 0%o)\n",
@@ -483,7 +483,7 @@ namespace pig
 	    ENOENT);
 
     // create the subdirectory.
-    if (etoile::wall::DirectoryCreate() == elle::StatusError)
+    if (etoile::wall::Directory::Create(subdirectory) == elle::StatusError)
       error("unable to create the directory",
 	    EINTR,
 	    directory);
@@ -497,7 +497,7 @@ namespace pig
 
     // set the owner permissions.
     if (etoile::wall::Access::Update(subdirectory,
-				     *FUSE::Subject,
+				     *PIG::Subject,
 				     permissions) == elle::StatusError)
       error("unable to update the access record",
 	    EINTR,
@@ -537,8 +537,8 @@ namespace pig
     etoile::path::Slice		name;
     etoile::path::Way		child(path);
     etoile::path::Way		parent(child, name);
-    etoile::context::Identifier	directory;
-    etoile::context::Identifier	subdirectory;
+    etoile::gear::Identifier	directory;
+    etoile::gear::Identifier	subdirectory;
 
     printf("[XXX] %s(%s)\n",
 	   __FUNCTION__,
@@ -587,10 +587,10 @@ namespace pig
   int			Crux::Access(const char*		path,
 				     int			mask)
   {
-    etoile::context::Identifier	identifier;
-    etoile::wall::Status	status;
-    etoile::path::Way		way(path);
-    nucleus::Record		record;
+    etoile::gear::Identifier		identifier;
+    etoile::miscellaneous::Information	information;
+    etoile::path::Way			way(path);
+    nucleus::Record			record;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -603,14 +603,14 @@ namespace pig
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
-					  status) == elle::StatusError)
+					  information) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR,
 	    identifier);
 
     // retrieve the user's permissions on the object.
     if (etoile::wall::Access::Lookup(identifier,
-				     *FUSE::Subject,
+				     *PIG::Subject,
 				     record) == elle::StatusError)
       error("unable to retrieve the access record",
 	    ENOENT,
@@ -625,7 +625,7 @@ namespace pig
     // check if the permissions match the mask for execution.
     if ((mask & X_OK) != 0)
       {
-	switch (status.genre)
+	switch (information.genre)
 	  {
 	  case nucleus::GenreDirectory:
 	    {
@@ -717,10 +717,10 @@ namespace pig
   int			Crux::Chmod(const char*			path,
 				    mode_t			mode)
   {
-    etoile::context::Identifier	identifier;
-    etoile::path::Way		way(path);
-    nucleus::Permissions	permissions;
-    etoile::wall::Status	status;
+    etoile::gear::Identifier		identifier;
+    etoile::path::Way			way(path);
+    nucleus::Permissions		permissions;
+    etoile::miscellaneous::Information	information;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
@@ -763,7 +763,7 @@ namespace pig
     // note that the method assumes that the caller is the object's owner!
     // if not, an error will occur anyway, so why bother checking.
     if (etoile::wall::Access::Update(identifier,
-				     *FUSE::Subject,
+				     *PIG::Subject,
 				     permissions) == elle::StatusError)
       error("unable to update the access records",
 	    ENOENT,
@@ -771,14 +771,14 @@ namespace pig
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
-					  status) == elle::StatusError)
+					  information) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR,
 	    identifier);
 
     // set the posix::exec attribute if necessary i.e depending on the
     // file genre.
-    switch (status.genre)
+    switch (information.genre)
       {
       case nucleus::GenreFile:
 	{
@@ -864,7 +864,7 @@ namespace pig
 				       size_t			size,
 				       int			flags)
   {
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
 
     printf("[XXX] %s(%s, %s, 0x%x, %u, 0x%x)\n",
@@ -905,7 +905,7 @@ namespace pig
 				       char*			value,
 				       size_t			size)
   {
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     nucleus::Trait		trait;
 
@@ -962,7 +962,7 @@ namespace pig
 					char*			list,
 					size_t			size)
   {
-    etoile::context::Identifier			identifier;
+    etoile::gear::Identifier			identifier;
     etoile::path::Way				way(path);
     nucleus::Range<nucleus::Trait>		range;
     nucleus::Range<nucleus::Trait>::Scoutor	scoutor;
@@ -1036,7 +1036,7 @@ namespace pig
   int			Crux::Removexattr(const char*		path,
 					  const char*		name)
   {
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
 
     printf("[XXX] %s(%s, %s)\n",
@@ -1095,8 +1095,8 @@ namespace pig
   int			Crux::Symlink(const char*		target,
 				      const char*		source)
   {
-    etoile::context::Identifier	directory;
-    etoile::context::Identifier	link;
+    etoile::gear::Identifier	directory;
+    etoile::gear::Identifier	link;
     etoile::path::Slice		name;
     etoile::path::Way		from(etoile::path::Way(source), name);
     etoile::path::Way		to(target);
@@ -1155,7 +1155,7 @@ namespace pig
 				       char*			buffer,
 				       size_t			size)
   {
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     etoile::path::Way		target;
 
@@ -1175,7 +1175,7 @@ namespace pig
 	    identifier);
 
     // discard the link.
-    if (etoile::wall::Link::Discard>(identifier) == elle::StatusError)
+    if (etoile::wall::Link::Discard(identifier) == elle::StatusError)
       error("unable to discard the link",
 	    ENOENT);
 
@@ -1202,8 +1202,8 @@ namespace pig
   {
     etoile::path::Slice		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
-    etoile::context::Identifier	directory;
-    etoile::context::Identifier	file;
+    etoile::gear::Identifier	directory;
+    etoile::gear::Identifier	file;
     nucleus::Permissions	permissions;
 
     printf("[XXX] %s(%s, 0%o, 0x%x)\n",
@@ -1230,7 +1230,7 @@ namespace pig
 
     // set the owner permissions.
     if (etoile::wall::Access::Update(file,
-				     *FUSE::Subject,
+				     *PIG::Subject,
 				     permissions) == elle::StatusError)
       error("unable to update the access records",
 	    EINTR,
@@ -1279,7 +1279,7 @@ namespace pig
 	    ENOENT);
 
     // store the identifier in the file handle.
-    info->fh = (uint64_t)new etoile::context::Identifier(file);
+    info->fh = (uint64_t)new etoile::gear::Identifier(file);
 
     printf("[/XXX] %s(%s, 0%o, 0x%x)\n",
 	   __FUNCTION__,
@@ -1295,7 +1295,7 @@ namespace pig
 				   struct ::fuse_file_info*	info)
   {
     etoile::path::Way		way(path);
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -1307,7 +1307,7 @@ namespace pig
 	    ENOENT);
 
     // store the identifier in the file handle.
-    info->fh = (uint64_t)new etoile::context::Identifier(identifier);
+    info->fh = (uint64_t)new etoile::gear::Identifier(identifier);
 
     printf("[/XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
@@ -1325,15 +1325,15 @@ namespace pig
 				    off_t			offset,
 				    struct ::fuse_file_info*	info)
   {
-    etoile::context::Identifier*	identifier;
-    elle::Region			region;
+    etoile::gear::Identifier*	identifier;
+    elle::Region		region;
 
     printf("[XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
     // retrieve the identifier.
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (etoile::gear::Identifier*)info->fh;
 
     // wrap the buffer.
     if (region.Wrap((elle::Byte*)buffer, size) == elle::StatusError)
@@ -1363,15 +1363,15 @@ namespace pig
 				   off_t			offset,
 				   struct ::fuse_file_info*	info)
   {
-    etoile::context::Identifier*	identifier;
-    elle::Region			region;
+    etoile::gear::Identifier*	identifier;
+    elle::Region		region;
 
     printf("[XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
     // retrieve the identifier.
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (etoile::gear::Identifier*)info->fh;
 
     // read the file.
     if (etoile::wall::File::Read(*identifier,
@@ -1397,7 +1397,7 @@ namespace pig
   int			Crux::Truncate(const char*		path,
 				       off_t			size)
   {
-    etoile::context::Identifier	identifier;
+    etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     struct ::fuse_file_info	info;
     int				result;
@@ -1436,14 +1436,14 @@ namespace pig
 					off_t			size,
 					struct ::fuse_file_info* info)
   {
-    etoile::context::Identifier*	identifier;
+    etoile::gear::Identifier*	identifier;
 
     printf("[XXX] %s(%s, %qu, info)\n",
 	   __FUNCTION__,
 	   path, size, info);
 
     // retrieve the identifier.
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (etoile::gear::Identifier*)info->fh;
 
     // adjust the file's size.
     if (etoile::wall::File::Adjust(*identifier,
@@ -1464,15 +1464,15 @@ namespace pig
   int			Crux::Release(const char*		path,
 				      struct ::fuse_file_info*	info)
   {
-    etoile::path::Way			way(path);
-    etoile::context::Identifier*	identifier;
+    etoile::path::Way		way(path);
+    etoile::gear::Identifier*	identifier;
 
     printf("[XXX] %s(%s, 0x%x)\n",
 	   __FUNCTION__,
 	   path, info);
 
     // retrieve the identifier.
-    identifier = (etoile::context::Identifier*)info->fh;
+    identifier = (etoile::gear::Identifier*)info->fh;
 
     // store the file.
     if (etoile::wall::File::Store(*identifier) == elle::StatusError)
@@ -1502,7 +1502,7 @@ namespace pig
     etoile::path::Way		from(etoile::path::Way(source), f);
     etoile::path::Slice		t;
     etoile::path::Way		to(etoile::path::Way(target), t);
-    etoile::context::Identifier	object;
+    etoile::gear::Identifier	object;
 
     printf("[XXX] %s(%s, %s)\n",
 	   __FUNCTION__,
@@ -1522,7 +1522,7 @@ namespace pig
 	// in this case, the object to move can simply be renamed since
 	// the source and target directory are identical.
 	//
-	etoile::context::Identifier	directory;
+	etoile::gear::Identifier	directory;
 
 	// load the directory.
 	if (etoile::wall::Directory::Load(from,
@@ -1553,8 +1553,8 @@ namespace pig
 	// directory is removed.
 	//
 	etoile::path::Way		way(source);
-	etoile::context::Identifier	object;
-	etoile::context::Identifier	directory;
+	etoile::gear::Identifier	object;
+	etoile::gear::Identifier	directory;
 
 	// load the object even though we don't know its genre as we
 	// do not need to know to perform this operation.
@@ -1619,12 +1619,12 @@ namespace pig
   ///
   int			Crux::Unlink(const char*			path)
   {
-    etoile::path::Slice		name;
-    etoile::path::Way		child(path);
-    etoile::path::Way		parent(child, name);
-    etoile::context::Identifier	directory;
-    etoile::context::Identifier	identifier;
-    etoile::wall::Status	status;
+    etoile::path::Slice			name;
+    etoile::path::Way			child(path);
+    etoile::path::Way			parent(child, name);
+    etoile::gear::Identifier		directory;
+    etoile::gear::Identifier		identifier;
+    etoile::miscellaneous::Information	information;
 
     printf("[XXX] %s(%s)\n",
 	   __FUNCTION__,
@@ -1637,7 +1637,7 @@ namespace pig
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
-					  status) == elle::StatusError)
+					  information) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR,
 	    identifier);
@@ -1659,7 +1659,7 @@ namespace pig
 	    directory);
 
     // remove the object according to its type: file or link.
-    switch (status.genre)
+    switch (information.genre)
       {
       case nucleus::GenreFile:
 	{

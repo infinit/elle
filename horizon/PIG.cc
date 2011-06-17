@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [thu jun  2 15:50:24 2011]
+// updated       julien quintard   [fri jun 17 17:10:21 2011]
 //
 
 //
@@ -18,6 +18,7 @@
 #include <pig/PIG.hh>
 
 #include <elle/Elle.hh>
+#include <agent/Agent.hh>
 
 namespace pig
 {
@@ -68,7 +69,8 @@ namespace pig
       PIG::Subject = new nucleus::Subject;
 
       // create the subject.
-      if (PIG::Subject->Create(Infinit::Identity.pair.K) == elle::StatusError)
+      if (PIG::Subject->Create(agent::Agent::Identity.pair.K) ==
+	  elle::StatusError)
 	escape("unable to create the user's subject");
     }
 
@@ -93,7 +95,8 @@ namespace pig
     //
     {
       // load the dictionary file.
-      if (PIG::Dictionary.Load(Infinit::Identity.name) == elle::StatusError)
+      if (PIG::Dictionary.Load(agent::Agent::Identity.name) ==
+	  elle::StatusError)
 	escape("unable to load the dictionary");
     }
 
