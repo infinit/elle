@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [sun jun  5 23:37:02 2011]
+// updated       julien quintard   [fri jun 17 20:54:15 2011]
 //
 
 ///

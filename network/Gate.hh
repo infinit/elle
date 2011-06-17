@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [sun jun  5 23:38:33 2011]
+// updated       julien quintard   [fri jun 17 20:58:26 2011]
 //
 
 ///

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [fri jun  3 19:47:59 2011]
+// updated       julien quintard   [fri jun 17 20:54:34 2011]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -96,7 +96,7 @@ namespace elle
     ///
     /// XXX
     ///
-    /// note that the session is never assigned when receive is used
+    /// note that the session is never assigned when Receive() is used
     /// to manually receive messages. it is therefore the caller's
     /// responsability to keep information regarding who it is communicating
     /// with and using which socket.
