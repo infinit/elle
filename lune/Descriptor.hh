@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.hh
 //
 // created       julien quintard   [sat may  1 21:16:41 2010]
-// updated       julien quintard   [fri may 20 21:33:14 2011]
+// updated       julien quintard   [fri jun 17 16:53:43 2011]
 //
 
 #ifndef LUNE_DESCRIPTOR_HH
@@ -20,7 +20,8 @@
 
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
-#include <hole/Hole.hh>
+
+#include <hole/Model.hh>
 
 #include <lune/Authority.hh>
 
