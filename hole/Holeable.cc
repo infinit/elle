@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.cc
 //
 // created       julien quintard   [thu may 12 10:20:19 2011]
-// updated       julien quintard   [thu may 12 10:51:18 2011]
+// updated       julien quintard   [tue jun 14 19:20:34 2011]
 //
 
 //

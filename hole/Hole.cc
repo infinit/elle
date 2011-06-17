@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [thu may 26 14:22:15 2011]
+// updated       julien quintard   [fri jun 17 17:02:46 2011]
 //
 
 //
@@ -17,9 +17,7 @@
 
 #include <hole/Hole.hh>
 
-#include <hole/Manifest.hh>
-
-#include <lune/Lune.hh>
+#include <Infinit.hh>
 
 namespace hole
 {
@@ -34,20 +32,14 @@ namespace hole
   const elle::Character		Component[] = "hole";
 
   ///
-  /// this defines the name of the door which will be used by clients.
+  /// this variable contains the network descriptor.
   ///
-  const elle::String&		Hole::Line("hole");
+  lune::Descriptor		Hole::Descriptor;
 
   ///
-  /// this variables contains all the networks Hole is currently connected
-  /// to.
+  /// this variable holds the hole implementation.
   ///
-  Hole::Container		Hole::Networks;
-
-  ///
-  /// this variable holds the channel object connecting Etoile to Hole.
-  ///
-  elle::Channel*		Hole::Channel = NULL;
+  Holeable*			Hole::Implementation = NULL;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -57,66 +49,63 @@ namespace hole
   /// this method initializes the hole by allocating and initializing
   /// the implementation.
   ///
-  elle::Status		Hole::Initialize()
+  elle::Status		Hole::Initialize(const elle::String&	name)
   {
+    nucleus::Network	network;
+
     enter();
 
-    //
-    // register the messages.
-    //
-    {
-      elle::Callback<const nucleus::Network>	join(&Hole::Join);
-      elle::Callback<const nucleus::Network>	leav(&Hole::Leave);
-      elle::Callback<const nucleus::Network>	origin(&Hole::Origin);
-      elle::Callback<const nucleus::Network,
-		     const nucleus::Address,
-		     const elle::Derivable
-		       <nucleus::Block> >	push(&Hole::Push);
-      elle::Callback<const nucleus::Network,
-		     const nucleus::Address,
-		     const nucleus::Version>	pull(&Hole::Pull);
-      elle::Callback<const nucleus::Network,
-		     const nucleus::Address>	wipe(&Hole::Wipe);
+    // does the network exist.
+    if (Hole::Descriptor.Exist(name) == elle::StatusFalse)
+      escape("this network does not seem to exist");
 
-      // register the join message.
-      if (elle::Network::Register<TagJoin>(join) == elle::StatusError)
-	escape("unable to register the callback");
+    // load the descriptor.
+    if (Hole::Descriptor.Load(name) == elle::StatusError)
+      escape("unable to load the descriptor");
 
-      // register the leave message.
-      if (elle::Network::Register<TagLeave>(leav) == elle::StatusError)
-	escape("unable to register the callback");
+    // validate the descriptor.
+    if (Hole::Descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
+      escape("unable to validate the descriptor");
 
-      // register the origin message.
-      if (elle::Network::Register<TagOrigin>(origin) == elle::StatusError)
-	escape("unable to register the callback");
+    // create the network instance.
+    if (network.Create(name) == elle::StatusError)
+      escape("unable to create the network instance");
 
-      // register the push message.
-      if (elle::Network::Register<TagPush>(push) == elle::StatusError)
-	escape("unable to register the callback");
+    // create the holeable depending on the model.
+    switch (Hole::Descriptor.model)
+      {
+      case ModelLocal:
+	{
+	  // allocate the instance.
+	  Hole::Implementation = new local::Local(network);
 
-      // register the pull message.
-      if (elle::Network::Register<TagPull>(pull) == elle::StatusError)
-	escape("unable to register the callback");
+	  break;
+	}
+      case ModelRemote:
+	{
+	  /* XXX
+	  remote::Remote*        remote;
 
-      // register the wipe message.
-      if (elle::Network::Register<TagWipe>(wipe) == elle::StatusError)
-	escape("unable to register the callback");
-    }
+	  // allocate the instance.
+	  remote = new remote::Remote(network);
 
-    //
-    // create the connection.
-    //
-    {
-      elle::Callback<elle::Door*>		connection(&Hole::Connection);
+	  // set remote host.
+	  if (remote->Host(boot) == elle::StatusError)
+	    escape("unable to set the host");
 
-      /// XXX \todo le faire proprement en quittant, tout nettoyer, notamment
-      ///     en catchant les signaux (UNIX/QT) et via unlink dans Bridge.
-      ::unlink("/tmp/hole");
+	  // set the implementation.
+	  Hole::Implementation = remote;
+	  */
 
-      // listen for incoming connection.
-      if (elle::Lane::Listen(Hole::Line, connection) == elle::StatusError)
-	escape("unable to listen for bridge connections");
-    }
+	  break;
+	}
+      default:
+	escape("unknown model");
+      }
+
+    // set the root address.
+    if (Hole::Implementation->Root(Hole::Descriptor.root) == elle::StatusError)
+      escape("unable to set the root address");
 
     leave();
   }
@@ -128,143 +117,22 @@ namespace hole
   {
     enter();
 
-    // XXX destroy all the instances
-
-    leave();
-  }
-
-//
-// ---------- callbacks -------------------------------------------------------
-//
-
-  ///
-  /// this method joins the given network.
-  ///
-  elle::Status		Hole::Join(const nucleus::Network&	network)
-  {
-    Holeable*		holeable;
-
-    enter(instance(holeable));
-
-    printf("[XXX] Hole::Join()\n");
-
-    // check if this network has already been joined. if not, join it.
-    if (Hole::Networks.find(network) == Hole::Networks.end())
-      {
-	nucleus::Address				root;
-	elle::Address					boot;
-	std::pair<Hole::Iterator, elle::Boolean>	result;
-	Model						model;
-
-	// XXX[to change: contact the meta disciple]
-	{
-	  lune::Descriptor	descriptor;
-
-	  if (descriptor.Load(network.name) == elle::StatusError)
-	    escape("unable to load the descriptor");
-
-	  model = descriptor.model;
-	  root = descriptor.root;
-	  boot = descriptor.boot;
-	}
-	// XXX
-
-	// create the holeable depending on the implementation.
-	switch (model)
-	  {
-	  case ModelLocal:
-	    {
-	      // allocate the instance.
-	      holeable = new local::Local(network);
-
-	      break;
-	    }
-	  case ModelRemote:
-	    {
-	      remote::Remote*	remote;
-
-	      // allocate the instance.
-	      remote = new remote::Remote(network);
-
-	      // set remote host.
-	      if (remote->Host(boot) == elle::StatusError)
-		escape("unable to set the host");
-
-	      // set the holeable.
-	      holeable = remote;
-
-	      break;
-	    }
-	  default:
-	    escape("unknown model");
-	  }
-
-	// set the root address.
-	if (holeable->Root(root) == elle::StatusError)
-	  escape("unable to set the root address");
-
-	// join the network.
-	if (holeable->Join() == elle::StatusError)
-	  escape("unable to join the network");
-
-	// insert the network in the container.
-	result = Hole::Networks.insert(
-		   std::pair<nucleus::Network, Holeable*>(network, holeable));
-
-	// check if the insertion was successful.
-	if (result.second == false)
-	  escape("unable to insert the network in the container");
-
-	// waive the tracking.
-	waive(holeable);
-      }
-
-    // reply to the caller.
-    if (Hole::Channel->Reply(elle::Inputs<TagOk>()) == elle::StatusError)
-      escape("unable to reply to the caller");
+    // nothing to do.
 
     leave();
   }
 
   ///
-  /// this method leaves the given network if no other application uses
-  /// it.
+  /// this method returns the address of the root block i.e the origin.
   ///
-  elle::Status		Hole::Leave(const nucleus::Network&	network)
+  elle::Status		Hole::Origin(nucleus::Address&		address)
   {
-    enter();
-
-    printf("[XXX] Hole::Leave()\n");
-
-    // XXX use a refcount to be sure to destroy it when it is no longer used.
-
-    // reply to the caller.
-    if (Hole::Channel->Reply(elle::Inputs<TagOk>()) == elle::StatusError)
-      escape("unable to reply to the caller");
-
-    leave();
-  }
-
-  ///
-  /// this method returns the address of the root block.
-  ///
-  elle::Status		Hole::Origin(const nucleus::Network&	network)
-  {
-    Hole::Scoutor	scoutor;
-
     enter();
 
     printf("[XXX] Hole::Origin()\n");
 
-    // locate the network.
-    if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
-      escape("hole does not seem to be connected to this network");
-
-    // answer to the caller.
-    if (Hole::Channel->Reply(
-	  elle::Inputs<TagAddress>(scoutor->second->root)) ==
-	elle::StatusError)
-      escape("unable to answer to the caller");
+    // return the address.
+    address = Hole::Implementation->root;
 
     leave();
   }
@@ -272,40 +140,26 @@ namespace hole
   ///
   /// this method stores the given block.
   ///
-  elle::Status		Hole::Push(const nucleus::Network&	network,
-				   const nucleus::Address&	address,
-				   const
-				     elle::Derivable
-				       <nucleus::Block>&	derivable)
+  elle::Status		Hole::Push(const nucleus::Address&	address,
+				   const nucleus::Block&	block)
   {
-    Hole::Scoutor	scoutor;
-    nucleus::Block*	object;
-
     enter();
 
     printf("[XXX] Hole::Push()\n");
 
-    // locate the network.
-    if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
-      escape("hole does not seem to be connected to this network");
-
-    // infer the block from the derivable.
-    if (derivable.Infer(object) == elle::StatusError)
-      escape("unable to infer the block from the derivable");
-
     // forward the request depending on the nature of the block which
-    // the addres indicates.
+    // the address indicates.
     switch (address.family)
       {
       case nucleus::FamilyContentHashBlock:
 	{
-	  nucleus::ImmutableBlock*	ib;
+	  const nucleus::ImmutableBlock*	ib;
 
 	  // cast to an immutable block.
-	  ib = static_cast<nucleus::ImmutableBlock*>(object);
+	  ib = static_cast<const nucleus::ImmutableBlock*>(&block);
 
 	  // store the immutable block.
-	  if (scoutor->second->Put(address, *ib) == elle::StatusError)
+	  if (Hole::Implementation->Put(address, *ib) == elle::StatusError)
 	    escape("unable to put the block");
 
 	  break;
@@ -314,13 +168,13 @@ namespace hole
       case nucleus::FamilyOwnerKeyBlock:
       case nucleus::FamilyImprintBlock:
 	{
-	  nucleus::MutableBlock*	mb;
+	  const nucleus::MutableBlock*		mb;
 
 	  // cast to a mutable block.
-	  mb = static_cast<nucleus::MutableBlock*>(object);
+	  mb = static_cast<const nucleus::MutableBlock*>(&block);
 
 	  // store the mutable block.
-	  if (scoutor->second->Put(address, *mb) == elle::StatusError)
+	  if (Hole::Implementation->Put(address, *mb) == elle::StatusError)
 	    escape("unable to put the block");
 
 	  break;
@@ -330,11 +184,6 @@ namespace hole
 	  escape("unknown block family");
 	}
       }
-
-    // answer to the caller.
-    if (Hole::Channel->Reply(
-	  elle::Inputs<TagOk>()) == elle::StatusError)
-      escape("unable to answer to the caller");
 
     leave();
   }
@@ -342,24 +191,13 @@ namespace hole
   ///
   /// this method returns the block associated with the given address.
   ///
-  elle::Status		Hole::Pull(const nucleus::Network&	network,
-				   const nucleus::Address&	address,
-				   const nucleus::Version&	version)
+  elle::Status		Hole::Pull(const nucleus::Address&	address,
+				   const nucleus::Version&	version,
+				   nucleus::Block&		block)
   {
-    Hole::Scoutor	scoutor;
-    nucleus::Block*	block;
-
-    enter(instance(block));
+    enter();
 
     printf("[XXX] Hole::Pull()\n");
-
-    // locate the network.
-    if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
-      escape("hole does not seem to be connected to this network");
-
-    // build the block according to the component.
-    if (elle::Factory::Build(address.component, block) == elle::StatusError)
-      escape("unable to build the block");
 
     // forward the request depending on the nature of the block which
     // the addres indicates.
@@ -370,10 +208,10 @@ namespace hole
 	  nucleus::ImmutableBlock*	ib;
 
 	  // cast to an immutable block.
-	  ib = static_cast<nucleus::ImmutableBlock*>(block);
+	  ib = static_cast<nucleus::ImmutableBlock*>(&block);
 
 	  // retrieve the immutable block.
-	  if (scoutor->second->Get(address, *ib) == elle::StatusError)
+	  if (Hole::Implementation->Get(address, *ib) == elle::StatusError)
 	    escape("unable to get the block");
 
 	  break;
@@ -385,11 +223,11 @@ namespace hole
 	  nucleus::MutableBlock*	mb;
 
 	  // cast to a mutable block.
-	  mb = static_cast<nucleus::MutableBlock*>(block);
+	  mb = static_cast<nucleus::MutableBlock*>(&block);
 
 	  // retrieve the mutable block.
-	  if (scoutor->second->Get(address, version,
-				   *mb) == elle::StatusError)
+	  if (Hole::Implementation->Get(address, version,
+					*mb) == elle::StatusError)
 	    escape("unable to get the block");
 
 	  break;
@@ -400,89 +238,21 @@ namespace hole
 	}
       }
 
-    elle::Derivable<nucleus::Block>	derivable(address.component, *block);
-
-    // return the block to the caller.
-    if (Hole::Channel->Reply(
-	  elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
-      escape("unable to return the block to the caller");
-
-    // waive.
-    waive(block);
-
-    // delete the block.
-    delete block;
-
     leave();
   }
 
   ///
   /// this method removes the block associated with the given address.
   ///
-  elle::Status		Hole::Wipe(const nucleus::Network&	network,
-				   const nucleus::Address&	address)
+  elle::Status		Hole::Wipe(const nucleus::Address&	address)
   {
-    Hole::Scoutor	scoutor;
-
     enter();
 
     printf("[XXX] Hole::Wipe()\n");
 
-    // locate the network.
-    if ((scoutor = Hole::Networks.find(network)) == Hole::Networks.end())
-      escape("hole does not seem to be connected to this network");
-
     // forward the kill request to the implementation.
-    if (scoutor->second->Kill(address) == elle::StatusError)
+    if (Hole::Implementation->Kill(address) == elle::StatusError)
       escape("unable to erase the block");
-
-    // answer the caller.
-    if (Hole::Channel->Reply(
-	  elle::Inputs<TagOk>()) == elle::StatusError)
-      escape("unable to answer to the caller");
-
-    leave();
-  }
-
-  ///
-  /// this callback is triggered whenever a client connects to the hole.
-  ///
-  elle::Status		Hole::Connection(elle::Door*&		door)
-  {
-    elle::Callback<const elle::String>	error(&Hole::Error);
-
-    enter();
-
-    // if Etoile is already considered to be connected, reject any
-    // subsequent request.
-    if (Hole::Channel != NULL)
-      {
-	// disconnect the door.
-	if (door->Disconnect() == elle::StatusError)
-	  escape("unable to disconnect the door");
-
-	leave();
-      }
-
-    // otherwise, accept the connection.
-    Hole::Channel = door;
-
-    // register the error callback.
-    if (Hole::Channel->Monitor(error) == elle::StatusError)
-      escape("unable to monitor the connection");
-
-    leave();
-  }
-
-  ///
-  /// this callback is triggered whenever the connection is shut down.
-  ///
-  elle::Status		Hole::Error(const elle::String&		error)
-  {
-    enter();
-
-    // set the channel to null.
-    Hole::Channel = NULL;
 
     leave();
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/remote/Remote.cc
 //
 // created       julien quintard   [fri may 20 19:32:16 2011]
-// updated       julien quintard   [thu may 26 12:52:52 2011]
+// updated       julien quintard   [tue jun 14 18:39:25 2011]
 //
 
 //

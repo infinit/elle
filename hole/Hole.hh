@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [thu may 26 12:48:38 2011]
+// updated       julien quintard   [fri jun 17 16:53:57 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -20,12 +20,9 @@
 
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
+#include <lune/Lune.hh>
 
 #include <hole/Holeable.hh>
-
-#include <elle/idiom/Close.hh>
-# include <map>
-#include <elle/idiom/Open.hh>
 
 ///
 /// this namespace is used by the hole storage abstraction.
@@ -47,49 +44,26 @@ namespace hole
   {
   public:
     //
-    // constants
-    //
-    static const elle::String&		Line;
-
-    //
-    // types
-    //
-    typedef std::map<const nucleus::Network,
-		     Holeable*>			Container;
-    typedef Container::iterator			Iterator;
-    typedef Container::const_iterator		Scoutor;
-
-    //
     // static methods
     //
-    static elle::Status		Initialize();
+    static elle::Status		Initialize(const elle::String&);
     static elle::Status		Clean();
 
-    //
-    // static callbacks
-    //
-    static elle::Status		Join(const nucleus::Network&);
-    static elle::Status		Leave(const nucleus::Network&);
+    static elle::Status		Origin(nucleus::Address&);
 
-    static elle::Status		Origin(const nucleus::Network&);
-
-    static elle::Status		Push(const nucleus::Network&,
-				     const nucleus::Address&,
-				     const elle::Derivable<nucleus::Block>&);
-    static elle::Status		Pull(const nucleus::Network&,
-				     const nucleus::Address&,
-				     const nucleus::Version&);
-    static elle::Status		Wipe(const nucleus::Network&,
-				     const nucleus::Address&);
-
-    static elle::Status		Connection(elle::Door*&);
-    static elle::Status		Error(const elle::String&);
+    static elle::Status		Push(const nucleus::Address&,
+				     const nucleus::Block&);
+    static elle::Status		Pull(const nucleus::Address&,
+				     const nucleus::Version&,
+				     nucleus::Block&);
+    static elle::Status		Wipe(const nucleus::Address&);
 
     //
     // static attributes
     //
-    static Container		Networks;
-    static elle::Channel*	Channel;
+    static lune::Descriptor	Descriptor;
+
+    static Holeable*		Implementation;
   };
 
 }
@@ -98,10 +72,9 @@ namespace hole
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/Manifest.hh>
 #include <hole/Model.hh>
 
 #include <hole/local/Local.hh>
-#include <hole/remote/Remote.hh>
+// XXX #include <hole/remote/Remote.hh>
 
 #endif

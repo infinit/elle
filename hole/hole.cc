@@ -8,20 +8,18 @@
 // file          /home/mycure/infinit/hole/hole.cc
 //
 // created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [thu may 26 11:09:35 2011]
+// updated       julien quintard   [fri jun 17 17:05:45 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/Hole.hh>
-
+#include <Infinit.hh>
+#include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
-
-#include <elle/idiom/Close.hh>
-# include <list>
-#include <elle/idiom/Open.hh>
+#include <hole/Hole.hh>
 
 namespace hole
 {
@@ -37,14 +35,18 @@ namespace hole
 			     elle::Character*			argv[])
   {
     elle::Parser*		parser;
-    std::list<elle::String>	list;
     elle::Character		option;
+    elle::String		network;
 
     enter();
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
-      escape("unable to initialize the Elle library");
+      escape("unable to initialize Elle");
+
+    // initialize Infinit.
+    if (Infinit::Initialize() == elle::StatusError)
+      escape("unable to initialize Infinit");
 
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
@@ -81,8 +83,8 @@ namespace hole
 	    }
 	  case 'n':
 	    {
-	      // add the name to the list.
-	      list.push_back(optarg);
+	      // set the network name.
+	      network.assign(optarg);
 
 	      break;
 	    }
@@ -107,6 +109,15 @@ namespace hole
 	  }
       }
 
+    // check the network.
+    if (network.empty() == true)
+      {
+	// display the usage.
+	parser->Usage();
+
+	escape("please specify a network name");
+      }
+
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
       escape("unable to initialize Nucleus");
@@ -115,117 +126,39 @@ namespace hole
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize the Lune library");
 
-    // initialize the hole.
-    if (Hole::Initialize() == elle::StatusError)
-      escape("unable to initialize the hole");
-
-    // go through the list and join the networks.
-    while (list.empty() == false)
-      {
-	elle::String		name;
-	nucleus::Network	network;
-
-	// retrieve the name.
-	name = list.front();
-
-	// create a network object.
-	if (network.Create(name) == elle::StatusError)
-	  escape("unable to create the network");
-
-	// check if this network has already been joined. if not, join it.
-	if (Hole::Networks.find(network) == Hole::Networks.end())
-	  {
-	    Holeable*					holeable;
-	    nucleus::Address				root;
-	    elle::Address				boot;
-	    std::pair<Hole::Iterator, elle::Boolean>	result;
-	    Model					model;
-
-	    // XXX[to change: contact the meta disciple]
-	    {
-	      lune::Descriptor	descriptor;
-
-	      if (descriptor.Load(network.name) == elle::StatusError)
-		escape("unable to load the descriptor");
-
-	      model = descriptor.model;
-	      root = descriptor.root;
-	      boot = descriptor.boot;
-	    }
-	    // XXX
-
-	    // create the holeable depending on the implementation.
-	    switch (model)
-	      {
-	      case ModelLocal:
-		{
-		  // allocate the instance.
-		  holeable = new local::Local(network);
-
-		  break;
-		}
-	      case ModelRemote:
-		{
-		  remote::Remote*	remote;
-
-		  // allocate the instance.
-		  remote = new remote::Remote(network);
-
-		  // set remote host.
-		  if (remote->Host(boot) == elle::StatusError)
-		    escape("unable to set the host");
-
-		  // set the holeable.
-		  holeable = remote;
-
-		  break;
-		}
-	      default:
-		escape("unknown model");
-	      }
-
-	    // set the root address.
-	    if (holeable->Root(root) == elle::StatusError)
-	      escape("unable to set the root address");
-
-	    // join the network.
-	    if (holeable->Join() == elle::StatusError)
-	      escape("unable to join the network");
-
-	    // insert the network in the container.
-	    result = Hole::Networks.insert(
-		       std::pair<nucleus::Network,
-				 Holeable*>(network,
-					    holeable));
-
-	    // check if the insertion was successful.
-	    if (result.second == false)
-	      escape("unable to insert the network in the container");
-	  }
-
-	// pop the element.
-	list.pop_front();
-      }
+    // initialize the Hole library.
+    if (hole::Hole::Initialize(network) == elle::StatusError)
+      escape("unable to initialize Hole");
 
     // launch the program.
     if (elle::Program::Launch() == elle::StatusError)
-      escape("unable to process the events");
+      escape("an error occured while processing events");
 
-    // clean the hole.
-    if (Hole::Clean() == elle::StatusError)
-      escape("unable to clean the hole");
+    // clean Hole.
+    if (hole::Hole::Clean() == elle::StatusError)
+      escape("unable to clean Hole");
 
-    // clean the Lune library.
+    // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
-      escape("unable to clean the Lune library");
+      escape("unable to clean Lune");
 
     // clean the nucleus library.
     if (nucleus::Nucleus::Clean() == elle::StatusError)
       escape("unable to clean Nucleus");
 
-    // clean the Elle library.
+    // clean Infinit.
+    if (Infinit::Clean() == elle::StatusError)
+      escape("unable to clean Infinit");
+
+    // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
-      escape("unable to clean the Elle library");
+      escape("unable to clean Elle");
+
+    // delete the parser.
+    delete parser;
+
+    // waive.
+    waive(parser);
 
     leave();
   }

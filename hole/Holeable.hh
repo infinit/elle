@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.hh
 //
 // created       julien quintard   [wed may 11 14:55:32 2011]
-// updated       julien quintard   [thu may 26 09:50:39 2011]
+// updated       julien quintard   [tue jun 14 19:20:40 2011]
 //
 
 #ifndef HOLE_HOLEABLE_HH

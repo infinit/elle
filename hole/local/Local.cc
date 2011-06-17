@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [thu may 26 14:47:25 2011]
+// updated       julien quintard   [tue jun 14 18:52:34 2011]
 //
 
 //
@@ -97,8 +97,8 @@ namespace hole
 	  nucleus::MutableBlock*	current;
 
 	  // build a block according to the component.
-	  if (elle::Factory::Build(address.component,
-				   current) == elle::StatusError)
+	  if (nucleus::Nucleus::Factory.Build(address.component,
+					      current) == elle::StatusError)
 	    escape("unable to build the block");
 
 	  // load the latest version.
@@ -111,6 +111,9 @@ namespace hole
 	  if (*current >= block)
 	    escape("the block to store does not seem to derive the current "
 		   "version");
+
+	  // delete the current instance.
+	  delete current;
 	}
 
       // store the block.

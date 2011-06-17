@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/local/Local.hh
 //
 // created       julien quintard   [tue apr 13 16:05:04 2010]
-// updated       julien quintard   [sun may 22 11:40:14 2011]
+// updated       julien quintard   [tue jun 14 18:47:33 2011]
 //
 
 #ifndef HOLE_LOCAL_LOCAL_HH

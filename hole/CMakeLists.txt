@@ -1,20 +1,23 @@
 PROJECT(Hole CXX)
 
-ADD_EXECUTABLE(Hole
+ADD_LIBRARY(hole
   local/Local.cc
 
-  remote/Client.cc
-  remote/Node.cc
-  remote/Remote.cc
-  remote/Server.cc
+# XXX
+#  remote/Client.cc
+#  remote/Node.cc
+#  remote/Remote.cc
+#  remote/Server.cc
 
   Hole.cc
   Holeable.cc
+)
 
+ADD_EXECUTABLE(Hole
   hole.cc
 )
 
-TARGET_LINK_LIBRARIES(Hole elle nucleus lune
+TARGET_LINK_LIBRARIES(Hole infinit elle nucleus lune hole
 		           ${QT_QTCORE_LIBRARIES}
 		           ${QT_QTNETWORK_LIBRARIES}
 			   ${QT_QTKERNEL_LIBRARIES})

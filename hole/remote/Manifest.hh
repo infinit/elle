@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [thu may 26 13:16:06 2011]
+// updated       julien quintard   [tue jun 14 18:53:44 2011]
 //
 
 #ifndef HOLE_REMOTE_MANIFEST_HH
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <hole/Manifest.hh>
+#include <elle/Manifest.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -51,7 +51,7 @@ namespace hole
 ///
 /// XXX
 ///
-range(hole::remote::Component, hole::remote::Tags, hole::Component);
+range(hole::remote::Component, hole::remote::Tags, elle::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -90,17 +90,17 @@ outward(hole::remote::TagRemoteOk,
 	parameters());
 
 inward(hole::remote::TagRemotePush,
-       parameters(const nucleus::Network,
-		  const nucleus::Address,
-		  const elle::Derivable<nucleus::Block>));
+       parameters(nucleus::Network,
+		  nucleus::Address,
+		  elle::Derivable<nucleus::Block>));
 inward(hole::remote::TagRemotePull,
-       parameters(const nucleus::Network,
-		  const nucleus::Address,
-		  const nucleus::Version));
+       parameters(nucleus::Network,
+		  nucleus::Address,
+		  nucleus::Version));
 outward(hole::remote::TagRemoteBlock,
-	parameters(const elle::Derivable<nucleus::Block>));
+	parameters(elle::Derivable<nucleus::Block>));
 inward(hole::remote::TagRemoteWipe,
-       parameters(const nucleus::Network,
-		  const nucleus::Address));
+       parameters(nucleus::Network,
+		  nucleus::Address));
 
 #endif

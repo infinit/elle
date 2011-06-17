@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/remote/Remote.hh
 //
 // created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [thu may 26 15:02:39 2011]
+// updated       julien quintard   [tue jun 14 18:38:54 2011]
 //
 
 #ifndef HOLE_LOCAL_REMOTE_HH
@@ -70,9 +70,6 @@ namespace hole
       //
 
       // holeable
-      elle::Status	Join();
-      elle::Status	Leave();
-
       elle::Status	Put(const nucleus::Address&,
 			    const nucleus::ImmutableBlock&);
       elle::Status	Put(const nucleus::Address&,
