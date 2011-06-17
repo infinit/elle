@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri jun 10 13:18:46 2011]
+// updated       julien quintard   [fri jun 17 16:40:00 2011]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <agent/Agent.hh>
+
+#include <Infinit.hh>
 
 namespace agent
 {
@@ -29,6 +31,11 @@ namespace agent
   ///
   const elle::Character		Component[] = "agent";
 
+  ///
+  /// this user's identity.
+  ///
+  lune::Identity		Agent::Identity;
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -36,11 +43,32 @@ namespace agent
   ///
   /// this method initializes the agent.
   ///
-  elle::Status		Agent::Initialize()
+  elle::Status		Agent::Initialize(const elle::String&	name)
   {
+    elle::String	prompt;
+    elle::String	pass;
+
     enter();
 
-    // nothing to do.
+    // does the identity exist.
+    if (Agent::Identity.Exist(name) == elle::StatusFalse)
+      escape("the user identity does not seem to exist");
+
+    // prompt the user for the passphrase.
+    prompt = "Enter passphrase for keypair '" + name + "': ";
+    pass = elle::String(::getpass(prompt.c_str()));
+
+    // load the identity.
+    if (Agent::Identity.Load(name) == elle::StatusError)
+      escape("unable to load the identity");
+
+    // verify the identity.
+    if (Agent::Identity.Validate(Infinit::Authority) != elle::StatusTrue)
+      escape("the identity seems to be invalid");
+
+    // decrypt the identity.
+    if (Agent::Identity.Decrypt(pass) == elle::StatusError)
+      escape("unable to decrypt the identity");
 
     leave();
   }
@@ -53,41 +81,6 @@ namespace agent
     enter();
 
     // nothing to do.
-
-    leave();
-  }
-
-  ///
-  /// this method is called whenever one needs to decrypt a code with
-  /// the agent's private key.
-  ///
-  elle::Status		Agent::Decrypt(const elle::Code&	code,
-				       elle::Clear&		clear)
-  {
-    enter();
-
-    printf("[XXX] Agent::Decrypt()\n");
-
-    // perform the cryptographic operation.
-    if (Infinit::Identity.pair.k.Decrypt(code, clear) == elle::StatusError)
-      escape("unable to perform the decryption");
-
-    leave();
-  }
-
-  ///
-  /// this method is triggered whenever one needs to perform a signature.
-  ///
-  elle::Status		Agent::Sign(const elle::Plain&		plain,
-				    elle::Signature&		signature)
-  {
-    enter();
-
-    printf("[XXX] Agent::Sign()\n");
-
-    // perform the cryptographic operation.
-    if (Infinit::Identity.pair.k.Sign(plain, signature) == elle::StatusError)
-      escape("unable to perform the signature");
 
     leave();
   }
