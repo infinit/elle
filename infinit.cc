@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [thu jun  2 15:30:02 2011]
+// updated       julien quintard   [fri jun 17 17:03:25 2011]
 //
 
 //
@@ -19,7 +19,9 @@
 
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
+#include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
+#include <hole/Hole.hh>
 #include <pig/PIG.hh>
 
 //
@@ -43,6 +45,10 @@ elle::Status		Main(elle::Natural32			argc,
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::StatusError)
     escape("unable to initialize Elle");
+
+  // initialize Infinit.
+  if (Infinit::Initialize() == elle::StatusError)
+    escape("unable to initialize Infinit");
 
   // set up the program.
   if (elle::Program::Setup() == elle::StatusError)
@@ -175,13 +181,17 @@ elle::Status		Main(elle::Natural32			argc,
   if (lune::Lune::Initialize() == elle::StatusError)
     escape("unable to initialize Lune");
 
-  // initialize Infinit.
-  if (Infinit::Initialize(user, network) == elle::StatusError)
-    escape("unable to initialize Infinit");
+  // initialize the Agent library.
+  if (agent::Agent::Initialize(user) == elle::StatusError)
+    escape("unable to initialize Agent");
 
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::StatusError)
     escape("unable to initialize Etoile");
+
+  // initialize the Hole library.
+  if (hole::Hole::Initialize(network) == elle::StatusError)
+    escape("unable to initialize Hole");
 
   // initialize PIG.
   if (pig::PIG::Initialize(mountpoint) == elle::StatusError)
@@ -195,13 +205,17 @@ elle::Status		Main(elle::Natural32			argc,
   if (pig::PIG::Clean() == elle::StatusError)
     escape("unable to clean PIG");
 
+  // clean Hole.
+  if (hole::Hole::Clean() == elle::StatusError)
+    escape("unable to clean Hole");
+
   // clean the Etoile library.
   if (etoile::Etoile::Clean() == elle::StatusError)
     escape("unable to clean Etoile");
 
-  // clean Infinit.
-  if (Infinit::Clean(k) == elle::StatusError)
-    escape("unable to clean Infinit");
+  // clean the Agent library.
+  if (agent::Agent::Clean() == elle::StatusError)
+    escape("unable to clean Agent");
 
   // clean Lune
   if (lune::Lune::Clean() == elle::StatusError)
@@ -210,6 +224,10 @@ elle::Status		Main(elle::Natural32			argc,
   // clean the nucleus library.
   if (nucleus::Nucleus::Clean() == elle::StatusError)
     escape("unable to clean Nucleus");
+
+  // clean Infinit.
+  if (Infinit::Clean() == elle::StatusError)
+    escape("unable to clean Infinit");
 
   // clean Elle.
   if (elle::Elle::Clean() == elle::StatusError)

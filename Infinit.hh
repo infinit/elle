@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.hh
 //
 // created       julien quintard   [tue may  4 22:00:43 2010]
-// updated       julien quintard   [thu jun  2 15:31:58 2011]
+// updated       julien quintard   [fri jun 17 17:06:08 2011]
 //
 
 #ifndef INFINIT_HH
@@ -31,20 +31,18 @@ public:
   //
   // constants
   //
-  static const elle::String		Authority;
+  static const elle::String		Key;
   static const elle::String		Version;
 
   //
   // globals
   //
-  static lune::Descriptor		Descriptor;
-  static lune::Identity			Identity;
+  static lune::Authority		Authority;
 
   //
   // methods
   //
-  static elle::Status		Initialize(const elle::String&,
-					   const elle::String&);
+  static elle::Status		Initialize();
   static elle::Status		Clean();
 };
 
