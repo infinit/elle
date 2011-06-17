@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.hh
 //
 // created       julien quintard   [sat may 21 12:27:09 2011]
-// updated       julien quintard   [sat may 21 17:06:54 2011]
+// updated       julien quintard   [fri jun 17 15:36:30 2011]
 //
 
 #ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH
@@ -56,11 +56,11 @@ namespace nucleus
       //
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       // fileable
       elle::Status	Load(const Network&,
@@ -77,7 +77,6 @@ namespace nucleus
       //
       // attributes
       //
-      // XXX Base		base;
       Version		version;
     };
 

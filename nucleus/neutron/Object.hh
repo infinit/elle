@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [sat may 21 22:05:44 2011]
+// updated       julien quintard   [fri jun 17 15:38:14 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
@@ -46,9 +46,6 @@ namespace nucleus
     ///
     /// XXX
     ///
-    /// XXX owner.subject et meta.owner.record ne sont pas serializes mais
-    /// sont ici juste pour simplifier le processus de gestion des access
-    ///
     class Object:
       public proton::ImprintBlock
     {
@@ -66,15 +63,13 @@ namespace nucleus
 
       elle::Status	Update(const Author&,
 			       const proton::Address&,
-			       const Size&,
-			       const elle::Digest&);
+			       const Size&);
       elle::Status	Administrate(const Attributes&,
 				     const proton::Address&,
 				     const Permissions&,
 				     const Token&);
 
-      template <typename T>
-      elle::Status	Seal(const T&,
+      elle::Status	Seal(const elle::PrivateKey&,
 			     const Access* = NULL);
 
       elle::Status	Validate(const proton::Address&,
@@ -106,12 +101,12 @@ namespace nucleus
 
       struct
       {
+	// XXX proton::Base		base;
+
 	struct
 	{
 	  Permissions		permissions;
 	  Token			token;
-
-	  Record		record;
 	}			owner;
 
 	Genre			genre;
@@ -129,12 +124,12 @@ namespace nucleus
 
       struct
       {
+	// XXX proton::Base		base;
+
 	proton::Address		contents;
 
 	Size			size;
 	elle::Time		stamp;
-
-	elle::Digest		fingerprint;
 
 	proton::Version		version;
 	elle::Signature		signature;
@@ -145,11 +140,5 @@ namespace nucleus
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <nucleus/neutron/Object.hxx>
 
 #endif

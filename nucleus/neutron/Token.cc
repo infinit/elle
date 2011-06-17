@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat may  7 22:08:47 2011]
+// updated       julien quintard   [thu jun 16 21:12:30 2011]
 //
 
 //
@@ -98,6 +98,25 @@ namespace nucleus
 	  if (K.Encrypt(key, *this->code) == elle::StatusError)
 	    escape("unable to encrypt the key");
 	}
+
+      leave();
+    }
+
+    ///
+    /// this method extracts the secret key from the token.
+    ///
+    elle::Status	Token::Extract(const elle::PrivateKey&	k,
+				       elle::SecretKey&		key) const
+    {
+      enter();
+
+      // check the code.
+      if (this->code == NULL)
+	escape("unable to retrieve the key out of a null token");
+
+      // decrypt the code.
+      if (k.Decrypt(*this->code, key) == elle::StatusError)
+	escape("unable to decrypt the token's content");
 
       leave();
     }

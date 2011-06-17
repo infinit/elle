@@ -8,11 +8,20 @@
 // file          /home/mycure/infinit/nucleus/proton/Base.hh
 //
 // created       julien quintard   [sat may 21 13:21:51 2011]
-// updated       julien quintard   [sat may 21 15:28:43 2011]
+// updated       julien quintard   [fri jun 17 14:48:43 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BASE_HH
 #define NUCLEUS_PROTON_BASE_HH
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/Elle.hh>
+
+#include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/Version.hh>
 
 namespace nucleus
 {
@@ -24,16 +33,48 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// a base references a precise version of a mutable block.
     ///
-    class Base
+    /// this construct is useful to make sure a mutable block derives
+    /// from another one, and another one down to the original mutable
+    /// block whose ownership can usually be statically verified.
+    ///
+    /// by following this chain, one can make sure a mutable block lies
+    /// in the legitimate block's history.
+    ///
+    class Base:
+      public elle::Object
     {
     public:
+      //
+      // methods
+      //
+      elle::Status	Create(const Version&,
+			       const elle::Digest&);
+      elle::Status	Create(const MutableBlock&);
+
+      elle::Status	Match(const MutableBlock&) const;
+
+      //
+      // interfaces
+      //
+
+      // object
+      declare(Base);
+      elle::Boolean	operator==(const Base&) const;
+
+      // dumpable
+      elle::Status	Dump(const elle::Natural32 = 0) const;
+
+      // archivable
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
+
       //
       // attributes
       //
       Version		version;
-      elle::Digest*	digest;
+      elle::Digest	digest;
     };
 
   }

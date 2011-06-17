@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Token.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [sat may  7 22:09:13 2011]
+// updated       julien quintard   [thu jun 16 20:49:11 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_TOKEN_HH
@@ -55,8 +55,7 @@ namespace nucleus
       //
       elle::Status	Update(const elle::SecretKey&,
 			       const elle::PublicKey&);
-      template <typename T>
-      elle::Status	Extract(const T&,
+      elle::Status	Extract(const elle::PrivateKey&,
 				elle::SecretKey&) const;
 
       //
@@ -82,11 +81,5 @@ namespace nucleus
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <nucleus/neutron/Token.hxx>
 
 #endif

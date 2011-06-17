@@ -4,14 +4,17 @@ ADD_LIBRARY(nucleus
   Nucleus.cc
 
   proton/Address.cc
+  proton/Base.cc
   proton/Block.cc
   proton/ContentHashBlock.cc
   proton/ImmutableBlock.cc
   proton/ImprintBlock.cc
+  proton/Location.cc
   proton/MutableBlock.cc
   proton/Network.cc
   proton/OwnerKeyBlock.cc
   proton/PublicKeyBlock.cc
+  proton/Stamp.cc
   proton/Version.cc
 
   neutron/Access.cc

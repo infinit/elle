@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [thu may 26 11:30:12 2011]
+// updated       julien quintard   [wed jun 15 20:13:41 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_VERSION_HH

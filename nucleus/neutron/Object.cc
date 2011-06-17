@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sat may 21 23:49:11 2011]
+// updated       julien quintard   [fri jun 17 15:38:54 2011]
 //
 
 //
@@ -87,19 +87,16 @@ namespace nucleus
 
       // (iii)
       {
-	elle::Digest	fingerprint;
 	Author		author;
 
 	// set an owner author.
 	if (author.Create() == elle::StatusError)
 	  escape("unable to create an author");
 
-	// set the initial data with no contents, an empty fingerprint and
-	// the owner as the author.
+	// set the initial data with no contents and the owner as the author.
 	if (this->Update(author,
 			 proton::Address::Null,
-			 0,
-			 fingerprint) == elle::StatusError)
+			 0) == elle::StatusError)
 	  escape("unable to set the initial data");
       }
 
@@ -111,8 +108,7 @@ namespace nucleus
     ///
     elle::Status	Object::Update(const Author&		author,
 				       const proton::Address&	contents,
-				       const Size&		size,
-				       const elle::Digest&	fingerprint)
+				       const Size&		size)
     {
       enter();
 
@@ -128,9 +124,6 @@ namespace nucleus
 
       // set the size.
       this->data.size = size;
-
-      // set the fingerprint.
-      this->data.fingerprint = fingerprint;
 
       // mark the section as dirty.
       this->data.state = StateDirty;
@@ -193,14 +186,108 @@ namespace nucleus
       // mark the section as dirty.
       this->meta.state = StateDirty;
 
-      // re-compute the owner's access record. just like this->owner.subject,
-      // this attribute is not mandatory but has been introduced in order
-      // to simplify access control management.
-      if (this->meta.owner.record.Update(this->owner.subject,
-					 this->meta.owner.permissions,
-					 this->meta.owner.token) ==
-	  elle::StatusError)
-	escape("unable to create the owner access record");
+      leave();
+    }
+
+    ///
+    /// this method seals the data and meta data by signing them.
+    ///
+    elle::Status	Object::Seal(const elle::PrivateKey&	k,
+				     const Access*		access)
+    {
+      enter();
+
+      // re-sign the data if required.
+      if (this->data.state == StateDirty)
+	{
+	  // increase the data version.
+	  this->data.version += 1;
+
+	  // sign the archive with the author key.
+	  if (k.Sign(this->data.contents,
+		     this->data.size,
+		     this->data.stamp,
+		     this->data.version,
+
+		     this->meta.owner.token,
+		     this->meta.access,
+
+		     this->data.signature) == elle::StatusError)
+	    escape("unable to sign the data archive");
+
+	  // mark the section as clean.
+	  this->data.state = StateClean;
+	}
+
+      // re-sign the meta data if required.
+      if (this->meta.state == StateDirty)
+	{
+
+	  // increase the meta version.
+	  this->meta.version += 1;
+
+	  // perform the meta signature depending on the presence of a
+	  // reference to an access block.
+	  if (this->meta.access != proton::Address::Null)
+	    {
+	      //
+	      // if an access block is referenced, the identities and
+	      // permissions of the delegates must be included in the meta
+	      // signature.
+	      //
+	      // in practical terms, a digest of the (subject, permissions)
+	      // access records is computed which is then included in
+	      // the meta signature.
+	      //
+	      elle::Digest	fingerprint;
+
+	      // test if there is an access block.
+	      if (access == NULL)
+		escape("the Seal() method must take the object's "
+		       "access block");
+
+	      // compute the fingerprint of the access (subject, permissions)
+	      // tuples.
+	      if (access->Fingerprint(fingerprint) == elle::StatusError)
+		escape("unable to compute the access block fingerprint");
+
+	      // sign the meta data, making sure to include the access
+	      // fingerprint.
+	      if (k.Sign(this->meta.owner.permissions,
+			 this->meta.genre,
+			 this->meta.stamp,
+			 this->meta.attributes,
+			 this->meta.version,
+
+			 fingerprint,
+
+			 this->meta.signature) == elle::StatusError)
+		escape("unable to sign the meta archive");
+	    }
+	  else
+	    {
+	      //
+	      // otherwise, only the meta attributes are included in
+	      // the signature.
+	      //
+
+	      // sign the meta data.
+	      if (k.Sign(this->meta.owner.permissions,
+			 this->meta.genre,
+			 this->meta.stamp,
+			 this->meta.attributes,
+			 this->meta.version,
+
+			 this->meta.signature) == elle::StatusError)
+		escape("unable to sign the meta archive");
+	    }
+
+	  // mark the section as clean.
+	  this->meta.state = StateClean;
+	}
+
+      // set the mutable block's version.
+      this->version = this->meta.version + this->data.version;
 
       leave();
     }
@@ -297,7 +384,6 @@ namespace nucleus
 			   this->data.contents,
 			   this->data.size,
 			   this->data.stamp,
-			   this->data.fingerprint,
 			   this->data.version,
 
 			   this->meta.owner.token,
@@ -432,11 +518,6 @@ namespace nucleus
       if (this->data.stamp.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the data stamp");
 
-      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Fingerprint]" << std::endl;
-      if (this->data.fingerprint.Dump(margin + 6) == elle::StatusError)
-	escape("unable to dump the fingerprint");
-
       if (this->data.version.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the data version");
 
@@ -485,7 +566,6 @@ namespace nucleus
       if (archive.Serialize(this->data.contents,
 			    this->data.size,
 			    this->data.stamp,
-			    this->data.fingerprint,
 			    this->data.version,
 			    this->data.signature) == elle::StatusError)
 	escape("unable to serialize the data part");
@@ -527,17 +607,9 @@ namespace nucleus
       if (archive.Extract(this->data.contents,
 			  this->data.size,
 			  this->data.stamp,
-			  this->data.fingerprint,
 			  this->data.version,
 			  this->data.signature) == elle::StatusError)
 	escape("unable to extract the data part");
-
-      // compute the owner record.
-      if (this->meta.owner.record.Update(this->owner.subject,
-					 this->meta.owner.permissions,
-					 this->meta.owner.token) ==
-	  elle::StatusError)
-	escape("unable to create the owner access record");
 
       leave();
     }
