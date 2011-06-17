@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Arguments.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [fri jun 10 13:02:55 2011]
+// updated       julien quintard   [fri jun 17 23:30:36 2011]
 //
 
 #ifndef ELLE_RADIX_ARGUMENTS_HXX
@@ -44,6 +44,10 @@ namespace elle
     /// note that the template specializations give meaning to the
     /// parameters i.e P<T...>.
     ///
+    /// the Trigger() method is also provided in constant should the calling
+    /// instance have no choice. note however that this would imply every
+    /// callback/closure/etc. argument to be constant as well.
+    ///
 
     ///
     /// zero-argument.
@@ -76,12 +80,48 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
 	// trigger the object.
 	if (object.Trigger() == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -151,12 +191,52 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
 	// trigger the object.
 	if (object.Trigger(this->argument1) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -231,13 +311,55 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
 	// trigger the object.
 	if (object.Trigger(this->argument1,
 			   this->argument2) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -317,7 +439,8 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
@@ -325,6 +448,49 @@ namespace elle
 	if (object.Trigger(this->argument1,
 			   this->argument2,
 			   this->argument3) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -409,7 +575,8 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
@@ -418,6 +585,51 @@ namespace elle
 			   this->argument2,
 			   this->argument3,
 			   this->argument4) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -507,7 +719,8 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
@@ -517,6 +730,53 @@ namespace elle
 			   this->argument3,
 			   this->argument4,
 			   this->argument5) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -613,7 +873,8 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
@@ -624,6 +885,57 @@ namespace elle
 			   this->argument4,
 			   this->argument5,
 			   this->argument6) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -725,7 +1037,8 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
@@ -737,6 +1050,59 @@ namespace elle
 			   this->argument5,
 			   this->argument6,
 			   this->argument7) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6, T7,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   this->argument7,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6, T7,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   this->argument7,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -843,7 +1209,8 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
@@ -856,6 +1223,61 @@ namespace elle
 			   this->argument6,
 			   this->argument7,
 			   this->argument8) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6, T7, T8,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   this->argument7,
+			   this->argument8,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6, T7, T8,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   this->argument7,
+			   this->argument8,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();
@@ -967,7 +1389,8 @@ namespace elle
       }
 
       template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object) const
+      Status		Trigger(const C<P>&			object)
+	const
       {
 	enter();
 
@@ -981,6 +1404,63 @@ namespace elle
 			   this->argument7,
 			   this->argument8,
 			   this->argument9) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6, T7, T8, T9,
+				    U...> >&			object,
+				U&...				arguments)
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   this->argument7,
+			   this->argument8,
+			   this->argument9,
+			   arguments...) == StatusError)
+	  escape("unable to trigger the object");
+
+	leave();
+      }
+
+      template <template <typename...> class C, typename...,
+		typename... U>
+      Status		Trigger(const
+				C<
+				  Parameters<
+				    T1, T2, T3, T4, T5,
+				    T6, T7, T8, T9,
+				    U...> >&			object,
+				U&...				arguments)
+	const
+      {
+	enter();
+
+	// trigger the object.
+	if (object.Trigger(this->argument1,
+			   this->argument2,
+			   this->argument3,
+			   this->argument4,
+			   this->argument5,
+			   this->argument6,
+			   this->argument7,
+			   this->argument8,
+			   this->argument9,
+			   arguments...) == StatusError)
 	  escape("unable to trigger the object");
 
 	leave();

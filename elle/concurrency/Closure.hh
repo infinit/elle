@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Closure.hh
 //
 // created       julien quintard   [thu mar 25 03:25:25 2010]
-// updated       julien quintard   [fri jun 10 00:01:19 2011]
+// updated       julien quintard   [sat jun 18 00:32:49 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HH
@@ -40,14 +40,21 @@ namespace elle
     ///
     /// Closure generic class.
     ///
+    /// note that this class is specialized in either a static or dynamic
+    /// closure.
+    ///
     template <typename... T>
     class Closure;
 
     ///
-    /// this class provides closures i.e variables bound to a callback.
+    /// this specialized class provides static closures i.e static arguments
+    /// bound to a callback.
     ///
-    template <typename... T>
-    class Closure< Parameters<T...> >:
+    /// once triggered, the arguments attached to the closure are passed
+    /// to the callback.
+    ///
+    template <typename... U>
+    class Closure< Parameters<U...> >:
       public Entity,
       public Base<Closure>
     {
@@ -55,13 +62,13 @@ namespace elle
       //
       // types
       //
-      typedef Parameters<T...>		P;
+      typedef Parameters<U...>		P;
 
       //
       // constructors & destructors
       //
-      Closure(Callback<P>&,
-	      T&...);
+      Closure(Callback< Parameters<U...> >&,
+	      U&...);
 
       //
       // methods
@@ -71,8 +78,60 @@ namespace elle
       //
       // attributes
       //
-      Callback<P>	callback;
-      Arguments<P>	arguments;
+      Callback< Parameters<U...> >	callback;
+      Arguments< Parameters<U...> >	arguments;
+    };
+
+    ///
+    /// this specialized class provides dynamic closures. unlike static
+    /// closures, both static and dynamic arguments can be provided.
+    ///
+    /// for instance, the closure:
+    ///
+    ///   Closure< Parameters<Natural32>,
+    ///            Parameters<String> > closure(callback, n);
+    ///
+    /// takes a Natural32 (n) as a static argument i.e at the closure creation
+    /// but also takes a String once the closure is triggered. thus,
+    /// such a closure would be used as follows:
+    ///
+    ///   closure.Trigger(string);
+    ///
+    /// such a call would result in the callback being triggered with both
+    /// the static and dynamic arguments. in this example, the callback
+    /// would have to be of the type:
+    ///
+    ///   Callback< Parameters<Natural32, String> >
+    ///
+    template <typename... U,
+	      typename... V>
+    class Closure< Parameters<U...>,
+		   Parameters<V...> >:
+      public Entity,
+      public Base<Closure>
+    {
+    public:
+      //
+      // types
+      //
+      typedef Parameters<U..., V...>	P;
+
+      //
+      // constructors & destructors
+      //
+      Closure(Callback< Parameters<U..., V...> >&,
+	      U&...);
+
+      //
+      // methods
+      //
+      Status		Trigger(V&...);
+
+      //
+      // attributes
+      //
+      Callback< Parameters<U..., V...> >	callback;
+      Arguments< Parameters<U...> >		arguments;
     };
 
   }

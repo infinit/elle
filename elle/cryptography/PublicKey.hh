@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [sat may 21 15:37:03 2011]
+// updated       julien quintard   [fri jun 17 14:06:37 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
