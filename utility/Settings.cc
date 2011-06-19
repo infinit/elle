@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [tue apr 26 13:18:12 2011]
+// updated       julien quintard   [sat jun 18 12:08:06 2011]
 //
 
 //
@@ -135,7 +135,8 @@ namespace elle
 	escape("an assignment with this name already exists");
 
       // allocate the assignment.
-      assignment = new Settings::Assignment(name, value);
+      if ((assignment = new Settings::Assignment(name, value)) == NULL)
+	escape("unable to allocate memory");
 
       // add the assignment to the container.
       this->assignments.push_back(assignment);
@@ -243,7 +244,8 @@ namespace elle
 	escape("a section with this identifier already exists");
 
       // allocate the section.
-      section = new Settings::Section(identifier);
+      if ((section = new Settings::Section(identifier)) == NULL)
+	escape("unable to allocate memory");
 
       // add the section to the container.
       this->sections.push_back(section);

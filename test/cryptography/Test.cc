@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [wed mar 23 15:23:22 2011]
+// updated       julien quintard   [sat jun 18 12:00:27 2011]
 //
 
 //
@@ -89,19 +89,23 @@ namespace elle
 	escape("unable to initialize the Elle library");
 
       // allocate an initialize key pair.
-      kp = new KeyPair;
+      if ((kp = new KeyPair) == NULL)
+	escape("unable to allocate memory");
 
       // generate a key pair
       if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
-					Test::MaximumKeyLength)) == StatusError)
+					Test::MaximumKeyLength)) ==
+	  StatusError)
 	escape("unable to generate the initial key pair");
 
       // allocate a secret key.
-      sk = new SecretKey;
+      if ((sk = new SecretKey) == NULL)
+	escape("unable to allocate memory");
 
       // generate the secret key.
       if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
-                                        Test::MaximumKeyLength)) == StatusError)
+                                        Test::MaximumKeyLength)) ==
+	  StatusError)
 	escape("unable to generate the initial secret key");
 
       // compute the number of tests.
@@ -126,16 +130,21 @@ namespace elle
 		delete sk;
 
 		// allocate the new keys
-		kp = new KeyPair;
-		sk = new SecretKey;
+		if ((kp = new KeyPair) == NULL)
+		  escape("unable to allocate memory");
+
+		if ((sk = new SecretKey) == NULL)
+		  escape("unable to allocate memory");
 
 		// generate the new keys.
 		if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
-						  Test::MaximumKeyLength)) == StatusError)
+						  Test::MaximumKeyLength)) ==
+		    StatusError)
 		  escape("unable to generate a new key pair");
 
 		if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
-						  Test::MaximumKeyLength)) == StatusError)
+						  Test::MaximumKeyLength)) ==
+		    StatusError)
 		  escape("unable to generate a secret key");
 
 		break;

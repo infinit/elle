@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Accord.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [mon may  3 21:12:45 2010]
+// updated       julien quintard   [sat jun 18 15:31:40 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_ACCORD_HH
@@ -46,6 +46,8 @@ namespace elle
     /// to access a resource in reading or writing such that multi read
     /// accesses are authorised but a single write access is exclusive to
     /// the others.
+    ///
+    /// XXX what is this class for? threads/fibers?
     ///
     class Accord:
       public Entity

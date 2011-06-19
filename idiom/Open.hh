@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [fri jun 10 11:48:55 2011]
+// updated       julien quintard   [sat jun 18 12:01:57 2011]
 //
 
 //
@@ -116,7 +116,8 @@
   {									\
     enter();								\
 									\
-    object = new _type_(*this);						\
+    if ((object = new _type_(*this)) == NULL)				\
+      escape("unable to allocate memory");				\
 									\
     leave();								\
   }

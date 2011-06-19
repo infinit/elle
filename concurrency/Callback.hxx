@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [mon jun  6 23:36:35 2011]
+// updated       julien quintard   [sat jun 18 12:55:55 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX

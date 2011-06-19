@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [sat may 21 15:35:21 2011]
+// updated       julien quintard   [sat jun 18 12:06:59 2011]
 //
 
 //
@@ -114,7 +114,8 @@ namespace elle
       //
 
       // initialise the public key structure.
-      this->key = ::EVP_PKEY_new();
+      if ((this->key = ::EVP_PKEY_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create the RSA structure.
       if ((rsa = ::RSA_new()) == NULL)
@@ -138,8 +139,8 @@ namespace elle
 
       // create, initialize and configure---by setting the padding---the
       // encrypt context.
-      if ((this->contexts.encrypt = ::EVP_PKEY_CTX_new(this->key, NULL)) ==
-	  NULL)
+      if ((this->contexts.encrypt =
+	   ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       if (::EVP_PKEY_encrypt_init(this->contexts.encrypt) <= 0)
@@ -154,7 +155,8 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create and initialize the verify context.
-      if ((this->contexts.verify = EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
+      if ((this->contexts.verify =
+	   EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       if (::EVP_PKEY_verify_init(this->contexts.verify) <= 0)
@@ -169,8 +171,8 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create and initialize the decrypt context.
-      if ((this->contexts.decrypt = ::EVP_PKEY_CTX_new(this->key, NULL)) ==
-	  NULL)
+      if ((this->contexts.decrypt =
+	   ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       if (::EVP_PKEY_verify_recover_init(this->contexts.decrypt) <= 0)

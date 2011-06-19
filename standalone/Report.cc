@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [mon jun  6 23:28:59 2011]
+// updated       julien quintard   [sat jun 18 12:59:19 2011]
 //
 
 //
@@ -58,7 +58,8 @@ namespace elle
       enter();
 
       // allocate the report for the initial thread/fiber.
-      Report::Current = new Report;
+      if ((Report::Current = new Report) == NULL)
+	escape("unable to allocate memory");
 
       // register the govern callback to the fiber system.
       if (Fiber::Register(govern) == StatusError)
@@ -108,7 +109,8 @@ namespace elle
 	case PhaseInitialize:
 	  {
 	    // allocate a new report and install it.
-	    Report::Current = new Report;
+	    if ((Report::Current = new Report) == NULL)
+	      escape("unable to allocate memory");
 
 	    break;
 	  }
@@ -388,7 +390,8 @@ namespace elle
 	  Natural8		type;
 
 	  // allocate a new entry.
-	  entry = new Report::Entry;
+	  if ((entry = new Report::Entry) == NULL)
+	    escape("unable to allocate memory");
 
 	  // extract the entry.
 	  if (archive.Extract(type,
@@ -431,7 +434,8 @@ namespace elle
       enter();
 
       // allocate the object.
-      object = new Report(*this);
+      if ((object = new Report(*this)) == NULL)
+	escape("unable to allocate memory");
 
       leave();
     }

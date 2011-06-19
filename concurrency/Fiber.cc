@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [tue jun  7 06:05:40 2011]
+// updated       julien quintard   [sun jun 19 17:28:51 2011]
 //
 
 //
@@ -46,10 +46,10 @@ namespace elle
     Fiber::F::Container		Fiber::Fibers;
 
     ///
-    /// this fiber corresponds to the application just when entering
+    /// this fiber corresponds to the program just when entering
     /// the processing of an event.
     ///
-    Fiber*			Fiber::Application = NULL;
+    Fiber*			Fiber::Program = NULL;
 
     ///
     /// this variable points to the fiber currently in use.
@@ -89,18 +89,20 @@ namespace elle
     {
       enter();
 
-      // allocate the application fiber but do not create it since
-      // this application has no need for a stack.
-      Fiber::Application = new Fiber;
+      // allocate the program fiber but do not create it since
+      // this program has no need for a stack.
+      if ((Fiber::Program = new Fiber) == NULL)
+	escape("unable to allocate memory");
 
       // allocate an environment.
-      Fiber::Application->environment = new Environment;
+      if ((Fiber::Program->environment = new Environment) == NULL)
+	escape("unable to allocate memory");
 
-      // set the application as being running.
-      Fiber::Application->state = Fiber::StateActive;
+      // set the program as being running.
+      Fiber::Program->state = Fiber::StateActive;
 
-      // set the current fiber as being the application.
-      Fiber::Current = Fiber::Application;
+      // set the current fiber as being the program.
+      Fiber::Current = Fiber::Program;
 
       leave();
     }
@@ -175,16 +177,52 @@ namespace elle
       }
 
       //
-      // delete also the application.
+      // delete also the program.
       //
       {
-	// delete the application's environment.
-	if (Fiber::Application->environment != NULL)
-	  delete Fiber::Application->environment;
+	// delete the program's environment.
+	if (Fiber::Program->environment != NULL)
+	  delete Fiber::Program->environment;
 
-	// delete the application fiber.
-	delete Fiber::Application;
+	// delete the program fiber.
+	delete Fiber::Program;
       }
+
+      leave();
+    }
+
+    ///
+    /// this method puts the current fiber to sleep for the given duration.
+    ///
+    /// in order to wake up the fiber, a timer is set up.
+    ///
+    /// note that the duration is expressed in milliseconds.
+    ///
+    Status		Fiber::Sleep(const Natural32		duration)
+    {
+      Callback< Parameters<> >		callback(&Fiber::Timeout,
+						 Fiber::Current);
+
+      enter();
+
+      //printf("[XXX 0x%x] Fiber::Sleep()\n",
+      //Fiber::Current);
+
+      // allocate the timer.
+      Fiber::Current->timer = new Timer;
+
+      // create the timer.
+      if (Fiber::Current->timer->Create(Timer::ModeSingle,
+					callback) == StatusError)
+	escape("unable to create the timer");
+
+      // set up the timer.
+      if (Fiber::Current->timer->Start(duration) == StatusError)
+	escape("unable to start the timer");
+
+      // wait for the resource represented by the timer's address.
+      if (Fiber::Wait(Fiber::Current->timer) == StatusError)
+	escape("unable to wait for the resource");
 
       leave();
     }
@@ -198,11 +236,20 @@ namespace elle
 					    Parameters<const Phase,
 						       Fiber*> >& callback)
     {
-      enter();
+      Callback< Parameters<const Phase, Fiber*> >*	c;
+
+      enter(instance(c));
+
+      // allocate the callback.
+      if ((c = new Callback<
+	             Parameters<const Phase, Fiber*> >(callback)) == NULL)
+	escape("unable to allocate memory");
 
       // store in the container.
-      Fiber::Phases.push_back(
-        new Callback< Parameters<const Phase, Fiber*> >(callback));
+      Fiber::Phases.push_back(c);
+
+      // waive.
+      waive(c);
 
       leave();
     }
@@ -317,7 +364,8 @@ namespace elle
       else
 	{
 	  // otherwise, allocate a new fiber.
-	  fiber = new Fiber;
+	  if ((fiber = new Fiber) == NULL)
+	    escape("unable to allocate memory");
 
 	  // create the fiber.
 	  if (fiber->Create() == StatusError)
@@ -325,7 +373,8 @@ namespace elle
 	}
 
       // allocate an environment.
-      fiber->environment = new Environment;
+      if ((fiber->environment = new Environment) == NULL)
+	escape("unable to allocate memory");
 
       leave();
     }
@@ -376,9 +425,9 @@ namespace elle
       //printf("[XXX 0x%x] Fiber::Add(0x%x)\n",
       //Fiber::Current, fiber);
 
-      // ignore the application fiber which is special as it is
+      // ignore the program fiber which is special as it is
       // used as the root fiber.
-      if (fiber == Fiber::Application)
+      if (fiber == Fiber::Program)
 	leave();
 
       // push the fiber.
@@ -399,9 +448,9 @@ namespace elle
       //printf("[XXX 0x%x] Fiber::Remove(0x%x)\n",
       //Fiber::Current, fiber);
 
-      // ignore the application fiber which is special as it is
+      // ignore the program fiber which is special as it is
       // used as the root fiber.
-      if (fiber == Fiber::Application)
+      if (fiber == Fiber::Program)
 	leave();
 
       // iterate over the container.
@@ -508,12 +557,12 @@ namespace elle
 	  }
       }
 
-      // dump the application.
+      // dump the program.
       std::cout << alignment << Dumpable::Shift
-		<< "[Application]" << std::endl;
+		<< "[Program]" << std::endl;
 
-      if (Fiber::Application->Dump(margin + 4) == StatusError)
-	escape("unable to dump the application fiber");
+      if (Fiber::Program->Dump(margin + 4) == StatusError)
+	escape("unable to dump the program fiber");
 
       // dump the current fiber.
       std::cout << alignment << Dumpable::Shift << "[Current]"
@@ -526,7 +575,7 @@ namespace elle
       {
 	Fiber::F::Scoutor	scoutor;
 
-	std::cout << alignment << Dumpable::Shift << "[Cache] " << std::endl;
+	std::cout << alignment << Dumpable::Shift << "[Cache]" << std::endl;
 
 	// dump every fiber of the cache.
 	for (scoutor = Fiber::Cache.begin();
@@ -556,7 +605,8 @@ namespace elle
       state(Fiber::StateUnknown),
       type(Fiber::TypeNone),
       environment(NULL),
-      data(NULL)
+      data(NULL),
+      timer(NULL)
     {
     }
 
@@ -568,6 +618,10 @@ namespace elle
       // release the frame.
       if (this->frame != NULL)
 	delete this->frame;
+
+      // release the timer.
+      if (this->timer != NULL)
+	delete this->timer;
     }
 
 //
@@ -582,11 +636,40 @@ namespace elle
       enter();
 
       // allocate the frame.
-      this->frame = new Frame;
+      if ((this->frame = new Frame) == NULL)
+	escape("unable to allocate memory");
 
       // create the frame.
       if (this->frame->Create(size) == StatusError)
 	escape("unable to create the frame");
+
+      leave();
+    }
+
+//
+// ---------- callbacks -------------------------------------------------------
+//
+
+    ///
+    /// this callback is triggered whenever the fiber needs to be woken up.
+    ///
+    Status		Fiber::Timeout()
+    {
+      enter();
+
+      // stop the timer.
+      if (this->timer->Stop() == StatusError)
+	escape("unable to stop the timer");
+
+      // awaken the fiber.
+      if (Fiber::Awaken(this->timer) != StatusTrue)
+	escape("unable to awaken the fiber");
+
+      // delete the timer.
+      delete this->timer;
+
+      // reset the pointer.
+      this->timer = NULL;
 
       leave();
     }
@@ -655,6 +738,19 @@ namespace elle
       // dump the data value.
       std::cout << alignment << Dumpable::Shift << "[Data] "
 		<< std::hex << this->data << std::endl;
+
+      // dump the timer.
+      if (this->timer != NULL)
+	{
+	  if (this->timer->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the timer");
+	}
+      else
+	{
+	  // dump none.
+	  std::cout << alignment << Dumpable::Shift << "[Timer] "
+		    << none << std::endl;
+	}
 
       leave();
     }

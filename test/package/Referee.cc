@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/package/Referee.cc
 //
 // created       julien quintard   [wed jan 28 12:32:31 2009]
-// updated       julien quintard   [fri jun  3 15:08:26 2011]
+// updated       julien quintard   [sat jun 18 12:01:28 2011]
 //
 
 //
@@ -40,7 +40,8 @@ namespace elle
 
       enter(instance(element));
 
-      element = new Element;
+      if ((element = new Element) == NULL)
+	escape("unable to allocate memory");
 
       element->type = type;
 

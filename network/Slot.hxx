@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [fri jun 17 20:55:14 2011]
+// updated       julien quintard   [sat jun 18 15:35:03 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -63,7 +63,6 @@ namespace elle
       // prepare the packet.
       if (packet.Create() == StatusError)
 	escape("unable to create the packet");
-
 
       // retrieve the offset---i.e size attribute---of the packet at this
       // time so that it can be used later to update parts of the archive,

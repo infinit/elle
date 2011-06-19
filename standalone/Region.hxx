@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.hxx
 //
 // created       julien quintard   [sun may  2 12:28:06 2010]
-// updated       julien quintard   [sun may  2 13:08:24 2010]
+// updated       julien quintard   [sat jun 18 12:13:51 2011]
 //
 
 #ifndef ELLE_STANDALONE_REGION_HXX

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sat jun 18 00:43:46 2011]
+// updated       julien quintard   [sun jun 19 17:28:17 2011]
 //
 
 //
@@ -47,6 +47,14 @@ namespace elle
       enter();
 
       printf("[Fiber4] Start\n");
+
+      printf("[Fiber4] Sleep()\n");
+
+      // sleep.
+      if (Fiber::Sleep(3000) == StatusError)
+	escape("unable to sleep");
+
+      printf("[Fiber4] /Sleep()\n");
 
       printf("[Fiber4] Awaken(ResourceA)\n");
 
@@ -184,23 +192,29 @@ namespace elle
       if (Program::Setup() == StatusError)
 	escape("unable to set up the program");
 
-      // create and start the timer1, launching the fiber1.
+      // create the timer1.
       if (Test::Timer1.Create(Timer::ModeSingle, fiber1) == StatusError)
 	escape("unable to create the timer");
 
-      Test::Timer1.Start(100);
+      // start the timer1, launching the fiber1.
+      if (Test::Timer1.Start(100) == StatusError)
+	escape("unable to start the timer");
 
-      // create and start the timer2, launching the fiber2.
+      // create the timer2.
       if (Test::Timer2.Create(Timer::ModeSingle, fiber2) == StatusError)
 	escape("unable to create the timer");
 
-      Test::Timer2.Start(1000);
+      // start the timer2, launching the fiber2.
+      if (Test::Timer2.Start(1000) == StatusError)
+	escape("unable to start the timer");
 
-      // create and start the timer3, launching the fiber3.
+      // create the timer3.
       if (Test::Timer3.Create(Timer::ModeSingle, fiber3) == StatusError)
 	escape("unable to create the timer");
 
-      Test::Timer3.Start(10000);
+      // start the timer3, launching the fiber3.
+      if (Test::Timer3.Start(10000) == StatusError)
+	escape("unable to start the timer");
 
       // launch the program.
       if (Program::Launch() == StatusError)

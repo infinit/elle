@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [tue jun  7 06:15:21 2011]
+// updated       julien quintard   [sat jun 18 12:26:38 2011]
 //
 
 //
@@ -87,7 +87,9 @@ namespace elle
 	delete this->callback;
 
       // allocate and copy a new callback.
-      this->callback = new Callback< Parameters<const String> >(callback);
+      if ((this->callback =
+	   new Callback< Parameters<const String> >(callback)) == NULL)
+	escape("unable to allocate memory");
 
       leave();
     }
