@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [sat may  7 22:31:46 2011]
+// updated       julien quintard   [sat jun 18 12:06:20 2011]
 //
 
 //
@@ -126,7 +126,8 @@ namespace elle
       //
 
       // initialise the private key structure.
-      this->key = ::EVP_PKEY_new();
+      if ((this->key = ::EVP_PKEY_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create the RSA structure.
       if ((rsa = ::RSA_new()) == NULL)
@@ -170,7 +171,8 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create and initialize a sign context.
-      if ((this->contexts.sign = ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
+      if ((this->contexts.sign =
+	   ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       if (::EVP_PKEY_sign_init(this->contexts.sign) <= 0)
@@ -185,7 +187,8 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create and initialize a encrypt context.
-      if ((this->contexts.encrypt = ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
+      if ((this->contexts.encrypt =
+	   ::EVP_PKEY_CTX_new(this->key, NULL)) == NULL)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       if (::EVP_PKEY_sign_init(this->contexts.encrypt) <= 0)
@@ -455,10 +458,12 @@ namespace elle
 	    slab(rsa, ::RSA_free));
 
       // create an EVP key.
-      key = ::EVP_PKEY_new();
+      if ((key = ::EVP_PKEY_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create a new RSA key.
-      rsa = ::RSA_new();
+      if ((rsa = ::RSA_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // derive the RSA key.
       if (comet::RSA_derive(rsa,
