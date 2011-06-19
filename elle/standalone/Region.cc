@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [wed mar 23 15:11:50 2011]
+// updated       julien quintard   [sat jun 18 12:13:18 2011]
 //
 
 //
@@ -415,7 +415,8 @@ namespace elle
       enter();
 
       // allocate the object.
-      object = new Region(*this);
+      if ((object = new Region(*this)) == NULL)
+	escape("unable to allocate memory");
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [tue jun  7 06:06:14 2011]
+// updated       julien quintard   [sun jun 19 13:09:02 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -47,6 +47,8 @@ namespace elle
     /// this class provides a timer functionality i.e the possibility to
     /// trigger an event.
     ///
+    /// note that the duration is expressed in milliseconds.
+    ///
     class Timer:
       public ::QObject,
 
@@ -75,14 +77,21 @@ namespace elle
       //
       Status		Create(const Mode,
 			       const Callback< Parameters<> >&);
-      Status		Start(Natural32 = 0);
+      Status		Start(const Natural32 = 0);
       Status		Stop();
-      Status		Restart(Natural32 = 0);
+      Status		Restart(const Natural32 = 0);
 
       //
       // callbacks
       //
       Status		Timeout();
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

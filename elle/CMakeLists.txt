@@ -26,6 +26,7 @@ ADD_LIBRARY(elle
   radix/Radix.cc
   radix/Trace.cc
 
+  io/Console.cc
   io/Directory.cc
   io/Dumpable.cc
   io/File.cc
@@ -91,7 +92,7 @@ ADD_LIBRARY(elle
   ${elle_MOCS}
 )
 
-TARGET_LINK_LIBRARIES(elle comet crypto ssl dl)
+TARGET_LINK_LIBRARIES(elle comet crypto ssl dl readline)
 
 ADD_SUBDIRECTORY(test)
 ADD_SUBDIRECTORY(benchmark)

@@ -8,22 +8,14 @@
 // file          /home/mycure/infinit/elle/concurrency/Resource.hh
 //
 // created       julien quintard   [sun mar 28 00:28:32 2010]
-// updated       julien quintard   [sun may  2 13:00:11 2010]
+// updated       julien quintard   [sat jun 18 20:47:23 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_RESOURCE_HH
 #define ELLE_CONCURRENCY_RESOURCE_HH
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/radix/Entity.hh>
-
 namespace elle
 {
-  using namespace radix;
-
   namespace concurrency
   {
 
@@ -36,22 +28,13 @@ namespace elle
     /// be willing to wait for, such as any concurrency control classes
     /// including Mutex, Semaphore, Condition and so forth.
     ///
-    /// basically, a program can be composed of multiple threads, each
-    /// handling its own events while each thread can be subdivided into
-    /// several fibers.
-    ///
-    /// therefore, a fiber F belonging to a thread T must, in order to
-    /// lock a mutex for instance, acquire the mutex in an atomic way
-    /// for concurrency purposes with other threads and then lock the
-    /// mutex for the fiber or wait for the resource to be cooperatively
-    /// released by the fiber owning the resource for now.
-    ///
     /// note that the address of the resource is used as a unique identifier
     /// simply because given an address space, every object has a unique
     /// memory address.
     ///
-    class Resource:
-      public Entity
+    /// note that both Object and Entity classes inherit this class.
+    ///
+    class Resource
     {
     };
 

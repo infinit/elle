@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Registrar.hxx
 //
 // created       julien quintard   [mon jun  6 12:13:38 2011]
-// updated       julien quintard   [tue jun 14 20:47:07 2011]
+// updated       julien quintard   [sat jun 18 12:07:27 2011]
 //
 
 #ifndef ELLE_UTILITY_REGISTRAR_HXX
@@ -61,7 +61,8 @@ namespace elle
 	escape("this identifier seems to have already been recorded");
 
       // create a new selectionoid.
-      selectionoid = new Selectionoid<C>(object);
+      if ((selectionoid = new Selectionoid<C>(object)) == NULL)
+	escape("unable to allocate memory");
 
       // insert the selectionoid in the container.
       result = this->container.insert(

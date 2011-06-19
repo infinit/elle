@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [tue jun  7 06:08:13 2011]
+// updated       julien quintard   [sat jun 18 12:30:15 2011]
 //
 
 //
@@ -75,7 +75,8 @@ namespace elle
       enter();
 
       // allocate a new server.
-      this->server = new ::QTcpServer;
+      if ((this->server = new ::QTcpServer) == NULL)
+	escape("unable to allocate memory");
 
       // start listening.
       if (this->server->listen(address.host.location, address.port) == false)
@@ -148,7 +149,8 @@ namespace elle
       enter(instance(porter));
 
       // allocate a new porter.
-      porter = new BridgePorter(callback);
+      if ((porter = new BridgePorter(callback)) == NULL)
+	escape("unable to allocate memory");
 
       // start listening.
       if (porter->Listen(address) == StatusError)
@@ -243,7 +245,9 @@ namespace elle
 	escape(this->server->errorString().toStdString().c_str());
 
       // allocate a new gate to this bridge.
-      gate = new Gate(Socket::ModeAsynchronous); // XXX
+      /// XXX \todo we should be able to specify the mode somewhere.
+      if ((gate = new Gate(Socket::ModeAsynchronous)) == NULL)
+	escape("unable to allocate memory");
 
       // create a gate with the specific socket.
       if (gate->Create(socket) == StatusError)

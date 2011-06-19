@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [sun jun  5 23:01:21 2011]
+// updated       julien quintard   [sun jun 19 17:29:49 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -45,7 +45,10 @@ namespace elle
 
       // trigger the closure and, should there are errors, display them.
       if (closure->Trigger() == elle::StatusError)
-	show();
+	{
+	  show();
+	  purge();
+	}
 
       // set the fiber state.
       Fiber::Current->state = Fiber::StateCompleted;
@@ -60,6 +63,9 @@ namespace elle
 
       //printf("[/XXX 0x%x] Fiber::Launch()\n",
       //Fiber::Current);
+
+      // release the resources.
+      release();
     }
 
     ///
@@ -81,8 +87,7 @@ namespace elle
       //Fiber::Current, Fiber::Current->state);
       //Fiber::Show();
 
-      // if we are in the fiber spawning a new fiber, the parent fiber
-      // some might say.
+      // if we are in the fiber spawning a new fiber...
       if (Fiber::Current->state == Fiber::StateActive)
 	{
 	  // declare a launch function pointer in order to bypass the type
@@ -164,14 +169,15 @@ namespace elle
 	  // at this point, we just came back from a fiber.
 	  //
 
-	  // retrieve the link the the current's parent fiber.
-	  fiber = Fiber::Current->link;
-
 	  // perform an action depending on the state of the fiber.
 	  switch (Fiber::Current->state)
 	    {
 	    case Fiber::StateCompleted:
 	      {
+		// select the parent fiber for scheduling which is
+		// referenced through the link.
+		fiber = Fiber::Current->link;
+
 		// clean the environment.
 		if (Fiber::Trigger(PhaseClean) == StatusError)
 		  escape("unable to initialize the environment");
@@ -184,7 +190,12 @@ namespace elle
 	      }
 	    case Fiber::StateSuspended:
 	      {
+		//
 		// do not delete this fiber as it will be resumed later.
+		//
+
+		// select the program fiber.
+		fiber = Fiber::Program;
 
 		break;
 	      }
@@ -197,15 +208,16 @@ namespace elle
 	      }
 	    }
 
-	  // set the current fiber as being the parent.
+	  // set the current fiber as being the selected fiber.
 	  Fiber::Current = fiber;
 
-	  // set the parent, now current, fiber as active.
+	  // set the fiber as active.
 	  Fiber::Current->state = Fiber::StateActive;
 
-	  // schedule the awaken fibers, only if we are in the application
-	  // fiber i.e the root fiber.
-	  if (Fiber::Current == Fiber::Application)
+	  // schedule the awaken fibers, only if we are in the program
+	  // fiber i.e the root fiber. otherwise just come back to the
+	  // fiber's execution.
+	  if (Fiber::Current == Fiber::Program)
 	    {
 	      if (Fiber::Schedule() == StatusError)
 		escape("unable to schedule the awaken fibers");
@@ -232,9 +244,9 @@ namespace elle
     {
       enter();
 
-      // check if the current fiber is the application.
-      if (Fiber::Current == Fiber::Application)
-	escape("unable to wait while in the application fiber");
+      // check if the current fiber is the program.
+      if (Fiber::Current == Fiber::Program)
+	escape("unable to wait while in the program fiber");
 
       //printf("[XXX 0x%x] Fiber::Wait(event[0x%qx])\n",
       //Fiber::Current, event.identifier);
@@ -246,7 +258,8 @@ namespace elle
       Fiber::Current->type = Fiber::TypeEvent;
 
       // set the event.
-      Fiber::Current->event = new Event(event);
+      if ((Fiber::Current->event = new Event(event)) == NULL)
+	escape("unable to allocate memory");
 
       // save the environment.
       if (Fiber::Trigger(PhaseSave) == StatusError)
@@ -256,15 +269,15 @@ namespace elle
       if (Fiber::Add(Fiber::Current) == StatusError)
 	escape("unable to add the fiber to the container");
 
-      // set the state of the application's fiber as awaken as we
+      // set the state of the program's fiber as awaken as we
       // are about to come back to it.
-      Fiber::Application->state = Fiber::StateAwaken;
+      Fiber::Program->state = Fiber::StateAwaken;
 
-      // switch to the application's context and save the current one
+      // switch to the program's context and save the current one
       // in order to carry on at this point when woken up.
       if (::swapcontext(&Fiber::Current->context,
-			&Fiber::Application->context) == -1)
-	escape("unable to swap to the application context");
+			&Fiber::Program->context) == -1)
+	escape("unable to swap to the program context");
 
       // retrieve the data.
       data = static_cast<T*>(Fiber::Current->data);
@@ -282,15 +295,19 @@ namespace elle
     /// this method takes the current fiber and sets the resource it is
     /// expected to continue.
     ///
+    /// note that resources are expected to be objects located in main
+    /// memory i.e memory addresses. since memory addresses are unique,
+    /// this simple scheme prevents conflicts.
+    ///
     template <typename T>
     Status		Fiber::Wait(const Resource*		resource,
 				    T*&				data)
     {
       enter();
 
-      // check if the current fiber is the application.
-      if (Fiber::Current == Fiber::Application)
-	escape("unable to wait while in the application fiber");
+      // check if the current fiber is the program.
+      if (Fiber::Current == Fiber::Program)
+	escape("unable to wait while in the program fiber");
 
       //printf("[XXX 0x%x] Fiber::Wait(resource[0x%x])\n",
       //Fiber::Current, resource);
@@ -301,7 +318,7 @@ namespace elle
       // set the type.
       Fiber::Current->type = Fiber::TypeResource;
 
-      // set the event.
+      // set the resource.
       Fiber::Current->resource = resource;
 
       // save the environment.
@@ -312,15 +329,15 @@ namespace elle
       if (Fiber::Add(Fiber::Current) == StatusError)
 	escape("unable to add the fiber to the container");
 
-      // set the state of the application's fiber as awaken as we
+      // set the state of the program's fiber as awaken as we
       // are about to come back to it.
-      Fiber::Application->state = Fiber::StateAwaken;
+      Fiber::Program->state = Fiber::StateAwaken;
 
-      // switch to the application's context and save the current one
+      // switch to the program's context and save the current one
       // in order to carry on at this point when woken up.
       if (::swapcontext(&Fiber::Current->context,
-			&Fiber::Application->context) == -1)
-	escape("unable to swap to the application context");
+			&Fiber::Program->context) == -1)
+	escape("unable to swap to the program context");
 
       // retrieve the data.
       data = static_cast<T*>(Fiber::Current->data);
@@ -371,7 +388,7 @@ namespace elle
 	  // reset the type.
 	  fiber->type = Fiber::TypeNone;
 
-	  // delete the event.
+	  // delete and reset the event.
 	  delete fiber->event;
 	  fiber->event = NULL;
 	}
@@ -422,6 +439,9 @@ namespace elle
 
 	  // reset the type.
 	  fiber->type = Fiber::TypeNone;
+
+	  // reset the resource.
+	  fiber->resource = NULL;
 	}
 
       // return true if at least one fiber has been awaken.

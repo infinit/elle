@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Mutex.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [mon may  3 21:13:05 2010]
+// updated       julien quintard   [sat jun 18 20:48:37 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_MUTEX_HH
@@ -21,8 +21,7 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/radix/Status.hh>
-
-#include <elle/concurrency/Resource.hh>
+#include <elle/radix/Entity.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QMutex>
@@ -49,7 +48,7 @@ namespace elle
     /// semaphore etc. should inherit from Resource
     ///
     class Mutex:
-      public Resource
+      public Entity
     {
     public:
       //

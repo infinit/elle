@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [tue apr 26 13:14:10 2011]
+// updated       julien quintard   [sat jun 18 12:05:57 2011]
 //
 
 //
@@ -199,10 +199,12 @@ namespace elle
 	    slab(rsa, ::RSA_free));
 
       // create an EVP key.
-      key = ::EVP_PKEY_new();
+      if ((key = ::EVP_PKEY_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // create a new RSA key.
-      rsa = ::RSA_new();
+      if ((rsa = ::RSA_new()) == NULL)
+	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(rsa,

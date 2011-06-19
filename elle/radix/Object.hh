@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [fri may 28 12:26:49 2010]
+// updated       julien quintard   [sat jun 18 20:37:28 2011]
 //
 
 #ifndef ELLE_RADIX_OBJECT_HH
@@ -30,11 +30,14 @@
 #include <elle/io/Format.hh>
 #include <elle/io/Uniquable.hh>
 
+#include <elle/concurrency/Resource.hh>
+
 namespace elle
 {
   using namespace core;
   using namespace package;
   using namespace io;
+  using namespace concurrency;
 
   namespace radix
   {
@@ -51,8 +54,11 @@ namespace elle
     /// assignment, which can be recycled but also compared. in addition,
     /// an object can be serialized hence stored offline such as in a file.
     ///
+    /// note that an object implicitly acts as a concurrency control resource.
+    ///
     class Object:
       public Meta,
+      public Resource,
       public virtual Dumpable, public virtual Archivable,
       public virtual Uniquable<FormatBase64>
     {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [tue jun  7 06:04:55 2011]
+// updated       julien quintard   [sun jun 19 15:51:44 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -32,6 +32,7 @@
 #include <elle/concurrency/Phase.hh>
 #include <elle/concurrency/Frame.hh>
 #include <elle/concurrency/Environment.hh>
+#include <elle/concurrency/Timer.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -58,27 +59,29 @@ namespace elle
     /// the burden of heavy concurrency control but also without the
     /// performance impact of threading sub-systems.
     ///
-    /// the fiber system is composed of a Fibers container that keeps
+    /// the fiber system is composed of a fiber container that keeps
     /// fibers waiting for an event, a resource or a child fiber to
-    /// complete its task.
+    /// complete a task.
     ///
-    /// every fiber is composed of a stack frame, a low-leve context,
+    /// every fiber is composed of a stack frame, a low-level context,
     /// a link to the parent fiber, the state of the fiber---active, awaken,
     /// suspended or completed---along with what the fiber is waiting for
     /// and a pointer to data that can be passed between the awakening
     /// and awaken fibers.
     ///
-    /// note that every program is composed of at least one thread and
-    /// one fiber, in which case concurrency control is needless.
+    /// note that every application is composed of at least one fiber
+    /// in which case concurrency control is needless.
     ///
     /// the fiber system works as follows. the current fiber decides to
     /// spawn a new fiber. the current fiber is put in the suspended state and
-    /// added to the Fibers container as it will wait for the child fiber
+    /// added to the fiber container as it will wait for the child fiber
     /// to complete.
-    /// a fiber can also explicitely wait for an event/resource in which
-    /// case it is suspended and put in the Fibers container.
+    ///
+    /// a fiber can also explicitly wait for an event/resource in which
+    /// case it is suspended and put in the fiber container.
+    ///
     /// once a fiber is awaken, its state is changed but the fiber is
-    /// not scheduled yet. indeed, once the current completes or is
+    /// not scheduled yet. indeed, once the current fiber completes or is
     /// suspended, the scheduler is launched which takes the first awaken
     /// fiber and resumes it.
     ///
@@ -116,20 +119,24 @@ namespace elle
       //
       // structures
       //
+
+      // fibers
       struct F
       {
-	typedef std::list<Fiber*>		Container;
-	typedef Container::iterator		Iterator;
-	typedef Container::const_iterator	Scoutor;
+	typedef std::list<Fiber*>			Container;
+	typedef Container::iterator			Iterator;
+	typedef Container::const_iterator		Scoutor;
       };
 
+      // cache
       struct C
       {
-	typedef std::list<Fiber*>		Container;
-	typedef Container::iterator		Iterator;
-	typedef Container::const_iterator	Scoutor;
+	typedef std::list<Fiber*>			Container;
+	typedef Container::iterator			Iterator;
+	typedef Container::const_iterator		Scoutor;
       };
 
+      // phases
       struct P
       {
 	typedef std::vector<
@@ -144,7 +151,7 @@ namespace elle
       //
       static F::Container	Fibers;
 
-      static Fiber*		Application;
+      static Fiber*		Program;
       static Fiber*		Current;
 
       static C::Container	Cache;
@@ -178,6 +185,8 @@ namespace elle
       static Status	Awaken(const Resource*,
 			       T* = (T*)NULL);
 
+      static Status	Sleep(const Natural32);
+
       static Status	Register(const
 				 Callback<
 				   Parameters<const Phase, Fiber*> >&);
@@ -210,6 +219,11 @@ namespace elle
       Status		Create(const Natural32 = Size);
 
       //
+      // callbacks
+      //
+      Status		Timeout();
+
+      //
       // interfaces
       //
 
@@ -236,6 +250,8 @@ namespace elle
       Environment*	environment;
 
       Meta*		data;
+
+      Timer*		timer;
     };
   }
 }

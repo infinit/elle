@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [tue jun  7 07:28:29 2011]
+// updated       julien quintard   [sat jun 18 12:26:20 2011]
 //
 
 //
@@ -73,7 +73,8 @@ namespace elle
       enter();
 
       // allocate a new UDP socket.
-      this->socket = new ::QUdpSocket;
+      if ((this->socket = new ::QUdpSocket) == NULL)
+	escape("unable to allocate memory");
 
       // bind the socket.
       if (this->socket->bind() == false)
@@ -124,7 +125,10 @@ namespace elle
       enter();
 
       // allocate a new UDP socket.
-      this->socket = new ::QUdpSocket;
+      if ((this->socket = new ::QUdpSocket) == NULL)
+	escape("unable to allocate memory");
+
+      // set the port.
       this->port = port;
 
       // bind the socket to the port.
@@ -263,7 +267,8 @@ namespace elle
 	  escape("unable to detach the data from the packet");
 
 	// allocate the parcel.
-	parcel = new Parcel;
+	if ((parcel = new Parcel) == NULL)
+	  escape("unable to allocate memory");
 
 	// extract the header.
 	if (parcel->header->Extract(packet) == StatusError)

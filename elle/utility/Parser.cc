@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.cc
 //
 // created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [wed jun  1 10:23:32 2011]
+// updated       julien quintard   [sat jun 18 13:38:21 2011]
 //
 
 //
@@ -102,7 +102,8 @@ namespace elle
       enter(instance(option));
 
       // create a new option.
-      option = new Parser::Option;
+      if ((option = new Parser::Option) == NULL)
+	escape("unable to allocate memory");
 
       // set the attributes.
       option->character = character;
@@ -240,7 +241,7 @@ namespace elle
       Natural32		i;
 
       // display the program description.
-      std::cerr << this->description;
+      std::cerr << this->description << std::endl;
 
       // display the general usage.
       std::cerr << "[Usage] " << this->argv[0] << " {options...}"

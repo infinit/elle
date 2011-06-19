@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [tue jun  7 06:06:41 2011]
+// updated       julien quintard   [sun jun 19 13:25:02 2011]
 //
 
 //
@@ -66,7 +66,8 @@ namespace elle
       this->mode = mode;
 
       // allocate the timer.
-      this->timer = new ::QTimer;
+      if ((this->timer = new ::QTimer) == NULL)
+	escape("unable to allocate memory");
 
       // set the timer mode.
       if (this->mode == Timer::ModeSingle)
@@ -86,7 +87,7 @@ namespace elle
     ///
     /// this method starts the timer according the the mode and duration.
     ///
-    Status		Timer::Start(Natural32			duration)
+    Status		Timer::Start(const Natural32		duration)
     {
       enter();
 
@@ -112,7 +113,7 @@ namespace elle
     ///
     /// this method restarts the timer according the the mode and duration.
     ///
-    Status		Timer::Restart(Natural32		duration)
+    Status		Timer::Restart(const Natural32		duration)
     {
       enter();
 
@@ -137,6 +138,36 @@ namespace elle
       // trigger the callback.
       if (this->callback.Trigger() == StatusError)
 	escape("an error occured while spawning the fiber");
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the timer.
+    ///
+    Status		Timer::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Timer]" << std::endl;
+
+      // dump the mode.
+      std::cout << alignment << Dumpable::Shift << "[Mode] "
+		<< (const Natural8)this->mode << std::endl;
+
+      // dump the callback.
+      if (this->callback.Dump(margin + 2) == StatusError)
+	escape("unable to dump the callback");
+
+      // dump the interval.
+      std::cout << alignment << Dumpable::Shift << "[Interval] "
+		<< (const Natural32)this->timer->interval() << std::endl;
 
       leave();
     }
