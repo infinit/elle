@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/components/Object.hh
+// file          /home/mycure/infinit/etoile/XXX/Object.hh
 //
 // created       julien quintard   [fri aug 14 19:06:33 2009]
-// updated       julien quintard   [thu may  5 16:18:20 2011]
+// updated       julien quintard   [thu jun 16 15:03:42 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_OBJECT_HH

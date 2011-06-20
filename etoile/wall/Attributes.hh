@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [thu may  5 16:30:12 2011]
+// updated       julien quintard   [tue jun 14 14:54:56 2011]
 //
 
 #ifndef ETOILE_WALL_ATTRIBUTES_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/context/Identifier.hh>
+#include <etoile/gear/Identifier.hh>
 
 namespace etoile
 {
@@ -42,13 +42,15 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Set(const context::Identifier&,
+      static elle::Status	Set(const gear::Identifier&,
 				    const elle::String&,
 				    const elle::String&);
-      static elle::Status	Get(const context::Identifier&,
-				    const elle::String&);
-      static elle::Status	Fetch(const context::Identifier&);
-      static elle::Status	Omit(const context::Identifier&,
+      static elle::Status	Get(const gear::Identifier&,
+				    const elle::String&,
+				    nucleus::Trait&);
+      static elle::Status	Fetch(const gear::Identifier&,
+				      nucleus::Range<nucleus::Trait>&);
+      static elle::Status	Omit(const gear::Identifier&,
 				     const elle::String&);
     };
 

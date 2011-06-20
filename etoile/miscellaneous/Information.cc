@@ -5,21 +5,21 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/Status.cc
+// file          /home/mycure/infinit/etoile/miscellaneous/Information.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [wed jun  1 12:03:16 2011]
+// updated       julien quintard   [tue jun 14 14:20:07 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/wall/Status.hh>
+#include <etoile/miscellaneous/Information.hh>
 
 namespace etoile
 {
-  namespace wall
+  namespace miscellaneous
   {
 
 //
@@ -27,9 +27,9 @@ namespace etoile
 //
 
     ///
-    /// this defines a empty, unused hence null status.
+    /// this defines a empty, unused hence null information.
     ///
-    const Status			Status::Null;
+    const Information			Information::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -38,7 +38,7 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Status::Status()
+    Information::Information()
     {
     }
 
@@ -47,9 +47,9 @@ namespace etoile
 //
 
     ///
-    /// this method generates the status according to the given object.
+    /// this method generates the information according to the given object.
     ///
-    elle::Status	Status::Create(const nucleus::Object&	object)
+    elle::Status	Information::Create(const nucleus::Object& object)
     {
       enter();
 
@@ -99,7 +99,8 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Status::operator==(const Status&	element) const
+    elle::Boolean	Information::operator==(const Information& element)
+      const
     {
       enter();
 
@@ -125,22 +126,22 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Status, _());
+    embed(Information, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// this method dumps the status object.
+    /// this method dumps the information object.
     ///
-    elle::Status	Status::Dump(const elle::Natural32	margin) const
+    elle::Status	Information::Dump(const elle::Natural32	margin) const
     {
       elle::String	alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Status]" << std::endl;
+      std::cout << alignment << "[Information]" << std::endl;
 
       // dump the genre.
       std::cout << alignment << elle::Dumpable::Shift << "[Genre] "
@@ -237,9 +238,9 @@ namespace etoile
 //
 
     ///
-    /// this method serializes the status.
+    /// this method serializes the information.
     ///
-    elle::Status	Status::Serialize(elle::Archive&	archive) const
+    elle::Status	Information::Serialize(elle::Archive&	archive) const
     {
       enter();
 
@@ -259,9 +260,9 @@ namespace etoile
     }
 
     ///
-    /// this method extracts the status.
+    /// this method extracts the information.
     ///
-    elle::Status	Status::Extract(elle::Archive&		archive)
+    elle::Status	Information::Extract(elle::Archive&	archive)
     {
       enter();
 

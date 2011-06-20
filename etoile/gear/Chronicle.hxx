@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Chronicle.hxx
 //
 // created       julien quintard   [fri jun  3 13:21:44 2011]
-// updated       julien quintard   [fri jun  3 13:27:00 2011]
+// updated       julien quintard   [sun jun 19 17:58:38 2011]
 //
 
 #ifndef ETOILE_GEAR_CHRONICLE_HXX
@@ -26,6 +26,7 @@ namespace etoile
     ///
     /// XXX
     ///
+    /* XXX
     template <typename... T>
     elle::Status	Chronicle::Record(const Operation	operation,
 					  const T&...		objects)
@@ -36,7 +37,7 @@ namespace etoile
 
       // allocate a new transaction.
       transaction = new Transaction<T...>(operation,
-					  objects);
+      objects);
 
       // create the transaction.
       if (transaction->Create() == elle::StatusError)
@@ -47,6 +48,7 @@ namespace etoile
 
       leave();
     }
+    */
 
   }
 }

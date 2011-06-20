@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/components/Access.cc
+// file          /home/mycure/infinit/etoile/XXX/Access.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [sun may 22 14:43:52 2011]
+// updated       julien quintard   [fri jun 17 13:35:02 2011]
 //
 
 //

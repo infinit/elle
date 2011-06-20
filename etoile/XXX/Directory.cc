@@ -5,27 +5,22 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/components/Directory.cc
+// file          /home/mycure/infinit/etoile/XXX/Directory.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [sat may 14 12:49:01 2011]
+// updated       julien quintard   [fri jun 17 12:59:39 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/components/Directory.hh>
-#include <etoile/components/Rights.hh>
-#include <etoile/components/Contents.hh>
-
-#include <etoile/journal/Journal.hh>
-
-#include <etoile/user/User.hh>
+#include <etoile/automaton/Directory.hh>
+#include <etoile/automaton/Contents.hh>
 
 namespace etoile
 {
-  namespace components
+  namespace automaton
   {
 
 //
@@ -35,32 +30,18 @@ namespace etoile
     ///
     /// this method creates a directory object.
     ///
-    elle::Status	Directory::Create(context::Directory*	context)
+    elle::Status	Directory::Create(
+			  gear::Directory*			context)
     {
-      user::User*	user;
-
       enter();
-
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
 
       // allocate a new directory object.
       context->object = new nucleus::Object;
 
-      // place the block in the application's network.
-      if (context->object->Place(user->application->network) ==
-	  elle::StatusError)
-	escape("unable to place the object");
-
       // create the directory.
       if (context->object->Create(nucleus::GenreDirectory,
-				  user->client->agent->K) == elle::StatusError)
+				  agent::Agent::K) == elle::StatusError)
 	escape("unable to create the directory object");
-
-      // bind the object.
-      if (context->object->Bind(context->address) == elle::StatusError)
-	escape("unable to bind the object");
 
       leave();
     }
@@ -69,7 +50,7 @@ namespace etoile
     /// this method loads the directory object identified by the given
     /// address in the context.
     ///
-    elle::Status	Directory::Load(context::Directory*	context,
+    elle::Status	Directory::Load(gear::Directory*	context,
 					const nucleus::Address&	address)
 					
     {
@@ -89,9 +70,9 @@ namespace etoile
     ///
     /// this method adds a directory entry to the directory.
     ///
-    elle::Status	Directory::Add(context::Directory*	directory,
+    elle::Status	Directory::Add(gear::Directory*		directory,
 				       const path::Slice&	name,
-				       context::Directory*	subdirectory)
+				       gear::Directory*		subdirectory)
     {
       nucleus::Entry*	entry;
 
@@ -125,7 +106,7 @@ namespace etoile
     ///
     /// this method returns the address corresponding to the given name.
     ///
-    elle::Status	Directory::Lookup(context::Directory*	context,
+    elle::Status	Directory::Lookup(gear::Directory*	context,
 					  const path::Slice&	name,
 					  nucleus::Entry*&	entry)
     {
@@ -153,11 +134,11 @@ namespace etoile
     ///
     /// this method returns a subset of the directory entries.
     ///
-    elle::Status	Directory::Consult(context::Directory*	context,
-					   const nucleus::Index& index,
-					   const nucleus::Size&	size,
-					   nucleus::Range<nucleus::Entry>&
-					     range)
+    elle::Status	Directory::Consult(
+			  gear::Directory*			context,
+			  const nucleus::Index&			index,
+			  const nucleus::Size&			size,
+			  nucleus::Range<nucleus::Entry>&	range)
     {
       enter();
 
@@ -185,7 +166,7 @@ namespace etoile
     ///
     /// this method renames an entry.
     ///
-    elle::Status	Directory::Rename(context::Directory*	context,
+    elle::Status	Directory::Rename(gear::Directory*	context,
 					  const path::Slice&	from,
 					  const path::Slice&	to)
     {
@@ -213,7 +194,7 @@ namespace etoile
     ///
     /// this method removes an entry.
     ///
-    elle::Status	Directory::Remove(context::Directory*	context,
+    elle::Status	Directory::Remove(gear::Directory*	context,
 					  const path::Slice&	name)
     {
       enter();
@@ -237,10 +218,11 @@ namespace etoile
       leave();
     }
 
+    /* XXX a virer
     ///
     /// this store the modifications applied onto the directory context.
     ///
-    elle::Status	Directory::Store(context::Directory*	context)
+    elle::Status	Directory::Store(gear::Directory*	context)
     {
       user::User*	user;
 
@@ -260,7 +242,7 @@ namespace etoile
     ///
     /// this method discards the modifications applied onto the context.
     ///
-    elle::Status	Directory::Discard(context::Directory*	context)
+    elle::Status	Directory::Discard(gear::Directory*	context)
     {
       enter();
 
@@ -270,6 +252,7 @@ namespace etoile
 
       leave();
     }
+    */
 
     ///
     /// this method removes the object along with the blocks attached to it.
@@ -278,7 +261,7 @@ namespace etoile
     /// it contains references to sub-entries. it is therefore the
     /// responsability of the caller to destroy the entries.
     ///
-    elle::Status	Directory::Destroy(context::Directory*	context)
+    elle::Status	Directory::Destroy(gear::Directory*	context)
     {
       user::User*	user;
       nucleus::Size	size;

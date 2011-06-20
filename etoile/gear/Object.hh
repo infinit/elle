@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [fri jun  3 11:55:08 2011]
+// updated       julien quintard   [mon jun 20 12:36:19 2011]
 //
 
 #ifndef ETOILE_GEAR_OBJECT_HH
@@ -22,7 +22,7 @@
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Context.hh>
-
+ 
 namespace etoile
 {
   namespace gear
@@ -46,8 +46,7 @@ namespace etoile
       //
       // constructors & destructors
       //
-      Object();
-      Object(const Format&);
+      Object(const Nature);
       ~Object();
 
       //
@@ -64,8 +63,19 @@ namespace etoile
       //
       // attributes
       //
-      nucleus::Object*		object;
-      nucleus::Access*		access;
+      nucleus::Object		object;
+      nucleus::Access		access;
+
+      // XXX once the object fetched, a base should be generated so that
+      // it can be used later on.
+
+      struct			Rights
+      {
+	nucleus::Role		role;
+	nucleus::Permissions	permissions;
+	elle::SecretKey		key;
+      }*			rights;
+      nucleus::Author*		author;
     };
 
   }

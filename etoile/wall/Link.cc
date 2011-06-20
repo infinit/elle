@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [wed jun  1 12:02:55 2011]
+// updated       julien quintard   [tue jun 14 14:42:00 2011]
 //
 
 //
@@ -17,12 +17,16 @@
 
 #include <etoile/wall/Link.hh>
 
+#include <etoile/gear/Identifier.hh>
+
+/* XXX
 #include <etoile/context/Link.hh>
 #include <etoile/context/Format.hh>
 
 #include <etoile/user/User.hh>
 
 #include <etoile/path/Path.hh>
+*/
 
 namespace etoile
 {
@@ -36,8 +40,10 @@ namespace etoile
     ///
     /// this method creates an new, though orphan, link object.
     ///
-    elle::Status	Link::Create()
+    elle::Status	Link::Create(
+			  gear::Identifier&			identifier)
     {
+      /*
       context::Link*	context;
       user::User*	user;
 
@@ -67,7 +73,6 @@ namespace etoile
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
@@ -77,13 +82,17 @@ namespace etoile
       waive(context);
 
       leave();
+      */
     }
 
     ///
     /// this method loads the link and creates a new context.
     ///
-    elle::Status	Link::Load(const path::Way&		way)
+    elle::Status	Link::Load(
+			  const path::Way&			way,
+			  gear::Identifier&			identifier)
     {
+      /*
       context::Link*	context;
       user::User*	user;
 
@@ -117,13 +126,11 @@ namespace etoile
 				 context->address) == elle::StatusError)
 	escape("unable to load the link in the given context");
 
-      /* XXX
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
@@ -133,6 +140,7 @@ namespace etoile
       waive(context);
 
       leave();
+      */
     }
 
     ///
@@ -142,7 +150,8 @@ namespace etoile
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
     ///
-    elle::Status	Link::Lock(const context::Identifier&	identifier)
+    elle::Status	Link::Lock(
+			  const gear::Identifier&		identifier)
     {
       enter();
 
@@ -159,7 +168,8 @@ namespace etoile
     ///
     /// this method releases a previously locked link.
     ///
-    elle::Status	Link::Release(const context::Identifier& identifer)
+    elle::Status	Link::Release(
+			  const gear::Identifier&		identifer)
     {
       enter();
 
@@ -171,9 +181,11 @@ namespace etoile
     ///
     /// this method binds a new target way to the given object.
     ///
-    elle::Status	Link::Bind(const context::Identifier&	identifier,
-				   const path::Way&		way)
+    elle::Status	Link::Bind(
+			  const gear::Identifier&		identifier,
+			  const path::Way&			way)
     {
+      /*
       context::Link*	context;
       user::User*	user;
 
@@ -203,21 +215,23 @@ namespace etoile
       if (components::Link::Bind(context, way) == elle::StatusError)
 	escape("unable to bind the target to the link");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method returns the way pointed by this link.
     ///
-    elle::Status	Link::Resolve(const context::Identifier& identifier)
+    elle::Status	Link::Resolve(
+			  const gear::Identifier&		identifier,
+			  path::Way&				way)
     {
+      /*
       context::Link*	context;
       user::User*	user;
       path::Way		way;
@@ -248,21 +262,22 @@ namespace etoile
       if (components::Link::Resolve(context, way) == elle::StatusError)
 	escape("unable to consult the link");
 
-      /* XXX
       // return the way to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagLinkWay>(way)) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method discards the link's modifications.
     ///
-    elle::Status	Link::Discard(const context::Identifier& identifier)
+    elle::Status	Link::Discard(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::Link*	context;
       user::User*	user;
 
@@ -292,22 +307,23 @@ namespace etoile
       if (components::Link::Discard(context) == elle::StatusError)
 	escape("unable to discard the link's modifications");
 
-      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method closes the context and applies, if required, the
     /// modifications.
     ///
-    elle::Status	Link::Store(const context::Identifier&	identifier)
+    elle::Status	Link::Store(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::Link*	context;
       user::User*	user;
 
@@ -337,21 +353,22 @@ namespace etoile
       if (components::Link::Store(context) == elle::StatusError)
 	escape("unable to store the link context");
 
-      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method destroys a link.
     ///
-    elle::Status	Link::Destroy(const context::Identifier& identifier)
+    elle::Status	Link::Destroy(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::Link*	context;
       user::User*	user;
 
@@ -381,14 +398,13 @@ namespace etoile
       if (components::Link::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the link context");
 
-      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
   }

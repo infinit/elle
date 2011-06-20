@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [thu may  5 16:32:55 2011]
+// updated       julien quintard   [tue jun 14 14:42:07 2011]
 //
 
 #ifndef ETOILE_WALL_LINK_HH
@@ -21,11 +21,9 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
+#include <etoile/gear/Identifier.hh>
+
 #include <etoile/path/Way.hh>
-
-#include <etoile/context/Identifier.hh>
-
-#include <etoile/components/Link.hh>
 
 namespace etoile
 {
@@ -45,16 +43,18 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Create();
-      static elle::Status	Load(const path::Way&);
-      static elle::Status	Lock(const context::Identifier&);
-      static elle::Status	Release(const context::Identifier&);
-      static elle::Status	Bind(const context::Identifier&,
+      static elle::Status	Create(gear::Identifier&);
+      static elle::Status	Load(const path::Way&,
+				     gear::Identifier&);
+      static elle::Status	Lock(const gear::Identifier&);
+      static elle::Status	Release(const gear::Identifier&);
+      static elle::Status	Bind(const gear::Identifier&,
 				     const path::Way&);
-      static elle::Status	Resolve(const context::Identifier&);
-      static elle::Status	Discard(const context::Identifier&);
-      static elle::Status	Store(const context::Identifier&);
-      static elle::Status	Destroy(const context::Identifier&);
+      static elle::Status	Resolve(const gear::Identifier&,
+					path::Way&);
+      static elle::Status	Discard(const gear::Identifier&);
+      static elle::Status	Store(const gear::Identifier&);
+      static elle::Status	Destroy(const gear::Identifier&);
     };
 
   }

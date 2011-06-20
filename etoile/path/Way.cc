@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [fri may 28 17:49:48 2010]
+// updated       julien quintard   [sun jun 19 23:04:27 2011]
 //
 
 //
@@ -46,6 +46,8 @@ namespace etoile
     /// copy constructor
     ///
     Way::Way(const Way&						way):
+      Object(way),
+
       path(way.path)
     {
     }

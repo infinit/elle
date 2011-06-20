@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [wed jun  1 12:04:21 2011]
+// updated       julien quintard   [tue jun 14 14:55:08 2011]
 //
 
 //
@@ -17,11 +17,11 @@
 
 #include <etoile/wall/Attributes.hh>
 
-#include <etoile/context/Object.hh>
+#include <etoile/gear/Identifier.hh>
 
-#include <etoile/components/Attributes.hh>
+// XXX #include <etoile/context/Object.hh>
 
-#include <etoile/user/User.hh>
+// XXX #include <etoile/components/Attributes.hh>
 
 namespace etoile
 {
@@ -35,11 +35,12 @@ namespace etoile
     ///
     /// this method sets a trait to the object's attributes.
     ///
-    elle::Status	Attributes::Set(const
-				          context::Identifier&	identifier,
-					const elle::String&	name,
-					const elle::String&	value)
+    elle::Status	Attributes::Set(
+			  const gear::Identifier&		identifier,
+			  const elle::String&			name,
+			  const elle::String&			value)
     {
+      /*
       context::Object*	context;
       user::User*	user;
 
@@ -71,24 +72,25 @@ namespace etoile
 				      value) == elle::StatusError)
 	escape("unable to set the attribute");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method returns the caller the trait associated with
     /// the given name.
     ///
-    elle::Status	Attributes::Get(const
-					  context::Identifier&	identifier,
-					const elle::String&	name)
+    elle::Status	Attributes::Get(
+			  const gear::Identifier&		identifier,
+			  const elle::String&			name,
+			  nucleus::Trait&			trait)
     {
+      /*
       context::Object*	context;
       user::User*	user;
       nucleus::Trait*	trait;
@@ -123,33 +125,32 @@ namespace etoile
       // answer the caller, depending on the result.
       if (trait == NULL)
 	{
-	  /* XXX
 	  // return the null trait.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAttributesTrait>(nucleus::Trait::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
-	  */
 	}
       else
 	{
-	  /* XXX
 	  // return the trait.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAttributesTrait>(*trait)) == elle::StatusError)
 	    escape("unable to reply to the application");
-	  */
 	}
 
       leave();
+      */
     }
 
     ///
     /// this method returns the attributes list.
     ///
-    elle::Status	Attributes::Fetch(const
-					    context::Identifier& identifier)
+    elle::Status	Attributes::Fetch(
+			  const gear::Identifier&		identifier,
+			  nucleus::Range<nucleus::Trait>&	range)
     {
+      /*
       context::Object*			context;
       user::User*			user;
       nucleus::Range<nucleus::Trait>	range;
@@ -181,23 +182,23 @@ namespace etoile
 					range) == elle::StatusError)
 	escape("unable to fetch the attributes list");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagAttributesRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method removes the attribute from the list.
     ///
-    elle::Status	Attributes::Omit(const
-					   context::Identifier&	identifier,
-					 const elle::String&	name)
+    elle::Status	Attributes::Omit(
+			  const gear::Identifier&		identifier,
+			  const elle::String&			name)
     {
+      /* XXX
       context::Object*	context;
       user::User*	user;
 
@@ -228,14 +229,13 @@ namespace etoile
 				       name) == elle::StatusError)
 	escape("unable to remove the attribute");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
   }

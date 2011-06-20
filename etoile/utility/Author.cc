@@ -5,21 +5,21 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/components/Author.cc
+// file          /home/mycure/infinit/etoile/utility/Author.cc
 //
-// created       julien quintard   [sun aug 23 15:33:40 2009]
-// updated       julien quintard   [thu may  5 16:34:04 2011]
+// created       julien quintard   [thu jun 16 16:16:28 2011]
+// updated       julien quintard   [thu jun 16 17:38:14 2011]
 //
-
+ 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/components/Author.hh>
+#include <etoile/utility/Author.hh>
 
 namespace etoile
 {
-  namespace components
+  namespace utility
   {
 
 //
@@ -27,22 +27,12 @@ namespace etoile
 //
 
     ///
-    /// this method forges the author object required to modify the
-    /// object associated with the given context.
+    /// this method forges the author required for modifying the associated
+    /// object.
     ///
-    elle::Status	Author::Forge(context::Object*		context)
+    elle::Status	Author::Create(Rights + Access)
     {
-      user::User*	user;
-
       enter();
-
-      // if an author exists, return.
-      if (context->author != NULL)
-	leave();
-
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the current user");
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)

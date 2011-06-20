@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [wed jun  1 11:44:03 2011]
+// updated       julien quintard   [tue jun 14 13:52:55 2011]
 //
 
 #ifndef ETOILE_WALL_OBJECT_HH
@@ -22,7 +22,9 @@
 
 #include <etoile/path/Way.hh>
 
-#include <etoile/context/Identifier.hh>
+#include <etoile/gear/Identifier.hh>
+
+#include <etoile/miscellaneous/Information.hh>
 
 namespace etoile
 {
@@ -46,12 +48,13 @@ namespace etoile
       // static methods
       //
       static elle::Status	Load(const path::Way&,
-				     context::Identifier&);
-      static elle::Status	Lock(const context::Identifier&);
-      static elle::Status	Release(const context::Identifier&);
-      static elle::Status	Information(const context::Identifier&);
-      static elle::Status	Discard(const context::Identifier&);
-      static elle::Status	Store(const context::Identifier&);
+				     gear::Identifier&);
+      static elle::Status	Lock(const gear::Identifier&);
+      static elle::Status	Release(const gear::Identifier&);
+      static elle::Status	Information(const gear::Identifier&,
+					    miscellaneous::Information&);
+      static elle::Status	Discard(const gear::Identifier&);
+      static elle::Status	Store(const gear::Identifier&);
     };
 
   }

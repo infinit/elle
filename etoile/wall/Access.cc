@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [wed jun  1 14:07:34 2011]
+// updated       julien quintard   [tue jun 14 14:53:09 2011]
 //
 
 //
@@ -17,12 +17,12 @@
 
 #include <etoile/wall/Access.hh>
 
-#include <etoile/context/Object.hh>
-#include <etoile/context/Format.hh>
+#include <etoile/gear/Identifier.hh>
 
-#include <etoile/components/Access.hh>
+// XXX #include <etoile/context/Object.hh>
+// #include <etoile/context/Format.hh>
 
-#include <etoile/user/User.hh>
+// XXX #include <etoile/components/Access.hh>
 
 namespace etoile
 {
@@ -37,12 +37,12 @@ namespace etoile
     /// this method returns the caller the access record associated with
     /// the given subject.
     ///
-    elle::Status	Access::Lookup(const
-				         context::Identifier&	identifier,
-				       const
-				         nucleus::Subject&	subject,
-				       nucleus::Record&		record)
+    elle::Status	Access::Lookup(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Subject&		subject,
+			  nucleus::Record&			record)
     {
+      /*
       context::Object*	context;
       user::User*	user;
       nucleus::Record*	record;
@@ -71,37 +71,34 @@ namespace etoile
       // answer the caller, depending on the result.
       if (record == NULL)
 	{
-	  /* XXX
 	  // return the null record.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAccessRecord>(nucleus::Record::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
-	  */
 	}
       else
 	{
-	  /* XXX
 	  // return the record.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagAccessRecord>(*record)) == elle::StatusError)
 	    escape("unable to reply to the application");
-	  */
 	}
 
       leave();
+      */
     }
 
     ///
     /// this method returns a subset of the access list.
     ///
-    elle::Status	Access::Consult(const
-				          context::Identifier&	identifier,
-					const
-					  nucleus::Index&	index,
-					const
-					  nucleus::Size&		size)
+    elle::Status	Access::Consult(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Index&			index,
+			  const nucleus::Size&			size,
+			  nucleus::Range<nucleus::Record>&	range)
     {
+      /*
       context::Object*			context;
       user::User*			user;
       nucleus::Range<nucleus::Record>	range;
@@ -135,27 +132,25 @@ namespace etoile
 				      range) == elle::StatusError)
 	escape("unable to consult the access list");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagAccessRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method grants access to the given subject, with the given
     /// permissions.
     ///
-    elle::Status	Access::Grant(const
-				        context::Identifier&	identifier,
-				      const
-				        nucleus::Subject&	subject,
-				      const
-				        nucleus::Permissions&	permissions)
+    elle::Status	Access::Grant(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Subject&		subject,
+			  const nucleus::Permissions&		permissions)
     {
+      /*
       context::Object*	context;
       user::User*	user;
 
@@ -187,26 +182,24 @@ namespace etoile
 				    permissions) == elle::StatusError)
 	escape("unable to grant access to the subject");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method updates the permissions of the given subject.
     ///
-    elle::Status	Access::Update(const
-				         context::Identifier&	identifier,
-				       const
-				         nucleus::Subject&	subject,
-				       const
-				         nucleus::Permissions&	permissions)
+    elle::Status	Access::Update(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Subject&		subject,
+			  const nucleus::Permissions&		permissions)
     {
+      /*
       context::Object*	context;
       user::User*	user;
 
@@ -238,27 +231,22 @@ namespace etoile
 				     permissions) == elle::StatusError)
 	escape("unable to update the access list");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method blocks the given subject from accessing the object.
     ///
-    elle::Status	Access::Block(const
-				        context::Identifier&	identifier,
-				      const
-				        nucleus::Subject&	subject)
+    elle::Status	Access::Block(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Subject&		subject)
     {
-      context::Object*	context;
-      user::User*	user;
-
       enter();
 
       printf("[XXX] Access::Block()\n");
@@ -269,11 +257,11 @@ namespace etoile
     ///
     /// this method removes the permissions from the given subject.
     ///
-    elle::Status	Access::Revoke(const
-				         context::Identifier&	identifier,
-				       const
-				         nucleus::Subject&	subject)
+    elle::Status	Access::Revoke(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Subject&		subject)
     {
+      /*
       context::Object*	context;
       user::User*	user;
 
@@ -304,14 +292,13 @@ namespace etoile
 				     subject) == elle::StatusError)
 	escape("unable to revoke the subject's permissions");
 
-      /* XXX
       // answer the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
   }

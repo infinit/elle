@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [thu may  5 16:29:39 2011]
+// updated       julien quintard   [tue jun 14 14:52:08 2011]
 //
 
 #ifndef ETOILE_WALL_DIRECTORY_HH
@@ -23,9 +23,7 @@
 
 #include <etoile/path/Way.hh>
 
-#include <etoile/context/Identifier.hh>
-
-#include <etoile/components/Directory.hh>
+#include <etoile/gear/Identifier.hh>
 
 namespace etoile
 {
@@ -45,26 +43,29 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Create();
-      static elle::Status	Load(const path::Way&);
-      static elle::Status	Lock(const context::Identifier&);
-      static elle::Status	Release(const context::Identifier&);
-      static elle::Status	Add(const context::Identifier&,
+      static elle::Status	Create(gear::Identifier&);
+      static elle::Status	Load(const path::Way&,
+				     gear::Identifier&);
+      static elle::Status	Lock(const gear::Identifier&);
+      static elle::Status	Release(const gear::Identifier&);
+      static elle::Status	Add(const gear::Identifier&,
 				    const path::Slice&,
-				    const context::Identifier&);
-      static elle::Status	Lookup(const context::Identifier&,
-				       const path::Slice&);
-      static elle::Status	Consult(const context::Identifier&,
+				    const gear::Identifier&);
+      static elle::Status	Lookup(const gear::Identifier&,
+				       const path::Slice&,
+				       nucleus::Entry&);
+      static elle::Status	Consult(const gear::Identifier&,
 					const nucleus::Index&,
-					const nucleus::Size&);
-      static elle::Status	Rename(const context::Identifier&,
+					const nucleus::Size&,
+					nucleus::Range<nucleus::Entry>&);
+      static elle::Status	Rename(const gear::Identifier&,
 				       const path::Slice&,
 				       const path::Slice&);
-      static elle::Status	Remove(const context::Identifier&,
+      static elle::Status	Remove(const gear::Identifier&,
 				       const path::Slice&);
-      static elle::Status	Discard(const context::Identifier&);
-      static elle::Status	Store(const context::Identifier&);
-      static elle::Status	Destroy(const context::Identifier&);
+      static elle::Status	Discard(const gear::Identifier&);
+      static elle::Status	Store(const gear::Identifier&);
+      static elle::Status	Destroy(const gear::Identifier&);
     };
 
   }

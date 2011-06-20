@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/File.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [fri jun  3 11:47:16 2011]
+// updated       julien quintard   [fri jun 17 16:24:14 2011]
 //
 
 //
@@ -75,7 +75,7 @@ namespace etoile
       else
 	{
 	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Contents] " << none << std::endl;
+		    << "[Contents] " << elle::none << std::endl;
 	}
 
       leave();

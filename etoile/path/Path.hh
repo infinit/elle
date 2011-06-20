@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [wed may 11 17:20:04 2011]
+// updated       julien quintard   [thu jun 16 10:27:05 2011]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -19,9 +19,9 @@
 //
 
 #include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Route.hh>
+#include <etoile/path/Venue.hh>
 
 namespace etoile
 {
@@ -49,7 +49,10 @@ namespace etoile
       static elle::Status	Clean();
 
       static elle::Status	Resolve(const Route&,
-					nucleus::Address&);
+					Venue&);
+      static elle::Status	Parse(const Slab&,
+				      Slice&,
+				      nucleus::Version&);
     };
 
   }
@@ -60,9 +63,11 @@ namespace etoile
 //
 
 #include <etoile/path/Cache.hh>
+#include <etoile/path/Chemin.hh>
 #include <etoile/path/Item.hh>
 #include <etoile/path/Length.hh>
 #include <etoile/path/Route.hh>
+#include <etoile/path/Slab.hh>
 #include <etoile/path/Slice.hh>
 #include <etoile/path/Venue.hh>
 #include <etoile/path/Way.hh>

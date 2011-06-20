@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/Status.hh
+// file          /home/mycure/infinit/etoile/miscellaneous/Information.hh
 //
 // created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [thu may  5 16:31:04 2011]
+// updated       julien quintard   [tue jun 14 13:50:41 2011]
 //
 
-#ifndef ETOILE_WALL_STATUS_HH
-#define ETOILE_WALL_STATUS_HH
+#ifndef ETOILE_MISCELLANEOUS_INFORMATION_HH
+#define ETOILE_MISCELLANEOUS_INFORMATION_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -23,8 +23,7 @@
 
 namespace etoile
 {
-
-  namespace wall
+  namespace miscellaneous
   {
 
 //
@@ -34,19 +33,19 @@ namespace etoile
     ///
     /// this class describes an object's meta data.
     ///
-    class Status:
+    class Information:
       public elle::Object
     {
     public:
       //
       // constants
       //
-      static const Status		Null;
+      static const Information		Null;
 
       //
       // constructors & destructors
       //
-      Status();
+      Information();
 
       //
       // method
@@ -58,8 +57,8 @@ namespace etoile
       //
 
       // object
-      declare(Status);
-      elle::Boolean	operator==(const Status&) const;
+      declare(Information);
+      elle::Boolean	operator==(const Information&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

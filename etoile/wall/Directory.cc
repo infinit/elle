@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [wed jun  1 12:01:22 2011]
+// updated       julien quintard   [thu jun 16 11:08:40 2011]
 //
 
 //
@@ -17,10 +17,7 @@
 
 #include <etoile/wall/Directory.hh>
 
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Format.hh>
-
-#include <etoile/user/User.hh>
+#include <etoile/gear/Identifier.hh>
 
 #include <etoile/path/Path.hh>
 
@@ -36,8 +33,10 @@ namespace etoile
     ///
     /// this method creates an new, though orphan, directory object.
     ///
-    elle::Status	Directory::Create()
+    elle::Status	Directory::Create(
+			  gear::Identifier&			identifier)
     {
+      /*
       context::Directory*	context;
       user::User*		user;
 
@@ -60,13 +59,13 @@ namespace etoile
       // create a new directory.
       if (components::Directory::Create(context) == elle::StatusError)
 	escape("unable to create the directory");
-      /* XXX
+
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -75,14 +74,30 @@ namespace etoile
       waive(context);
 
       leave();
+      */
     }
 
     ///
     /// this method loads the directory and creates a new context.
     ///
-    elle::Status	Directory::Load(const
-					  path::Way&		way)
+    elle::Status	Directory::Load(
+			  const path::Way&			way,
+			  gear::Identifier&			identifier)
     {
+      /* XXX
+	 instead of path::Way, we will receive a path::Chemin;
+
+	 nucleus::Location	location;
+	 gear::Scope*		scope;
+
+	 chemin.Locate(location);
+
+	 Gear::Select(identifier, &scope);
+
+	 scope->automaton.XXX(location, ...);
+       */
+
+      /*
       context::Directory*	context;
       user::User*		user;
 
@@ -115,13 +130,13 @@ namespace etoile
       if (components::Directory::Load(context,
 				      context->address) == elle::StatusError)
 	escape("unable to load the directory in the given context");
-      /* XXX
+
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -130,17 +145,53 @@ namespace etoile
       waive(context);
 
       leave();
+      */
+    }
+
+    ///
+    /// this application locks the directory the identified context is related
+    /// to.
+    ///
+    /// the method returns true if the lock has been acquired or false
+    /// otherwise.
+    ///
+    elle::Status	Directory::Lock(
+			  const gear::Identifier&		identifier)
+    {
+      enter();
+
+      printf("[XXX] Directory::Lock()\n");
+
+      // XXX
+      // XXX peut etre qu'il faudrait avoir une liste dependencies dans
+      // un context qui signifierait que le context courant ne peut etre
+      // commit tant que les dependences ne le sont pas!
+
+      leave();
+    }
+
+    ///
+    /// this method releases a previously locked directory.
+    ///
+    elle::Status	Directory::Release(
+			  const gear::Identifier&		identifer)
+    {
+      enter();
+
+      printf("[XXX] Directory::Release()\n");
+
+      leave();
     }
 
     ///
     /// this method adds an entry.
     ///
-    elle::Status	Directory::Add(const
-					 context::Identifier&	parent,
-				       const path::Slice&	name,
-				       const
-				         context::Identifier&	child)
+    elle::Status	Directory::Add(
+			  const gear::Identifier&		parent,
+			  const path::Slice&			name,
+			  const gear::Identifier&		child)
     {
+      /*
       context::Directory*	directory;
       context::Directory*	subdirectory;
       user::User*		user;
@@ -171,58 +222,25 @@ namespace etoile
 				     name,
 				     subdirectory) == elle::StatusError)
 	escape("unable to add the entry");
-      /* XXX
+
       // reply to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
+
+      leave();
       */
-      leave();
-    }
-
-    ///
-    /// this application locks the directory the identified context is related
-    /// to.
-    ///
-    /// the method returns true if the lock has been acquired or false
-    /// otherwise.
-    ///
-    elle::Status	Directory::Lock(const
-					  context::Identifier&	identifier)
-    {
-      enter();
-
-      printf("[XXX] Directory::Lock()\n");
-
-      // XXX
-      // XXX peut etre qu'il faudrait avoir une liste dependencies dans
-      // un context qui signifierait que le context courant ne peut etre
-      // commit tant que les dependences ne le sont pas!
-
-      leave();
-    }
-
-    ///
-    /// this method releases a previously locked directory.
-    ///
-    elle::Status	Directory::Release(const
-					     context::Identifier& identifer)
-    {
-      enter();
-
-      printf("[XXX] Directory::Release()\n");
-
-      leave();
     }
 
     ///
     /// this method returns the address associated with the given name.
     ///
-    elle::Status	Directory::Lookup(const
-					    context::Identifier& identifier,
-					  const
-					    path::Slice&	name)
+    elle::Status	Directory::Lookup(
+			  const gear::Identifier&		identifier,
+			  const path::Slice&			name,
+			  nucleus::Entry&			entry)
     {
+      /*
       context::Directory*	context;
       user::User*		user;
       nucleus::Entry*		entry;
@@ -258,38 +276,35 @@ namespace etoile
       // return the status to the caller.
       if (entry == NULL)
 	{
-	  /* XXX
 	  // return a null entry.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagDirectoryEntry>(nucleus::Entry::Null)) ==
 	      elle::StatusError)
 	    escape("unable to reply to the application");
-	  */
 	}
       else
 	{
-	  /* XXX
 	  // return the entry.
 	  if (user->application->channel->Reply(
 	        elle::Inputs<TagDirectoryEntry>(*entry)) == elle::StatusError)
 	    escape("unable to reply to the application");
-	  */
 	}
 
       leave();
+      */
     }
 
     ///
     /// this method returns a set [offset, offset + size[ of entries
     /// (name, address) from the directory identified by _identifier_.
     ///
-    elle::Status	Directory::Consult(const
-					     context::Identifier& identifier,
-					   const
-					     nucleus::Offset&	offset,
-					   const
-					     nucleus::Offset&	size)
+    elle::Status	Directory::Consult(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Offset&		offset,
+			  const nucleus::Offset&		size,
+			  nucleus::Range<nucleus::Entry>&	range)
     {
+      /*
       context::Directory*		context;
       user::User*			user;
       nucleus::Range<nucleus::Entry>	range;
@@ -323,26 +338,24 @@ namespace etoile
 					 range) == elle::StatusError)
 	escape("unable to consult the directory");
 
-      /* XXX
       // return the set to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagDirectoryRange>(range)) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method renames an entry of the given directory.
     ///
-    elle::Status	Directory::Rename(const
-					    context::Identifier& identifier,
-					  const
-					    path::Slice&	from,
-					  const
-					    path::Slice&	to)
+    elle::Status	Directory::Rename(
+			  const gear::Identifier&		identifier,
+			  const path::Slice&			from,
+			  const path::Slice&			to)
     {
+      /*
       context::Directory*	context;
       user::User*		user;
 
@@ -374,23 +387,23 @@ namespace etoile
 					to) == elle::StatusError)
 	escape("unable to rename the entry");
 
-      /* XXX
       // return the set to the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method removes an entry.
     ///
-    elle::Status	Directory::Remove(const
-					    context::Identifier& identifier,
-					  const path::Slice&	name)
+    elle::Status	Directory::Remove(
+			  const gear::Identifier&		identifier,
+			  const path::Slice&			name)
     {
+      /*
       context::Directory*	context;
       user::User*		user;
 
@@ -416,22 +429,22 @@ namespace etoile
 					name) == elle::StatusError)
 	escape("unable to create the subdirectory");
 
-      /* XXX
       // reply to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method discards the directory's modifications.
     ///
-    elle::Status	Directory::Discard(const
-					     context::Identifier& identifier)
+    elle::Status	Directory::Discard(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::Directory*	context;
       user::User*		user;
 
@@ -461,23 +474,23 @@ namespace etoile
       if (components::Directory::Discard(context) == elle::StatusError)
 	escape("unable to discard the directory's modifications");
 
-      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method closes the context and applies, if required, the
     /// modifications.
     ///
-    elle::Status	Directory::Store(const
-					   context::Identifier&	identifier)
+    elle::Status	Directory::Store(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::Directory*	context;
       user::User*		user;
 
@@ -507,22 +520,22 @@ namespace etoile
       if (components::Directory::Store(context) == elle::StatusError)
 	escape("unable to store the directory context");
 
-      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
     ///
     /// this method destroys a directory.
     ///
-    elle::Status	Directory::Destroy(const
-					     context::Identifier& identifier)
+    elle::Status	Directory::Destroy(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::Directory*	context;
       user::User*		user;
 
@@ -552,14 +565,13 @@ namespace etoile
       if (components::Directory::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the directory context");
 
-      /* XXX
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
 
       leave();
+      */
     }
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Repository.cc
 //
 // created       julien quintard   [tue jan 26 14:32:46 2010]
-// updated       julien quintard   [thu may  5 15:56:50 2011]
+// updated       julien quintard   [sun jun 19 17:59:28 2011]
 //
 
 //

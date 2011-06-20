@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [fri jun  3 09:52:29 2011]
+// updated       julien quintard   [sun jun 19 22:49:33 2011]
 //
 
 //
@@ -17,13 +17,13 @@
 
 #include <etoile/path/Path.hh>
 
-#include <etoile/user/User.hh>
+#include <etoile/gear/Scope.hh>
+
+// XXX #include <etoile/automaton/Directory.hh>
+
 #include <etoile/depot/Depot.hh>
 
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Context.hh>
-
-#include <etoile/components/Directory.hh>
+#include <nucleus/Nucleus.hh>
 
 namespace etoile
 {
@@ -71,43 +71,46 @@ namespace etoile
     /// objects and explore them.
     ///
     elle::Status	Path::Resolve(const Route&		route,
-				      nucleus::Address&		address)
+				      Venue&			venue)
     {
-      Venue		venue;
+      nucleus::Address	address;
+      nucleus::Version	version;
       Route::Scoutor	scoutor;
 
       enter();
-
-      //printf("[XXX] Path::Resolve()\n");
-      //route.Dump();
 
       // first ask the cache to resolve as much as it can.
       //if (Cache::Resolve(route, venue) == elle::StatusError)
       //escape("unable to resolve part of the route through the cache");
 
+      // if complete, return the address i.e without updating the cache.
+      if (route.elements.size() == venue.elements.size())
+	leave();
+
       // if the cache did not resolve anything.
       if (venue == Venue::Null)
 	{
-	  user::User*	user;
-
-	  // load the current user.
-	  if (user::User::Instance(user) == elle::StatusError)
-	    escape("unable to load the user");
+	  Slice		slice;
 
 	  // retrieve the root directory's address.
-	  if (depot::Depot::Origin(user->application->network,
-				   address) == elle::StatusError)
+	  if (depot::Depot::Origin(address) == elle::StatusError)
 	    escape("unable to retrieve the address of the root directory");
-	}
-      else
-	{
-	  // set the address with the address of the last resolved element.
-	  address = venue.elements[venue.elements.size() - 1];
+
+	  // parse the very first slab i.e the root slab in order
+	  // to extract the version number. note that the root slab is
+	  // always empty.
+	  if (Path::Parse(route.elements[0],
+			  slice, version) == elle::StatusError)
+	    escape("unable to extract the version number from the root slab");
+
+	  // record the root directory in the venue.
+	  if (venue.Record(address, version) == elle::StatusError)
+	    escape("unable to record the root directory in the venue");
 	}
 
-      // if complete, return the address.
-      if (route.elements.size() == venue.elements.size())
-	leave();
+      // set the address/version with the address of the last resolved element.
+      address = venue.elements[venue.elements.size() - 1].address;
+      version = venue.elements[venue.elements.size() - 1].version;
 
       // otherwise, resolve manually by retrieving the directory object.
       for (scoutor = route.elements.begin() + venue.elements.size();
@@ -115,69 +118,77 @@ namespace etoile
 	   scoutor++)
 	{
 	  //
-	  // note here that all operations are performed on a local context.
+	  // note here that all operations are performed on a local scope.
 	  //
-	  // this context is not exported because no application needs to
-	  // access it. therefore it is not allocated nor added to the context
+	  // this scope is not exported because no application needs to
+	  // access it. therefore it is not allocated nor added to the gear
 	  // container.
 	  //
-	  // additionally, as a consequence, it must not be "delete"d. once
-	  // the context is stored, it ends up in the journal which distinguish
-	  // local from external contexts through their identifiers. indeed,
-	  // external contexts have proper identifiers and have been allocated,
-	  // hence need deletion, while local contexts are allocated on the
-	  // stack, hence need no deletion and use the Null identifier.
-	  //
 
-	  context::Directory	context;
-	  nucleus::Entry*	entry;
+	  /* XXX
+	  gear::Scope<automaton::Directory>	scope;
+	  Slice					slice;
+	  nucleus::Version			version;
+	  nucleus::Entry*			entry;
+	  nucleus::Location			location(address, version);
 
-	  // allocate a new context.
-	  if (context::Context::New(context) == elle::StatusError)
-	    escape("unable to allocate a new context");
+	  // fetch the directory.
+	  if (scope.automaton.Load(location) == elle::StatusError)
+	    escape("unable to fetch the directory object");
 
-	  // load the directory referenced by address.
-	  if (components::Directory::Load(context,
-					  address) == elle::StatusError)
-	    escape("unable to load one of the route's directories");
+	  // extract the slice/version from the current slab.
+	  if (Path::Parse(*scoutor,
+			  slice, version) == elle::StatusError)
+	    escape("unable to extract the slice/version from the "
+		   "current slab");
 
 	  // look up for the name.
-	  if (components::Directory::Lookup(context,
-					    *scoutor,
-					    entry) == elle::StatusError)
+	  if (scope.automaton.Lookup(slice, entry) == elle::StatusError)
 	    escape("unable to find one of the route's entries");
 
 	  // if there is no such entry, abort.
 	  if (entry == NULL)
-	    {
-	      // close the context.
-	      if (components::Directory::Discard(context) == elle::StatusError)
-		escape("unable to close the context");
+	    escape("unable to locate the target path");
 
-	      escape("unable to locate the target path");
-	    }
-
-	  // set the address.
+	  // set the address; the version is already set i.e it has
+	  // been extracted from the slab.
 	  address = entry->address;
 
-	  // record the address in the venue.
-	  if (venue.Record(address) == elle::StatusError)
+	  // first, record the address/version in the venue.
+	  if (venue.Record(address, version) == elle::StatusError)
 	    escape("unable to record the venue address");
-
-	  // close the context.
-	  if (components::Directory::Discard(context) == elle::StatusError)
-	    escape("unable to close the context");
+	  */
 	}
 
       // update the resolved path to the cache.
       //if (Cache::Update(route, venue) == elle::StatusError)
       //escape("unable to update the cache");
 
-      // return the target address.
-      address = venue.elements[venue.elements.size() - 1];
-
       //printf("[XXX] /Path::Resolve()\n");
       //std::cout << address << std::endl;
+
+      leave();
+    }
+
+    ///
+    /// this method takes a slice and tries to extract both the real
+    /// slice and the version number.
+    ///
+    /// for instance the slice 'teton.txt~42#'---assuming the regexp '~[0-9]+#'
+    /// is used for version numbers---would be split into 'teton.txt' and
+    /// the version number 42.
+    ///
+    elle::Status	Path::Parse(const Slab&			slab,
+				    Slice&			slice,
+				    nucleus::Version&		version)
+    {
+      enter();
+
+      // XXX
+      slice = slab;
+
+      // XXX to remove the warning.
+      version = version;
 
       leave();
     }

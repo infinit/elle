@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transaction.hxx
 //
 // created       julien quintard   [fri jun  3 13:06:41 2011]
-// updated       julien quintard   [fri jun  3 13:57:17 2011]
+// updated       julien quintard   [fri jun 17 16:51:18 2011]
 //
 
 #ifndef ETOILE_GEAR_TRANSACTION_HXX

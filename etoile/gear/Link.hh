@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Link.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [fri jun  3 11:38:39 2011]
+// updated       julien quintard   [fri jun 17 16:24:26 2011]
 //
 
 #ifndef ETOILE_GEAR_LINK_HH
@@ -41,11 +41,6 @@ namespace etoile
     {
     public:
       //
-      // types
-      //
-      typedef nucleus::Reference	Content;
-
-      //
       // constructors & destructors
       //
       Link();
@@ -65,7 +60,7 @@ namespace etoile
       //
       // attributes
       //
-      nucleus::Contents<Content>*	contents;
+      nucleus::Contents<nucleus::Reference>*	contents;
     };
 
   }

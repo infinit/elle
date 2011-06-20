@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [thu may  5 16:06:45 2011]
+// updated       julien quintard   [wed jun 15 20:52:06 2011]
 //
 
 //
@@ -49,12 +49,15 @@ namespace etoile
     ///
     /// this method records the next step of the venue.
     ///
-    elle::Status	Venue::Record(const nucleus::Address&	address)
+    elle::Status	Venue::Record(const nucleus::Address&	address,
+				      const nucleus::Version&	version)
     {
+      nucleus::Location	location(address, version);
+
       enter();
 
       // store the address in the container.
-      this->elements.push_back(address);
+      this->elements.push_back(location);
 
       leave();
     }

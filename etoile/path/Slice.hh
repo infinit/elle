@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Slice.hh
 //
 // created       julien quintard   [fri apr  2 01:29:28 2010]
-// updated       julien quintard   [mon may  3 13:29:51 2010]
+// updated       julien quintard   [thu jun 16 10:25:10 2011]
 //
 
 #ifndef ETOILE_PATH_SLICE_HH

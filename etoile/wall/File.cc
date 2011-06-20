@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [wed jun  1 12:00:26 2011]
+// updated       julien quintard   [tue jun 14 15:58:07 2011]
 //
 
 //
@@ -17,10 +17,14 @@
 
 #include <etoile/wall/File.hh>
 
+#include <etoile/gear/Identifier.hh>
+
+/* XXX
 #include <etoile/context/Directory.hh>
 #include <etoile/context/Format.hh>
 
 #include <etoile/user/User.hh>
+*/
 
 #include <etoile/path/Path.hh>
 
@@ -36,8 +40,10 @@ namespace etoile
     ///
     /// this method creates an new, though orphan, file object.
     ///
-    elle::Status	File::Create()
+    elle::Status	File::Create(
+			  gear::Identifier&			identifier)
     {
+      /*
       context::File*	context;
       user::User*	user;
 
@@ -60,13 +66,13 @@ namespace etoile
       // create a new file.
       if (components::File::Create(context) == elle::StatusError)
 	escape("unable to create the file");
-      /* XXX
+
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -75,13 +81,17 @@ namespace etoile
       waive(context);
 
       leave();
+      */
     }
 
     ///
     /// this method loads the file and creates a new context.
     ///
-    elle::Status	File::Load(const path::Way&		way)
+    elle::Status	File::Load(
+			  const path::Way&			way,
+			  gear::Identifier&			identifier)
     {
+      /*
       context::File*	context;
       user::User*	user;
 
@@ -114,13 +124,13 @@ namespace etoile
       if (components::File::Load(context,
 				      context->address) == elle::StatusError)
 	escape("unable to load the file in the given context");
-      /* XXX
+
       // return the context identifier to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagIdentifier>(context->identifier)) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       // export the context.
       if (context::Context::Export(context) == elle::StatusError)
 	escape("unable to export the context");
@@ -129,6 +139,7 @@ namespace etoile
       waive(context);
 
       leave();
+      */
     }
 
     ///
@@ -138,8 +149,8 @@ namespace etoile
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
     ///
-    elle::Status	File::Lock(const
-				     context::Identifier&	identifier)
+    elle::Status	File::Lock(
+			  const gear::Identifier&		identifier)
     {
       enter();
 
@@ -156,8 +167,8 @@ namespace etoile
     ///
     /// this method releases a previously locked file.
     ///
-    elle::Status	File::Release(const
-				        context::Identifier&	identifer)
+    elle::Status	File::Release(
+			  const gear::Identifier&		identifer)
     {
       enter();
 
@@ -169,10 +180,12 @@ namespace etoile
     ///
     /// this method writes a region of the file.
     ///
-    elle::Status	File::Write(const context::Identifier& identifier,
-				    const nucleus::Offset&	offset,
-				    const elle::Region&		region)
+    elle::Status	File::Write(
+		          const gear::Identifier&		identifier,
+			  const nucleus::Offset&		offset,
+			  const elle::Region&			region)
     {
+      /*
       context::File*	context;
       user::User*	user;
 
@@ -202,22 +215,26 @@ namespace etoile
       if (components::File::Write(context, offset, region) ==
 	  elle::StatusError)
 	escape("unable to write the file");
-      /* XXX
+
       // answer the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagOk>()) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
     ///
     /// this method reads a region of the file.
     ///
-    elle::Status	File::Read(const context::Identifier&	identifier,
-				   const nucleus::Offset&	offset,
-				   const nucleus::Size&		size)
+    elle::Status	File::Read(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Offset&		offset,
+			  const nucleus::Size&			size,
+			  elle::Region&				region)
     {
+      /*
       context::File*	context;
       user::User*	user;
       elle::Region	region;
@@ -243,21 +260,24 @@ namespace etoile
       if (components::File::Read(context, offset, size, region) ==
 	  elle::StatusError)
 	escape("unable to read the file");
-      /* XXX
+
       // reply to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagFileRegion>(region)) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
     ///
     /// this method adjusts the size of a file.
     ///
-    elle::Status	File::Adjust(const context::Identifier&	identifier,
-				     const nucleus::Size&	size)
+    elle::Status	File::Adjust(
+			  const gear::Identifier&		identifier,
+			  const nucleus::Size&			size)
     {
+      /*
       context::File*	context;
       user::User*	user;
 
@@ -286,20 +306,23 @@ namespace etoile
       // adjust the file.
       if (components::File::Adjust(context, size) == elle::StatusError)
 	escape("unable to adjust the file size");
-      /* XXX
+
       // return the set to the caller.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
     ///
     /// this method discards the file's modifications.
     ///
-    elle::Status	File::Discard(const context::Identifier& identifier)
+    elle::Status	File::Discard(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::File*	context;
       user::User*	user;
 
@@ -328,21 +351,24 @@ namespace etoile
       // discard the context.
       if (components::File::Discard(context) == elle::StatusError)
 	escape("unable to discard the file's modifications");
-      /* XXX
+
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
     ///
     /// this method closes the context and applies, if required, the
     /// modifications.
     ///
-    elle::Status	File::Store(const context::Identifier&	identifier)
+    elle::Status	File::Store(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::File*	context;
       user::User*	user;
 
@@ -371,20 +397,23 @@ namespace etoile
       // store the context.
       if (components::File::Store(context) == elle::StatusError)
 	escape("unable to store the file context");
-      /* XXX
+
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
     ///
     /// this method destroys a file.
     ///
-    elle::Status	File::Destroy(const context::Identifier& identifier)
+    elle::Status	File::Destroy(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::File*	context;
       user::User*	user;
 
@@ -413,13 +442,14 @@ namespace etoile
       // destroy the context.
       if (components::File::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the file context");
-      /* XXX
+
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
   }

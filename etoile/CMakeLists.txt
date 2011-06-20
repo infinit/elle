@@ -1,60 +1,40 @@
 PROJECT(Etoile CXX)
 
 ADD_LIBRARY(etoile
-#  configuration/Configuration.cc
-
-#  context/Context.cc
-#  context/Directory.cc
-#  context/File.cc
-#  context/Identifier.cc
-#  context/Link.cc
-#  context/Object.cc
-#  context/Rights.cc
-
-#  components/Access.cc
-#  components/Attributes.cc
-#  components/Author.cc
-#  components/Directory.cc
-#  components/File.cc
-#  components/Link.cc
-#  components/Object.cc
-#  components/Rights.cc
-
 #  path/Cache.cc
 #  path/Item.cc
-#  path/Path.cc
-#  path/Route.cc
-#  path/Venue.cc
-#  path/Way.cc
-
-# XXX
-#  user/Agent.cc
-#  user/Application.cc
-#  user/Client.cc
-#  user/Guest.cc
-#  user/Map.cc
-#  user/User.cc
-
-#  journal/Bucket.cc
-#  journal/Item.cc
-#  journal/Journal.cc
+  path/Path.cc
+  path/Route.cc
+  path/Chemin.cc
+  path/Venue.cc
+  path/Way.cc
 
 #  depot/Cell.cc
-#  depot/Depot.cc
-#  depot/Hole.cc
+  depot/Depot.cc
+  depot/Hole.cc
 #  depot/Record.cc
 #  depot/Repository.cc
 #  depot/Unit.cc
 
-#  wall/Wall.cc
+  gear/Identifier.cc
+
+#  automaton/Automaton.cc
+#  automaton/Directory.cc
+#  automaton/File.cc
+#  automaton/Link.cc
+#  automaton/Object.cc
+
+  wall/Attributes.cc
+  wall/Access.cc
+  wall/Directory.cc
+  wall/File.cc
+  wall/Link.cc
+  wall/Object.cc
+  wall/Path.cc
 #  wall/User.cc
-#  wall/Object.cc
-#  wall/Access.cc
-#  wall/Directory.cc
-#  wall/File.cc
-#  wall/Link.cc
-#  wall/Status.cc
-#  wall/Attributes.cc
+  wall/Wall.cc
+
+  miscellaneous/Information.cc
 
   Etoile.cc
 )

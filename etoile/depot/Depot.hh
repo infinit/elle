@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [mon may 23 13:56:12 2011]
+// updated       julien quintard   [tue jun 14 22:26:36 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -20,8 +20,6 @@
 
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
-
-#include <etoile/depot/Hole.hh>
 
 namespace etoile
 {
@@ -58,18 +56,14 @@ namespace etoile
       //
       // methods
       //
-      static elle::Status	Origin(const nucleus::Network&,
-				       nucleus::Address&);
+      static elle::Status	Origin(nucleus::Address&);
 
-      static elle::Status	Push(const nucleus::Network&,
-				     const nucleus::Address&,
+      static elle::Status	Push(const nucleus::Address&,
 				     const nucleus::Block&);
-      static elle::Status	Pull(const nucleus::Network&,
-				     const nucleus::Address&,
+      static elle::Status	Pull(const nucleus::Address&,
 				     const nucleus::Version&,
 				     nucleus::Block&);
-      static elle::Status	Wipe(const nucleus::Network&,
-				     const nucleus::Address&);
+      static elle::Status	Wipe(const nucleus::Address&);
     };
 
   }
@@ -79,11 +73,11 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/depot/Cell.hh>
-#include <etoile/depot/Location.hh>
+//#include <etoile/depot/Cell.hh>
+//#include <etoile/depot/Location.hh> // XXX changer nom vs path::Location
 #include <etoile/depot/Hole.hh>
-#include <etoile/depot/Record.hh>
-#include <etoile/depot/Repository.hh>
-#include <etoile/depot/Unit.hh>
+//#include <etoile/depot/Record.hh>
+//#include <etoile/depot/Repository.hh>
+//#include <etoile/depot/Unit.hh>
 
 #endif

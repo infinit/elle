@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [fri may 28 17:49:20 2010]
+// updated       julien quintard   [thu jun 16 10:26:52 2011]
 //
 
 //
@@ -31,6 +31,11 @@ namespace etoile
     /// this method creates a route from a string by splitting it according
     /// to the path separator.
     ///
+    /// note that the first slab is always empty in order to represent
+    /// the root directory.
+    ///
+    /// XXX \todo handle formats: ~2#/suce~42#/avale/leche.txt~3#
+    ///
     elle::Status	Route::Create(const Way&		way)
     {
       Length		start;
@@ -44,16 +49,18 @@ namespace etoile
       end =
 	way.path.find_first_of(elle::System::Path::Separator, start);
 
+      // XXX if first slab is not empty, error
+
       // go through the string.
       while (start < way.path.length())
 	{
-	  Slice		element;
+	  Slab		slab;
 
 	  // locate the next element.
-	  element = way.path.substr(start, end - start);
+	  slab = way.path.substr(start, end - start);
 
-	  // if the element exist, add it to the container.
-	  this->elements.push_back(element);
+	  // add the section to the container.
+	  this->elements.push_back(slab);
 
 	  // compute the next offsets.
 	  start =
@@ -69,15 +76,15 @@ namespace etoile
     /// this method creates a route by appending a name to an existing route.
     ///
     elle::Status	Route::Create(const Route&		route,
-				      const Slice&		name)
+				      const Slab&		slab)
     {
       enter();
 
       // copy the elements.
       this->elements = route.elements;
 
-      // add the name.
-      this->elements.push_back(name);
+      // add the slab.
+      this->elements.push_back(slab);
 
       leave();
     }

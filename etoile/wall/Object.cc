@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [wed jun  1 11:45:16 2011]
+// updated       julien quintard   [tue jun 14 14:16:31 2011]
 //
 
 //
@@ -17,12 +17,13 @@
 
 #include <etoile/wall/Object.hh>
 
-#include <etoile/context/Object.hh>
-#include <etoile/context/Format.hh>
-
-#include <etoile/components/Object.hh>
-
 #include <etoile/path/Path.hh>
+
+#include <etoile/miscellaneous/Information.hh>
+
+// XXX #include <etoile/automaton/Object.hh>
+// #include <etoile/context/Object.hh>
+// #include <etoile/context/Format.hh>
 
 namespace etoile
 {
@@ -37,9 +38,11 @@ namespace etoile
     /// this method loads an object in a context and returns the context
     /// identifier.
     ///
-    elle::Status	Object::Load(const path::Way&		way,
-				     context::Identifier&	identifier)
+    elle::Status	Object::Load(
+			  const path::Way&			way,
+			  gear::Identifier&			identifier)
     {
+      /* XXX
       context::Object*		context;
 
       enter(instance(context));
@@ -73,6 +76,7 @@ namespace etoile
       waive(context);
 
       leave();
+      */
     }
 
     ///
@@ -82,8 +86,8 @@ namespace etoile
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
     ///
-    elle::Status	Object::Lock(const
-				       context::Identifier&	identifier)
+    elle::Status	Object::Lock(
+			  const gear::Identifier&		identifier)
     {
       enter();
 
@@ -95,8 +99,8 @@ namespace etoile
     ///
     /// this method releases a previously locked object.
     ///
-    elle::Status	Object::Release(const
-					  context::Identifier&	identifer)
+    elle::Status	Object::Release(
+			  const gear::Identifier&		identifer)
     {
       enter();
 
@@ -108,9 +112,11 @@ namespace etoile
     ///
     /// this method returns information on the object in a compact format.
     ///
-    elle::Status	Object::Information(const
-					      context::Identifier& identifier)
+    elle::Status	Object::Information(
+			  const gear::Identifier&		identifier,
+			  miscellaneous::Information&		information)
     {
+      /* XXX
       context::Object*		context;
       Status			status;
       user::User*		user;
@@ -141,21 +147,23 @@ namespace etoile
       if (components::Object::Information(context,
 					  status) == elle::StatusError)
 	escape("unable to retrieve information on the object");
-      /* XXX
+
       // return the status to the caller.
       if (user->application->channel->Reply(
 	    elle::Inputs<TagObjectStatus>(status)) == elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
     ///
     /// this method discards the modifications.
     ///
-    elle::Status	Object::Discard(const
-				          context::Identifier&	identifier)
+    elle::Status	Object::Discard(
+			  const gear::Identifier&		identifier)
     {
+      /* XXX
       context::Object*		context;
       user::User*		user;
 
@@ -184,22 +192,24 @@ namespace etoile
       // discard the context.
       if (components::Object::Discard(context) == elle::StatusError)
 	escape("unable to discard the object's modifications");
-      /* XXX
+
       // reply to the application.
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
     ///
     /// this method commits the modifications pending on the context
     /// and closes it.
     ///
-    elle::Status	Object::Store(const
-				        context::Identifier&	identifier)
+    elle::Status	Object::Store(
+			  const gear::Identifier&		identifier)
     {
+      /*
       context::Object*		context;
       user::User*		user;
 
@@ -232,8 +242,9 @@ namespace etoile
       if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
 	  elle::StatusError)
 	escape("unable to reply to the application");
-      */
+
       leave();
+      */
     }
 
   }

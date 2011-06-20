@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Identifier.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [fri jun  3 11:49:25 2011]
+// updated       julien quintard   [tue jun 14 15:40:29 2011]
 //
 
 //
@@ -50,7 +50,7 @@ namespace etoile
     /// default constructor.
     ///
     Identifier::Identifier():
-      value(Identifer::Zero)
+      value(Identifier::Zero)
     {
     }
 

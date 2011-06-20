@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.hh
 //
 // created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [thu may  5 16:06:35 2011]
+// updated       julien quintard   [wed jun 15 20:50:43 2011]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH
@@ -21,7 +21,9 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <vector>
+#include <elle/idiom/Close.hh>
+# include <vector>
+#include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -33,10 +35,7 @@ namespace etoile
 //
 
     ///
-    /// a venue contains the addresses corresponding to a route.
-    ///
-    /// needless to say that a venue without its corresponding route.
-    /// is useless.
+    /// a venue contains the addresses/versions corresponding to a route.
     ///
     class Venue:
       public elle::Object
@@ -50,7 +49,7 @@ namespace etoile
       //
       // types
       //
-      typedef std::vector<nucleus::Address>	Container;
+      typedef std::vector<nucleus::Location>	Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 
@@ -62,7 +61,8 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Record(const nucleus::Address&);
+      elle::Status	Record(const nucleus::Address&,
+			       const nucleus::Version&);
 
       //
       // interfaces

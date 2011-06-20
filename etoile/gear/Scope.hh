@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.hh
 //
 // created       julien quintard   [fri jun  3 11:01:57 2011]
-// updated       julien quintard   [fri jun  3 11:40:59 2011]
+// updated       julien quintard   [fri jun 17 16:52:27 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HH
@@ -18,7 +18,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-// XXX
+#include <elle/Elle.hh>
+
+#include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Chronicle.hh>
+
+#include <etoile/path/Chemin.hh>
 
 namespace etoile
 {
@@ -37,37 +42,49 @@ namespace etoile
     /// constituent blocks, the system would be able to fetch the latest
     /// version of the context and re-apply the set of operations.
     ///
+    template <typename T>
     class Scope:
-      public elle::Object
+      public elle::Entity,
+      public elle::Base<Scope>
     {
     public:
       //
       // constructors & destructors
       //
-      Scope(const Nature,
-	    const path::Route&,
-	    const nucleus::Address&);
+      Scope();
+      ~Scope();
+
+      //
+      // methods
+      //
+      elle::Status	Export();
+      elle::Status	Import();
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      // XXX
 
       //
       // attributes
       //
-      Nature		nature;
+      Identifier	identifier;
 
-      path::Route	route;
-      nucleus::Address	address;
+      path::Chemin	chemin;
 
-      Context		context;
-      Chronicle		chronicle;
-      State		state;
-
-      // XXX peut etre faire une classe speciale genre Subject qui
-      //  definit l'auteur courant et ses perms sur le scope car en fonction
-      //  des modifs les perms changent (donc rapport au state)
-      // XXX Rights*			rights;
-      // XXX nucleus::Author*		author;
+      T			context;
+      Chronicle*	chronicle;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/gear/Scope.hxx>
 
 #endif
