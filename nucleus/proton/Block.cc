@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [sat may 21 21:57:12 2011]
+// updated       julien quintard   [sun jun 19 23:02:02 2011]
 //
 
 //
@@ -72,7 +72,7 @@ namespace nucleus
     {
       enter();
 
-      fail("this method should never have been called");
+      escape("this method should never have been called");
     }
 
     ///
@@ -83,7 +83,7 @@ namespace nucleus
     {
       enter();
 
-      fail("this method should never have been called");
+      escape("this method should never have been called");
     }
 
 //
@@ -98,7 +98,7 @@ namespace nucleus
     {
       enter();
 
-      fail("this method should never have been called");
+      escape("this method should never have been called");
     }
 
 //

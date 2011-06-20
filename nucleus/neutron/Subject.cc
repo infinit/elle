@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [thu may  5 15:43:28 2011]
+// updated       julien quintard   [sun jun 19 22:48:16 2011]
 //
 
 //
@@ -37,7 +37,8 @@ namespace nucleus
     ///
     /// copy constructor.
     ///
-    Subject::Subject(const Subject&				subject)
+    Subject::Subject(const Subject&				subject):
+      Object(subject)
     {
       // set the type.
       this->type = subject.type;

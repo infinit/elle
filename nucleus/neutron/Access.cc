@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [thu may 12 13:09:33 2011]
+// updated       julien quintard   [sun jun 19 22:46:15 2011]
 //
 
 //
@@ -173,9 +173,11 @@ namespace nucleus
 		// respond to vassal's requests.
 		//
 
+		/* XXX
 		elle::PublicKey*	K;
 		proton::Address*	address;
 		Token			token;
+		*/
 
 		// retrieve the group's block address.
 		// XXX

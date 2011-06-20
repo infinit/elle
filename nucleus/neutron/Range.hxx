@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [thu may  5 09:32:50 2011]
+// updated       julien quintard   [sun jun 19 22:46:36 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
@@ -43,6 +43,8 @@ namespace nucleus
     ///
     template <typename T>
     Range<T>::Range(const Range<T>&				element):
+      Object(element),
+
       options(element.options)
     {
       Range<T>::Scoutor		scoutor;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [fri jun 17 14:32:59 2011]
+// updated       julien quintard   [sun jun 19 23:00:40 2011]
 //
 
 //
@@ -48,7 +48,8 @@ namespace nucleus
     ///
     /// this is the copy constructor.
     ///
-    Address::Address(const Address&				address)
+    Address::Address(const Address&				address):
+      Object(address)
     {
       // set the family/component;
       this->family = address.family;

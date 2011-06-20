@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sat may 21 21:55:10 2011]
+// updated       julien quintard   [sun jun 19 22:44:30 2011]
 //
 
 //
@@ -108,7 +108,7 @@ namespace nucleus
     ///
     /// XXX
     ///
-    elle::Boolean	ContentHashBlock::operator<(const Block&	block)
+    elle::Boolean	ContentHashBlock::operator<(const Block&)
       const
     {
       enter();

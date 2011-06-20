@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [sat may 14 12:41:26 2011]
+// updated       julien quintard   [sun jun 19 22:43:49 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
@@ -70,8 +70,8 @@ namespace nucleus
     Contents<T>::Contents():
       proton::ContentHashBlock(ContentsMap<T>::Component),
 
-      cipher(NULL),
-      content(NULL)
+      content(NULL),
+      cipher(NULL)
     {
     }
 
@@ -81,13 +81,13 @@ namespace nucleus
     template <typename T>
     Contents<T>::~Contents()
     {
-      // release the cipher, if present.
-      if (this->cipher != NULL)
-	delete this->cipher;
-
       // release the block, if present.
       if (this->content != NULL)
 	delete this->content;
+
+      // release the cipher, if present.
+      if (this->cipher != NULL)
+	delete this->cipher;
     }
 
 //

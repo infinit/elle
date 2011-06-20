@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [sun may 22 14:32:37 2011]
+// updated       julien quintard   [sun jun 19 22:45:38 2011]
 //
 
 //
@@ -260,6 +260,10 @@ namespace nucleus
       Version		i;
 
       enter();
+
+      // XXX just to remove the warning
+      Network n = network;
+      Address a = address;
 
       /* XXX
       // first, turn the block's address into a string.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Token.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jun 16 21:12:30 2011]
+// updated       julien quintard   [sun jun 19 22:48:28 2011]
 //
 
 //
@@ -46,7 +46,8 @@ namespace nucleus
     ///
     /// copy constructor.
     ///
-    Token::Token(const Token&					token)
+    Token::Token(const Token&					token):
+      Object(token)
     {
       // copy the code, if present.
       if (token.code != NULL)
