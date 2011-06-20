@@ -2,6 +2,7 @@ PROJECT(Lune CXX)
 
 ADD_LIBRARY(lune
   Authority.cc
+  Configuration.cc
   Descriptor.cc
   Dictionary.cc
   Identity.cc

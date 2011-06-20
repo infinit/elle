@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Authority.cc
 //
 // created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [tue apr 26 13:27:56 2011]
+// updated       julien quintard   [sun jun 19 23:54:48 2011]
 //
 
 //

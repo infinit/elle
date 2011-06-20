@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Authority.hh
 //
 // created       julien quintard   [tue may  4 23:35:57 2010]
-// updated       julien quintard   [tue apr 26 13:28:09 2011]
+// updated       julien quintard   [sun jun 19 23:32:01 2011]
 //
 
 #ifndef LUNE_AUTHORITY_HH

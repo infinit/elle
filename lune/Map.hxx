@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Map.hxx
 //
 // created       julien quintard   [sun apr 18 11:02:43 2010]
-// updated       julien quintard   [fri may 28 16:56:15 2010]
+// updated       julien quintard   [sun jun 19 18:01:08 2011]
 //
 
 #ifndef LUNE_MAP_HXX

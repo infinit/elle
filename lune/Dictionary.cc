@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Dictionary.cc
 //
 // created       julien quintard   [mon may 10 16:14:02 2010]
-// updated       julien quintard   [sun may  8 10:36:00 2011]
+// updated       julien quintard   [mon jun 20 01:36:46 2011]
 //
 
 //
