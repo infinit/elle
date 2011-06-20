@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [mon jun 20 01:24:16 2011]
+// updated       julien quintard   [mon jun 20 11:43:12 2011]
 //
 
 //
@@ -721,6 +721,10 @@ namespace elle
       // extract the value.
       stream >> value;
 
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
+
       leave();
     }
 
@@ -752,6 +756,10 @@ namespace elle
 
       // extract the value.
       stream >> value;
+
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
 
       leave();
     }
@@ -785,6 +793,10 @@ namespace elle
       // extract the value.
       stream >> value;
 
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
+
       leave();
     }
 
@@ -816,6 +828,10 @@ namespace elle
 
       // extract the value.
       stream >> value;
+
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
 
       leave();
     }
@@ -849,6 +865,10 @@ namespace elle
       // extract the value.
       stream >> value;
 
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
+
       leave();
     }
 
@@ -880,6 +900,10 @@ namespace elle
 
       // extract the value.
       stream >> value;
+
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
 
       leave();
     }
@@ -913,6 +937,10 @@ namespace elle
       // extract the value.
       stream >> value;
 
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
+
       leave();
     }
 
@@ -944,6 +972,10 @@ namespace elle
 
       // extract the value.
       stream >> value;
+
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
 
       leave();
     }
@@ -977,6 +1009,10 @@ namespace elle
       // extract the value.
       stream >> value;
 
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
+
       leave();
     }
 
@@ -1009,6 +1045,10 @@ namespace elle
       // extract the value.
       stream >> value;
 
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
+
       leave();
     }
 
@@ -1040,6 +1080,10 @@ namespace elle
 
       // extract the value.
       stream >> value;
+
+      // check the stream.
+      if (!stream || !stream.eof())
+	escape("the value's format seems to be incorrect");
 
       leave();
     }
