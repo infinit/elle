@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [sat jun 18 12:30:11 2011]
+// updated       julien quintard   [sun jun 19 17:56:24 2011]
 //
 
 //
@@ -73,8 +73,7 @@ namespace elle
       enter();
 
       // allocate a new server.
-      if ((this->server = new ::QLocalServer) == NULL)
-	escape("unable to allocate memory");
+      this->server = new ::QLocalServer;
 
       // start listening.
       if (this->server->listen(name.c_str()) == false)
@@ -147,8 +146,7 @@ namespace elle
       enter(instance(porter));
 
       // allocate a new porter.
-      if ((porter = new LanePorter(callback)) == NULL)
-	escape("unable to allocate memory");
+      porter = new LanePorter(callback);
 
       // start listening.
       if (porter->Listen(name) == StatusError)
@@ -246,8 +244,7 @@ namespace elle
 
       // allocate a new door to this lane.
       /// XXX \todo we should be able to specify the mode somewhere.
-      if ((door = new Door(Socket::ModeAsynchronous)) == NULL)
-	escape("unable to allocate memory");
+      door = new Door(Socket::ModeAsynchronous);
 
       // create a door with the specific socket.
       if (door->Create(socket) == StatusError)

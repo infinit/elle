@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [fri may 28 12:16:44 2010]
+// updated       julien quintard   [sun jun 19 22:37:37 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HXX
@@ -46,6 +46,8 @@ namespace elle
     ///
     template <typename... T>
     Function<T...>::Function(const Function<T...>&		function):
+      Object(function),
+
       handler(function.handler)
     {
     }

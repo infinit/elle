@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [sat jun 18 12:06:59 2011]
+// updated       julien quintard   [sun jun 19 22:58:09 2011]
 //
 
 //
@@ -53,7 +53,8 @@ namespace elle
     ///
     /// this is the copy constructor.
     ///
-    PublicKey::PublicKey(const PublicKey&			K)
+    PublicKey::PublicKey(const PublicKey&			K):
+      Object(K)
     {
       // re-create the public key by duplicate the internal numbers.
       if (this->Create(K.key) == StatusError)

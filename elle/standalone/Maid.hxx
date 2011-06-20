@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Maid.hxx
 //
 // created       julien quintard   [sun feb 28 09:08:48 2010]
-// updated       julien quintard   [sun may  2 10:57:39 2010]
+// updated       julien quintard   [sun jun 19 22:13:07 2011]
 //
 
 #ifndef ELLE_STANDALONE_MAID_HXX
@@ -82,7 +82,7 @@ namespace elle
     /// the time.
     ///
     template <typename... T>
-    inline Maid::Garrison*	Maid::Install(Void*		memory)
+    inline Maid::Garrison*	Maid::Install(Void*)
     {
       return (NULL);
     }

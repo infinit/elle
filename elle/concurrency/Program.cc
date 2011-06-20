@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [sat jun 18 12:19:38 2011]
+// updated       julien quintard   [sun jun 19 17:53:17 2011]
 //
 
 //
@@ -46,8 +46,7 @@ namespace elle
       enter();
 
       // allocate a new program.
-      if ((program = new Program) == NULL)
-	escape("unable to allocate memory");
+      program = new Program;
 
       leave();
     }
@@ -81,8 +80,7 @@ namespace elle
       n = 0;
 
       // allocate the QT program.
-      if ((program->core = new ::QCoreApplication(n, NULL)) == NULL)
-	escape("unable to allocate memory");
+      program->core = new ::QCoreApplication(n, NULL);
 
       // set the prolog/epilog callbacks.
       program->prolog = prolog;

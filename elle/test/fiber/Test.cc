@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun jun 19 17:28:17 2011]
+// updated       julien quintard   [sun jun 19 23:09:34 2011]
 //
 
 //
@@ -175,8 +175,8 @@ namespace elle
     ///
     /// the main function.
     ///
-    Status		Main(const Natural32			argc,
-			     const Character*			argv[])
+    Status		Main(const Natural32,
+			     const Character*[])
     {
       Callback< Parameters<> >	fiber1(&Fiber1);
       Callback< Parameters<> >	fiber2(&Fiber2);

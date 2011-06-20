@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [sat jun 18 12:55:55 2011]
+// updated       julien quintard   [sun jun 19 22:27:22 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -78,6 +78,8 @@ namespace elle
     ///
     template <typename... T>
     Callback< Parameters<T...> >::Callback(const Callback&	callback):
+      Routine(callback),
+
       scheme(callback.scheme)
     {
       enter();
@@ -97,6 +99,10 @@ namespace elle
 	    // clone the method.
 	    this->method = new Method<T&...>(*callback.method);
 
+	    break;
+	  }
+	case Routine::SchemeUnknown:
+	  {
 	    break;
 	  }
 	}
@@ -125,6 +131,10 @@ namespace elle
 	    // delete the method.
 	    delete this->method;
 
+	    break;
+	  }
+	case Routine::SchemeUnknown:
+	  {
 	    break;
 	  }
 	}
@@ -179,6 +189,10 @@ namespace elle
 
 	    break;
 	  }
+	case Routine::SchemeUnknown:
+	  {
+	    escape("unknown scheme");
+	  }
 	}
 
       leave();
@@ -216,9 +230,9 @@ namespace elle
 
 	    break;
 	  }
-	default:
+	case Routine::SchemeUnknown:
 	  {
-	    escape("invalid callback scheme");
+	    escape("unknown scheme");
 	  }
 	}
 

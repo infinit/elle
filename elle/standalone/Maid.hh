@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Maid.hh
 //
 // created       julien quintard   [sun feb 28 09:00:00 2010]
-// updated       julien quintard   [sun may  2 13:11:42 2010]
+// updated       julien quintard   [sun jun 19 21:58:23 2011]
 //
 
 #ifndef ELLE_STANDALONE_MAID_HH
@@ -205,15 +205,6 @@ namespace elle
     class Maid
     {
     public:
-      //
-      // constants
-      //
-      struct		Size
-      {
-	static const Natural32		Garrison;
-	static const Natural32		Guard;
-      };
-
       //
       // enumerations
       //

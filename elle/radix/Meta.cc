@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [sat jun 18 13:08:28 2011]
+// updated       julien quintard   [sun jun 19 22:32:30 2011]
 //
 
 //
@@ -151,7 +151,6 @@ namespace elle
       // only proceed if debugging has been activated.
       if (Meta::Debug == true)
 	{
-	  void*		addresses[Trace::Size];
 	  Trace*	trace;
 
 	  // allocate a new trace
@@ -171,7 +170,7 @@ namespace elle
     /// this operator is called whenever an object is allocated in
     /// a given memory area referenced by _address_.
     ///
-    Void*		Meta::operator new(Natural32		size,
+    Void*		Meta::operator new(Natural32,
 					   Void*		address)
     {
       // return the address of the already reserved memory area.

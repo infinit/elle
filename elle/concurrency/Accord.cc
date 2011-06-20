@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Accord.cc
 //
 // created       julien quintard   [sun mar  7 19:07:03 2010]
-// updated       julien quintard   [sun may  2 17:11:21 2010]
+// updated       julien quintard   [sun jun 19 22:33:54 2011]
 //
 
 //
@@ -40,7 +40,7 @@ namespace elle
       // lock depending on the mode.
       switch (mode)
 	{
-	ModeWrite:
+	case ModeWrite:
 	  {
 	    // lock.
 	    if (timeout > 0)
@@ -53,7 +53,7 @@ namespace elle
 
 	    break;
 	  }
-	ModeRead:
+	case ModeRead:
 	  {
 	    // lock.
 	    if (timeout > 0)

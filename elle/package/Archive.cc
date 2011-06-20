@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sat jun 18 12:31:31 2011]
+// updated       julien quintard   [sun jun 19 17:57:46 2011]
 //
 
 //
@@ -952,8 +952,7 @@ namespace elle
       enter();
 
       // allocate the object.
-      if ((object = new Archive(*this)) == NULL)
-	escape("unable to allocate memory");
+      object = new Archive(*this);
 
       leave();
     }

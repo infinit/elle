@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [sun jun 19 17:29:49 2011]
+// updated       julien quintard   [sun jun 19 22:59:07 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -45,10 +45,7 @@ namespace elle
 
       // trigger the closure and, should there are errors, display them.
       if (closure->Trigger() == elle::StatusError)
-	{
-	  show();
-	  purge();
-	}
+	show();
 
       // set the fiber state.
       Fiber::Current->state = Fiber::StateCompleted;
@@ -258,8 +255,7 @@ namespace elle
       Fiber::Current->type = Fiber::TypeEvent;
 
       // set the event.
-      if ((Fiber::Current->event = new Event(event)) == NULL)
-	escape("unable to allocate memory");
+      Fiber::Current->event = new Event(event);
 
       // save the environment.
       if (Fiber::Trigger(PhaseSave) == StatusError)
@@ -356,7 +352,6 @@ namespace elle
 				      T*			data)
     {
       Fiber::F::Iterator	iterator;
-      Fiber*			fiber;
       Boolean			awaken;
 
       enter();
@@ -408,7 +403,6 @@ namespace elle
 				      T*			data)
     {
       Fiber::F::Iterator	iterator;
-      Fiber*			fiber;
       Boolean			awaken;
 
       enter();

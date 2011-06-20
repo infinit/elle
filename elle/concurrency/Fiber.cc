@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [sun jun 19 17:28:51 2011]
+// updated       julien quintard   [sun jun 19 22:40:57 2011]
 //
 
 //
@@ -91,12 +91,10 @@ namespace elle
 
       // allocate the program fiber but do not create it since
       // this program has no need for a stack.
-      if ((Fiber::Program = new Fiber) == NULL)
-	escape("unable to allocate memory");
+      Fiber::Program = new Fiber;
 
       // allocate an environment.
-      if ((Fiber::Program->environment = new Environment) == NULL)
-	escape("unable to allocate memory");
+      Fiber::Program->environment = new Environment;
 
       // set the program as being running.
       Fiber::Program->state = Fiber::StateActive;
@@ -236,20 +234,11 @@ namespace elle
 					    Parameters<const Phase,
 						       Fiber*> >& callback)
     {
-      Callback< Parameters<const Phase, Fiber*> >*	c;
-
-      enter(instance(c));
-
-      // allocate the callback.
-      if ((c = new Callback<
-	             Parameters<const Phase, Fiber*> >(callback)) == NULL)
-	escape("unable to allocate memory");
+      enter();
 
       // store in the container.
-      Fiber::Phases.push_back(c);
-
-      // waive.
-      waive(c);
+      Fiber::Phases.push_back(
+        new Callback< Parameters<const Phase, Fiber*> >(callback));
 
       leave();
     }
@@ -364,8 +353,7 @@ namespace elle
       else
 	{
 	  // otherwise, allocate a new fiber.
-	  if ((fiber = new Fiber) == NULL)
-	    escape("unable to allocate memory");
+	  fiber = new Fiber;
 
 	  // create the fiber.
 	  if (fiber->Create() == StatusError)
@@ -373,8 +361,7 @@ namespace elle
 	}
 
       // allocate an environment.
-      if ((fiber->environment = new Environment) == NULL)
-	escape("unable to allocate memory");
+      fiber->environment = new Environment;
 
       leave();
     }
@@ -636,8 +623,7 @@ namespace elle
       enter();
 
       // allocate the frame.
-      if ((this->frame = new Frame) == NULL)
-	escape("unable to allocate memory");
+      this->frame = new Frame;
 
       // create the frame.
       if (this->frame->Create(size) == StatusError)
@@ -727,6 +713,11 @@ namespace elle
 	    std::cout << alignment << Dumpable::Shift << "[Resource] "
 		      << std::hex << this->resource << std::endl;
 
+	    break;
+	  }
+	case Fiber::TypeFiber:
+	case Fiber::TypeNone:
+	  {
 	    break;
 	  }
 	}

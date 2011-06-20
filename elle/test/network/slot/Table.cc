@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.cc
 //
 // created       julien quintard   [wed mar 17 13:23:40 2010]
-// updated       julien quintard   [sat jun 18 12:01:08 2011]
+// updated       julien quintard   [sun jun 19 17:48:07 2011]
 //
 
 //
@@ -73,8 +73,7 @@ namespace elle
 	  enter(instance(neighbour));
 
 	  // allocate a new neighbour.
-	  if ((neighbour = new Neighbour) == NULL)
-	    escape("unable to allocate memory");
+	  neighbour = new Neighbour;
 
 	  // create a new neighbour.
 	  if (neighbour->Create(this->node, address, name) == StatusError)
@@ -228,8 +227,7 @@ namespace elle
 	  Neighbour*	neighbour;
 
 	  // allocate a neighbour.
-	  if ((neighbour = new Neighbour) == NULL)
-	    escape("unable to allocate memory");
+	  neighbour = new Neighbour;
 
 	  // extract the neighbour.
 	  if (archive.Extract(*neighbour) == StatusError)

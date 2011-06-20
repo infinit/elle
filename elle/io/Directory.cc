@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Directory.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [sun may 22 13:32:10 2011]
+// updated       julien quintard   [sun jun 19 22:15:11 2011]
 //
 
 //
@@ -52,8 +52,6 @@ namespace elle
     ///
     Status		Directory::Create(const Path&		path)
     {
-      int		fd;
-
       enter();
 
       // does the directory already exist.
