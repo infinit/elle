@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [sat jun 18 12:59:19 2011]
+// updated       julien quintard   [sun jun 19 22:18:02 2011]
 //
 
 //
@@ -58,8 +58,7 @@ namespace elle
       enter();
 
       // allocate the report for the initial thread/fiber.
-      if ((Report::Current = new Report) == NULL)
-	escape("unable to allocate memory");
+      Report::Current = new Report;
 
       // register the govern callback to the fiber system.
       if (Fiber::Register(govern) == StatusError)
@@ -109,8 +108,7 @@ namespace elle
 	case PhaseInitialize:
 	  {
 	    // allocate a new report and install it.
-	    if ((Report::Current = new Report) == NULL)
-	      escape("unable to allocate memory");
+	    Report::Current = new Report;
 
 	    break;
 	  }
@@ -167,8 +165,6 @@ namespace elle
     Report::Report(const Report&				report)
     {
       Report::Scoutor	scoutor;
-
-      enter();
 
       // go through the container.
       for (scoutor = report.container.begin();
@@ -250,7 +246,6 @@ namespace elle
 				       const String&		time,
 				       const Report&		report)
     {
-      Character		date[128];
       Report::Scoutor	scoutor;
 
       // go through the record and record every message.
@@ -271,7 +266,7 @@ namespace elle
 	}
 
       // create a headline message of the given type.
-      this->Record(type, location, __DATE__ " " __TIME__, "Report");
+      this->Record(type, location, time, "Report");
     }
 
 //
@@ -390,8 +385,7 @@ namespace elle
 	  Natural8		type;
 
 	  // allocate a new entry.
-	  if ((entry = new Report::Entry) == NULL)
-	    escape("unable to allocate memory");
+	  entry = new Report::Entry;
 
 	  // extract the entry.
 	  if (archive.Extract(type,
@@ -434,8 +428,7 @@ namespace elle
       enter();
 
       // allocate the object.
-      if ((object = new Report(*this)) == NULL)
-	escape("unable to allocate memory");
+      object = new Report(*this);
 
       leave();
     }

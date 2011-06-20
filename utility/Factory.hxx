@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [sat jun 18 12:08:59 2011]
+// updated       julien quintard   [sun jun 19 17:51:08 2011]
 //
 
 #ifndef ELLE_UTILITY_FACTORY_HXX
@@ -48,8 +48,7 @@ namespace elle
       enter();
 
       // allocate the object.
-      if ((meta = new T) == NULL)
-	escape("unable to allocate memory");
+      meta = new T;
 
       leave();
     }
@@ -74,8 +73,7 @@ namespace elle
 	escape("unable to register an already registered identifier");
 
       // create a generatoid.
-      if ((generatoid = new Factory::Generatoid<T>(identifier)) == NULL)
-	escape("unable to allocate memory");
+      generatoid = new Factory::Generatoid<T>(identifier);
 
       // insert the generator in the container.
       result = this->container.insert(

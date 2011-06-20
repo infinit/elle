@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Link.cc
 //
 // created       julien quintard   [sun may 22 13:08:22 2011]
-// updated       julien quintard   [sun may 22 13:38:11 2011]
+// updated       julien quintard   [sun jun 19 22:16:00 2011]
 //
 
 //
@@ -51,9 +51,6 @@ namespace elle
     Status		Link::Create(const Path&		link,
 				     const Path&		target)
     {
-      struct ::stat	status;
-      int		fd;
-
       enter();
 
       // does the link exist.

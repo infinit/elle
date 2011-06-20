@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [sun jun 19 13:25:02 2011]
+// updated       julien quintard   [sun jun 19 17:54:57 2011]
 //
 
 //
@@ -66,8 +66,7 @@ namespace elle
       this->mode = mode;
 
       // allocate the timer.
-      if ((this->timer = new ::QTimer) == NULL)
-	escape("unable to allocate memory");
+      this->timer = new ::QTimer;
 
       // set the timer mode.
       if (this->mode == Timer::ModeSingle)

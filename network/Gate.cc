@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [sat jun 18 12:31:04 2011]
+// updated       julien quintard   [sun jun 19 22:58:44 2011]
 //
 
 //
@@ -106,8 +106,7 @@ namespace elle
       enter();
 
       // allocate a new socket.
-      if ((socket = new ::QTcpSocket) == NULL)
-	escape("unable to allocate memory");
+      socket = new ::QTcpSocket;
 
       // create the gate.
       if (this->Create(socket) == StatusError)
@@ -199,7 +198,7 @@ namespace elle
 
       // push the packet to the socket.
       if (this->socket->write((const char*)packet.contents,
-			      packet.size) != packet.size)
+			      packet.size) != (::qint64)packet.size)
 	escape("unable to write the packet");
 
       // flush to start sending data immediately.
@@ -261,8 +260,7 @@ namespace elle
 	  }
 
 	// allocate a new raw.
-	if ((raw = new Raw) == NULL)
-	  escape("unable to allocate memory");
+	raw = new Raw;
 
 	// prepare the raw
 	if (raw->Prepare(size) == StatusError)
@@ -351,8 +349,7 @@ namespace elle
 	    escape("unable to detach the data from the packet");
 
 	  // allocate the parcel.
-	  if ((parcel = new Parcel) == NULL)
-	    escape("unable to allocate memory");
+	  parcel = new Parcel;
 
 	  // extract the header.
 	  if (parcel->header->Extract(packet) == StatusError)

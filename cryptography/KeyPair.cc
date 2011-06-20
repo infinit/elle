@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [sat jun 18 12:05:57 2011]
+// updated       julien quintard   [sun jun 19 22:57:43 2011]
 //
 
 //
@@ -346,6 +346,10 @@ namespace elle
       if (Base64::Decode(String((char*)region.contents, region.size),
 			 cipher) == StatusError)
 	escape("unable to decode the cipher");
+
+      // create the key based on the given pass.
+      if (key.Create(pass) == StatusError)
+	escape("unable to create the key");
 
       // decrypt the cipher file content with the secret key.
       if (key.Decrypt(cipher, *this) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/File.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [sun may 22 13:14:20 2011]
+// updated       julien quintard   [sun jun 19 22:15:47 2011]
 //
 
 //
@@ -111,7 +111,7 @@ namespace elle
       // write the text to the file.
       if (::write(fd,
 		  data.contents,
-		  data.size) != data.size)
+		  data.size) != (ssize_t)data.size)
 	{
 	  ::close(fd);
 

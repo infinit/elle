@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [sat jun 18 12:08:06 2011]
+// updated       julien quintard   [mon jun 20 01:24:16 2011]
 //
 
 //
@@ -135,8 +135,7 @@ namespace elle
 	escape("an assignment with this name already exists");
 
       // allocate the assignment.
-      if ((assignment = new Settings::Assignment(name, value)) == NULL)
-	escape("unable to allocate memory");
+      assignment = new Settings::Assignment(name, value);
 
       // add the assignment to the container.
       this->assignments.push_back(assignment);
@@ -244,8 +243,7 @@ namespace elle
 	escape("a section with this identifier already exists");
 
       // allocate the section.
-      if ((section = new Settings::Section(identifier)) == NULL)
-	escape("unable to allocate memory");
+      section = new Settings::Section(identifier);
 
       // add the section to the container.
       this->sections.push_back(section);
@@ -334,12 +332,37 @@ namespace elle
     }
 
     ///
-    /// this method makes it easy to sets an assignment in the given
+    /// this method returns true if the given item exists in the given
     /// section.
     ///
-    Status		Settings::Set(const String&		identifier,
-				      const String&		name,
-				      const String&		value)
+    Status		Settings::Find(const String&		identifier,
+				       const String&		name)
+    {
+      Settings::Section*	section;
+
+      enter();
+
+      // check if the section exists.
+      if (this->Locate(identifier) != StatusTrue)
+	false();
+
+      // retrieve the section.
+      if (this->Lookup(identifier, section) == StatusError)
+	flee("unable to retrieve the section");
+
+      // check if the section exists.
+      if (section->Locate(name) != StatusTrue)
+	false();
+
+      true();
+    }
+
+    ///
+    /// this method writes an item.
+    ///
+    Status		Settings::Write(const String&		identifier,
+					const String&		name,
+					const String&		value)
     {
       Settings::Section*	section;
 
@@ -365,19 +388,15 @@ namespace elle
     }
 
     ///
-    /// this method makes it easy to retrieve a value from a specific section.
+    /// this method reads an item which is assumed to exist.
     ///
-    Status		Settings::Get(const String&		identifier,
-				      const String&		name,
-				      String&			value)
+    Status		Settings::Read(const String&		identifier,
+				       const String&		name,
+				       String&			value)
     {
       Settings::Section*	section;
 
       enter();
-
-      // check if the section exists.
-      if (this->Locate(identifier) != StatusTrue)
-	escape("this section does not seem to exist");
 
       // retrieve the section.
       if (this->Lookup(identifier, section) == StatusError)
@@ -386,6 +405,641 @@ namespace elle
       // lookup the assignment in the section.
       if (section->Lookup(name, value) == StatusError)
 	escape("unable to locate the assignment");
+
+      leave();
+    }
+
+    ///
+    /// this method makes it easy to sets an assignment in the given
+    /// section.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const String&		value)
+    {
+      enter();
+
+      // write the item.
+      if (this->Write(identifier, name, value) == StatusError)
+	escape("unable to write the settings");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a boolean.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Boolean&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a character.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Character&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a integer8.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Integer8&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a integer16.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Integer16&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a integer32.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Integer32&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a integer64.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Integer64&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a natural8.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Natural8&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a natural16.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Natural16&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a natural32.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Natural32&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a natural64.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Natural64&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method sets a real.
+    ///
+    Status		Settings::Set(const String&		identifier,
+				      const String&		name,
+				      const Real&		value)
+    {
+      String		string;
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the boolean into a string.
+      stream << value;
+
+      // set the value.
+      if (this->Set(identifier, name, stream.str()) == StatusError)
+	escape("unable to set the value");
+
+      leave();
+    }
+
+    ///
+    /// this method makes it easy to retrieve a value from a specific section.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      String&			value,
+				      const String		d)
+    {
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, value) == StatusError)
+	escape("unable to read the item");
+
+      leave();
+    }
+
+    ///
+    /// this method gets a boolean.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Boolean&			value,
+				      const Boolean		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a character.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Character&		value,
+				      const Character		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a integer8.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Integer8&			value,
+				      const Integer8		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a integer16.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Integer16&		value,
+				      const Integer16		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a integer32.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Integer32&		value,
+				      const Integer32		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a integer64.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Integer64&		value,
+				      const Integer64		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a natural8.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Natural8&			value,
+				      const Natural8		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a natural16.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Natural16&		value,
+				      const Natural16		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a natural32.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Natural32&		value,
+				      const Natural32		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a natural64.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Natural64&		value,
+				      const Natural64		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
+
+      leave();
+    }
+
+    ///
+    /// this method gets a real.
+    ///
+    Status		Settings::Get(const String&		identifier,
+				      const String&		name,
+				      Real&			value,
+				      const Real		d)
+    {
+      String			string;
+
+      enter();
+
+      // set the value with the default.
+      value = d;
+
+      // if the item does not exist, return the default value.
+      if (this->Find(identifier, name) == StatusFalse)
+	leave();
+
+      // otherwise, read the item from the settings.
+      if (this->Read(identifier, name, string) == StatusError)
+	escape("unable to read the item");
+
+      // set up the stream.
+      std::istringstream	stream(string);
+
+      // extract the value.
+      stream >> value;
 
       leave();
     }

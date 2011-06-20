@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sat jun 18 12:24:55 2011]
+// updated       julien quintard   [sun jun 19 22:36:44 2011]
 //
 
 //
@@ -104,8 +104,7 @@ namespace elle
       enter();
 
       // allocate a new socket.
-      if ((socket = new ::QLocalSocket) == NULL)
-	escape("unable to allocate memory");
+      socket = new ::QLocalSocket;
 
       // create the door.
       if (this->Create(socket) == StatusError)
@@ -202,7 +201,7 @@ namespace elle
 
       // push the packet to the socket.
       if (this->socket->write((const char*)packet.contents,
-			      packet.size) != packet.size)
+			      packet.size) != (::qint64)packet.size)
 	escape("unable to write the packet");
 
       // flush to start sending data immediately.
@@ -264,8 +263,7 @@ namespace elle
 	  }
 
 	// allocate a new raw.
-	if ((raw = new Raw) == NULL)
-	  escape("unable to allocate memory");
+	raw = new Raw;
 
 	// prepare the raw
 	if (raw->Prepare(size) == StatusError)
@@ -354,8 +352,7 @@ namespace elle
 	    escape("unable to detach the data from the packet");
 
 	  // allocate the parcel.
-	  if ((parcel = new Parcel) == NULL)
-	    escape("unable to allocate memory");
+	  parcel = new Parcel;
 
 	  // extract the header.
 	  if (parcel->header->Extract(packet) == StatusError)

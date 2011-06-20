@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.cc
 //
 // created       julien quintard   [mon apr 26 21:25:23 2010]
-// updated       julien quintard   [sun may  2 12:17:40 2010]
+// updated       julien quintard   [sun jun 19 22:29:28 2011]
 //
 
 //
@@ -50,7 +50,7 @@ namespace elle
     Void		Trace::Generate()
     {
       // retrieve the frame addresses.
-      this->size = ::backtrace(this->frames, Trace::Size);
+      this->size = ::backtrace(this->frames, Trace::Capacity);
     }
 
 //
@@ -64,7 +64,6 @@ namespace elle
     {
       String		alignment(margin, ' ');
       char**		symbols;
-      Natural32		size;
       Natural32		i;
 
       enter();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [sat jun 18 12:06:20 2011]
+// updated       julien quintard   [sun jun 19 22:57:55 2011]
 //
 
 //
@@ -54,7 +54,8 @@ namespace elle
     ///
     /// this is the copy constructor.
     ///
-    PrivateKey::PrivateKey(const PrivateKey&			k)
+    PrivateKey::PrivateKey(const PrivateKey&			k):
+      Object(k)
     {
       // create the private key by duplicating the internal numbers.
       if (this->Create(k.key) == StatusError)

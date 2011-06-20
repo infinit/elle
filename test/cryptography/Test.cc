@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sat jun 18 12:00:27 2011]
+// updated       julien quintard   [sun jun 19 17:47:43 2011]
 //
 
 //
@@ -89,8 +89,7 @@ namespace elle
 	escape("unable to initialize the Elle library");
 
       // allocate an initialize key pair.
-      if ((kp = new KeyPair) == NULL)
-	escape("unable to allocate memory");
+      kp = new KeyPair;
 
       // generate a key pair
       if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
@@ -99,8 +98,7 @@ namespace elle
 	escape("unable to generate the initial key pair");
 
       // allocate a secret key.
-      if ((sk = new SecretKey) == NULL)
-	escape("unable to allocate memory");
+      sk = new SecretKey;
 
       // generate the secret key.
       if (sk->Generate(Random::Generate(Test::MinimumKeyLength,
@@ -130,11 +128,8 @@ namespace elle
 		delete sk;
 
 		// allocate the new keys
-		if ((kp = new KeyPair) == NULL)
-		  escape("unable to allocate memory");
-
-		if ((sk = new SecretKey) == NULL)
-		  escape("unable to allocate memory");
+		kp = new KeyPair;
+		sk = new SecretKey;
 
 		// generate the new keys.
 		if (kp->Generate(Random::Generate(Test::MinimumKeyLength,
