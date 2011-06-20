@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [fri jun 17 16:33:35 2011]
+// updated       julien quintard   [mon jun 20 01:46:12 2011]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -47,6 +47,7 @@ namespace agent
     // static attributes
     //
     static lune::Identity	Identity;
+    static lune::Configuration	Configuration;
   };
 
 }

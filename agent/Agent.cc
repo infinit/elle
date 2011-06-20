@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri jun 17 16:40:00 2011]
+// updated       julien quintard   [mon jun 20 01:56:47 2011]
 //
 
 //
@@ -36,6 +36,11 @@ namespace agent
   ///
   lune::Identity		Agent::Identity;
 
+  ///
+  /// this variable contains the system configuration
+  ///
+  lune::Configuration		Agent::Configuration;
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -56,7 +61,12 @@ namespace agent
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
-    pass = elle::String(::getpass(prompt.c_str()));
+
+    if (elle::Console::Input(
+          pass,
+	  prompt,
+	  elle::Console::OptionPassword) == elle::StatusError)
+      escape("unable to read the input");
 
     // load the identity.
     if (Agent::Identity.Load(name) == elle::StatusError)
@@ -69,6 +79,14 @@ namespace agent
     // decrypt the identity.
     if (Agent::Identity.Decrypt(pass) == elle::StatusError)
       escape("unable to decrypt the identity");
+
+    // load the configuration file.
+    if (Agent::Configuration.Load(name) == elle::StatusError)
+      escape("unable to load the configuration");
+
+    // pull the parameters.
+    if (Agent::Configuration.Pull() == elle::StatusError)
+      escape("unable to pull the configuration parameters");
 
     leave();
   }
