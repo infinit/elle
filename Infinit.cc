@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.cc
 //
 // created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [fri jun 17 17:06:02 2011]
+// updated       julien quintard   [mon jun 20 01:47:20 2011]
 //
 
 //
@@ -47,17 +47,22 @@ lune::Authority			Infinit::Authority;
 ///
 elle::Status		Infinit::Initialize()
 {
-  elle::PublicKey	K;
-
   enter();
 
-  // restore the authority's public key.
-  if (K.Restore(Infinit::Key) == elle::StatusError)
-    escape("unable to restore the authority's public key");
+  //
+  // create the autority.
+  //
+  {
+    elle::PublicKey	K;
 
-  // create the authority based on the hard-coded public key.
-  if (Infinit::Authority.Create(K) == elle::StatusError)
-    escape("unable to create the authority");
+    // restore the authority's public key.
+    if (K.Restore(Infinit::Key) == elle::StatusError)
+      escape("unable to restore the authority's public key");
+
+    // create the authority based on the hard-coded public key.
+    if (Infinit::Authority.Create(K) == elle::StatusError)
+      escape("unable to create the authority");
+  }
 
   leave();
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.hh
 //
 // created       julien quintard   [tue may  4 22:00:43 2010]
-// updated       julien quintard   [fri jun 17 17:06:08 2011]
+// updated       julien quintard   [mon jun 20 01:46:01 2011]
 //
 
 #ifndef INFINIT_HH

@@ -9,7 +9,7 @@ INCLUDE_DIRECTORIES(. ${QT_INCLUDES})
 #
 # for C++0x
 #
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -g")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=gnu++0x -g")
 
 #
 # for FUSE
@@ -18,22 +18,22 @@ ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
 ADD_SUBDIRECTORY(comet)
 ADD_SUBDIRECTORY(elle)
-#ADD_SUBDIRECTORY(nucleus)
-#ADD_SUBDIRECTORY(lune)
-#ADD_SUBDIRECTORY(etoile)
-#ADD_SUBDIRECTORY(agent)
-#ADD_SUBDIRECTORY(pig)
-#ADD_SUBDIRECTORY(hole)
-#ADD_SUBDIRECTORY(applications)
+ADD_SUBDIRECTORY(nucleus)
+ADD_SUBDIRECTORY(lune)
+ADD_SUBDIRECTORY(etoile)
+ADD_SUBDIRECTORY(agent)
+ADD_SUBDIRECTORY(pig)
+ADD_SUBDIRECTORY(hole)
+ADD_SUBDIRECTORY(applications)
 
-#ADD_LIBRARY(infinit
-#  Infinit.cc
-#)
+ADD_LIBRARY(infinit
+  Infinit.cc
+)
 
-#ADD_EXECUTABLE(Infinit
-#  infinit.cc
-#)
+ADD_EXECUTABLE(Infinit
+  infinit.cc
+)
 
-#TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole pig
-#  			      ${QT_QTNETWORK_LIBRARIES}
-#			      ${QT_QTCORE_LIBRARIES})
+TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole pig
+  			      ${QT_QTNETWORK_LIBRARIES}
+			      ${QT_QTCORE_LIBRARIES})

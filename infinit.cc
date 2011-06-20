@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [fri jun 17 17:03:25 2011]
+// updated       julien quintard   [mon jun 20 01:44:58 2011]
 //
 
 //
@@ -46,10 +46,6 @@ elle::Status		Main(elle::Natural32			argc,
   if (elle::Elle::Initialize() == elle::StatusError)
     escape("unable to initialize Elle");
 
-  // initialize Infinit.
-  if (Infinit::Initialize() == elle::StatusError)
-    escape("unable to initialize Infinit");
-
   // set up the program.
   if (elle::Program::Setup() == elle::StatusError)
     escape("unable to set up the program");
@@ -58,12 +54,11 @@ elle::Status		Main(elle::Natural32			argc,
   parser = new elle::Parser(argc, argv);
 
   // specify a program description.
-  if (parser->Description("Copyright (c) 2008, 2009, 2010, 2011, "
-			  "Julien Quintard, All rights reserved.\n"
-			  "\n"
-			  +
-			  Infinit::Version + "\n"
-			  "\n") == elle::StatusError)
+  if (parser->Description(Infinit::Version +
+			  " "+
+			  "Copyright (c) 2008, 2009, 2010, 2011, "
+			  "Julien Quintard, All rights reserved.\n") == 
+      elle::StatusError)
     escape("unable to set the description");
 
   // set up the parser.
@@ -181,6 +176,10 @@ elle::Status		Main(elle::Natural32			argc,
   if (lune::Lune::Initialize() == elle::StatusError)
     escape("unable to initialize Lune");
 
+  // initialize Infinit.
+  if (Infinit::Initialize() == elle::StatusError)
+    escape("unable to initialize Infinit");
+
   // initialize the Agent library.
   if (agent::Agent::Initialize(user) == elle::StatusError)
     escape("unable to initialize Agent");
@@ -217,6 +216,10 @@ elle::Status		Main(elle::Natural32			argc,
   if (agent::Agent::Clean() == elle::StatusError)
     escape("unable to clean Agent");
 
+  // clean Infinit.
+  if (Infinit::Clean() == elle::StatusError)
+    escape("unable to clean Infinit");
+
   // clean Lune
   if (lune::Lune::Clean() == elle::StatusError)
     escape("unable to clean Lune");
@@ -224,10 +227,6 @@ elle::Status		Main(elle::Natural32			argc,
   // clean the nucleus library.
   if (nucleus::Nucleus::Clean() == elle::StatusError)
     escape("unable to clean Nucleus");
-
-  // clean Infinit.
-  if (Infinit::Clean() == elle::StatusError)
-    escape("unable to clean Infinit");
 
   // clean Elle.
   if (elle::Elle::Clean() == elle::StatusError)
@@ -249,9 +248,22 @@ elle::Status		Main(elle::Natural32			argc,
 int			main(int				argc,
 			     char*				argv[])
 {
-  Main(argc, argv);
+  try
+    {
+      if (Main(argc, argv) == elle::StatusError)
+	{
+	  show();
 
-  expose();
+	  return (1);
+	}
+    }
+  catch (std::exception& e)
+    {
+      std::cout << "The program has been terminated following "
+		<< "a fatal error (" << e.what() << ")." << std::endl;
+
+      return (1);
+    }
 
   return (0);
 }
