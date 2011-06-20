@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [fri jun 17 17:07:23 2011]
+// updated       julien quintard   [sun jun 19 18:04:09 2011]
 //
 
 //

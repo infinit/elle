@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [tue jun 14 15:01:11 2011]
+// updated       julien quintard   [sun jun 19 22:54:40 2011]
 //
 
 //
@@ -76,7 +76,7 @@ namespace pig
     struct ::fuse_file_info	info;
     int				result;
 
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
@@ -101,7 +101,7 @@ namespace pig
       error("unable to discard the object",
 	    EINTR);
 
-    printf("[/XXX] %s(%s, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
@@ -121,7 +121,7 @@ namespace pig
     etoile::path::Way			way(path);
     elle::String*			name;
 
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
@@ -266,7 +266,7 @@ namespace pig
 	}
       }
 
-    printf("[/XXX] %s(%s, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
@@ -277,7 +277,7 @@ namespace pig
   /// this method changes the access and modification time of the object.
   ///
   int			Crux::Utimens(const char*		path,
-				      const struct timespec	tv[2])
+				      const struct timespec[2])
   {
     printf("[XXX] %s(%s, ...)\n",
 	   __FUNCTION__,
@@ -304,7 +304,7 @@ namespace pig
     etoile::path::Way		way(path);
     nucleus::Record		record;
 
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -338,9 +338,10 @@ namespace pig
 
     // duplicate the identifier and save it in the info structure's file
     // handle.
-    info->fh = (uint64_t)new etoile::gear::Identifier(identifier);
+    info->fh =
+      (uint64_t)new etoile::gear::Identifier(identifier);
 
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -360,7 +361,7 @@ namespace pig
     etoile::gear::Identifier*		identifier;
     off_t				next;
 
-    printf("[XXX] %s(%s, 0x%x, 0x%x, %qu, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p, 0x%p, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, buffer, filler, offset, info);
 
@@ -420,7 +421,7 @@ namespace pig
 	  break;
       }
 
-    printf("[/XXX] %s(%s, 0x%x, 0x%x, %qu, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p, 0x%p, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, buffer, filler, offset, info);
 
@@ -435,7 +436,7 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -454,7 +455,7 @@ namespace pig
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
 
-    printf("[/XXX] %s(%s, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -867,7 +868,7 @@ namespace pig
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
 
-    printf("[XXX] %s(%s, %s, 0x%x, %u, 0x%x)\n",
+    printf("[XXX] %s(%s, %s, 0x%p, %u, 0x%x)\n",
 	   __FUNCTION__,
 	   path, name, value, size, flags);
 
@@ -890,7 +891,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %s, 0x%x, %u, 0x%x)\n",
+    printf("[/XXX] %s(%s, %s, 0x%p, %u, 0x%x)\n",
 	   __FUNCTION__,
 	   path, name, value, size, flags);
 
@@ -909,7 +910,7 @@ namespace pig
     etoile::path::Way		way(path);
     nucleus::Trait		trait;
 
-    printf("[XXX] %s(%s, %s, 0x%x, %u)\n",
+    printf("[XXX] %s(%s, %s, 0x%p, %u)\n",
 	   __FUNCTION__,
 	   path, name, value, size);
 
@@ -935,7 +936,7 @@ namespace pig
     if (trait == nucleus::Trait::Null)
       skip(ENOATTR);
 
-    printf("[/XXX] %s(%s, %s, 0x%x, %u)\n",
+    printf("[/XXX] %s(%s, %s, 0x%p, %u)\n",
 	   __FUNCTION__,
 	   path, name, value, size);
 
@@ -968,7 +969,7 @@ namespace pig
     nucleus::Range<nucleus::Trait>::Scoutor	scoutor;
     size_t					offset;
 
-    printf("[XXX] %s(%s, 0x%x, %u)\n",
+    printf("[XXX] %s(%s, 0x%p, %u)\n",
 	   __FUNCTION__,
 	   path, list, size);
 
@@ -989,7 +990,7 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, 0x%x, %u)\n",
+    printf("[/XXX] %s(%s, 0x%p, %u)\n",
 	   __FUNCTION__,
 	   path, list, size);
 
@@ -1076,13 +1077,13 @@ namespace pig
 				   int				command,
 				   struct flock*		flags)
   {
-    printf("[XXX] %s(%s, 0x%x, %u, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p, %u, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info, command, flags);
 
     // XXX: to implement
 
-    printf("[/XXX] %s(%s, 0x%x, %u, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p, %u, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info, command, flags);
 
@@ -1159,7 +1160,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Way		target;
 
-    printf("[XXX] %s(%s, 0x%x, %u)\n",
+    printf("[XXX] %s(%s, 0x%p, %u)\n",
 	   __FUNCTION__,
 	   path, buffer, size);
 
@@ -1186,7 +1187,7 @@ namespace pig
 	        target.path.length() + 1 :
 	        size);
 
-    printf("[/XXX] %s(%s, 0x%x, %u)\n",
+    printf("[/XXX] %s(%s, 0x%p, %u)\n",
 	   __FUNCTION__,
 	   path, buffer, size);
 
@@ -1206,7 +1207,7 @@ namespace pig
     etoile::gear::Identifier	file;
     nucleus::Permissions	permissions;
 
-    printf("[XXX] %s(%s, 0%o, 0x%x)\n",
+    printf("[XXX] %s(%s, 0%o, 0x%p)\n",
 	   __FUNCTION__,
 	   path, mode, info);
 
@@ -1279,9 +1280,10 @@ namespace pig
 	    ENOENT);
 
     // store the identifier in the file handle.
-    info->fh = (uint64_t)new etoile::gear::Identifier(file);
+    info->fh =
+      (uint64_t)new etoile::gear::Identifier(file);
 
-    printf("[/XXX] %s(%s, 0%o, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0%o, 0x%p)\n",
 	   __FUNCTION__,
 	   path, mode, info);
 
@@ -1297,7 +1299,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::gear::Identifier	identifier;
 
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1307,9 +1309,10 @@ namespace pig
 	    ENOENT);
 
     // store the identifier in the file handle.
-    info->fh = (uint64_t)new etoile::gear::Identifier(identifier);
+    info->fh =
+      (uint64_t)new etoile::gear::Identifier(identifier);
 
-    printf("[/XXX] %s(%s, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1328,7 +1331,7 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    printf("[XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1347,7 +1350,7 @@ namespace pig
       error("unable to write the file",
 	    EACCES);
 
-    printf("[/XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1366,7 +1369,7 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    printf("[XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1384,7 +1387,7 @@ namespace pig
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
 
-    printf("[/XXX] %s(%s, 0x%x, %u, %qu, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1438,7 +1441,7 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, %qu, info)\n",
+    printf("[XXX] %s(%s, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, size, info);
 
@@ -1451,7 +1454,7 @@ namespace pig
       error("unable to adjust the size of the file",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %qu, info)\n",
+    printf("[/XXX] %s(%s, %qu, 0x%p)\n",
 	   __FUNCTION__,
 	   path, size, info);
 
@@ -1467,7 +1470,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1485,7 +1488,7 @@ namespace pig
     // reset the file handle.
     info->fh = 0;
 
-    printf("[/XXX] %s(%s, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1720,13 +1723,13 @@ namespace pig
 				    int				datasync,
 				    struct ::fuse_file_info*	info)
   {
-    printf("[XXX] %s(%s, %u, 0x%x)\n",
+    printf("[XXX] %s(%s, %u, 0x%p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
     // XXX Publish blocs: Journal::Load(), Journal::Publish()
 
-    printf("[/XXX] %s(%s, %u, 0x%x)\n",
+    printf("[/XXX] %s(%s, %u, 0x%p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
@@ -1740,13 +1743,13 @@ namespace pig
 				       int			datasync,
 				       struct ::fuse_file_info*	info)
   {
-    printf("[XXX] %s(%s, %u, 0x%x)\n",
+    printf("[XXX] %s(%s, %u, 0x%p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
     // XXX Publish blocs: Journal::Load(), Journal::Publish()
 
-    printf("[/XXX] %s(%s, %u, 0x%x)\n",
+    printf("[/XXX] %s(%s, %u, 0x%p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
@@ -1757,13 +1760,13 @@ namespace pig
   int			Crux::Flush(const char*			path,
 				    struct ::fuse_file_info*	info)
   {
-    printf("[XXX] %s(%s, 0x%x)\n",
+    printf("[XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
     // XXX
 
-    printf("[/XXX] %s(%s, 0x%x)\n",
+    printf("[/XXX] %s(%s, 0x%p)\n",
 	   __FUNCTION__,
 	   path, info);
 
