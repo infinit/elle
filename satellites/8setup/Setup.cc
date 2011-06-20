@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri may  6 14:24:22 2011]
+// updated       julien quintard   [sun jun 19 17:46:06 2011]
 //
 
 //

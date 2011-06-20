@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sun may  8 10:47:19 2011]
+// updated       julien quintard   [mon jun 20 01:52:50 2011]
 //
 
 //
@@ -45,6 +45,7 @@ namespace application
     lune::Authority	authority;
     lune::Identity	identity;
     lune::Dictionary	dictionary;
+    lune::Configuration	configuration;
 
     enter();
 
@@ -62,7 +63,12 @@ namespace application
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority: ";
-    pass = elle::String(::getpass(prompt.c_str()));
+
+    if (elle::Console::Input(
+          pass,
+	  prompt,
+	  elle::Console::OptionPassword) == elle::StatusError)
+      escape("unable to read the input");
 
     // load the authority.
     if (authority.Load() == elle::StatusError)
@@ -74,7 +80,12 @@ namespace application
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
-    pass = elle::String(::getpass(prompt.c_str()));
+
+    if (elle::Console::Input(
+          pass,
+	  prompt,
+	  elle::Console::OptionPassword) == elle::StatusError)
+      escape("unable to read the input");
 
     // generate a key pair.
     if (pair.Generate() == elle::StatusError)
@@ -100,6 +111,18 @@ namespace application
     if (dictionary.Store(name) == elle::StatusError)
       escape("unable to store the dictionary");
 
+    // pull the default parameters.
+    if (configuration.Pull() == elle::StatusError)
+      escape("unable to pull the configuration parameters");
+
+    // push the current parameters.
+    if (configuration.Push() == elle::StatusError)
+      escape("unable to pus the parameters");
+
+    // store the configuration.
+    if (configuration.Store(name) == elle::StatusError)
+      escape("unable to store the configuration");
+
     leave();
   }
 
@@ -118,7 +141,7 @@ namespace application
 
       // check the argument.
       if (name.empty() == true)
-	escape("unable to create a user without a user name");
+	escape("unable to destroy a user without a user name");
 
       // check if the user already exists.
       if (identity.Exist(name) == elle::StatusFalse)
@@ -160,6 +183,21 @@ namespace application
     }
 
     //
+    // remove the configuration, if necessary.
+    //
+    {
+      lune::Configuration	configuration;
+
+      // if the configuration exists...
+      if (configuration.Exist(name) == elle::StatusTrue)
+	{
+	  // remove it.
+	  if (configuration.Erase(name) == elle::StatusError)
+	    escape("unable to erase the configuration");
+	}
+    }
+
+    //
     // remove the user directory.
     //
     {
@@ -192,7 +230,6 @@ namespace application
   {
     elle::String	prompt;
     elle::String	pass;
-    lune::Authority	authority;
     lune::Identity	identity;
     elle::PublicKey	K;
     elle::Unique	unique;
@@ -207,24 +244,21 @@ namespace application
     if (identity.Exist(name) == elle::StatusFalse)
       escape("this user does not seem to exist");
 
-    // restore the authority's public key.
-    if (K.Restore(Infinit::Authority) == elle::StatusError)
-      escape("unable to restore the authority's public key");
-
-    // create the authority based on the hard-coded public key.
-    if (authority.Create(K) == elle::StatusError)
-      escape("unable to create the authority");
-
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
-    pass = elle::String(::getpass(prompt.c_str()));
+
+    if (elle::Console::Input(
+          pass,
+	  prompt,
+	  elle::Console::OptionPassword) == elle::StatusError)
+      escape("unable to read the input");
 
     // load the identity.
     if (identity.Load(name) == elle::StatusError)
       escape("unable to load the identity");
 
     // verify the identity.
-    if (identity.Validate(authority) != elle::StatusTrue)
+    if (identity.Validate(Infinit::Authority) != elle::StatusTrue)
       escape("the identity seems to be invalid");
 
     // decrypt the identity.
@@ -406,6 +440,10 @@ namespace application
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
+    // initialize Infinit.
+    if (Infinit::Initialize() == elle::StatusError)
+      escape("unable to initialize Infinit");
+
     // initialize the Etoile.
     if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
@@ -461,6 +499,10 @@ namespace application
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
+
+    // clean Infinit.
+    if (Infinit::Clean() == elle::StatusError)
+      escape("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)

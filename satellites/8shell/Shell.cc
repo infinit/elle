@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8shell/Shell.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon may 23 13:36:37 2011]
+// updated       julien quintard   [sun jun 19 17:46:43 2011]
 //
 
 //

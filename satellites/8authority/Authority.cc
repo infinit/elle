@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri may  6 14:23:58 2011]
+// updated       julien quintard   [sun jun 19 17:46:33 2011]
 //
 
 //
@@ -55,7 +55,12 @@ namespace application
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
-    pass = elle::String(::getpass(prompt.c_str()));
+
+    if (elle::Console::Input(
+          pass,
+	  prompt,
+	  elle::Console::OptionPassword) == elle::StatusError)
+      escape("unable to read the input");
 
     // generate the authority key pair.
     if (pair.Generate(Authority::Length) == elle::StatusError)
@@ -112,7 +117,12 @@ namespace application
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority keypair: ";
-    pass = elle::String(::getpass(prompt.c_str()));
+
+    if (elle::Console::Input(
+          pass,
+	  prompt,
+	  elle::Console::OptionPassword) == elle::StatusError)
+      escape("unable to read the input");
 
     // load the authority.
     if (authority.Load() == elle::StatusError)

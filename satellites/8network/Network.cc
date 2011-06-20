@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [wed may 25 10:07:10 2011]
+// updated       julien quintard   [sun jun 19 17:45:55 2011]
 //
 
 //
@@ -93,7 +93,12 @@ namespace application
 
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for the authority: ";
-      pass = elle::String(::getpass(prompt.c_str()));
+
+      if (elle::Console::Input(
+            pass,
+	    prompt,
+	    elle::Console::OptionPassword) == elle::StatusError)
+	escape("unable to read the input");
 
       // load the authority.
       if (authority.Load() == elle::StatusError)
@@ -113,7 +118,12 @@ namespace application
 
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for keypair '" + owner + "': ";
-      pass = elle::String(::getpass(prompt.c_str()));
+
+      if (elle::Console::Input(
+            pass,
+	    prompt,
+	    elle::Console::OptionPassword) == elle::StatusError)
+	escape("unable to read the input");
 
       // load the identity.
       if (identity.Load(owner) == elle::StatusError)
