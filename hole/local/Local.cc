@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [tue jun 14 18:52:34 2011]
+// updated       julien quintard   [sun jun 19 23:08:11 2011]
 //
 
 //
@@ -178,6 +178,9 @@ namespace hole
       nucleus::Block	block;
 
       enter();
+
+      // XXX to remove warnings
+      nucleus::Address a = address;
 
       // erase the block.
       // XXX history -> no deletion

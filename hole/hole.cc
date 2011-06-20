@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/hole.cc
 //
 // created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [fri jun 17 17:05:45 2011]
+// updated       julien quintard   [mon jun 20 01:35:24 2011]
 //
 
 //
@@ -43,10 +43,6 @@ namespace hole
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
-
-    // initialize Infinit.
-    if (Infinit::Initialize() == elle::StatusError)
-      escape("unable to initialize Infinit");
 
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
@@ -126,6 +122,10 @@ namespace hole
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize the Lune library");
 
+    // initialize Infinit.
+    if (Infinit::Initialize() == elle::StatusError)
+      escape("unable to initialize Infinit");
+
     // initialize the Hole library.
     if (hole::Hole::Initialize(network) == elle::StatusError)
       escape("unable to initialize Hole");
@@ -138,6 +138,10 @@ namespace hole
     if (hole::Hole::Clean() == elle::StatusError)
       escape("unable to clean Hole");
 
+    // clean Infinit.
+    if (Infinit::Clean() == elle::StatusError)
+      escape("unable to clean Infinit");
+
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
       escape("unable to clean Lune");
@@ -145,10 +149,6 @@ namespace hole
     // clean the nucleus library.
     if (nucleus::Nucleus::Clean() == elle::StatusError)
       escape("unable to clean Nucleus");
-
-    // clean Infinit.
-    if (Infinit::Clean() == elle::StatusError)
-      escape("unable to clean Infinit");
 
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
@@ -175,9 +175,22 @@ namespace hole
 int			main(int				argc,
                              char*				argv[])
 {
-  hole::Main(argc, argv);
+  try
+    {
+      if (hole::Main(argc, argv) == elle::StatusError)
+	{
+	  show();
 
-  expose();
+	  return (1);
+	}
+    }
+  catch (std::exception& e)
+    {
+      std::cout << "The program has been terminated following "
+		<< "a fatal error (" << e.what() << ")." << std::endl;
+
+      return (1);
+    }
 
   return (0);
 }
