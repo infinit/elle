@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [sun jun 19 18:04:17 2011]
+// updated       julien quintard   [mon jun 20 15:13:39 2011]
 //
 
 //
@@ -26,11 +26,6 @@ namespace pig
 //
 // ---------- definitions -----------------------------------------------------
 //
-
-  ///
-  /// the subject representing the current user.
-  ///
-  nucleus::Subject*			PIG::Subject;
 
   ///
   /// this variable contains the UID of the 'somebody' user, user which
@@ -60,19 +55,6 @@ namespace pig
   elle::Status		PIG::Initialize(const elle::String&	mountpoint)
   {
     enter();
-
-    //
-    // create a subject representing the current user.
-    //
-    {
-      // allocate a new subject.
-      PIG::Subject = new nucleus::Subject;
-
-      // create the subject.
-      if (PIG::Subject->Create(agent::Agent::Identity.pair.K) ==
-	  elle::StatusError)
-	escape("unable to create the user's subject");
-    }
 
     //
     // initialize the 'somebody' entity.
@@ -117,15 +99,6 @@ namespace pig
   elle::Status		PIG::Clean()
   {
     enter();
-
-    //
-    // destroy the subject.
-    //
-    {
-      // delete the subject instance.
-      if (PIG::Subject != NULL)
-	delete PIG::Subject;
-    }
 
     //
     // clean FUSE.

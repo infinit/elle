@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [sun jun 19 22:54:40 2011]
+// updated       julien quintard   [thu jun 23 15:05:52 2011]
 //
 
 //
@@ -18,6 +18,7 @@
 #include <pig/Crux.hh>
 #include <pig/PIG.hh>
 
+#include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 
 namespace pig
@@ -73,19 +74,24 @@ namespace pig
   {
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
     struct ::fuse_file_info	info;
     int				result;
 
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
-    // XXX un moyen de tester si l'objet exist?
-    // XXX faire un module de wall: Path
+    // XXX un moyen de tester si l'objet exist: Path::Exist?
+
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      skip(ENOENT);
 
     // load the object.
-    if (etoile::wall::Object::Load(way, identifier) == elle::StatusError)
-      skip(ENOENT);
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
+      error("unable to load the object",
+	    ENOENT);
 
     // set the identifier in the fuse_file_info structure.
     //
@@ -101,7 +107,7 @@ namespace pig
       error("unable to discard the object",
 	    EINTR);
 
-    printf("[/XXX] %s(%s, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
@@ -121,7 +127,7 @@ namespace pig
     etoile::path::Way			way(path);
     elle::String*			name;
 
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
@@ -266,7 +272,7 @@ namespace pig
 	}
       }
 
-    printf("[/XXX] %s(%s, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, stat);
 
@@ -302,14 +308,20 @@ namespace pig
   {
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
     nucleus::Record		record;
 
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
-    // load the object.
-    if (etoile::wall::Directory::Load(way, identifier) == elle::StatusError)
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
+    // load the directory.
+    if (etoile::wall::Directory::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT);
 
@@ -318,7 +330,7 @@ namespace pig
 
     // retrieve the user's permissions on the object.
     if (etoile::wall::Access::Lookup(identifier,
-				     *PIG::Subject,
+				     agent::Agent::Subject,
 				     record) == elle::StatusError)
       error("unable to retrieve the access record",
 	    EINTR,
@@ -341,7 +353,7 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(identifier);
 
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -361,7 +373,7 @@ namespace pig
     etoile::gear::Identifier*		identifier;
     off_t				next;
 
-    printf("[XXX] %s(%s, 0x%p, 0x%p, %qu, 0x%p)\n",
+    printf("[XXX] %s(%s, %p, %p, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, buffer, filler, offset, info);
 
@@ -421,7 +433,7 @@ namespace pig
 	  break;
       }
 
-    printf("[/XXX] %s(%s, 0x%p, 0x%p, %qu, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p, %p, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, buffer, filler, offset, info);
 
@@ -436,7 +448,7 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -455,7 +467,7 @@ namespace pig
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
 
-    printf("[/XXX] %s(%s, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -470,6 +482,7 @@ namespace pig
   {
     etoile::path::Slice		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
+    etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	subdirectory;
     nucleus::Permissions	permissions;
@@ -478,8 +491,13 @@ namespace pig
 	   __FUNCTION__,
 	   path, mode);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the directory.
-    if (etoile::wall::Directory::Load(way, directory) == elle::StatusError)
+    if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT);
 
@@ -498,7 +516,7 @@ namespace pig
 
     // set the owner permissions.
     if (etoile::wall::Access::Update(subdirectory,
-				     *PIG::Subject,
+				     agent::Agent::Subject,
 				     permissions) == elle::StatusError)
       error("unable to update the access record",
 	    EINTR,
@@ -538,6 +556,7 @@ namespace pig
     etoile::path::Slice		name;
     etoile::path::Way		child(path);
     etoile::path::Way		parent(child, name);
+    etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	subdirectory;
 
@@ -545,13 +564,24 @@ namespace pig
 	   __FUNCTION__,
 	   path);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the directory.
-    if (etoile::wall::Directory::Load(parent, directory) == elle::StatusError)
+    if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT,
+	    directory);
+
     // load the subdirectory.
-    if (etoile::wall::Directory::Load(child,
+    if (etoile::wall::Directory::Load(chemin,
 				      subdirectory) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT,
@@ -591,14 +621,20 @@ namespace pig
     etoile::gear::Identifier		identifier;
     etoile::miscellaneous::Information	information;
     etoile::path::Way			way(path);
+    etoile::path::Chemin		chemin;
     nucleus::Record			record;
 
     printf("[XXX] %s(%s, 0%o)\n",
 	   __FUNCTION__,
 	   path, mask);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the object.
-    if (etoile::wall::Object::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
 	    ENOENT);
 
@@ -611,7 +647,7 @@ namespace pig
 
     // retrieve the user's permissions on the object.
     if (etoile::wall::Access::Lookup(identifier,
-				     *PIG::Subject,
+				     agent::Agent::Subject,
 				     record) == elle::StatusError)
       error("unable to retrieve the access record",
 	    ENOENT,
@@ -720,6 +756,7 @@ namespace pig
   {
     etoile::gear::Identifier		identifier;
     etoile::path::Way			way(path);
+    etoile::path::Chemin		chemin;
     nucleus::Permissions		permissions;
     etoile::miscellaneous::Information	information;
 
@@ -754,8 +791,13 @@ namespace pig
     if ((mode & S_IWUSR) != 0)
       permissions |= nucleus::PermissionWrite;
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
    // load the object.
-    if (etoile::wall::Object::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
 	    ENOENT);
 
@@ -764,7 +806,7 @@ namespace pig
     // note that the method assumes that the caller is the object's owner!
     // if not, an error will occur anyway, so why bother checking.
     if (etoile::wall::Access::Update(identifier,
-				     *PIG::Subject,
+				     agent::Agent::Subject,
 				     permissions) == elle::StatusError)
       error("unable to update the access records",
 	    ENOENT,
@@ -867,13 +909,19 @@ namespace pig
   {
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
 
-    printf("[XXX] %s(%s, %s, 0x%p, %u, 0x%x)\n",
+    printf("[XXX] %s(%s, %s, %p, %u, 0x%x)\n",
 	   __FUNCTION__,
 	   path, name, value, size, flags);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the object.
-    if (etoile::wall::Object::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
 	    ENOENT);
 
@@ -891,7 +939,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %s, 0x%p, %u, 0x%x)\n",
+    printf("[/XXX] %s(%s, %s, %p, %u, 0x%x)\n",
 	   __FUNCTION__,
 	   path, name, value, size, flags);
 
@@ -908,14 +956,20 @@ namespace pig
   {
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
     nucleus::Trait		trait;
 
-    printf("[XXX] %s(%s, %s, 0x%p, %u)\n",
+    printf("[XXX] %s(%s, %s, %p, %u)\n",
 	   __FUNCTION__,
 	   path, name, value, size);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the object.
-    if (etoile::wall::Object::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
 	    ENOENT);
 
@@ -934,9 +988,9 @@ namespace pig
 
     // test if a trait has been found.
     if (trait == nucleus::Trait::Null)
-      skip(ENOATTR);
+      error("unable to resolve the path",ENOATTR);
 
-    printf("[/XXX] %s(%s, %s, 0x%p, %u)\n",
+    printf("[/XXX] %s(%s, %s, %p, %u)\n",
 	   __FUNCTION__,
 	   path, name, value, size);
 
@@ -965,16 +1019,22 @@ namespace pig
   {
     etoile::gear::Identifier			identifier;
     etoile::path::Way				way(path);
+    etoile::path::Chemin			chemin;
     nucleus::Range<nucleus::Trait>		range;
     nucleus::Range<nucleus::Trait>::Scoutor	scoutor;
     size_t					offset;
 
-    printf("[XXX] %s(%s, 0x%p, %u)\n",
+    printf("[XXX] %s(%s, %p, %u)\n",
 	   __FUNCTION__,
 	   path, list, size);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the object.
-    if (etoile::wall::Object::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
 	    ENOENT);
 
@@ -990,7 +1050,7 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, 0x%p, %u)\n",
+    printf("[/XXX] %s(%s, %p, %u)\n",
 	   __FUNCTION__,
 	   path, list, size);
 
@@ -1039,13 +1099,19 @@ namespace pig
   {
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
 
     printf("[XXX] %s(%s, %s)\n",
 	   __FUNCTION__,
 	   path, name);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the object.
-    if (etoile::wall::Object::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
 	    ENOENT);
 
@@ -1077,13 +1143,13 @@ namespace pig
 				   int				command,
 				   struct flock*		flags)
   {
-    printf("[XXX] %s(%s, 0x%p, %u, 0x%p)\n",
+    printf("[XXX] %s(%s, %p, %u, %p)\n",
 	   __FUNCTION__,
 	   path, info, command, flags);
 
     // XXX: to implement
 
-    printf("[/XXX] %s(%s, 0x%p, %u, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p, %u, %p)\n",
 	   __FUNCTION__,
 	   path, info, command, flags);
 
@@ -1101,13 +1167,19 @@ namespace pig
     etoile::path::Slice		name;
     etoile::path::Way		from(etoile::path::Way(source), name);
     etoile::path::Way		to(target);
+    etoile::path::Chemin	chemin;
 
     printf("[XXX] %s(%s, %s)\n",
 	   __FUNCTION__,
 	   target, source);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the directory.
-    if (etoile::wall::Directory::Load(from, directory) == elle::StatusError)
+    if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT);
 
@@ -1160,7 +1232,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Way		target;
 
-    printf("[XXX] %s(%s, 0x%p, %u)\n",
+    printf("[XXX] %s(%s, %p, %u)\n",
 	   __FUNCTION__,
 	   path, buffer, size);
 
@@ -1187,7 +1259,7 @@ namespace pig
 	        target.path.length() + 1 :
 	        size);
 
-    printf("[/XXX] %s(%s, 0x%p, %u)\n",
+    printf("[/XXX] %s(%s, %p, %u)\n",
 	   __FUNCTION__,
 	   path, buffer, size);
 
@@ -1203,16 +1275,22 @@ namespace pig
   {
     etoile::path::Slice		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
+    etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	file;
     nucleus::Permissions	permissions;
 
-    printf("[XXX] %s(%s, 0%o, 0x%p)\n",
+    printf("[XXX] %s(%s, 0%o, %p)\n",
 	   __FUNCTION__,
 	   path, mode, info);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the directory.
-    if (etoile::wall::Directory::Load(way, directory) == elle::StatusError)
+    if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT);
 
@@ -1231,7 +1309,7 @@ namespace pig
 
     // set the owner permissions.
     if (etoile::wall::Access::Update(file,
-				     *PIG::Subject,
+				     agent::Agent::Subject,
 				     permissions) == elle::StatusError)
       error("unable to update the access records",
 	    EINTR,
@@ -1283,7 +1361,7 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(file);
 
-    printf("[/XXX] %s(%s, 0%o, 0x%p)\n",
+    printf("[/XXX] %s(%s, 0%o, %p)\n",
 	   __FUNCTION__,
 	   path, mode, info);
 
@@ -1299,7 +1377,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::gear::Identifier	identifier;
 
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1312,7 +1390,7 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(identifier);
 
-    printf("[/XXX] %s(%s, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1331,7 +1409,7 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    printf("[XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
+    printf("[XXX] %s(%s, %p, %u, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1350,7 +1428,7 @@ namespace pig
       error("unable to write the file",
 	    EACCES);
 
-    printf("[/XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p, %u, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1369,7 +1447,7 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    printf("[XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
+    printf("[XXX] %s(%s, %p, %u, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1387,7 +1465,7 @@ namespace pig
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
 
-    printf("[/XXX] %s(%s, 0x%p, %u, %qu, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p, %u, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, buffer, size, offset, info);
 
@@ -1441,7 +1519,7 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, %qu, 0x%p)\n",
+    printf("[XXX] %s(%s, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, size, info);
 
@@ -1454,7 +1532,7 @@ namespace pig
       error("unable to adjust the size of the file",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %qu, 0x%p)\n",
+    printf("[/XXX] %s(%s, %qu, %p)\n",
 	   __FUNCTION__,
 	   path, size, info);
 
@@ -1470,7 +1548,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1488,7 +1566,7 @@ namespace pig
     // reset the file handle.
     info->fh = 0;
 
-    printf("[/XXX] %s(%s, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
@@ -1525,10 +1603,16 @@ namespace pig
 	// in this case, the object to move can simply be renamed since
 	// the source and target directory are identical.
 	//
+	etoile::path::Chemin		chemin;
 	etoile::gear::Identifier	directory;
 
+	// resolve the path.
+	if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
+	  error("unable to resolve the path",
+		ENOENT);
+
 	// load the directory.
-	if (etoile::wall::Directory::Load(from,
+	if (etoile::wall::Directory::Load(chemin,
 					  directory) == elle::StatusError)
 	  error("unable to load the directory",
 		ENOENT);
@@ -1556,17 +1640,30 @@ namespace pig
 	// directory is removed.
 	//
 	etoile::path::Way		way(source);
+	etoile::path::Chemin		chemin;
 	etoile::gear::Identifier	object;
 	etoile::gear::Identifier	directory;
 
+	// resolve the path.
+	if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+	  error("unable to resolve the path",
+		ENOENT);
+
 	// load the object even though we don't know its genre as we
 	// do not need to know to perform this operation.
-	if (etoile::wall::Object::Load(way, object) == elle::StatusError)
+	if (etoile::wall::Object::Load(chemin, object) == elle::StatusError)
 	  error("unable to load the object",
 		ENOENT);
 
+	// resolve the path.
+	if (etoile::wall::Path::Resolve(to, chemin) == elle::StatusError)
+	  error("unable to resolve the path",
+		ENOENT,
+		object);
+
 	// load the _to_ directory.
-	if (etoile::wall::Directory::Load(to, directory) == elle::StatusError)
+	if (etoile::wall::Directory::Load(chemin,
+					  directory) == elle::StatusError)
 	  error("unable to load the directory",
 		ENOENT,
 		object);
@@ -1585,8 +1682,14 @@ namespace pig
 		ENOENT,
 		object);
 
+	// resolve the path.
+	if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
+	  error("unable to resolve the path",
+		ENOENT,
+		object);
+
 	// load the _from_ directory.
-	if (etoile::wall::Directory::Load(from,
+	if (etoile::wall::Directory::Load(chemin,
 					  directory) == elle::StatusError)
 	  error("unable to load the directory",
 		ENOENT,
@@ -1625,6 +1728,7 @@ namespace pig
     etoile::path::Slice			name;
     etoile::path::Way			child(path);
     etoile::path::Way			parent(child, name);
+    etoile::path::Chemin		chemin;
     etoile::gear::Identifier		directory;
     etoile::gear::Identifier		identifier;
     etoile::miscellaneous::Information	information;
@@ -1633,8 +1737,13 @@ namespace pig
 	   __FUNCTION__,
 	   path);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the object.
-    if (etoile::wall::Object::Load(child, identifier) == elle::StatusError)
+    if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
 	    ENOENT);
 
@@ -1650,8 +1759,13 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the directory.
-    if (etoile::wall::Directory::Load(parent, directory) == elle::StatusError)
+    if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT);
 
@@ -1723,13 +1837,13 @@ namespace pig
 				    int				datasync,
 				    struct ::fuse_file_info*	info)
   {
-    printf("[XXX] %s(%s, %u, 0x%p)\n",
+    printf("[XXX] %s(%s, %u, %p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
     // XXX Publish blocs: Journal::Load(), Journal::Publish()
 
-    printf("[/XXX] %s(%s, %u, 0x%p)\n",
+    printf("[/XXX] %s(%s, %u, %p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
@@ -1743,13 +1857,13 @@ namespace pig
 				       int			datasync,
 				       struct ::fuse_file_info*	info)
   {
-    printf("[XXX] %s(%s, %u, 0x%p)\n",
+    printf("[XXX] %s(%s, %u, %p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
     // XXX Publish blocs: Journal::Load(), Journal::Publish()
 
-    printf("[/XXX] %s(%s, %u, 0x%p)\n",
+    printf("[/XXX] %s(%s, %u, %p)\n",
 	   __FUNCTION__,
 	   path, datasync, info);
 
@@ -1760,13 +1874,13 @@ namespace pig
   int			Crux::Flush(const char*			path,
 				    struct ::fuse_file_info*	info)
   {
-    printf("[XXX] %s(%s, 0x%p)\n",
+    printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
     // XXX
 
-    printf("[/XXX] %s(%s, 0x%p)\n",
+    printf("[/XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
