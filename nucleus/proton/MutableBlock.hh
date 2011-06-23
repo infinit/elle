@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.hh
 //
 // created       julien quintard   [sat may 21 12:27:09 2011]
-// updated       julien quintard   [fri jun 17 15:36:30 2011]
+// updated       julien quintard   [wed jun 22 13:34:36 2011]
 //
 
 #ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH
@@ -25,6 +25,7 @@
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/Family.hh>
 #include <nucleus/proton/Version.hh>
+#include <nucleus/proton/Base.hh>
 
 #include <nucleus/neutron/Component.hh>
 
@@ -39,6 +40,9 @@ namespace nucleus
 
     ///
     /// XXX
+    ///
+    /// the _base attribute is used internally to keep a view of the
+    /// block's original state i.e before being modified.
     ///
     class MutableBlock:
       public Block
@@ -78,6 +82,8 @@ namespace nucleus
       // attributes
       //
       Version		version;
+
+      Base		_base;
     };
 
   }

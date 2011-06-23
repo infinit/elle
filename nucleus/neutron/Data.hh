@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [wed may  4 23:17:44 2011]
+// updated       julien quintard   [wed jun 22 12:39:08 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_DATA_HH
@@ -20,8 +20,9 @@
 
 #include <elle/Elle.hh>
 
+#include <nucleus/proton/State.hh>
+
 #include <nucleus/neutron/Offset.hh>
-#include <nucleus/neutron/State.hh>
 
 namespace nucleus
 {
@@ -33,7 +34,11 @@ namespace nucleus
 //
 
     ///
-    /// this class represents file data.
+    /// this class represents a file's content.
+    ///
+    /// note that the Catalog does not derive the Block class. indeed, the
+    /// Contents class represents the container for genre-specific content:
+    /// Catalog for directories, Data for files etc.
     ///
     class Data:
       public elle::Object
@@ -73,7 +78,7 @@ namespace nucleus
       //
       // attributes
       //
-      State		state;
+      proton::State	_state;
 
       elle::Region	region;
     };

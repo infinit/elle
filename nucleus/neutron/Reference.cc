@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Reference.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu may  5 15:43:07 2011]
+// updated       julien quintard   [wed jun 22 12:42:58 2011]
 //
 
 //
@@ -30,7 +30,7 @@ namespace nucleus
     /// default constructor.
     ///
     Reference::Reference():
-      state(StateClean)
+      _state(proton::StateClean)
     {
     }
 
@@ -49,7 +49,7 @@ namespace nucleus
       this->target = target;
 
       // set the reference as dirty.
-      this->state = StateDirty;
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -105,11 +105,10 @@ namespace nucleus
       std::cout << alignment << "[Reference] " << std::endl;
 
       // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[State] "
-		<< this->state << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
+		<< this->_state << std::endl;
 
       // dump the target.
-      // dump the state.
       std::cout << alignment << elle::Dumpable::Shift << "[Target] "
 		<< this->target << std::endl;
 

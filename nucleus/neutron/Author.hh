@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Author.hh
 //
 // created       julien quintard   [fri aug 21 22:04:45 2009]
-// updated       julien quintard   [wed may  4 23:11:38 2011]
+// updated       julien quintard   [mon jun 20 14:01:30 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_AUTHOR_HH
@@ -40,6 +40,11 @@ namespace nucleus
       public elle::Object
     {
     public:
+      //
+      // constants
+      //
+      static const Author		Null;
+
       //
       // constructors & destructors
       //

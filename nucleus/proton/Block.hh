@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [fri jun  3 11:28:21 2011]
+// updated       julien quintard   [wed jun 22 13:33:53 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BLOCK_HH
@@ -23,6 +23,7 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Network.hh>
 #include <nucleus/proton/Family.hh>
+#include <nucleus/proton/State.hh>
 
 #include <nucleus/neutron/Component.hh>
 
@@ -39,6 +40,9 @@ namespace nucleus
     /// this class abstracts the notion of storable block of data.
     ///
     /// note that every block is identified by an address.
+    ///
+    /// the _state attribute indicates whether the block has
+    /// been modified. therefore, this indicator is never serialized.
     ///
     class Block:
       public elle::Object,
@@ -60,8 +64,6 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status		Place(const Network&);
-
       virtual elle::Status	Bind(Address&) const;
       virtual elle::Status	Validate(const Address&) const;
 
@@ -94,6 +96,8 @@ namespace nucleus
       Network			network;
       Family			family;
       neutron::Component	component;
+
+      State			_state;
     };
 
   }

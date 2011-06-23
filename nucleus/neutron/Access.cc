@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [sun jun 19 22:46:15 2011]
+// updated       julien quintard   [wed jun 22 22:27:21 2011]
 //
 
 //
@@ -25,6 +25,15 @@ namespace nucleus
   {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// the null access.
+    ///
+    const Access			Access::Null;
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 
@@ -32,9 +41,7 @@ namespace nucleus
     /// default constructor.
     ///
     Access::Access():
-      proton::ContentHashBlock(ComponentAccess),
-
-      state(StateClean)
+      proton::ContentHashBlock(ComponentAccess)
     {
     }
 
@@ -53,8 +60,8 @@ namespace nucleus
       if (this->range.Add(record) == elle::StatusError)
 	escape("unable to add the record in the range");
 
-      // set the object as dirty.
-      this->state = StateDirty;
+      // set the block as dirty.
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -202,7 +209,37 @@ namespace nucleus
 	    }
 
 	  // set the access block as being dirty.
-	  this->state = StateDirty;
+	  this->_state = proton::StateDirty;
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method updates the records with a null token.
+    ///
+    elle::Status	Access::Downgrade()
+    {
+      Range<Record>::Iterator	iterator;
+
+      enter();
+
+      // go through the range.
+      for (iterator = this->range.container.begin();
+	   iterator != this->range.container.end();
+	   iterator++)
+	{
+	  Record*	record = *iterator;
+
+	  // check if the subject has the proper permissions.
+	  if (!(record->permissions & PermissionRead))
+	    continue;
+
+	  // reset the token.
+	  record->token = Token::Null;
+
+	  // set the access block as being dirty.
+	  this->_state = proton::StateDirty;
 	}
 
       leave();
@@ -219,8 +256,8 @@ namespace nucleus
       if (this->range.Remove(subject) == elle::StatusError)
 	escape("unable to remove the record");
 
-      // set the object as dirty.
-      this->state = StateDirty;
+      // set the block as dirty.
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -306,6 +343,24 @@ namespace nucleus
 //
 
     ///
+    /// this operator compares two objects.
+    ///
+    elle::Boolean	Access::operator==(const Access&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the ranges.
+      if (this->range != element.range)
+	false();
+
+      true();
+    }
+
+    ///
     /// this macro-function call generates the object.
     ///
     embed(Access, _());
@@ -324,10 +379,6 @@ namespace nucleus
       enter();
 
       std::cout << alignment << "[Access]" << std::endl;
-
-      // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[State] "
-		<< this->state << std::endl;
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)

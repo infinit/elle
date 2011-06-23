@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.hh
 //
 // created       julien quintard   [fri may  6 14:45:42 2011]
-// updated       julien quintard   [sat may 21 15:27:37 2011]
+// updated       julien quintard   [wed jun 22 12:40:06 2011]
 //
 
 #ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
@@ -84,7 +84,7 @@ namespace nucleus
 
 	elle::Signature		signature;
 
-	neutron::Subject	subject;
+	neutron::Subject	_subject;
       }				owner;
     };
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [fri jun 17 15:38:14 2011]
+// updated       julien quintard   [wed jun 22 12:41:23 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
@@ -28,7 +28,6 @@
 #include <nucleus/neutron/Author.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Permissions.hh>
-#include <nucleus/neutron/State.hh>
 #include <nucleus/neutron/Token.hh>
 #include <nucleus/neutron/Attributes.hh>
 #include <nucleus/neutron/Access.hh>
@@ -45,6 +44,9 @@ namespace nucleus
 
     ///
     /// XXX
+    ///
+    /// XXX meta.owner._record ne sont pas serializes mais
+    /// sont ici juste pour simplifier le processus de gestion des access
     ///
     class Object:
       public proton::ImprintBlock
@@ -70,10 +72,10 @@ namespace nucleus
 				     const Token&);
 
       elle::Status	Seal(const elle::PrivateKey&,
-			     const Access* = NULL);
+			     const Access& = Access::Null);
 
       elle::Status	Validate(const proton::Address&,
-				 const Access* = NULL) const;
+				 const Access& = Access::Null) const;
 
       //
       // operators
@@ -107,6 +109,8 @@ namespace nucleus
 	{
 	  Permissions		permissions;
 	  Token			token;
+
+	  Record		_record;
 	}			owner;
 
 	Genre			genre;
@@ -119,7 +123,7 @@ namespace nucleus
 	proton::Version		version;
 	elle::Signature		signature;
 
-	State			state;
+	proton::State		_state;
       }				meta;
 
       struct
@@ -134,7 +138,7 @@ namespace nucleus
 	proton::Version		version;
 	elle::Signature		signature;
 
-	State			state;
+	proton::State		_state;
       }				data;
     };
 

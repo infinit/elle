@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [fri jun 17 14:34:17 2011]
+// updated       julien quintard   [wed jun 22 19:54:32 2011]
 //
 
 #ifndef NUCLEUS_PROTON_ADDRESS_HH

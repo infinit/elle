@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Catalog.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [wed may  4 23:11:07 2011]
+// updated       julien quintard   [wed jun 22 12:50:18 2011]
 //
 
 //
@@ -30,7 +30,7 @@ namespace nucleus
     /// default constructor.
     ///
     Catalog::Catalog():
-      state(StateClean)
+      _state(proton::StateClean)
     {
     }
 
@@ -50,7 +50,7 @@ namespace nucleus
 	escape("unable to add the entry in the range");
 
       // range the object as dirty.
-      this->state = StateDirty;
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -133,7 +133,7 @@ namespace nucleus
 	escape("unable to remove the entry");
 
       // range the object as dirty.
-      this->state = StateDirty;
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -156,7 +156,7 @@ namespace nucleus
       entry->name = to;
 
       // range the object as dirty.
-      this->state = StateDirty;
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -200,8 +200,8 @@ namespace nucleus
       std::cout << alignment << "[Catalog]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[State] "
-		<< this->state << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
+		<< this->_state << std::endl;
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [sat may 21 17:02:36 2011]
+// updated       julien quintard   [thu jun 23 10:04:03 2011]
 //
 
 //
@@ -48,7 +48,7 @@ namespace nucleus
 //
 
     ///
-    /// this method creates an OKB based on the given owner's public key.
+    /// this method creates an imprint based on the given owner's public key.
     ///
     elle::Status	ImprintBlock::Create(const elle::PublicKey& owner)
     {
@@ -67,7 +67,7 @@ namespace nucleus
       // create a subject corresponding to the user. note that this
       // subject will never be serialized hence is not really part of
       // the object but is used to ease the process of access control.
-      if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
+      if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
 	escape("unable to create the owner subject");
 
       leave();
@@ -88,7 +88,7 @@ namespace nucleus
 			 (elle::Natural8&)this->component,
 			 this->seed.stamp, this->seed.salt, this->owner.K) ==
 	  elle::StatusError)
-	escape("unable to compute the OKB's address");
+	escape("unable to compute the imprint address");
 
       leave();
     }
@@ -115,7 +115,7 @@ namespace nucleus
 		      (elle::Natural8&)this->component,
 		      this->seed.stamp, this->seed.salt, this->owner.K) ==
 	  elle::StatusError)
-	escape("unable to compute the OKB's address");
+	escape("unable to compute the imprint address");
 
       // verify with the recorded address.
       if (address != self)
@@ -144,23 +144,32 @@ namespace nucleus
       if (MutableBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
-      // dump the stamp.
+      // dump the seed.
       std::cout << alignment << elle::Dumpable::Shift
+		<< "[Seed]" << std::endl;
+
+      // dump the stamp.
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Stamp]" << std::endl;
 
-      if (this->seed.stamp.Dump(margin + 2) == elle::StatusError)
+      if (this->seed.stamp.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the stamp");
 
       // dump the salt.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Salt]" << this->seed.salt << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+		<< "[Salt] " << this->seed.salt << std::endl;
 
-      // dump the owner's public key.
+      // dump the owner.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Owner]" << std::endl;
 
+      // dump the owner's public key.
       if (this->owner.K.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the owner's public key");
+
+      // dump the subject.
+      if (this->owner._subject.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the subject");
 
       leave();
     }
@@ -211,7 +220,7 @@ namespace nucleus
 	escape("unable to extract the block's content");
 
       // compute the owner subject.
-      if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
+      if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
 	escape("unable to create the owner subject");
 
       leave();

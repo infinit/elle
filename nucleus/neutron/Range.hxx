@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [sun jun 19 22:46:36 2011]
+// updated       julien quintard   [wed jun 22 20:11:23 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
@@ -261,6 +261,27 @@ namespace nucleus
 //
 // ---------- object ----------------------------------------------------------
 //
+
+    ///
+    /// this operator compares two objects.
+    ///
+    template <typename T>
+    elle::Boolean	Range<T>::operator==(const Range<T>&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the sizes.
+      if (this->container.size() != element.container.size())
+	false();
+
+      // XXX iterate
+
+      true();
+    }
 
     ///
     /// this macro-function call generates the object.

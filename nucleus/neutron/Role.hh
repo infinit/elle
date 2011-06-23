@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Role.hh
 //
 // created       julien quintard   [sun apr  4 14:38:46 2010]
-// updated       julien quintard   [thu may  5 09:38:00 2011]
+// updated       julien quintard   [mon jun 20 14:02:47 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_ROLE_HH
@@ -44,7 +44,7 @@ namespace nucleus
     ///
     const Role				RoleUnknown = 0x0;
     const Role				RoleOwner = 0x1;
-    const Role				RoleDelegate = 0x2;
+    const Role				RoleLord = 0x2;
     const Role				RoleVassal = 0x4;
 
   }

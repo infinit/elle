@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Range.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [thu may  5 09:32:12 2011]
+// updated       julien quintard   [wed jun 22 20:10:23 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_RANGE_HH
@@ -103,6 +103,7 @@ namespace nucleus
 
       // object
       declare(Range<T>);
+      elle::Boolean	operator==(const Range<T>&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

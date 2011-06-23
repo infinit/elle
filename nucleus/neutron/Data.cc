@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [wed may  4 23:18:13 2011]
+// updated       julien quintard   [wed jun 22 12:39:20 2011]
 //
 
 //
@@ -30,7 +30,7 @@ namespace nucleus
     /// default constructor.
     ///
     Data::Data():
-      state(StateClean)
+      _state(proton::StateClean)
     {
     }
 
@@ -61,7 +61,7 @@ namespace nucleus
 	escape("unable to write the data");
 
       // set the data as dirty.
-      this->state = StateDirty;
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -119,7 +119,7 @@ namespace nucleus
       this->region.size = size;
 
       // set the data as dirty.
-      this->state = StateDirty;
+      this->_state = proton::StateDirty;
 
       leave();
     }
@@ -162,8 +162,8 @@ namespace nucleus
       std::cout << alignment << "[Data]" << std::endl;
 
       // dump the state.
-      std::cout << alignment << elle::Dumpable::Shift << "[State] "
-		<< this->state << std::endl;
+      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
+		<< this->_state << std::endl;
 
       // dump the region attribute.
       if (this->region.Dump(margin + 2) == elle::StatusError)

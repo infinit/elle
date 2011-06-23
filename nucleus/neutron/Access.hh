@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [sun may  8 09:08:20 2011]
+// updated       julien quintard   [wed jun 22 20:10:13 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_ACCESS_HH
@@ -22,7 +22,6 @@
 
 #include <nucleus/proton/ContentHashBlock.hh>
 
-#include <nucleus/neutron/State.hh>
 #include <nucleus/neutron/Index.hh>
 #include <nucleus/neutron/Size.hh>
 #include <nucleus/neutron/Range.hh>
@@ -50,6 +49,11 @@ namespace nucleus
     {
     public:
       //
+      // constants
+      //
+      static const Access		Null;
+
+      //
       // constructors & destructors
       //
       Access();
@@ -65,6 +69,7 @@ namespace nucleus
 				const Size&,
 				Range<Record>&) const;
       elle::Status	Upgrade(const elle::SecretKey&);
+      elle::Status	Downgrade();
       elle::Status	Remove(const Subject&);
       elle::Status	Capacity(Size&) const;
       elle::Status	Locate(const Subject&,
@@ -77,6 +82,7 @@ namespace nucleus
 
       // object
       declare(Access);
+      elle::Boolean	operator==(const Access&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -88,8 +94,6 @@ namespace nucleus
       //
       // attributes
       //
-      State		state;
-
       Range<Record>	range;
     };
 

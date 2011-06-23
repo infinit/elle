@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Entry.hh
 //
 // created       julien quintard   [fri apr  2 00:03:02 2010]
-// updated       julien quintard   [thu may  5 13:39:47 2011]
+// updated       julien quintard   [wed jun 22 22:45:11 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_ENTRY_HH

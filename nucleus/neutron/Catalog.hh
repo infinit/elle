@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Catalog.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [wed may  4 23:10:53 2011]
+// updated       julien quintard   [wed jun 22 12:37:43 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CATALOG_HH
@@ -20,7 +20,8 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/neutron/State.hh>
+#include <nucleus/proton/State.hh>
+
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Entry.hh>
@@ -37,6 +38,10 @@ namespace nucleus
     ///
     /// this class represents the content of a directory and is composed
     /// of a set of tuples (name, address).
+    ///
+    /// note that the Catalog does not derive the Block class. indeed, the
+    /// Contents class represents the container for genre-specific content:
+    /// Catalog for directories, Data for files etc.
     ///
     /// \todo XXX note that, for now, all the entries are stored in a single
     /// block until an advanced, multi-block-based, data structure is
@@ -83,7 +88,7 @@ namespace nucleus
       //
       // attributes
       //
-      State		state;
+      proton::State	_state;
 
       Range<Entry>	range;
     };

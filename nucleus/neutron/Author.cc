@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [sun jun 19 18:03:24 2011]
+// updated       julien quintard   [mon jun 20 14:09:19 2011]
 //
 
 //
@@ -21,6 +21,15 @@ namespace nucleus
 {
   namespace neutron
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    const Author			Author::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -64,7 +73,7 @@ namespace nucleus
     }
 
     ///
-    /// this method creates a delegate-specific author object, used whenver
+    /// this method creates a lord-specific author object, used whenver
     /// a user has been directly granted access to an object i.e is
     /// explicitely listed in the Access block.
     ///
@@ -73,7 +82,7 @@ namespace nucleus
       enter();
 
       // set the role.
-      this->role = RoleDelegate;
+      this->role = RoleLord;
 
       // allocate a new proof.
       this->proof = new Proof;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Base.hh
 //
 // created       julien quintard   [sat may 21 13:21:51 2011]
-// updated       julien quintard   [fri jun 17 14:48:43 2011]
+// updated       julien quintard   [thu jun 23 08:50:55 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BASE_HH
@@ -20,13 +20,21 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/Version.hh>
 
 namespace nucleus
 {
   namespace proton
   {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// this makes sure the MutableBlock type is declared.
+    ///
+    class MutableBlock;
 
 //
 // ---------- classes ---------------------------------------------------------

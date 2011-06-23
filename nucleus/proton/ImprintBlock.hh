@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.hh
 //
 // created       julien quintard   [sat may  7 23:26:59 2011]
-// updated       julien quintard   [sat may 21 15:25:16 2011]
+// updated       julien quintard   [wed jun 22 12:40:58 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
@@ -79,7 +79,8 @@ namespace nucleus
       struct
       {
 	elle::PublicKey		K;
-	neutron::Subject	subject;
+
+	neutron::Subject	_subject;
       }				owner;
     };
 

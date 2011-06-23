@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.cc
 //
 // created       julien quintard   [fri may  6 15:34:18 2011]
-// updated       julien quintard   [sat may 21 15:23:39 2011]
+// updated       julien quintard   [wed jun 22 12:48:57 2011]
 //
 
 //
@@ -74,7 +74,7 @@ namespace nucleus
       // create a subject corresponding to the user. note that this
       // subject will never be serialized hence is not really part of
       // the object but is used to ease the process of access control.
-      if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
+      if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
 	escape("unable to create the owner subject");
 
       leave();
@@ -176,6 +176,9 @@ namespace nucleus
       if (this->owner.signature.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the owner's signature");
 
+      if (this->owner._subject.Dump(margin + 6) == elle::StatusError)
+	escape("unable to dump the subject");
+
       leave();
     }
 
@@ -225,7 +228,7 @@ namespace nucleus
 	escape("unable to extract the owner part");
 
       // compute the owner subject.
-      if (this->owner.subject.Create(this->owner.K) == elle::StatusError)
+      if (this->owner._subject.Create(this->owner.K) == elle::StatusError)
 	escape("unable to create the owner subject");
 
       leave();

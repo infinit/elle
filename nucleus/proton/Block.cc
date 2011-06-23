@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [sun jun 19 23:02:02 2011]
+// updated       julien quintard   [wed jun 22 12:36:16 2011]
 //
 
 //
@@ -37,33 +37,22 @@ namespace nucleus
 
     Block::Block():
       family(FamilyUnknown),
-      component(neutron::ComponentUnknown)
+      component(neutron::ComponentUnknown),
+      _state(StateClean)
     {
     }
 
     Block::Block(const Family					family,
 		 const neutron::Component			component):
       family(family),
-      component(component)
+      component(component),
+      _state(StateClean)
     {
     }
 
 //
 // ---------- methods ---------------------------------------------------------
 //
-
-    ///
-    /// this method places the block in a given network.
-    ///
-    elle::Status	Block::Place(const Network&		network)
-    {
-      enter();
-
-      // set the network.
-      this->network = network;
-
-      leave();
-    }
 
     ///
     /// this method computes the address of the block.
@@ -137,6 +126,10 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << "[Component] "
 		<< (elle::Natural32)this->component << std::endl;
 
+      // dump the state.
+      std::cout << alignment << elle::Dumpable::Shift << "[_State] "
+		<< (elle::Natural32)this->_state << std::endl;
+
       leave();
     }
 
@@ -183,7 +176,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method erases the block file.
     ///
     elle::Status	Block::Erase(const Network&,
 				     const Address&) const

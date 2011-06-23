@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [fri jun 10 13:08:43 2011]
+// updated       julien quintard   [wed jun 22 12:35:50 2011]
 //
 
 #ifndef NUCLEUS_NUCLEUS_HH
@@ -23,6 +23,9 @@
 ///
 /// this namespace contains the whole logic related to the Infinit
 /// file system.
+///
+/// note that every attribute starting with an underscore, such as '_state',
+/// will not be serialized, hence represent in-memory information only.
 ///
 namespace nucleus
 {
