@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 20 11:44:21 2011]
+// updated       julien quintard   [mon jun 20 16:39:10 2011]
 //
 
 //
@@ -37,6 +37,11 @@ namespace agent
   lune::Identity		Agent::Identity;
 
   ///
+  /// this variable represents the user subject.
+  ///
+  nucleus::Subject		Agent::Subject;
+
+  ///
   /// this variable contains the system configuration
   ///
   lune::Configuration		Agent::Configuration;
@@ -55,38 +60,57 @@ namespace agent
 
     enter();
 
-    // does the identity exist.
-    if (Agent::Identity.Exist(name) == elle::StatusFalse)
-      escape("the user identity does not seem to exist");
-
-    // prompt the user for the passphrase.
-    prompt = "Enter passphrase for keypair '" + name + "': ";
-
-    if (elle::Console::Input(
-          pass,
-	  prompt,
-	  elle::Console::OptionPassword) == elle::StatusError)
-      escape("unable to read the input");
-
+    //
     // load the identity.
-    if (Agent::Identity.Load(name) == elle::StatusError)
-      escape("unable to load the identity");
+    //
+    {
+      // does the identity exist.
+      if (Agent::Identity.Exist(name) == elle::StatusFalse)
+	escape("the user identity does not seem to exist");
 
-    // verify the identity.
-    if (Agent::Identity.Validate(Infinit::Authority) != elle::StatusTrue)
-      escape("the identity seems to be invalid");
+      // prompt the user for the passphrase.
+      prompt = "Enter passphrase for keypair '" + name + "': ";
 
-    // decrypt the identity.
-    if (Agent::Identity.Decrypt(pass) == elle::StatusError)
-      escape("unable to decrypt the identity");
+      if (elle::Console::Input(
+            pass,
+	    prompt,
+	    elle::Console::OptionPassword) == elle::StatusError)
+	escape("unable to read the input");
 
-    // load the configuration file.
-    if (Agent::Configuration.Load(name) == elle::StatusError)
-      escape("unable to load the configuration");
+      // load the identity.
+      if (Agent::Identity.Load(name) == elle::StatusError)
+	escape("unable to load the identity");
 
-    // pull the parameters.
-    if (Agent::Configuration.Pull() == elle::StatusError)
-      escape("unable to pull the configuration parameters");
+      // verify the identity.
+      if (Agent::Identity.Validate(Infinit::Authority) != elle::StatusTrue)
+	escape("the identity seems to be invalid");
+
+      // decrypt the identity.
+      if (Agent::Identity.Decrypt(pass) == elle::StatusError)
+	escape("unable to decrypt the identity");
+    }
+
+    //
+    // create a subject representing the user.
+    //
+    {
+      // create the subject.
+      if (Agent::Subject.Create(Agent::Identity.pair.K) == elle::StatusError)
+	escape("unable to create the user's subject");
+    }
+
+    //
+    // load the configuration.
+    //
+    {
+      // load the configuration file.
+      if (Agent::Configuration.Load(name) == elle::StatusError)
+	escape("unable to load the configuration");
+
+      // pull the parameters.
+      if (Agent::Configuration.Pull() == elle::StatusError)
+	escape("unable to pull the configuration parameters");
+    }
 
     leave();
   }
