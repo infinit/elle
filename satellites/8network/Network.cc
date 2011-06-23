@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sun jun 19 17:45:55 2011]
+// updated       julien quintard   [tue jun 21 16:54:25 2011]
 //
 
 //
@@ -141,10 +141,6 @@ namespace application
       // create the network object.
       if (network.Create(name) == elle::StatusError)
 	escape("unable to create the network object");
-
-      // place the block in the given network.
-      if (directory.Place(network) == elle::StatusError)
-	escape("unable to place the directory");
 
       // create directory object, setting the user's as the owner.
       if (directory.Create(nucleus::GenreDirectory,
@@ -302,7 +298,6 @@ namespace application
   elle::Status		Network::Information(const elle::String& name)
   {
     lune::Descriptor	descriptor;
-    lune::Authority	authority;
 
     enter();
 
@@ -320,21 +315,6 @@ namespace application
     }
 
     //
-    // retrieve the authority.
-    //
-    {
-      elle::PublicKey	K;
-
-      // restore the authority's public key.
-      if (K.Restore(Infinit::Authority) == elle::StatusError)
-	escape("unable to restore the authority's public key");
-
-      // create the authority based on the hard-coded public key.
-      if (authority.Create(K) == elle::StatusError)
-	escape("unable to create the authority");
-    }
-
-    //
     // retrieve the descriptor.
     //
     {
@@ -343,7 +323,7 @@ namespace application
 	escape("unable to load the descriptor");
 
       // validate the descriptor.
-      if (descriptor.Validate(authority) != elle::StatusTrue)
+      if (descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
 	escape("unable to validate the descriptor");
     }
 

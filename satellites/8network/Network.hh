@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [fri may 20 21:52:39 2011]
+// updated       julien quintard   [mon jun 20 13:54:37 2011]
 //
 
 #ifndef NETWORK_NETWORK_HH
