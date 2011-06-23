@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [fri jun 17 16:24:07 2011]
+// updated       julien quintard   [thu jun 23 16:20:02 2011]
 //
 
 //
@@ -32,12 +32,27 @@ namespace etoile
     ///
     /// the default constructor.
     ///
+    Object::Object():
+      Context(NatureObject),
+
+      access(NULL)
+    {
+      // initialize the rights structure.
+      this->rights.role = nucleus::RoleUnknown;
+      this->rights.permissions = nucleus::PermissionNone;
+    }
+
+    ///
+    /// the nature-specific constructor.
+    ///
     Object::Object(const Nature					nature):
       Context(nature),
 
-      rights(NULL),
-      author(NULL)
+      access(NULL)
     {
+      // initialize the rights structure.
+      this->rights.role = nucleus::RoleUnknown;
+      this->rights.permissions = nucleus::PermissionNone;
     }
 
     ///
@@ -45,112 +60,9 @@ namespace etoile
     ///
     Object::~Object()
     {
-      // delete the rights.
-      if (this->rights != NULL)
-	delete this->rights;
-
-      // delete the author.
-      if (this->author != NULL)
-	delete this->author;
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method fetches the object.
-    ///
-    elle::Status	Object::Load(const nucleus::Location&	location)
-    {
-      enter();
-
-      // retrieve the object block.
-      if (depot::Depot::Pull(location.address,
-			     location.version,
-			     this->object) == elle::StatusError)
-	escape("unable to retrieve the object block");
-
-      // if there is an attached access block.
-      if (this->object.meta.access != nucleus::Address::Null)
-	{
-	  // retrieve the access block.
-	  if (depot::Depot::Pull(this->object.meta.access,
-				 nucleus::Version::Any,
-				 this->access) == elle::StatusError)
-	    escape("unable to load the access block");
-	}
-      else
-	{
-	  // otherwise the block is left empty, as new.
-	}
-
-      leave();
-    }
-
-    ///
-    /// this method fills in the information instance.
-    ///
-    elle::Status	Object::Information(
-			  miscellaneous::Information&		information)
-    {
-      enter();
-
-      // generate the information based on the object.
-      if (information.Create(this->object) == elle::StatusError)
-	escape("unable to generate the information");
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    elle::Status	Object::Destroy()
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    elle::Status	Object::Store()
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    ///
-    /// this method determines the user's rights over this object
-    /// by computing the role and permissions of the user along with the
-    /// key for decrypting the data.
-    ///
-    elle::Status	Object::Rights()
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    elle::Status	Object::Author()
-    {
-      enter();
-
-      // XXX
-
-      leave();
+      // delete the access.
+      if (this->access != NULL)
+	delete this->access;
     }
 
 //
@@ -172,13 +84,141 @@ namespace etoile
       if (Context::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the parent context");
 
+      // dump the location.
+      if (this->location.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the location");
+
       // dump the object.
       if (this->object.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the object");
 
-      // dump the access.
-      if (this->access.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the access");
+      // dump the access, if present.
+      if (this->access != NULL)
+	{
+	  // dump the access block.
+	  if (this->access->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the access");
+	}
+      else
+	{
+	  // dump none.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Access] " << elle::none << std::endl;
+	}
+
+      // dump the rights.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Rights]" << std::endl;
+
+      // dump the role.
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+		<< "[Role] "
+		<< (const elle::Natural32)this->rights.role << std::endl;
+
+      // dump the permissions.
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+		<< "[Permissions] "
+		<< (const elle::Natural32)this->rights.permissions
+		<< std::endl;
+
+      // dump the key.
+      if (this->rights.key.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the key");
+
+      // dump the record.
+      if (this->rights.record.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the record");
+
+      // dump the author.
+      if (this->author.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the author");
+
+      leave();
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method serializes the object.
+    ///
+    elle::Status	Object::Serialize(elle::Archive&	archive) const
+    {
+      enter();
+
+      // serialize the attributes.
+      if (archive.Serialize(this->location,
+			    this->object) == elle::StatusError)
+	escape("unable to serialize the attributes");
+
+      // serialize the access.
+      if (this->access == NULL)
+	{
+	  // serialize the access.
+	  if (archive.Serialize(*this->access) == elle::StatusError)
+	    escape("unable to serialize the access");
+	}
+      else
+	{
+	  // serialize 'none'.
+	  if (archive.Serialize(elle::none) == elle::StatusError)
+	    escape("unable to serialize 'none'");
+	}
+
+      // serialize the attributes.
+      if (archive.Serialize((const elle::Natural8&)this->rights.role,
+			    (const elle::Natural8&)this->rights.permissions,
+			    this->rights.key,
+			    this->rights.record,
+			    this->author) == elle::StatusError)
+	escape("unable to serialize the attributes");
+
+      leave();
+    }
+
+    ///
+    /// this method extracts the object.
+    ///
+    elle::Status	Object::Extract(elle::Archive&		archive)
+    {
+      elle::Archive::Type	type;
+
+      enter();
+
+      // extract the attributes.
+      if (archive.Extract(this->location,
+			  this->object) == elle::StatusError)
+	escape("unable to extract the attributes");
+
+      // fetch the next element's type.
+      if (archive.Fetch(type) == elle::StatusError)
+	escape("unable to fetch the next element's type");
+
+      // extract the access.
+      if (type == elle::Archive::TypeNull)
+	{
+	  // extract 'none'.
+	  if (archive.Extract(elle::none) == elle::StatusError)
+	    escape("unable to extract 'none'");
+	}
+      else
+	{
+	  // allocate an access.
+	  this->access = new nucleus::Access;
+
+	  // extract the access.
+	  if (archive.Extract(*this->access) == elle::StatusError)
+	    escape("unable to extract the access");
+	}
+
+      // extract the attributes.
+      if (archive.Extract((elle::Natural8&)this->rights.role,
+			  (elle::Natural8&)this->rights.permissions,
+			  this->rights.key,
+			  this->rights.record,
+			  this->author) == elle::StatusError)
+	escape("unable to extract the attributes");
 
       leave();
     }

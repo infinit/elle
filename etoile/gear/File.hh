@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/File.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [fri jun 17 16:24:11 2011]
+// updated       julien quintard   [thu jun 23 16:20:09 2011]
 //
 
 #ifndef ETOILE_GEAR_FILE_HH
@@ -22,6 +22,7 @@
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Object.hh>
+#include <etoile/gear/Nature.hh>
 
 namespace etoile
 {
@@ -40,6 +41,11 @@ namespace etoile
       public Object
     {
     public:
+      //
+      // types
+      //
+      typedef nucleus::Data			C;
+
       //
       // constructors & destructors
       //
@@ -60,7 +66,7 @@ namespace etoile
       //
       // attributes
       //
-      nucleus::Contents<nucleus::Data>*		contents;
+      nucleus::Contents<C>*	contents;
     };
 
   }

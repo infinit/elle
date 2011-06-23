@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.hh
 //
 // created       julien quintard   [fri jun  3 10:58:40 2011]
-// updated       julien quintard   [thu jun 16 09:39:01 2011]
+// updated       julien quintard   [thu jun 23 16:40:22 2011]
 //
 
 #ifndef ETOILE_GEAR_GEAR_HH
@@ -40,7 +40,6 @@ namespace etoile
     ///
     /// XXX
     ///
-    template <typename T>
     class Scope;
 
 //
@@ -56,8 +55,7 @@ namespace etoile
       //
       // types
       //
-      typedef std::map<const Identifier,
-		       elle::Base<Scope>*>		Container;
+      typedef std::map<const Identifier, Scope*>	Container;
       typedef Container::iterator			Iterator;
       typedef Container::const_iterator			Scoutor;
 
@@ -65,10 +63,13 @@ namespace etoile
       // static methods
       //
       static elle::Status	Add(const Identifier&,
-				    elle::Base<Scope>*);
-      static elle::Status	Select(const Identifier&,
-				       elle::Base<Scope>*&);
+				    Scope*);
       static elle::Status	Remove(const Identifier&);
+
+      static elle::Status	Select(const Identifier&,
+				       Scope*&);
+
+      static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // static attributes
@@ -83,7 +84,9 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Directory.hh>
 #include <etoile/gear/Scope.hh>
+#include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Object.hh>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [tue jun 14 14:16:31 2011]
+// updated       julien quintard   [thu jun 23 14:33:58 2011]
 //
 
 //
@@ -17,13 +17,14 @@
 
 #include <etoile/wall/Object.hh>
 
-#include <etoile/path/Path.hh>
+#include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Scope.hh>
+#include <etoile/gear/Object.hh>
+#include <etoile/gear/Gear.hh>
+
+#include <etoile/automaton/Object.hh>
 
 #include <etoile/miscellaneous/Information.hh>
-
-// XXX #include <etoile/automaton/Object.hh>
-// #include <etoile/context/Object.hh>
-// #include <etoile/context/Format.hh>
 
 namespace etoile
 {
@@ -35,55 +36,50 @@ namespace etoile
 //
 
     ///
-    /// this method loads an object in a context and returns the context
-    /// identifier.
+    /// this method loads the object identified by _chemin_ into a new
+    /// scope and returns the scope's identifier so that subsequent
+    /// operations can be carried out.
     ///
     elle::Status	Object::Load(
-			  const path::Way&			way,
+			  const path::Chemin&			chemin,
 			  gear::Identifier&			identifier)
     {
-      /* XXX
-      context::Object*		context;
+      gear::Scope<gear::Object>*	scope;
+      nucleus::Location			location;
 
-      enter(instance(context));
+      enter(instance(scope));
 
-      // create a new context.
-      if (context::Context::New(context) == elle::StatusError)
-	escape("unable to allocate a new context");
+      printf("[XXX] Object::Load()\n");
 
-      // create a route from the given way.
-      if (context->route.Create(way) == elle::StatusError)
-	escape("unable to create a route");
+      // allocate the scope.
+      scope = new gear::Scope<gear::Object>;
 
-      // resolve the route in an object address.
-      if (path::Path::Resolve(context->route,
-			      context->address) == elle::StatusError)
-	escape("unable to resolve the given route into an object's address");
+      // locate the object based on the chemin.
+      if (chemin.Locate(location) == elle::StatusError)
+	escape("unable to locate the directory");
 
-      // load the object in the given context.
-      if (components::Object::Load(context,
-				   context->address) == elle::StatusError)
-	escape("unable to load the object in the given context");
+      // apply the load automaton on the context.
+      if (automaton::Object::Load(scope->context,
+				  location) == elle::StatusError)
+	escape("unable to load the object");
 
-      // return the context identifier to the caller.
-      identifier = context->identifier;
-
-      // export the context.
-      if (context::Context::Export(context) == elle::StatusError)
+      // export the scope.
+      if (scope->Export() == elle::StatusError)
 	escape("unable to export the context");
 
-      // waive to tracking.
-      waive(context);
+      // return the identifier.
+      identifier = scope->identifier;
+
+      // waive.
+      waive(scope);
 
       leave();
-      */
     }
 
     ///
-    /// this method locks the object the identified context is related
-    /// to.
+    /// this method locks the object.
     ///
-    /// the method returns true if the lock has been acquired or false
+    /// the method returns true if the lock has been acquired, false
     /// otherwise.
     ///
     elle::Status	Object::Lock(
@@ -92,6 +88,8 @@ namespace etoile
       enter();
 
       printf("[XXX] Object::Lock()\n");
+
+      // XXX
 
       leave();
     }
@@ -106,145 +104,117 @@ namespace etoile
 
       printf("[XXX] Object::Release()\n");
 
+      // XXX
+
       leave();
     }
 
     ///
-    /// this method returns information on the object in a compact format.
+    /// this method returns general information regarding the identified
+    /// object.
     ///
     elle::Status	Object::Information(
 			  const gear::Identifier&		identifier,
 			  miscellaneous::Information&		information)
     {
-      /* XXX
-      context::Object*		context;
-      Status			status;
-      user::User*		user;
+      gear::Scope<gear::Object>*	scope;
 
       enter();
 
       printf("[XXX] Object::Information()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to get information on non-object contexts");
-
-      // request the object component to fill the status structure.
-      if (components::Object::Information(context,
-					  status) == elle::StatusError)
-	escape("unable to retrieve information on the object");
-
-      // return the status to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagObjectStatus>(status)) == elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the information automaton on the context.
+      if (automaton::Object::Information(scope->context,
+					 information) == elle::StatusError)
+	escape("unable to retrieve general information on the object");
 
       leave();
-      */
     }
 
     ///
-    /// this method discards the modifications.
+    /// this method discards the scope hence potentially ignoring some
+    /// modifications.
     ///
     elle::Status	Object::Discard(
 			  const gear::Identifier&		identifier)
     {
-      /* XXX
-      context::Object*		context;
-      user::User*		user;
+      gear::Scope<gear::Object>*	scope;
 
       enter();
 
       printf("[XXX] Object::Discard()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
 
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is exactly an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to discard non-object contexts");
-
-      // discard the context.
-      if (components::Object::Discard(context) == elle::StatusError)
-	escape("unable to discard the object's modifications");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // delete the scope.
+      delete scope;
 
       leave();
-      */
     }
 
     ///
-    /// this method commits the modifications pending on the context
-    /// and closes it.
+    /// this method commits the pending modifications by placing the
+    /// scope in the journal.
     ///
     elle::Status	Object::Store(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::Object*		context;
-      user::User*		user;
-
       enter();
 
       printf("[XXX] Object::Store()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is exactly an object.
-      if (context->format != context::FormatObject)
-	escape("unable to store non-object contexts");
-
-      // store the context.
-      if (components::Object::Store(context) == elle::StatusError)
-	escape("unable to store the object context");
-      /* XXX
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // XXX
 
       leave();
-      */
+    }
+
+    ///
+    /// this method destroys an object.
+    ///
+    /// this method should be used with great care since, not knowing the
+    /// object's genre, the data blocks will not be removed. therefore,
+    /// the genre-specific Destroy() method should always be preferred.
+    ///
+    elle::Status	Object::Destroy(
+			  const gear::Identifier&		identifier)
+    {
+      enter();
+
+      printf("[XXX] Object::Destroy()\n");
+
+      // XXX
+
+      leave();
+    }
+
+    ///
+    /// this method purges an object i.e removes all the blocks of all
+    /// the versions associated with this object.
+    ///
+    /// this method should be used with great care since, not knowing the
+    /// object's genre, the data blocks will not be removed. therefore,
+    /// the genre-specific Destroy() method should always be preferred.
+    ///
+    elle::Status	Object::Purge(
+			  const gear::Identifier&		identifier)
+    {
+      enter();
+
+      printf("[XXX] Object::Purge()\n");
+
+      // XXX
+
+      leave();
     }
 
   }

@@ -16,13 +16,21 @@ ADD_LIBRARY(etoile
 #  depot/Repository.cc
 #  depot/Unit.cc
 
+  gear/Chronicle.cc
+  gear/Context.cc
+  gear/Directory.cc
+  gear/Gear.cc
   gear/Identifier.cc
+  gear/Object.cc
+  gear/Transcript.cc
 
-#  automaton/Automaton.cc
-#  automaton/Directory.cc
+  automaton/Access.cc
+  automaton/Author.cc
+  automaton/Directory.cc
 #  automaton/File.cc
 #  automaton/Link.cc
-#  automaton/Object.cc
+  automaton/Object.cc
+  automaton/Rights.cc
 
   wall/Attributes.cc
   wall/Access.cc

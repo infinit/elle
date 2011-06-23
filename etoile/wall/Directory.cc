@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [thu jun 16 11:08:40 2011]
+// updated       julien quintard   [thu jun 23 14:35:01 2011]
 //
 
 //
@@ -18,8 +18,11 @@
 #include <etoile/wall/Directory.hh>
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Scope.hh>
+#include <etoile/gear/Directory.hh>
+#include <etoile/gear/Gear.hh>
 
-#include <etoile/path/Path.hh>
+#include <etoile/automaton/Directory.hh>
 
 namespace etoile
 {
@@ -31,141 +34,94 @@ namespace etoile
 //
 
     ///
-    /// this method creates an new, though orphan, directory object.
+    /// this method creates a new directory object.
+    ///
+    /// note however that the object is not attached to the hierarchy
+    /// and is therefore considered as orphan.
     ///
     elle::Status	Directory::Create(
 			  gear::Identifier&			identifier)
     {
-      /*
-      context::Directory*	context;
-      user::User*		user;
+      gear::Scope<gear::Directory>*	scope;
 
-      enter(instance(context));
+      enter(instance(scope));
 
       printf("[XXX] Directory::Create()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // allocate the scope.
+      scope = new gear::Scope<gear::Directory>;
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // create a new context.
-      if (context::Context::New(context) == elle::StatusError)
-	escape("unable to allocate a new context");
-
-      // create a new directory.
-      if (components::Directory::Create(context) == elle::StatusError)
+      // apply the create automaton on the context.
+      if (automaton::Directory::Create(scope->context) == elle::StatusError)
 	escape("unable to create the directory");
 
-      // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagIdentifier>(context->identifier)) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
-      // export the context.
-      if (context::Context::Export(context) == elle::StatusError)
+      // export the scope.
+      if (scope->Export() == elle::StatusError)
 	escape("unable to export the context");
 
+      // return the identifier.
+      identifier = scope->identifier;
+
       // waive.
-      waive(context);
+      waive(scope);
 
       leave();
-      */
     }
 
     ///
-    /// this method loads the directory and creates a new context.
+    /// this method loads the directory referenced through the given
+    /// chemin.
     ///
     elle::Status	Directory::Load(
-			  const path::Way&			way,
+			  const path::Chemin&			chemin,
 			  gear::Identifier&			identifier)
     {
-      /* XXX
-	 instead of path::Way, we will receive a path::Chemin;
+      gear::Scope<gear::Directory>*	scope;
+      nucleus::Location			location;
 
-	 nucleus::Location	location;
-	 gear::Scope*		scope;
-
-	 chemin.Locate(location);
-
-	 Gear::Select(identifier, &scope);
-
-	 scope->automaton.XXX(location, ...);
-       */
-
-      /*
-      context::Directory*	context;
-      user::User*		user;
-
-      enter(instance(context));
+      enter(instance(scope));
 
       printf("[XXX] Directory::Load()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // allocate the scope.
+      scope = new gear::Scope<gear::Directory>;
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // locate the object based on the chemin.
+      if (chemin.Locate(location) == elle::StatusError)
+	escape("unable to locate the directory");
 
-      // create a new context.
-      if (context::Context::New(context) == elle::StatusError)
-	escape("unable to allocate a new context");
+      // apply the load automaton on the context.
+      if (automaton::Directory::Load(scope->context,
+				     location) == elle::StatusError)
+	escape("unable to load the directory");
 
-      // create a route from the given way.
-      if (context->route.Create(way) == elle::StatusError)
-	escape("unable to create a route");
-
-      // resolve the route in a directory address.
-      if (path::Path::Resolve(context->route,
-			      context->address) == elle::StatusError)
-	escape("unable to resolve the given route into an directory address");
-
-      // load the directory in the given context.
-      if (components::Directory::Load(context,
-				      context->address) == elle::StatusError)
-	escape("unable to load the directory in the given context");
-
-      // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagIdentifier>(context->identifier)) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
-      // export the context.
-      if (context::Context::Export(context) == elle::StatusError)
+      // export the scope.
+      if (scope->Export() == elle::StatusError)
 	escape("unable to export the context");
 
+      // return the identifier.
+      identifier = scope->identifier;
+
       // waive.
-      waive(context);
+      waive(scope);
 
       leave();
-      */
     }
 
     ///
-    /// this application locks the directory the identified context is related
-    /// to.
+    /// this method locks the given directory.
     ///
-    /// the method returns true if the lock has been acquired or false
+    /// the method returns true if the lock has been acquired, false
     /// otherwise.
     ///
     elle::Status	Directory::Lock(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
       printf("[XXX] Directory::Lock()\n");
 
       // XXX
-      // XXX peut etre qu'il faudrait avoir une liste dependencies dans
-      // un context qui signifierait que le context courant ne peut etre
-      // commit tant que les dependences ne le sont pas!
 
       leave();
     }
@@ -174,124 +130,76 @@ namespace etoile
     /// this method releases a previously locked directory.
     ///
     elle::Status	Directory::Release(
-			  const gear::Identifier&		identifer)
+			  const gear::Identifier&)
     {
       enter();
 
       printf("[XXX] Directory::Release()\n");
 
+      // XXX
+
       leave();
     }
 
     ///
-    /// this method adds an entry.
+    /// this method adds an entry to the given directory.
     ///
     elle::Status	Directory::Add(
 			  const gear::Identifier&		parent,
 			  const path::Slice&			name,
 			  const gear::Identifier&		child)
     {
-      /*
-      context::Directory*	directory;
-      context::Directory*	subdirectory;
-      user::User*		user;
+      gear::Scope<gear::Directory>*	directory;
+      gear::Scope<gear::Object>*	object;
 
       enter();
 
       printf("[XXX] Directory::Add()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the parent identifier.
+      if (gear::Gear::Select(parent, directory) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // select the scope associated with the child identifier.
+      if (gear::Gear::Select(child, object) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // retrieve the directory context.
-      if (user->application->Retrieve(parent, directory) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // retrieve the subdirectory context.
-      if (user->application->Retrieve(child, subdirectory) ==
-	  elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // request the directory component to add the entry.
-      if (components::Directory::Add(directory,
-				     name,
-				     subdirectory) == elle::StatusError)
-	escape("unable to add the entry");
-
-      // reply to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagOk>()) == elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the add automaton on the context.
+      if (automaton::Directory::Add(
+	    directory->context,
+	    name,
+	    object->context.location.address) == elle::StatusError)
+	escape("unable to add the directory entry");
 
       leave();
-      */
     }
 
     ///
-    /// this method returns the address associated with the given name.
+    /// this method returns the directory entry associated with the
+    /// given name.
     ///
     elle::Status	Directory::Lookup(
 			  const gear::Identifier&		identifier,
 			  const path::Slice&			name,
 			  nucleus::Entry&			entry)
     {
-      /*
-      context::Directory*	context;
-      user::User*		user;
-      nucleus::Entry*		entry;
+      gear::Scope<gear::Directory>*	scope;
 
       enter();
 
       printf("[XXX] Directory::Lookup()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the directory context");
-
-      // check if the context is directory.
-      if ((context->format & context::FormatDirectory) !=
-	  context::FormatDirectory)
-	escape("unable to test a non-directory object");
-
-      // lookup the directory.
-      if (components::Directory::Lookup(context,
-					name,
-					entry) == elle::StatusError)
-	escape("unable to know if the given name is present in the directory");
-
-      // return the status to the caller.
-      if (entry == NULL)
-	{
-	  // return a null entry.
-	  if (user->application->channel->Reply(
-	        elle::Inputs<TagDirectoryEntry>(nucleus::Entry::Null)) ==
-	      elle::StatusError)
-	    escape("unable to reply to the application");
-	}
-      else
-	{
-	  // return the entry.
-	  if (user->application->channel->Reply(
-	        elle::Inputs<TagDirectoryEntry>(*entry)) == elle::StatusError)
-	    escape("unable to reply to the application");
-	}
+      // apply the lookup automaton on the context.
+      if (automaton::Directory::Lookup(scope->context,
+				       name,
+				       entry) == elle::StatusError)
+	escape("unable to lookup the directory entry");
 
       leave();
-      */
     }
 
     ///
@@ -304,229 +212,118 @@ namespace etoile
 			  const nucleus::Offset&		size,
 			  nucleus::Range<nucleus::Entry>&	range)
     {
-      /*
-      context::Directory*		context;
-      user::User*			user;
-      nucleus::Range<nucleus::Entry>	range;
+      gear::Scope<gear::Directory>*	scope;
 
       enter();
 
       printf("[XXX] Directory::Consult()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the directory context");
-
-      // check if the context is directory.
-      if ((context->format & context::FormatDirectory) !=
-	  context::FormatDirectory)
-	escape("unable to consult a non-directory object");
-
-      // consult the directory.
-      if (components::Directory::Consult(context,
-					 offset,
-					 size,
-					 range) == elle::StatusError)
-	escape("unable to consult the directory");
-
-      // return the set to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagDirectoryRange>(range)) == elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the consult automaton on the context.
+      if (automaton::Directory::Consult(scope->context,
+					offset,
+					size,
+					range) == elle::StatusError)
+	escape("unable to consult the directory entries");
 
       leave();
-      */
     }
 
     ///
-    /// this method renames an entry of the given directory.
+    /// this method renames a directory entry.
     ///
     elle::Status	Directory::Rename(
 			  const gear::Identifier&		identifier,
 			  const path::Slice&			from,
 			  const path::Slice&			to)
     {
-      /*
-      context::Directory*	context;
-      user::User*		user;
+      gear::Scope<gear::Directory>*	scope;
 
       enter();
 
       printf("[XXX] Directory::Rename()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier,
-				      context) == elle::StatusError)
-	escape("unable to retrieve the directory context");
-
-      // check if the context is directory.
-      if ((context->format & context::FormatDirectory) !=
-	  context::FormatDirectory)
-	escape("unable to rename a non-directory object");
-
-      // rename the entry.
-      if (components::Directory::Rename(context,
-					from,
-					to) == elle::StatusError)
-	escape("unable to rename the entry");
-
-      // return the set to the caller.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the rename automaton on the context.
+      if (automaton::Directory::Rename(scope->context,
+				       from, to) == elle::StatusError)
+	escape("unable to rename the directory entry");
 
       leave();
-      */
     }
 
     ///
-    /// this method removes an entry.
+    /// this method removes a directory entry.
     ///
     elle::Status	Directory::Remove(
 			  const gear::Identifier&		identifier,
 			  const path::Slice&			name)
     {
-      /*
-      context::Directory*	context;
-      user::User*		user;
+      gear::Scope<gear::Directory>*	scope;
 
       enter();
 
       printf("[XXX] Directory::Remove()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the directory context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // request the directory component to remove the entry.
-      if (components::Directory::Remove(context,
-					name) == elle::StatusError)
-	escape("unable to create the subdirectory");
-
-      // reply to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagOk>()) == elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the remove automaton on the context.
+      if (automaton::Directory::Remove(scope->context,
+				       name) == elle::StatusError)
+	escape("unable to remove the directory entry");
 
       leave();
-      */
     }
 
     ///
-    /// this method discards the directory's modifications.
+    /// this method discards the scope along with the possible
+    /// modifications having been performed.
     ///
     elle::Status	Directory::Discard(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::Directory*	context;
-      user::User*		user;
+      gear::Scope<gear::Directory>*	scope;
 
       enter();
 
       printf("[XXX] Directory::Discard()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
 
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the directory context");
-
-      // check if the context is directory.
-      if ((context->format & context::FormatDirectory) !=
-	  context::FormatDirectory)
-	escape("unable to store a non-directory object");
-
-      // discard the context.
-      if (components::Directory::Discard(context) == elle::StatusError)
-	escape("unable to discard the directory's modifications");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // delete the scope.
+      delete scope;
 
       leave();
-      */
     }
 
     ///
-    /// this method closes the context and applies, if required, the
-    /// modifications.
+    /// this method closes the scope and places it in the journal for
+    /// the modifications to be published in the storage layer.
     ///
     elle::Status	Directory::Store(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::Directory*	context;
-      user::User*		user;
-
       enter();
 
       printf("[XXX] Directory::Store()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the directory context");
-
-      // check if the context is directory.
-      if ((context->format & context::FormatDirectory) !=
-	  context::FormatDirectory)
-	escape("unable to store a non-directory object");
-
-      // store the context.
-      if (components::Directory::Store(context) == elle::StatusError)
-	escape("unable to store the directory context");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // XXX
 
       leave();
-      */
     }
 
     ///
@@ -535,43 +332,29 @@ namespace etoile
     elle::Status	Directory::Destroy(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::Directory*	context;
-      user::User*		user;
-
       enter();
 
       printf("[XXX] Directory::Destroy()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier,
-				      context) == elle::StatusError)
-	escape("unable to retrieve the directory context");
-
-      // check if the context is directory.
-      if ((context->format & context::FormatDirectory) !=
-	  context::FormatDirectory)
-	escape("unable to store a non-directory object");
-
-      // destroy the context.
-      if (components::Directory::Destroy(context) == elle::StatusError)
-	escape("unable to destroy the directory context");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // XXX
 
       leave();
-      */
+    }
+
+    ///
+    /// this method purges a directory i.e removes all the blocks of all
+    /// the versions associated with this directory.
+    ///
+    elle::Status	Directory::Purge(
+			  const gear::Identifier&		identifier)
+    {
+      enter();
+
+      printf("[XXX] Directory::Purge()\n");
+
+      // XXX
+
+      leave();
     }
 
   }

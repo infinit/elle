@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.cc
 //
 // created       julien quintard   [tue jun 14 16:41:06 2011]
-// updated       julien quintard   [tue jun 14 20:53:04 2011]
+// updated       julien quintard   [thu jun 23 16:40:53 2011]
 //
 
 //
@@ -39,8 +39,8 @@ namespace etoile
     /// this method adds the given scope to the container in order to
     /// be retrieved at a later time.
     ///
-    elle::Status	Gear::Add(Identifier&		identifier,
-				  Scope*		scope)
+    elle::Status	Gear::Add(const Identifier&		identifier,
+				  Scope*			scope)
     {
       std::pair<Gear::Iterator, elle::Boolean>	result;
 
@@ -62,12 +62,32 @@ namespace etoile
     }
 
     ///
+    /// this method removes a scope from the container, making it unusable
+    /// at a later time.
+    ///
+    elle::Status	Gear::Remove(const Identifier&		identifier)
+    {
+      Gear::Iterator	iterator;
+
+      enter();
+
+      // find the entry.
+      if ((iterator = Gear::Scopes.find(identifier)) == Gear::Scopes.end())
+	escape("unable to locate the scope associated with the identifier");
+
+      // erase the entry.
+      Gear::Scopes.erase(iterator);
+
+      leave();
+    }
+
+    ///
     /// this method returns the scope associated with the given identifier.
     ///
-    elle::Status	Gear::Select(Identifier&	identifier,
-				     Scope*&		scope)
+    elle::Status	Gear::Select(const Identifier&		identifier,
+				     Scope*&			scope)
     {
-      Gear::Scoutor	scoutor;
+      Gear::Scoutor		scoutor;
 
       enter();
 
@@ -82,21 +102,30 @@ namespace etoile
     }
 
     ///
-    /// this method removes a scope from the container, making it unusable
-    /// at a later time.
+    /// this method displays the list of exported scopes.
     ///
-    elle::Status	Gear::Remove(Identifier&	identifier)
+    elle::Status	Gear::Show(const elle::Natural32	margin)
     {
-      Gear::Iterator	iterator;
+      elle::String	alignment(margin, ' ');
+      Gear::Scoutor	scoutor;
 
       enter();
 
-      // find the entry.
-      if ((iterator = Gear::Scopes.find(identifier)) == Gear::Scopes.end())
-	escape("unable to locate the scope associated with the identifier");
+      std::cout << alignment << "[Gear]" << std::endl;
 
-      // erase the entry.
-      Gear::Scopes.erase(iterator);
+      // dump the container.
+      for (scoutor = Gear::Scopes.begin();
+	   scoutor != Gear::Scopes.end();
+	   scoutor++)
+	{
+	  // dump the identifier.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Identifier] " << scoutor->first << std::endl;
+
+	  // dump the scope's address.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Scope] " << std::hex << scoutor->second << std::endl;
+	}
 
       leave();
     }

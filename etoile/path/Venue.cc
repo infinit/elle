@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [wed jun 15 20:52:06 2011]
+// updated       julien quintard   [thu jun 23 09:29:39 2011]
 //
 
 //
@@ -63,32 +63,6 @@ namespace etoile
     }
 
 //
-// ---------- dumpable --------------------------------------------------------
-//
-
-    ///
-    /// this method dumps a venue.
-    ///
-    elle::Status	Venue::Dump(const elle::Natural32	margin) const
-    {
-      elle::String	alignment(margin, ' ');
-      Venue::Scoutor	scoutor;
-
-      enter();
-
-      std::cout << alignment << "[Venue]" << std::endl;
-
-      // for every element.
-      for (scoutor = this->elements.begin();
-	   scoutor != this->elements.end();
-	   scoutor++)
-	if (scoutor->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the address");
-
-      leave();
-    }
-
-//
 // ---------- object ----------------------------------------------------------
 //
 
@@ -124,6 +98,33 @@ namespace etoile
     /// this macro-function call generates the object.
     ///
     embed(Venue, _());
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps a venue.
+    ///
+    elle::Status	Venue::Dump(const elle::Natural32	margin) const
+    {
+      elle::String	alignment(margin, ' ');
+      Venue::Scoutor	scoutor;
+
+      enter();
+
+      std::cout << alignment << "[Venue] " << std::dec
+		<< this->elements.size() << std::endl;
+
+      // for every element.
+      for (scoutor = this->elements.begin();
+	   scoutor != this->elements.end();
+	   scoutor++)
+	if (scoutor->Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the address");
+
+      leave();
+    }
 
   }
 }

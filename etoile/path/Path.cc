@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sun jun 19 22:49:33 2011]
+// updated       julien quintard   [thu jun 23 16:31:43 2011]
 //
 
 //
@@ -17,9 +17,9 @@
 
 #include <etoile/path/Path.hh>
 
-#include <etoile/gear/Scope.hh>
+#include <etoile/gear/Directory.hh>
 
-// XXX #include <etoile/automaton/Directory.hh>
+#include <etoile/automaton/Directory.hh>
 
 #include <etoile/depot/Depot.hh>
 
@@ -41,9 +41,11 @@ namespace etoile
     {
       enter();
 
+      /* XXX
       // initialize the cache.
       if (Cache::Initialize() == elle::StatusError)
 	escape("unable to initialize the cache");
+      */
 
       leave();
     }
@@ -55,9 +57,11 @@ namespace etoile
     {
       enter();
 
+      /* XXX
       // clean the cache.
       if (Cache::Clean() == elle::StatusError)
 	escape("unable to clean the cache");
+      */
 
       leave();
     }
@@ -125,39 +129,41 @@ namespace etoile
 	  // container.
 	  //
 
-	  /* XXX
-	  gear::Scope<automaton::Directory>	scope;
-	  Slice					slice;
-	  nucleus::Version			version;
-	  nucleus::Entry*			entry;
-	  nucleus::Location			location(address, version);
+	  gear::Directory	context;
+	  Slice			slice;
+	  nucleus::Version	version;
+	  nucleus::Entry	entry;
+	  nucleus::Location	location(address, version);
 
 	  // fetch the directory.
-	  if (scope.automaton.Load(location) == elle::StatusError)
+	  if (automaton::Directory::Load(context,
+					 location) == elle::StatusError)
 	    escape("unable to fetch the directory object");
 
 	  // extract the slice/version from the current slab.
 	  if (Path::Parse(*scoutor,
-			  slice, version) == elle::StatusError)
+			  slice,
+			  version) == elle::StatusError)
 	    escape("unable to extract the slice/version from the "
 		   "current slab");
 
 	  // look up for the name.
-	  if (scope.automaton.Lookup(slice, entry) == elle::StatusError)
+	  if (automaton::Directory::Lookup(context,
+					   slice,
+					   entry) == elle::StatusError)
 	    escape("unable to find one of the route's entries");
 
 	  // if there is no such entry, abort.
-	  if (entry == NULL)
+	  if (entry == nucleus::Entry::Null)
 	    escape("unable to locate the target path");
 
 	  // set the address; the version is already set i.e it has
 	  // been extracted from the slab.
-	  address = entry->address;
+	  address = entry.address;
 
 	  // first, record the address/version in the venue.
 	  if (venue.Record(address, version) == elle::StatusError)
 	    escape("unable to record the venue address");
-	  */
 	}
 
       // update the resolved path to the cache.
@@ -188,7 +194,7 @@ namespace etoile
       slice = slab;
 
       // XXX to remove the warning.
-      version = version;
+      version = nucleus::Version::Last;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [fri jun  3 11:48:52 2011]
+// updated       julien quintard   [tue jun 21 12:53:53 2011]
 //
 
 #ifndef ETOILE_GEAR_IDENTIFIER_HH
@@ -30,7 +30,7 @@ namespace etoile
 //
 
     ///
-    /// identifiers are used to uniquely identify contexts.
+    /// identifiers are used to uniquely identify scopes.
     ///
     class Identifier:
       public elle::Object

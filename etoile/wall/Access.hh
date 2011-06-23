@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [tue jun 14 14:32:26 2011]
+// updated       julien quintard   [thu jun 23 14:31:42 2011]
 //
 
 #ifndef ETOILE_WALL_ACCESS_HH
@@ -33,7 +33,7 @@ namespace etoile
 //
 
     ///
-    /// this class provides functionalities for controlling the access
+    /// this class provides functionalities for manipulating the access
     /// control mechanism.
     ///
     class Access
@@ -55,8 +55,6 @@ namespace etoile
       static elle::Status	Update(const gear::Identifier&,
 				       const nucleus::Subject&,
 				       const nucleus::Permissions&);
-      static elle::Status	Block(const gear::Identifier&,
-				      const nucleus::Subject&);
       static elle::Status	Revoke(const gear::Identifier&,
 				       const nucleus::Subject&);
     };

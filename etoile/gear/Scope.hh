@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.hh
 //
 // created       julien quintard   [fri jun  3 11:01:57 2011]
-// updated       julien quintard   [fri jun 17 16:52:27 2011]
+// updated       julien quintard   [thu jun 23 16:47:35 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HH
@@ -22,6 +22,8 @@
 
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Chronicle.hh>
+#include <etoile/gear/Context.hh>
+#include <etoile/gear/Nature.hh>
 
 #include <etoile/path/Chemin.hh>
 
@@ -42,16 +44,14 @@ namespace etoile
     /// constituent blocks, the system would be able to fetch the latest
     /// version of the context and re-apply the set of operations.
     ///
-    template <typename T>
     class Scope:
-      public elle::Entity,
-      public elle::Base<Scope>
+      public elle::Object
     {
     public:
       //
       // constructors & destructors
       //
-      Scope();
+      Scope(const Nature);
       ~Scope();
 
       //
@@ -60,12 +60,17 @@ namespace etoile
       elle::Status	Export();
       elle::Status	Import();
 
+      // XXX T& Context()
+
       //
       // interfaces
       //
 
+      // object
+      declare(Scope);
+
       // dumpable
-      // XXX
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
@@ -74,17 +79,11 @@ namespace etoile
 
       path::Chemin	chemin;
 
-      T			context;
+      Context*		context;
       Chronicle*	chronicle;
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <etoile/gear/Scope.hxx>
 
 #endif

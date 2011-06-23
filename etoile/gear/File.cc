@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/File.cc
 //
 // created       julien quintard   [sat aug 22 02:14:09 2009]
-// updated       julien quintard   [fri jun 17 16:24:14 2011]
+// updated       julien quintard   [thu jun 23 16:20:16 2011]
 //
 
 //

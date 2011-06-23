@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [tue jun 14 14:53:09 2011]
+// updated       julien quintard   [thu jun 23 15:17:58 2011]
 //
 
 //
@@ -18,11 +18,11 @@
 #include <etoile/wall/Access.hh>
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Scope.hh>
+#include <etoile/gear/Object.hh>
+#include <etoile/gear/Gear.hh>
 
-// XXX #include <etoile/context/Object.hh>
-// #include <etoile/context/Format.hh>
-
-// XXX #include <etoile/components/Access.hh>
+#include <etoile/automaton/Access.hh>
 
 namespace etoile
 {
@@ -42,55 +42,27 @@ namespace etoile
 			  const nucleus::Subject&		subject,
 			  nucleus::Record&			record)
     {
-      /*
-      context::Object*	context;
-      user::User*	user;
-      nucleus::Record*	record;
+      gear::Scope<gear::Object>*	scope;
 
       enter();
 
       printf("[XXX] Access::Lookup()\n");
 
-      // XXX retrieve context
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to test non-objects");
-
-      // request the components.
-      if (components::Access::Lookup(context, subject, record) ==
-	  elle::StatusError)
-	escape("unable to retrieve the subject's access record");
-
-      // answer the caller, depending on the result.
-      if (record == NULL)
-	{
-	  // return the null record.
-	  if (user->application->channel->Reply(
-	        elle::Inputs<TagAccessRecord>(nucleus::Record::Null)) ==
-	      elle::StatusError)
-	    escape("unable to reply to the application");
-	}
-      else
-	{
-	  // return the record.
-	  if (user->application->channel->Reply(
-	        elle::Inputs<TagAccessRecord>(*record)) == elle::StatusError)
-	    escape("unable to reply to the application");
-	}
+      // apply the lookup automaton on the context.
+      if (automaton::Access::Lookup(scope->context,
+				    subject,
+				    record) == elle::StatusError)
+	escape("unable to lookup the access record");
 
       leave();
-      */
     }
 
     ///
-    /// this method returns a subset of the access list.
+    /// this method returns a subset of the object's access access list.
     ///
     elle::Status	Access::Consult(
 			  const gear::Identifier&		identifier,
@@ -98,207 +70,104 @@ namespace etoile
 			  const nucleus::Size&			size,
 			  nucleus::Range<nucleus::Record>&	range)
     {
-      /*
-      context::Object*			context;
-      user::User*			user;
-      nucleus::Range<nucleus::Record>	range;
+      gear::Scope<gear::Object>*	scope;
 
       enter();
 
       printf("[XXX] Access::Consult()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to test non-objects");
-
-      // request the components.
-      if (components::Access::Consult(context,
-				      index,
-				      size,
-				      range) == elle::StatusError)
-	escape("unable to consult the access list");
-
-      // answer the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagAccessRange>(range)) == elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the consult automaton on the context.
+      if (automaton::Access::Consult(scope->context,
+				     index,
+				     size,
+				     range) == elle::StatusError)
+	escape("unable to consult the access records");
 
       leave();
-      */
     }
 
     ///
-    /// this method grants access to the given subject, with the given
-    /// permissions.
+    /// this method grants the given access permissions to the subject.
     ///
     elle::Status	Access::Grant(
 			  const gear::Identifier&		identifier,
 			  const nucleus::Subject&		subject,
 			  const nucleus::Permissions&		permissions)
     {
-      /*
-      context::Object*	context;
-      user::User*	user;
+      gear::Scope<gear::Object>*	scope;
 
       enter();
 
       printf("[XXX] Access::Grant()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to test non-objects");
-
-      // request the components.
-      if (components::Access::Grant(context,
-				    subject,
-				    permissions) == elle::StatusError)
+      // apply the grant automaton on the context.
+      if (automaton::Access::Grant(scope->context,
+				   subject,
+				   permissions) == elle::StatusError)
 	escape("unable to grant access to the subject");
 
-      // answer the caller.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
       leave();
-      */
     }
 
     ///
-    /// this method updates the permissions of the given subject.
+    /// this method updates the permissions associated with the subject.
     ///
     elle::Status	Access::Update(
 			  const gear::Identifier&		identifier,
 			  const nucleus::Subject&		subject,
 			  const nucleus::Permissions&		permissions)
     {
-      /*
-      context::Object*	context;
-      user::User*	user;
+      gear::Scope<gear::Object>*	scope;
 
       enter();
 
       printf("[XXX] Access::Update()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to test non-objects");
-
-      // request the components.
-      if (components::Access::Update(context,
-				     subject,
-				     permissions) == elle::StatusError)
-	escape("unable to update the access list");
-
-      // answer the caller.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
-      leave();
-      */
-    }
-
-    ///
-    /// this method blocks the given subject from accessing the object.
-    ///
-    elle::Status	Access::Block(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Subject&		subject)
-    {
-      enter();
-
-      printf("[XXX] Access::Block()\n");
+      // apply the update automaton on the context.
+      if (automaton::Access::Update(scope->context,
+				    subject,
+				    permissions) == elle::StatusError)
+	escape("unable to update the subject's access permissions");
 
       leave();
     }
 
     ///
-    /// this method removes the permissions from the given subject.
+    /// this method removes the user's permissions from the access control
+    /// list.
     ///
     elle::Status	Access::Revoke(
 			  const gear::Identifier&		identifier,
 			  const nucleus::Subject&		subject)
     {
-      /*
-      context::Object*	context;
-      user::User*	user;
+      gear::Scope<gear::Object>*	scope;
 
       enter();
 
       printf("[XXX] Access::Revoke()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the object context");
-
-      // check if the context is an object.
-      if ((context->format & context::FormatObject) !=
-	  context::FormatObject)
-	escape("unable to test non-objects");
-
-      // request the components.
-      if (components::Access::Revoke(context,
-				     subject) == elle::StatusError)
-	escape("unable to revoke the subject's permissions");
-
-      // answer the caller.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the revoke automaton on the context.
+      if (automaton::Access::Revoke(scope->context,
+				    subject) == elle::StatusError)
+	escape("unable to revoke the subject's access permissions");
 
       leave();
-      */
     }
 
   }

@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/components/Access.hh
+// file          /home/mycure/infinit/etoile/XXX/Access.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [thu may  5 16:22:39 2011]
+// updated       julien quintard   [mon jun 20 14:58:07 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_ACCESS_HH

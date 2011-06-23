@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Chemin.hh
 //
 // created       julien quintard   [tue jun 14 13:24:13 2011]
-// updated       julien quintard   [thu jun 16 11:01:00 2011]
+// updated       julien quintard   [thu jun 23 09:13:06 2011]
 //
 
 #ifndef ETOILE_PATH_CHEMIN_HH
@@ -41,7 +41,7 @@ namespace etoile
     /// along with its associated venue.
     ///
     class Chemin:
-      elle::Object
+      public elle::Object
     {
     public:
       //
@@ -55,13 +55,18 @@ namespace etoile
       elle::Status	Create(const Route&,
 			       const Venue&);
 
-      elle::Status	Locate(nucleus::Location&);
+      elle::Status	Locate(nucleus::Location&) const;
 
       //
       // interfaces
       //
 
-      // XXX
+      // object
+      declare(Chemin);
+      elle::Boolean	operator==(const Chemin&) const;
+
+      // dumpable
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

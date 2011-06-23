@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Directory.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [fri jun 17 16:24:19 2011]
+// updated       julien quintard   [thu jun 23 16:20:20 2011]
 //
 
 #ifndef ETOILE_GEAR_DIRECTORY_HH
@@ -22,6 +22,7 @@
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Object.hh>
+#include <etoile/gear/Nature.hh>
 
 #include <etoile/path/Slice.hh>
 
@@ -35,13 +36,24 @@ namespace etoile
 //
 
     ///
-    /// this context represents a directory object as it embeds
-    /// a catalog contents along with inherited object-related stuff.
+    /// this class represents a directory-specific context.
+    ///
+    /// this context derives the Object context and therefore benefits from
+    /// all the object-related attributes plus the contents i.e the catalog
+    /// in the case of a directory.
+    ///
+    /// such a context can be used with object- and directory-specific
+    /// automata.
     ///
     class Directory:
       public Object
     {
     public:
+      //
+      // types
+      //
+      typedef nucleus::Catalog			C;
+
       //
       // constructors & destructors
       //
@@ -49,43 +61,20 @@ namespace etoile
       ~Directory();
 
       //
-      // methods
-      //
-      elle::Status	Create();
-      elle::Status	Load(const nucleus::Location&);
-      elle::Status	Open();
-      elle::Status	Add(const path::Slice&,
-			    const nucleus::Address&);
-      elle::Status	Lookup(const path::Slice&,
-			       nucleus::Entry*&);
-      elle::Status	Consult(const nucleus::Index&,
-				const nucleus::Size&,
-				nucleus::Range<nucleus::Entry>&);
-      elle::Status	Rename(const path::Slice&,
-			       const path::Slice&);
-      elle::Status	Remove(const path::Slice&);
-      elle::Status	Destroy();
-      elle::Status	Close();
-      elle::Status	Store();
-
-      //
       // interfaces
       //
-
-      // XXX object
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
 
-      // XXX archivable
-
-      // transcribable
-      elle::Status	Transcribe(journal::Transcript&) const;
+      // archivable
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
-      nucleus::Contents<nucleus::Catalog>*	contents;
+      nucleus::Contents<C>*	contents;
     };
 
   }

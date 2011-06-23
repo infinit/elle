@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Context.hh
 //
 // created       julien quintard   [thu jun 16 09:55:55 2011]
-// updated       julien quintard   [mon jun 20 12:34:33 2011]
+// updated       julien quintard   [thu jun 23 16:45:25 2011]
 //
 
 #ifndef ETOILE_GEAR_CONTEXT_HH
@@ -21,13 +21,11 @@
 #include <elle/Elle.hh>
 
 #include <etoile/gear/Nature.hh>
-#include <etoile/gear/Transcribable.hh>
+#include <etoile/gear/State.hh>
+#include <etoile/gear/Transcript.hh>
 
 namespace etoile
 {
-  ///
-  /// XXX
-  ///
   namespace gear
   {
 
@@ -42,8 +40,7 @@ namespace etoile
     /// some modifications.
     ///
     class Context:
-      public elle::Object,
-      virtual public Transcribable
+      public elle::Object
     {
     public:
       //
@@ -55,27 +52,24 @@ namespace etoile
       // interfaces
       //
 
-      // XXX object
-
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      // XXX
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
       Nature		nature;
+
+      State		state;
+
+      Transcript	transcript;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-// XXX
 
 #endif

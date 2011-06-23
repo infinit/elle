@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [thu jun 16 10:26:52 2011]
+// updated       julien quintard   [thu jun 23 09:27:38 2011]
 //
 
 //
@@ -43,13 +43,18 @@ namespace etoile
 
       enter();
 
-      // initialize the pointers.
+      // initialize the offsets.
+      start = 0;
+      end = way.path.find_first_of(elle::System::Path::Separator, start);
+
+      // create the root slab.
+      this->elements.push_back(way.path.substr(start, end - start));
+
+      // compute the next offsets.
       start =
-	way.path.find_first_not_of(elle::System::Path::Separator);
+	way.path.find_first_not_of(elle::System::Path::Separator, end);
       end =
 	way.path.find_first_of(elle::System::Path::Separator, start);
-
-      // XXX if first slab is not empty, error
 
       // go through the string.
       while (start < way.path.length())

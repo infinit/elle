@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [mon jun 20 12:36:19 2011]
+// updated       julien quintard   [thu jun 23 16:19:42 2011]
 //
 
 #ifndef ETOILE_GEAR_OBJECT_HH
@@ -22,6 +22,7 @@
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/gear/Context.hh>
+#include <etoile/gear/Nature.hh>
  
 namespace etoile
 {
@@ -33,11 +34,35 @@ namespace etoile
 //
 
     ///
-    /// this class represents an object context and is therefore used
-    /// to perform sequential operations on objects.
+    /// this class represents an object context.
     ///
-    /// note that when the object is loaded or created, the rights the
-    /// subject has over the object are computed.
+    /// although every object references a Contents block which itself
+    /// contains the address of the data blocks, the Contents block is
+    /// not included in this context as it depends on the object's genre i.e
+    /// file, directory or link.
+    ///
+    /// however, object contexts include an access block which may be missing
+    /// should the object be kept private to the owner.
+    ///
+    /// finally, note that once necessary, the user's rights on the
+    /// object are computed; likewise for the authorship.
+    ///
+    /// noteworthy is that the base is computed when the object is
+    /// fetched from the storage layer, hence sealing its original state.
+    ///
+    /// a context can only be stored, destroyed or discarded.
+    ///
+    /// in the first case, the set of interconnected blocks are made
+    /// consistent and the internal addresses are re-computed to reference
+    /// the other blocks.
+    ///
+    /// ih the second case, since the blocks have not been made consistent, no
+    /// matter what modifications have been performed, the original address
+    /// plus the internal addresses remain unchanged and can be used to
+    /// remove the blocks from the storage layer.
+    ///
+    /// in the last case, the context is simply dropped, hence ignoring
+    /// the potential modifications.
     ///
     class Object:
       public Context
@@ -46,6 +71,7 @@ namespace etoile
       //
       // constructors & destructors
       //
+      Object();
       Object(const Nature);
       ~Object();
 
@@ -53,29 +79,29 @@ namespace etoile
       // interfaces
       //
 
-      // XXX object
-
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
 
-      // XXX archivable
+      // archivable
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes
       //
+      nucleus::Location		location;
+
       nucleus::Object		object;
-      nucleus::Access		access;
+      nucleus::Access*		access;
 
-      // XXX once the object fetched, a base should be generated so that
-      // it can be used later on.
-
-      struct			Rights
+      struct
       {
 	nucleus::Role		role;
 	nucleus::Permissions	permissions;
 	elle::SecretKey		key;
-      }*			rights;
-      nucleus::Author*		author;
+	nucleus::Record		record;
+      }				rights;
+      nucleus::Author		author;
     };
 
   }

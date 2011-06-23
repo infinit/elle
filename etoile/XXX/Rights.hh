@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/components/Rights.hh
+// file          /home/mycure/infinit/etoile/XXX/Rights.hh
 //
 // created       julien quintard   [tue feb  2 16:54:18 2010]
-// updated       julien quintard   [thu may  5 16:17:44 2011]
+// updated       julien quintard   [mon jun 20 13:59:53 2011]
 //
 
 #ifndef ETOILE_COMPONENTS_RIGHTS_HH

@@ -5,21 +5,22 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/utility/Author.cc
+// file          /home/mycure/infinit/etoile/automaton/Author.cc
 //
-// created       julien quintard   [thu jun 16 16:16:28 2011]
-// updated       julien quintard   [thu jun 16 17:38:14 2011]
+// created       julien quintard   [mon jun 20 14:13:45 2011]
+// updated       julien quintard   [tue jun 21 14:12:53 2011]
 //
- 
+
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/utility/Author.hh>
+#include <etoile/automaton/Author.hh>
+#include <etoile/automaton/Rights.hh>
 
 namespace etoile
 {
-  namespace utility
+  namespace automaton
   {
 
 //
@@ -27,33 +28,35 @@ namespace etoile
 //
 
     ///
-    /// this method forges the author required for modifying the associated
-    /// object.
+    /// this method forges the author objects require in order to prove
+    /// the user had the permission to operate upon the object.
     ///
-    elle::Status	Author::Create(Rights + Access)
+    elle::Status	Author::Forge(gear::Object&		context)
     {
       enter();
+
+      // if an author exists, return.
+      if (context.author != nucleus::Author::Null)
+	leave();
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
 	escape("unable to determine the rights");
 
-      // allocate a new author.
-      context->author = new nucleus::Author;
-
       // build the author object according to the subject's role.
-      switch (context->rights->role)
+      switch (context.rights.role)
 	{
 	case nucleus::RoleOwner:
 	  {
 	    // create an owner author.
-	    if (context->author->Create() == elle::StatusError)
+	    if (context.author.Create() == elle::StatusError)
 	      escape("unable to create the author");
 
 	    break;
 	  }
-	case nucleus::RoleDelegate:
+	case nucleus::RoleLord:
 	  {
+	    /* XXX
 	    nucleus::Index	index;
 
 	    // retrieve the record index.
@@ -64,14 +67,12 @@ namespace etoile
 	    // create the delegate-specific author.
 	    if (context->author->Create(index) == elle::StatusError)
 	      escape("unable to create the author");
-
+	    */
 	    break;
 	  }
 	default:
 	  {
-	    // XXX at this point, the user is probably a vassal but
-	    // a voucher must be found.
-	    printf("[XXX] Author::Forge() NYI\n");
+	    // XXX
 
 	    break;
 	  }

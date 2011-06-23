@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/XXX/Rights.cc
 //
 // created       julien quintard   [tue feb  2 16:56:21 2010]
-// updated       julien quintard   [thu jun 16 18:51:01 2011]
+// updated       julien quintard   [tue jun 21 14:20:06 2011]
 //
 
 //

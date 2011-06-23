@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Chronicle.hh
 //
 // created       julien quintard   [fri jun  3 11:54:04 2011]
-// updated       julien quintard   [fri jun 17 16:50:35 2011]
+// updated       julien quintard   [thu jun 23 09:34:05 2011]
 //
 
 #ifndef ETOILE_GEAR_CHRONICLE_HH
@@ -35,7 +35,7 @@ namespace etoile
     /// a chronicle represents a sequence of operations.
     ///
     class Chronicle:
-      public elle::Entity
+      public elle::Object
     {
     public:
       //
@@ -53,6 +53,12 @@ namespace etoile
       elle::Status	Record(const Operation,
 			       const T&...);
       */
+
+      // object
+      declare(Chronicle);
+
+      // dumpable
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
