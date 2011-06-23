@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sun jun 19 22:59:45 2011]
+// updated       julien quintard   [mon jun 20 13:42:56 2011]
 //
 
 //
@@ -154,7 +154,7 @@ namespace elle
       if (this->socket->writeDatagram((char*)packet.contents,
 				      packet.size,
 				      address.host.location,
-				      address.port) != (::quint64)packet.size)
+				      address.port) != (::qint64)packet.size)
 	escape(this->socket->errorString().toStdString().c_str());
 
       leave();

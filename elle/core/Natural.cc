@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Natural.cc
 //
 // created       julien quintard   [wed feb 18 15:40:40 2009]
-// updated       julien quintard   [fri apr 30 17:12:13 2010]
+// updated       julien quintard   [thu jun 23 11:50:07 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace std
   ///
   /// this method displays a Natural8 type.
   ///
-  std::ostream&		operator<<(std::ostream&		stream,
+  ostream&		operator<<(ostream&			stream,
 				   const elle::core::Natural8&	element)
   {
     // cast it into a number.

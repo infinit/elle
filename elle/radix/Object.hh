@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [sat jun 18 20:37:28 2011]
+// updated       julien quintard   [thu jun 23 10:12:50 2011]
 //
 
 #ifndef ELLE_RADIX_OBJECT_HH
@@ -59,7 +59,8 @@ namespace elle
     class Object:
       public Meta,
       public Resource,
-      public virtual Dumpable, public virtual Archivable,
+      public virtual Dumpable,
+      public virtual Archivable,
       public virtual Uniquable<FormatBase64>
     {
     public:

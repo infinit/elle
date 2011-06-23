@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.hh
 //
 // created       julien quintard   [mon feb  9 21:22:34 2009]
-// updated       julien quintard   [mon may  3 21:00:16 2010]
+// updated       julien quintard   [thu jun 23 13:02:15 2011]
 //
 
 #ifndef ELLE_IO_DUMPABLE_HH

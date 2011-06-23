@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Large.hh
 //
 // created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [sun may  2 15:43:20 2010]
+// updated       julien quintard   [thu jun 23 11:49:14 2011]
 //
 
 #ifndef ELLE_CORE_LARGE_HH
@@ -47,7 +47,7 @@ namespace elle
 namespace std
 {
 
-  std::ostream&		operator<<(std::ostream&,
+  ostream&		operator<<(ostream&,
 				   const elle::core::Large&);
 
 }

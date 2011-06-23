@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Base.hh
 //
 // created       julien quintard   [thu jun  9 23:50:49 2011]
-// updated       julien quintard   [fri jun 10 11:32:57 2011]
+// updated       julien quintard   [wed jun 22 22:25:24 2011]
 //
 
 #ifndef ELLE_RADIX_BASE_HH
@@ -20,16 +20,23 @@ namespace elle
   {
 
 //
-// ---------- structures ------------------------------------------------------
+// ---------- classes ---------------------------------------------------------
 //
 
     ///
-    /// this template structure can be used to build common base for
+    /// this template class can be used to build common base for
     /// various classes.
     ///
     template <template <typename...> class T>
-    struct Base
+    class Base
     {
+    public:
+      //
+      // constructors & destructors
+      //
+      virtual ~Base()
+      {
+      }
     };
 
   }

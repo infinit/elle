@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [sat jun 18 15:35:03 2011]
+// updated       julien quintard   [thu jun 23 11:59:24 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -127,8 +127,6 @@ namespace elle
 	  // until a complete parcel has been received.
 	  while (true)
 	    {
-	      Status	status;
-
 	      // wait for the ready signal.
 	      if (this->socket->waitForReadyRead() == false)
 		escape("an error occured while waiting for the ready signal");
@@ -144,6 +142,14 @@ namespace elle
 		case StatusError:
 		  {
 		    escape("unable to read a complete parcel from the door");
+		  }
+		case StatusTrue:
+		  {
+		    // everything is good.
+		  }
+		case StatusOk:
+		  {
+		    escape("unexpected return value");
 		  }
 		};
 

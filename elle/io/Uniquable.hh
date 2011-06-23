@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hh
 //
 // created       julien quintard   [sun may  2 12:01:53 2010]
-// updated       julien quintard   [wed may  5 23:17:01 2010]
+// updated       julien quintard   [thu jun 23 12:51:34 2011]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HH
@@ -93,10 +93,8 @@ namespace std
 {
 
   template <const elle::io::Format F>
-  std::ostream&		operator<<(
-                          std::ostream&				stream,
-			  const
-			    elle::io::Uniquable<F>&		object);
+  ostream&		operator<<(ostream&,
+				   const elle::io::Uniquable<F>&);
 
 }
 
