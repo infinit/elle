@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hxx
 //
 // created       julien quintard   [fri jun  3 22:22:21 2011]
-// updated       julien quintard   [fri jun 10 12:42:40 2011]
+// updated       julien quintard   [thu jun 23 13:11:37 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HXX
@@ -150,7 +150,7 @@ namespace elle
 
       // archivable
 
-      Status		Serialize(Archive&			archive) const
+      Status		Serialize(Archive&) const
       {
 	enter();
 

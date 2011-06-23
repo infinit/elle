@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [fri jun 17 20:54:34 2011]
+// updated       julien quintard   [thu jun 23 11:59:12 2011]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -126,8 +126,6 @@ namespace elle
 	  // until a complete parcel has been received.
 	  while (true)
 	    {
-	      Status	status;
-
 	      // wait for the ready signal.
 	      if (this->socket->waitForReadyRead() == false)
 		escape("an error occured while waiting for the ready signal");
@@ -143,6 +141,14 @@ namespace elle
 		case StatusError:
 		  {
 		    escape("unable to read a complete parcel from the door");
+		  }
+		case StatusTrue:
+		  {
+		    // everything is good.
+		  }
+		case StatusOk:
+		  {
+		    escape("unexpected return value");
 		  }
 		};
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hxx
 //
 // created       julien quintard   [sun may  2 13:22:46 2010]
-// updated       julien quintard   [fri mar 18 16:22:34 2011]
+// updated       julien quintard   [thu jun 23 11:50:35 2011]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HXX
@@ -137,7 +137,6 @@ namespace elle
   }
 }
 
-
 //
 // ---------- operators -------------------------------------------------------
 //
@@ -149,12 +148,10 @@ namespace std
   /// this function implements the << operator for uniquables.
   ///
   template <const elle::io::Format F>
-  std::ostream&		operator<<(
-                          std::ostream&				stream,
-			  const
-			    elle::io::Uniquable<F>&		object)
+  ostream&		operator<<(
+                          ostream&				stream,
+			  const elle::io::Uniquable<F>&		object)
   {
-    static const elle::core::Natural32	Length = 50;
     elle::io::Unique			unique;
 
     enter();
@@ -163,19 +160,8 @@ namespace std
     if (object.Save(unique) == elle::radix::StatusError)
       yield("unable to save the object", stream);
 
-    // display the unique depending on its length.
-    if (unique.length() < Length)
-      {
-	// display the unique in its entirety.
-	stream << unique;
-      }
-    else
-      {
-	// otherwise chop it.
-	stream << unique.substr(0, Length / 2)
-	       << "..."
-	       << unique.substr(unique.length() - (Length / 2));
-      }
+    // display the unique in its entirety.
+    stream << unique;
 
     // release.
     release();

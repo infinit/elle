@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.cc
 //
 // created       julien quintard   [wed feb 18 15:40:40 2009]
-// updated       julien quintard   [fri apr 30 17:10:02 2010]
+// updated       julien quintard   [thu jun 23 11:49:50 2011]
 //
 
 //
@@ -45,7 +45,7 @@ namespace std
   ///
   /// this method displays a Null type i.e the Nil value.
   ///
-  std::ostream&		operator<<(std::ostream&		stream,
+  ostream&		operator<<(ostream&		stream,
 				   const elle::core::Null&)
   {
     stream << "(nil)";

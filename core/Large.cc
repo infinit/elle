@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Large.cc
 //
 // created       julien quintard   [thu feb  5 15:37:07 2009]
-// updated       julien quintard   [tue mar 22 14:51:52 2011]
+// updated       julien quintard   [thu jun 23 11:49:23 2011]
 //
 
 //
@@ -33,7 +33,7 @@ namespace std
   ///
   /// this method displays a Large number in its hexadecimal form.
   ///
-  std::ostream&		operator<<(std::ostream&		stream,
+  ostream&		operator<<(ostream&		stream,
 				   const elle::core::Large&	element)
   {
     static const elle::core::Natural32	Length = 50;

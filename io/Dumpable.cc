@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Dumpable.cc
 //
 // created       julien quintard   [sat mar 20 00:43:22 2010]
-// updated       julien quintard   [sun may  2 11:51:13 2010]
+// updated       julien quintard   [thu jun 23 13:01:37 2011]
 //
 
 //

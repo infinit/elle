@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Natural.hh
 //
 // created       julien quintard   [thu nov 29 20:13:16 2007]
-// updated       julien quintard   [fri apr 30 17:10:22 2010]
+// updated       julien quintard   [thu jun 23 11:50:00 2011]
 //
 
 #ifndef ELLE_CORE_NATURAL_HH
@@ -50,7 +50,7 @@ namespace elle
 namespace std
 {
 
-  std::ostream&		operator<<(std::ostream&,
+  ostream&		operator<<(ostream&,
 				   const elle::core::Natural8&);
 
 }
