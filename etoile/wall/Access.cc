@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [thu jun 23 15:17:58 2011]
+// updated       julien quintard   [sat jun 25 16:26:33 2011]
 //
 
 //
@@ -42,7 +42,8 @@ namespace etoile
 			  const nucleus::Subject&		subject,
 			  nucleus::Record&			record)
     {
-      gear::Scope<gear::Object>*	scope;
+      gear::Scope*	scope;
+      gear::Object*	context;
 
       enter();
 
@@ -52,8 +53,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the lookup automaton on the context.
-      if (automaton::Access::Lookup(scope->context,
+      if (automaton::Access::Lookup(*context,
 				    subject,
 				    record) == elle::StatusError)
 	escape("unable to lookup the access record");
@@ -70,7 +75,8 @@ namespace etoile
 			  const nucleus::Size&			size,
 			  nucleus::Range<nucleus::Record>&	range)
     {
-      gear::Scope<gear::Object>*	scope;
+      gear::Scope*	scope;
+      gear::Object*	context;
 
       enter();
 
@@ -80,8 +86,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the consult automaton on the context.
-      if (automaton::Access::Consult(scope->context,
+      if (automaton::Access::Consult(*context,
 				     index,
 				     size,
 				     range) == elle::StatusError)
@@ -98,7 +108,8 @@ namespace etoile
 			  const nucleus::Subject&		subject,
 			  const nucleus::Permissions&		permissions)
     {
-      gear::Scope<gear::Object>*	scope;
+      gear::Scope*	scope;
+      gear::Object*	context;
 
       enter();
 
@@ -108,8 +119,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the grant automaton on the context.
-      if (automaton::Access::Grant(scope->context,
+      if (automaton::Access::Grant(*context,
 				   subject,
 				   permissions) == elle::StatusError)
 	escape("unable to grant access to the subject");
@@ -125,7 +140,8 @@ namespace etoile
 			  const nucleus::Subject&		subject,
 			  const nucleus::Permissions&		permissions)
     {
-      gear::Scope<gear::Object>*	scope;
+      gear::Scope*	scope;
+      gear::Object*	context;
 
       enter();
 
@@ -135,8 +151,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the update automaton on the context.
-      if (automaton::Access::Update(scope->context,
+      if (automaton::Access::Update(*context,
 				    subject,
 				    permissions) == elle::StatusError)
 	escape("unable to update the subject's access permissions");
@@ -152,7 +172,8 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  const nucleus::Subject&		subject)
     {
-      gear::Scope<gear::Object>*	scope;
+      gear::Scope*	scope;
+      gear::Object*	context;
 
       enter();
 
@@ -162,8 +183,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the revoke automaton on the context.
-      if (automaton::Access::Revoke(scope->context,
+      if (automaton::Access::Revoke(*context,
 				    subject) == elle::StatusError)
 	escape("unable to revoke the subject's access permissions");
 

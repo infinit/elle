@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Context.hh
 //
 // created       julien quintard   [thu jun 16 09:55:55 2011]
-// updated       julien quintard   [thu jun 23 16:45:25 2011]
+// updated       julien quintard   [sat jun 25 13:38:33 2011]
 //
 
 #ifndef ETOILE_GEAR_CONTEXT_HH
@@ -49,6 +49,12 @@ namespace etoile
       Context(const Nature);
 
       //
+      // methods
+      //
+      template <typename T>
+      elle::Status	Cast(T*&);
+
+      //
       // interfaces
       //
 
@@ -71,5 +77,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/gear/Context.hxx>
 
 #endif

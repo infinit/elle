@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [thu jun 23 14:34:51 2011]
+// updated       julien quintard   [sat jun 25 16:42:05 2011]
 //
 
 #ifndef ETOILE_WALL_DIRECTORY_HH

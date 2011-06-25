@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transcript.hh
 //
 // created       julien quintard   [fri jun 17 13:10:45 2011]
-// updated       julien quintard   [wed jun 22 13:50:03 2011]
+// updated       julien quintard   [sat jun 25 13:40:05 2011]
 //
 
 #ifndef ETOILE_GEAR_TRANSCRIPT_HH
@@ -20,6 +20,8 @@
 
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
+
+#include <etoile/gear/Action.hh>
 
 namespace etoile
 {
@@ -34,20 +36,39 @@ namespace etoile
     /// XXX
     ///
     class Transcript:
-      public elle::Entity
+      public elle::Object
     {
     public:
+      //
+      // types
+      //
+      typedef std::list<Action*>		Container;
+      typedef Container::iterator		Iterator;
+      typedef Container::const_iterator		Scoutor;
+
+      //
+      // constructors & destructors
+      //
+      ~Transcript();
+
       //
       // methods
       //
       elle::Status	Push(const nucleus::Address&,
-			     const nucleus::Block&);
+			     const nucleus::Block*);
       elle::Status	Wipe(const nucleus::Address&);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      // XXX Bucket		bucket;
+      Container		container;
     };
 
   }

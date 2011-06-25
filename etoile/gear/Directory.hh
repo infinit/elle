@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Directory.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [thu jun 23 16:20:20 2011]
+// updated       julien quintard   [sat jun 25 13:45:19 2011]
 //
 
 #ifndef ETOILE_GEAR_DIRECTORY_HH
@@ -41,9 +41,6 @@ namespace etoile
     /// this context derives the Object context and therefore benefits from
     /// all the object-related attributes plus the contents i.e the catalog
     /// in the case of a directory.
-    ///
-    /// such a context can be used with object- and directory-specific
-    /// automata.
     ///
     class Directory:
       public Object

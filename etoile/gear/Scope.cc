@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.cc
 //
 // created       julien quintard   [wed jun 15 13:09:29 2011]
-// updated       julien quintard   [thu jun 23 16:22:20 2011]
+// updated       julien quintard   [sat jun 25 14:55:51 2011]
 //
 
 //
@@ -17,6 +17,10 @@
 
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Gear.hh>
+#include <etoile/gear/Directory.hh>
+#include <etoile/gear/File.hh>
+#include <etoile/gear/Link.hh>
+#include <etoile/gear/Object.hh>
 
 namespace etoile
 {
@@ -28,10 +32,9 @@ namespace etoile
 //
 
     ///
-    /// default constructor.
+    /// nature-specific constructor.
     ///
     Scope::Scope(const Nature					nature):
-      context(NULL),
       chronicle(NULL)
     {
       // create the context according to the nature.
@@ -40,28 +43,28 @@ namespace etoile
 	case NatureObject:
 	  {
 	    // allocate the context.
-	    this->context = new Object;
+	    this->context = new gear::Object;
 
 	    break;
 	  }
 	case NatureDirectory:
 	  {
 	    // allocate the context.
-	    this->context = new Directory;
+	    this->context = new gear::Directory;
 
 	    break;
 	  }
 	case NatureFile:
 	  {
 	    // allocate the context.
-	    // XXX this->context = new File;
+	    this->context = new gear::File;
 
 	    break;
 	  }
 	case NatureLink:
 	  {
 	    // allocate the context.
-	    // XXX this->context = new Link;
+	    this->context = new gear::Link;
 
 	    break;
 	  }
@@ -129,15 +132,6 @@ namespace etoile
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Scope, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -163,7 +157,7 @@ namespace etoile
       // dump the context, if present.
       if (this->context != NULL)
 	{
-	  if (this->context.Dump(margin + 2) == elle::StatusError)
+	  if (this->context->Dump(margin + 2) == elle::StatusError)
 	    escape("unable to dump the context");
 	}
       else
@@ -189,5 +183,3 @@ namespace etoile
 
   }
 }
-
-#endif

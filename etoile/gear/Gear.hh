@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.hh
 //
 // created       julien quintard   [fri jun  3 10:58:40 2011]
-// updated       julien quintard   [thu jun 23 16:40:22 2011]
+// updated       julien quintard   [sat jun 25 13:36:30 2011]
 //
 
 #ifndef ETOILE_GEAR_GEAR_HH
@@ -19,6 +19,7 @@
 //
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Scope.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
@@ -32,15 +33,6 @@ namespace etoile
   ///
   namespace gear
   {
-
-//
-// ---------- forward declarations --------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    class Scope;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -84,9 +76,20 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
+#include <etoile/gear/Action.hh>
+#include <etoile/gear/Chronicle.hh>
+#include <etoile/gear/Context.hh>
 #include <etoile/gear/Directory.hh>
-#include <etoile/gear/Scope.hh>
+#include <etoile/gear/Event.hh>
+#include <etoile/gear/File.hh>
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Link.hh>
+#include <etoile/gear/Nature.hh>
 #include <etoile/gear/Object.hh>
+#include <etoile/gear/Operation.hh>
+#include <etoile/gear/Scope.hh>
+#include <etoile/gear/State.hh>
+#include <etoile/gear/Transaction.hh>
+#include <etoile/gear/Transcript.hh>
 
 #endif

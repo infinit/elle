@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [tue jun 14 15:58:07 2011]
+// updated       julien quintard   [sat jun 25 14:37:17 2011]
 //
 
 //
@@ -18,15 +18,14 @@
 #include <etoile/wall/File.hh>
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Nature.hh>
+#include <etoile/gear/Scope.hh>
+#include <etoile/gear/File.hh>
+#include <etoile/gear/Gear.hh>
 
-/* XXX
-#include <etoile/context/Directory.hh>
-#include <etoile/context/Format.hh>
+#include <etoile/automaton/File.hh>
 
-#include <etoile/user/User.hh>
-*/
-
-#include <etoile/path/Path.hh>
+#include <etoile/journal/Journal.hh>
 
 namespace etoile
 {
@@ -38,113 +37,92 @@ namespace etoile
 //
 
     ///
-    /// this method creates an new, though orphan, file object.
+    /// this method creates a new file object.
+    ///
+    /// note however that the object is not attached to the hierarchy
+    /// and is therefore considered as orphan.
     ///
     elle::Status	File::Create(
 			  gear::Identifier&			identifier)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::File*	context;
 
-      enter(instance(context));
+      enter(instance(scope));
 
       printf("[XXX] File::Create()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // allocate the scope.
+      scope = new gear::Scope(gear::NatureFile);
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // allocate a new context.
-      if (context::Context::New(context) == elle::StatusError)
-	escape("unable to allocate a new context");
-
-      // create a new file.
-      if (components::File::Create(context) == elle::StatusError)
+      // apply the create automaton on the context.
+      if (automaton::File::Create(*context) == elle::StatusError)
 	escape("unable to create the file");
 
-      // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagIdentifier>(context->identifier)) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
-      // export the context.
-      if (context::Context::Export(context) == elle::StatusError)
+      // export the scope.
+      if (scope->Export() == elle::StatusError)
 	escape("unable to export the context");
 
+      // return the identifier.
+      identifier = scope->identifier;
+
       // waive.
-      waive(context);
+      waive(scope);
 
       leave();
-      */
     }
 
     ///
-    /// this method loads the file and creates a new context.
+    /// this method loads a file object given its chemin and initializes
+    /// an associated context.
     ///
     elle::Status	File::Load(
-			  const path::Way&			way,
+			  const path::Chemin&			chemin,
 			  gear::Identifier&			identifier)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::File*	context;
+      nucleus::Location	location;
 
-      enter(instance(context));
+      enter(instance(scope));
 
       printf("[XXX] File::Load()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // allocate the scope.
+      scope = new gear::Scope(gear::NatureFile);
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // allocate a new context.
-      if (context::Context::New(context) == elle::StatusError)
-	escape("unable to allocate a new context");
+      // locate the object based on the chemin.
+      if (chemin.Locate(location) == elle::StatusError)
+	escape("unable to locate the file");
 
-      // create a route from the given way.
-      if (context->route.Create(way) == elle::StatusError)
-	escape("unable to create a route");
+      // apply the load automaton on the context.
+      if (automaton::File::Load(*context,
+				location) == elle::StatusError)
+	escape("unable to load the file");
 
-      // resolve the route in a file address.
-      if (path::Path::Resolve(context->route, context->address) ==
-	  elle::StatusError)
-	escape("unable to resolve the given route into an file address");
-
-      // load the file in the given context.
-      if (components::File::Load(context,
-				      context->address) == elle::StatusError)
-	escape("unable to load the file in the given context");
-
-      // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagIdentifier>(context->identifier)) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
-      // export the context.
-      if (context::Context::Export(context) == elle::StatusError)
+      // export the scope.
+      if (scope->Export() == elle::StatusError)
 	escape("unable to export the context");
 
+      // return the identifier.
+      identifier = scope->identifier;
+
       // waive.
-      waive(context);
+      waive(scope);
 
       leave();
-      */
     }
 
     ///
-    /// this application locks the file the identified context is related
-    /// to.
+    /// this application locks the given file.
     ///
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
@@ -157,9 +135,6 @@ namespace etoile
       printf("[XXX] File::Lock()\n");
 
       // XXX
-      // XXX peut etre qu'il faudrait avoir une liste dependencies dans
-      // un context qui signifierait que le context courant ne peut etre
-      // commit tant que les dependences ne le sont pas!
 
       leave();
     }
@@ -174,55 +149,41 @@ namespace etoile
 
       printf("[XXX] File::Release()\n");
 
+      // XXX
+
       leave();
     }
 
     ///
-    /// this method writes a region of the file.
+    /// this method writes the file with the given region of data.
     ///
     elle::Status	File::Write(
 		          const gear::Identifier&		identifier,
 			  const nucleus::Offset&		offset,
 			  const elle::Region&			region)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::File*	context;
 
       enter();
 
       printf("[XXX] File::Write()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the file context");
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // check if the context is file.
-      if ((context->format & context::FormatFile) !=
-	  context::FormatFile)
-	escape("unable to test a non-file object");
-
-      // write the file.
-      if (components::File::Write(context, offset, region) ==
-	  elle::StatusError)
+      // apply the write automaton on the context.
+      if (automaton::File::Write(*context,
+				 offset,
+				 region) == elle::StatusError)
 	escape("unable to write the file");
 
-      // answer the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagOk>()) == elle::StatusError)
-	escape("unable to reply to the application");
-
       leave();
-      */
     }
 
     ///
@@ -234,40 +195,29 @@ namespace etoile
 			  const nucleus::Size&			size,
 			  elle::Region&				region)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
-      elle::Region	region;
+      gear::Scope*	scope;
+      gear::File*	context;
 
       enter();
 
       printf("[XXX] File::Read()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the file context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // request the file component.
-      if (components::File::Read(context, offset, size, region) ==
-	  elle::StatusError)
+      // apply the read automaton on the context.
+      if (automaton::File::Read(*context,
+				offset,
+				size,
+				region) == elle::StatusError)
 	escape("unable to read the file");
 
-      // reply to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagFileRegion>(region)) == elle::StatusError)
-	escape("unable to reply to the application");
-
       leave();
-      */
     }
 
     ///
@@ -277,134 +227,91 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  const nucleus::Size&			size)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::File*	context;
 
       enter();
 
       printf("[XXX] File::Adjust()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the file context");
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // check if the context is file.
-      if ((context->format & context::FormatFile) !=
-	  context::FormatFile)
-	escape("unable to rename a non-file object");
-
-      // adjust the file.
-      if (components::File::Adjust(context, size) == elle::StatusError)
-	escape("unable to adjust the file size");
-
-      // return the set to the caller.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the adjust automaton on the context.
+      if (automaton::File::Adjust(*context,
+				  size) == elle::StatusError)
+	escape("unable to adjust the file's size");
 
       leave();
-      */
     }
 
     ///
-    /// this method discards the file's modifications.
+    /// this method discards the scope, potentially ignoring the
+    /// performed modifications.
     ///
     elle::Status	File::Discard(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
+      gear::Scope*	scope;
 
       enter();
 
       printf("[XXX] File::Discard()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
 
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the file context");
-
-      // check if the context is file.
-      if ((context->format & context::FormatFile) !=
-	  context::FormatFile)
-	escape("unable to store a non-file object");
-
-      // discard the context.
-      if (components::File::Discard(context) == elle::StatusError)
-	escape("unable to discard the file's modifications");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // delete the scope.
+      delete scope;
 
       leave();
-      */
     }
 
     ///
-    /// this method closes the context and applies, if required, the
-    /// modifications.
+    /// this method closes the scope and places it in the journal for
+    /// the modifications to be published in the storage layer.
     ///
     elle::Status	File::Store(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::File*	context;
 
       enter();
 
       printf("[XXX] File::Store()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the file context");
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // check if the context is file.
-      if ((context->format & context::FormatFile) !=
-	  context::FormatFile)
-	escape("unable to store a non-file object");
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
 
-      // store the context.
-      if (components::File::Store(context) == elle::StatusError)
-	escape("unable to store the file context");
+      // apply the store automaton on the context.
+      if (automaton::File::Store(*context) == elle::StatusError)
+	escape("unable to store the file");
 
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // record the scope in the journal.
+      if (journal::Journal::Record(scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       leave();
-      */
     }
 
     ///
@@ -413,43 +320,29 @@ namespace etoile
     elle::Status	File::Destroy(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::File*	context;
-      user::User*	user;
-
       enter();
 
       printf("[XXX] File::Destroy()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the file context");
-
-      // check if the context is file.
-      if ((context->format & context::FormatFile) !=
-	  context::FormatFile)
-	escape("unable to store a non-file object");
-
-      // destroy the context.
-      if (components::File::Destroy(context) == elle::StatusError)
-	escape("unable to destroy the file context");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // XXX
 
       leave();
-      */
+    }
+
+    ///
+    /// this method purges a file i.e removes all the blocks of all
+    /// the versions associated with this file.
+    ///
+    elle::Status	File::Purge(
+			  const gear::Identifier&		identifier)
+    {
+      enter();
+
+      printf("[XXX] File::Purge()\n");
+
+      // XXX
+
+      leave();
     }
 
   }

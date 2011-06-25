@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Directory.cc
 //
 // created       julien quintard   [mon jun 20 13:22:27 2011]
-// updated       julien quintard   [thu jun 23 14:45:57 2011]
+// updated       julien quintard   [sat jun 25 16:30:13 2011]
 //
 
 //
@@ -19,7 +19,6 @@
 #include <etoile/automaton/Object.hh>
 #include <etoile/automaton/Contents.hh>
 #include <etoile/automaton/Rights.hh>
-#include <etoile/automaton/Author.hh>
 
 #include <agent/Agent.hh>
 
@@ -149,8 +148,7 @@ namespace etoile
 					    pointer) == elle::StatusError)
 	escape("unable to find the entry in the directory");
 
-      // assign the entry depending on its value i.e leaving the entry
-      // as null if the return pointer is null.
+      // assign the entry depending on the pointer.
       if (pointer != NULL)
 	entry = *pointer;
 

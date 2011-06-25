@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Object.cc
 //
 // created       julien quintard   [mon jun 20 12:47:31 2011]
-// updated       julien quintard   [thu jun 23 13:46:49 2011]
+// updated       julien quintard   [fri jun 24 15:38:27 2011]
 //
 
 //
@@ -132,12 +132,12 @@ namespace etoile
 	{
 	  // seal the object.
 	  if (context.object.Seal(agent::Agent::Identity.pair.k,
-				  *context.access) == elle::StatusError)
+				  context.access) == elle::StatusError)
 	    escape("unable to seal the object");
 
 	  // mark the block as needing to be stored.
 	  if (context.transcript.Push(context.location.address,
-				      context.object) == elle::StatusError)
+				      &context.object) == elle::StatusError)
 	    escape("unable to record the object for storing");
 	}
 

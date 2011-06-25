@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Chronicle.cc
 //
 // created       julien quintard   [thu jun 23 09:32:55 2011]
-// updated       julien quintard   [thu jun 23 09:33:28 2011]
+// updated       julien quintard   [sat jun 25 13:39:31 2011]
 //
 
 //
@@ -21,15 +21,6 @@ namespace etoile
 {
   namespace gear
   {
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Chronicle, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

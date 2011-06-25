@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [wed jun 22 23:02:29 2011]
+// updated       julien quintard   [sat jun 25 14:06:00 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_CONTENTS_HXX
@@ -48,6 +48,10 @@ namespace etoile
       // otherwise create a new contents according to the context's type.
       context.contents = new nucleus::Contents<typename T::C>;
 
+      // create the contents.
+      if (context.contents->Create() == elle::StatusError)
+	escape("unable to create the contents");
+
       // check if there exists a contents. if so, load the block.
       if (context.object.data.contents != nucleus::Address::Null)
 	{
@@ -62,7 +66,7 @@ namespace etoile
 	    escape("unable to determine the user's rights");
 
 	  // if the user has the permission to read, decrypt the content.
-	  if (!(context.rights.permissions & nucleus::PermissionRead))
+	  if (context.rights.permissions & nucleus::PermissionRead)
 	    {
 	      // decrypt the contents i.e the contents.
 	      if (context.contents->Decrypt(context.rights.key) ==
@@ -201,7 +205,7 @@ namespace etoile
 	  if (context.contents->Bind(address) == elle::StatusError)
 	    escape("unable to bind the contents");
 
-	  // set the contents as consistent.
+	  // set the content as consistent.
 	  context.contents->content->_state = nucleus::StateConsistent;
 
 	  // update the object data section.
@@ -210,6 +214,11 @@ namespace etoile
 		address,
 		size) == elle::StatusError)
 	    escape("unable to update the object data section");
+
+	  // mark the block as needing to be stored.
+	  if (context.transcript.Push(address,
+				      context.contents) == elle::StatusError)
+	    escape("unable to record the object for storing");
 
 	  //
 	  // finally, since the data has been re-encrypted, the key must be

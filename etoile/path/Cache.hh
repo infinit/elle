@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Cache.hh
 //
 // created       julien quintard   [fri aug  7 19:39:51 2009]
-// updated       julien quintard   [mon may  3 17:43:55 2010]
+// updated       julien quintard   [fri jun 24 14:45:00 2011]
 //
 
 #ifndef ETOILE_PATH_CACHE_HH

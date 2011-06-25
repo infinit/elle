@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [thu jun 23 16:31:43 2011]
+// updated       julien quintard   [sat jun 25 16:30:23 2011]
 //
 
 //
@@ -131,9 +131,12 @@ namespace etoile
 
 	  gear::Directory	context;
 	  Slice			slice;
-	  nucleus::Version	version;
 	  nucleus::Entry	entry;
-	  nucleus::Location	location(address, version);
+	  nucleus::Location	location;
+
+	  // create the location.
+	  if (location.Create(address, version) == elle::StatusError)
+	    escape("unable to create the location");
 
 	  // fetch the directory.
 	  if (automaton::Directory::Load(context,
@@ -155,7 +158,7 @@ namespace etoile
 
 	  // if there is no such entry, abort.
 	  if (entry == nucleus::Entry::Null)
-	    escape("unable to locate the target path");
+	    escape("unable to locate the directory entry");
 
 	  // set the address; the version is already set i.e it has
 	  // been extracted from the slab.

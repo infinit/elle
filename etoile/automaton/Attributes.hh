@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/Attributes.hh
+// file          /home/mycure/infinit/etoile/automaton/Attributes.hh
 //
-// created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [sat jun 25 16:37:39 2011]
+// created       julien quintard   [mon feb  1 19:22:40 2010]
+// updated       julien quintard   [sat jun 25 16:24:27 2011]
 //
 
-#ifndef ETOILE_WALL_ATTRIBUTES_HH
-#define ETOILE_WALL_ATTRIBUTES_HH
+#ifndef ETOILE_AUTOMATON_ATTRIBUTES_HH
+#define ETOILE_AUTOMATON_ATTRIBUTES_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,11 +21,11 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Object.hh>
 
 namespace etoile
 {
-  namespace wall
+  namespace automaton
   {
 
 //
@@ -33,8 +33,8 @@ namespace etoile
 //
 
     ///
-    /// this class provides functionalities for controlling the attributes
-    /// attached to objects.
+    /// this class provides functionalities for manipulating an
+    /// object's attributes.
     ///
     class Attributes
     {
@@ -42,15 +42,15 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Set(const gear::Identifier&,
+      static elle::Status	Set(gear::Object&,
 				    const elle::String&,
 				    const elle::String&);
-      static elle::Status	Get(const gear::Identifier&,
+      static elle::Status	Get(gear::Object&,
 				    const elle::String&,
 				    nucleus::Trait&);
-      static elle::Status	Fetch(const gear::Identifier&,
+      static elle::Status	Fetch(gear::Object&,
 				      nucleus::Range<nucleus::Trait>&);
-      static elle::Status	Omit(const gear::Identifier&,
+      static elle::Status	Omit(gear::Object&,
 				     const elle::String&);
     };
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [tue jun 14 14:42:00 2011]
+// updated       julien quintard   [sat jun 25 14:36:08 2011]
 //
 
 //
@@ -18,15 +18,14 @@
 #include <etoile/wall/Link.hh>
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Nature.hh>
+#include <etoile/gear/Scope.hh>
+#include <etoile/gear/Link.hh>
+#include <etoile/gear/Gear.hh>
 
-/* XXX
-#include <etoile/context/Link.hh>
-#include <etoile/context/Format.hh>
+#include <etoile/automaton/Link.hh>
 
-#include <etoile/user/User.hh>
-
-#include <etoile/path/Path.hh>
-*/
+#include <etoile/journal/Journal.hh>
 
 namespace etoile
 {
@@ -38,114 +37,92 @@ namespace etoile
 //
 
     ///
-    /// this method creates an new, though orphan, link object.
+    /// this method creates a new link object.
+    ///
+    /// note however that the object is not attached to the hierarchy
+    /// and is therefore considered as orphan.
     ///
     elle::Status	Link::Create(
 			  gear::Identifier&			identifier)
     {
-      /*
-      context::Link*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::Link*	context;
 
-      enter(instance(context));
+      enter(instance(scope));
 
       printf("[XXX] Link::Create()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // allocate the scope.
+      scope = new gear::Scope(gear::NatureLink);
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // allocate a new context.
-      if (context::Context::New(context) == elle::StatusError)
-	escape("unable to allocate a new context");
-
-      // create a new link.
-      if (components::Link::Create(context) == elle::StatusError)
+      // apply the create automaton on the context.
+      if (automaton::Link::Create(*context) == elle::StatusError)
 	escape("unable to create the link");
 
-      /* XXX
-      // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagIdentifier>(context->identifier)) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
-      // export the context.
-      if (context::Context::Export(context) == elle::StatusError)
+      // export the scope.
+      if (scope->Export() == elle::StatusError)
 	escape("unable to export the context");
 
+      // return the identifier.
+      identifier = scope->identifier;
+
       // waive.
-      waive(context);
+      waive(scope);
 
       leave();
-      */
     }
 
     ///
-    /// this method loads the link and creates a new context.
+    /// this method loads a link object given its chemin and initializes
+    /// an associated context.
     ///
     elle::Status	Link::Load(
-			  const path::Way&			way,
+			  const path::Chemin&			chemin,
 			  gear::Identifier&			identifier)
     {
-      /*
-      context::Link*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::Link*	context;
+      nucleus::Location	location;
 
-      enter(instance(context));
+      enter(instance(scope));
 
       printf("[XXX] Link::Load()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // allocate the scope.
+      scope = new gear::Scope(gear::NatureLink);
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // allocate a new context.
-      if (context::Context::New(context) == elle::StatusError)
-	escape("unable to allocate a new context");
+      // locate the object based on the chemin.
+      if (chemin.Locate(location) == elle::StatusError)
+	escape("unable to locate the link");
 
-      // create a route from the given way.
-      if (context->route.Create(way) == elle::StatusError)
-	escape("unable to create a route");
+      // apply the load automaton on the context.
+      if (automaton::Link::Load(*context,
+				location) == elle::StatusError)
+	escape("unable to load the link");
 
-      // resolve the route in a link address.
-      if (path::Path::Resolve(context->route, context->address) ==
-	  elle::StatusError)
-	escape("unable to resolve the given route into an link address");
-
-      // load the link in the given context.
-      if (components::Link::Load(context,
-				 context->address) == elle::StatusError)
-	escape("unable to load the link in the given context");
-
-      // return the context identifier to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagIdentifier>(context->identifier)) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
-
-      // export the context.
-      if (context::Context::Export(context) == elle::StatusError)
+      // export the scope.
+      if (scope->Export() == elle::StatusError)
 	escape("unable to export the context");
 
+      // return the identifier.
+      identifier = scope->identifier;
+
       // waive.
-      waive(context);
+      waive(scope);
 
       leave();
-      */
     }
 
     ///
-    /// this application locks the link the identified context is related
-    /// to.
+    /// this application locks the given link.
     ///
     /// the method returns true if the lock has been acquired or false
     /// otherwise.
@@ -158,9 +135,6 @@ namespace etoile
       printf("[XXX] Link::Lock()\n");
 
       // XXX
-      // XXX peut etre qu'il faudrait avoir une liste dependencies dans
-      // un context qui signifierait que le context courant ne peut etre
-      // commit tant que les dependences ne le sont pas!
 
       leave();
     }
@@ -175,6 +149,8 @@ namespace etoile
 
       printf("[XXX] Link::Release()\n");
 
+      // XXX
+
       leave();
     }
 
@@ -185,43 +161,27 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  const path::Way&			way)
     {
-      /*
-      context::Link*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::Link*	context;
 
       enter();
 
       printf("[XXX] Link::Bind()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the link context");
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // check if the context is link.
-      if ((context->format & context::FormatLink) !=
-	  context::FormatLink)
-	escape("unable to test a non-link object");
-
-      // bind the link.
-      if (components::Link::Bind(context, way) == elle::StatusError)
-	escape("unable to bind the target to the link");
-
-      // answer the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagOk>()) == elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the bind automaton on the context.
+      if (automaton::Link::Bind(*context,
+				way) == elle::StatusError)
+	escape("unable to bind the link");
 
       leave();
-      */
     }
 
     ///
@@ -231,135 +191,91 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  path::Way&				way)
     {
-      /*
-      context::Link*	context;
-      user::User*	user;
-      path::Way		way;
+      gear::Scope*	scope;
+      gear::Link*	context;
 
       enter();
 
       printf("[XXX] Link::Resolve()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the link context");
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // check if the context is link.
-      if ((context->format & context::FormatLink) !=
-	  context::FormatLink)
-	escape("unable to consult a non-link object");
-
-      // request the components.
-      if (components::Link::Resolve(context, way) == elle::StatusError)
-	escape("unable to consult the link");
-
-      // return the way to the caller.
-      if (user->application->channel->Reply(
-	    elle::Inputs<TagLinkWay>(way)) == elle::StatusError)
-	escape("unable to reply to the application");
+      // apply the resolve automaton on the context.
+      if (automaton::Link::Resolve(*context,
+				   way) == elle::StatusError)
+	escape("unable to resolve the link");
 
       leave();
-      */
     }
 
     ///
-    /// this method discards the link's modifications.
+    /// this method discards the scope, potentially ignoring the
+    /// performed modifications.
     ///
     elle::Status	Link::Discard(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::Link*	context;
-      user::User*	user;
+      gear::Scope*	scope;
 
       enter();
 
       printf("[XXX] Link::Discard()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
 
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the link context");
-
-      // check if the context is link.
-      if ((context->format & context::FormatLink) !=
-	  context::FormatLink)
-	escape("unable to store a non-link object");
-
-      // discard the context.
-      if (components::Link::Discard(context) == elle::StatusError)
-	escape("unable to discard the link's modifications");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // delete the scope.
+      delete scope;
 
       leave();
-      */
     }
 
     ///
-    /// this method closes the context and applies, if required, the
-    /// modifications.
+    /// this method closes the scope and places it in the journal for
+    /// the modifications to be published in the storage layer.
     ///
     elle::Status	Link::Store(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::Link*	context;
-      user::User*	user;
+      gear::Scope*	scope;
+      gear::Link*	context;
 
       enter();
 
       printf("[XXX] Link::Store()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
 
       // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the link context");
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
-      // check if the context is link.
-      if ((context->format & context::FormatLink) !=
-	  context::FormatLink)
-	escape("unable to store a non-link object");
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
 
-      // store the context.
-      if (components::Link::Store(context) == elle::StatusError)
-	escape("unable to store the link context");
+      // apply the store automaton on the context.
+      if (automaton::Link::Store(*context) == elle::StatusError)
+	escape("unable to store the link");
 
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // record the scope in the journal.
+      if (journal::Journal::Record(scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       leave();
-      */
     }
 
     ///
@@ -368,43 +284,29 @@ namespace etoile
     elle::Status	Link::Destroy(
 			  const gear::Identifier&		identifier)
     {
-      /*
-      context::Link*	context;
-      user::User*	user;
-
       enter();
 
       printf("[XXX] Link::Destroy()\n");
 
-      // load the current user.
-      if (user::User::Instance(user) == elle::StatusError)
-	escape("unable to load the user");
-
-      // check if the user is an application..
-      if (user->type != user::User::TypeApplication)
-	escape("non-applications cannot authenticate");
-
-      // retrieve the context.
-      if (user->application->Retrieve(identifier, context) ==
-	  elle::StatusError)
-	escape("unable to retrieve the link context");
-
-      // check if the context is link.
-      if ((context->format & context::FormatLink) !=
-	  context::FormatLink)
-	escape("unable to store a non-link object");
-
-      // destroy the context.
-      if (components::Link::Destroy(context) == elle::StatusError)
-	escape("unable to destroy the link context");
-
-      // reply to the application.
-      if (user->application->channel->Reply(elle::Inputs<TagOk>()) ==
-	  elle::StatusError)
-	escape("unable to reply to the application");
+      // XXX
 
       leave();
-      */
+    }
+
+    ///
+    /// this method purges a link i.e removes all the blocks of all
+    /// the versions associated with this link.
+    ///
+    elle::Status	Link::Purge(
+			  const gear::Identifier&		identifier)
+    {
+      enter();
+
+      printf("[XXX] Link::Purge()\n");
+
+      // XXX
+
+      leave();
     }
 
   }

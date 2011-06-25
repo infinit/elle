@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.hh
 //
 // created       julien quintard   [fri jun  3 11:01:57 2011]
-// updated       julien quintard   [thu jun 23 16:47:35 2011]
+// updated       julien quintard   [sat jun 25 13:38:54 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HH
@@ -20,9 +20,9 @@
 
 #include <elle/Elle.hh>
 
+#include <etoile/gear/Context.hh>
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Chronicle.hh>
-#include <etoile/gear/Context.hh>
 #include <etoile/gear/Nature.hh>
 
 #include <etoile/path/Chemin.hh>
@@ -60,14 +60,9 @@ namespace etoile
       elle::Status	Export();
       elle::Status	Import();
 
-      // XXX T& Context()
-
       //
       // interfaces
       //
-
-      // object
-      declare(Scope);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

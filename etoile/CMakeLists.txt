@@ -16,19 +16,24 @@ ADD_LIBRARY(etoile
 #  depot/Repository.cc
 #  depot/Unit.cc
 
+  gear/Action.cc
   gear/Chronicle.cc
   gear/Context.cc
   gear/Directory.cc
+  gear/File.cc
   gear/Gear.cc
   gear/Identifier.cc
+  gear/Link.cc
   gear/Object.cc
+  gear/Scope.cc
   gear/Transcript.cc
 
   automaton/Access.cc
+  automaton/Attributes.cc
   automaton/Author.cc
   automaton/Directory.cc
-#  automaton/File.cc
-#  automaton/Link.cc
+  automaton/File.cc
+  automaton/Link.cc
   automaton/Object.cc
   automaton/Rights.cc
 
@@ -43,6 +48,8 @@ ADD_LIBRARY(etoile
   wall/Wall.cc
 
   miscellaneous/Information.cc
+
+  journal/Journal.cc
 
   Etoile.cc
 )

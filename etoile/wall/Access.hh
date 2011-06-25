@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [thu jun 23 14:31:42 2011]
+// updated       julien quintard   [sat jun 25 16:26:18 2011]
 //
 
 #ifndef ETOILE_WALL_ACCESS_HH

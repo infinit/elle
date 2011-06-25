@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [thu jun 23 14:35:01 2011]
+// updated       julien quintard   [sat jun 25 16:29:30 2011]
 //
 
 //
@@ -18,11 +18,14 @@
 #include <etoile/wall/Directory.hh>
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Nature.hh>
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Directory.hh>
 #include <etoile/gear/Gear.hh>
 
 #include <etoile/automaton/Directory.hh>
+
+#include <etoile/journal/Journal.hh>
 
 namespace etoile
 {
@@ -42,17 +45,22 @@ namespace etoile
     elle::Status	Directory::Create(
 			  gear::Identifier&			identifier)
     {
-      gear::Scope<gear::Directory>*	scope;
+      gear::Scope*	scope;
+      gear::Directory*	context;
 
       enter(instance(scope));
 
       printf("[XXX] Directory::Create()\n");
 
       // allocate the scope.
-      scope = new gear::Scope<gear::Directory>;
+      scope = new gear::Scope(gear::NatureDirectory);
+
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
       // apply the create automaton on the context.
-      if (automaton::Directory::Create(scope->context) == elle::StatusError)
+      if (automaton::Directory::Create(*context) == elle::StatusError)
 	escape("unable to create the directory");
 
       // export the scope.
@@ -76,22 +84,27 @@ namespace etoile
 			  const path::Chemin&			chemin,
 			  gear::Identifier&			identifier)
     {
-      gear::Scope<gear::Directory>*	scope;
-      nucleus::Location			location;
+      gear::Scope*	scope;
+      gear::Directory*	context;
+      nucleus::Location	location;
 
       enter(instance(scope));
 
       printf("[XXX] Directory::Load()\n");
 
       // allocate the scope.
-      scope = new gear::Scope<gear::Directory>;
+      scope = new gear::Scope(gear::NatureDirectory);
+
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
       // locate the object based on the chemin.
       if (chemin.Locate(location) == elle::StatusError)
 	escape("unable to locate the directory");
 
       // apply the load automaton on the context.
-      if (automaton::Directory::Load(scope->context,
+      if (automaton::Directory::Load(*context,
 				     location) == elle::StatusError)
 	escape("unable to load the directory");
 
@@ -149,26 +162,38 @@ namespace etoile
 			  const path::Slice&			name,
 			  const gear::Identifier&		child)
     {
-      gear::Scope<gear::Directory>*	directory;
-      gear::Scope<gear::Object>*	object;
+      gear::Scope*	scope;
+      gear::Directory*	directory;
+      gear::Object*	object;
+      nucleus::Address	address;
 
       enter();
 
       printf("[XXX] Directory::Add()\n");
 
-      // select the scope associated with the parent identifier.
-      if (gear::Gear::Select(parent, directory) == elle::StatusError)
+      // select the scope associated with the child identifier.
+      if (gear::Gear::Select(child, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
-      // select the scope associated with the child identifier.
-      if (gear::Gear::Select(child, object) == elle::StatusError)
+      // retrieve the context.
+      if (scope->context->Cast(object) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // keep the address.
+      address = object->location.address;
+
+      // select the scope associated with the parent identifier.
+      if (gear::Gear::Select(parent, scope) == elle::StatusError)
 	escape("unable to select the scope");
+
+      // retrieve the context.
+      if (scope->context->Cast(directory) == elle::StatusError)
+	escape("unable to retrieve the context");
 
       // apply the add automaton on the context.
-      if (automaton::Directory::Add(
-	    directory->context,
-	    name,
-	    object->context.location.address) == elle::StatusError)
+      if (automaton::Directory::Add(*directory,
+				    name,
+				    address) == elle::StatusError)
 	escape("unable to add the directory entry");
 
       leave();
@@ -183,7 +208,8 @@ namespace etoile
 			  const path::Slice&			name,
 			  nucleus::Entry&			entry)
     {
-      gear::Scope<gear::Directory>*	scope;
+      gear::Scope*	scope;
+      gear::Directory*	context;
 
       enter();
 
@@ -193,8 +219,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the lookup automaton on the context.
-      if (automaton::Directory::Lookup(scope->context,
+      if (automaton::Directory::Lookup(*context,
 				       name,
 				       entry) == elle::StatusError)
 	escape("unable to lookup the directory entry");
@@ -212,7 +242,8 @@ namespace etoile
 			  const nucleus::Offset&		size,
 			  nucleus::Range<nucleus::Entry>&	range)
     {
-      gear::Scope<gear::Directory>*	scope;
+      gear::Scope*	scope;
+      gear::Directory*	context;
 
       enter();
 
@@ -222,8 +253,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the consult automaton on the context.
-      if (automaton::Directory::Consult(scope->context,
+      if (automaton::Directory::Consult(*context,
 					offset,
 					size,
 					range) == elle::StatusError)
@@ -240,7 +275,8 @@ namespace etoile
 			  const path::Slice&			from,
 			  const path::Slice&			to)
     {
-      gear::Scope<gear::Directory>*	scope;
+      gear::Scope*	scope;
+      gear::Directory*	context;
 
       enter();
 
@@ -250,9 +286,14 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the rename automaton on the context.
-      if (automaton::Directory::Rename(scope->context,
-				       from, to) == elle::StatusError)
+      if (automaton::Directory::Rename(*context,
+				       from,
+				       to) == elle::StatusError)
 	escape("unable to rename the directory entry");
 
       leave();
@@ -265,7 +306,8 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  const path::Slice&			name)
     {
-      gear::Scope<gear::Directory>*	scope;
+      gear::Scope*	scope;
+      gear::Directory*	context;
 
       enter();
 
@@ -275,8 +317,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the remove automaton on the context.
-      if (automaton::Directory::Remove(scope->context,
+      if (automaton::Directory::Remove(*context,
 				       name) == elle::StatusError)
 	escape("unable to remove the directory entry");
 
@@ -290,7 +336,7 @@ namespace etoile
     elle::Status	Directory::Discard(
 			  const gear::Identifier&		identifier)
     {
-      gear::Scope<gear::Directory>*	scope;
+      gear::Scope*	scope;
 
       enter();
 
@@ -317,11 +363,32 @@ namespace etoile
     elle::Status	Directory::Store(
 			  const gear::Identifier&		identifier)
     {
+      gear::Scope*	scope;
+      gear::Directory*	context;
+
       enter();
 
       printf("[XXX] Directory::Store()\n");
 
-      // XXX
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
+
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
+
+      // apply the store automaton on the context.
+      if (automaton::Directory::Store(*context) == elle::StatusError)
+	escape("unable to store the directory");
+
+      // record the scope in the journal.
+      if (journal::Journal::Record(scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       leave();
     }

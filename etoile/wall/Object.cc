@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [thu jun 23 14:33:58 2011]
+// updated       julien quintard   [fri jun 24 14:34:47 2011]
 //
 
 //
@@ -18,11 +18,14 @@
 #include <etoile/wall/Object.hh>
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Nature.hh>
 #include <etoile/gear/Scope.hh>
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Gear.hh>
 
 #include <etoile/automaton/Object.hh>
+
+#include <etoile/journal/Journal.hh>
 
 #include <etoile/miscellaneous/Information.hh>
 
@@ -44,22 +47,27 @@ namespace etoile
 			  const path::Chemin&			chemin,
 			  gear::Identifier&			identifier)
     {
-      gear::Scope<gear::Object>*	scope;
-      nucleus::Location			location;
+      gear::Scope*	scope;
+      gear::Object*	context;
+      nucleus::Location	location;
 
       enter(instance(scope));
 
       printf("[XXX] Object::Load()\n");
 
       // allocate the scope.
-      scope = new gear::Scope<gear::Object>;
+      scope = new gear::Scope(gear::NatureObject);
+
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
 
       // locate the object based on the chemin.
       if (chemin.Locate(location) == elle::StatusError)
 	escape("unable to locate the directory");
 
       // apply the load automaton on the context.
-      if (automaton::Object::Load(scope->context,
+      if (automaton::Object::Load(*context,
 				  location) == elle::StatusError)
 	escape("unable to load the object");
 
@@ -117,7 +125,8 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  miscellaneous::Information&		information)
     {
-      gear::Scope<gear::Object>*	scope;
+      gear::Scope*	scope;
+      gear::Object*	context;
 
       enter();
 
@@ -127,8 +136,12 @@ namespace etoile
       if (gear::Gear::Select(identifier, scope) == elle::StatusError)
 	escape("unable to select the scope");
 
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // apply the information automaton on the context.
-      if (automaton::Object::Information(scope->context,
+      if (automaton::Object::Information(*context,
 					 information) == elle::StatusError)
 	escape("unable to retrieve general information on the object");
 
@@ -142,7 +155,7 @@ namespace etoile
     elle::Status	Object::Discard(
 			  const gear::Identifier&		identifier)
     {
-      gear::Scope<gear::Object>*	scope;
+      gear::Scope*	scope;
 
       enter();
 
@@ -169,11 +182,32 @@ namespace etoile
     elle::Status	Object::Store(
 			  const gear::Identifier&		identifier)
     {
+      gear::Scope*	scope;
+      gear::Object*	context;
+
       enter();
 
       printf("[XXX] Object::Store()\n");
 
-      // XXX
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
+
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
+
+      // apply the store automaton on the context.
+      if (automaton::Object::Store(*context) == elle::StatusError)
+	escape("unable to store the object");
+
+      // record the scope in the journal.
+      if (journal::Journal::Record(scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       leave();
     }

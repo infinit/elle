@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Access.hh
 //
 // created       julien quintard   [mon jun 20 14:58:16 2011]
-// updated       julien quintard   [thu jun 23 14:45:09 2011]
+// updated       julien quintard   [sat jun 25 16:27:13 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_ACCESS_HH

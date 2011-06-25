@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Link.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [thu jun 23 16:20:32 2011]
+// updated       julien quintard   [sat jun 25 13:46:36 2011]
 //
 
 #ifndef ETOILE_GEAR_LINK_HH
@@ -34,8 +34,11 @@ namespace etoile
 //
 
     ///
-    /// this context represents a link object as it embeds
-    /// a reference along with inherited object-related stuff.
+    /// this class represents a file-specific context.
+    ///
+    /// this context derives the Object context and therefore benefits from
+    /// all the object-related attributes plus the contents i.e the catalog
+    /// in the case of a file.
     ///
     class Link:
       public Object
@@ -56,12 +59,12 @@ namespace etoile
       // interfaces
       //
 
-      // XXX object
-
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
 
-      // XXX archivable
+      // archivable
+      elle::Status	Serialize(elle::Archive&) const;
+      elle::Status	Extract(elle::Archive&);
 
       //
       // attributes

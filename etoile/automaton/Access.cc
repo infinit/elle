@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Access.cc
 //
 // created       julien quintard   [mon jun 20 14:59:09 2011]
-// updated       julien quintard   [thu jun 23 14:46:37 2011]
+// updated       julien quintard   [sat jun 25 16:34:45 2011]
 //
  
 //
@@ -163,7 +163,7 @@ namespace etoile
 	  if (Rights::Determine(context) == elle::StatusError)
 	    escape("unable to determine the user's rights");
 
-	  // set the record attributes from the user's rights.
+	  // return the record.
 	  record = context.rights.record;
 	}
       else
@@ -182,7 +182,7 @@ namespace etoile
 	      // automatically when the object was extracted.
 	      //
 
-	      // return the owner access record.
+	      // return the record.
 	      record = context.object.meta.owner._record;
 	    }
 	  else
@@ -203,8 +203,7 @@ namespace etoile
 					 pointer) == elle::StatusError)
 		escape("unable to lookup in the access object");
 
-	      // assign the record depending on its value i.e leaving
-	      // the record as null if the return pointer is null.
+	      // assign the record depending on the pointer.
 	      if (pointer != NULL)
 		record = *pointer;
 	    }
@@ -611,6 +610,12 @@ namespace etoile
 		context.object.meta.owner.permissions,
 		context.object.meta.owner.token) == elle::StatusError)
 	    escape("unable to update the object's meta section");
+
+	  // mark the block as needing to be stored.
+	  if (context.transcript.Push(address,
+				      context.access) == elle::StatusError)
+	    escape("unable to record the object for storing");
+
 	}
 
       leave();
@@ -618,3 +623,4 @@ namespace etoile
 
   }
 }
+

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transaction.hh
 //
 // created       julien quintard   [fri jun  3 12:19:03 2011]
-// updated       julien quintard   [fri jun 17 16:51:14 2011]
+// updated       julien quintard   [sat jun 25 14:30:27 2011]
 //
 
 #ifndef ETOILE_GEAR_TRANSACTION_HH
@@ -29,6 +29,7 @@ namespace etoile
 // ---------- classes ---------------------------------------------------------
 //
 
+/* XXX
     ///
     /// a transaction represents an atomic event performed on a scope.
     ///
@@ -38,6 +39,7 @@ namespace etoile
       public Event
     {
     };
+*/
 
   }
 }
@@ -46,6 +48,6 @@ namespace etoile
 // ---------- templates -------------------------------------------------------
 //
 
-#include <etoile/gear/Transaction.hxx>
+// XXX #include <etoile/gear/Transaction.hxx>
 
 #endif

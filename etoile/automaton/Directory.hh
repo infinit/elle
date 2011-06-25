@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Directory.hh
 //
 // created       julien quintard   [mon jun 20 13:29:57 2011]
-// updated       julien quintard   [thu jun 23 14:35:08 2011]
+// updated       julien quintard   [sat jun 25 16:29:37 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_DIRECTORY_HH

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Operation.hh
 //
 // created       julien quintard   [fri jun 10 14:28:17 2011]
-// updated       julien quintard   [fri jun 17 16:51:05 2011]
+// updated       julien quintard   [sat jun 25 14:29:37 2011]
 //
 
 #ifndef ETOILE_GEAR_OPERATION_HH
@@ -19,6 +19,7 @@ namespace etoile
   namespace gear
   {
 
+    /* XXX
     enum Operation
       {
 	OperationObjectLoad,
@@ -34,6 +35,8 @@ namespace etoile
     };
 
     Operation::Object::Load
+    */
+
   }
 }
 
