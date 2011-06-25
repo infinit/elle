@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [thu jun 23 15:05:52 2011]
+// updated       julien quintard   [sat jun 25 16:32:46 2011]
 //
 
 //
@@ -86,7 +86,8 @@ namespace pig
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
-      skip(ENOENT);
+      error("unable to resolve the path",
+	    ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
@@ -207,12 +208,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to access
 	  // and read the directory.
-	  if ((information.permissions.owner & nucleus::PermissionRead) != 0)
+	  if (information.permissions.owner & nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the directory content.
-	  if ((information.permissions.owner & nucleus::PermissionWrite) != 0)
+	  if (information.permissions.owner & nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
 
 	  break;
@@ -225,12 +226,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read
 	  // the file.
-	  if ((information.permissions.owner & nucleus::PermissionRead) != 0)
+	  if (information.permissions.owner & nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the file content.
-	  if ((information.permissions.owner & nucleus::PermissionWrite) != 0)
+	  if (information.permissions.owner & nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
 
 	  // retrieve the attribute.
@@ -255,12 +256,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read and
 	  // search the linked object.
-	  if ((information.permissions.owner & nucleus::PermissionRead) != 0)
+	  if (information.permissions.owner & nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the link.
-	  if ((information.permissions.owner & nucleus::PermissionWrite) != 0)
+	  if (information.permissions.owner & nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
  
 	  break;
@@ -343,7 +344,7 @@ namespace pig
 	    identifier);
 
     // check if the user has the right to read the directory.
-    if ((record.permissions & nucleus::PermissionRead) == 0)
+    if (!(record.permissions & nucleus::PermissionRead))
       error("the subject does not have the right permission",
 	    EACCES,
 	    identifier);
@@ -508,10 +509,10 @@ namespace pig
 	    directory);
 
     // compute the permissions.
-    if ((mode & S_IRUSR) != 0)
+    if (mode & S_IRUSR)
       permissions |= nucleus::PermissionRead;
 
-    if ((mode & S_IWUSR) != 0)
+    if (mode & S_IWUSR)
       permissions |= nucleus::PermissionWrite;
 
     // set the owner permissions.
@@ -660,7 +661,7 @@ namespace pig
 	    identifier);
 
     // check if the permissions match the mask for execution.
-    if ((mask & X_OK) != 0)
+    if (mask & X_OK)
       {
 	switch (information.genre)
 	  {
@@ -668,7 +669,7 @@ namespace pig
 	    {
 	      // check if the user has the read permission meaning the
 	      // exec bit
-	      if ((record.permissions & nucleus::PermissionRead) == 0)
+	      if (!(record.permissions & nucleus::PermissionRead))
 		error("the subject does not have the right to access",
 		      EACCES,
 		      identifier);
@@ -719,18 +720,18 @@ namespace pig
       }
 
     // check if the permissions match the mask for reading.
-    if ((mask & R_OK) != 0)
+    if (mask & R_OK)
       {
-	if ((record.permissions & nucleus::PermissionRead) == 0)
+	if (!(record.permissions & nucleus::PermissionRead))
 	  error("the subject does not have the right to read",
 		EACCES,
 		identifier);
       }
 
     // check if the permissions match the mask for writing.
-    if ((mask & W_OK) != 0)
+    if (mask & W_OK)
       {
-	if ((record.permissions & nucleus::PermissionWrite) == 0)
+	if (!(record.permissions & nucleus::PermissionWrite))
 	  error("the subject does not have the right to write",
 		EACCES,
 		identifier);
@@ -785,10 +786,10 @@ namespace pig
     // XXX sticky-bit etc. in attributes!
 
     // compute the permissions.
-    if ((mode & S_IRUSR) != 0)
+    if (mode & S_IRUSR)
       permissions |= nucleus::PermissionRead;
 
-    if ((mode & S_IWUSR) != 0)
+    if (mode & S_IWUSR)
       permissions |= nucleus::PermissionWrite;
 
     // resolve the path.
@@ -988,7 +989,8 @@ namespace pig
 
     // test if a trait has been found.
     if (trait == nucleus::Trait::Null)
-      error("unable to resolve the path",ENOATTR);
+      error("unable to locate this attribute",
+	    ENOATTR);
 
     printf("[/XXX] %s(%s, %s, %p, %u)\n",
 	   __FUNCTION__,
@@ -1230,14 +1232,20 @@ namespace pig
   {
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
     etoile::path::Way		target;
 
     printf("[XXX] %s(%s, %p, %u)\n",
 	   __FUNCTION__,
 	   path, buffer, size);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the link.
-    if (etoile::wall::Link::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::Link::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the link",
 	    ENOENT);
 
@@ -1301,10 +1309,10 @@ namespace pig
 	    directory);
 
     // compute the permissions.
-    if ((mode & S_IRUSR) != 0)
+    if (mode & S_IRUSR)
       permissions |= nucleus::PermissionRead;
 
-    if ((mode & S_IWUSR) != 0)
+    if (mode & S_IWUSR)
       permissions |= nucleus::PermissionWrite;
 
     // set the owner permissions.
@@ -1316,7 +1324,7 @@ namespace pig
 	    file, directory);
 
     // if the file has the exec bit, add the posix::exec attribute.
-    if ((mode & S_IXUSR) != 0)
+    if (mode & S_IXUSR)
       {
 	// set the posix::exec attribute
 	if (etoile::wall::Attributes::Set(file,
@@ -1351,9 +1359,14 @@ namespace pig
       error("unable to store the directory",
 	    EINTR);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(etoile::path::Way(path),
+				    chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // finally, the file is reopened.
-    if (etoile::wall::File::Load(etoile::path::Way(path),
-				 file) == elle::StatusError)
+    if (etoile::wall::File::Load(chemin, file) == elle::StatusError)
       error("unable to load the file",
 	    ENOENT);
 
@@ -1375,14 +1388,20 @@ namespace pig
 				   struct ::fuse_file_info*	info)
   {
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
     etoile::gear::Identifier	identifier;
 
     printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, info);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the file.
-    if (etoile::wall::File::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::File::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the file",
 	    ENOENT);
 
@@ -1480,6 +1499,7 @@ namespace pig
   {
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
+    etoile::path::Chemin	chemin;
     struct ::fuse_file_info	info;
     int				result;
 
@@ -1487,8 +1507,13 @@ namespace pig
 	   __FUNCTION__,
 	   path, size);
 
+    // resolve the path.
+    if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
+      error("unable to resolve the path",
+	    ENOENT);
+
     // load the file.
-    if (etoile::wall::File::Load(way, identifier) == elle::StatusError)
+    if (etoile::wall::File::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the file",
 	    ENOENT);
 
@@ -1780,8 +1805,14 @@ namespace pig
       {
       case nucleus::GenreFile:
 	{
+	  // resolve the path.
+	  if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
+	    error("unable to resolve the path",
+		  ENOENT,
+		  directory);
+
 	  // load the object.
-	  if (etoile::wall::File::Load(child,
+	  if (etoile::wall::File::Load(chemin,
 				       identifier) == elle::StatusError)
 	    error("unable to load the file",
 		  ENOENT,
@@ -1797,8 +1828,15 @@ namespace pig
 	}
       case nucleus::GenreLink:
 	{
+	  // resolve the path.
+	  if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
+	    error("unable to resolve the path",
+		  ENOENT,
+		  directory);
+
 	  // load the link
-	  if (etoile::wall::Link::Load(child, identifier) == elle::StatusError)
+	  if (etoile::wall::Link::Load(chemin,
+				       identifier) == elle::StatusError)
 	    error("unable to load the link",
 		  ENOENT,
 		  directory);
