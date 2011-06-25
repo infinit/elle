@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:22:14 2011]
-// updated       julien quintard   [sun may 22 13:27:36 2011]
+// updated       julien quintard   [fri jun 24 18:07:45 2011]
 //
 
 //
@@ -181,6 +181,9 @@ namespace nucleus
       if (path.Complete(elle::Piece("%NETWORK%", network.name),
 			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
 	flee("unable to complete the path");
+
+      // XXX
+      path.Dump();
 
       // test the file.
       if (elle::File::Exist(path) == elle::StatusTrue)

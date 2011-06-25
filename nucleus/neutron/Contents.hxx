@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [sun jun 19 22:43:49 2011]
+// updated       julien quintard   [fri jun 24 16:23:02 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
@@ -225,6 +225,11 @@ namespace nucleus
 	  if (this->content->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the content");
 	}
+      else
+	{
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Content] " << elle::none << std::endl;
+	}
 
       // if present, dump the cipher.
       if (this->cipher != NULL)
@@ -234,6 +239,11 @@ namespace nucleus
 
 	  if (this->cipher->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the cipher");
+	}
+      else
+	{
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Cipher] " << elle::none << std::endl;
 	}
 
       leave();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Location.cc
 //
 // created       julien quintard   [wed jun 15 20:17:21 2011]
-// updated       julien quintard   [wed jun 15 20:55:11 2011]
+// updated       julien quintard   [fri jun 24 17:41:25 2011]
 //
 
 //
@@ -39,16 +39,6 @@ namespace nucleus
     /// default constructor.
     ///
     Location::Location()
-    {
-    }
-
-    ///
-    /// specific constructor.
-    ///
-    Location::Location(const Address&				address,
-		       const Version&				version):
-      address(address),
-      version(version)
     {
     }
 

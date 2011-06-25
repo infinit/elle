@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [wed jun 22 15:20:04 2011]
+// updated       julien quintard   [fri jun 24 19:05:57 2011]
 //
 
 //
@@ -208,7 +208,7 @@ namespace nucleus
     /// this method seals the data and meta data by signing them.
     ///
     elle::Status	Object::Seal(const elle::PrivateKey&	k,
-				     const Access&		access)
+				     const Access*		access)
     {
       enter();
 
@@ -256,13 +256,13 @@ namespace nucleus
 	      elle::Digest	fingerprint;
 
 	      // test if there is an access block.
-	      if (access == Access::Null)
+	      if (access == NULL)
 		escape("the Seal() method must take the object's "
 		       "access block");
 
 	      // compute the fingerprint of the access (subject, permissions)
 	      // tuples.
-	      if (access.Fingerprint(fingerprint) == elle::StatusError)
+	      if (access->Fingerprint(fingerprint) == elle::StatusError)
 		escape("unable to compute the access block fingerprint");
 
 	      // sign the meta data, making sure to include the access
@@ -284,11 +284,6 @@ namespace nucleus
 	      // otherwise, only the meta attributes are included in
 	      // the signature.
 	      //
-
-	      // test if there is an access block.
-	      if (access != Access::Null)
-		escape("an access block is provided though not referenced "
-		       "in the object");
 
 	      // sign the meta data.
 	      if (k.Sign(this->meta.owner.permissions,
@@ -324,7 +319,7 @@ namespace nucleus
     /// block's general version number matches the object's versions.
     ///
     elle::Status	Object::Validate(const proton::Address&	address,
-					 const Access&		access)
+					 const Access*		access)
       const
     {
       const elle::PublicKey*	author;
@@ -345,13 +340,13 @@ namespace nucleus
 	    elle::Digest	fingerprint;
 
 	    // test if there is an access block.
-	    if (access == Access::Null)
+	    if (access == NULL)
 	      escape("the Validate() method must take the object's "
 		     "access block");
 
 	    // compute the fingerprint of the access (subject, permissions)
 	    // tuples.
-	    if (access.Fingerprint(fingerprint) == elle::StatusError)
+	    if (access->Fingerprint(fingerprint) == elle::StatusError)
 	      escape("unable to compute the access block fingerprint");
 
 	    // verify the meta part, including the access fingerprint.
@@ -368,11 +363,6 @@ namespace nucleus
 	  }
 	else
 	  {
-	    // test if there is an access block.
-	    if (access != Access::Null)
-	      escape("an access block is provided though not referenced "
-		     "in the object");
-
 	    // verify the meta part.
 	    if (this->owner.K.Verify(this->meta.signature,
 
@@ -424,34 +414,6 @@ namespace nucleus
 	if (this->version != (this->data.version + this->meta.version))
 	  flee("invalid version number");
       }
-
-      true();
-    }
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    elle::Boolean	Object::operator<(const Block&		block) const
-    {
-      const Object*	object =
-	dynamic_cast<const Object*>(&block);
-
-      enter();
-
-      // check the cast.
-      if (object == NULL)
-	flee("unable to cast the block into an Object");
-
-      // check the versions.
-      if ((object->meta.version >= this->meta.version) ||
-	  (object->data.version >= this->data.version))
-	false();
-
-      // XXX check the data/meta base.
 
       true();
     }

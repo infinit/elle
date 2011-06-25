@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.cc
 //
 // created       julien quintard   [sat may 21 13:41:42 2011]
-// updated       julien quintard   [wed jun 15 20:17:13 2011]
+// updated       julien quintard   [fri jun 24 17:53:44 2011]
 //
 
 //
@@ -81,6 +81,42 @@ namespace nucleus
 
       // compare the numbers.
       if (this->number != element.number)
+	false();
+
+      true();
+    }
+
+    ///
+    /// XXX
+    ///
+    elle::Boolean	Version::operator<(const Version&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the numbers.
+      if (this->number >= element.number)
+	false();
+
+      true();
+    }
+
+    ///
+    /// XXX
+    ///
+    elle::Boolean	Version::operator>(const Version&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the numbers.
+      if (this->number <= element.number)
 	false();
 
       true();

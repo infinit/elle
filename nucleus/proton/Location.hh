@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Location.hh
 //
 // created       julien quintard   [wed jun 15 20:11:00 2011]
-// updated       julien quintard   [thu jun 23 08:51:59 2011]
+// updated       julien quintard   [fri jun 24 17:41:18 2011]
 //
 
 #ifndef NUCLEUS_PROTON_LOCATION_HH
@@ -51,8 +51,6 @@ namespace nucleus
       // constructors & destructors
       //
       Location();
-      Location(const Address&,
-	       const Version&);
 
       //
       // methods

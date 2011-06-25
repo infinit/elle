@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [wed jun 22 12:41:23 2011]
+// updated       julien quintard   [fri jun 24 19:06:04 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
@@ -72,15 +72,10 @@ namespace nucleus
 				     const Token&);
 
       elle::Status	Seal(const elle::PrivateKey&,
-			     const Access& = Access::Null);
+			     const Access* = NULL);
 
       elle::Status	Validate(const proton::Address&,
-				 const Access& = Access::Null) const;
-
-      //
-      // operators
-      //
-      elle::Boolean	operator<(const Block&) const;
+				 const Access* = NULL) const;
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [thu jun 23 13:37:40 2011]
+// updated       julien quintard   [fri jun 24 18:07:40 2011]
 //
 
 //

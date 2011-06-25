@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [wed jun 15 20:13:41 2011]
+// updated       julien quintard   [fri jun 24 17:53:56 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_VERSION_HH
@@ -57,6 +57,8 @@ namespace nucleus
       // object
       declare(Version);
       elle::Boolean	operator==(const Version&) const;
+      elle::Boolean	operator<(const Version&) const;
+      elle::Boolean	operator>(const Version&) const;
       Version&		operator+=(const elle::Natural32);
       Version		operator+(const Version&) const;
 
