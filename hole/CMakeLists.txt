@@ -11,6 +11,7 @@ ADD_LIBRARY(hole
 
   Hole.cc
   Holeable.cc
+  Model.cc
 )
 
 ADD_EXECUTABLE(Hole

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/hole.cc
 //
 // created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [mon jun 20 01:35:24 2011]
+// updated       julien quintard   [sun jun 26 22:25:00 2011]
 //
 
 //
@@ -34,100 +34,59 @@ namespace hole
   elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
   {
-    elle::Parser*		parser;
-    elle::Character		option;
-    elle::String		network;
-
-    enter();
+    enter(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
+
+    // initialize the nucleus library.
+    if (nucleus::Nucleus::Initialize() == elle::StatusError)
+      escape("unable to initialize Nucleus");
+
+    // initialize the Lune library.
+    if (lune::Lune::Initialize() == elle::StatusError)
+      escape("unable to initialize Lune");
+
+    // initialize Infinit.
+    if (Infinit::Initialize() == elle::StatusError)
+      escape("unable to initialize Infinit");
 
     // set up the program.
     if (elle::Program::Setup() == elle::StatusError)
       escape("unable to set up the program");
 
     // allocate a new parser.
-    parser = new elle::Parser(argc, argv);
+    Infinit::Parser = new elle::Parser(argc, argv);
 
-    // set up the parser.
-    if (parser->Register('h',
-			 "help",
-			 "display the help",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
+    // specify a program description.
+    if (Infinit::Parser->Description(Infinit::Version +
+				     " "+
+				     "Copyright (c) 2008, 2009, 2010, 2011, "
+				     "Julien Quintard, All rights "
+				     "reserved.\n") == elle::StatusError)
+      escape("unable to set the description");
 
-    if (parser->Register('n',
-			 "network",
-			 "join the given network at startup",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
+    // set up the hole-specific options.
+    if (hole::Hole::Options() == elle::StatusError)
+      escape("unable to set up the options");
 
     // parse.
-    while (parser->Parse(option) == elle::StatusTrue)
-      {
-	switch (option)
-	  {
-	  case 'h':
-	    {
-	      // display the usage.
-	      parser->Usage();
+    if (Infinit::Parser->Parse() == elle::StatusError)
+      escape("unable to parse the command line");
 
-	      // quit.
-	      leave();
-	    }
-	  case 'n':
-	    {
-	      // set the network name.
-	      network.assign(optarg);
-
-	      break;
-	    }
-	  case '?':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("unknown option");
-	    }
-	  case ':':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("missing argument");
-	    }
-	  default:
-	    {
-	      escape("an error occured while parsing the options");
-	    }
-	  }
-      }
-
-    // check the network.
-    if (network.empty() == true)
+    // test the option.
+    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
       {
 	// display the usage.
-	parser->Usage();
+	Infinit::Parser->Usage();
 
-	escape("please specify a network name");
+	// quit.
+	leave();
       }
 
-    // initialize the nucleus library.
-    if (nucleus::Nucleus::Initialize() == elle::StatusError)
-      escape("unable to initialize Nucleus");
-
-    // initialize the lune library.
-    if (lune::Lune::Initialize() == elle::StatusError)
-      escape("unable to initialize the Lune library");
-
-    // initialize Infinit.
-    if (Infinit::Initialize() == elle::StatusError)
-      escape("unable to initialize Infinit");
-
     // initialize the Hole library.
-    if (hole::Hole::Initialize(network) == elle::StatusError)
+    if (hole::Hole::Initialize() == elle::StatusError)
       escape("unable to initialize Hole");
 
     // launch the program.
@@ -155,10 +114,10 @@ namespace hole
       escape("unable to clean Elle");
 
     // delete the parser.
-    delete parser;
+    delete Infinit::Parser;
 
     // waive.
-    waive(parser);
+    waive(Infinit::Parser);
 
     leave();
   }

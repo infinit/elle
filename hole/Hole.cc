@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [thu jun 23 14:27:30 2011]
+// updated       julien quintard   [mon jun 27 09:42:07 2011]
 //
 
 //
@@ -49,11 +49,16 @@ namespace hole
   /// this method initializes the hole by allocating and initializing
   /// the implementation.
   ///
-  elle::Status		Hole::Initialize(const elle::String&	name)
+  elle::Status		Hole::Initialize()
   {
     nucleus::Network	network;
+    elle::String	name;
 
     enter();
+
+    // retrieve the network name.
+    if (Infinit::Parser->Value("Network", name) == elle::StatusError)
+      escape("unable to retrieve the network name");
 
     // does the network exist.
     if (Hole::Descriptor.Exist(name) == elle::StatusFalse)
@@ -72,16 +77,16 @@ namespace hole
       escape("unable to create the network instance");
 
     // create the holeable depending on the model.
-    switch (Hole::Descriptor.model)
+    switch (Hole::Descriptor.model.type)
       {
-      case ModelLocal:
+      case Model::TypeLocal:
 	{
 	  // allocate the instance.
 	  Hole::Implementation = new local::Local(network);
 
 	  break;
 	}
-      case ModelRemote:
+      case Model::TypeRemote:
 	{
 	  /* XXX
 	  remote::Remote*        remote;
@@ -100,7 +105,7 @@ namespace hole
 	  break;
 	}
       default:
-	escape("unknown model");
+	escape("unknown or not-yet-supported model");
       }
 
     // set the root address.
@@ -118,6 +123,25 @@ namespace hole
     enter();
 
     // nothing to do.
+
+    leave();
+  }
+
+  ///
+  /// this method sets up the hole-specific options.
+  ///
+  elle::Status		Hole::Options()
+  {
+    enter();
+
+    // register the option.
+    if (Infinit::Parser->Register(
+	  "Network",
+	  'n',
+	  "network",
+	  "specifies the name of the network",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
 
     leave();
   }
