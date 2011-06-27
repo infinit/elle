@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Model.hh
 //
 // created       julien quintard   [fri may 20 17:46:53 2011]
-// updated       julien quintard   [mon jun 27 10:33:42 2011]
+// updated       julien quintard   [mon jun 27 14:01:53 2011]
 //
 
 #ifndef HOLE_MODEL_HH
@@ -64,6 +64,14 @@ namespace hole
     static const Descriptor		Descriptors[Types];
 
     //
+    // static methods
+    //
+    static elle::Status	Convert(const elle::String&,
+				Type&);
+    static elle::Status	Convert(const Type,
+				elle::String&);
+
+    //
     // constructors & destructors
     //
     Model();
@@ -72,6 +80,7 @@ namespace hole
     //
     // methods
     //
+    elle::Status	Create(const Type);
     elle::Status	Create(const elle::String&);
 
     //

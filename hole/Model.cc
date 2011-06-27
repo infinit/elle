@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Model.cc
 //
 // created       julien quintard   [mon jun 27 09:15:33 2011]
-// updated       julien quintard   [mon jun 27 10:33:56 2011]
+// updated       julien quintard   [mon jun 27 15:39:26 2011]
 //
 
 //
@@ -17,18 +17,13 @@
 
 #include <hole/Model.hh>
 
+#include <elle/idiom/Close.hh>
+# include <algorithm>
+# include <string>
+#include <elle/idiom/Open.hh>
+
 namespace hole
 {
-
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
-///
-/// XXX
-///
-#define ModelDefine(_identifier_)					\
-  { Model::Type ## _identifier_, #_identifier_ }
 
 //
 // ---------- definitions -----------------------------------------------------
@@ -44,10 +39,71 @@ namespace hole
   ///
   const Model::Descriptor		Model::Descriptors[Model::Types] =
     {
-      ModelDefine(Local),
-      ModelDefine(Remote),
-      ModelDefine(Kool)
+      { Model::TypeLocal, "local" },
+      { Model::TypeRemote, "remote" },
+      { Model::TypeKool, "kool" },
     };
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+  ///
+  /// XXX
+  ///
+  elle::Status		Model::Convert(const elle::String&	name,
+				       Type&			type)
+  {
+    elle::String	string(name);
+    elle::Natural32	i;
+
+    enter();
+
+    // transform the given name in lowercase.
+    std::transform(string.begin(), string.end(),
+		   string.begin(), std::ptr_fun(::tolower));
+
+    // go through the descriptors.
+    for (i = 0; i < Model::Types; i++)
+      {
+	// is this the model we are looking for?
+	if (Model::Descriptors[i].name == string)
+	  {
+	    // set the model type.
+	    type = Model::Descriptors[i].type;
+
+	    leave();
+	  }
+      }
+
+    escape("unable to locate the given model name");
+  }
+
+  ///
+  /// XXX
+  ///
+  elle::Status		Model::Convert(const Type		type,
+				       elle::String&		name)
+  {
+    elle::Natural32	i;
+
+    enter();
+
+    // go through the descriptors.
+    for (i = 0; i < Model::Types; i++)
+      {
+	// is this the model we are looking for?
+	if (Model::Descriptors[i].type == type)
+	  {
+	    // set the model name.
+	    name = Model::Descriptors[i].name;
+
+	    leave();
+	  }
+      }
+
+    escape("unable to locate the given model type");
+  }
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -76,26 +132,28 @@ namespace hole
   ///
   /// XXX
   ///
-  elle::Status		Model::Create(const elle::String&	name)
+  elle::Status		Model::Create(const Type		type)
   {
-    elle::Natural32	i;
-
     enter();
 
-    // go through the descriptors.
-    for (i = 0; i < Model::Types; i++)
-      {
-	// is this the model we are looking for?
-	if (Model::Descriptors[i].name == name)
-	  {
-	    // set the model type.
-	    this->type = Model::Descriptors[i].type;
+    // set the type.
+    this->type = type;
 
-	    leave();
-	  }
-      }
+    leave();
+  }
 
-    escape("unable to locate the given model name");
+  ///
+  /// XXX
+  ///
+  elle::Status		Model::Create(const elle::String&	name)
+  {
+    enter();
+
+    // convert the name into a type.
+    if (Model::Convert(name, this->type) == elle::StatusError)
+      escape("unable to convert the model name into a valid type");
+
+    leave();
   }
 
 //

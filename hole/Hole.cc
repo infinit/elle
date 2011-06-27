@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [mon jun 27 09:42:07 2011]
+// updated       julien quintard   [mon jun 27 22:11:09 2011]
 //
 
 //
@@ -140,7 +140,7 @@ namespace hole
 	  'n',
 	  "network",
 	  "specifies the name of the network",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     leave();

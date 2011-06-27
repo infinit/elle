@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/hole.cc
 //
 // created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [sun jun 26 22:25:00 2011]
+// updated       julien quintard   [mon jun 27 22:11:43 2011]
 //
 
 //
@@ -66,6 +66,15 @@ namespace hole
 				     "Julien Quintard, All rights "
 				     "reserved.\n") == elle::StatusError)
       escape("unable to set the description");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Help",
+	  'h',
+	  "help",
+	  "display the help",
+	  elle::Parser::KindNone) == elle::StatusError)
+      escape("unable to register the option");
 
     // set up the hole-specific options.
     if (hole::Hole::Options() == elle::StatusError)
