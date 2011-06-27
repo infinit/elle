@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 08:39:41 2011]
+// updated       julien quintard   [mon jun 27 22:11:02 2011]
 //
 
 //
@@ -150,7 +150,7 @@ namespace agent
 	  'u',
 	  "user",
 	  "specifies the name of the user",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     leave();
