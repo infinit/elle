@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [mon jun 20 01:57:02 2011]
+// updated       julien quintard   [mon jun 27 20:16:30 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
@@ -39,25 +39,28 @@ namespace lune
     //
     static const elle::String		Extension;
 
-    struct				Path
+    struct				Default
     {
-      static const elle::Natural32	Capacity = 4096;
-    };
+      struct				Path
+      {
+	static const elle::Natural32	Capacity;
+      };
 
-    struct				Cache
-    {
-      static const elle::Natural32	Capacity = 2097152;
-    };
+      struct				Cache
+      {
+	static const elle::Natural32	Capacity;
+      };
 
-    struct				Reserve
-    {
-      static const elle::Natural32	Capacity = 1073741824;
-    };
+      struct				Reserve
+      {
+	static const elle::Natural32	Capacity;
+      };
 
-    struct				Debug
-    {
-      static const elle::Boolean	Meta = false;
-      static const elle::Boolean	PIG = true;
+      struct				Debug
+      {
+	static const elle::Boolean	Meta;
+	static const elle::Boolean	PIG;
+      };
     };
 
     //
@@ -75,10 +78,6 @@ namespace lune
 
     // dumpable
     elle::Status	Dump(const elle::Natural32 = 0) const;
-
-    // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
 
     // fileable
     elle::Status	Load(const elle::String&);

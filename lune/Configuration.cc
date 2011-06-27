@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [mon jun 20 01:50:08 2011]
+// updated       julien quintard   [mon jun 27 21:13:20 2011]
 //
 
 //
@@ -31,6 +31,20 @@ namespace lune
   ///
   const elle::String		Configuration::Extension = ".conf";
 
+  ///
+  /// these are the default parameters.
+  ///
+  const elle::Natural32		Configuration::Default::Path::Capacity =
+    4096;
+  const elle::Natural32		Configuration::Default::Cache::Capacity =
+    2097152;
+  const elle::Natural32		Configuration::Default::Reserve::Capacity =
+    1073741824;
+  const elle::Boolean		Configuration::Default::Debug::Meta =
+    false;
+  const elle::Boolean		Configuration::Default::Debug::PIG =
+    true;
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -47,6 +61,7 @@ namespace lune
     // update the settings with the parameters.
     //
 
+    /* XXX
     if (elle::Settings::Set(
 	  "path", "capacity",
 	  this->path.capacity) == elle::StatusError)
@@ -71,6 +86,7 @@ namespace lune
 	  "debug", "pig",
 	  this->debug.pig) == elle::StatusError)
       escape("unable to update the parameter");
+    */
 
     leave();
   }
@@ -87,35 +103,37 @@ namespace lune
     // retrieve the parameters from the settings.
     //
 
+    /* XXX
     if (elle::Settings::Get(
 	  "path", "capacity",
 	  this->path.capacity,
-	  Configuration::Path::Capacity) == elle::StatusError)
+	  Configuration::Default::Path::Capacity) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
 	  "cache", "capacity",
 	  this->cache.capacity,
-	  Configuration::Cache::Capacity) == elle::StatusError)
+	  Configuration::Default::Cache::Capacity) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
 	  "reserve", "capacity",
 	  this->reserve.capacity,
-	  Configuration::Reserve::Capacity) == elle::StatusError)
+	  Configuration::Default::Reserve::Capacity) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
 	  "debug", "meta",
 	  this->debug.meta,
-	  Configuration::Debug::Meta) == elle::StatusError)
+	  Configuration::Default::Debug::Meta) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
 	  "debug", "pig",
 	  this->debug.pig,
-	  Configuration::Debug::PIG) == elle::StatusError)
+	  Configuration::Default::Debug::PIG) == elle::StatusError)
       escape("unable to retrieve the parameter");
+    */
 
     leave();
   }
@@ -152,30 +170,6 @@ namespace lune
       escape("unable to dump the settings");
 
     leave();
-  }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-  ///
-  /// this method serializes the object.
-  ///
-  elle::Status		Configuration::Serialize(elle::Archive&) const
-  {
-    enter();
-
-    escape("this method should never have been called");
-  }
-
-  ///
-  /// this method extracts the object.
-  ///
-  elle::Status		Configuration::Extract(elle::Archive&)
-  {
-    enter();
-
-    escape("this method should never have been called");
   }
 
 //

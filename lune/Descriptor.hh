@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.hh
 //
 // created       julien quintard   [sat may  1 21:16:41 2010]
-// updated       julien quintard   [mon jun 27 09:32:10 2011]
+// updated       julien quintard   [mon jun 27 20:16:22 2011]
 //
 
 #ifndef LUNE_DESCRIPTOR_HH
@@ -39,8 +39,7 @@ namespace lune
   /// role of identifier.
   ///
   class Descriptor:
-    public elle::Object,
-    public virtual elle::Fileable<elle::FormatCustom>
+    public elle::Settings
   {
   public:
     //
@@ -58,6 +57,9 @@ namespace lune
     elle::Status	Seal(const Authority&);
     elle::Status	Validate(const Authority&) const;
 
+    elle::Status	Push();
+    elle::Status	Pull();
+
     //
     // interfaces
     //
@@ -67,10 +69,6 @@ namespace lune
 
     // dumpable
     elle::Status	Dump(const elle::Natural32 = 0) const;
-
-    // archivable
-    elle::Status	Serialize(elle::Archive&) const;
-    elle::Status	Extract(elle::Archive&);
 
     // fileable
     elle::Status	Load(const elle::String&);
