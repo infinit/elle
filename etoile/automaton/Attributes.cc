@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Attributes.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [sat jun 25 16:26:08 2011]
+// updated       julien quintard   [mon jun 27 10:45:03 2011]
 //
 
 //
@@ -121,9 +121,10 @@ namespace etoile
       enter();
 
       // consult the attributes.
-      if (context.object.meta.attributes.Consult(nucleus::IndexFirst,
-						 nucleus::SizeMaximum,
-						 range) == elle::StatusError)
+      if (context.object.meta.attributes.Consult(
+	    elle::Type<nucleus::Index>::Minimum,
+	    elle::Type<nucleus::Size>::Maximum,
+	    range) == elle::StatusError)
 	escape("unable to fetch the attributes");
 
       leave();
