@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Offset.hh
 //
 // created       julien quintard   [sun jan 31 22:34:41 2010]
-// updated       julien quintard   [thu may  5 09:11:25 2011]
+// updated       julien quintard   [mon jun 27 10:41:21 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OFFSET_HH
@@ -34,16 +34,6 @@ namespace nucleus
     /// is an alias of the size.
     ///
     typedef Size		Offset;
-
-//
-// ---------- constants -------------------------------------------------------
-//
-
-    ///
-    /// this constants defines the first and last offsets.
-    ///
-    const Offset		OffsetFirst = elle::Type<Offset>::Minimum;
-    const Offset		OffsetLast = elle::Type<Offset>::Maximum;
 
   }
 }
