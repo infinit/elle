@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Directory.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [sun jun 19 22:15:11 2011]
+// updated       julien quintard   [mon jun 27 21:22:53 2011]
 //
 
 //
@@ -175,8 +175,8 @@ namespace elle
 
 	  // create the target path.
 	  if (target.Create(path.string +
-			    elle::System::Path::Separator +
-			    elle::String(entry->d_name)) == StatusError)
+			    System::Path::Separator +
+			    String(entry->d_name)) == StatusError)
 	    escape("unable to create the target path");
 
 	  // perform an action depending on the nature of the target.
@@ -185,7 +185,7 @@ namespace elle
 	    case DT_DIR:
 	      {
 		// empty it as well.
-		if (Directory::Clear(target) == elle::StatusError)
+		if (Directory::Clear(target) == StatusError)
 		  escape("unable to empty a subdirectory");
 
 		// remove the directory.

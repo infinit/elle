@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Pattern.hh
 //
 // created       julien quintard   [mon apr 25 10:59:05 2011]
-// updated       julien quintard   [tue apr 26 12:17:38 2011]
+// updated       julien quintard   [mon jun 27 21:23:23 2011]
 //
 
 #ifndef ELLE_IO_PATTERN_HH
@@ -49,7 +49,7 @@ namespace elle
       //
       // methods
       //
-      elle::Status	Create(const String&);
+      Status		Create(const String&);
 
       //
       // interfaces

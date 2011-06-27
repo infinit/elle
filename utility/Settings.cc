@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [sun jun 26 21:12:44 2011]
+// updated       julien quintard   [mon jun 27 21:20:22 2011]
 //
 
 //
@@ -19,6 +19,9 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Region.hh>
+
+#include <elle/io/File.hh>
 
 namespace elle
 {
@@ -472,17 +475,25 @@ namespace elle
     ///
     Status		Settings::Load(const Path&		path)
     {
-      std::ifstream		file(path.string.c_str());
+      std::istringstream	stream;
+      Region			region;
       String			line;
       Settings::Section*	section;
 
       enter();
 
+      // read the content.
+      if (File::Read(path, region) == StatusError)
+	escape("unable to read the file");
+
+      // set up the stream.
+      stream.str(String((const char*)region.contents, (::size_t)region.size));
+
       // initialize the section pointer.
       section = NULL;
 
       // for every line of the file.
-      while (std::getline(file, line))
+      while (std::getline(stream, line))
 	{
 	  String		name;
 	  String		value;
@@ -550,8 +561,10 @@ namespace elle
     ///
     Status		Settings::Store(const Path&		path) const
     {
-      std::ofstream	file(path.string.c_str());
-      Settings::Scoutor	i;
+      std::ostringstream	stream;
+      Region			region;
+      String			string;
+      Settings::Scoutor		i;
 
       enter();
 
@@ -564,7 +577,7 @@ namespace elle
 	  Settings::Section::Scoutor	j;
 
 	  // write the section identifier.
-	  file << "[" << section->identifier << "]" << std::endl;
+	  stream << "[" << section->identifier << "]" << std::endl;
 
 	  // go through the assignments.
 	  for (j = section->assignments.begin();
@@ -574,10 +587,22 @@ namespace elle
 	      Settings::Assignment*	assignment = *j;
 
 	      // write the assignment.
-	      file << assignment->name << " = "
-		   << assignment->value << std::endl;
+	      stream << assignment->name << " = "
+		     << assignment->value << std::endl;
 	    }
 	}
+
+      // retrieve the string.
+      string = stream.str();
+
+      // wrap the stream in a region.
+      if (region.Wrap((Byte*)string.c_str(),
+		      (Natural64)string.length()) == StatusError)
+	escape("unable to wrap the stream");
+
+      // write the content.
+      if (File::Write(path, region) == StatusError)
+	escape("unable to write the file");
 
       leave();
     }
@@ -590,7 +615,7 @@ namespace elle
       enter();
 
       // erase the file.
-      if (elle::File::Erase(path) == elle::StatusError)
+      if (File::Erase(path) == StatusError)
 	escape("unable to erase the file");
 
       leave();
@@ -601,7 +626,7 @@ namespace elle
     ///
     Status		Settings::Exist(const Path&		path) const
     {
-      return (elle::File::Exist(path));
+      return (File::Exist(path));
     }
 
   }

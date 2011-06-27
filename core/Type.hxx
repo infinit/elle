@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Type.hxx
 //
 // created       julien quintard   [fri jan 30 16:29:55 2009]
-// updated       julien quintard   [sun jun 26 21:09:07 2011]
+// updated       julien quintard   [mon jun 27 21:22:06 2011]
 //
 
 #ifndef ELLE_CORE_TYPE_HXX
@@ -151,7 +151,7 @@ namespace elle
     ///
     template <typename T1,
 	      typename T2>
-    elle::Status	Variable::Convert(const T1&		input,
+    Status		Variable::Convert(const T1&		input,
 					  T2&			output)
     {
       String		string;

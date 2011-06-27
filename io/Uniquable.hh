@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hh
 //
 // created       julien quintard   [sun may  2 12:01:53 2010]
-// updated       julien quintard   [thu jun 23 12:51:34 2011]
+// updated       julien quintard   [mon jun 27 18:10:06 2011]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HH

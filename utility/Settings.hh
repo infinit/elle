@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [sun jun 26 21:12:32 2011]
+// updated       julien quintard   [mon jun 27 21:58:09 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HH
@@ -27,10 +27,11 @@
 
 #include <elle/io/Fileable.hh>
 #include <elle/io/Format.hh>
+#include <elle/io/Uniquable.hh>
+#include <elle/io/Unique.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
-# include <fstream>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -50,11 +51,35 @@ namespace elle
     /// this class provides functionalities for human-readable, hence editable,
     /// configuration files.
     ///
+    /// note that the class supports both basic types and compount i.e
+    /// Uniquable classes through the Behaviour structure dispatcher.
+    ///
     class Settings:
       public Object,
       public virtual Fileable<FormatCustom>
     {
     public:
+      ///
+      /// this enumeration types every basic element settings are composed of.
+      ///
+      enum Type
+	{
+	  TypeUnknown = 0,
+	  TypeNull,
+	  TypeBoolean,
+	  TypeCharacter,
+	  TypeReal,
+	  TypeInteger8,
+	  TypeInteger16,
+	  TypeInteger32,
+	  TypeInteger64,
+	  TypeNatural8,
+	  TypeNatural16,
+	  TypeNatural32,
+	  TypeNatural64,
+	  TypeString
+	};
+
       //
       // classes
       //
@@ -164,8 +189,54 @@ namespace elle
       template <typename T>
       Status		Get(const String&,
 			    const String&,
+			    T&);
+      template <typename T>
+      Status		Get(const String&,
+			    const String&,
 			    T&,
-			    const T = Type<T>::Default);
+			    const T&);
+
+      //
+      // behaviours
+      //
+      template <typename T, Boolean C>
+      struct		Behaviour
+      {
+	static Status	Set(Settings&,
+			    const String&,
+			    const String&,
+			    const T&);
+	static Status	Get(Settings&,
+			    const String&,
+			    const String&,
+			    T&);
+	static Status	Get(Settings&,
+			    const String&,
+			    const String&,
+			    T&,
+			    const T&);
+      };
+
+      template <typename T>
+      struct		Behaviour<T, true>
+      {
+	template <const Format F>
+	static Status	Set(Settings&,
+			    const String&,
+			    const String&,
+			    const Uniquable<F>&);
+	template <const Format F>
+	static Status	Get(Settings&,
+			    const String&,
+			    const String&,
+			    Uniquable<F>&);
+	template <const Format F>
+	static Status	Get(Settings&,
+			    const String&,
+			    const String&,
+			    Uniquable<F>&,
+			    const Uniquable<F>&);
+      };
 
       //
       // interfaces
