@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.cc
 //
 // created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [mon jun 20 01:47:20 2011]
+// updated       julien quintard   [mon jun 27 11:12:51 2011]
 //
 
 //
@@ -26,7 +26,7 @@
 /// can be used to verify the authenticity of the various certificates
 /// populating the Infinit system.
 ///
-const elle::String		Infinit::Key("RUxMAQ0AAAAAAgAAsKKVNXszNo9F2vug8A-TcYCn4mVUeZorx5vGN6OACFSh18COd1e8+Iu0j-0+Ja0e52b9qKeEQ3UHZUJ1+1bKxmOsQTvUOLFkgBXbmwnOtqg1KDNpFaHqtzAgVN3uQEcYKlBWnA-26otBZTgTxXMOMgLWog+s0wqhTwhiZ1YkUygy+Ld8ljvOOccyVxHyLOxhx8NKybnuPvBKz6JvSEUvmk4tLLyx82japPu0ck3HQCRQGaIliAnFWG70M02ME8+80RO3zMkkmxhQiI5z8GIo0uvWwXlA7Cv4DEh9ej74XvbyXQ0iaO0Evo1zG79xoCJ8XNdZeyL+DmHFf65D8mLxq9GL8lAipImuBrJVcueNrKNqIDCwvpnJM9pLQ0ZKKTiumjPQH9rLTVTzKxONPlHXdVw-okniAmFtCZTpo1sYF4q-Tnb0yLOfL5YVq+y8GNGUp-6P9hoDhLUTU5CoWyrV1UznK4PhT-TtUkqi8KfnrNY8jZBYhmD2ChUa+7YCBvCgRu4VIcVynUvHCPYKAVhgCH9DAWkGkZbPMv5uB7HGGxQVtmv2JHkZKtK+BxvkTY2roLGm9sJPozwQblfPD24G-ASgHmyakkvINR8S4j1Di6VTpErw4IUKe9IXRHOWsFx2v4Wh9CUQjmE0cu4jRvHYUvSMKXvKYP+jMs7UdCtmk2kNAAAAAwAAAAEAAQ==");
+const elle::String		Infinit::Key("RUxMAQ0AAAAAAgAAxcbd+krWt+U+s5Uu9pTcJqH7y4aEPyOfneFTPUhmp7Ogf1eOzZqHj5Qmdyt3NsYuNYslpzD32zv-xbvFyTm9dOmqkzdsZ8LuxTSVVTRsu+3xS21Fl56KV0J3p7WymvP6VtbHguF-u72+Q3MppN-HtJ0tz+nL8v0nU1pCdFPLjBRL5LKEEc5uyhVKKgz12qfu83IteTPz-qAVt71gDPdxHxNqFtGs04LjZDvB7hhhratakmOTeOPTz+E7Fo-2qTZ5No-cVe7Du94sJahjBbhjRIKvE72fzWVHmUS8+jVS3BPF4QOc5j8eQIlbOV-pUuzqPfIY51LpZesiR6dPg36NXK2RMGWEUiwDAGC6j3kwlXKXByLRnE8WpiaCZxQQOM1ai7lT0KIpfluD4njDU1MdaV6oxlrF8A-Mv8EQLsUzL+AA41rvP0NW8xB7vcKqUMg3wGn6J-GZBTT56SuGkC6oDyVO0s5NScOgfYlF5ehH9KqQQHYyh6RfsgQOTeWD2+fvUU8KJz8x3dGXs9O+0y+3E14SoFmJYEuTjM2fdmmxSmkQMl51tiCvmwVr5vHR7MLvT7HC4pV5MzV+QGoCakR+6CfM596FOmXh7XHiIFjshogGrjPA07MtAggvlDZ3bt-Z6zta5vaYHtFvDZads18B77BgPCNAaluBgiiJRWZ-IoMNAAAAAwAAAAEAAQ==");
 
 ///
 /// this constant contains the version string.
@@ -34,9 +34,23 @@ const elle::String		Infinit::Key("RUxMAQ0AAAAAAgAAsKKVNXszNo9F2vug8A-TcYCn4mVUeZ
 const elle::String		Infinit::Version("Infinit[alpha]");
 
 ///
+/// this constant contains the copyright string.
+///
+const elle::String		Infinit::Copyright(
+				  Infinit::Version +
+				  " "+
+				  "Copyright (c) 2008, 2009, 2010, 2011, "
+				  "Julien Quintard, All rights reserved.\n");
+
+///
 /// this variable contains the authority.
 ///
 lune::Authority			Infinit::Authority;
+
+///
+/// this variable contains the program's parser.
+///
+elle::Parser*			Infinit::Parser;
 
 //
 // ---------- methods ---------------------------------------------------------

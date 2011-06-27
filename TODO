@@ -1,0 +1,32 @@
+- lune::descriptor avec Settings
+- ecrire applications/8diary
+
+- dans wall faire Transaction puis Apply. difference entre des ref
+  en live et normal lorsqu'on l'extract
+- generer des vraies addresses aleatoires: hash -> suffit d'utiliser
+  le digest dans sa forme string vu que ca prend en compte family, component
+  etc.
+- peut etre attacher des objects a une fibre: report, session ou autre.
+  comment ca pas besoin de govern.
+- ajouter un Serialize(T*) qui serialize le derefenrecement *T.
+  ce sera utile pour retourner des pointeurs par reseau.
+- changer les yield etc. bref ceux qui ne renvoie pas d'erreur en un log
+
+- utiliser les rvalue references
+- passer aux exceptions au lieu de tous les if? on aurait moins de messages
+  d'erreurs. on pourrait etre plus precis et ca fera moins a traduire.
+  -> ATTENTION: tout d'abord verifier qu'on peut recuperer une stack trace.
+- pour optimiser et simplifier, on pourrait merger Access::Grant et
+  Access::Update
+- prendre en compte gear/State.hh
+- revoir midget: autre nom!
+- faire marcher cache path, cache block, reserve et journal
+  en cherchant le bloc dedans
+
+- peut etre inutile d'avoir un etoile/misc/Information et recuperer l'objet
+  entierement dans PIG.
+- lock: locker le reseau mais egalement etre sur qu'aucun scope ne travaille
+  sur cet objet
+- hole/implementations/, hole/algorithms/ etc.
+
+- tree-based data structure -> would improve long directories etc.

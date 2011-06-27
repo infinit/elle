@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [mon jun 20 01:44:58 2011]
+// updated       julien quintard   [mon jun 27 07:49:17 2011]
 //
 
 //
@@ -34,139 +34,11 @@
 elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
 {
-  elle::Parser*		parser;
-  elle::Character	option;
-  elle::String		user;
-  elle::String		network;
-  elle::String		mountpoint;
-
-  enter(instance(parser));
+  enter(instance(Infinit::Parser));
 
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::StatusError)
     escape("unable to initialize Elle");
-
-  // set up the program.
-  if (elle::Program::Setup() == elle::StatusError)
-    escape("unable to set up the program");
-
-  // allocate a new parser.
-  parser = new elle::Parser(argc, argv);
-
-  // specify a program description.
-  if (parser->Description(Infinit::Version +
-			  " "+
-			  "Copyright (c) 2008, 2009, 2010, 2011, "
-			  "Julien Quintard, All rights reserved.\n") == 
-      elle::StatusError)
-    escape("unable to set the description");
-
-  // set up the parser.
-  if (parser->Register('h',
-		       "help",
-		       "display the help",
-		       elle::Parser::TypeNone) == elle::StatusError)
-    escape("unable to register the option");
-
-  if (parser->Register('u',
-		       "user",
-		       "specifies the name of the user",
-		       elle::Parser::TypeRequired) == elle::StatusError)
-    escape("unable to register the option");
-
-  if (parser->Register('n',
-		       "network",
-		       "specifies the name of the network",
-		       elle::Parser::TypeRequired) == elle::StatusError)
-    escape("unable to register the option");
-
-  if (parser->Register('m',
-		       "mountpoint",
-		       "specifies the mount point",
-		       elle::Parser::TypeRequired) == elle::StatusError)
-    escape("unable to register the option");
-
-  // parse.
-  while (parser->Parse(option) == elle::StatusTrue)
-    {
-      switch (option)
-	{
-	case 'h':
-	  {
-	    // display the usage.
-	    parser->Usage();
-
-	    // quit.
-	    leave();
-	  }
-	case 'u':
-	  {
-	    // retrieve the user name.
-	    user.assign(optarg);
-
-	    break;
-	  }
-	case 'n':
-	  {
-	    // retrieve the network name.
-	    network.assign(optarg);
-
-	    break;
-	  }
-	case 'm':
-	  {
-	    // retrieve the mountpoint.
-	    mountpoint.assign(optarg);
-
-	    break;
-	  }
-	case '?':
-	  {
-	    // display the usage.
-	    parser->Usage();
-
-	    escape("unknown option");
-	  }
-	case ':':
-	  {
-	    // display the usage.
-	    parser->Usage();
-
-	    escape("missing argument");
-	  }
-	default:
-	  {
-	    escape("an error occured while parsing the options");
-	  }
-	}
-    }
-
-  // check the user.
-  if (user.empty() == true)
-    {
-      // display the usage.
-      parser->Usage();
-
-      escape("please specify a user name");
-    }
-
-  // check the network.
-  if (network.empty() == true)
-    {
-      // display the usage.
-      parser->Usage();
-
-      escape("please specify a network name");
-    }
-
-  // check the mountpoint.
-  if (mountpoint.empty() == true)
-    {
-      // display the usage.
-      parser->Usage();
-
-      escape("please specify a mountpoint");
-    }
 
   // initialize the nucleus library.
   if (nucleus::Nucleus::Initialize() == elle::StatusError)
@@ -180,20 +52,66 @@ elle::Status		Main(elle::Natural32			argc,
   if (Infinit::Initialize() == elle::StatusError)
     escape("unable to initialize Infinit");
 
-  // initialize the Agent library.
-  if (agent::Agent::Initialize(user) == elle::StatusError)
-    escape("unable to initialize Agent");
-
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::StatusError)
     escape("unable to initialize Etoile");
 
+  // set up the program.
+  if (elle::Program::Setup() == elle::StatusError)
+    escape("unable to set up the program");
+
+  // allocate a new parser.
+  Infinit::Parser = new elle::Parser(argc, argv);
+
+  // specify a program description.
+  if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+    escape("unable to set the description");
+
+  // register the options.
+  if (Infinit::Parser->Register(
+        "Help",
+	'h',
+	"help",
+	"display the help",
+	elle::Parser::FormatNone) == elle::StatusError)
+    escape("unable to register the option");
+
+  // set up the agent-specific options.
+  if (agent::Agent::Options() == elle::StatusError)
+    escape("unable to set up the options");
+
+  // set up the hole-specific options.
+  if (hole::Hole::Options() == elle::StatusError)
+    escape("unable to set up the options");
+
+  // set up the pig-specific options.
+  if (pig::PIG::Options() == elle::StatusError)
+    escape("unable to set up the options");
+
+  // parse.
+  if (Infinit::Parser->Parse() == elle::StatusError)
+    escape("unable to parse the command line");
+
+  // test the option.
+  if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+    {
+      // display the usage.
+      Infinit::Parser->Usage();
+
+      // quit.
+      leave();
+    }
+
+  // initialize the Agent library.
+  if (agent::Agent::Initialize() == elle::StatusError)
+    escape("unable to initialize Agent");
+
   // initialize the Hole library.
-  if (hole::Hole::Initialize(network) == elle::StatusError)
+  if (hole::Hole::Initialize() == elle::StatusError)
     escape("unable to initialize Hole");
 
   // initialize PIG.
-  if (pig::PIG::Initialize(mountpoint) == elle::StatusError)
+  if (pig::PIG::Initialize() == elle::StatusError)
     escape("unable to initialize PIG");
 
   // launch the program.
@@ -208,13 +126,13 @@ elle::Status		Main(elle::Natural32			argc,
   if (hole::Hole::Clean() == elle::StatusError)
     escape("unable to clean Hole");
 
-  // clean the Etoile library.
-  if (etoile::Etoile::Clean() == elle::StatusError)
-    escape("unable to clean Etoile");
-
   // clean the Agent library.
   if (agent::Agent::Clean() == elle::StatusError)
     escape("unable to clean Agent");
+
+  // clean the Etoile library.
+  if (etoile::Etoile::Clean() == elle::StatusError)
+    escape("unable to clean Etoile");
 
   // clean Infinit.
   if (Infinit::Clean() == elle::StatusError)
@@ -233,10 +151,10 @@ elle::Status		Main(elle::Natural32			argc,
     escape("unable to clean Elle");
 
   // delete the parser.
-  delete parser;
+  delete Infinit::Parser;
 
   // waive.
-  waive(parser);
+  waive(Infinit::Parser);
 
   leave();
 }
