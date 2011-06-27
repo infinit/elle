@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.cc
 //
 // created       julien quintard   [tue oct 30 12:16:42 2007]
-// updated       julien quintard   [sun may  2 18:27:18 2010]
+// updated       julien quintard   [mon jun 27 07:16:56 2011]
 //
 
 //
@@ -58,7 +58,7 @@ namespace elle
 	escape(::strerror(errno));
 
       // read random data.
-      if (::read(fd, temporary, sizeof(temporary)) == -1)
+      if (::read(fd, temporary, sizeof (temporary)) == -1)
 	{
 	  ::close(fd);
 
@@ -69,7 +69,7 @@ namespace elle
       ::close(fd);
 
       // seed the random generator.
-      ::RAND_seed(temporary, sizeof(temporary));
+      ::RAND_seed(temporary, sizeof (temporary));
 
       // load the crypto error strings.
       ::ERR_load_crypto_strings();
