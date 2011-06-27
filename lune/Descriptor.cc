@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.cc
 //
 // created       julien quintard   [sat may  1 21:19:13 2010]
-// updated       julien quintard   [fri may 20 21:50:23 2011]
+// updated       julien quintard   [mon jun 27 09:33:28 2011]
 //
 
 //
@@ -31,18 +31,6 @@ namespace lune
   const elle::String		Descriptor::Extension = ".dsc";
 
 //
-// ---------- constructors & destructors --------------------------------------
-//
-
-  ///
-  /// default constructor.
-  ///
-  Descriptor::Descriptor():
-    model(hole::ModelUnknown)
-  {
-  }
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -51,8 +39,7 @@ namespace lune
   ///
   elle::Status		Descriptor::Create(const elle::String&	name,
 					   const hole::Model&	model,
-					   const nucleus::Address& root,
-					   const elle::Address&	boot)
+					   const nucleus::Address& root)
   {
     enter();
 
@@ -60,7 +47,6 @@ namespace lune
     this->name = name;
     this->model = model;
     this->root = root;
-    this->boot = boot;
 
     leave();
   }
@@ -74,9 +60,8 @@ namespace lune
 
     // sign the attributesr with the authority.
     if (authority.k->Sign(this->name,
-			  (elle::Natural8&)this->model,
+			  this->model,
 			  this->root,
-			  this->boot,
 			  this->signature) == elle::StatusError)
       escape("unable to sign the attributes with the authority");
 
@@ -94,9 +79,8 @@ namespace lune
     // verify the signature.
     if (authority.K.Verify(this->signature,
 			   this->name,
-			   (elle::Natural8&)this->model,
-			   this->root,
-			   this->boot) != elle::StatusTrue)
+			   this->model,
+			   this->root) != elle::StatusTrue)
       false();
 
     true();
@@ -131,8 +115,8 @@ namespace lune
 	      << "[Name] " << this->name << std::endl;
 
     // dump the model.
-    std::cout << alignment << elle::Dumpable::Shift
-	      << "[Model] " << (elle::Natural8)this->model << std::endl;
+    if (this->model.Dump(margin + 4) == elle::StatusError)
+      escape("unable to dump the model");
 
     // dump the root directory.
     std::cout << alignment << elle::Dumpable::Shift << "[Root] " << std::endl;
@@ -140,13 +124,6 @@ namespace lune
     // dump the address.
     if (this->root.Dump(margin + 4) == elle::StatusError)
       escape("unable to dump the address");
-
-    // dump the boot.
-    std::cout << alignment << elle::Dumpable::Shift << "[Boot]" << std::endl;
-
-    // dump the network.
-    if (this->boot.Dump(margin + 4) == elle::StatusError)
-      escape("unable to dump the network");
 
     leave();
   }
@@ -164,9 +141,8 @@ namespace lune
 
     // serialize the attributes.
     if (archive.Serialize(this->name,
-			  (elle::Natural8&)this->model,
+			  this->model,
 			  this->root,
-			  this->boot,
 			  this->signature) == elle::StatusError)
       escape("unable to serialize the attributes");
 
@@ -182,9 +158,8 @@ namespace lune
 
     // extract the attributes.
     if (archive.Extract(this->name,
-			(elle::Natural8&)this->model,
+			this->model,
 			this->root,
-			this->boot,
 			this->signature) == elle::StatusError)
       escape("unable to extract the attributes");
 

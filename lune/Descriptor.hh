@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.hh
 //
 // created       julien quintard   [sat may  1 21:16:41 2010]
-// updated       julien quintard   [fri jun 17 16:53:43 2011]
+// updated       julien quintard   [mon jun 27 09:32:10 2011]
 //
 
 #ifndef LUNE_DESCRIPTOR_HH
@@ -49,17 +49,11 @@ namespace lune
     static const elle::String		Extension;
 
     //
-    // constructors & destructors
-    //
-    Descriptor();
-
-    //
     // methods
     //
     elle::Status	Create(const elle::String&,
 			       const hole::Model&,
-			       const nucleus::Address&,
-			       const elle::Address&);
+			       const nucleus::Address&);
 
     elle::Status	Seal(const Authority&);
     elle::Status	Validate(const Authority&) const;
@@ -90,7 +84,6 @@ namespace lune
     elle::String	name;
     hole::Model		model;
     nucleus::Address	root;
-    elle::Address	boot;
     elle::Signature	signature;
   };
 

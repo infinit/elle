@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.hh
 //
 // created       julien quintard   [fri apr 30 12:55:13 2010]
-// updated       julien quintard   [sun jun 19 23:24:42 2011]
+// updated       julien quintard   [mon jun 27 10:53:43 2011]
 //
 
 //
@@ -48,6 +48,8 @@ namespace lune
     //
     // static attributes
     //
+    static elle::Pattern	Home;
+
     static elle::Pattern	Authority;
 
     static elle::Pattern	Users;

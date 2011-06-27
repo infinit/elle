@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.cc
 //
 // created       julien quintard   [fri apr 30 16:29:27 2010]
-// updated       julien quintard   [sun jun 19 23:19:03 2011]
+// updated       julien quintard   [mon jun 27 10:54:34 2011]
 //
 
 //
@@ -23,6 +23,11 @@ namespace lune
 //
 // ---------- definitions -----------------------------------------------------
 //
+
+  ///
+  /// this variable contains the path to the Infinit directory.
+  ///
+  elle::Pattern			Lune::Home;
 
   ///
   /// this variable contains the path to the Infinit authority
@@ -132,6 +137,11 @@ namespace lune
       ".infinit";
 
     enter();
+
+    // create the home path pattern.
+    if (Lune::Home.Create(
+	  home) == elle::StatusError)
+      escape("unable to create the pattern");
 
     // create the authority path pattern.
     if (Lune::Authority.Create(
