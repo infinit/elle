@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [sun jun 19 22:18:02 2011]
+// updated       julien quintard   [mon jun 27 07:17:30 2011]
 //
 
 //
@@ -415,7 +415,7 @@ namespace elle
       enter();
 
       // return the size.
-      size = sizeof(Report);
+      size = sizeof (Report);
 
       leave();
     }

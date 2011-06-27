@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [sun jun 19 22:37:37 2011]
+// updated       julien quintard   [mon jun 27 07:17:47 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HXX
@@ -92,7 +92,7 @@ namespace elle
 
       // dump the quantum.
       std::cout << alignment << Dumpable::Shift << "[Quantum] "
-		<< std::dec << sizeof...(T) << std::endl;
+		<< std::dec << sizeof... (T) << std::endl;
 
       // dump the handler.
       std::cout << alignment << Dumpable::Shift << "[Handler] "

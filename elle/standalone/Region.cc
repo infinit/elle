@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sun jun 19 17:52:11 2011]
+// updated       julien quintard   [mon jun 27 07:22:59 2011]
 //
 
 //
@@ -402,7 +402,7 @@ namespace elle
       enter();
 
       // return the size.
-      size = sizeof(Region);
+      size = sizeof (Region);
 
       leave();
     }

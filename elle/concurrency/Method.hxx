@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [fri may 28 12:15:58 2010]
+// updated       julien quintard   [mon jun 27 07:17:52 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HXX
@@ -74,7 +74,7 @@ namespace elle
 
       // dump the quantum.
       std::cout << alignment << Dumpable::Shift << "[Quantum] "
-		<< std::dec << sizeof...(T) << std::endl;
+		<< std::dec << sizeof... (T) << std::endl;
 
       // dump the object.
       std::cout << alignment << Dumpable::Shift << "[Object] "

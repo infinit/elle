@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon may  3 21:26:48 2010]
+// updated       julien quintard   [mon jun 27 07:15:56 2011]
 //
 
 //
@@ -76,7 +76,7 @@ namespace elle
 	  escape("unable to generate a new key pair");
 
 	// prepare random data.
-	if (region.Wrap(buffer, sizeof(buffer)) == StatusError)
+	if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
 	  escape("unable to prepare the block");
 
 	time.Start();
@@ -106,7 +106,7 @@ namespace elle
 	  escape("unable to generate a new key pair");
 
 	// some random data.
-	if (region.Wrap(buffer, sizeof(buffer)) == StatusError)
+	if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
 	  escape("unable to prepare the block");
 
 	// encrypt the input.
@@ -143,7 +143,7 @@ namespace elle
 	  escape("unable to generate a new key pair");
 
 	// prepare random data.
-	if (region.Wrap(buffer, sizeof(buffer)) == StatusError)
+	if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
 	  escape("unable to prepare the block");
 
 	time.Start();
@@ -172,7 +172,7 @@ namespace elle
 	  escape("unable to generate a new key pair");
 
 	// some random data.
-	if (region.Wrap(buffer, sizeof(buffer)) == StatusError)
+	if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
 	  escape("unable to prepare the block");
 
 	// sign the input.
@@ -200,7 +200,7 @@ namespace elle
 	Time		time;
 
 	// some random data.
-	if (region.Wrap(buffer, sizeof(buffer)) == StatusError)
+	if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
 	  escape("unable to prepare the block");
 
 	time.Start();
@@ -247,7 +247,7 @@ namespace elle
 	  escape("unable to generate a new secret key");
 
 	// prepare random data.
-	if (region.Wrap(buffer, sizeof(buffer)) == StatusError)
+	if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
 	  escape("unable to prepare the block");
 
 	time.Start();
@@ -277,7 +277,7 @@ namespace elle
 	  escape("unable to generate a new secret key");
 
 	// prepare random data.
-	if (region.Wrap(buffer, sizeof(buffer)) == StatusError)
+	if (region.Wrap(buffer, sizeof (buffer)) == StatusError)
 	  escape("unable to prepare the block");
 
 	// encrypt the input.

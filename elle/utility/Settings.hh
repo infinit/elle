@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [mon jun 20 01:06:08 2011]
+// updated       julien quintard   [sun jun 26 21:12:32 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HH
@@ -157,91 +157,15 @@ namespace elle
 			     const String&,
 			     String&);
 
+      template <typename T>
       Status		Set(const String&,
 			    const String&,
-			    const String&);
-      Status		Set(const String&,
-			    const String&,
-			    const Boolean&);
-      Status		Set(const String&,
-			    const String&,
-			    const Character&);
-      Status		Set(const String&,
-			    const String&,
-			    const Integer8&);
-      Status		Set(const String&,
-			    const String&,
-			    const Integer16&);
-      Status		Set(const String&,
-			    const String&,
-			    const Integer32&);
-      Status		Set(const String&,
-			    const String&,
-			    const Integer64&);
-      Status		Set(const String&,
-			    const String&,
-			    const Natural8&);
-      Status		Set(const String&,
-			    const String&,
-			    const Natural16&);
-      Status		Set(const String&,
-			    const String&,
-			    const Natural32&);
-      Status		Set(const String&,
-			    const String&,
-			    const Natural64&);
-      Status		Set(const String&,
-			    const String&,
-			    const Real&);
-
+			    const T&);
+      template <typename T>
       Status		Get(const String&,
 			    const String&,
-			    String&,
-			    const String = "");
-      Status		Get(const String&,
-			    const String&,
-			    Boolean&,
-			    const Boolean = false);
-      Status		Get(const String&,
-			    const String&,
-			    Character&,
-			    const Character = '\0');
-      Status		Get(const String&,
-			    const String&,
-			    Integer8&,
-			    const Integer8 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Integer16&,
-			    const Integer16 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Integer32&,
-			    const Integer32 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Integer64&,
-			    const Integer64 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Natural8&,
-			    const Natural8 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Natural16&,
-			    const Natural16 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Natural32&,
-			    const Natural32 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Natural64&,
-			    const Natural64 = 0);
-      Status		Get(const String&,
-			    const String&,
-			    Real&,
-			    const Real = 0.0);
+			    T&,
+			    const T = Type<T>::Default);
 
       //
       // interfaces
@@ -267,5 +191,11 @@ namespace elle
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <elle/utility/Settings.hxx>
 
 #endif

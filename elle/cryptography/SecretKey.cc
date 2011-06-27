@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [tue apr 26 11:47:29 2011]
+// updated       julien quintard   [mon jun 27 07:16:48 2011]
 //
 
 //
@@ -138,7 +138,7 @@ namespace elle
       enter(local(context, ::EVP_CIPHER_CTX_cleanup));
 
       // generate a salt.
-      ::RAND_pseudo_bytes((unsigned char*)salt, sizeof(salt));
+      ::RAND_pseudo_bytes((unsigned char*)salt, sizeof (salt));
 
       // generate the key and IV based on the salt and password.
       if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
@@ -148,7 +148,7 @@ namespace elle
 			   this->region.size,
 			   1,
 			   (unsigned char*)key,
-			   (unsigned char*)iv) != sizeof(key))
+			   (unsigned char*)iv) != sizeof (key))
 	escape("the generated key's size does not match the one expected");
 
       // initialise the context.
@@ -169,22 +169,22 @@ namespace elle
       capacity = ::EVP_CIPHER_CTX_block_size(&context);
 
       // allocate the cipher.
-      if (cipher.region.Prepare(sizeof(SecretKey::Magic) - 1 + sizeof(salt) +
+      if (cipher.region.Prepare(sizeof (SecretKey::Magic) - 1 + sizeof (salt) +
 				plain.size + capacity) == StatusError)
 	escape("unable to reserve memory for the cipher");
 
       // push the magic string directly into the cipher.
       ::memcpy(cipher.region.contents,
 	       SecretKey::Magic,
-	       sizeof(SecretKey::Magic) - 1);
+	       sizeof (SecretKey::Magic) - 1);
 
       // push the salt directly into the cipher.
-      ::memcpy(cipher.region.contents + sizeof(SecretKey::Magic) - 1,
+      ::memcpy(cipher.region.contents + sizeof (SecretKey::Magic) - 1,
 	       salt,
-	       sizeof(salt));
+	       sizeof (salt));
 
       // initialise the cipher's size.
-      cipher.region.size = sizeof(SecretKey::Magic) - 1 + sizeof(salt);
+      cipher.region.size = sizeof (SecretKey::Magic) - 1 + sizeof (salt);
 
       // cipher the plain text.
       if (::EVP_EncryptUpdate(&context,
@@ -234,13 +234,13 @@ namespace elle
       // check whether the cipher was produced with a salt.
       if (::memcmp(SecretKey::Magic,
 		   cipher.region.contents,
-		   sizeof(SecretKey::Magic) - 1) != 0)
+		   sizeof (SecretKey::Magic) - 1) != 0)
 	escape("this encrypted information was produced without any salt");
 
       // copy the salt for the sack of clarity.
       ::memcpy(salt,
-	       cipher.region.contents + sizeof(Magic) - 1,
-	       sizeof(salt));
+	       cipher.region.contents + sizeof (Magic) - 1,
+	       sizeof (salt));
 
       // generate the key and IV based on the salt and password.
       if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
@@ -250,7 +250,7 @@ namespace elle
 			   this->region.size,
 			   1,
 			   key,
-			   iv) != sizeof(key))
+			   iv) != sizeof (key))
 	escape("the generated key's size does not match the one expected");
 
       // initialise the context.
@@ -273,7 +273,7 @@ namespace elle
 
       // allocate the clear.
       if (clear.Prepare(cipher.region.size -
-			(sizeof(SecretKey::Magic) - 1 + sizeof(salt)) +
+			(sizeof (SecretKey::Magic) - 1 + sizeof (salt)) +
 			capacity) == StatusError)
 	escape("unable to reserve memory for the clear text");
 
@@ -282,11 +282,11 @@ namespace elle
 			      clear.contents,
 			      &size,
 			      cipher.region.contents +
-			      sizeof(SecretKey::Magic) - 1 +
-			      sizeof(salt),
+			      sizeof (SecretKey::Magic) - 1 +
+			      sizeof (salt),
 			      cipher.region.size -
-			      (sizeof(SecretKey::Magic) - 1 +
-			       sizeof(salt))) == 0)
+			      (sizeof (SecretKey::Magic) - 1 +
+			       sizeof (salt))) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // update the clear size.

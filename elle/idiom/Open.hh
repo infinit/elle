@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sun jun 19 17:48:39 2011]
+// updated       julien quintard   [mon jun 27 07:16:31 2011]
 //
 
 //
@@ -103,7 +103,7 @@
   {									\
     enter();								\
 									\
-    size = sizeof(_type_);						\
+    size = sizeof (_type_);						\
 									\
     leave();								\
   }									\
@@ -330,7 +330,7 @@
   elle::standalone::Maid::Garrison* _maid_ =				\
     elle::standalone::Maid::Install(					\
       (elle::core::Void*)						\
-        alloca(sizeof(elle::standalone::Maid::Garrison)),		\
+        alloca(sizeof (elle::standalone::Maid::Garrison)),		\
       ##_guards_)
 
 ///
@@ -379,7 +379,7 @@
   elle::standalone::Maid::Monitor(					\
     (elle::core::Void*)							\
       alloca(								\
-        sizeof(elle::standalone::Maid::Instance<elle::core::Void*>)),	\
+        sizeof (elle::standalone::Maid::Instance<elle::core::Void*>)),	\
     _pointer_)
 
 ///
@@ -390,7 +390,7 @@
   elle::standalone::Maid::Monitor(					\
     (elle::core::Void*)							\
       alloca(								\
-        sizeof(elle::standalone::Maid::Slab<elle::core::Void*,		\
+        sizeof (elle::standalone::Maid::Slab<elle::core::Void*,		\
 	                                    elle::core::Void		\
                                               (*)(elle::core::Void*)>)),\
     _pointer_, _function_)

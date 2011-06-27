@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [sun jun 19 17:57:46 2011]
+// updated       julien quintard   [mon jun 27 07:18:33 2011]
 //
 
 //
@@ -39,30 +39,6 @@ namespace elle
     /// archives are initialised with this default capacity.
     ///
     const Natural64		Archive::Default::Capacity = 64;
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    ArchiveName(Null);
-    ArchiveName(Boolean);
-    ArchiveName(Character);
-    ArchiveName(Real);
-    ArchiveName(Integer8);
-    ArchiveName(Integer16);
-    ArchiveName(Integer32);
-    ArchiveName(Integer64);
-    ArchiveName(Natural8);
-    ArchiveName(Natural16);
-    ArchiveName(Natural32);
-    ArchiveName(Natural64);
-    ArchiveName(String);
-    ArchiveName(Large);
-    ArchiveName(Region);
-    ArchiveName(Archive);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -122,7 +98,7 @@ namespace elle
 	escape("cannot allocate the default archive capacity");
 
       // pack the magic.
-      for (i = 0; i < (sizeof(Archive::Magic) / sizeof(Character)); i++)
+      for (i = 0; i < (sizeof (Archive::Magic) / sizeof (Character)); i++)
 	{
 	  if (this->Store(Archive::Magic[i]) == StatusError)
 	    escape("unable to store the archive magic number");
@@ -162,7 +138,7 @@ namespace elle
 	escape("unable to take over the given region");
 
       // extract and verify the magic number.
-      for (i = 0; i < (sizeof(Archive::Magic) / sizeof(Character)); i++)
+      for (i = 0; i < (sizeof (Archive::Magic) / sizeof (Character)); i++)
 	{
 	  Character	magic;
 
@@ -239,7 +215,7 @@ namespace elle
 
       // prepare the buffer so that it can receive size of data.
       // that means enlarging the buffer and aligning the offset.
-      if (this->Align(sizeof(Byte)) == StatusError)
+      if (this->Align(sizeof (Byte)) == StatusError)
 	escape("unable to align the size");
 
       if (this->Reserve(size) == StatusError)
@@ -269,7 +245,7 @@ namespace elle
 	escape("unable to store the length");
 
       // align the size if it is necessary.
-      if (this->Align(sizeof(char)) == StatusError)
+      if (this->Align(sizeof (char)) == StatusError)
 	escape("unable to align the size");
 
       // possibly enlarge the archive and align the size.
@@ -298,7 +274,7 @@ namespace elle
 
       // align the archive though, aligning on a Byte should
       // not be a problem...
-      if (this->Align(sizeof(Byte)) == StatusError)
+      if (this->Align(sizeof (Byte)) == StatusError)
 	escape("unable to align the size");
 
       // enlarge the buffer.
@@ -326,7 +302,7 @@ namespace elle
 	escape("unable to store the size");
 
       // align the size if it is necessary.
-      if (this->Align(sizeof(Byte)) == StatusError)
+      if (this->Align(sizeof (Byte)) == StatusError)
 	escape("unable to align the size");
 
       // possibly enlarge the archive and align the size.
@@ -378,7 +354,7 @@ namespace elle
       if (size > 0)
 	{
 	  // align the offset if it is necessary.
-	  if (this->Align(sizeof(Byte)) == StatusError)
+	  if (this->Align(sizeof (Byte)) == StatusError)
 	    escape("unable to align the offset");
 
 	  // load directly the bignum from the buffer.
@@ -408,7 +384,7 @@ namespace elle
       if (length > 0)
 	{
 	  // align the offset if it is necessary.
-	  if (this->Align(sizeof(char)) == StatusError)
+	  if (this->Align(sizeof (char)) == StatusError)
 	    escape("unable to align the offset");
 
 	  // assign the content to the string.
@@ -438,7 +414,7 @@ namespace elle
       if (size > 0)
 	{
 	  // align the offset if it is necessary.
-	  if (this->Align(sizeof(Byte)) == StatusError)
+	  if (this->Align(sizeof (Byte)) == StatusError)
 	    escape("unable to align the offset");
 
 	  // assign the data.
@@ -471,7 +447,7 @@ namespace elle
       if (size > 0)
 	{
 	  // align the offset if it is necessary.
-	  if (this->Align(sizeof(Byte)) == StatusError)
+	  if (this->Align(sizeof (Byte)) == StatusError)
 	    escape("unable to align the offset");
 
 	  // assign the content to the buffer.
@@ -939,7 +915,7 @@ namespace elle
       enter();
 
       // return the size.
-      size = sizeof(Archive);
+      size = sizeof (Archive);
 
       leave();
     }

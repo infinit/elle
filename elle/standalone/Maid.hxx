@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Maid.hxx
 //
 // created       julien quintard   [sun feb 28 09:08:48 2010]
-// updated       julien quintard   [sun jun 19 22:13:07 2011]
+// updated       julien quintard   [mon jun 27 07:17:21 2011]
 //
 
 #ifndef ELLE_STANDALONE_MAID_HXX
@@ -73,7 +73,7 @@ namespace elle
 					      T...		guards)
     {
       // create the Garrison instance.
-      return (new (memory) Maid::Garrison(sizeof...(T), guards...));
+      return (new (memory) Maid::Garrison(sizeof... (T), guards...));
     }
 
     ///
