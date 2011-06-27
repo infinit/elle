@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 20 16:39:10 2011]
+// updated       julien quintard   [mon jun 27 08:39:41 2011]
 //
 
 //
@@ -53,12 +53,22 @@ namespace agent
   ///
   /// this method initializes the agent.
   ///
-  elle::Status		Agent::Initialize(const elle::String&	name)
+  elle::Status		Agent::Initialize()
   {
     elle::String	prompt;
     elle::String	pass;
+    elle::String	name;
 
     enter();
+
+    //
+    // handle the parser.
+    //
+    {
+      // retrieve the user name.
+      if (Infinit::Parser->Value("User", name) == elle::StatusError)
+	escape("unable to retrieve the user name");
+    }
 
     //
     // load the identity.
@@ -123,6 +133,25 @@ namespace agent
     enter();
 
     // nothing to do.
+
+    leave();
+  }
+
+  ///
+  /// this method sets up the agent-specific options.
+  ///
+  elle::Status		Agent::Options()
+  {
+    enter();
+
+    // register the option.
+    if (Infinit::Parser->Register(
+	  "User",
+	  'u',
+	  "user",
+	  "specifies the name of the user",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
 
     leave();
   }

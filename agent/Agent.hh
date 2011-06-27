@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [mon jun 20 15:13:27 2011]
+// updated       julien quintard   [sun jun 26 14:21:29 2011]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -40,8 +40,10 @@ namespace agent
     //
     // static methods
     //
-    static elle::Status		Initialize(const elle::String&);
+    static elle::Status		Initialize();
     static elle::Status		Clean();
+
+    static elle::Status		Options();
 
     //
     // static attributes
