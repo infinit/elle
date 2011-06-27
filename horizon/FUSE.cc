@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [sun jun 19 18:04:09 2011]
+// updated       julien quintard   [mon jun 27 07:35:14 2011]
 //
 
 //
@@ -108,6 +108,9 @@ namespace pig
     // initialize the FUSE operations.
     //
     {
+      // set all the pointers to zero.
+      ::memset(&FUSE::System::Operations, 0x0, sizeof (::fuse_operations));
+
       // FUSE::System::Operations.statfs: not supported
       FUSE::System::Operations.getattr = Crux::Getattr;
       FUSE::System::Operations.fgetattr = Crux::Fgetattr;
@@ -122,10 +125,12 @@ namespace pig
       FUSE::System::Operations.access = Crux::Access;
       FUSE::System::Operations.chmod = Crux::Chmod;
       FUSE::System::Operations.chown = Crux::Chown;
+#ifdef HAVE_SETXATTR
       FUSE::System::Operations.setxattr = Crux::Setxattr;
       FUSE::System::Operations.getxattr = Crux::Getxattr;
       FUSE::System::Operations.listxattr = Crux::Listxattr;
       FUSE::System::Operations.removexattr = Crux::Removexattr;
+#endif
 
       FUSE::System::Operations.lock = Crux::Lock;
 
@@ -170,8 +175,8 @@ namespace pig
 
       // setup fuse.
       if ((FUSE::System::Core = ::fuse_setup(
-				  (int)(sizeof(arguments) /
-					sizeof(elle::Character*)),
+				  (int)(sizeof (arguments) /
+					sizeof (elle::Character*)),
 				  (char**)arguments,
 				  &FUSE::System::Operations,
 				  sizeof (FUSE::System::Operations),

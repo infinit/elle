@@ -4,6 +4,7 @@ ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
 ADD_LIBRARY(pig
   Crux.cc
+  Diary.cc
   FUSE.cc
   PIG.cc
 )

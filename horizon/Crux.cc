@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [sat jun 25 16:32:46 2011]
+// updated       julien quintard   [mon jun 27 07:26:30 2011]
 //
 
 //
@@ -82,6 +82,19 @@ namespace pig
 	   __FUNCTION__,
 	   path, stat);
 
+    /* XXX
+    // record the operation.
+    if (PIG::Diary.Record(
+	  Diary::OperationGetattr,
+	  elle::String(path),
+	  elle::Region(stat, sizeof (struct stat))) == elle::StatusError)
+      escape("unable to record the operation");
+
+// XXX il faudrait ecrire un programme qui utiliser du FUSE forward et
+ creer un diary. nous on le rejoue dans notre FS.
+// XXX 8diaryne
+*/
+
     // XXX un moyen de tester si l'objet exist: Path::Exist?
 
     // resolve the path.
@@ -133,7 +146,7 @@ namespace pig
 	   path, stat);
 
     // clear the stat structure.
-    ::memset(stat, 0x0, sizeof(struct stat));
+    ::memset(stat, 0x0, sizeof (struct stat));
 
     // retrieve the identifier.
     identifier = (etoile::gear::Identifier*)info->fh;
@@ -897,6 +910,7 @@ namespace pig
     return (0);
   }
 
+#ifdef HAVE_SETXATTR
   ///
   /// this method sets an extended attribute value.
   ///
@@ -1136,6 +1150,7 @@ namespace pig
 
     return (0);
   }
+#endif
 
   ///
   /// this method handles locking on the given object.

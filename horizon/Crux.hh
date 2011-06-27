@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.hh
 //
 // created       julien quintard   [wed jun  1 09:19:13 2011]
-// updated       julien quintard   [wed jun  1 12:08:11 2011]
+// updated       julien quintard   [mon jun 27 07:11:44 2011]
 //
 
 #ifndef PIG_CRUX_HH
@@ -24,7 +24,9 @@
 
 #include <elle/idiom/Close.hh>
 # include <fuse.h>
-# include <attr/xattr.h>
+# ifdef HAVE_SETXATTR
+#  include <attr/xattr.h>
+# endif
 #include <elle/idiom/Open.hh>
 
 namespace pig
@@ -81,6 +83,7 @@ namespace pig
 			      uid_t,
 			      gid_t);
 
+#ifdef HAVE_SETXATTR
     // attribute
     static int		Setxattr(const char*,
 				 const char*,
@@ -96,6 +99,7 @@ namespace pig
 				  size_t);
     static int		Removexattr(const char*,
 				    const char*);
+#endif
 
     // lock
     static int		Lock(const char*,
