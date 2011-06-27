@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/package/Pack.cc
 //
 // created       julien quintard   [wed jan 28 12:08:47 2009]
-// updated       julien quintard   [fri jun  3 15:07:58 2011]
+// updated       julien quintard   [mon jun 27 07:16:14 2011]
 //
 
 //
@@ -56,7 +56,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeNull,
 				    &none,
-				    sizeof(Null)) == StatusError)
+				    sizeof (Null)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -74,7 +74,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeBoolean,
 				    &value,
-				    sizeof(Boolean)) == StatusError)
+				    sizeof (Boolean)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -92,7 +92,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeCharacter,
 				    &value,
-				    sizeof(Character)) == StatusError)
+				    sizeof (Character)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -110,7 +110,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeReal,
 				    &value,
-				    sizeof(Real)) == StatusError)
+				    sizeof (Real)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -128,7 +128,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger8,
 				    &value,
-				    sizeof(Integer8)) == StatusError)
+				    sizeof (Integer8)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -146,7 +146,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger16,
 				    &value,
-				    sizeof(Integer16)) == StatusError)
+				    sizeof (Integer16)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -164,7 +164,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger32,
 				    &value,
-				    sizeof(Integer32)) == StatusError)
+				    sizeof (Integer32)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -182,7 +182,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeInteger64,
 				    &value,
-				    sizeof(Integer64)) == StatusError)
+				    sizeof (Integer64)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -200,7 +200,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural8,
 				    &value,
-				    sizeof(Natural8)) == StatusError)
+				    sizeof (Natural8)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -218,7 +218,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural16,
 				    &value,
-				    sizeof(Natural16)) == StatusError)
+				    sizeof (Natural16)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -236,7 +236,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural32,
 				    &value,
-				    sizeof(Natural32)) == StatusError)
+				    sizeof (Natural32)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;
@@ -254,7 +254,7 @@ namespace elle
 		if (refer)
 		  if (Referee::Push(Archive::TypeNatural64,
 				    &value,
-				    sizeof(Natural64)) == StatusError)
+				    sizeof (Natural64)) == StatusError)
 		    escape("unable to push the element into the referee");
 
 		break;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [sun jun 19 17:53:17 2011]
+// updated       julien quintard   [sun jun 26 22:20:31 2011]
 //
 
 //

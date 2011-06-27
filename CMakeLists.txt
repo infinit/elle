@@ -15,6 +15,7 @@ ADD_LIBRARY(elle
   core/Large.cc
   core/Null.cc
   core/Natural.cc
+  core/Type.cc
 
   standalone/Maid.cc
   standalone/Region.cc

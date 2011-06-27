@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.cc
 //
 // created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [mon jun 20 01:53:49 2011]
+// updated       julien quintard   [mon jun 27 11:00:14 2011]
 //
 
 //
@@ -34,6 +34,75 @@ namespace elle
     /// must be displayed in Usage().
     ///
     const Natural32		Parser::Alignment = 25;
+
+//
+// ---------- option-specific methods -----------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Parser::Option::Option(const String&			name,
+			   const Character&			character,
+			   const String&			string,
+			   const String&			description,
+			   const Format&			format):
+      name(name),
+      character(character),
+      string(string),
+      description(description),
+      format(format),
+
+      state(Parser::StateDeactivated),
+      value(NULL)
+    {
+    }
+
+    ///
+    /// this method dumps the option.
+    ///
+    Status		Parser::Option::Dump(const Natural32	margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Option] " << this->name << std::endl;
+
+      // dump the character.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Character] " << this->character << std::endl;
+
+      // dump the string.
+      std::cout << alignment << Dumpable::Shift
+		<< "[String] " << this->string << std::endl;
+
+      // dump the description.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Description] " << this->description << std::endl;
+
+      // dump the format.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Format] " << (const Natural32)this->format << std::endl;
+
+      // dump the state.
+      std::cout << alignment << Dumpable::Shift
+		<< "[State] " << (const Natural32)this->state << std::endl;
+
+      // dump the value, if present.
+      if (this->value != NULL)
+	{
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Value] " << *this->value << std::endl;
+	}
+      else
+	{
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Value] " << none << std::endl;
+	}
+
+      leave();
+    }
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -64,6 +133,10 @@ namespace elle
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
 	{
+	  // delete the value, if present.
+	  if (this->options[i]->value != NULL)
+	    delete this->options[i]->value;
+
 	  // delete the option.
 	  delete this->options[i];
 	}
@@ -92,23 +165,22 @@ namespace elle
     ///
     /// this method adds an option to the parser.
     ///
-    Status		Parser::Register(const Character&	character,
+    Status		Parser::Register(const String&		name,
+					 const Character&	character,
 					 const String&		string,
 					 const String&		description,
-					 const Type&		type)
+					 const Format		format)
     {
       Parser::Option*	option;
 
       enter(instance(option));
 
       // create a new option.
-      option = new Parser::Option;
-
-      // set the attributes.
-      option->character = character;
-      option->string = string;
-      option->description = description;
-      option->type = type;
+      option = new Parser::Option(name,
+				  character,
+				  string,
+				  description,
+				  format);
 
       // add the option to the vector of options.
       this->options.push_back(option);
@@ -120,14 +192,70 @@ namespace elle
     }
 
     ///
+    /// this method returns true and sets the pointer if the given
+    /// named option has been located.
+    ///
+    Status		Parser::Locate(const String&		name,
+				       Parser::Option*&		option)
+    {
+      Natural32		i;
+
+      enter();
+
+      // go through the options.
+      for (i = 0; i < this->options.size(); i++)
+	{
+	  // is this the right option.
+	  if (this->options[i]->name == name)
+	    {
+	      // set the pointer.
+	      option = this->options[i];
+
+	      true();
+	    }
+	}
+
+      false();
+    }
+
+    ///
+    /// this method returns true and sets the pointer if the given
+    /// character option has been located.
+    ///
+    Status		Parser::Locate(const Character&		character,
+				       Parser::Option*&		option)
+    {
+      Natural32		i;
+
+      enter();
+
+      // go through the options.
+      for (i = 0; i < this->options.size(); i++)
+	{
+	  // is this the right option.
+	  if (this->options[i]->character == character)
+	    {
+	      // set the pointer.
+	      option = this->options[i];
+
+	      true();
+	    }
+	}
+
+      false();
+    }
+
+    ///
     /// this method parses the arguments according to the registered
     /// options.
     ///
     /// this method returns true if there is still some arguments to
     /// process or false otherwise.
     ///
-    Status		Parser::Parse(Character&		option)
+    Status		Parser::Parse()
     {
+      Character		character;
+
       enter();
 
       // check if the shorts and longs structure has been generated, if
@@ -147,21 +275,21 @@ namespace elle
 
 	      // append a special character(s) depending on the required
 	      // arguments.
-	      switch (this->options[i]->type)
+	      switch (this->options[i]->format)
 		{
-		case Parser::TypeNone:
+		case Parser::FormatNone:
 		  {
 		    // no option.
 		    break;
 		  }
-		case Parser::TypeRequired:
+		case Parser::FormatRequired:
 		  {
 		    // add the ':' character
 		    this->shorts.append(":");
 
 		    break;
 		  }
-		case Parser::TypeOptional:
+		case Parser::FormatOptional:
 		  {
 		    // add the '::' character
 		    this->shorts.append("::");
@@ -174,14 +302,14 @@ namespace elle
 	  // allocate the structure.
 	  if ((this->longs =
 	       (struct ::option*)::malloc((this->options.size() + 1) *
-					  sizeof(struct ::option))) == NULL)
+					  sizeof (struct ::option))) == NULL)
 	    escape("unable to allocate memory");
 
 	  // initialize the structure with zeros, especially since the
 	  // last entry must be set to zero anyway.
 	  ::memset(this->longs,
 		   0x0,
-		   (this->options.size() + 1) * sizeof(struct ::option));
+		   (this->options.size() + 1) * sizeof (struct ::option));
 
 	  // build the long options.
 	  for (i = 0; i < this->options.size(); i++)
@@ -190,23 +318,23 @@ namespace elle
 	      this->longs[i].name = this->options[i]->string.c_str();
 
 	      // set the argument.
-	      switch (this->options[i]->type)
+	      switch (this->options[i]->format)
 		{
-		case Parser::TypeNone:
+		case Parser::FormatNone:
 		  {
 		    // no option.
 		    this->longs[i].has_arg = 0;
 
 		    break;
 		  }
-		case Parser::TypeRequired:
+		case Parser::FormatRequired:
 		  {
 		    // set the argument as being required.
 		    this->longs[i].has_arg = 1;
 
 		    break;
 		  }
-		case Parser::TypeOptional:
+		case Parser::FormatOptional:
 		  {
 		    // set the argument as being optional.
 		    this->longs[i].has_arg = 2;
@@ -223,13 +351,118 @@ namespace elle
 	}
 
       // now process the argument.
-      if ((option = getopt_long(this->argc, this->argv,
-				this->shorts.c_str(),
-				this->longs,
-				NULL)) == -1)
-	false();
+      while ((character = getopt_long(this->argc, this->argv,
+				      this->shorts.c_str(),
+				      this->longs,
+				      NULL)) != -1)
+	{
+	  Parser::Option*	option;
 
-      true();
+	  // unknown option.
+	  if (character == '?')
+	    {
+	      // display the usage.
+	      this->Usage();
+
+	      escape("unknown option");
+	    }
+
+	  // missing argument.
+	  if (character == ':')
+	    {
+	      // display the usage.
+	      this->Usage();
+
+	      escape("missing argument");
+	    }
+
+	  // locate the option.
+	  if (this->Locate(character, option) == StatusFalse)
+	    escape("unable to locate the option");
+
+	  // activate the option.
+	  option->state = Parser::StateActivated;
+
+	  // depending on the format.
+	  switch (option->format)
+	    {
+	    case Parser::FormatNone:
+	      {
+		// if an argument is present, return an error.
+		if (optarg != NULL)
+		  escape("this option is not supposed to take an argument");
+
+		break;
+	      }
+	    case Parser::FormatOptional:
+	      {
+		// allocate and set the value, if present.
+		if (optarg != NULL)
+		  option->value = new String(::optarg);
+
+		break;
+	      }
+	    case Parser::FormatRequired:
+	      {
+		// if no argument is provided, return an error.
+		if (optarg == NULL)
+		  escape("this option is supposed to take an argument");
+
+		// allocate and set the value
+		option->value = new String(::optarg);
+
+		break;
+	      }
+	    }
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method returns true if the given option has been provided
+    /// on the command line.
+    ///
+    Status		Parser::Test(const String&		name)
+    {
+      Parser::Option*	option;
+
+      enter();
+
+      // locate the option.
+      if (this->Locate(name, option) == StatusFalse)
+	escape("unable to locate the option");
+
+      // return true if the option has been activated.
+      if (option->state == Parser::StateActivated)
+	true();
+
+      false();
+    }
+
+    ///
+    /// this method returns true if the given option has been provided
+    /// with an argument.
+    ///
+    Status		Parser::Argument(const String&		name)
+    {
+      Parser::Option*	option;
+
+      enter();
+
+      // locate the option.
+      if (this->Locate(name, option) == StatusFalse)
+	escape("unable to locate the option");
+
+      // return true if the option has been activated.
+      if (option->state == Parser::StateDeactivated)
+	escape("this option has not been activated");
+
+      // return true if an argument has been provided.
+      if (option->value != NULL)
+	true();
+
+      false();
     }
 
     ///
@@ -261,10 +494,10 @@ namespace elle
 		    << ", "
 		    << "--" << this->options[i]->string;
 
-	  // add =ARG depending on the type or argument required.
-	  switch (this->options[i]->type)
+	  // add =ARG depending on the format or argument required.
+	  switch (this->options[i]->format)
 	    {
-	    case Parser::TypeNone:
+	    case Parser::FormatNone:
 	      {
 		// nothing to add: compute the length accordingly.
 		length = 2 +
@@ -280,7 +513,7 @@ namespace elle
 
 		break;
 	      }
-	    case Parser::TypeRequired:
+	    case Parser::FormatRequired:
 	      {
 		// add the indication that an argument is required.
 		std::cerr << "=ARG";
@@ -299,7 +532,7 @@ namespace elle
 
 		break;
 	      }
-	    case Parser::TypeOptional:
+	    case Parser::FormatOptional:
 	      {
 		// compute the length.
 		length = 2 +
@@ -325,6 +558,57 @@ namespace elle
 	}
 
       std::cerr << std::endl;
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the parser.
+    ///
+    Status		Parser::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+      Parser::Scoutor	scoutor;
+
+      enter();
+
+      std::cout << alignment << "[Parser]" << std::endl;
+
+      // dump argc.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Argc] " << this->argc << std::endl;
+
+      // dump argv.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Argv] " << std::hex << this->argv << std::endl;
+
+      // dump the description.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Description] " << this->description << std::endl;
+
+      // dump the short options.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Short] " << this->shorts << std::endl;
+
+      // dump the long options.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Long] " << std::hex << this->longs << std::endl;
+
+      // dump the options.
+      for (scoutor = this->options.begin();
+	   scoutor != this->options.end();
+	   scoutor++)
+	{
+	  Parser::Option*	option = *scoutor;
+
+	  // dump the option.
+	  if (option->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the option");
+	}
+
+      leave();
     }
 
   }

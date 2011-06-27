@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [fri may 28 12:16:06 2010]
+// updated       julien quintard   [mon jun 27 07:17:58 2011]
 //
 
 //
@@ -62,7 +62,7 @@ namespace elle
 	{
 	  // generate random bytes.
 	  if (::RAND_bytes((unsigned char*)&this->identifier,
-			   sizeof(this->identifier)) == 0)
+			   sizeof (this->identifier)) == 0)
 	    escape(::ERR_error_string(ERR_get_error(), NULL));
 	} while (*this == Event::Null);
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jun 10 00:32:43 2011]
+// updated       julien quintard   [mon jun 27 07:18:11 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX
@@ -17,6 +17,8 @@
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <elle/core/Type.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -34,24 +36,12 @@ namespace elle
 //
 
     ///
-    /// these templates provide the methods a way to link types to
-    /// the enum Type value and a name, which can reveal useful for
-    /// debugging.
-    ///
-    template <const Archive::Type V>
-    struct ArchiveType
-    {
-      static const Byte		Value = V;
-      static const Character*	Name;
-    };
-
-    ///
     /// this base template allows for specialized-template.
     ///
     template <typename T>
-    class ArchiveMap:
-      public ArchiveType<Archive::TypeUnknown>
+    struct ArchiveType
     {
+      static const Byte		Value = Archive::TypeUnknown;
     };
 
     ///
@@ -60,17 +50,10 @@ namespace elle
     ///
 #define ArchiveDeclare(_type_)						\
   template <>								\
-  class ArchiveMap<_type_>:						\
-    public ArchiveType<Archive::Type ## _type_>				\
+  struct ArchiveType<_type_>						\
   {									\
+    static const Byte		Value = Archive::Type ## _type_;	\
   };
-
-    ///
-    /// this macro-function links the type to a name.
-    ///
-#define ArchiveName(_type_)						\
-  template <>								\
-  const Character*	ArchiveType<Archive::Type ## _type_>::Name = #_type_;
 
     ///
     /// these macro-function calls actually generate the specialized-templates
@@ -104,7 +87,7 @@ namespace elle
     Status	Archive::Behaviour<T, C>::Serialize(Archive&	archive,
 						    const T&	element)
     {
-      const Byte	type = ArchiveMap<T>::Value;
+      const Byte	type = ArchiveType<T>::Value;
 
       enter();
 
@@ -143,7 +126,7 @@ namespace elle
 	escape("unable to load the type");
 
       // check the type.
-      if (type != ArchiveMap<T>::Value)
+      if (type != ArchiveType<T>::Value)
 	escape("wrong type");
 
       // load the element.
@@ -190,7 +173,7 @@ namespace elle
     {
       return
 	(Archive::Behaviour<T,
-	                    ArchiveMap<T>::Value
+	                    ArchiveType<T>::Value
                               ==
                             Archive::TypeUnknown>::Serialize(*this, element));
     }
@@ -228,7 +211,7 @@ namespace elle
     {
       return
 	(Archive::Behaviour<T,
-	                    ArchiveMap<T>::Value
+	                    ArchiveType<T>::Value
                               ==
                             Archive::TypeUnknown>::Extract(*this, element));
     }
@@ -349,22 +332,22 @@ namespace elle
 	escape("unable to extract while not in extraction mode");
 
       // check if this type is a basic type.
-      if (ArchiveMap<T>::Value == Archive::TypeUnknown)
+      if (ArchiveType<T>::Value == Archive::TypeUnknown)
 	escape("unable to extract value of unknown type");
 
       // align the size if it is necessary.
-      if (this->Align(sizeof(T)) == StatusError)
+      if (this->Align(sizeof (T)) == StatusError)
 	escape("unable to align the size");
 
       // possibly enlarge the archive.
-      if (this->Reserve(sizeof(T)) == StatusError)
+      if (this->Reserve(sizeof (T)) == StatusError)
 	escape("unable to reserve space for an upcoming serialization");
 
       // store the element.
       *((T*)(this->contents + this->size)) = element;
 
       // update the size.
-      this->size += sizeof(T);
+      this->size += sizeof (T);
 
       leave();
     }
@@ -386,18 +369,18 @@ namespace elle
 	escape("unable to extract while not in extraction mode");
 
       // check if this type is a basic type.
-      if (ArchiveMap<T>::Value == Archive::TypeUnknown)
+      if (ArchiveType<T>::Value == Archive::TypeUnknown)
 	escape("unable to extract value of unknown type");
 
       // align the offset if it is necessary.
-      if (this->Align(sizeof(T)) == StatusError)
+      if (this->Align(sizeof (T)) == StatusError)
 	escape("unable to align the offset");
 
       // load the element.
       element = *((T*)(this->contents + this->offset));
 
       // update the offset.
-      this->offset += sizeof(T);
+      this->offset += sizeof (T);
 
       leave();
     }
@@ -418,7 +401,7 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[" << ArchiveMap<T>::Name << "] "
+      std::cout << alignment << "[" << Type<T>::Name << "] "
 		<< element << std::endl;
 
       leave();

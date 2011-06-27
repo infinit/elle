@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.hh
 //
 // created       julien quintard   [wed apr 28 11:11:05 2010]
-// updated       julien quintard   [wed jun  1 10:19:50 2011]
+// updated       julien quintard   [mon jun 27 08:10:58 2011]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HH
@@ -21,6 +21,7 @@
 #include <elle/core/Natural.hh>
 #include <elle/core/Character.hh>
 #include <elle/core/String.hh>
+#include <elle/core/Type.hh>
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
@@ -58,27 +59,54 @@ namespace elle
       //
       // enumeration
       //
-      enum Type
+      enum Format
 	{
-	  TypeNone,
-	  TypeOptional,
-	  TypeRequired
+	  FormatNone,
+	  FormatOptional,
+	  FormatRequired
+	};
+
+      enum State
+	{
+	  StateDeactivated,
+	  StateActivated
 	};
 
       //
-      // structures
+      // classes
       //
-      struct Option:
+      class Option:
 	public Entity
       {
       public:
 	//
+	// constructors & destructors
+	//
+	Option(const String&,
+	       const Character&,
+	       const String&,
+	       const String&,
+	       const Format&);
+
+	//
 	// attributes
 	//
+	String		name;
+
 	Character	character;
 	String		string;
 	String		description;
-	Type		type;
+	Format		format;
+
+	State		state;
+	String*		value;
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
       };
 
       //
@@ -100,14 +128,37 @@ namespace elle
       //
       Status		Description(const String&);
 
-      Status		Register(const Character&,
+      Status		Register(const String&,
+				 const Character&,
 				 const String&,
 				 const String&,
-				 const Type&);
+				 const Format);
 
-      Status		Parse(Character&);
+      Status		Locate(const String&,
+			       Option*&);
+      Status		Locate(const Character&,
+			       Option*&);
+
+      Status		Parse();
+
+      Status		Test(const String&);
+      Status		Argument(const String&);
+      template <typename T>
+      Status		Value(const String&,
+			      T&);
+      template <typename T>
+      Status		Default(const String&,
+				T&,
+				const T = Type<T>::Default);
 
       Void		Usage();
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes
@@ -125,5 +176,11 @@ namespace elle
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <elle/utility/Parser.hxx>
 
 #endif

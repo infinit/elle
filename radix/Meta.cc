@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [sun jun 19 22:32:30 2011]
+// updated       julien quintard   [mon jun 27 07:17:37 2011]
 //
 
 //
@@ -154,7 +154,7 @@ namespace elle
 	  Trace*	trace;
 
 	  // allocate a new trace
-	  trace = new (::malloc(sizeof(Trace))) Trace(address);
+	  trace = new (::malloc(sizeof (Trace))) Trace(address);
 
 	  // generate the trace.
 	  trace->Generate();
