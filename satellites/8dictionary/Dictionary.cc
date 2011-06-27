@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8dictionary/Dictionary.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 11:10:01 2011]
+// updated       julien quintard   [mon jun 27 22:12:25 2011]
 //
 
 //
@@ -413,7 +413,7 @@ namespace application
 	  'h',
 	  "help",
 	  "display the help",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -422,7 +422,7 @@ namespace application
 	  'p',
 	  "profile",
 	  "specify the user name of the dictionary",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -431,7 +431,7 @@ namespace application
 	  'a',
 	  "add",
 	  "add a dictionary record",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -440,7 +440,7 @@ namespace application
 	  'r',
 	  "remove",
 	  "remove a dictionary record",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -449,7 +449,7 @@ namespace application
 	  's',
 	  "show",
 	  "show all the dictionary records",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -458,7 +458,7 @@ namespace application
 	  'd',
 	  "dump",
 	  "dump a specific dictionary record",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -467,7 +467,7 @@ namespace application
 	  'u',
 	  "user",
 	  "indicate the type of the record to be a user",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -476,7 +476,7 @@ namespace application
 	  'g',
 	  "group",
 	  "indicate the type of the record to be a group",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -485,7 +485,7 @@ namespace application
 	  'n',
 	  "name",
 	  "specify the local UNIX/Windows/etc. name of the user/group entry",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -494,7 +494,7 @@ namespace application
 	  'i',
 	  "identifier",
 	  "specify the user/group Infinit base64 identifier",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.

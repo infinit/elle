@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 11:11:35 2011]
+// updated       julien quintard   [mon jun 27 22:13:15 2011]
 //
 
 //
@@ -333,7 +333,7 @@ namespace application
 	  'h',
 	  "help",
 	  "display the help",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -342,7 +342,7 @@ namespace application
 	  'c',
 	  "create",
 	  "create a user",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -351,7 +351,7 @@ namespace application
 	  'd',
 	  "destroy",
 	  "destroy an existing network",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -360,7 +360,7 @@ namespace application
 	  'x',
 	  "information",
 	  "display information regarding the user",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -369,7 +369,7 @@ namespace application
 	  'n',
 	  "name",
 	  "specify the user name",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.

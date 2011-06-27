@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 11:01:31 2011]
+// updated       julien quintard   [mon jun 27 22:12:41 2011]
 //
 
 //
@@ -157,6 +157,10 @@ namespace application
       if (descriptor.Seal(authority) == elle::StatusError)
 	escape("unable to seal the descriptor");
 
+      // push the attributes.
+      if (descriptor.Push() == elle::StatusError)
+	escape("unable to push the descriptor's attributes");
+
       // store the descriptor.
       if (descriptor.Store(name) == elle::StatusError)
 	escape("unable to store the descriptor file");
@@ -304,6 +308,10 @@ namespace application
       if (descriptor.Load(name) == elle::StatusError)
 	escape("unable to load the descriptor");
 
+      // pull the attributes.
+      if (descriptor.Pull() == elle::StatusError)
+	escape("unable to pull the descriptor's attributes");
+
       // validate the descriptor.
       if (descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
 	escape("unable to validate the descriptor");
@@ -375,7 +383,7 @@ namespace application
 	  'h',
 	  "help",
 	  "display the help",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -384,7 +392,7 @@ namespace application
 	  'c',
 	  "create",
 	  "create a new network",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -393,7 +401,7 @@ namespace application
 	  'd',
 	  "destroy",
 	  "destroy an existing network",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -402,7 +410,7 @@ namespace application
 	  'x',
 	  "information",
 	  "display information regarding a network",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -411,7 +419,7 @@ namespace application
 	  'n',
 	  "name",
 	  "specify the network name",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -420,7 +428,7 @@ namespace application
 	  'm',
 	  "model",
 	  "specify the network model: Local, Remote, Kool etc.",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -429,7 +437,7 @@ namespace application
 	  'a',
 	  "administrator",
 	  "specify the network administrator",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.

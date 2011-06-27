@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 11:01:16 2011]
+// updated       julien quintard   [mon jun 27 22:12:51 2011]
 //
 
 //
@@ -139,7 +139,7 @@ namespace application
 	  'h',
 	  "help",
 	  "display the help",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -148,7 +148,7 @@ namespace application
 	  'i',
 	  "initialize",
 	  "initialize the user's infinit environment",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -157,7 +157,7 @@ namespace application
 	  'c',
 	  "clean",
 	  "clean the user's infinit environment",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.

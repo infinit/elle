@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 11:10:37 2011]
+// updated       julien quintard   [mon jun 27 22:12:12 2011]
 //
 
 //
@@ -201,7 +201,7 @@ namespace application
 	  'h',
 	  "help",
 	  "display the help",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -210,7 +210,7 @@ namespace application
 	  'c',
 	  "create",
 	  "create the authority",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -219,7 +219,7 @@ namespace application
 	  'd',
 	  "destroy",
 	  "destroy the existing authority",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -228,7 +228,7 @@ namespace application
 	  'x',
 	  "information",
 	  "display information regarding the authority",
-	  elle::Parser::FormatNone) == elle::StatusError)
+	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
     // parse.
