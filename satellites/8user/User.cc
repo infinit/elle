@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 20 01:52:50 2011]
+// updated       julien quintard   [mon jun 27 11:11:35 2011]
 //
 
 //
@@ -289,148 +289,13 @@ namespace application
   elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
   {
-    elle::Parser*	parser;
     User::Operation	operation;
-    elle::Character	option;
-    elle::String	name;
-    elle::String	attribute;
-    elle::String	value;
 
-    enter();
+    enter(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
-
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
-
-    // initialize the operation.
-    operation = User::OperationUnknown;
-
-    // allocate a new parser.
-    parser = new elle::Parser(argc, argv);
-
-    // set up the parser.
-    if (parser->Register('h',
-			 "help",
-			 "display the help",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('c',
-			 "create",
-			 "create a new user",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('d',
-			 "destroy",
-			 "destroy an existing user",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('x',
-			 "information",
-			 "display information on an existing user",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('n',
-			 "name",
-			 "specifies a unique user name",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // parse.
-    while (parser->Parse(option) == elle::StatusTrue)
-      {
-	switch (option)
-	  {
-	  case 'h':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      // quit.
-	      leave();
-	    }
-	  case 'c':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != User::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the create operation cannot be set concurrently "
-			 "to another operation");
-		}
-
-	      operation = User::OperationCreate;
-
-	      break;
-	    }
-	  case 'd':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != User::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the destroy operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = User::OperationDestroy;
-
-	      break;
-	    }
-	  case 'x':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != User::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the information operation cannot be set "
-			 "concurrently to another operation");
-		}
-
-	      operation = User::OperationInformation;
-
-	      break;
-	    }
-	  case 'n':
-	    {
-	      // retrieve the user name.
-	      name.assign(optarg);
-
-	      break;
-	    }
-	  case '?':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("unknown option");
-	    }
-	  case ':':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("missing argument");
-	    }
-	  default:
-	    {
-	      escape("an error occured while parsing the options");
-	    }
-	  }
-      }
 
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
@@ -444,15 +309,118 @@ namespace application
     if (Infinit::Initialize() == elle::StatusError)
       escape("unable to initialize Infinit");
 
-    // initialize the Etoile.
+    // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
+
+    // initialize the operation.
+    operation = User::OperationUnknown;
+
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
+    // allocate a new parser.
+    Infinit::Parser = new elle::Parser(argc, argv);
+
+    // specify a program description.
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+      escape("unable to set the description");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Help",
+	  'h',
+	  "help",
+	  "display the help",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Create",
+	  'c',
+	  "create",
+	  "create a user",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Destroy",
+	  'd',
+	  "destroy",
+	  "destroy an existing network",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Information",
+	  'x',
+	  "information",
+	  "display information regarding the user",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Name",
+	  'n',
+	  "name",
+	  "specify the user name",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // parse.
+    if (Infinit::Parser->Parse() == elle::StatusError)
+      escape("unable to parse the command line");
+
+    // test the option.
+    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	// quit.
+	leave();
+      }
+
+    // check the mutually exclusive options.
+    if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Information") == elle::StatusTrue))
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("the create, destroy and information options are "
+	       "mutually exclusive");
+      }
+
+    // test the option.
+    if (Infinit::Parser->Test("Create") == elle::StatusTrue)
+      operation = User::OperationCreate;
+
+    // test the option.
+    if (Infinit::Parser->Test("Destroy") == elle::StatusTrue)
+      operation = User::OperationCreate;
+
+    // test the option.
+    if (Infinit::Parser->Test("Information") == elle::StatusTrue)
+      operation = User::OperationCreate;
 
     // trigger the operation.
     switch (operation)
       {
       case User::OperationCreate:
 	{
+	  elle::String		name;
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
+
 	  // create a user.
 	  if (User::Create(name) == elle::StatusError)
 	    escape("unable to create the user");
@@ -465,6 +433,12 @@ namespace application
 	}
       case User::OperationDestroy:
 	{
+	  elle::String		name;
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
+
 	  // destroy a user.
 	  if (User::Destroy(name) == elle::StatusError)
 	    escape("unable to destroy the user");
@@ -477,6 +451,12 @@ namespace application
 	}
       case User::OperationInformation:
 	{
+	  elle::String		name;
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
+
 	  // display information.
 	  if (User::Information(name) == elle::StatusError)
 	    escape("unable to display information on the user");
@@ -487,14 +467,11 @@ namespace application
       default:
 	{
 	  // display the usage.
-	  parser->Usage();
+	  Infinit::Parser->Usage();
 
 	  escape("please specify an operation to perform");
 	}
       }
-
-    // delete the parser.
-    delete parser;
 
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
@@ -515,6 +492,12 @@ namespace application
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
+
+    // delete the parser.
+    delete Infinit::Parser;
+
+    // waive.
+    waive(Infinit::Parser);
 
     leave();
   }

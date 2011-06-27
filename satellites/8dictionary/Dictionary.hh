@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8dictionary/Dictionary.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [tue apr 26 21:19:07 2011]
+// updated       julien quintard   [mon jun 27 08:53:48 2011]
 //
 
 #ifndef DICTIONARY_DICTIONARY_HH
@@ -18,13 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
-
-#include <elle/idiom/Close.hh>
-# include <sys/stat.h>
-#include <elle/idiom/Open.hh>
 
 namespace application
 {

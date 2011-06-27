@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [wed may  5 19:52:41 2010]
+// updated       julien quintard   [mon jun 27 07:46:41 2011]
 //
 
 #ifndef AUTHORITY_AUTHORITY_HH
@@ -18,13 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
-
-#include <elle/idiom/Close.hh>
-# include <sys/stat.h>
-#include <elle/idiom/Open.hh>
 
 namespace application
 {

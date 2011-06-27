@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [wed may  5 21:46:08 2010]
+// updated       julien quintard   [mon jun 27 11:10:49 2011]
 //
 
 #ifndef USER_USER_HH
@@ -22,10 +22,6 @@
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
-
-#include <elle/idiom/Close.hh>
-# include <sys/stat.h>
-#include <elle/idiom/Open.hh>
 
 namespace application
 {

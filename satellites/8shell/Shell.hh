@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8shell/Shell.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon may 23 11:26:39 2011]
+// updated       julien quintard   [mon jun 27 11:11:23 2011]
 //
 
 #ifndef DEBUG_DEBUG_HH
@@ -22,7 +22,6 @@
 #include <etoile/Etoile.hh>
 
 #include <elle/idiom/Close.hh>
-# include <sys/stat.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 #include <elle/idiom/Open.hh>

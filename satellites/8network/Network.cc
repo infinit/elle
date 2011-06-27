@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [tue jun 21 16:54:25 2011]
+// updated       julien quintard   [mon jun 27 11:01:31 2011]
 //
 
 //
@@ -39,15 +39,14 @@ namespace application
   ///
   elle::Status		Network::Create(const elle::String&	name,
 					const hole::Model&	model,
-					const elle::Address&	boot,
-					const elle::String&	owner)
+					const elle::String&	administrator)
   {
     lune::Authority	authority;
     lune::Descriptor	descriptor;
     lune::Identity	identity;
     nucleus::Object	directory;
-    nucleus::Address	address;
     nucleus::Network	network;
+    nucleus::Address	address;
 
     enter();
 
@@ -55,29 +54,17 @@ namespace application
     // test the arguments.
     //
     {
-      // test the name argument.
-      if (name.empty() == true)
-	escape("unable to create a network without a name");
-
       // does the network already exist.
       if (descriptor.Exist(name) == elle::StatusTrue)
 	escape("this network seems to already exist");
 
       // check the model.
-      if (model == hole::ModelUnknown)
+      if (model == hole::Model::Null)
 	escape("please specify the model of the network");
 
-      // test the network argument.
-      if (boot == elle::Address::Null)
-	escape("unable to create a network without a bootstrap node");
-
-      // test the owner argument.
-      if (owner.empty() == true)
-	escape("unable to create a network without a owner");
-
-      // does the owner user exist.
-      if (identity.Exist(owner) == elle::StatusFalse)
-	escape("the owner user does not seem to exist");
+      // does the administrator user exist.
+      if (identity.Exist(administrator) == elle::StatusFalse)
+	escape("the administrator user does not seem to exist");
 
       // check if the authority exists.
       if (authority.Exist() == elle::StatusFalse)
@@ -110,14 +97,14 @@ namespace application
     }
 
     //
-    // retrieve the owner's identity.
+    // retrieve the administrator's identity.
     //
     {
       elle::String		prompt;
       elle::String		pass;
 
       // prompt the user for the passphrase.
-      prompt = "Enter passphrase for keypair '" + owner + "': ";
+      prompt = "Enter passphrase for keypair '" + administrator + "': ";
 
       if (elle::Console::Input(
             pass,
@@ -126,8 +113,8 @@ namespace application
 	escape("unable to read the input");
 
       // load the identity.
-      if (identity.Load(owner) == elle::StatusError)
-	escape("unable to load the owner's identity");
+      if (identity.Load(administrator) == elle::StatusError)
+	escape("unable to load the administrator's identity");
 
       // decrypt the authority.
       if (identity.Decrypt(pass) == elle::StatusError)
@@ -142,7 +129,7 @@ namespace application
       if (network.Create(name) == elle::StatusError)
 	escape("unable to create the network object");
 
-      // create directory object, setting the user's as the owner.
+      // create directory object, setting the user's as the administrator.
       if (directory.Create(nucleus::GenreDirectory,
 			   identity.pair.K) == elle::StatusError)
 	escape("unable to create the object directory");
@@ -163,8 +150,7 @@ namespace application
       // create the descriptor.
       if (descriptor.Create(name,
 			    model,
-			    address,
-			    boot) == elle::StatusError)
+			    address) == elle::StatusError)
 	escape("unable to create the network's descriptor");
 
       // seal the descriptor.
@@ -305,10 +291,6 @@ namespace application
     // test the arguments.
     //
     {
-      // test the name.
-      if (name.empty() == true)
-	escape("please specify the name of the network");
-
       // does the network exist.
       if (descriptor.Exist(name) == elle::StatusFalse)
 	escape("this network does not seem to exist");
@@ -349,203 +331,13 @@ namespace application
   elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
   {
-    elle::Parser*		parser;
-    Network::Operation		operation;
-    elle::Character		option;
-    elle::String		name;
-    hole::Model			model;
-    elle::String		owner;
-    elle::Address		boot;
+    Network::Operation	operation;
 
-    enter();
+    enter(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
-
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
-
-    // initialize the operation.
-    operation = Network::OperationUnknown;
-
-    // initialize the model.
-    model = hole::ModelUnknown;
-
-    // allocate a new parser.
-    parser = new elle::Parser(argc, argv);
-
-    // set up the parser.
-    if (parser->Register('h',
-			 "help",
-			 "display the help",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('c',
-			 "create",
-			 "create a new network",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('d',
-			 "destroy",
-			 "destroy an existing network",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('x',
-			 "information",
-			 "print information on the network",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('n',
-			 "name",
-			 "specifies the network name",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('m',
-			 "model",
-			 "specifies the network model: local, remote, kool "
-			 "etc.",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('o',
-			 "owner",
-			 "specifies the name of the network's owner",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('b',
-			 "bootstrap",
-			 "specifies the bootstrap node's network "
-			 "address of the form 'host:port'",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // parse.
-    while (parser->Parse(option) == elle::StatusTrue)
-      {
-	switch (option)
-	  {
-	  case 'h':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      // quit.
-	      leave();
-	    }
-	  case 'c':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Network::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the create operation cannot be set concurrently "
-			 "to another operation");
-		}
-
-	      operation = Network::OperationCreate;
-
-	      break;
-	    }
-	  case 'd':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Network::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the destroy operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = Network::OperationDestroy;
-
-	      break;
-	    }
-	  case 'x':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Network::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the print operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = Network::OperationInformation;
-
-	      break;
-	    }
-	  case 'n':
-	    {
-	      // assign the name.
-	      name.assign(optarg);
-
-	      break;
-	    }
-	  case 'm':
-	    {
-	      elle::String	m(optarg);
-
-	      // assign the model.
-	      if (m == "local")
-		model = hole::ModelLocal;
-	      else if (m == "remote")
-		model = hole::ModelRemote;
-	      else if (m == "kool")
-		model = hole::ModelKool;
-	      else
-		escape("unknown model");
-
-	      break;
-	    }
-	  case 'o':
-	    {
-	      // assign the owner.
-	      owner.assign(optarg);
-
-	      break;
-	    }
-	  case 'b':
-	    {
-	      // create the node.
-	      if (boot.Create(optarg) == elle::StatusError)
-		escape("unable to create the bootstrap address");
-
-	      break;
-	    }
-	  case '?':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("unknown option");
-	    }
-	  case ':':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("missing argument");
-	    }
-	  default:
-	    {
-	      escape("an error occured while parsing the options");
-	    }
-	  }
-      }
 
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
@@ -555,13 +347,158 @@ namespace application
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
+    // initialize Infinit.
+    if (Infinit::Initialize() == elle::StatusError)
+      escape("unable to initialize Infinit");
+
+    // initialize the Etoile library.
+    if (etoile::Etoile::Initialize() == elle::StatusError)
+      escape("unable to initialize Etoile");
+
+    // initialize the operation.
+    operation = Network::OperationUnknown;
+
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
+    // allocate a new parser.
+    Infinit::Parser = new elle::Parser(argc, argv);
+
+    // specify a program description.
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+      escape("unable to set the description");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Help",
+	  'h',
+	  "help",
+	  "display the help",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Create",
+	  'c',
+	  "create",
+	  "create a new network",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Destroy",
+	  'd',
+	  "destroy",
+	  "destroy an existing network",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Information",
+	  'x',
+	  "information",
+	  "display information regarding a network",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Name",
+	  'n',
+	  "name",
+	  "specify the network name",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Model",
+	  'm',
+	  "model",
+	  "specify the network model: Local, Remote, Kool etc.",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Administrator",
+	  'a',
+	  "administrator",
+	  "specify the network administrator",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // parse.
+    if (Infinit::Parser->Parse() == elle::StatusError)
+      escape("unable to parse the command line");
+
+    // test the option.
+    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	// quit.
+	leave();
+      }
+
+    // check the mutually exclusive options.
+    if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Information") == elle::StatusTrue))
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("the create, destroy and information options are "
+	       "mutually exclusive");
+      }
+
+    // test the option.
+    if (Infinit::Parser->Test("Create") == elle::StatusTrue)
+      operation = Network::OperationCreate;
+
+    // test the option.
+    if (Infinit::Parser->Test("Destroy") == elle::StatusTrue)
+      operation = Network::OperationDestroy;
+
+    // test the option.
+    if (Infinit::Parser->Test("Information") == elle::StatusTrue)
+      operation = Network::OperationInformation;
+
     // trigger the operation.
     switch (operation)
       {
       case Network::OperationCreate:
 	{
+	  elle::String		name;
+	  elle::String		string;
+	  hole::Model		model;
+	  elle::String		administrator;
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
+
+	  // retrieve the model.
+	  if (Infinit::Parser->Value("Model", string) == elle::StatusError)
+	    escape("unable to retrieve the model value");
+
+	  // build the model.
+	  if (model.Create(string) == elle::StatusError)
+	    escape("unable to create the model");
+
+	  // retrieve the administrator.
+	  if (Infinit::Parser->Value("Administrator",
+				     administrator) == elle::StatusError)
+	    escape("unable to retrieve the administrator value");
+
 	  // create the network.
-	  if (Network::Create(name, model, boot, owner) == elle::StatusError)
+	  if (Network::Create(name, model, administrator) == elle::StatusError)
 	    escape("unable to create the network");
 
 	  // display a message.
@@ -572,6 +509,12 @@ namespace application
 	}
       case Network::OperationDestroy:
 	{
+	  elle::String		name;
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
+
 	  // destroy the network.
 	  if (Network::Destroy(name) == elle::StatusError)
 	    escape("unable to destroy the network");
@@ -584,6 +527,12 @@ namespace application
 	}
       case Network::OperationInformation:
 	{
+	  elle::String		name;
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
+
 	  // get information on the network.
 	  if (Network::Information(name) == elle::StatusError)
 	    escape("unable to retrieve information on the network");
@@ -594,14 +543,19 @@ namespace application
       default:
 	{
 	  // display the usage.
-	  parser->Usage();
+	  Infinit::Parser->Usage();
 
 	  escape("please specify an operation to perform");
 	}
       }
 
-    // delete the parser.
-    delete parser;
+    // clean the Etoile.
+    if (etoile::Etoile::Clean() == elle::StatusError)
+      escape("unable to clean Etoile");
+
+    // clean Infinit.
+    if (Infinit::Clean() == elle::StatusError)
+      escape("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
@@ -614,6 +568,12 @@ namespace application
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
+
+    // delete the parser.
+    delete Infinit::Parser;
+
+    // waive.
+    waive(Infinit::Parser);
 
     leave();
   }

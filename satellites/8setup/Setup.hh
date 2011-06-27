@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon apr 25 21:35:06 2011]
+// updated       julien quintard   [mon jun 27 10:51:40 2011]
 //
 
 #ifndef SETUP_SETUP_HH
@@ -18,16 +18,10 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
-
-#include <elle/idiom/Close.hh>
-# include <sys/stat.h>
-# include <sys/types.h>
-# include <dirent.h>
-# include <unistd.h>
-#include <elle/idiom/Open.hh>
 
 namespace application
 {

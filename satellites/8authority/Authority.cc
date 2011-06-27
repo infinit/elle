@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sun jun 19 17:46:33 2011]
+// updated       julien quintard   [mon jun 27 11:10:37 2011]
 //
 
 //
@@ -157,132 +157,13 @@ namespace application
   elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
   {
-    elle::Parser*		parser;
     Authority::Operation	operation;
-    elle::Character		option;
 
-    enter();
+    enter(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
-
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
-
-    // initialize the operation.
-    operation = Authority::OperationUnknown;
-
-    // allocate a new parser.
-    parser = new elle::Parser(argc, argv);
-
-    // set up the parser.
-    if (parser->Register('h',
-			 "help",
-			 "display the help",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('c',
-			 "create",
-			 "create the authority",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('d',
-			 "destroy",
-			 "destroy the existing authority",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('x',
-			 "information",
-			 "print information on the authority",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    // parse.
-    while (parser->Parse(option) == elle::StatusTrue)
-      {
-	switch (option)
-	  {
-	  case 'h':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      // quit.
-	      leave();
-	    }
-	  case 'c':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Authority::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the create operation cannot be set concurrently "
-			 "to another operation");
-		}
-
-	      operation = Authority::OperationCreate;
-
-	      break;
-	    }
-	  case 'd':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Authority::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the destroy operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = Authority::OperationDestroy;
-
-	      break;
-	    }
-	  case 'x':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Authority::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the print operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = Authority::OperationInformation;
-
-	      break;
-	    }
-	  case '?':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("unknown option");
-	    }
-	  case ':':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("missing argument");
-	    }
-	  default:
-	    {
-	      escape("an error occured while parsing the options");
-	    }
-	  }
-      }
 
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
@@ -292,9 +173,101 @@ namespace application
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
-    // initialize the Etoile.
+    // initialize Infinit.
+    if (Infinit::Initialize() == elle::StatusError)
+      escape("unable to initialize Infinit");
+
+    // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
+
+    // initialize the operation.
+    operation = Authority::OperationUnknown;
+
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
+    // allocate a new parser.
+    Infinit::Parser = new elle::Parser(argc, argv);
+
+    // specify a program description.
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+      escape("unable to set the description");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Help",
+	  'h',
+	  "help",
+	  "display the help",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Create",
+	  'c',
+	  "create",
+	  "create the authority",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Destroy",
+	  'd',
+	  "destroy",
+	  "destroy the existing authority",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Information",
+	  'x',
+	  "information",
+	  "display information regarding the authority",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // parse.
+    if (Infinit::Parser->Parse() == elle::StatusError)
+      escape("unable to parse the command line");
+
+    // test the option.
+    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	// quit.
+	leave();
+      }
+
+    // check the mutually exclusive options.
+    if ((Infinit::Parser->Test("Create") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Destroy") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Information") == elle::StatusTrue))
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("the create, destroy and information options are "
+	       "mutually exclusive");
+      }
+
+    // test the option.
+    if (Infinit::Parser->Test("Create") == elle::StatusTrue)
+      operation = Authority::OperationCreate;
+
+    // test the option.
+    if (Infinit::Parser->Test("Destroy") == elle::StatusTrue)
+      operation = Authority::OperationDestroy;
+
+    // test the option.
+    if (Infinit::Parser->Test("Information") == elle::StatusTrue)
+      operation = Authority::OperationInformation;
 
     // trigger the operation.
     switch (operation)
@@ -335,18 +308,19 @@ namespace application
       default:
 	{
 	  // display the usage.
-	  parser->Usage();
+	  Infinit::Parser->Usage();
 
 	  escape("please specify an operation to perform");
 	}
       }
 
-    // delete the parser.
-    delete parser;
-
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
+
+    // clean Infinit.
+    if (Infinit::Clean() == elle::StatusError)
+      escape("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
@@ -359,6 +333,12 @@ namespace application
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
+
+    // delete the parser.
+    delete Infinit::Parser;
+
+    // waive.
+    waive(Infinit::Parser);
 
     leave();
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon jun 20 13:54:37 2011]
+// updated       julien quintard   [mon jun 27 10:32:39 2011]
 //
 
 #ifndef NETWORK_NETWORK_HH
@@ -23,10 +23,6 @@
 #include <lune/Lune.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
-
-#include <elle/idiom/Close.hh>
-# include <sys/stat.h>
-#include <elle/idiom/Open.hh>
 
 namespace application
 {
@@ -58,7 +54,6 @@ namespace application
     //
     static elle::Status		Create(const elle::String&,
 				       const hole::Model&,
-				       const elle::Address&,
 				       const elle::String&);
     static elle::Status		Destroy(const elle::String&);
     static elle::Status		Information(const elle::String&);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8dictionary/Dictionary.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sun jun 19 17:45:45 2011]
+// updated       julien quintard   [mon jun 27 11:10:01 2011]
 //
 
 //
@@ -50,14 +50,6 @@ namespace application
     //
     {
       lune::Identity	identity;
-
-      // check the name.
-      if (name.empty() == true)
-	escape("please specify a name");
-
-      // check the identifier.
-      if (identifier.empty() == true)
-	escape("please specify an identifier");
 
       // does the user identity exist.
       if (identity.Exist(profile) == elle::StatusFalse)
@@ -143,10 +135,6 @@ namespace application
     //
     {
       lune::Identity	identity;
-
-      // check the name.
-      if (name.empty() == true)
-	escape("please specify a name");
 
       // does the user identity exist.
       if (identity.Exist(profile) == elle::StatusFalse)
@@ -302,10 +290,6 @@ namespace application
     {
       lune::Identity	identity;
 
-      // check the name.
-      if (name.empty() == true)
-	escape("please specify a name");
-
       // does the user identity exist.
       if (identity.Exist(profile) == elle::StatusFalse)
 	escape("this user does not seem to exist");
@@ -385,247 +369,13 @@ namespace application
   elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
   {
-    elle::Parser*		parser;
     Dictionary::Operation	operation;
-    Dictionary::Type		type;
-    elle::String		profile;
-    elle::Character		option;
-    elle::String		name;
-    elle::Unique		identifier;
 
-    enter();
+    enter(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
-
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
-
-    // initialize the operation.
-    operation = Dictionary::OperationUnknown;
-
-    // initialize the type.
-    type = Dictionary::TypeUnknown;
-
-    // allocate a new parser.
-    parser = new elle::Parser(argc, argv);
-
-    // set up the parser.
-    if (parser->Register('h',
-			 "help",
-			 "display the help",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('p',
-			 "profile",
-			 "specify the user name of the dictionary",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('a',
-			 "add",
-			 "add an dictionary record",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('r',
-			 "remove",
-			 "remove an dictionary record",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('s',
-			 "show",
-			 "show all the dictionary records",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('d',
-			 "dump",
-			 "dump a specific dictionary record",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('u',
-			 "user",
-			 "indicate the type of the record to be a user",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('g',
-			 "group",
-			 "indicate the type of the record to be a group",
-			 elle::Parser::TypeNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('n',
-			 "name",
-			 "specifies the local UNIX/Windows/etc. name of "
-			 "the user/group entry",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    if (parser->Register('i',
-			 "identifier",
-			 "specifies the user/group Infinit base64 identifier",
-			 elle::Parser::TypeRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // parse.
-    while (parser->Parse(option) == elle::StatusTrue)
-      {
-	switch (option)
-	  {
-	  case 'h':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      // quit.
-	      leave();
-	    }
-	  case 'p':
-	    {
-	      // retrieve the user profile.
-	      profile.assign(optarg);
-
-	      break;
-	    }
-	  case 'a':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Dictionary::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the add operation cannot be set concurrently "
-			 "to another operation");
-		}
-
-	      operation = Dictionary::OperationAdd;
-
-	      break;
-	    }
-	  case 'r':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Dictionary::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the remove operation cannot be set concurrently to "
-			 "another operation");
-		}
-
-	      operation = Dictionary::OperationRemove;
-
-	      break;
-	    }
-	  case 's':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Dictionary::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the dump operation cannot be set "
-			 "concurrently to another operation");
-		}
-
-	      operation = Dictionary::OperationShow;
-
-	      break;
-	    }
-	  case 'd':
-	    {
-	      // check if the operation has already been set up.
-	      if (operation != Dictionary::OperationUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the show operation cannot be set "
-			 "concurrently to another operation");
-		}
-
-	      operation = Dictionary::OperationDump;
-
-	      break;
-	    }
-	  case 'u':
-	    {
-	      // check if the type has already been set up.
-	      if (type != Dictionary::TypeUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the user type cannot be set "
-			 "concurrently to another type");
-		}
-
-	      // set the type.
-	      type = Dictionary::TypeUser;
-
-	      break;
-	    }
-	  case 'g':
-	    {
-	      // check if the type has already been set up.
-	      if (type != Dictionary::TypeUnknown)
-		{
-		  // display the usage.
-		  parser->Usage();
-
-		  escape("the group type cannot be set "
-			 "concurrently to another type");
-		}
-
-	      // set the type.
-	      type = Dictionary::TypeGroup;
-
-	      break;
-	    }
-	  case 'n':
-	    {
-	      // retrieve the user/group name.
-	      name.assign(optarg);
-
-	      break;
-	    }
-	  case 'i':
-	    {
-	      // retrieve the user/group identifier.
-	      identifier.assign(optarg);
-
-	      break;
-	    }
-	  case '?':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("unknown option");
-	    }
-	  case ':':
-	    {
-	      // display the usage.
-	      parser->Usage();
-
-	      escape("missing argument");
-	    }
-	  default:
-	    {
-	      escape("an error occured while parsing the options");
-	    }
-	  }
-      }
 
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
@@ -635,15 +385,202 @@ namespace application
     if (lune::Lune::Initialize() == elle::StatusError)
       escape("unable to initialize Lune");
 
-    // initialize the Etoile.
+    // initialize Infinit.
+    if (Infinit::Initialize() == elle::StatusError)
+      escape("unable to initialize Infinit");
+
+    // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
+
+    // initialize the operation.
+    operation = Dictionary::OperationUnknown;
+
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
+    // allocate a new parser.
+    Infinit::Parser = new elle::Parser(argc, argv);
+
+    // specify a program description.
+    if (Infinit::Parser->Description(Infinit::Copyright) == elle::StatusError)
+      escape("unable to set the description");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Help",
+	  'h',
+	  "help",
+	  "display the help",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Profile",
+	  'p',
+	  "profile",
+	  "specify the user name of the dictionary",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Add",
+	  'a',
+	  "add",
+	  "add a dictionary record",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Remove",
+	  'r',
+	  "remove",
+	  "remove a dictionary record",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Show",
+	  's',
+	  "show",
+	  "show all the dictionary records",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Dump",
+	  'd',
+	  "dump",
+	  "dump a specific dictionary record",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "User",
+	  'u',
+	  "user",
+	  "indicate the type of the record to be a user",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Group",
+	  'g',
+	  "group",
+	  "indicate the type of the record to be a group",
+	  elle::Parser::FormatNone) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Name",
+	  'n',
+	  "name",
+	  "specify the local UNIX/Windows/etc. name of the user/group entry",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "Identifier",
+	  'i',
+	  "identifier",
+	  "specify the user/group Infinit base64 identifier",
+	  elle::Parser::FormatRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // parse.
+    if (Infinit::Parser->Parse() == elle::StatusError)
+      escape("unable to parse the command line");
+
+    // test the option.
+    if (Infinit::Parser->Test("Help") == elle::StatusTrue)
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	// quit.
+	leave();
+      }
+
+    // check the mutually exclusive options.
+    if ((Infinit::Parser->Test("Add") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Remove") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Dump") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Show") == elle::StatusTrue))
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("the add, remove, dump and show options are "
+	       "mutually exclusive");
+      }
+
+    // check the mutually exclusive options.
+    if ((Infinit::Parser->Test("User") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Group") == elle::StatusTrue))
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("the user and group types cannot be activated together");
+      }
+
+    // test the option.
+    if (Infinit::Parser->Test("Add") == elle::StatusTrue)
+      operation = Dictionary::OperationAdd;
+
+    // test the option.
+    if (Infinit::Parser->Test("Remove") == elle::StatusTrue)
+      operation = Dictionary::OperationRemove;
+
+    // test the option.
+    if (Infinit::Parser->Test("Dump") == elle::StatusTrue)
+      operation = Dictionary::OperationDump;
+
+    // test the option.
+    if (Infinit::Parser->Test("Show") == elle::StatusTrue)
+      operation = Dictionary::OperationShow;
 
     // trigger a command.
     switch (operation)
       {
       case Dictionary::OperationAdd:
 	{
+	  elle::String		profile;
+	  Dictionary::Type	type;
+	  elle::String		name;
+	  elle::Unique		identifier;
+
+	  // retrieve the profile.
+	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", profile) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
+	  // retrieve the type.
+	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
+	    type = Dictionary::TypeUser;
+	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+	    type = Dictionary::TypeGroup;
+	  else
+	    escape("please specify the type of the entity: user or group");
+
+	  // retrieve the identifier.
+	  if (Infinit::Parser->Value("Identifier",
+				     identifier) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
 	  // add a record.
 	  if (Dictionary::Add(profile,
 			      type,
@@ -652,13 +589,33 @@ namespace application
 	    escape("unable to add a mapping");
 
 	  // display a message.
-	  std::cout << "The mapping has been added successfully!"
+	  std::cout << "The record has been added successfully!"
 		    << std::endl;
 
 	  break;
 	}
       case Dictionary::OperationRemove:
 	{
+	  elle::String		profile;
+	  Dictionary::Type	type;
+	  elle::String		name;
+
+	  // retrieve the profile.
+	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", profile) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
+	  // retrieve the type.
+	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
+	    type = Dictionary::TypeUser;
+	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+	    type = Dictionary::TypeGroup;
+	  else
+	    escape("please specify the type of the entity: user or group");
+
 	  // remove a record.
 	  if (Dictionary::Remove(profile,
 				 type,
@@ -666,22 +623,33 @@ namespace application
 	    escape("unable to remove the mapping");
 
 	  // display a message.
-	  std::cout << "The mapping has been removed successfully!"
+	  std::cout << "The record has been removed successfully!"
 		    << std::endl;
-
-	  break;
-	}
-      case Dictionary::OperationShow:
-	{
-	  // show the records.
-	  if (Dictionary::Show(profile,
-			       type) == elle::StatusError)
-	    escape("unable to show the mappings");
 
 	  break;
 	}
       case Dictionary::OperationDump:
 	{
+	  elle::String		profile;
+	  Dictionary::Type	type;
+	  elle::String		name;
+
+	  // retrieve the profile.
+	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
+	  // retrieve the name.
+	  if (Infinit::Parser->Value("Name", profile) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
+	  // retrieve the type.
+	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
+	    type = Dictionary::TypeUser;
+	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+	    type = Dictionary::TypeGroup;
+	  else
+	    escape("please specify the type of the entity: user or group");
+
 	  // dump the record.
 	  if (Dictionary::Dump(profile,
 			       type,
@@ -690,22 +658,47 @@ namespace application
 
 	  break;
 	}
+      case Dictionary::OperationShow:
+	{
+	  elle::String		profile;
+	  Dictionary::Type	type;
+
+	  // retrieve the profile.
+	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
+	    escape("unable to retrieve the profile value");
+
+	  // retrieve the type.
+	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
+	    type = Dictionary::TypeUser;
+	  else if (Infinit::Parser->Test("Group") == elle::StatusTrue)
+	    type = Dictionary::TypeGroup;
+	  else
+	    escape("please specify the type of the entity: user or group");
+
+	  // show the records.
+	  if (Dictionary::Show(profile,
+			       type) == elle::StatusError)
+	    escape("unable to show the mappings");
+
+	  break;
+	}
       case Dictionary::OperationUnknown:
       default:
 	{
 	  // display the usage.
-	  parser->Usage();
+	  Infinit::Parser->Usage();
 
 	  escape("please specify an operation to perform");
 	}
       }
 
-    // delete the parser.
-    delete parser;
-
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
+
+    // clean Infinit.
+    if (Infinit::Clean() == elle::StatusError)
+      escape("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::StatusError)
@@ -718,6 +711,12 @@ namespace application
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
+
+    // delete the parser.
+    delete Infinit::Parser;
+
+    // waive.
+    waive(Infinit::Parser);
 
     leave();
   }
