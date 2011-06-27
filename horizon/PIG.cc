@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [mon jun 27 08:41:09 2011]
+// updated       julien quintard   [mon jun 27 22:11:52 2011]
 //
 
 //
@@ -176,7 +176,7 @@ namespace pig
 	  'm',
 	  "mountpoint",
 	  "specifies the mount point",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the option.
@@ -185,7 +185,7 @@ namespace pig
 	  'c',
 	  "record",
 	  "activates the event recording feature",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the option.
@@ -194,7 +194,7 @@ namespace pig
 	  'y',
 	  "replay",
 	  "activates the replay of the recorded events",
-	  elle::Parser::FormatRequired) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     leave();
