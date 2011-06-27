@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [fri jun 10 00:08:13 2011]
+// updated       julien quintard   [mon jun 27 18:33:31 2011]
 //
 
 #ifndef ELLE_RADIX_PARAMETERS_HXX
@@ -24,7 +24,6 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/radix/Status.hh>
-#include <elle/radix/Base.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -45,8 +44,7 @@ namespace elle
     /// zero parameter.
     ///
     template <>
-    struct Parameters<>:
-      public Base<Parameters>
+    struct Parameters<>
     {
       //
       // constants
@@ -58,8 +56,7 @@ namespace elle
     /// one parameter.
     ///
     template <typename T1>
-    struct Parameters<T1>:
-      public Base<Parameters>
+    struct Parameters<T1>
     {
       //
       // types
@@ -78,8 +75,7 @@ namespace elle
     template <typename T1,
 	      typename T2>
     struct Parameters<T1,
-		      T2>:
-      public Base<Parameters>
+		      T2>
     {
       //
       // types
@@ -101,8 +97,7 @@ namespace elle
 	      typename T3>
     struct Parameters<T1,
 		      T2,
-		      T3>:
-      public Base<Parameters>
+		      T3>
     {
       //
       // types
@@ -127,8 +122,7 @@ namespace elle
     struct Parameters<T1,
 		      T2,
 		      T3,
-		      T4>:
-      public Base<Parameters>
+		      T4>
     {
       //
       // types
@@ -156,8 +150,7 @@ namespace elle
 		      T2,
 		      T3,
 		      T4,
-		      T5>:
-      public Base<Parameters>
+		      T5>
     {
       //
       // types
@@ -188,8 +181,7 @@ namespace elle
 		      T3,
 		      T4,
 		      T5,
-		      T6>:
-      public Base<Parameters>
+		      T6>
     {
       //
       // types
@@ -223,8 +215,7 @@ namespace elle
 		      T4,
 		      T5,
 		      T6,
-		      T7>:
-      public Base<Parameters>
+		      T7>
     {
       //
       // types
@@ -261,8 +252,7 @@ namespace elle
 		      T5,
 		      T6,
 		      T7,
-		      T8>:
-      public Base<Parameters>
+		      T8>
     {
       //
       // types
@@ -302,8 +292,7 @@ namespace elle
 		      T6,
 		      T7,
 		      T8,
-		      T9>:
-      public Base<Parameters>
+		      T9>
     {
       //
       // types

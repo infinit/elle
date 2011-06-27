@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Closure.hh
 //
 // created       julien quintard   [thu mar 25 03:25:25 2010]
-// updated       julien quintard   [sat jun 18 00:32:49 2011]
+// updated       julien quintard   [mon jun 27 18:35:16 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HH
@@ -22,7 +22,6 @@
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Parameters.hh>
 #include <elle/radix/Arguments.hh>
-#include <elle/radix/Base.hh>
 
 #include <elle/concurrency/Callback.hh>
 
@@ -55,8 +54,7 @@ namespace elle
     ///
     template <typename... U>
     class Closure< Parameters<U...> >:
-      public Entity,
-      public Base<Closure>
+      public Entity
     {
     public:
       //
@@ -107,8 +105,7 @@ namespace elle
 	      typename... V>
     class Closure< Parameters<U...>,
 		   Parameters<V...> >:
-      public Entity,
-      public Base<Closure>
+      public Entity
     {
     public:
       //

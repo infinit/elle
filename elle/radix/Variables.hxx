@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Variables.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [fri jun 17 23:54:40 2011]
+// updated       julien quintard   [mon jun 27 18:34:01 2011]
 //
 
 #ifndef ELLE_RADIX_VARIABLES_HXX
@@ -24,7 +24,6 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Parameters.hh>
-#include <elle/radix/Base.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -50,8 +49,7 @@ namespace elle
     ///
     template <>
     class Variables< Parameters<> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -147,8 +145,7 @@ namespace elle
     ///
     template <typename T1>
     class Variables< Parameters<T1> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -325,8 +322,7 @@ namespace elle
     template <typename T1,
 	      typename T2>
     class Variables< Parameters<T1, T2> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -513,8 +509,7 @@ namespace elle
 	      typename T2,
 	      typename T3>
     class Variables< Parameters<T1, T2, T3> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -711,8 +706,7 @@ namespace elle
 	      typename T3,
 	      typename T4>
     class Variables< Parameters<T1, T2, T3, T4> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -919,8 +913,7 @@ namespace elle
 	      typename T4,
 	      typename T5>
     class Variables< Parameters<T1, T2, T3, T4, T5> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -1138,8 +1131,7 @@ namespace elle
 	      typename T6>
     class Variables< Parameters<T1, T2, T3, T4, T5,
 				T6> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -1372,8 +1364,7 @@ namespace elle
 	      typename T7>
     class Variables< Parameters<T1, T2, T3, T4, T5,
 				T6, T7> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -1616,8 +1607,7 @@ namespace elle
 	      typename T8>
     class Variables< Parameters<T1, T2, T3, T4, T5,
 				T6, T7, T8> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //
@@ -1870,8 +1860,7 @@ namespace elle
 	      typename T9>
     class Variables< Parameters<T1, T2, T3, T4, T5,
 				T6, T7, T8, T9> >:
-      public Entity,
-      public Base<Variables>
+      public Entity
     {
     public:
       //

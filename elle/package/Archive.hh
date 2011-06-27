@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [fri jun 10 00:30:33 2011]
+// updated       julien quintard   [mon jun 27 19:27:26 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HH
@@ -202,15 +202,19 @@ namespace elle
       template <typename T, Boolean C>
       struct		Behaviour
       {
-	static Status	Serialize(Archive&, const T&);
-	static Status	Extract(Archive&, T&);
+	static Status	Serialize(Archive&,
+				  const T&);
+	static Status	Extract(Archive&,
+				T&);
       };
 
       template <typename T>
       struct		Behaviour<T, true>
       {
-	static Status	Serialize(Archive&, const Archivable&);
-	static Status	Extract(Archive&, Archivable&);
+	static Status	Serialize(Archive&,
+				  const Archivable&);
+	static Status	Extract(Archive&,
+				Archivable&);
       };
 
       //

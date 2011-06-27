@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [fri jun 10 00:00:34 2011]
+// updated       julien quintard   [mon jun 27 18:35:05 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -22,7 +22,6 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Parameters.hh>
-#include <elle/radix/Base.hh>
 
 #include <elle/concurrency/Routine.hh>
 #include <elle/concurrency/Function.hh>
@@ -52,8 +51,7 @@ namespace elle
     ///
     template <typename... T>
     class Callback< Parameters<T...> >:
-      public Routine,
-      public Base<Callback>
+      public Routine
     {
     public:
       //

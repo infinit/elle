@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Pattern.cc
 //
 // created       julien quintard   [mon apr 25 11:37:13 2011]
-// updated       julien quintard   [tue apr 26 12:13:47 2011]
+// updated       julien quintard   [mon jun 27 21:23:10 2011]
 //
 
 //
@@ -34,7 +34,7 @@ namespace elle
     ///
     /// this method creates a pattern.
     ///
-    elle::Status	Pattern::Create(const String&		string)
+    Status		Pattern::Create(const String&		string)
     {
       enter();
 

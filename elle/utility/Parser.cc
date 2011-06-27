@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.cc
 //
 // created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [mon jun 27 11:00:14 2011]
+// updated       julien quintard   [mon jun 27 22:14:53 2011]
 //
 
 //
@@ -46,12 +46,12 @@ namespace elle
 			   const Character&			character,
 			   const String&			string,
 			   const String&			description,
-			   const Format&			format):
+			   const Kind&				kind):
       name(name),
       character(character),
       string(string),
       description(description),
-      format(format),
+      kind(kind),
 
       state(Parser::StateDeactivated),
       value(NULL)
@@ -81,9 +81,9 @@ namespace elle
       std::cout << alignment << Dumpable::Shift
 		<< "[Description] " << this->description << std::endl;
 
-      // dump the format.
+      // dump the kind.
       std::cout << alignment << Dumpable::Shift
-		<< "[Format] " << (const Natural32)this->format << std::endl;
+		<< "[Kind] " << (const Natural32)this->kind << std::endl;
 
       // dump the state.
       std::cout << alignment << Dumpable::Shift
@@ -169,7 +169,7 @@ namespace elle
 					 const Character&	character,
 					 const String&		string,
 					 const String&		description,
-					 const Format		format)
+					 const Kind		kind)
     {
       Parser::Option*	option;
 
@@ -180,7 +180,7 @@ namespace elle
 				  character,
 				  string,
 				  description,
-				  format);
+				  kind);
 
       // add the option to the vector of options.
       this->options.push_back(option);
@@ -275,21 +275,21 @@ namespace elle
 
 	      // append a special character(s) depending on the required
 	      // arguments.
-	      switch (this->options[i]->format)
+	      switch (this->options[i]->kind)
 		{
-		case Parser::FormatNone:
+		case Parser::KindNone:
 		  {
 		    // no option.
 		    break;
 		  }
-		case Parser::FormatRequired:
+		case Parser::KindRequired:
 		  {
 		    // add the ':' character
 		    this->shorts.append(":");
 
 		    break;
 		  }
-		case Parser::FormatOptional:
+		case Parser::KindOptional:
 		  {
 		    // add the '::' character
 		    this->shorts.append("::");
@@ -318,23 +318,23 @@ namespace elle
 	      this->longs[i].name = this->options[i]->string.c_str();
 
 	      // set the argument.
-	      switch (this->options[i]->format)
+	      switch (this->options[i]->kind)
 		{
-		case Parser::FormatNone:
+		case Parser::KindNone:
 		  {
 		    // no option.
 		    this->longs[i].has_arg = 0;
 
 		    break;
 		  }
-		case Parser::FormatRequired:
+		case Parser::KindRequired:
 		  {
 		    // set the argument as being required.
 		    this->longs[i].has_arg = 1;
 
 		    break;
 		  }
-		case Parser::FormatOptional:
+		case Parser::KindOptional:
 		  {
 		    // set the argument as being optional.
 		    this->longs[i].has_arg = 2;
@@ -383,10 +383,10 @@ namespace elle
 	  // activate the option.
 	  option->state = Parser::StateActivated;
 
-	  // depending on the format.
-	  switch (option->format)
+	  // depending on the kind.
+	  switch (option->kind)
 	    {
-	    case Parser::FormatNone:
+	    case Parser::KindNone:
 	      {
 		// if an argument is present, return an error.
 		if (optarg != NULL)
@@ -394,7 +394,7 @@ namespace elle
 
 		break;
 	      }
-	    case Parser::FormatOptional:
+	    case Parser::KindOptional:
 	      {
 		// allocate and set the value, if present.
 		if (optarg != NULL)
@@ -402,7 +402,7 @@ namespace elle
 
 		break;
 	      }
-	    case Parser::FormatRequired:
+	    case Parser::KindRequired:
 	      {
 		// if no argument is provided, return an error.
 		if (optarg == NULL)
@@ -494,10 +494,10 @@ namespace elle
 		    << ", "
 		    << "--" << this->options[i]->string;
 
-	  // add =ARG depending on the format or argument required.
-	  switch (this->options[i]->format)
+	  // add =ARG depending on the kind or argument required.
+	  switch (this->options[i]->kind)
 	    {
-	    case Parser::FormatNone:
+	    case Parser::KindNone:
 	      {
 		// nothing to add: compute the length accordingly.
 		length = 2 +
@@ -513,7 +513,7 @@ namespace elle
 
 		break;
 	      }
-	    case Parser::FormatRequired:
+	    case Parser::KindRequired:
 	      {
 		// add the indication that an argument is required.
 		std::cerr << "=ARG";
@@ -532,7 +532,7 @@ namespace elle
 
 		break;
 	      }
-	    case Parser::FormatOptional:
+	    case Parser::KindOptional:
 	      {
 		// compute the length.
 		length = 2 +

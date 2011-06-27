@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [mon jun 27 07:18:11 2011]
+// updated       julien quintard   [mon jun 27 19:37:44 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX
@@ -175,7 +175,8 @@ namespace elle
 	(Archive::Behaviour<T,
 	                    ArchiveType<T>::Value
                               ==
-                            Archive::TypeUnknown>::Serialize(*this, element));
+                            Archive::TypeUnknown>::Serialize(*this,
+							     element));
     }
 
     ///
@@ -213,7 +214,8 @@ namespace elle
 	(Archive::Behaviour<T,
 	                    ArchiveType<T>::Value
                               ==
-                            Archive::TypeUnknown>::Extract(*this, element));
+                            Archive::TypeUnknown>::Extract(*this,
+							   element));
     }
 
     ///
