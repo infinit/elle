@@ -1,4 +1,7 @@
-- lune::descriptor avec Settings
+- utiliser Configuration::Debug::PIG
+- changer midget pour qu'il prenne autre chose qu'un Object, c'est pas
+  beau. ca devrait prendre un uniquable mais c'est la merde. -> faire une
+  fonction a l'instar des std::hex etc.
 - ecrire applications/8diary
 
 - dans wall faire Transaction puis Apply. difference entre des ref

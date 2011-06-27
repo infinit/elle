@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [mon jun 27 07:49:17 2011]
+// updated       julien quintard   [mon jun 27 22:11:29 2011]
 //
 
 //
@@ -73,7 +73,7 @@ elle::Status		Main(elle::Natural32			argc,
 	'h',
 	"help",
 	"display the help",
-	elle::Parser::FormatNone) == elle::StatusError)
+	elle::Parser::KindNone) == elle::StatusError)
     escape("unable to register the option");
 
   // set up the agent-specific options.
