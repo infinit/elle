@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [sun jun 19 22:57:43 2011]
+// updated       julien quintard   [mon jun 27 21:22:39 2011]
 //
 
 //
@@ -403,7 +403,7 @@ namespace elle
       enter();
 
       // erase the file.
-      if (elle::File::Erase(path) == elle::StatusError)
+      if (File::Erase(path) == StatusError)
 	escape("unable to erase the file");
 
       leave();
@@ -414,7 +414,7 @@ namespace elle
     ///
     Status		KeyPair::Exist(const Path&		path) const
     {
-      return (elle::File::Exist(path));
+      return (File::Exist(path));
     }
 
   }
