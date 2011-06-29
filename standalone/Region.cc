@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [mon jun 27 07:22:59 2011]
+// updated       julien quintard   [tue jun 28 23:07:57 2011]
 //
 
 //
@@ -40,6 +40,19 @@ namespace elle
       options(Region::OptionNone),
       contents(NULL),
       size(0),
+      capacity(0)
+    {
+    }
+
+    ///
+    /// wrap constructor.
+    ///
+    Region::Region(Byte*					contents,
+		   Natural64					size):
+      type(Region::TypeChunk),
+      options(Region::OptionNone),
+      contents(contents),
+      size(size),
       capacity(0)
     {
     }
