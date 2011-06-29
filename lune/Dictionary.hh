@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Dictionary.hh
 //
 // created       julien quintard   [mon may 10 15:52:06 2010]
-// updated       julien quintard   [mon jun 20 01:36:31 2011]
+// updated       julien quintard   [tue jun 28 14:55:00 2011]
 //
 
 #ifndef LUNE_DICTIONARY_HH
