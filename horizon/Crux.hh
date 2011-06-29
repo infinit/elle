@@ -8,11 +8,19 @@
 // file          /home/mycure/infinit/pig/Crux.hh
 //
 // created       julien quintard   [wed jun  1 09:19:13 2011]
-// updated       julien quintard   [mon jun 27 07:11:44 2011]
+// updated       julien quintard   [tue jun 28 19:54:52 2011]
 //
 
 #ifndef PIG_CRUX_HH
 #define PIG_CRUX_HH
+
+//
+// ---------- macros ----------------------------------------------------------
+//
+
+#ifndef FUSE_USE_VERSION
+# define FUSE_USE_VERSION		26
+#endif
 
 //
 // ---------- includes --------------------------------------------------------
@@ -105,7 +113,7 @@ namespace pig
     static int		Lock(const char*,
 			     struct ::fuse_file_info*,
 			     int,
-			     struct flock*);
+			     struct ::flock*);
 
     // link
     static int		Symlink(const char*,
@@ -143,6 +151,7 @@ namespace pig
 			       const char*);
     static int		Unlink(const char*);
 
+    /* XXX
     // sync
     static int		Fsync(const char*,
 			      int,
@@ -152,6 +161,7 @@ namespace pig
 				 struct ::fuse_file_info*);
     static int		Flush(const char*,
 			      struct ::fuse_file_info*);
+    */
 
     //
     // static methods

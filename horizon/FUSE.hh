@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [tue jun 14 14:31:13 2011]
+// updated       julien quintard   [tue jun 28 21:11:07 2011]
 //
 
 #ifndef PIG_FUSE_HH
@@ -18,8 +18,9 @@
 // ---------- macros ----------------------------------------------------------
 //
 
-#undef FUSE_USE_VERSION
-#define FUSE_USE_VERSION		26
+#ifndef FUSE_USE_VERSION
+# define FUSE_USE_VERSION		26
+#endif
 
 //
 // ---------- includes --------------------------------------------------------
@@ -51,7 +52,8 @@ namespace pig
     //
     // static methods
     //
-    static elle::Status		Initialize(const elle::String&);
+    static elle::Status		Initialize();
+    static elle::Status		Setup(const elle::String&);
     static elle::Status		Clean();
 
     //

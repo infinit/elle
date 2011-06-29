@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [mon jun 27 07:26:30 2011]
+// updated       julien quintard   [wed jun 29 17:33:17 2011]
 //
 
 //
@@ -1883,6 +1883,7 @@ namespace pig
     return (0);
   }
 
+  /* XXX
   ///
   /// this method forces the updates to be commited.
   ///
@@ -1939,6 +1940,7 @@ namespace pig
 
     return (0);
   }
+  */
 
 //
 // ---------- static methods --------------------------------------------------

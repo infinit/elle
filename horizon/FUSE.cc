@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [mon jun 27 07:35:14 2011]
+// updated       julien quintard   [tue jun 28 21:16:03 2011]
 //
 
 //
@@ -76,32 +76,8 @@ namespace pig
   ///
   /// this method initializes the FUSE component.
   ///
-  elle::Status		FUSE::Initialize(const elle::String&	mountpoint)
+  elle::Status		FUSE::Initialize()
   {
-    //
-    // build the arguments.
-    //
-    // note that the -h option can be passed in order to display all
-    // the available options including the threaded, debug, file system
-    // name, file system type etc.
-    //
-    // for example the -d option could be used instead of -f in order
-    // to activate the debug mode.
-    //
-    elle::String	ofsname("-ofsname='" +
-				hole::Hole::Descriptor.name +
-				"'");
-    const char*		arguments[] =
-      {
-	"PIG",
-
-	"-s",
-	"-d",
-	"-osubtype='infinit'",
-	ofsname.c_str(),
-	mountpoint.c_str()
-      };
-
     enter();
 
     //
@@ -147,16 +123,56 @@ namespace pig
       FUSE::System::Operations.ftruncate = Crux::Ftruncate;
       FUSE::System::Operations.release = Crux::Release;
 
-      FUSE::System::Operations.unlink = Crux::Unlink;
       FUSE::System::Operations.rename = Crux::Rename;
+      FUSE::System::Operations.unlink = Crux::Unlink;
 
+      /* XXX
       // FUSE::System::Operations.flush: not supported
       FUSE::System::Operations.fsync = Crux::Fsync;
       FUSE::System::Operations.fsyncdir = Crux::Fsyncdir;
 
       // XXX pour trouver le bug de compile du kernel linux
       FUSE::System::Operations.flush = Crux::Flush;
+      */
+
+      // XXX activer le flag ci-dessous pour eviter d'avoir un path
+      // avec les Fsync, Fgetattr etc.
+      // XXX FUSE::System::Operations.flag_nullpath_ok = 1;
     }
+
+    leave();
+  }
+
+  ///
+  /// this methods sets up the FUSE module.
+  ///
+  elle::Status		FUSE::Setup(const elle::String&		mountpoint)
+  {
+    //
+    // build the arguments.
+    //
+    // note that the -h option can be passed in order to display all
+    // the available options including the threaded, debug, file system
+    // name, file system type etc.
+    //
+    // for example the -d option could be used instead of -f in order
+    // to activate the debug mode.
+    //
+    elle::String	ofsname("-ofsname='" +
+				hole::Hole::Descriptor.name +
+				"'");
+    const char*		arguments[] =
+      {
+	"PIG",
+
+	"-s",
+	"-d",
+	"-osubtype='infinit'",
+	ofsname.c_str(),
+	mountpoint.c_str()
+      };
+
+    enter();
 
     //
     // initialize the FUSE event loop.

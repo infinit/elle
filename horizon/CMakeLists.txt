@@ -4,9 +4,12 @@ ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
 
 ADD_LIBRARY(pig
   Crux.cc
-  Diary.cc
   FUSE.cc
   PIG.cc
+
+  diary/Diary.cc
+  diary/Record.cc
+  diary/Upcall.cc
 )
 
 TARGET_LINK_LIBRARIES(pig elle nucleus lune etoile fuse)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [mon jun 27 22:11:52 2011]
+// updated       julien quintard   [wed jun 29 18:01:40 2011]
 //
 
 //
@@ -49,7 +49,7 @@ namespace pig
   /// this variable contains the diary which either records the PIG
   /// events or replays them.
   ///
-  pig::Diary				PIG::Diary;
+  pig::diary::Diary			PIG::Diary;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -72,44 +72,6 @@ namespace pig
       if (Infinit::Parser->Value("Mountpoint",
 				 mountpoint) == elle::StatusError)
 	escape("unable to retrieve the mount point");
-
-      // check the mutually exclusive options.
-      if ((Infinit::Parser->Test("Record") == elle::StatusTrue) &&
-	  (Infinit::Parser->Test("Replay") == elle::StatusTrue))
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
-
-	  escape("the record and replay options are mutually exclusive");
-	}
-
-      // test the option.
-      if (Infinit::Parser->Test("Record") == elle::StatusTrue)
-	{
-	  elle::String		path;
-
-	  // retrieve the path.
-	  if (Infinit::Parser->Value("Record", path) == elle::StatusError)
-	    escape("unable to retrieve the diary path");
-
-	  // create the diary.
-	  if (PIG::Diary.Create(Diary::ModeRecord, path) == elle::StatusError)
-	    escape("unable to create the diary");
-	}
-
-      // test the option.
-      if (Infinit::Parser->Test("Replay") == elle::StatusTrue)
-	{
-	  elle::String		path;
-
-	  // retrieve the path.
-	  if (Infinit::Parser->Value("Replay", path) == elle::StatusError)
-	    escape("unable to retrieve the diary path");
-
-	  // create the diary.
-	  if (PIG::Diary.Create(Diary::ModeRecord, path) == elle::StatusError)
-	    escape("unable to create the diary");
-	}
     }
 
     //
@@ -142,8 +104,49 @@ namespace pig
     // initialize FUSE.
     //
     {
-      if (FUSE::Initialize(mountpoint) == elle::StatusError)
+      if (FUSE::Initialize() == elle::StatusError)
 	escape("unable to initialize FUSE");
+    }
+
+    //
+    // launch the diary replaying if it has been activated instead
+    // of waiting for the program to be started.
+    //
+    {
+      elle::String		string;
+      elle::Path		path;
+
+      // test the option.
+      if (Infinit::Parser->Test("Replay") == elle::StatusTrue)
+	{
+	  // retrieve the path.
+	  if (Infinit::Parser->Value("Replay", string) == elle::StatusError)
+	    escape("unable to retrieve the diary path");
+
+	  // create the path.
+	  if (path.Create(string) == elle::StatusError)
+	    escape("unable to create the path");
+
+	  // load the diary.
+	  if (PIG::Diary.Load(path) == elle::StatusError)
+	    escape("unable to load the diary");
+
+	  // set up the diary.
+	  if (PIG::Diary.Setup(FUSE::System::Operations) == elle::StatusError)
+	    escape("unable to set up the diary");
+
+	  // replay the diary.
+	  if (PIG::Diary.Replay() == elle::StatusError)
+	    escape("unable to replay the diary");
+	}
+    }
+
+    //
+    // set up FUSE.
+    //
+    {
+      if (FUSE::Setup(mountpoint) == elle::StatusError)
+	escape("unable to set up FUSE");
     }
 
     leave();
@@ -176,15 +179,6 @@ namespace pig
 	  'm',
 	  "mountpoint",
 	  "specifies the mount point",
-	  elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // register the option.
-    if (Infinit::Parser->Register(
-	  "Record",
-	  'c',
-	  "record",
-	  "activates the event recording feature",
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
