@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8dictionary/Dictionary.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 22:12:25 2011]
+// updated       julien quintard   [tue jun 28 13:06:12 2011]
 //
 
 //
