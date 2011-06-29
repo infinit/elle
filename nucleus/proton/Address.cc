@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [mon jun 27 09:34:52 2011]
+// updated       julien quintard   [tue jun 28 23:19:48 2011]
 //
 
 //
@@ -170,7 +170,7 @@ namespace nucleus
       enter();
 
       // display the name.
-      std::cout << alignment << "[Address] " << std::endl;
+      std::cout << alignment << "[Address]" << std::endl;
 
       // display the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
