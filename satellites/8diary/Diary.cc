@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Diary.cc
 //
 // created       julien quintard   [mon jun 27 22:38:51 2011]
-// updated       julien quintard   [wed jun 29 18:03:43 2011]
+// updated       julien quintard   [thu jun 30 10:24:57 2011]
 //
 
 //
@@ -213,11 +213,54 @@ namespace application
 	  if (diary.Store(path) == elle::StatusError)
 	    escape("unable to store the diary");
 
+	  // display a message.
+	  std::cout << "The sequence of file system operations have been "
+		    << "successfully recorded in '" << path.string << "'!"
+		    << std::endl;
+
 	  break;
 	}
       case Diary::OperationReplay:
 	{
-	  // XXX
+	  elle::String		mirror;
+	  pig::Diary		diary;
+	  elle::String		string;
+	  elle::Path		path;
+
+	  // retrieve the mirror.
+	  if (Infinit::Parser->Value("Path",
+				     string) == elle::StatusError)
+	    escape("unable to retrieve the path value");
+
+	  // create the path.
+	  if (path.Create(string) == elle::StatusError)
+	    escape("unable to create the path");
+
+	  // retrieve the mirror.
+	  if (Infinit::Parser->Value("Mirror",
+				     mirror) == elle::StatusError)
+	    escape("unable to retrieve the mirror value");
+
+	  // set up the crux.
+	  if (Crux::Setup(mirror) == elle::StatusError)
+	    escape("unable to set up the crux");
+
+	  // load the diary.
+	  if (diary.Load(path) == elle::StatusError)
+	    escape("unable to load the diary");
+
+	  // set up the diary.
+	  if (diary.Setup(Crux::Operations) == elle::StatusError)
+	    escape("unable to set up the diary");
+
+	  // replay the diary.
+	  if (diary.Replay() == elle::StatusError)
+	    escape("unable to replay the diary");
+
+	  // display a message.
+	  std::cout << "The sequence of file system operations have been "
+		    << "successfully replayed from '" << path.string << "'!"
+		    << std::endl;
 
 	  break;
 	}
