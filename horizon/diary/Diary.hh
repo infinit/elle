@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.hh
 //
 // created       julien quintard   [sun jun 26 22:32:34 2011]
-// updated       julien quintard   [wed jun 29 17:10:16 2011]
+// updated       julien quintard   [thu jun 30 09:27:48 2011]
 //
 
 #ifndef PIG_DIARY_DIARY_HH
@@ -113,6 +113,6 @@ namespace pig
 //
 
 #include <pig/diary/Record.hh>
-// XXX record
+#include <pig/diary/Replay.hh>
 
 #endif

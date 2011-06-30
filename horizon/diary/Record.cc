@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Record.cc
 //
 // created       julien quintard   [tue jun 28 22:17:27 2011]
-// updated       julien quintard   [wed jun 29 18:01:05 2011]
+// updated       julien quintard   [thu jun 30 09:32:38 2011]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <pig/diary/Record.hh>
+#include <pig/diary/Upcall.hh>
 
 namespace pig
 {
@@ -993,7 +994,9 @@ namespace pig
 	Record::Operations.rename = Record::Rename;
 	Record::Operations.unlink = Record::Unlink;
 
-	Record::Operations.flag_nullpath_ok = 1;
+	// the flag_nullpath_ok is not activated in order to get
+	// as much debug information as possible.
+	Record::Operations.flag_nullpath_ok = 0;
       }
 
       leave();

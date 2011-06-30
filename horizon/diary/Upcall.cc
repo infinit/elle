@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Upcall.cc
 //
 // created       julien quintard   [tue jun 28 15:02:54 2011]
-// updated       julien quintard   [wed jun 29 18:05:18 2011]
+// updated       julien quintard   [thu jun 30 10:38:29 2011]
 //
 
 //
@@ -32,8 +32,6 @@ namespace pig
     elle::Status	Upcall::Create(const Operation		operation)
     {
       enter();
-
-      printf("Upcall: %u\n", operation);
 
       // create the archive.
       if (this->archive.Create() == elle::StatusError)
@@ -106,7 +104,9 @@ namespace pig
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize(this->archive) == elle::StatusError)
+      if (archive.Serialize(elle::Region(this->archive.contents,
+					 this->archive.size)) ==
+	  elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -117,11 +117,21 @@ namespace pig
     ///
     elle::Status	Upcall::Extract(elle::Archive&		archive)
     {
+      elle::Region	region;
+
       enter();
 
-      // extract the attributes.
-      if (archive.Extract(this->archive) == elle::StatusError)
+      // extract the region.
+      if (archive.Extract(region) == elle::StatusError)
 	escape("unable to extract the attributes");
+
+      // detach the region.
+      if (region.Detach() == elle::StatusError)
+	escape("unable to detach the region");
+
+      // prepare the archive.
+      if (this->archive.Prepare(region) == elle::StatusError)
+	escape("unable to prepare the archive");
 
       leave();
     }

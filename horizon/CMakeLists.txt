@@ -9,6 +9,7 @@ ADD_LIBRARY(pig
 
   diary/Diary.cc
   diary/Record.cc
+  diary/Replay.cc
   diary/Upcall.cc
 )
 

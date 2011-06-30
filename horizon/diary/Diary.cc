@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.cc
 //
 // created       julien quintard   [sun jun 26 22:48:13 2011]
-// updated       julien quintard   [wed jun 29 17:10:56 2011]
+// updated       julien quintard   [thu jun 30 09:27:40 2011]
 //
 
 //
@@ -17,6 +17,7 @@
 
 #include <pig/diary/Diary.hh>
 #include <pig/diary/Record.hh>
+#include <pig/diary/Replay.hh>
 
 namespace pig
 {
@@ -101,7 +102,17 @@ namespace pig
       // set the mode.
       this->mode = Diary::ModeReplay;
 
-      // XXX
+      // initialize the replay.
+      if (Replay::Initialize(this) == elle::StatusError)
+	escape("unable to initialize the replay");
+
+      // launch the replay.
+      if (Replay::Launch() == elle::StatusError)
+	escape("unable to launch the replay");
+
+      // clean the replay.
+      if (Replay::Clean() == elle::StatusError)
+	escape("unable to clean the replay");
 
       leave();
     }

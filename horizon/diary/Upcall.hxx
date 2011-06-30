@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Upcall.hxx
 //
 // created       julien quintard   [tue jun 28 15:00:55 2011]
-// updated       julien quintard   [wed jun 29 17:55:04 2011]
+// updated       julien quintard   [thu jun 30 08:39:56 2011]
 //
 
 #ifndef PIG_DIARY_UPCALL_HXX
