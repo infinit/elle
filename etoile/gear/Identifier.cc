@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Identifier.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [tue jun 14 15:40:29 2011]
+// updated       julien quintard   [sat jul  2 14:27:35 2011]
 //
 
 //
@@ -67,6 +67,9 @@ namespace etoile
 
       // increments the counter.
       this->value = Identifier::Counter++;
+
+      // XXX
+      printf("NEW IDENTIFIER: %qu\n", this->value);
 
       leave();
     }

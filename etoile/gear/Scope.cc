@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.cc
 //
 // created       julien quintard   [wed jun 15 13:09:29 2011]
-// updated       julien quintard   [sat jun 25 14:55:51 2011]
+// updated       julien quintard   [fri jul  1 14:07:43 2011]
 //
 
 //

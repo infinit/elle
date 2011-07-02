@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.cc
 //
 // created       julien quintard   [tue jun 14 16:41:06 2011]
-// updated       julien quintard   [fri jun 24 13:03:30 2011]
+// updated       julien quintard   [fri jul  1 14:11:55 2011]
 //
 
 //
@@ -46,6 +46,8 @@ namespace etoile
 
       enter();
 
+      printf("-------[XXX] Gear::Add(%qu, 0x%x)\n", identifier.value, scope);
+
       // check if this identifier has already been recorded.
       if (Gear::Scopes.find(identifier) != Gear::Scopes.end())
 	escape("this identifier seems to have already been recorded");
@@ -71,6 +73,8 @@ namespace etoile
 
       enter();
 
+      printf("-------[XXX] Gear::Remove(%qu)\n", identifier.value);
+
       // find the entry.
       if ((iterator = Gear::Scopes.find(identifier)) == Gear::Scopes.end())
 	escape("unable to locate the scope associated with the identifier");
@@ -90,6 +94,8 @@ namespace etoile
       Gear::Scoutor		scoutor;
 
       enter();
+
+      printf("-------[XXX] Gear::Select(%qu, ...)\n", identifier.value);
 
       // find the entry.
       if ((scoutor = Gear::Scopes.find(identifier)) == Gear::Scopes.end())

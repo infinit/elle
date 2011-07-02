@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Object.cc
 //
 // created       julien quintard   [mon jun 20 12:47:31 2011]
-// updated       julien quintard   [fri jun 24 15:38:27 2011]
+// updated       julien quintard   [sat jul  2 11:26:49 2011]
 //
 
 //

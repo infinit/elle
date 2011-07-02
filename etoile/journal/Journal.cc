@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [fri jun 24 14:23:50 2011]
-// updated       julien quintard   [fri jun 24 18:15:14 2011]
+// updated       julien quintard   [sat jul  2 15:17:19 2011]
 //
 
 //
@@ -40,7 +40,7 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Journal::Record()\n");
+      printf("[XXX] Journal::Record(%qu)\n", scope->identifier.value);
 
       // XXX for now just perform the operations.
 
@@ -76,6 +76,9 @@ namespace etoile
 	      }
 	    }
 	}
+
+      // delete the scope.
+      delete scope;
 
       leave();
     }

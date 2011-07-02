@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [sat jun 25 14:06:00 2011]
+// updated       julien quintard   [sat jul  2 14:10:05 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_CONTENTS_HXX
@@ -159,6 +159,8 @@ namespace etoile
 	  //
 	  // therefore, the object is updated with a null content address.
 	  //
+
+	  printf("CLOSING CONTENTS: size(%qu)\n", size);
 
 	  // update the object's data section with the null address.
 	  if (context.object.Update(
