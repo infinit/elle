@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.hh
 //
 // created       julien quintard   [wed apr 28 11:11:05 2010]
-// updated       julien quintard   [mon jun 27 22:18:45 2011]
+// updated       julien quintard   [fri jul  1 19:21:01 2011]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HH
@@ -189,7 +189,7 @@ namespace elle
 	static Status	Value(Parser&,
 			      const String&,
 			      T&,
-			      const T&);
+			      const T);
       };
 
       template <typename T>
@@ -203,7 +203,7 @@ namespace elle
 	static Status	Value(Parser&,
 			      const String&,
 			      Uniquable<F>&,
-			      const Uniquable<F>&);
+			      const Uniquable<F>);
       };
 
       Void		Usage();

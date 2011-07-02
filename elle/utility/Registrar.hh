@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Registrar.hh
 //
 // created       julien quintard   [mon jun  6 12:07:32 2011]
-// updated       julien quintard   [mon jun 27 18:43:23 2011]
+// updated       julien quintard   [fri jul  1 11:40:59 2011]
 //
 
 #ifndef ELLE_UTILITY_REGISTRAR_HH

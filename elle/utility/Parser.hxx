@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.hxx
 //
 // created       julien quintard   [sun jun 26 21:23:03 2011]
-// updated       julien quintard   [mon jun 27 22:20:04 2011]
+// updated       julien quintard   [fri jul  1 22:18:05 2011]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HXX
@@ -114,28 +114,25 @@ namespace elle
     Status	Parser::Behaviour<T, C>::Value(Parser&		parser,
 					       const String&	name,
 					       T&		value,
-					       const T&		D)
+					       const T		D)
     {
       Parser::Option*	option;
 
       enter();
 
       // locate the option.
-      if (parser.Locate(name, option) == StatusFalse)
-	escape("unable to locate the option");
-
-      // if no argument has been provided, return the default value.
-      if (option->value == NULL)
+      if ((parser.Locate(name, option) == StatusTrue) &&
+	  (option->value != NULL))
+	{
+	  // convert the string-based argument to the given type, if possible.
+	  if (Variable::Convert(*option->value, value) == StatusError)
+	    escape("unable to convert the argument");
+	}
+      else
 	{
 	  // set the default value.
 	  value = D;
-
-	  leave();
 	}
-
-      // convert the string-based argument to the given type, if possible.
-      if (Variable::Convert(*option->value, value) == StatusError)
-	escape("unable to convert the argument");
 
       leave();
     }
@@ -192,18 +189,21 @@ namespace elle
 		  Parser&					parser,
 		  const String&					name,
 		  Uniquable<F>&					object,
-		  const Uniquable<F>&				D)
+		  const Uniquable<F>				D)
     {
       Parser::Option*	option;
 
       enter();
 
       // locate the option.
-      if (parser.Locate(name, option) == StatusFalse)
-	escape("unable to locate the option");
-
-      // if no argument has been provided, return the default value.
-      if (option->value == NULL)
+      if ((parser.Locate(name, option) == StatusTrue) &&
+	  (option->value != NULL))
+	{
+	  // restore the object.
+	  if (object.Restore(*option->value) == StatusError)
+	    escape("unable to restore the object");
+	}
+      else
 	{
 	  Unique	unique;
 
@@ -214,13 +214,7 @@ namespace elle
 	  // restore the object.
 	  if (object.Restore(unique) == StatusError)
 	    escape("unable to restore the object");
-
-	  leave();
 	}
-
-      // restore the object.
-      if (object.Restore(*option->value) == StatusError)
-	escape("unable to restore the object");
 
       leave();
     }

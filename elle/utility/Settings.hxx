@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hxx
 //
 // created       julien quintard   [sun jun 26 20:57:08 2011]
-// updated       julien quintard   [mon jun 27 21:44:57 2011]
+// updated       julien quintard   [fri jul  1 19:21:54 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HXX
@@ -125,7 +125,7 @@ namespace elle
 					       const String&	identifier,
 					       const String&	name,
 					       T&		value,
-					       const T&		D)
+					       const T		D)
     {
       String	string;
 
@@ -220,7 +220,7 @@ namespace elle
 		  const String&					identifier,
 		  const String&					name,
 		  Uniquable<F>&					object,
-		  const Uniquable<F>&				D)
+		  const Uniquable<F>				D)
     {
       Unique	unique;
 
