@@ -1,3 +1,9 @@
+- passer les appels de Wall avec des pointeurs: on changera dans
+  Serialize pour traiter les pointers et les dereferencer
+- ticket: file gaps with map of regions
+- pour eviter concurrence dans Live, ajouter le pointeur de fi plutot
+  que le path.
+- rendre tous les IO asynchrone. File::Read etc.
 - ticker PIG Missing Functionalities: lock, statefs, fsync, sync, flush etc.
 
 - peut etre passer le recording/replaying en event-based: mieux pour quitter
