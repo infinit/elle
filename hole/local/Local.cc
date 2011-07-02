@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [fri jun 24 18:05:22 2011]
+// updated       julien quintard   [fri jul  1 14:10:21 2011]
 //
 
 //
@@ -139,8 +139,6 @@ namespace hole
     {
       enter();
 
-      printf("Local::Get(Immutable)\n");
-
       // does the block exist.
       if (block.Exist(this->network, address) == elle::StatusFalse)
 	escape("the block does not seem to exist");
@@ -164,8 +162,6 @@ namespace hole
 				   nucleus::MutableBlock&	block)
     {
       enter();
-
-      printf("Local::Get(Mutable)\n");
 
       // does the block exist.
       if (block.Exist(this->network, address, version) == elle::StatusFalse)

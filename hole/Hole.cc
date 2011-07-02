@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [mon jun 27 22:11:09 2011]
+// updated       julien quintard   [fri jul  1 14:01:07 2011]
 //
 
 //
@@ -67,6 +67,10 @@ namespace hole
     // load the descriptor.
     if (Hole::Descriptor.Load(name) == elle::StatusError)
       escape("unable to load the descriptor");
+
+    // pull the attributes.
+    if (Hole::Descriptor.Pull() == elle::StatusError)
+      escape("unable to pull the descriptor's attributes");
 
     // validate the descriptor.
     if (Hole::Descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
