@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [wed jun 29 18:01:40 2011]
+// updated       julien quintard   [sat jul  2 12:22:07 2011]
 //
 
 //
@@ -65,16 +65,6 @@ namespace pig
     enter();
 
     //
-    // handle the parser.
-    //
-    {
-      // retrieve the mount point.
-      if (Infinit::Parser->Value("Mountpoint",
-				 mountpoint) == elle::StatusError)
-	escape("unable to retrieve the mount point");
-    }
-
-    //
     // initialize the 'somebody' entity.
     //
     {
@@ -115,6 +105,8 @@ namespace pig
     {
       elle::String		string;
       elle::Path		path;
+      elle::Natural32		from;
+      elle::Natural32		to;
 
       // test the option.
       if (Infinit::Parser->Test("Replay") == elle::StatusTrue)
@@ -135,9 +127,33 @@ namespace pig
 	  if (PIG::Diary.Setup(FUSE::System::Operations) == elle::StatusError)
 	    escape("unable to set up the diary");
 
+	  // initialize the indexes.
+	  from = 0;
+	  to = PIG::Diary.number;
+
+	  // retrieve the from.
+	  if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
+	      (Infinit::Parser->Value(
+	         "From",
+		 from) == elle::StatusError))
+	      escape("unable to retrieve the from value");
+
+	  // retrieve the to.
+	  if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
+	      (Infinit::Parser->Value(
+	         "To",
+		 to) == elle::StatusError))
+	    escape("unable to retrieve the to value");
+
 	  // replay the diary.
-	  if (PIG::Diary.Replay() == elle::StatusError)
+	  if (PIG::Diary.Replay(from, to) == elle::StatusError)
 	    escape("unable to replay the diary");
+
+	  // exit the program.
+	  if (elle::Program::Exit() == elle::StatusError)
+	    escape("unable to exit the program");
+
+	  leave();
 	}
     }
 
@@ -145,6 +161,11 @@ namespace pig
     // set up FUSE.
     //
     {
+      // retrieve the mount point.
+      if (Infinit::Parser->Value("Mountpoint",
+				 mountpoint) == elle::StatusError)
+	escape("unable to retrieve the mount point");
+
       if (FUSE::Setup(mountpoint) == elle::StatusError)
 	escape("unable to set up FUSE");
     }
@@ -188,6 +209,26 @@ namespace pig
 	  'y',
 	  "replay",
 	  "activates the replay of the recorded events",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "From",
+	  'f',
+	  "from",
+	  "specify the number of the first operation to be triggered from "
+	  "the diary",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "To",
+	  't',
+	  "to",
+	  "specify the number of the last operation to be triggered from "
+	  "the diary",
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 

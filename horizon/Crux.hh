@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.hh
 //
 // created       julien quintard   [wed jun  1 09:19:13 2011]
-// updated       julien quintard   [tue jun 28 19:54:52 2011]
+// updated       julien quintard   [fri jul  1 23:09:21 2011]
 //
 
 #ifndef PIG_CRUX_HH
@@ -108,12 +108,6 @@ namespace pig
     static int		Removexattr(const char*,
 				    const char*);
 #endif
-
-    // lock
-    static int		Lock(const char*,
-			     struct ::fuse_file_info*,
-			     int,
-			     struct ::flock*);
 
     // link
     static int		Symlink(const char*,

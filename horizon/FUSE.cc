@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [tue jun 28 21:16:03 2011]
+// updated       julien quintard   [fri jul  1 23:17:20 2011]
 //
 
 //
@@ -107,8 +107,6 @@ namespace pig
       FUSE::System::Operations.listxattr = Crux::Listxattr;
       FUSE::System::Operations.removexattr = Crux::Removexattr;
 #endif
-
-      FUSE::System::Operations.lock = Crux::Lock;
 
       // FUSE::System::Operations.link: not supported
       FUSE::System::Operations.readlink = Crux::Readlink;
@@ -273,9 +271,11 @@ namespace pig
     // release the buffers, sessions etc.
     //
     {
-      ::free(FUSE::System::Buffer);
+      if (FUSE::System::Buffer != NULL)
+	::free(FUSE::System::Buffer);
 
-      ::fuse_session_reset(FUSE::System::Session);
+      if (FUSE::System::Session != NULL)
+	::fuse_session_reset(FUSE::System::Session);
     }
 
     //
@@ -283,7 +283,8 @@ namespace pig
     //
     {
       // stop FUSE.
-      ::fuse_teardown(FUSE::System::Core, FUSE::System::Mountpoint);
+      if (FUSE::System::Core != NULL)
+	::fuse_teardown(FUSE::System::Core, FUSE::System::Mountpoint);
     }
 
     leave();

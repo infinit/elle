@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Record.cc
 //
 // created       julien quintard   [tue jun 28 22:17:27 2011]
-// updated       julien quintard   [thu jun 30 09:32:38 2011]
+// updated       julien quintard   [fri jul  1 13:49:18 2011]
 //
 
 //
@@ -56,7 +56,9 @@ namespace pig
 	fail("unable to create the upcall");
 
       if (upcall.Inputs(
-	    elle::String(path)) ==
+	    elle::String(path),
+	    elle::Region((elle::Byte*)stbuf,
+			 (elle::Natural64)sizeof (struct ::stat))) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
@@ -92,6 +94,8 @@ namespace pig
 
       if (upcall.Inputs(
   	    elle::String(path),
+	    elle::Region((elle::Byte*)stbuf,
+			 (elle::Natural64)sizeof (struct ::stat)),
 	    elle::Region((elle::Byte*)fi,
 			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
 	  elle::StatusError)
@@ -101,7 +105,9 @@ namespace pig
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)stbuf,
-			 (elle::Natural64)sizeof (struct ::stat))) ==
+			 (elle::Natural64)sizeof (struct ::stat)),
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's outputs");
 
@@ -127,16 +133,15 @@ namespace pig
 	fail("unable to create the upcall");
 
       if (upcall.Inputs(
-	    elle::String(path)) ==
+	    elle::String(path),
+	    elle::Region((elle::Byte*)ts,
+			 (elle::Natural64)sizeof (struct ::timespec[2]))) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
       res = Record::Pointer->fuse.utimens(path, ts);
 
-      if (upcall.Outputs(
-	    elle::Region((elle::Byte*)ts,
-			 (elle::Natural64)sizeof (struct ::timespec[2]))) ==
-	  elle::StatusError)
+      if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
 
       if (upcall.Result(res) == elle::StatusError)
@@ -161,7 +166,9 @@ namespace pig
 	fail("unable to create the upcall");
 
       if (upcall.Inputs(
-	    elle::String(path)) ==
+	    elle::String(path),
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
@@ -207,7 +214,10 @@ namespace pig
 
       res = Record::Pointer->fuse.readdir(path, buf, filler, offset, fi);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs(
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
+	  elle::StatusError)
 	fail("unable to specify the upcall's outputs");
 
       if (upcall.Result(res) == elle::StatusError)
@@ -240,7 +250,10 @@ namespace pig
 
       res = Record::Pointer->fuse.releasedir(path, fi);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs(
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
+	  elle::StatusError)
 	fail("unable to specify the upcall's outputs");
 
       if (upcall.Result(res) == elle::StatusError)
@@ -469,6 +482,7 @@ namespace pig
       if (upcall.Inputs(
   	    elle::String(path),
   	    elle::String(name),
+  	    elle::String(value, size),
 	    (elle::Natural64)size) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
@@ -504,6 +518,7 @@ namespace pig
 
       if (upcall.Inputs(
 	    elle::String(path),
+	    elle::String(list, size)
 	    (elle::Natural64)size) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
@@ -605,6 +620,7 @@ namespace pig
 
       if (upcall.Inputs(
   	    elle::String(path),
+  	    elle::String(buf, size),
 	    (elle::Natural64)size) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
@@ -640,7 +656,9 @@ namespace pig
 
       if (upcall.Inputs(
   	    elle::String(path),
-	    (elle::Natural32)mode) ==
+	    (elle::Natural32)mode,
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
@@ -674,7 +692,9 @@ namespace pig
 	fail("unable to create the upcall");
 
       if (upcall.Inputs(
-	    elle::String(path)) ==
+	    elle::String(path),
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
@@ -723,7 +743,10 @@ namespace pig
 
       res = Record::Pointer->fuse.write(path, buf, size, offset, fi);
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs(
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
+	  elle::StatusError)
 	fail("unable to specify the upcall's outputs");
 
       if (upcall.Result(res) == elle::StatusError)
@@ -752,6 +775,8 @@ namespace pig
 
       if (upcall.Inputs(
   	    elle::String(path),
+	    elle::Region((elle::Byte*)buf,
+			 (elle::Natural64)size),
 	    (elle::Natural64)size,
 	    (elle::Natural64)offset,
 	    elle::Region((elle::Byte*)fi,
@@ -866,7 +891,10 @@ namespace pig
       res = Record::Pointer->fuse.release(path, fi);
 #include <elle/idiom/Open.hh>
 
-      if (upcall.Outputs() == elle::StatusError)
+      if (upcall.Outputs(
+	    elle::Region((elle::Byte*)fi,
+			 (elle::Natural64)sizeof (struct ::fuse_file_info))) ==
+	  elle::StatusError)
 	fail("unable to specify the upcall's outputs");
 
       if (upcall.Result(res) == elle::StatusError)

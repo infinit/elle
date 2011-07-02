@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [wed jun 29 17:33:17 2011]
+// updated       julien quintard   [sat jul  2 14:06:51 2011]
 //
 
 //
@@ -81,19 +81,6 @@ namespace pig
     printf("[XXX] %s(%s, %p)\n",
 	   __FUNCTION__,
 	   path, stat);
-
-    /* XXX
-    // record the operation.
-    if (PIG::Diary.Record(
-	  Diary::OperationGetattr,
-	  elle::String(path),
-	  elle::Region(stat, sizeof (struct stat))) == elle::StatusError)
-      escape("unable to record the operation");
-
-// XXX il faudrait ecrire un programme qui utiliser du FUSE forward et
- creer un diary. nous on le rejoue dans notre FS.
-// XXX 8diaryne
-*/
 
     // XXX un moyen de tester si l'objet exist: Path::Exist?
 
@@ -197,6 +184,9 @@ namespace pig
 
     // set the size.
     stat->st_size = (off_t)information.size;
+
+    // XXX
+    printf("SIZE(%qu)\n", (off_t)stat->st_size);
 
     // convert the times into time_t structures.
     stat->st_atime = time(NULL);
@@ -1151,27 +1141,6 @@ namespace pig
     return (0);
   }
 #endif
-
-  ///
-  /// this method handles locking on the given object.
-  ///
-  int			Crux::Lock(const char*			path,
-				   struct ::fuse_file_info*	info,
-				   int				command,
-				   struct flock*		flags)
-  {
-    printf("[XXX] %s(%s, %p, %u, %p)\n",
-	   __FUNCTION__,
-	   path, info, command, flags);
-
-    // XXX: to implement
-
-    printf("[/XXX] %s(%s, %p, %u, %p)\n",
-	   __FUNCTION__,
-	   path, info, command, flags);
-
-    return (0);
-  }
 
   ///
   /// this method creates a symbolic link.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Record.hh
 //
 // created       julien quintard   [tue jun 28 20:18:21 2011]
-// updated       julien quintard   [thu jun 30 09:33:18 2011]
+// updated       julien quintard   [fri jul  1 21:06:35 2011]
 //
 
 #ifndef PIG_DIARY_RECORD_HH
@@ -39,6 +39,7 @@
 # include <dirent.h>
 # include <errno.h>
 # include <sys/time.h>
+# include <sys/stat.h>
 # ifdef HAVE_SETXATTR
 #  include <sys/xattr.h>
 # endif

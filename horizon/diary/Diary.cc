@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.cc
 //
 // created       julien quintard   [sun jun 26 22:48:13 2011]
-// updated       julien quintard   [thu jun 30 09:27:40 2011]
+// updated       julien quintard   [fri jul  1 19:14:38 2011]
 //
 
 //
@@ -91,7 +91,8 @@ namespace pig
     ///
     /// this method starts the replaying.
     ///
-    elle::Status	Diary::Replay()
+    elle::Status	Diary::Replay(const elle::Natural32	from,
+				      const elle::Natural32	to)
     {
       enter();
 
@@ -107,7 +108,7 @@ namespace pig
 	escape("unable to initialize the replay");
 
       // launch the replay.
-      if (Replay::Launch() == elle::StatusError)
+      if (Replay::Launch(from, to) == elle::StatusError)
 	escape("unable to launch the replay");
 
       // clean the replay.

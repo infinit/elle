@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Upcall.cc
 //
 // created       julien quintard   [tue jun 28 15:02:54 2011]
-// updated       julien quintard   [thu jun 30 10:38:29 2011]
+// updated       julien quintard   [fri jul  1 21:33:58 2011]
 //
 
 //
@@ -33,14 +33,8 @@ namespace pig
     {
       enter();
 
-      // create the archive.
-      if (this->archive.Create() == elle::StatusError)
-	escape("unable to create the archive");
-
-      // serialize the operation code.
-      if (this->archive.Serialize((const elle::Natural32&)operation) ==
-	  elle::StatusError)
-	escape("unable to serialize the operation");
+      // set the operation.
+      this->operation = operation;
 
       leave();
     }
@@ -49,13 +43,12 @@ namespace pig
     /// this method specifies the upcall's result and serializes it
     /// right away.
     ///
-    elle::Status	Upcall::Result(const elle::Natural32	result)
+    elle::Status	Upcall::Result(const elle::Integer32	result)
     {
       enter();
 
-      // serializes the result.
-      if (this->archive.Serialize(result) == elle::StatusError)
-	escape("unable to serialize the result");
+      // set the result;
+      this->result = result;
 
       leave();
     }
@@ -82,12 +75,30 @@ namespace pig
 
       enter();
 
-      // display the name.
       std::cout << alignment << "[Upcall]" << std::endl;
 
-      // dump the archive.
-      if (this->archive.Dump(margin + 2) == elle::StatusError)
+      // display the operation.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Operation] " << (elle::Natural32)this->operation
+		<< std::endl;
+
+      // display the inputs.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Inputs]" << std::endl;
+
+      if (this->inputs.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the archive");
+
+      // display the outputs.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Inputs]" << std::endl;
+
+      if (this->inputs.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the archive");
+
+      // display the result.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Result] " << this->operation << std::endl;
 
       leave();
     }
@@ -104,9 +115,10 @@ namespace pig
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize(elle::Region(this->archive.contents,
-					 this->archive.size)) ==
-	  elle::StatusError)
+      if (archive.Serialize((elle::Natural32&)this->operation,
+			    this->inputs,
+			    this->outputs,
+			    this->result) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -117,21 +129,14 @@ namespace pig
     ///
     elle::Status	Upcall::Extract(elle::Archive&		archive)
     {
-      elle::Region	region;
-
       enter();
 
-      // extract the region.
-      if (archive.Extract(region) == elle::StatusError)
+      // extract the attributes.
+      if (archive.Extract((elle::Natural32&)this->operation,
+			    this->inputs,
+			    this->outputs,
+			    this->result) == elle::StatusError)
 	escape("unable to extract the attributes");
-
-      // detach the region.
-      if (region.Detach() == elle::StatusError)
-	escape("unable to detach the region");
-
-      // prepare the archive.
-      if (this->archive.Prepare(region) == elle::StatusError)
-	escape("unable to prepare the archive");
 
       leave();
     }
