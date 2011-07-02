@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Crux.hh
 //
 // created       julien quintard   [tue jun 28 12:47:04 2011]
-// updated       julien quintard   [wed jun 29 00:01:52 2011]
+// updated       julien quintard   [fri jul  1 10:38:44 2011]
 //
 
 #ifndef DIARY_CRUX_HH

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8dictionary/Dictionary.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu jun 30 09:23:55 2011]
+// updated       julien quintard   [fri jul  1 22:28:42 2011]
 //
 
 //
@@ -565,8 +565,8 @@ namespace application
 	    escape("unable to retrieve the profile value");
 
 	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", profile) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
 
 	  // retrieve the type.
 	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
@@ -605,8 +605,8 @@ namespace application
 	    escape("unable to retrieve the profile value");
 
 	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", profile) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
 
 	  // retrieve the type.
 	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
@@ -639,8 +639,8 @@ namespace application
 	    escape("unable to retrieve the profile value");
 
 	  // retrieve the name.
-	  if (Infinit::Parser->Value("Name", profile) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
+	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
+	    escape("unable to retrieve the name value");
 
 	  // retrieve the type.
 	  if (Infinit::Parser->Test("User") == elle::StatusTrue)

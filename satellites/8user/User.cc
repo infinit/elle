@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 22:13:15 2011]
+// updated       julien quintard   [fri jul  1 13:57:37 2011]
 //
 
 //
@@ -404,11 +404,11 @@ namespace application
 
     // test the option.
     if (Infinit::Parser->Test("Destroy") == elle::StatusTrue)
-      operation = User::OperationCreate;
+      operation = User::OperationDestroy;
 
     // test the option.
     if (Infinit::Parser->Test("Information") == elle::StatusTrue)
-      operation = User::OperationCreate;
+      operation = User::OperationInformation;
 
     // trigger the operation.
     switch (operation)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Diary.cc
 //
 // created       julien quintard   [mon jun 27 22:38:51 2011]
-// updated       julien quintard   [thu jun 30 10:24:57 2011]
+// updated       julien quintard   [sat jul  2 12:23:07 2011]
 //
 
 //
@@ -95,7 +95,7 @@ namespace application
 	  'c',
 	  "record",
 	  "activate the event recording",
-	  elle::Parser::KindNone) == elle::StatusError)
+	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -104,15 +104,6 @@ namespace application
 	  'y',
 	  "replay",
 	  "activate the event replaying",
-	  elle::Parser::KindNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    // register the options.
-    if (Infinit::Parser->Register(
-          "Path",
-	  'p',
-	  "path",
-	  "specify the path to the diary file to be recording or replayed",
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
@@ -132,6 +123,26 @@ namespace application
 	  "mirror",
 	  "specify the path to the directory which must be mirrored through "
 	  "the mounpoint",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "From",
+	  'f',
+	  "from",
+	  "specify the number of the first operation to be triggered from "
+	  "the diary",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
+          "To",
+	  't',
+	  "to",
+	  "specify the number of the last operation to be triggered from "
+	  "the diary",
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
@@ -179,7 +190,7 @@ namespace application
 	  elle::Path		path;
 
 	  // retrieve the mirror.
-	  if (Infinit::Parser->Value("Path",
+	  if (Infinit::Parser->Value("Record",
 				     string) == elle::StatusError)
 	    escape("unable to retrieve the path value");
 
@@ -226,9 +237,11 @@ namespace application
 	  pig::Diary		diary;
 	  elle::String		string;
 	  elle::Path		path;
+	  elle::Natural32	from;
+	  elle::Natural32	to;
 
 	  // retrieve the mirror.
-	  if (Infinit::Parser->Value("Path",
+	  if (Infinit::Parser->Value("Replay",
 				     string) == elle::StatusError)
 	    escape("unable to retrieve the path value");
 
@@ -253,8 +266,26 @@ namespace application
 	  if (diary.Setup(Crux::Operations) == elle::StatusError)
 	    escape("unable to set up the diary");
 
-	  // replay the diary.
-	  if (diary.Replay() == elle::StatusError)
+	  // initialize the indexes.
+	  from = 0;
+	  to = diary.number;
+
+	  // retrieve the from.
+	  if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
+	      (Infinit::Parser->Value(
+	         "From",
+		 from) == elle::StatusError))
+	      escape("unable to retrieve the from value");
+
+	  // retrieve the to.
+	  if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
+	      (Infinit::Parser->Value(
+	         "To",
+		 to) == elle::StatusError))
+	    escape("unable to retrieve the to value");
+
+	      // replay the diary.
+	  if (diary.Replay(from, to) == elle::StatusError)
 	    escape("unable to replay the diary");
 
 	  // display a message.

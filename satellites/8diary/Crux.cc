@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Crux.cc
 //
 // created       julien quintard   [tue jun 28 12:46:13 2011]
-// updated       julien quintard   [wed jun 29 15:21:13 2011]
+// updated       julien quintard   [sat jul  2 13:58:07 2011]
 //
 
 //
@@ -99,7 +99,8 @@ namespace application
     int			res;
     Crux::Handle*	d;
 
-    if ((d = (Crux::Handle*)::malloc(sizeof(Crux::Handle))) == NULL)
+    if ((d =
+	 (Crux::Handle*)::malloc(sizeof(Crux::Handle))) == NULL)
       return -ENOMEM;
 
     if ((d->dp = ::opendir(way.c_str())) == NULL)
