@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [wed jun 22 12:39:20 2011]
+// updated       julien quintard   [sat jul  2 14:11:18 2011]
 //
 
 //
@@ -78,8 +78,15 @@ namespace nucleus
       enter();
 
       // check the operation's validity.
+      /// XXX \todo this check is unecessary for POSIX systems i.e
+      ///   condering a pread(fd, buf, size, offset) with offset != 0 though
+      ///   the file does not have any data, the call returns 0.
+      ///   with this check, an error would be returned.
+      ///   perhaps change with a logged warning or treat the case in PIG.
+      ///   for now the call returns: the region contains no data i.e size = 0
       if (offset > this->region.size)
-	escape("the offset is out of bound");
+	/// XXX escape("the offset is out of bound");
+	leave();
 
       // set size to the maximum between the request size and the available
       // size.
@@ -117,6 +124,9 @@ namespace nucleus
 
       // then, manually set the region size.
       this->region.size = size;
+
+      // XXX
+      printf("ADJUST: %qu\n", this->region.size);
 
       // set the data as dirty.
       this->_state = proton::StateDirty;
