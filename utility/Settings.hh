@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [mon jun 27 21:58:09 2011]
+// updated       julien quintard   [fri jul  1 19:21:40 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HH
@@ -214,7 +214,7 @@ namespace elle
 			    const String&,
 			    const String&,
 			    T&,
-			    const T&);
+			    const T);
       };
 
       template <typename T>
@@ -235,7 +235,7 @@ namespace elle
 			    const String&,
 			    const String&,
 			    Uniquable<F>&,
-			    const Uniquable<F>&);
+			    const Uniquable<F>);
       };
 
       //

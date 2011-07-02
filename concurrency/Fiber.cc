@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [sun jun 19 22:40:57 2011]
+// updated       julien quintard   [fri jul  1 12:27:58 2011]
 //
 
 //

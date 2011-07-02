@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [tue jun 28 23:07:57 2011]
+// updated       julien quintard   [sat jul  2 12:01:10 2011]
 //
 
 //
@@ -236,6 +236,10 @@ namespace elle
 	{
 	  if (this->Prepare(size) == StatusError)
 	    escape("unable to prepare the region for the first time");
+
+	  // XXX temporary for diary comparison: maybe create a configuration
+	  // value for activating this.
+	  ::memset(this->contents, 0x0, this->capacity);
 	}
       else
 	{
@@ -249,6 +253,12 @@ namespace elle
 	  if ((this->contents = (Byte*)::realloc(this->contents,
 						 this->capacity)) == NULL)
 	    escape(::strerror(errno));
+
+	  // XXX temporary for diary comparison: maybe create a configuration
+	  // value for activating this.
+	  ::memset(this->contents + this->size,
+		   0x0,
+		   this->capacity - this->size);
 	}
 
       leave();
