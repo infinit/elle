@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:22:14 2011]
-// updated       julien quintard   [fri jun 24 18:07:45 2011]
+// updated       julien quintard   [mon jul  4 09:41:06 2011]
 //
 
 //
@@ -50,14 +50,15 @@ namespace nucleus
 					     const Address&	address)
     {
       elle::Path	path;
-      elle::Unique	unique;
+      elle::String	unique;
       elle::Region	region;
 
       enter();
 
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
+      // first, turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::Block::Immutable) ==
@@ -89,15 +90,16 @@ namespace nucleus
 					      const Address&	address) const
     {
       elle::Path	path;
-      elle::Unique	unique;
+      elle::String	unique;
       elle::Region	region;
       elle::String	string;
 
       enter();
 
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
+      // first, turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::Block::Immutable) ==
@@ -132,13 +134,14 @@ namespace nucleus
 					      const Address&	address) const
     {
       elle::Path	path;
-      elle::Unique	unique;
+      elle::String	unique;
 
       enter();
 
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
+      // first, turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::Block::Immutable) ==
@@ -164,13 +167,14 @@ namespace nucleus
 					      const Address&	address) const
     {
       elle::Path	path;
-      elle::Unique	unique;
+      elle::String	unique;
 
       enter();
 
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	flee("unable to save the address' unique");
+      // first, turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::Block::Immutable) ==
@@ -181,9 +185,6 @@ namespace nucleus
       if (path.Complete(elle::Piece("%NETWORK%", network.name),
 			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
 	flee("unable to complete the path");
-
-      // XXX
-      path.Dump();
 
       // test the file.
       if (elle::File::Exist(path) == elle::StatusTrue)

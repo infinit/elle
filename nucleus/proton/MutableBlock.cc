@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [fri jun 24 18:07:40 2011]
+// updated       julien quintard   [mon jul  4 09:45:09 2011]
 //
 
 //
@@ -121,15 +121,16 @@ namespace nucleus
 					   const Version&	version)
     {
       elle::Path	path;
-      elle::Unique	unique;
+      elle::String	unique;
       elle::Region	region;
       elle::String	number;
 
       enter();
 
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
+      // first, turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::Block::Mutable) ==
@@ -144,13 +145,10 @@ namespace nucleus
 	}
       else
 	{
-	  std::ostringstream	oss;
-
-	  // transfer the version to the stream.
-	  oss << version.number;
-
-	  // assign the number.
-	  number = oss.str();
+	  // convert the version number.
+	  if (elle::Variable::Convert(version.number,
+				      number) == elle::StatusFalse)
+	    escape("unable to convert the version number into a string");
 	}
 
       // complete the path with the network name.
@@ -181,23 +179,22 @@ namespace nucleus
     {
       elle::Path		file;
       elle::Path		link;
-      elle::Unique		unique;
+      elle::String		unique;
       elle::Region		region;
       elle::String		string;
-      std::ostringstream	oss;
       elle::String		number;
 
       enter();
 
-      // transfer the version to the stream.
-      oss << this->version.number;
+      // convert the version number into a string.
+      if (elle::Variable::Convert(this->version.number,
+				  number) == elle::StatusFalse)
+	escape("unable to transform the version number into a string");
 
-      // assign the number.
-      number = oss.str();
-
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
+      // first, turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (file.Create(lune::Lune::Network::Shelter::Block::Mutable) ==
@@ -336,20 +333,20 @@ namespace nucleus
       const
     {
       elle::Path		path;
-      elle::Unique		unique;
-      std::ostringstream	oss;
+      elle::String		unique;
       elle::String		number;
 
       enter();
 
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-        flee("unable to save the address' unique");
+      // first, turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::Block::Mutable) ==
 	  elle::StatusError)
-	flee("unable to create the path");
+	escape("unable to create the path");
 
       // if the requested version is the latest...
       if (version == Version::Last)
@@ -359,13 +356,10 @@ namespace nucleus
 	}
       else
 	{
-	  std::ostringstream	oss;
-
-	  // transfer the version to the stream.
-	  oss << version.number;
-
-	  // assign the number.
-	  number = oss.str();
+	  // convert the version number.
+	  if (elle::Variable::Convert(version.number,
+				      number) == elle::StatusFalse)
+	    escape("unable to convert the version number into a string");
 	}
 
       // complete the path with the network name.

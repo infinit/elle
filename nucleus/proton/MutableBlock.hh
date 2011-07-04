@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.hh
 //
 // created       julien quintard   [sat may 21 12:27:09 2011]
-// updated       julien quintard   [fri jun 24 17:01:58 2011]
+// updated       julien quintard   [sun jul  3 12:02:30 2011]
 //
 
 #ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH

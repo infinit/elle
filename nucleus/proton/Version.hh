@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [fri jun 24 17:53:56 2011]
+// updated       julien quintard   [sun jul  3 23:44:33 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_VERSION_HH
@@ -49,6 +49,11 @@ namespace nucleus
       //
       Version();
       Version(const elle::Natural64);
+
+      //
+      // methods
+      //
+      elle::Status	Create(const elle::Natural64);
 
       //
       // interfaces

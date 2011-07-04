@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.cc
 //
 // created       julien quintard   [sat may 21 13:41:42 2011]
-// updated       julien quintard   [fri jun 24 17:53:44 2011]
+// updated       julien quintard   [sun jul  3 23:44:29 2011]
 //
 
 //
@@ -62,6 +62,23 @@ namespace nucleus
     Version::Version(const elle::Natural64			number):
       number(number)
     {
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method creates a version.
+    ///
+    elle::Status	Version::Create(const elle::Natural64	number)
+    {
+      enter();
+
+      // assign the number.
+      this->number = number;
+
+      leave();
     }
 
 //
