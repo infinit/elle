@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [fri jul  1 14:01:07 2011]
+// updated       julien quintard   [mon jul  4 13:38:28 2011]
 //
 
 //
@@ -16,7 +16,6 @@
 //
 
 #include <hole/Hole.hh>
-
 #include <Infinit.hh>
 
 namespace hole
@@ -58,7 +57,12 @@ namespace hole
 
     // retrieve the network name.
     if (Infinit::Parser->Value("Network", name) == elle::StatusError)
-      escape("unable to retrieve the network name");
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("unable to retrieve the network name");
+      }
 
     // does the network exist.
     if (Hole::Descriptor.Exist(name) == elle::StatusFalse)
@@ -157,8 +161,6 @@ namespace hole
   {
     enter();
 
-    printf("[XXX] Hole::Origin()\n");
-
     // return the address.
     address = Hole::Implementation->root;
 
@@ -172,8 +174,6 @@ namespace hole
 				   const nucleus::Block&	block)
   {
     enter();
-
-    printf("[XXX] Hole::Push()\n");
 
     // forward the request depending on the nature of the block which
     // the address indicates.
@@ -225,8 +225,6 @@ namespace hole
   {
     enter();
 
-    printf("[XXX] Hole::Pull()\n");
-
     // forward the request depending on the nature of the block which
     // the addres indicates.
     switch (address.family)
@@ -275,8 +273,6 @@ namespace hole
   elle::Status		Hole::Wipe(const nucleus::Address&	address)
   {
     enter();
-
-    printf("[XXX] Hole::Wipe()\n");
 
     // forward the kill request to the implementation.
     if (Hole::Implementation->Kill(address) == elle::StatusError)
