@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [mon jun 20 13:42:56 2011]
+// updated       julien quintard   [mon jul  4 11:56:14 2011]
 //
 
 //
@@ -421,7 +421,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }
@@ -438,7 +438,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }

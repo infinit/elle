@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [thu jun 23 11:59:24 2011]
+// updated       julien quintard   [mon jul  4 11:22:06 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -170,7 +170,7 @@ namespace elle
 		escape("unable to extract the error message");
 
 	      // report the remote error.
-	      report(Report::TypeError, report);
+	      transpose(report);
 	    }
 
 	  escape("received a packet with an unexpected tag");

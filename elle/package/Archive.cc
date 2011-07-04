@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [mon jun 27 07:18:33 2011]
+// updated       julien quintard   [mon jul  4 11:53:22 2011]
 //
 
 //
@@ -196,6 +196,8 @@ namespace elle
     Status		Archive::Store(const Null&)
     {
       enter();
+
+      // nothing to do.
 
       leave();
     }
@@ -946,7 +948,7 @@ namespace elle
 
       // recycle the object.
       if (this->Recycle(&element) == StatusError)
-	yield("unable to recycle the object", *this);
+	yield(*this, "unable to recycle the object");
 
       return (*this);
     }

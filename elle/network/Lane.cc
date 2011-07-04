@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [sun jun 19 17:56:24 2011]
+// updated       julien quintard   [mon jul  4 11:56:37 2011]
 //
 
 //
@@ -273,7 +273,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }

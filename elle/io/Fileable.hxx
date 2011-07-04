@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hxx
 //
 // created       julien quintard   [fri apr 30 17:43:29 2010]
-// updated       julien quintard   [fri jul  1 12:59:12 2011]
+// updated       julien quintard   [sun jul  3 13:13:47 2011]
 //
 
 #ifndef ELLE_IO_FILEABLE_HXX

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [thu jun 23 11:59:12 2011]
+// updated       julien quintard   [mon jul  4 11:21:08 2011]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -169,7 +169,7 @@ namespace elle
 		escape("unable to extract the error message");
 
 	      // report the remote error.
-	      report(Report::TypeError, report);
+	      transpose(report);
 	    }
 
 	  escape("received a packet with an unexpected tag");

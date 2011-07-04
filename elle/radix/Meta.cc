@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [mon jun 27 07:17:37 2011]
+// updated       julien quintard   [mon jul  4 10:31:58 2011]
 //
 
 //
@@ -41,8 +41,8 @@ namespace elle
     ///
     /// this value defines if the meta debugging must be activated.
     ///
-    /// \todo XXX it could be good to put this in a configuration module
-    ///           very much like Etoile.
+    /// note that this configuration parameter cannot be put elsewhere
+    /// as everything relies on Meta.
     ///
     const Boolean		Meta::Debug = false;
 

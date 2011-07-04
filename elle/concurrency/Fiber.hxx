@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [mon jun 27 21:21:48 2011]
+// updated       julien quintard   [mon jul  4 11:45:18 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -53,7 +53,7 @@ namespace elle
       // remove the parent fiber from the container since it is going
       // to be scheduled as soon as this function returns.
       if (Fiber::Remove(Fiber::Current->link) == StatusError)
-	alert("unable to remove the fiber");
+	alert(_(), "unable to remove the fiber");
 
       // set the state of the parent's fiber as awaken.
       Fiber::Current->link->state = Fiber::StateAwaken;

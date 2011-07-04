@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [mon jun 27 19:27:26 2011]
+// updated       julien quintard   [sun jul  3 13:10:34 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HH
@@ -193,6 +193,8 @@ namespace elle
 
       Status		Fetch(enum Type&);
       Status		Rewind();
+
+      Status		Size(Natural32&);
 
       Status		Seal();
 

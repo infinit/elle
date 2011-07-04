@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Type.cc
 //
 // created       julien quintard   [sun jun 26 19:36:23 2011]
-// updated       julien quintard   [sun jun 26 21:02:18 2011]
+// updated       julien quintard   [mon jul  4 12:37:20 2011]
 //
 
 //
@@ -74,7 +74,7 @@ namespace elle
       else
 	output = "false";
 
-      leave();
+      true();
     }
 
     ///
@@ -93,7 +93,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -112,7 +112,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -131,7 +131,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -150,7 +150,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -169,7 +169,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -188,7 +188,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -207,7 +207,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -226,7 +226,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -245,7 +245,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -264,7 +264,7 @@ namespace elle
       // assign the output.
       output.assign(stream.str());
 
-      leave();
+      true();
     }
 
     ///
@@ -285,9 +285,9 @@ namespace elle
 	       (input == "No") || (input == "no"))
 	output = false;
       else
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -303,11 +303,13 @@ namespace elle
       // extract the value.
       stream >> output;
 
+      /* XXX \todo this check fails :(
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
+      */
 
-      leave();
+      true();
     }
 
     ///
@@ -325,9 +327,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -345,9 +347,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -365,9 +367,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -385,9 +387,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -405,9 +407,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -425,9 +427,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -445,9 +447,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -465,9 +467,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
     ///
@@ -485,9 +487,9 @@ namespace elle
 
       // check the stream.
       if (!stream || !stream.eof())
-	escape("the value's format seems to be incorrect");
+	false();
 
-      leave();
+      true();
     }
 
   }
