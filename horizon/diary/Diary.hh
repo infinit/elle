@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.hh
 //
 // created       julien quintard   [sun jun 26 22:32:34 2011]
-// updated       julien quintard   [fri jul  1 21:03:10 2011]
+// updated       julien quintard   [sun jul  3 13:28:31 2011]
 //
 
 #ifndef PIG_DIARY_DIARY_HH
@@ -81,6 +81,8 @@ namespace pig
       elle::Status	Write(const Upcall&);
       elle::Status	Read(Upcall&);
 
+      elle::Status	End() const;
+
       //
       // interfaces
       //
@@ -95,6 +97,10 @@ namespace pig
       elle::Status	Serialize(elle::Archive&) const;
       elle::Status	Extract(elle::Archive&);
 
+      // fileable
+      elle::Status	Load(const elle::Path&);
+      elle::Status	Store(const elle::Path&) const;
+
       //
       // attributes
       //
@@ -102,7 +108,6 @@ namespace pig
 
       ::fuse_operations	fuse;
 
-      elle::Natural32	number;
       elle::Archive	archive;
     };
 

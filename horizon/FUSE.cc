@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [fri jul  1 23:17:20 2011]
+// updated       julien quintard   [mon jul  4 12:54:01 2011]
 //
 
 //
@@ -133,9 +133,9 @@ namespace pig
       FUSE::System::Operations.flush = Crux::Flush;
       */
 
-      // XXX activer le flag ci-dessous pour eviter d'avoir un path
-      // avec les Fsync, Fgetattr etc.
-      // XXX FUSE::System::Operations.flag_nullpath_ok = 1;
+      // the following flag being activated prevents the path argument
+      // to be passed for functions which take a file descriptor.
+      FUSE::System::Operations.flag_nullpath_ok = 1;
     }
 
     leave();

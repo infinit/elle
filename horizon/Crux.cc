@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [sat jul  2 14:06:51 2011]
+// updated       julien quintard   [mon jul  4 13:10:56 2011]
 //
 
 //
@@ -78,9 +78,10 @@ namespace pig
     struct ::fuse_file_info	info;
     int				result;
 
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, stat);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, stat);
 
     // XXX un moyen de tester si l'objet exist: Path::Exist?
 
@@ -108,9 +109,10 @@ namespace pig
       error("unable to discard the object",
 	    EINTR);
 
-    printf("[/XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, stat);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, stat);
 
     return (result);
   }
@@ -128,9 +130,10 @@ namespace pig
     etoile::path::Way			way(path);
     elle::String*			name;
 
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, stat);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, stat);
 
     // clear the stat structure.
     ::memset(stat, 0x0, sizeof (struct stat));
@@ -276,9 +279,10 @@ namespace pig
 	}
       }
 
-    printf("[/XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, stat);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, stat);
 
     return (0);
   }
@@ -289,17 +293,19 @@ namespace pig
   int			Crux::Utimens(const char*		path,
 				      const struct timespec[2])
   {
-    printf("[XXX] %s(%s, ...)\n",
-	   __FUNCTION__,
-	   path);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, ...)\n",
+	     __FUNCTION__,
+	     path);
 
     //
     // not supported
     //
 
-    printf("[/XXX] %s(%s, ...)\n",
-	   __FUNCTION__,
-	   path);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, ...)\n",
+	     __FUNCTION__,
+	     path);
 
     return (0);
   }
@@ -315,9 +321,10 @@ namespace pig
     etoile::path::Chemin	chemin;
     nucleus::Record		record;
 
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -357,9 +364,10 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(identifier);
 
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     return (0);
   }
@@ -377,9 +385,10 @@ namespace pig
     etoile::gear::Identifier*		identifier;
     off_t				next;
 
-    printf("[XXX] %s(%s, %p, %p, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, buffer, filler, offset, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p, %p, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, buffer, filler, offset, info);
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
@@ -437,9 +446,10 @@ namespace pig
 	  break;
       }
 
-    printf("[/XXX] %s(%s, %p, %p, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, buffer, filler, offset, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p, %p, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, buffer, filler, offset, info);
 
     return (0);
   }
@@ -452,9 +462,10 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
@@ -471,9 +482,10 @@ namespace pig
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
 
-    printf("[/XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     return (0);
   }
@@ -491,9 +503,10 @@ namespace pig
     etoile::gear::Identifier	subdirectory;
     nucleus::Permissions	permissions;
 
-    printf("[XXX] %s(%s, 0%o)\n",
-	   __FUNCTION__,
-	   path, mode);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, 0%o)\n",
+	     __FUNCTION__,
+	     path, mode);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -545,9 +558,10 @@ namespace pig
       error("unable to store the directory",
 	    EINTR);
 
-    printf("[/XXX] %s(%s, 0%o)\n",
-	   __FUNCTION__,
-	   path, mode);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, 0%o)\n",
+	     __FUNCTION__,
+	     path, mode);
 
     return (0);
   }
@@ -564,9 +578,10 @@ namespace pig
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	subdirectory;
 
-    printf("[XXX] %s(%s)\n",
-	   __FUNCTION__,
-	   path);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s)\n",
+	     __FUNCTION__,
+	     path);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
@@ -608,9 +623,10 @@ namespace pig
       error("unable to destroy the directory",
 	    EINTR);
 
-    printf("[/XXX] %s(%s)\n",
-	   __FUNCTION__,
-	   path);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s)\n",
+	     __FUNCTION__,
+	     path);
 
     return (0);
   }
@@ -628,9 +644,10 @@ namespace pig
     etoile::path::Chemin		chemin;
     nucleus::Record			record;
 
-    printf("[XXX] %s(%s, 0%o)\n",
-	   __FUNCTION__,
-	   path, mask);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, 0%o)\n",
+	     __FUNCTION__,
+	     path, mask);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -745,9 +762,10 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, 0%o)\n",
-	   __FUNCTION__,
-	   path, mask);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, 0%o)\n",
+	     __FUNCTION__,
+	     path, mask);
 
     return (0);
   }
@@ -764,9 +782,10 @@ namespace pig
     nucleus::Permissions		permissions;
     etoile::miscellaneous::Information	information;
 
-    printf("[XXX] %s(%s, 0%o)\n",
-	   __FUNCTION__,
-	   path, mode);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, 0%o)\n",
+	     __FUNCTION__,
+	     path, mode);
 
     //
     // note that this method ignores both the group and other permissions.
@@ -852,9 +871,10 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, 0%o)\n",
-	   __FUNCTION__,
-	   path, mode);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, 0%o)\n",
+	     __FUNCTION__,
+	     path, mode);
 
     return (0);
   }
@@ -866,9 +886,10 @@ namespace pig
 				    uid_t			uid,
 				    gid_t			gid)
   {
-    printf("[XXX] %s(%s, %u, %u)\n",
-	   __FUNCTION__,
-	   path, uid, gid);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %u, %u)\n",
+	     __FUNCTION__,
+	     path, uid, gid);
 
     //
     // this functionality is not implemented because, in Infinit, changing
@@ -889,13 +910,12 @@ namespace pig
     // probleme! donc niquel.
     //
 
-    // XXX
-    error("NYI",
-	  EINTR);
+    // XXX todo
 
-    printf("[/XXX] %s(%s, %u, %u)\n",
-	   __FUNCTION__,
-	   path, uid, gid);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %u, %u)\n",
+	     __FUNCTION__,
+	     path, uid, gid);
 
     return (0);
   }
@@ -916,9 +936,10 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
 
-    printf("[XXX] %s(%s, %s, %p, %u, 0x%x)\n",
-	   __FUNCTION__,
-	   path, name, value, size, flags);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %s, %p, %u, 0x%x)\n",
+	     __FUNCTION__,
+	     path, name, value, size, flags);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -944,9 +965,10 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %s, %p, %u, 0x%x)\n",
-	   __FUNCTION__,
-	   path, name, value, size, flags);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %s, %p, %u, 0x%x)\n",
+	     __FUNCTION__,
+	     path, name, value, size, flags);
 
     return (0);
   }
@@ -964,9 +986,10 @@ namespace pig
     etoile::path::Chemin	chemin;
     nucleus::Trait		trait;
 
-    printf("[XXX] %s(%s, %s, %p, %u)\n",
-	   __FUNCTION__,
-	   path, name, value, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %s, %p, %u)\n",
+	     __FUNCTION__,
+	     path, name, value, size);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -996,9 +1019,10 @@ namespace pig
       error("unable to locate this attribute",
 	    ENOATTR);
 
-    printf("[/XXX] %s(%s, %s, %p, %u)\n",
-	   __FUNCTION__,
-	   path, name, value, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %s, %p, %u)\n",
+	     __FUNCTION__,
+	     path, name, value, size);
 
     // if the size is null, it means that this call must be considered
     // as a request for the size required to store the value.
@@ -1030,9 +1054,10 @@ namespace pig
     nucleus::Range<nucleus::Trait>::Scoutor	scoutor;
     size_t					offset;
 
-    printf("[XXX] %s(%s, %p, %u)\n",
-	   __FUNCTION__,
-	   path, list, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p, %u)\n",
+	     __FUNCTION__,
+	     path, list, size);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1056,9 +1081,10 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %p, %u)\n",
-	   __FUNCTION__,
-	   path, list, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p, %u)\n",
+	     __FUNCTION__,
+	     path, list, size);
 
     // if the size is zero, this call must return the size required to
     // store the list.
@@ -1107,9 +1133,10 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
 
-    printf("[XXX] %s(%s, %s)\n",
-	   __FUNCTION__,
-	   path, name);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %s)\n",
+	     __FUNCTION__,
+	     path, name);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1134,9 +1161,10 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %s)\n",
-	   __FUNCTION__,
-	   path, name);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %s)\n",
+	     __FUNCTION__,
+	     path, name);
 
     return (0);
   }
@@ -1155,9 +1183,10 @@ namespace pig
     etoile::path::Way		to(target);
     etoile::path::Chemin	chemin;
 
-    printf("[XXX] %s(%s, %s)\n",
-	   __FUNCTION__,
-	   target, source);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %s)\n",
+	     __FUNCTION__,
+	     target, source);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
@@ -1200,9 +1229,10 @@ namespace pig
       error("unable to store the directory",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %s)\n",
-	   __FUNCTION__,
-	   target, source);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %s)\n",
+	     __FUNCTION__,
+	     target, source);
 
     return (0);
   }
@@ -1219,9 +1249,10 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::path::Way		target;
 
-    printf("[XXX] %s(%s, %p, %u)\n",
-	   __FUNCTION__,
-	   path, buffer, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p, %u)\n",
+	     __FUNCTION__,
+	     path, buffer, size);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1251,9 +1282,10 @@ namespace pig
 	        target.path.length() + 1 :
 	        size);
 
-    printf("[/XXX] %s(%s, %p, %u)\n",
-	   __FUNCTION__,
-	   path, buffer, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p, %u)\n",
+	     __FUNCTION__,
+	     path, buffer, size);
 
     return (0);
   }
@@ -1272,9 +1304,10 @@ namespace pig
     etoile::gear::Identifier	file;
     nucleus::Permissions	permissions;
 
-    printf("[XXX] %s(%s, 0%o, %p)\n",
-	   __FUNCTION__,
-	   path, mode, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, 0%o, %p)\n",
+	     __FUNCTION__,
+	     path, mode, info);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1358,9 +1391,10 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(file);
 
-    printf("[/XXX] %s(%s, 0%o, %p)\n",
-	   __FUNCTION__,
-	   path, mode, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, 0%o, %p)\n",
+	     __FUNCTION__,
+	     path, mode, info);
 
     return (0);
   }
@@ -1375,9 +1409,10 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	identifier;
 
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1393,9 +1428,10 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(identifier);
 
-    printf("[/XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     return (0);
   }
@@ -1412,9 +1448,10 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    printf("[XXX] %s(%s, %p, %u, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, buffer, size, offset, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, buffer, size, offset, info);
 
     // retrieve the identifier.
     identifier = (etoile::gear::Identifier*)info->fh;
@@ -1431,9 +1468,10 @@ namespace pig
       error("unable to write the file",
 	    EACCES);
 
-    printf("[/XXX] %s(%s, %p, %u, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, buffer, size, offset, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p, %u, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, buffer, size, offset, info);
 
     return (size);
   }
@@ -1450,9 +1488,10 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    printf("[XXX] %s(%s, %p, %u, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, buffer, size, offset, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, buffer, size, offset, info);
 
     // retrieve the identifier.
     identifier = (etoile::gear::Identifier*)info->fh;
@@ -1468,9 +1507,10 @@ namespace pig
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
 
-    printf("[/XXX] %s(%s, %p, %u, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, buffer, size, offset, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p, %u, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, buffer, size, offset, info);
 
     return ((int)region.size);
   }
@@ -1487,9 +1527,10 @@ namespace pig
     struct ::fuse_file_info	info;
     int				result;
 
-    printf("[XXX] %s(%s, %qu)\n",
-	   __FUNCTION__,
-	   path, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %qu)\n",
+	     __FUNCTION__,
+	     path, size);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1512,9 +1553,10 @@ namespace pig
       error("unable to store the file",
 	    EINTR);
 
-    printf("[/XXX] %s(%s, %qu)\n",
-	   __FUNCTION__,
-	   path, size);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %qu)\n",
+	     __FUNCTION__,
+	     path, size);
 
     return (result);
   }
@@ -1528,9 +1570,10 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, size, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, size, info);
 
     // retrieve the identifier.
     identifier = (etoile::gear::Identifier*)info->fh;
@@ -1541,9 +1584,10 @@ namespace pig
       error("unable to adjust the size of the file",
 	    ENOENT);
 
-    printf("[/XXX] %s(%s, %qu, %p)\n",
-	   __FUNCTION__,
-	   path, size, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %qu, %p)\n",
+	     __FUNCTION__,
+	     path, size, info);
 
     return (0);
   }
@@ -1557,9 +1601,10 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::gear::Identifier*	identifier;
 
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     // retrieve the identifier.
     identifier = (etoile::gear::Identifier*)info->fh;
@@ -1575,9 +1620,10 @@ namespace pig
     // reset the file handle.
     info->fh = 0;
 
-    printf("[/XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %p)\n",
+	     __FUNCTION__,
+	     path, info);
 
     return (0);
   }
@@ -1594,9 +1640,10 @@ namespace pig
     etoile::path::Way		to(etoile::path::Way(target), t);
     etoile::gear::Identifier	object;
 
-    printf("[XXX] %s(%s, %s)\n",
-	   __FUNCTION__,
-	   source, target);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s, %s)\n",
+	     __FUNCTION__,
+	     source, target);
 
     // call the Unlink() method in order to remove, if present, the
     // target.
@@ -1722,9 +1769,10 @@ namespace pig
 		ENOENT);
       }
 
-    printf("[/XXX] %s(%s, %s)\n",
-	   __FUNCTION__,
-	   source, target);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s, %s)\n",
+	     __FUNCTION__,
+	     source, target);
 
     return (0);
   }
@@ -1742,9 +1790,10 @@ namespace pig
     etoile::gear::Identifier		identifier;
     etoile::miscellaneous::Information	information;
 
-    printf("[XXX] %s(%s)\n",
-	   __FUNCTION__,
-	   path);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[pig] %s(%s)\n",
+	     __FUNCTION__,
+	     path);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
@@ -1845,9 +1894,10 @@ namespace pig
       error("unable to store the directory",
 	    EINTR);
 
-    printf("[/XXX] %s(%s)\n",
-	   __FUNCTION__,
-	   path);
+    if (agent::Agent::Configuration.debug.pig == true)
+      printf("[/pig] %s(%s)\n",
+	     __FUNCTION__,
+	     path);
 
     return (0);
   }

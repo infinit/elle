@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.cc
 //
 // created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [sat jul  2 14:02:17 2011]
+// updated       julien quintard   [sun jul  3 14:09:23 2011]
 //
 
 //
@@ -454,7 +454,11 @@ namespace pig
 	      (mode_t)inputs.mode);
 
       if (upcall.result != res)
+	{
+	  printf("EXPECTED(%d) GOT(%d)\n", upcall.result, res);
+
 	escape("invalid result");
+	}
 
       leave();
     }
@@ -489,7 +493,11 @@ namespace pig
 	      (gid_t)inputs.gid);
 
       if (upcall.result != res)
+	{
+	  printf("EXPECTED(%d) GOT(%d)\n", upcall.result, res);
+
 	escape("invalid result");
+	}
 
       leave();
     }
@@ -1014,7 +1022,7 @@ namespace pig
 
       if (upcall.result != res)
 	{
-	escape("invalid result");
+	  escape("invalid result");
 	}
 
       if (inputs.buf != outputs.buf)
@@ -1022,7 +1030,7 @@ namespace pig
 	  inputs.buf.Dump();
 	  outputs.buf.Dump();
 
-	escape("invalid buffer");
+	  escape("invalid buffer");
 	}
 
       leave();
@@ -1245,7 +1253,9 @@ namespace pig
       printf("%d ... %d\n", from, to);
 
       // first, go through the upcalls that must be ignored.
-      for (i = 0; i < from; i++)
+      for (i = 0;
+	   (i < from) && (Replay::Pointer->End() == elle::StatusFalse);
+	   i++)
 	{
 	  Upcall		upcall;
 
@@ -1255,7 +1265,9 @@ namespace pig
 	}
 
       // then go through the remaining upcalls up to 'to'.
-      for (; i < to; i++)
+      for (;
+	   (i < to) && (Replay::Pointer->End() == elle::StatusFalse);
+	    i++)
 	{
 	  Upcall		upcall;
 
@@ -1264,9 +1276,8 @@ namespace pig
 	    escape("unable to read the upcall");
 
 	  // XXX
-	  printf("%u / %u :: opcode(%u)\n",
-		 i, Replay::Pointer->number,
-		 upcall.operation);
+	  printf("n(%u) :: opcode(%u)\n",
+		 i, upcall.operation);
 
 	  // forward the call to a specific method depending on
 	  // the operation code.

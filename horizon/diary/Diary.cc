@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.cc
 //
 // created       julien quintard   [sun jun 26 22:48:13 2011]
-// updated       julien quintard   [fri jul  1 19:14:38 2011]
+// updated       julien quintard   [sun jul  3 13:28:14 2011]
 //
 
 //
@@ -32,8 +32,7 @@ namespace pig
     /// default constructor.
     ///
     Diary::Diary():
-      mode(Diary::ModeUnknown),
-      number(0)
+      mode(Diary::ModeUnknown)
     {
     }
 
@@ -133,9 +132,6 @@ namespace pig
       if (this->archive.Serialize(upcall) == elle::StatusError)
 	escape("unable to serialize the upcall");
 
-      // increase the number.
-      this->number += 1;
-
       leave();
     }
 
@@ -155,6 +151,20 @@ namespace pig
 	escape("unable to extract the upcall");
 
       leave();
+    }
+
+    ///
+    /// this method returns true if the end of the diary has been reached.
+    ///
+    elle::Status	Diary::End() const
+    {
+      enter();
+
+      // have we reached the end of the archive.
+      if (this->archive.offset == this->archive.size)
+	true();
+
+      false();
     }
 
 //
@@ -186,10 +196,6 @@ namespace pig
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Mode] " << (elle::Natural32)this->mode << std::endl;
 
-      // display the name.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Number] " << this->number << std::endl;
-
       // dump the archive.
       if (this->archive.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the archive");
@@ -209,8 +215,7 @@ namespace pig
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize(this->number,
-			    this->archive) == elle::StatusError)
+      if (archive.Serialize(this->archive) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -224,9 +229,59 @@ namespace pig
       enter();
 
       // extract the attributes.
-      if (archive.Extract(this->number,
-			  this->archive) == elle::StatusError)
+      if (archive.Extract(this->archive) == elle::StatusError)
 	escape("unable to extract the attributes");
+
+      leave();
+    }
+
+//
+// ---------- fileable --------------------------------------------------------
+//
+
+    ///
+    /// this method loads the diary.
+    ///
+    /// note that since diaries can be very large---several gigabytes---the
+    /// method handles the archive specifically, making sure that no
+    /// copy is performed.
+    ///
+    elle::Status	Diary::Load(const elle::Path&		path)
+    {
+      elle::Region	region;
+
+      enter();
+
+      // read the file's content.
+      if (elle::File::Read(path, region) == elle::StatusError)
+	escape("unable to read the file's content");
+
+      // detach the data from the region.
+      if (region.Detach() == elle::StatusError)
+	escape("unable to detach the data");
+
+      // prepare the archive.
+      if (this->archive.Prepare(region) == elle::StatusError)
+	escape("unable to prepare the archive");
+
+      leave();
+    }
+
+    ///
+    /// this method stores the diary in its file format.
+    ///
+    /// note that since diaries can be very large---several gigabytes---the
+    /// method handles the archive specifically, making sure that no
+    /// copy is performed.
+    ///
+    elle::Status	Diary::Store(const elle::Path&		path)
+      const
+    {
+      enter();
+
+      // write the file's content.
+      if (elle::File::Write(path, this->archive) == elle::StatusError)
+	escape("unable to write the file's content");
 
       leave();
     }

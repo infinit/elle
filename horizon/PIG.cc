@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [sat jul  2 12:22:07 2011]
+// updated       julien quintard   [mon jul  4 13:39:33 2011]
 //
 
 //
@@ -113,7 +113,12 @@ namespace pig
 	{
 	  // retrieve the path.
 	  if (Infinit::Parser->Value("Replay", string) == elle::StatusError)
-	    escape("unable to retrieve the diary path");
+	    {
+	      // display the usage.
+	      Infinit::Parser->Usage();
+
+	      escape("unable to retrieve the diary path");
+	    }
 
 	  // create the path.
 	  if (path.Create(string) == elle::StatusError)
@@ -129,21 +134,31 @@ namespace pig
 
 	  // initialize the indexes.
 	  from = 0;
-	  to = PIG::Diary.number;
+	  to = elle::Variable::Maximum(to);
 
 	  // retrieve the from.
 	  if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
 	      (Infinit::Parser->Value(
 	         "From",
 		 from) == elle::StatusError))
+	    {
+	      // display the usage.
+	      Infinit::Parser->Usage();
+
 	      escape("unable to retrieve the from value");
+	    }
 
 	  // retrieve the to.
 	  if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
 	      (Infinit::Parser->Value(
 	         "To",
 		 to) == elle::StatusError))
-	    escape("unable to retrieve the to value");
+	    {
+	      // display the usage.
+	      Infinit::Parser->Usage();
+
+	      escape("unable to retrieve the to value");
+	    }
 
 	  // replay the diary.
 	  if (PIG::Diary.Replay(from, to) == elle::StatusError)
@@ -164,7 +179,12 @@ namespace pig
       // retrieve the mount point.
       if (Infinit::Parser->Value("Mountpoint",
 				 mountpoint) == elle::StatusError)
-	escape("unable to retrieve the mount point");
+	{
+	  // display the usage.
+	  Infinit::Parser->Usage();
+
+	  escape("unable to retrieve the mount point");
+	}
 
       if (FUSE::Setup(mountpoint) == elle::StatusError)
 	escape("unable to set up FUSE");
