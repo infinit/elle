@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 22:11:02 2011]
+// updated       julien quintard   [mon jul  4 13:38:51 2011]
 //
 
 //
@@ -67,7 +67,12 @@ namespace agent
     {
       // retrieve the user name.
       if (Infinit::Parser->Value("User", name) == elle::StatusError)
-	escape("unable to retrieve the user name");
+	{
+	  // display the usage.
+	  Infinit::Parser->Usage();
+
+	  escape("unable to retrieve the user name");
+	}
     }
 
     //
