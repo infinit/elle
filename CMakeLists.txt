@@ -32,7 +32,7 @@ ADD_LIBRARY(elle
   io/Dumpable.cc
   io/File.cc
   io/Link.cc
-  io/Midget.cc
+  io/Manipulators.cc
   io/Pattern.cc
   io/Piece.cc
   io/Path.cc
