@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [mon jun 27 22:11:29 2011]
+// updated       julien quintard   [mon jul  4 19:15:20 2011]
 //
 
 //
