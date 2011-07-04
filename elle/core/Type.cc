@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Type.cc
 //
 // created       julien quintard   [sun jun 26 19:36:23 2011]
-// updated       julien quintard   [mon jul  4 12:37:20 2011]
+// updated       julien quintard   [mon jul  4 16:03:58 2011]
 //
 
 //
@@ -278,11 +278,13 @@ namespace elle
       // test the input.
       if ((input == "1") ||
 	  (input == "True") || (input == "true") ||
-	  (input == "Yes") || (input == "yes"))
+	  (input == "Yes") || (input == "yes") ||
+	  (input == "On") || (input == "on"))
 	output = true;
       else if ((input == "0") ||
 	       (input == "False") || (input == "false") ||
-	       (input == "No") || (input == "no"))
+	       (input == "No") || (input == "no") ||
+	       (input == "Off") || (input == "off"))
 	output = false;
       else
 	false();
@@ -303,7 +305,8 @@ namespace elle
       // extract the value.
       stream >> output;
 
-      /* XXX \todo this check fails :(
+      /// XXX \todo this check fails :( and I don't know why!
+      /*
       // check the stream.
       if (!stream || !stream.eof())
 	false();
