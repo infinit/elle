@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [fri jun  3 15:21:40 2011]
+// updated       julien quintard   [mon jul  4 11:19:18 2011]
 //
 
 #ifndef ELLE_STANDALONE_REPORT_HH
@@ -199,10 +199,7 @@ namespace elle
 			       const String&,
 			       const String&,
 			       const String&);
-      Void		Record(Type,
-			       const String&,
-			       const String&,
-			       const Report&);
+      Void		Record(const Report&);
 
       //
       // interfaces

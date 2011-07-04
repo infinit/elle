@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [sun jun 19 17:54:57 2011]
+// updated       julien quintard   [mon jul  4 11:55:16 2011]
 //
 
 //
@@ -187,7 +187,7 @@ namespace elle
 
       // trigger the callback in a new fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }

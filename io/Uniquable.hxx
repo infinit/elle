@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hxx
 //
 // created       julien quintard   [sun may  2 13:22:46 2010]
-// updated       julien quintard   [thu jun 23 11:50:35 2011]
+// updated       julien quintard   [mon jul  4 12:04:27 2011]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HXX
@@ -158,7 +158,7 @@ namespace std
 
     // generate the unique identifier.
     if (object.Save(unique) == elle::radix::StatusError)
-      yield("unable to save the object", stream);
+      yield(stream, "unable to save the object");
 
     // display the unique in its entirety.
     stream << unique;

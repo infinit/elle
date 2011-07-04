@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [mon jun 27 07:17:30 2011]
+// updated       julien quintard   [mon jul  4 11:51:55 2011]
 //
 
 //
@@ -241,10 +241,7 @@ namespace elle
     ///
     /// this method adds a set of messages to the report.
     ///
-    Void		Report::Record(Report::Type		type,
-				       const String&		location,
-				       const String&		time,
-				       const Report&		report)
+    Void		Report::Record(const Report&		report)
     {
       Report::Scoutor	scoutor;
 
@@ -264,9 +261,6 @@ namespace elle
 		       entry->time,
 		       entry->message);
 	}
-
-      // create a headline message of the given type.
-      this->Record(type, location, time, "Report");
     }
 
 //
@@ -482,7 +476,7 @@ namespace elle
 
       // recycle the report.
       if (this->Recycle(&element) == StatusError)
-	yield("unable to recycle the report", *this);
+	yield(*this, "unable to recycle the report");
 
       return (*this);
     }

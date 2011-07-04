@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Midget.cc
 //
 // created       julien quintard   [thu jun 23 10:30:29 2011]
-// updated       julien quintard   [thu jun 23 13:26:43 2011]
+// updated       julien quintard   [mon jul  4 11:53:06 2011]
 //
 
 //
@@ -59,7 +59,7 @@ namespace std
 
     // generate the unique identifier.
     if (midget.object.Save(unique) == elle::radix::StatusError)
-      yield("unable to save the object", stream);
+      yield(stream, "unable to save the object");
 
     // display the unique depending on its length.
     if (unique.length() < midget.length)

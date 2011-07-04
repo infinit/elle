@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun jun 19 22:36:44 2011]
+// updated       julien quintard   [mon jul  4 11:55:57 2011]
 //
 
 //
@@ -558,7 +558,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }
@@ -575,7 +575,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }

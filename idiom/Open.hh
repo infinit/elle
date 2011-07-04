@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [mon jun 27 07:16:31 2011]
+// updated       julien quintard   [mon jul  4 11:52:06 2011]
 //
 
 //
@@ -74,7 +74,7 @@
       return (*this);							\
 									\
     if (this->Recycle(&object) == elle::radix::StatusError)		\
-      yield("unable to recycle the object", *this);			\
+      yield(*this, "unable to recycle the object");			\
 									\
     return (*this);							\
   }									\
@@ -126,29 +126,45 @@
 //
 
 ///
-/// this macro-function register a report entry.
+/// this macro-function registers a report entry.
 ///
 /// note that this macro function should never be called directly. instead
 /// the macro functions below should be used: leave, escape, true, alert
 /// etc.
 ///
-#define report(_type_, _message_)					\
+#define report(_type_, _format_, _arguments_...)			\
   do									\
     {									\
       elle::standalone::Report*	_report_;				\
       std::ostringstream	_tmp_;					\
+      elle::Character		_message_[1024];			\
 									\
       _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;	\
 									\
       elle::core::String	_location_(_tmp_.str());		\
       elle::core::String	_time_(__DATE__ " " __TIME__);		\
 									\
+      ::sprintf(_message_, _format_, ##_arguments_);			\
+									\
       if (elle::standalone::Report::Instance(_report_) !=		\
 	  elle::radix::StatusError)					\
         _report_->Record(_type_,					\
 			 _location_,					\
 			 _time_,					\
-			 _message_);					\
+			 elle::String(_message_));			\
+    } while (false)
+
+///
+/// this macro-function transposes an existing report.
+///
+#define transpose(_r_)							\
+  do									\
+    {									\
+      elle::standalone::Report*	_report_;				\
+									\
+      if (elle::standalone::Report::Instance(_report_) !=		\
+	  elle::radix::StatusError)					\
+        _report_->Record(_r_);						\
     } while (false)
 
 ///
@@ -188,17 +204,19 @@
 ///
 /// this macro-function reports a warning.
 ///
-#define warn(_text_)							\
-  report(elle::standalone::Report::TypeWarning, _text_)
+#define warn(_format_, _arguments_...)					\
+  report(elle::standalone::Report::TypeWarning,				\
+	 _format_, ##_arguments_)
 
 ///
 /// this macro-function indicates that an error occured
 /// and returns StatusError.
 ///
-#define escape(_text_)							\
+#define escape(_format_, _arguments_...)				\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError, _text_);		\
+      report(elle::standalone::Report::TypeError,			\
+	     _format_, ##_arguments_);					\
 									\
       release();							\
 									\
@@ -209,10 +227,11 @@
 /// this macro-function indicates that an error occured
 /// and return StatusFalse.
 ///
-#define flee(_text_)							\
+#define flee(_format_, _arguments_...)					\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError, _text_);		\
+      report(elle::standalone::Report::TypeError,			\
+	     _format_, ##_arguments_);					\
 									\
       release();							\
 									\
@@ -225,10 +244,11 @@
 /// note that the return object is specifed, hence this function
 /// perfectly fits when an error occurs in operators etc.
 ///
-#define yield(_text_, _return_)						\
+#define yield(_return_, _format_, _arguments_...)			\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError, _text_);		\
+      report(elle::standalone::Report::TypeError,			\
+	     _format_, ##_arguments_);					\
 									\
       release();							\
       									\
@@ -241,10 +261,11 @@
 /// XXX \todo this one should directly print on stderr or later
 ///     forward the message to a log application.
 ///
-#define alert(_text_, _return_...)					\
+#define alert(_return_, _format_, _arguments_...)			\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError, _text_);		\
+      report(elle::standalone::Report::TypeError,			\
+	     _format_, ##_arguments_);					\
 									\
       show();								\
 									\
@@ -257,10 +278,11 @@
 /// this macro-function adds an failure, displays the stack and
 /// stops the program.
 ///
-#define fail(_text_)							\
+#define fail(_format_, _arguments_...)					\
   do									\
     {									\
-      report(elle::standalone::Report::TypeFailure, _text_);		\
+      report(elle::standalone::Report::TypeFailure,			\
+	     _format_, ##_arguments_);					\
 									\
       show();								\
 									\

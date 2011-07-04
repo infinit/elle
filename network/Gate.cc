@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [sun jun 19 22:58:44 2011]
+// updated       julien quintard   [mon jul  4 11:56:05 2011]
 //
 
 //
@@ -545,7 +545,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }
@@ -562,7 +562,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert("unable to spawn a fiber");
+	alert(_(), "unable to spawn a fiber");
 
       release();
     }

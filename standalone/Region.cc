@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [sat jul  2 12:01:10 2011]
+// updated       julien quintard   [mon jul  4 11:51:42 2011]
 //
 
 //
@@ -498,7 +498,7 @@ namespace elle
 
       // recycle the region.
       if (this->Recycle(&element) == StatusError)
-	yield("unable to recycle the region", *this);
+	yield(*this, "unable to recycle the region");
 
       return (*this);
     }

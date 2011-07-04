@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.hxx
 //
 // created       julien quintard   [sun jun 26 21:23:03 2011]
-// updated       julien quintard   [fri jul  1 22:18:05 2011]
+// updated       julien quintard   [mon jul  4 12:20:26 2011]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HXX
@@ -83,21 +83,23 @@ namespace elle
 
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
-	escape("unable to locate the option");
+	escape("unable to locate the option '%s'",
+	       name.c_str());
 
       // if the option has not been activated, return an error.
       if (option->state == Parser::StateDeactivated)
-	/// XXX \todo precise the short/long option name here
-	escape("the option has not been activated");
+	escape("the option '%s' has not been activated",
+	       name.c_str());
 
       // if no argument has been provided, return an error.
       if (option->value == NULL)
-	/// XXX \todo precise the short/long option name here
-	escape("the option has not been provided with an argument");
+	escape("the option '%s' has not been provided with an argument",
+	       name.c_str());
 
       // convert the string-based argument to the given type, if possible.
-      if (Variable::Convert(*option->value, value) == StatusError)
-	escape("unable to convert the argument");
+      if (Variable::Convert(*option->value, value) == StatusFalse)
+	escape("unable to convert the argument '%s' for the option '%s'",
+	       option->value->c_str(), name.c_str());
 
       leave();
     }
@@ -125,8 +127,9 @@ namespace elle
 	  (option->value != NULL))
 	{
 	  // convert the string-based argument to the given type, if possible.
-	  if (Variable::Convert(*option->value, value) == StatusError)
-	    escape("unable to convert the argument");
+	  if (Variable::Convert(*option->value, value) == StatusFalse)
+	    escape("unable to convert the argument '%s' for the option '%s'",
+		   option->value->c_str(), name.c_str());
 	}
       else
 	{
@@ -156,21 +159,23 @@ namespace elle
 
       // locate the option.
       if (parser.Locate(name, option) == StatusFalse)
-	escape("unable to locate the option");
+	escape("unable to locate the option '%s'",
+	       name.c_str());
 
       // if the option has not been activated, return an error.
       if (option->state == Parser::StateDeactivated)
-	/// XXX \todo precise the short/long option name here
-	escape("the option has not been activated");
+	escape("the option '%s' has not been activated",
+	       name.c_str());
 
       // if no argument has been provided, return an error.
       if (option->value == NULL)
-	/// XXX \todo precise the short/long option name here
-	escape("the option has not been provided with an argument");
+	escape("the option '%s' has not been provided with an argument",
+	       name.c_str());
 
       // restore the object.
       if (object.Restore(*option->value) == StatusError)
-	escape("unable to restore the object");
+	escape("unable to restore the object '%s' for the option '%s'",
+	       option->value->c_str(), name.c_str());
 
       leave();
     }
@@ -201,7 +206,8 @@ namespace elle
 	{
 	  // restore the object.
 	  if (object.Restore(*option->value) == StatusError)
-	    escape("unable to restore the object");
+	    escape("unable to restore the object '%s' for the option '%s'",
+		   option->value->c_str(), name.c_str());
 	}
       else
 	{
@@ -209,11 +215,13 @@ namespace elle
 
 	  // save the default value.
 	  if (D.Save(unique) == StatusError)
-	    escape("unable to save the default value");
+	    escape("unable to save the default value for the option '%s'",
+		   name.c_str());
 
 	  // restore the object.
 	  if (object.Restore(unique) == StatusError)
-	    escape("unable to restore the object");
+	    escape("unable to restore the object '%s' for the option '%s'",
+		   unique.c_str(), name.c_str());
 	}
 
       leave();

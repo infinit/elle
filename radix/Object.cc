@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.cc
 //
 // created       julien quintard   [sun may  2 12:21:39 2010]
-// updated       julien quintard   [sat may 21 15:30:29 2011]
+// updated       julien quintard   [mon jul  4 11:52:43 2011]
 //
 
 //
@@ -89,11 +89,9 @@ namespace elle
     ///
     Object		Object::operator+(const Object&)
     {
-      Object		result;
-
       enter();
 
-      yield("this method should never have been called", result);
+      yield(*this, "this method should never have been called");
     }
 
     ///

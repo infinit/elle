@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hxx
 //
 // created       julien quintard   [wed may 25 14:20:06 2011]
-// updated       julien quintard   [thu jun 23 11:59:32 2011]
+// updated       julien quintard   [mon jul  4 11:22:19 2011]
 //
 
 #ifndef ELLE_NETWORK_GATE_HXX
@@ -169,7 +169,7 @@ namespace elle
 		escape("unable to extract the error message");
 
 	      // report the remote error.
-	      report(Report::TypeError, report);
+	      transpose(report);
 	    }
 
 	  escape("received a packet with an unexpected tag");

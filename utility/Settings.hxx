@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hxx
 //
 // created       julien quintard   [sun jun 26 20:57:08 2011]
-// updated       julien quintard   [fri jul  1 19:21:54 2011]
+// updated       julien quintard   [mon jul  4 12:24:59 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HXX
@@ -79,12 +79,14 @@ namespace elle
       enter();
 
       // transform the value into a string-based format.
-      if (Variable::Convert(value, string) == StatusError)
-	escape("unable to convert the value");
+      if (Variable::Convert(value, string) == StatusFalse)
+	escape("unable to convert the value for '%s' to the section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // write the value.
       if (settings.Write(identifier, name, string) == StatusError)
-	escape("unable to write the value");
+	escape("unable to write the value '%s' for '%s' to the section '%s'",
+	       string.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -104,15 +106,18 @@ namespace elle
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
-	escape("unable to locate the item");
+	escape("unable to locate the value for '%s' in section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, string) == StatusError)
-	escape("unable to read the value");
+	escape("unable to read the value for '%s' to the section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // convert the string into the type.
-      if (Variable::Convert(string, value) == StatusError)
-	escape("unable to convert the value");
+      if (Variable::Convert(string, value) == StatusFalse)
+	escape("unable to convert the value '%s' for '%s' to the section '%s'",
+	       string.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -142,11 +147,13 @@ namespace elle
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, string) == StatusError)
-	escape("unable to read the value");
+	escape("unable to read the value for '%s' to the section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // convert the string into the type.
-      if (Variable::Convert(string, value) == StatusError)
-	escape("unable to convert the value");
+      if (Variable::Convert(string, value) == StatusFalse)
+	escape("unable to convert the value '%s' for '%s' to the section '%s'",
+	       string.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -171,11 +178,13 @@ namespace elle
 
       // save the object in a unique representation.
       if (object.Save(unique) == StatusError)
-	escape("unable to save the object");
+	escape("unable to save the object for '%s' to the section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // write the value.
       if (settings.Write(identifier, name, unique) == StatusError)
-	escape("unable to write the value");
+	escape("unable to write the value '%s' for '%s' to the section '%s'",
+	       unique.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -197,15 +206,19 @@ namespace elle
 
       // if the item does not exist, return the default value.
       if (settings.Find(identifier, name) == StatusFalse)
-	escape("unable to locate the item");
+	escape("unable to locate the item for '%s' to the section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, unique) == StatusError)
-	escape("unable to read the value");
+	escape("unable to read the value for '%s' to the section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // restore the object.
       if (object.Restore(unique) == StatusError)
-	escape("unable to restore the object");
+	escape("unable to restore the object '%s' for '%s' to the "
+	       "section '%s'",
+	       unique.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
@@ -231,22 +244,29 @@ namespace elle
 	{
 	  // save the default value.
 	  if (D.Save(unique) == StatusError)
-	    escape("unable to save the default value");
+	    escape("unable to save the default value for '%s' to the "
+		   "section '%s'",
+		   name.c_str(), identifier.c_str());
 
 	  // restore the object with the default unique.
 	  if (object.Restore(unique) == StatusError)
-	    escape("unable to restore the object");
+	    escape("unable to restore the object for '%s' to the "
+		   "section '%s'",
+		   name.c_str(), identifier.c_str());
 
 	  leave();
 	}
 
       // otherwise, read the item from the settings.
       if (settings.Read(identifier, name, unique) == StatusError)
-	escape("unable to read the value");
+	escape("unable to read the value for '%s' to the section '%s'",
+	       name.c_str(), identifier.c_str());
 
       // restore the object.
       if (object.Restore(unique) == StatusError)
-	escape("unable to restore the object");
+	escape("unable to restore the object '%s' for '%s' to the "
+	       "section '%s'",
+	       unique.c_str(), name.c_str(), identifier.c_str());
 
       leave();
     }
