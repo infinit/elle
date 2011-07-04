@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Diary.cc
 //
 // created       julien quintard   [mon jun 27 22:38:51 2011]
-// updated       julien quintard   [sat jul  2 12:23:07 2011]
+// updated       julien quintard   [sun jul  3 13:29:30 2011]
 //
 
 //
@@ -268,7 +268,7 @@ namespace application
 
 	  // initialize the indexes.
 	  from = 0;
-	  to = diary.number;
+	  to = elle::Variable::Maximum(to);
 
 	  // retrieve the from.
 	  if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
