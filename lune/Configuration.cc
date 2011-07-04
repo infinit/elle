@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [mon jun 27 21:13:20 2011]
+// updated       julien quintard   [mon jul  4 13:13:04 2011]
 //
 
 //
@@ -29,21 +29,33 @@ namespace lune
   ///
   /// this string defines the configuration files extension.
   ///
-  const elle::String		Configuration::Extension = ".conf";
+  const elle::String	Configuration::Extension = ".conf";
 
   ///
   /// these are the default parameters.
   ///
-  const elle::Natural32		Configuration::Default::Path::Capacity =
+  const elle::Natural32	Configuration::Default::Path::Capacity =
     4096;
-  const elle::Natural32		Configuration::Default::Cache::Capacity =
+
+  const elle::Natural32	Configuration::Default::Cache::Capacity =
     2097152;
-  const elle::Natural32		Configuration::Default::Reserve::Capacity =
+
+  const elle::Natural32	Configuration::Default::Reserve::Capacity =
     1073741824;
-  const elle::Boolean		Configuration::Default::Debug::Meta =
+
+  const elle::Boolean	Configuration::Default::Debug::PIG =
     false;
-  const elle::Boolean		Configuration::Default::Debug::PIG =
-    true;
+  const elle::Boolean	Configuration::Default::Debug::Etoile =
+    false;
+  const elle::Boolean	Configuration::Default::Debug::Hole =
+    false;
+
+  const elle::Boolean	Configuration::Default::History::Path =
+    false;
+  const elle::Character	Configuration::Default::History::Indicator::Root =
+    '@';
+  const elle::Character	Configuration::Default::History::Indicator::Slab =
+    '%';
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -61,7 +73,6 @@ namespace lune
     // update the settings with the parameters.
     //
 
-    /* XXX
     if (elle::Settings::Set(
 	  "path", "capacity",
 	  this->path.capacity) == elle::StatusError)
@@ -78,15 +89,34 @@ namespace lune
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "debug", "meta",
-	  this->debug.meta) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
 	  "debug", "pig",
 	  this->debug.pig) == elle::StatusError)
       escape("unable to update the parameter");
-    */
+
+    if (elle::Settings::Set(
+	  "debug", "etoile",
+	  this->debug.etoile) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "debug", "hole",
+	  this->debug.hole) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "history", "path",
+	  this->history.path) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "history", "indicator.root",
+	  this->history.indicator.root) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "history", "indicator.slab",
+	  this->history.indicator.slab) == elle::StatusError)
+      escape("unable to update the parameter");
 
     leave();
   }
@@ -103,7 +133,6 @@ namespace lune
     // retrieve the parameters from the settings.
     //
 
-    /* XXX
     if (elle::Settings::Get(
 	  "path", "capacity",
 	  this->path.capacity,
@@ -123,17 +152,42 @@ namespace lune
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "debug", "meta",
-	  this->debug.meta,
-	  Configuration::Default::Debug::Meta) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
 	  "debug", "pig",
 	  this->debug.pig,
 	  Configuration::Default::Debug::PIG) == elle::StatusError)
       escape("unable to retrieve the parameter");
-    */
+
+    if (elle::Settings::Get(
+	  "debug", "etoile",
+	  this->debug.etoile,
+	  Configuration::Default::Debug::Etoile) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "debug", "hole",
+	  this->debug.hole,
+	  Configuration::Default::Debug::Hole) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "history", "path",
+	  this->history.path,
+	  Configuration::Default::History::Path) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Get(
+	  "history", "indicator.root",
+	  this->history.indicator.root,
+	  Configuration::Default::History::Indicator::Root) ==
+	elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Get(
+	  "history", "indicator.slab",
+	  this->history.indicator.slab,
+	  Configuration::Default::History::Indicator::Slab) ==
+	elle::StatusError)
+      escape("unable to update the parameter");
 
     leave();
   }
