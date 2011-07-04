@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [mon jul  4 13:13:04 2011]
+// updated       julien quintard   [mon jul  4 15:59:19 2011]
 //
 
 //
@@ -50,7 +50,7 @@ namespace lune
   const elle::Boolean	Configuration::Default::Debug::Hole =
     false;
 
-  const elle::Boolean	Configuration::Default::History::Path =
+  const elle::Boolean	Configuration::Default::History::Status =
     false;
   const elle::Character	Configuration::Default::History::Indicator::Root =
     '@';
@@ -104,8 +104,8 @@ namespace lune
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "history", "path",
-	  this->history.path) == elle::StatusError)
+	  "history", "status",
+	  this->history.status) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -170,9 +170,9 @@ namespace lune
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "history", "path",
-	  this->history.path,
-	  Configuration::Default::History::Path) == elle::StatusError)
+	  "history", "status",
+	  this->history.status,
+	  Configuration::Default::History::Status) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Get(

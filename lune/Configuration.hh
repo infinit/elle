@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [mon jul  4 13:12:12 2011]
+// updated       julien quintard   [mon jul  4 15:57:52 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
@@ -65,7 +65,7 @@ namespace lune
 
       struct				History
       {
-	static const elle::Boolean	Path;
+	static const elle::Boolean	Status;
 
 	struct				Indicator
 	{
@@ -102,16 +102,22 @@ namespace lune
     //
     struct
     {
+      elle::Boolean		status;
+
       elle::Natural32		capacity;
     }				path;
 
     struct
     {
+      elle::Boolean		status;
+
       elle::Natural32		capacity;
     }				cache;
 
     struct
     {
+      elle::Boolean		status;
+
       elle::Natural32		capacity;
     }				reserve;
 
@@ -124,7 +130,7 @@ namespace lune
 
     struct
     {
-      elle::Boolean		path;
+      elle::Boolean		status;
 
       struct
       {
