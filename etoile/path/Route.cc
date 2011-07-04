@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [thu jun 23 09:27:38 2011]
+// updated       julien quintard   [mon jul  4 12:41:22 2011]
 //
 
 //
@@ -17,6 +17,8 @@
 
 #include <etoile/path/Path.hh>
 #include <etoile/path/Route.hh>
+
+#include <agent/Agent.hh>
 
 namespace etoile
 {
@@ -34,34 +36,79 @@ namespace etoile
     /// note that the first slab is always empty in order to represent
     /// the root directory.
     ///
-    /// XXX \todo handle formats: ~2#/suce~42#/avale/leche.txt~3#
+    /// the following assumes the root version indicator is '@' while the
+    /// slab version indicator is '%'.
+    ///
+    /// note that the ways can embed version numbers as shown next:
+    ///
+    ///   /suce%42/avale/leche.txt%3
+    ///
+    /// however, the format '%[0-9]+' cannot be used with the root directory
+    /// since the way always starts with '/...'.
+    ///
+    /// in order to provide this functionality, the following check is made:
+    /// if the first non-empty slab starts with '@[0-9]+', then this slab is
+    /// used as the root one with the appropriate version number.
     ///
     elle::Status	Route::Create(const Way&		way)
     {
       Length		start;
       Length		end;
+      Slab		slab;
 
       enter();
 
-      // initialize the offsets.
-      start = 0;
-      end = way.path.find_first_of(elle::System::Path::Separator, start);
+      // check that the way starts with a leading '/'
+      if (way.path[0] != elle::System::Path::Separator)
+	escape("the path must contain the leading path separator '%c'",
+	       elle::System::Path::Separator);
 
-      // create the root slab.
-      this->elements.push_back(way.path.substr(start, end - start));
+      // clear the elements.
+      this->elements.clear();
 
       // compute the next offsets.
       start =
-	way.path.find_first_not_of(elle::System::Path::Separator, end);
+	way.path.find_first_not_of(elle::System::Path::Separator);
       end =
 	way.path.find_first_of(elle::System::Path::Separator, start);
 
-      // go through the string.
+      // check if at least one slab is present.
+      if (start < way.path.length())
+	{
+	  // create the slab.
+	  slab = way.path.substr(start, end - start);
+
+	  // check if the slab represents the root directory i.e starts
+	  // with '@' and follows with a possible version number.
+	  if (slab[0] == agent::Agent::Configuration.history.indicator.root)
+	    {
+	      // modify the '@' character with the version indicator '%'.
+	      slab[0] = agent::Agent::Configuration.history.indicator.slab;
+
+	      // record the slab.
+	      this->elements.push_back(slab);
+
+	      // compute the next offsets.
+	      start =
+		way.path.find_first_not_of(elle::System::Path::Separator, end);
+	      end =
+		way.path.find_first_of(elle::System::Path::Separator, start);
+	    }
+	}
+
+      // if no slab is present or the first slab does not represent the
+      // root directory---i.e the elements container is empty---register
+      // an empty root slab.
+      if (this->elements.empty() == true)
+	{
+	  // record an empty root slab.
+	  this->elements.push_back("");
+	}
+
+      // then, go through the string.
       while (start < way.path.length())
 	{
-	  Slab		slab;
-
-	  // locate the next element.
+	  // create the slab.
 	  slab = way.path.substr(start, end - start);
 
 	  // add the section to the container.

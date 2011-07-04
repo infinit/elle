@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [thu jun 16 10:27:05 2011]
+// updated       julien quintard   [mon jul  4 10:44:20 2011]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Route.hh>
 #include <etoile/path/Venue.hh>

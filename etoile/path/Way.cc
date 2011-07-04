@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [sun jun 19 23:04:27 2011]
+// updated       julien quintard   [mon jul  4 12:44:40 2011]
 //
 
 //
@@ -66,7 +66,9 @@ namespace etoile
     ///
     Way::Way(const Way&						way,
 	     Slice&						name):
-      path(way.path, 0, way.path.find_last_of(elle::System::Path::Separator))
+      path(way.path,
+	   0,
+	   way.path.find_last_of(elle::System::Path::Separator) + 1)
     {
       Length	start;
       Length	end;

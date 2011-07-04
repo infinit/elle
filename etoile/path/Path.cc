@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sat jun 25 16:30:23 2011]
+// updated       julien quintard   [mon jul  4 10:44:30 2011]
 //
 
 //
@@ -23,7 +23,7 @@
 
 #include <etoile/depot/Depot.hh>
 
-#include <nucleus/Nucleus.hh>
+#include <agent/Agent.hh>
 
 namespace etoile
 {
@@ -107,6 +107,11 @@ namespace etoile
 			  slice, version) == elle::StatusError)
 	    escape("unable to extract the version number from the root slab");
 
+	  // check that the slice is empty, as it should for the root
+	  // directory.
+	  if (slice.empty() == false)
+	    escape("the root slice should always be empty");
+
 	  // record the root directory in the venue.
 	  if (venue.Record(address, version) == elle::StatusError)
 	    escape("unable to record the root directory in the venue");
@@ -150,6 +155,10 @@ namespace etoile
 	    escape("unable to extract the slice/version from the "
 		   "current slab");
 
+	  // check that the slice is not empty.
+	  if (slice.empty() == true)
+	    escape("the slice should never be empty");
+
 	  // look up for the name.
 	  if (automaton::Directory::Lookup(context,
 					   slice,
@@ -183,7 +192,7 @@ namespace etoile
     /// this method takes a slice and tries to extract both the real
     /// slice and the version number.
     ///
-    /// for instance the slice 'teton.txt~42#'---assuming the regexp '~[0-9]+#'
+    /// for instance the slice 'teton.txt%42'---assuming the regexp '%[0-9]+'
     /// is used for version numbers---would be split into 'teton.txt' and
     /// the version number 42.
     ///
@@ -191,13 +200,46 @@ namespace etoile
 				    Slice&			slice,
 				    nucleus::Version&		version)
     {
+      Length		length;
+      Length		start;
+      elle::Natural64	n;
+
       enter();
 
-      // XXX
-      slice = slab;
+      // compute the start index.
+      start = slab.find_last_of(
+	        agent::Agent::Configuration.history.indicator.slab);
 
-      // XXX to remove the warning.
-      version = nucleus::Version::Last;
+      // if the in-path versioning has been activated and a version
+      // seems to have been found.
+      if ((agent::Agent::Configuration.history.path == true) &&
+	  (start != elle::String::npos))
+	{
+	  // retrieve the slab's length.
+	  length = slab.length();
+
+	  // retrieve the slice.
+	  slice = elle::String(slab, 0, start);
+
+	  // transform the string into a number.
+	  if (elle::Variable::Convert(elle::String(slab,
+						   start + 1,
+						   length - (start + 1)),
+				      n) == elle::StatusError)
+	    escape("unable to convert the string-based version number");
+
+	  // create the version.
+	  if (version.Create(n) == elle::StatusError)
+	    escape("unable to create the version");
+	}
+      else
+	{
+	  // set the slice as being the entire slab.
+	  slice = slab;
+
+	  // and set the version as being the latest possible.
+	  version = nucleus::Version::Last;
+	}
 
       leave();
     }
