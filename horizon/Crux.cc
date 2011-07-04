@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [mon jul  4 13:10:56 2011]
+// updated       julien quintard   [mon jul  4 16:35:23 2011]
 //
 
 //
@@ -226,7 +226,7 @@ namespace pig
 	}
       case nucleus::GenreFile:
 	{
-	  nucleus::Trait	trait;
+	  nucleus::Trait*	trait;
 
 	  stat->st_mode = S_IFREG;
 
@@ -248,7 +248,8 @@ namespace pig
 		  ENOENT);
 
 	  // check the trait.
-	  if (trait.value == "true")
+	  if ((trait != NULL) &&
+	      (trait->value == "true"))
 	    {
 	      // active the exec bit.
 	      stat->st_mode |= S_IXUSR;
@@ -319,7 +320,7 @@ namespace pig
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
-    nucleus::Record		record;
+    nucleus::Record*		record;
 
     if (agent::Agent::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
@@ -348,13 +349,13 @@ namespace pig
 	    identifier);
 
     // check the record.
-    if (record == nucleus::Record::Null)
+    if (record == NULL)
       error("the subject does not seem to have been granted an access",
 	    EACCES,
 	    identifier);
 
     // check if the user has the right to read the directory.
-    if (!(record.permissions & nucleus::PermissionRead))
+    if (!(record->permissions & nucleus::PermissionRead))
       error("the subject does not have the right permission",
 	    EACCES,
 	    identifier);
@@ -532,9 +533,9 @@ namespace pig
       permissions |= nucleus::PermissionWrite;
 
     // set the owner permissions.
-    if (etoile::wall::Access::Update(subdirectory,
-				     agent::Agent::Subject,
-				     permissions) == elle::StatusError)
+    if (etoile::wall::Access::Grant(subdirectory,
+				    agent::Agent::Subject,
+				    permissions) == elle::StatusError)
       error("unable to update the access record",
 	    EINTR,
 	    subdirectory, directory);
@@ -642,7 +643,7 @@ namespace pig
     etoile::miscellaneous::Information	information;
     etoile::path::Way			way(path);
     etoile::path::Chemin		chemin;
-    nucleus::Record			record;
+    nucleus::Record*			record;
 
     if (agent::Agent::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o)\n",
@@ -675,7 +676,7 @@ namespace pig
 	    identifier);
 
     // check the record.
-    if (record == nucleus::Record::Null)
+    if (record == NULL)
       error("the subject does not seem to have been granted access",
 	    EACCES,
 	    identifier);
@@ -689,7 +690,7 @@ namespace pig
 	    {
 	      // check if the user has the read permission meaning the
 	      // exec bit
-	      if (!(record.permissions & nucleus::PermissionRead))
+	      if (!(record->permissions & nucleus::PermissionRead))
 		error("the subject does not have the right to access",
 		      EACCES,
 		      identifier);
@@ -698,7 +699,7 @@ namespace pig
 	    }
 	  case nucleus::GenreFile:
 	    {
-	      nucleus::Trait	trait;
+	      nucleus::Trait*	trait;
 
 	      // get the posix::exec attribute
 	      if (etoile::wall::Attributes::Get(identifier,
@@ -709,7 +710,8 @@ namespace pig
 		      identifier);
 
 	      // check the trait.
-	      if (trait.value != "true")
+	      if ((trait != NULL) &&
+		  (trait->value != "true"))
 		error("the subject does not have the right to execute",
 		      EACCES,
 		      identifier);
@@ -718,7 +720,7 @@ namespace pig
 	    }
 	  case nucleus::GenreLink:
 	    {
-	      nucleus::Trait	trait;
+	      nucleus::Trait*	trait;
 
 	      // get the posix::exec attribute
 	      if (etoile::wall::Attributes::Get(identifier,
@@ -729,7 +731,8 @@ namespace pig
 		      identifier);
 
 	      // check the trait.
-	      if (trait.value != "true")
+	      if ((trait != NULL) &&
+		  (trait->value != "true"))
 		error("the subject does not have the right to access",
 		      EACCES,
 		      identifier);
@@ -742,7 +745,7 @@ namespace pig
     // check if the permissions match the mask for reading.
     if (mask & R_OK)
       {
-	if (!(record.permissions & nucleus::PermissionRead))
+	if (!(record->permissions & nucleus::PermissionRead))
 	  error("the subject does not have the right to read",
 		EACCES,
 		identifier);
@@ -751,7 +754,7 @@ namespace pig
     // check if the permissions match the mask for writing.
     if (mask & W_OK)
       {
-	if (!(record.permissions & nucleus::PermissionWrite))
+	if (!(record->permissions & nucleus::PermissionWrite))
 	  error("the subject does not have the right to write",
 		EACCES,
 		identifier);
@@ -828,9 +831,9 @@ namespace pig
     //
     // note that the method assumes that the caller is the object's owner!
     // if not, an error will occur anyway, so why bother checking.
-    if (etoile::wall::Access::Update(identifier,
-				     agent::Agent::Subject,
-				     permissions) == elle::StatusError)
+    if (etoile::wall::Access::Grant(identifier,
+				    agent::Agent::Subject,
+				    permissions) == elle::StatusError)
       error("unable to update the access records",
 	    ENOENT,
 	    identifier);
@@ -984,7 +987,7 @@ namespace pig
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
-    nucleus::Trait		trait;
+    nucleus::Trait*		trait;
 
     if (agent::Agent::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s, %p, %u)\n",
@@ -1015,7 +1018,7 @@ namespace pig
 	    ENOENT);
 
     // test if a trait has been found.
-    if (trait == nucleus::Trait::Null)
+    if (trait == NULL)
       error("unable to locate this attribute",
 	    ENOATTR);
 
@@ -1028,15 +1031,15 @@ namespace pig
     // as a request for the size required to store the value.
     if (size == 0)
       {
-	return (trait.value.length());
+	return (trait->value.length());
       }
     else
       {
 	// otherwise, copy the trait value in the value buffer.
-	::memcpy(value, trait.value.data(), trait.value.length());
+	::memcpy(value, trait->value.data(), trait->value.length());
 
 	// return the length of the value.
-	return (trait.value.length());
+	return (trait->value.length());
       }
   }
 
@@ -1333,9 +1336,9 @@ namespace pig
       permissions |= nucleus::PermissionWrite;
 
     // set the owner permissions.
-    if (etoile::wall::Access::Update(file,
-				     agent::Agent::Subject,
-				     permissions) == elle::StatusError)
+    if (etoile::wall::Access::Grant(file,
+				    agent::Agent::Subject,
+				    permissions) == elle::StatusError)
       error("unable to update the access records",
 	    EINTR,
 	    file, directory);
