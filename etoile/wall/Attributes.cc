@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [sat jun 25 16:23:53 2011]
+// updated       julien quintard   [mon jul  4 15:43:46 2011]
 //
 
 //
@@ -72,7 +72,7 @@ namespace etoile
     elle::Status	Attributes::Get(
 			  const gear::Identifier&		identifier,
 			  const elle::String&			name,
-			  nucleus::Trait&			trait)
+			  nucleus::Trait*&			trait)
     {
       gear::Scope*	scope;
       gear::Object*	context;

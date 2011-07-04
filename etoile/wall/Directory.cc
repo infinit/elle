@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [sat jun 25 16:29:30 2011]
+// updated       julien quintard   [mon jul  4 15:45:12 2011]
 //
 
 //
@@ -206,7 +206,7 @@ namespace etoile
     elle::Status	Directory::Lookup(
 			  const gear::Identifier&		identifier,
 			  const path::Slice&			name,
-			  nucleus::Entry&			entry)
+			  nucleus::Entry*&			entry)
     {
       gear::Scope*	scope;
       gear::Directory*	context;

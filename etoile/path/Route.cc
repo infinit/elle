@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [mon jul  4 12:41:22 2011]
+// updated       julien quintard   [mon jul  4 16:02:36 2011]
 //
 
 //
@@ -80,7 +80,8 @@ namespace etoile
 
 	  // check if the slab represents the root directory i.e starts
 	  // with '@' and follows with a possible version number.
-	  if (slab[0] == agent::Agent::Configuration.history.indicator.root)
+	  if ((agent::Agent::Configuration.history.status == true) &&
+	      (slab[0] == agent::Agent::Configuration.history.indicator.root))
 	    {
 	      // modify the '@' character with the version indicator '%'.
 	      slab[0] = agent::Agent::Configuration.history.indicator.slab;

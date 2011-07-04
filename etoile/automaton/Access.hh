@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Access.hh
 //
 // created       julien quintard   [mon jun 20 14:58:16 2011]
-// updated       julien quintard   [sat jun 25 16:27:13 2011]
+// updated       julien quintard   [mon jul  4 16:24:29 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_ACCESS_HH
@@ -50,14 +50,11 @@ namespace etoile
 				      const nucleus::Permissions&);
       static elle::Status	Lookup(gear::Object&,
 				       const nucleus::Subject&,
-				       nucleus::Record&);
+				       nucleus::Record*&);
       static elle::Status	Consult(gear::Object&,
 					const nucleus::Index&,
 					const nucleus::Size&,
 					nucleus::Range<nucleus::Record>&);
-      static elle::Status	Update(gear::Object&,
-				       const nucleus::Subject&,
-				       const nucleus::Permissions&);
       static elle::Status	Revoke(gear::Object&,
 				       const nucleus::Subject&);
 

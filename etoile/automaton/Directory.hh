@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Directory.hh
 //
 // created       julien quintard   [mon jun 20 13:29:57 2011]
-// updated       julien quintard   [sat jun 25 16:29:37 2011]
+// updated       julien quintard   [mon jul  4 15:45:50 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_DIRECTORY_HH
@@ -53,7 +53,7 @@ namespace etoile
 				    const nucleus::Address&);
       static elle::Status	Lookup(gear::Directory&,
 				       const path::Slice&,
-				       nucleus::Entry&);
+				       nucleus::Entry*&);
       static elle::Status	Consult(gear::Directory&,
 					const nucleus::Index&,
 					const nucleus::Size&,

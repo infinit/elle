@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Access.cc
 //
 // created       julien quintard   [mon jun 20 14:59:09 2011]
-// updated       julien quintard   [sat jun 25 16:34:45 2011]
+// updated       julien quintard   [mon jul  4 16:29:30 2011]
 //
  
 //
@@ -75,9 +75,7 @@ namespace etoile
 			  const nucleus::Subject&		subject,
 			  const nucleus::Permissions&		permissions)
     {
-      nucleus::Record*	record;
-
-      enter(instance(record));
+      enter();
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
@@ -95,14 +93,20 @@ namespace etoile
 	  // in this case, the subject represents the object's owner.
 	  //
 
-	  escape("unable to grant access to the owner i.e this user "
-		 "already have access");
+	  // update the permissions.
+	  if (context.object.Administrate(
+                context.object.meta.attributes,
+		context.object.meta.access,
+		permissions,
+		context.object.meta.owner.token) == elle::StatusError)
+	    escape("unable to update the object's meta section");
 	}
       else
 	{
 	  //
 	  // otherwise, the subject is a lord being a user or a group.
 	  //
+	  nucleus::Record*	record;
 
 	  // open the access block.
 	  if (Access::Open(context) == elle::StatusError)
@@ -110,23 +114,40 @@ namespace etoile
 
 	  // look in the access object.
 	  if (context.access->Exist(subject) == elle::StatusTrue)
-	    escape("this subject already exist in the access block");
+	    {
+	      // retrieve the record.
+	      if (context.access->Lookup(subject, record) == elle::StatusError)
+		escape("unable to retrieve the subject's record");
 
-	  // allocate a new record.
-	  record = new nucleus::Record;
+	      // update the record with the new permissions.
+	      if (record->Update(subject,
+				 permissions,
+				 context.rights.key) == elle::StatusError)
+		escape("unable to update the record");
+	    }
+	  else
+	    {
+	      enter(instance(record));
 
-	  // create the new record.
-	  if (record->Update(subject,
-			     permissions,
-			     context.rights.key) == elle::StatusError)
-	    escape("unable to create the new record");
+	      // allocate a new record.
+	      record = new nucleus::Record;
 
-	  // add the record to the access object.
-	  if (context.access->Add(record) == elle::StatusError)
-	    escape("unable to add the new record");
+	      // create the new record.
+	      if (record->Update(subject,
+				 permissions,
+				 context.rights.key) == elle::StatusError)
+		escape("unable to create the new record");
 
-	  // stop tracking record.
-	  waive(record);
+	      // add the record to the access object.
+	      if (context.access->Add(record) == elle::StatusError)
+		escape("unable to add the new record");
+
+	      // stop tracking record.
+	      waive(record);
+
+	      // release.
+	      release();
+	    }
 	}
 
       // is the target subject the user i.e the object owner in this case.
@@ -147,7 +168,7 @@ namespace etoile
     elle::Status	Access::Lookup(
 			  gear::Object&				context,
 			  const nucleus::Subject&		subject,
-			  nucleus::Record&			record)
+			  nucleus::Record*&			record)
     {
       enter();
 
@@ -164,7 +185,7 @@ namespace etoile
 	    escape("unable to determine the user's rights");
 
 	  // return the record.
-	  record = context.rights.record;
+	  record = &context.rights.record;
 	}
       else
 	{
@@ -183,7 +204,7 @@ namespace etoile
 	      //
 
 	      // return the record.
-	      record = context.object.meta.owner._record;
+	      record = &context.object.meta.owner._record;
 	    }
 	  else
 	    {
@@ -192,20 +213,14 @@ namespace etoile
 	      // in look in it.
 	      //
 
-	      nucleus::Record*	pointer;
-
 	      // open the access.
 	      if (Access::Open(context) == elle::StatusError)
 		escape("unable to open the access block");
 
 	      // lookup the subject.
 	      if (context.access->Lookup(subject,
-					 pointer) == elle::StatusError)
+					 record) == elle::StatusError)
 		escape("unable to lookup in the access object");
-
-	      // assign the record depending on the pointer.
-	      if (pointer != NULL)
-		record = *pointer;
 	    }
 	}
 
@@ -268,73 +283,6 @@ namespace etoile
 				      size,
 				      range) == elle::StatusError)
 	    escape("unable to consult the access object");
-	}
-
-      leave();
-    }
-
-    ///
-    /// this method updates an existing record with the given permissions.
-    ///
-    elle::Status	Access::Update(
-			  gear::Object&				context,
-			  const nucleus::Subject&		subject,
-			  const nucleus::Permissions&		permissions)
-    {
-      enter();
-
-      // determine the rights over the object.
-      if (Rights::Determine(context) == elle::StatusError)
-	escape("unable to determine the rights");
-
-      // verify that the user can modify the accesses.
-      if (context.rights.role != nucleus::RoleOwner)
-	escape("the user does not seem to have the permission to update "
-	       "the access permissions");
-
-      // update the access block or object according to the subject.
-      if (subject == context.object.owner._subject)
-	{
-	  //
-	  // in this case, the subject represents the object's owner.
-	  //
-
-	  // update the permissions.
-	  if (context.object.Administrate(
-                context.object.meta.attributes,
-		context.object.meta.access,
-		permissions,
-		context.object.meta.owner.token) == elle::StatusError)
-	    escape("unable to update the object's meta section");
-	}
-      else
-	{
-	  //
-	  // otherwise, the subject is a lord being a user or a group.
-	  //
-	  nucleus::Record*	record;
-
-	  // open the access.
-	  if (Access::Open(context) == elle::StatusError)
-	    escape("unable to open the access block");
-
-	  // retrieve the record associated with the given subject.
-	  if (context.access->Lookup(subject, record) == elle::StatusFalse)
-	    escape("unable to retrieve the subject's access record");
-
-	  // update the record.
-	  if (record->Update(subject,
-			     permissions,
-			     context.rights.key) == elle::StatusError)
-	    escape("unable to update the subject's record");
-	}
-
-      // is the target subject the user i.e the object owner in this case.
-      if (agent::Agent::Subject == subject)
-	{
-	  // update the context rights.
-	  if (Rights::Update(context, permissions) == elle::StatusError)
-	    escape("unable to update the rigths");
 	}
 
       leave();

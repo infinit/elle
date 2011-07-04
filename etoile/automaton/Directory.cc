@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Directory.cc
 //
 // created       julien quintard   [mon jun 20 13:22:27 2011]
-// updated       julien quintard   [sat jun 25 16:30:13 2011]
+// updated       julien quintard   [mon jul  4 15:46:38 2011]
 //
 
 //
@@ -124,10 +124,8 @@ namespace etoile
     elle::Status	Directory::Lookup(
 			  gear::Directory&			context,
 			  const path::Slice&			name,
-			  nucleus::Entry&			entry)
+			  nucleus::Entry*&			entry)
     {
-      nucleus::Entry*	pointer;
-
       enter();
 
       // determine the rights.
@@ -145,12 +143,8 @@ namespace etoile
 
       // look up the entry.
       if (context.contents->content->Lookup(name,
-					    pointer) == elle::StatusError)
+					    entry) == elle::StatusError)
 	escape("unable to find the entry in the directory");
-
-      // assign the entry depending on the pointer.
-      if (pointer != NULL)
-	entry = *pointer;
 
       leave();
     }

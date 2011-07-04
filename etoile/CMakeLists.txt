@@ -44,7 +44,6 @@ ADD_LIBRARY(etoile
   wall/Link.cc
   wall/Object.cc
   wall/Path.cc
-#  wall/User.cc
   wall/Wall.cc
 
   miscellaneous/Information.cc

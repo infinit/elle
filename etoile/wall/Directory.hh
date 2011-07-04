@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [sat jun 25 16:42:05 2011]
+// updated       julien quintard   [mon jul  4 15:44:50 2011]
 //
 
 #ifndef ETOILE_WALL_DIRECTORY_HH
@@ -55,7 +55,7 @@ namespace etoile
 				    const gear::Identifier&);
       static elle::Status	Lookup(const gear::Identifier&,
 				       const path::Slice&,
-				       nucleus::Entry&);
+				       nucleus::Entry*&);
       static elle::Status	Consult(const gear::Identifier&,
 					const nucleus::Index&,
 					const nucleus::Size&,

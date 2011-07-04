@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Attributes.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [mon jun 27 10:45:03 2011]
+// updated       julien quintard   [mon jul  4 15:47:10 2011]
 //
 
 //
@@ -93,20 +93,14 @@ namespace etoile
     elle::Status	Attributes::Get(
 			  gear::Object&				context,
 			  const elle::String&			name,
-			  nucleus::Trait&			trait)
+			  nucleus::Trait*&			trait)
     {
-      nucleus::Trait*	pointer;
-
       enter();
 
       // lookup in the attributes object.
       if (context.object.meta.attributes.Lookup(name,
-						pointer) == elle::StatusError)
+						trait) == elle::StatusError)
 	escape("unable to lookup in the attributes");
-
-      // return the trait depending on the pointer.
-      if (pointer != NULL)
-	trait = *pointer;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [mon jul  4 10:44:30 2011]
+// updated       julien quintard   [mon jul  4 16:01:13 2011]
 //
 
 //
@@ -136,7 +136,7 @@ namespace etoile
 
 	  gear::Directory	context;
 	  Slice			slice;
-	  nucleus::Entry	entry;
+	  nucleus::Entry*	entry;
 	  nucleus::Location	location;
 
 	  // create the location.
@@ -166,12 +166,13 @@ namespace etoile
 	    escape("unable to find one of the route's entries");
 
 	  // if there is no such entry, abort.
-	  if (entry == nucleus::Entry::Null)
-	    escape("unable to locate the directory entry");
+	  if (entry == NULL)
+	    escape("unable to locate the directory entry '%s'",
+		   slice.c_str());
 
 	  // set the address; the version is already set i.e it has
 	  // been extracted from the slab.
-	  address = entry.address;
+	  address = entry->address;
 
 	  // first, record the address/version in the venue.
 	  if (venue.Record(address, version) == elle::StatusError)
@@ -212,7 +213,7 @@ namespace etoile
 
       // if the in-path versioning has been activated and a version
       // seems to have been found.
-      if ((agent::Agent::Configuration.history.path == true) &&
+      if ((agent::Agent::Configuration.history.status == true) &&
 	  (start != elle::String::npos))
 	{
 	  // retrieve the slab's length.

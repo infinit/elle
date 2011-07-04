@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [sat jun 25 16:26:33 2011]
+// updated       julien quintard   [mon jul  4 16:24:20 2011]
 //
 
 //
@@ -40,7 +40,7 @@ namespace etoile
     elle::Status	Access::Lookup(
 			  const gear::Identifier&		identifier,
 			  const nucleus::Subject&		subject,
-			  nucleus::Record&			record)
+			  nucleus::Record*&			record)
     {
       gear::Scope*	scope;
       gear::Object*	context;
@@ -128,38 +128,6 @@ namespace etoile
 				   subject,
 				   permissions) == elle::StatusError)
 	escape("unable to grant access to the subject");
-
-      leave();
-    }
-
-    ///
-    /// this method updates the permissions associated with the subject.
-    ///
-    elle::Status	Access::Update(
-			  const gear::Identifier&		identifier,
-			  const nucleus::Subject&		subject,
-			  const nucleus::Permissions&		permissions)
-    {
-      gear::Scope*	scope;
-      gear::Object*	context;
-
-      enter();
-
-      printf("[XXX] Access::Update()\n");
-
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
-
-      // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // apply the update automaton on the context.
-      if (automaton::Access::Update(*context,
-				    subject,
-				    permissions) == elle::StatusError)
-	escape("unable to update the subject's access permissions");
 
       leave();
     }

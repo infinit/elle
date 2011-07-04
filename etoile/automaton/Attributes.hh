@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Attributes.hh
 //
 // created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [sat jun 25 16:24:27 2011]
+// updated       julien quintard   [mon jul  4 15:44:13 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_ATTRIBUTES_HH
@@ -47,7 +47,7 @@ namespace etoile
 				    const elle::String&);
       static elle::Status	Get(gear::Object&,
 				    const elle::String&,
-				    nucleus::Trait&);
+				    nucleus::Trait*&);
       static elle::Status	Fetch(gear::Object&,
 				      nucleus::Range<nucleus::Trait>&);
       static elle::Status	Omit(gear::Object&,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.hh
 //
 // created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [sat jun 25 16:26:18 2011]
+// updated       julien quintard   [mon jul  4 16:24:07 2011]
 //
 
 #ifndef ETOILE_WALL_ACCESS_HH
@@ -44,7 +44,7 @@ namespace etoile
       //
       static elle::Status	Lookup(const gear::Identifier&,
 				       const nucleus::Subject&,
-				       nucleus::Record&);
+				       nucleus::Record*&);
       static elle::Status	Consult(const gear::Identifier&,
 					const nucleus::Index&,
 					const nucleus::Size&,
@@ -52,9 +52,6 @@ namespace etoile
       static elle::Status	Grant(const gear::Identifier&,
 				      const nucleus::Subject&,
 				      const nucleus::Permissions&);
-      static elle::Status	Update(const gear::Identifier&,
-				       const nucleus::Subject&,
-				       const nucleus::Permissions&);
       static elle::Status	Revoke(const gear::Identifier&,
 				       const nucleus::Subject&);
     };
