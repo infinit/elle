@@ -595,6 +595,10 @@ class Source(Node):
 
         Node.__init__(self, path)
 
+    def clone(self, path):
+
+        return Source(path)
+
 Node.extensions['c'] = Source
 Node.extensions['cc'] = Source
 Node.extensions['cpp'] = Source
