@@ -578,13 +578,16 @@ class StaticLibLinker(ShellCommand):
 
         self.objs = objs
         self.lib = lib
-        self.tk = tk
-        self.cfg = cfg
+        self.toolkit = tk
+        self.config = cfg
         Builder.__init__(self, objs, [lib])
 
     def execute(self):
 
-        return self.cmd('Link %s' % self.lib, self.tk.archive(self.cfg, self.objs, self.lib))
+        return self.cmd('Link %s' % self.lib,
+                        self.toolkit.archive(self.config,
+                                             self.objs + self.sources_dynamic(),
+                                             self.lib))
 
 class Source(Node):
 
