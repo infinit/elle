@@ -7,7 +7,7 @@
 # See the LICENSE file for more information.
 
 import platform, re
-from .. import Builder, Exception, Node, Path, node, srctree, _CACHEDIR
+from .. import Builder, Exception, Node, Path, node, srctree, _CACHEDIR, debug
 from .  import Config, StaticLib, Header, Object, Source
 
 #class MocBuilder:
@@ -79,17 +79,35 @@ class Qt:
 
     moc_re = re.compile('Q_OBJECT')
 
-    def hook_bin_deps(self, linker):
+    # Find any header in our dependency that contains a Q_OBJECT, run
+    # it through the Moc and add the result to our sources.
+    def hook_bin_deps(self, linker, current = None):
 
-        # FIXME: all_srcs should be optimized with yield
-        for header in [src for src in linker.all_srcs() if src.__class__ == Header]: # FIXME: inheritance
-            found = False
-            for line in open(str(header.path()), 'r'):
-                if re.search(self.moc_re, line):
-                    found = True
-                    break
-            if found:
-                self.moc_file(linker, header)
+        def find_moc_sources(builder, take, reject, where = True):
+            for source in builder.sources().values() + builder.sources_dynamic():
+                with debug.indentation():
+                    if isinstance(source, StaticLib):
+                        find_moc_sources(source.builder, take, reject, False)
+                        continue
+                    if isinstance(source, Header):
+                        found = False
+                        for line in open(str(source.path()), 'r'):
+                            if re.search(self.moc_re, line):
+                                found = True
+                                break
+                        if found:
+                            if where:
+                                take.add(source)
+                            else:
+                                reject.add(source)
+                    if source.builder is not None:
+                        find_moc_sources(source.builder, take, reject, where)
+
+        take = set()
+        reject = set()
+        find_moc_sources(linker, take, reject)
+        for source in take - reject:
+            self.moc_file(linker, source)
 
     def hook_bin_src(self, src):
 
