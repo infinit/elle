@@ -32,6 +32,7 @@ def configure(prefix = '.'):
     'src/drake/cxx/sdl.py',
     'src/drake/debug.py',
     'src/drake/git.py',
+    'src/drake/opencv.py',
     'src/drake/python/__init__.py',
     'src/drake/sched.py',
     'src/drake/utils.py',
