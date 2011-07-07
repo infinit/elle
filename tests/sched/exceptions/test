@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import drake, drake.sched
 import traceback
@@ -18,8 +18,7 @@ beacon_sub_2 = False
 def main():
   global beacon_main_1, beacon_main_2
   beacon_main_1 = True
-  yield sub()
-  drake.sched.coro_rethrow()
+  drake.sched.coro_recurse((yield sub()))
   beacon_main_2 = True
 
 def sub():
@@ -46,8 +45,7 @@ def main():
   global beacon_main_1, beacon_main_2
   try:
     beacon_main_1 = True
-    yield sub()
-    drake.sched.coro_rethrow()
+    drake.sched.coro_recurse((yield sub()))
     assert False
   finally:
     beacon_main_2 = True
@@ -115,8 +113,8 @@ def main():
   global beacon_main_1, beacon_main_2
   try:
     beacon_main_1 = True
-    yield drake.sched.Coroutine(sub(), "sub", SCHED)
-    drake.sched.coro_rethrow()
+    drake.sched.coro_recurse((yield drake.sched.Coroutine(sub(), "sub",
+                                                          SCHED, parent = SCHED.coroutine())))
     assert False
   finally:
     beacon_main_2 = True

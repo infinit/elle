@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import drake, os.path, sys
 
 i = int(sys.argv[1])
 
-print i
+print(i)
 
 try:
     drake.set_srctree('.')
@@ -26,6 +26,6 @@ try:
         assert os.path.exists(str(tgt))
         assert not root.run
         os.remove(str(tgt))
-except drake.Exception, e:
-    print '%s: %s' % (sys.argv[0], e)
+except drake.Exception as e:
+    print('%s: %s' % (sys.argv[0], e))
     exit(1)

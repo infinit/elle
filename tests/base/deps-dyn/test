@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import drake, os
 
@@ -34,6 +34,7 @@ class DynBuilder(drake.Builder):
 
   def dependencies(self):
 
+    yield
     global deps
     deps = True
     if add:

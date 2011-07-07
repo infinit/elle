@@ -6,7 +6,7 @@
 #
 # See the LICENSE file for more information.
 
-import commands
+import subprocess
 import drake
 import platform
 import string
@@ -29,7 +29,7 @@ class Value(drake.Node):
 
     >>> path = '/tmp/.drake.value'
     >>> with open(path, 'w') as f:
-    ...   print >> f, '42'
+    ...   print('42', file = f)
     >>> n = Value(path)
     >>> assert n.value() == 42
     """
@@ -43,7 +43,7 @@ class Value(drake.Node):
 
     def write(self, value):
         with open(str(self.path()), 'w') as f:
-            print >> f, repr(value)
+            print(repr(value), file = f)
 
 
 class _PasswordGenerator(drake.Builder):
@@ -57,7 +57,7 @@ class _PasswordGenerator(drake.Builder):
     def execute(self):
         self.output("password (length: %s) %s" % (self.__length, self.__target),
                     "Password %s" % self.__target)
-        pw = ''.join([random.choice(string.letters
+        pw = ''.join([random.choice(string.ascii_letters
                                     + string.digits
                                     + string.punctuation)
                       for i in range(self.__length)])
@@ -130,8 +130,8 @@ class Python:
 
         self.python = self.prefix / 'bin/python'
 
-        self.major = eval(commands.getoutput('%s -c \"import sys\nprint sys.version_info[0]\"' % self.python))
-        self.minor = eval(commands.getoutput('%s -c \"import sys\nprint sys.version_info[1]\"' % self.python))
+        self.major = eval(subprocess.getoutput('%s -c \"import sys\nprint sys.version_info[0]\"' % self.python))
+        self.minor = eval(subprocess.getoutput('%s -c \"import sys\nprint sys.version_info[1]\"' % self.python))
 
         if not check_version(major, self.major):
             raise Exception('invalid python major version: expected %s.x, got %s.%s' % (major, self.major, self.minor))
@@ -150,7 +150,7 @@ class Python:
           }
 
         for module in modules:
-            if commands.getstatusoutput('%s -c \'import %s\'' % (self.python, module))[0] >> 8 != 0:
+            if subprocess.getstatusoutput('%s -c \'import %s\'' % (self.python, module))[0] >> 8 != 0:
                 msg = 'missing python module %s' % module
                 if platform.system() == 'Linux':
                     distro = platform.linux_distribution()[0]

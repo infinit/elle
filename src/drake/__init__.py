@@ -10,9 +10,9 @@ _OS = __import__('os')
 import hashlib, platform, re, subprocess, sys, threading, time, types, shutil
 import inspect
 from copy import deepcopy
-import debug
+import drake.debug
 import atexit
-from sched import Coroutine, Scheduler
+from drake.sched import Coroutine, Scheduler
 
 
 class Profile:
@@ -28,7 +28,7 @@ class Profile:
         return ProfileInstance(self)
 
     def show(self):
-        print self
+        print(self)
 
     def __str__(self):
         return '%s: called %s time, %s seconds.' % (self.__name, self.__calls, self.__time)
@@ -163,11 +163,12 @@ class Path(object):
         >>> p.remove(True)
         >>> p.remove(True)
         Traceback (most recent call last):
-        Exception: Path does not exist: /tmp/.drake.foo
+            ...
+        drake.Exception: Path does not exist: /tmp/.drake.foo
         """
         try:
             _OS.remove(str(self))
-        except OSError, e:
+        except OSError as e:
             if e.errno == 2:
                 if err:
                     raise Exception('Path does not exist: %s' % str(self))
@@ -308,7 +309,8 @@ class Path(object):
         Path("baz")
         >>> Path('').basename()
         Traceback (most recent call last):
-        Exception: Cannot take the basename of an empty path.
+            ...
+        drake.Exception: Cannot take the basename of an empty path.
         """
         if not self.__path:
             raise Exception("Cannot take the basename of an empty path.")
@@ -326,7 +328,8 @@ class Path(object):
         Path("")
         >>> Path('').dirname()
         Traceback (most recent call last):
-        Exception: Cannot take the dirname of an empty path.
+            ...
+        drake.Exception: Cannot take the dirname of an empty path.
         """
         if not self.__path:
             raise Exception("Cannot take the dirname of an empty path.")
@@ -357,10 +360,10 @@ class Path(object):
 
         >>> path = Path('/tmp/.drake.touch.exists')
         >>> with open(str(path), 'w') as f:
-        ...   print >> f, 'foobar'
+        ...   print('foobar', file = f)
         >>> path.touch()
         >>> with open(str(path), 'r') as f:
-        ...   print f.read(),
+        ...   print(f.read(), end = '')
         foobar
         """
         if not self.dirname().empty():
@@ -402,7 +405,7 @@ class Path(object):
             rhs = Path(rhs)
         return self.__path == rhs.__path
 
-    def __div__(self, rhs):
+    def __truediv__(self, rhs):
         """The concatenation of self and rhs.
 
         rhs -- the end of the new path, as a Path or a string.
@@ -418,7 +421,8 @@ class Path(object):
 
         >>> Path('foo') / Path('/absolute')
         Traceback (most recent call last):
-        Exception: Cannot concatenate an absolute path: Path("/absolute").
+            ...
+        drake.Exception: Cannot concatenate an absolute path: Path("/absolute").
         """
         rhs = Path(rhs)
         if rhs.absolute():
@@ -457,7 +461,8 @@ class Path(object):
 
         >>> p.strip_prefix("quux")
         Traceback (most recent call last):
-        Exception: quux is not a prefix of bar/baz
+            ...
+        drake.Exception: quux is not a prefix of bar/baz
         """
         if (not isinstance(rhs, Path)):
             rhs = Path(rhs)
@@ -529,7 +534,7 @@ class DepFile:
 
     def up_to_date(self):
         """Whether all registered files match the stored hash."""
-        for path in self.__sha1.keys():
+        for path in list(self.__sha1.keys()):
             if path not in Node.nodes:
                 del self.__sha1[path]
                 continue
@@ -545,7 +550,7 @@ class DepFile:
         with open(str(self.path()), 'w') as f:
             for path in self.__files:
                 h = self.__files[path].hash()
-                print >>f, '%s %s %s' % (h, self.__files[path].name(), self.__files[path].drake_type())
+                print('%s %s %s' % (h, self.__files[path].name(), self.__files[path].drake_type()), file = f)
 
     def __repr__(self):
         """Python representation."""
@@ -605,22 +610,20 @@ class _BaseNodeTypeType(type):
 
         return type.__call__(*arg)
 
-class _BaseNodeType(type):
-
-    __metaclass__ = _BaseNodeTypeType
+class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
 
     def __call__(c, *args, **kwargs):
 
         try:
             return type.__call__(c, *args, **kwargs)
-        except NodeRedefinition, e:
+        except NodeRedefinition as e:
             assert e.name() in BaseNode.nodes
             node = BaseNode.nodes[e.name()]
             assert node.__class__ is c
             return node
 
 
-class BaseNode(object):
+class BaseNode(object, metaclass = _BaseNodeType):
 
     """Base entity manipulated by drake.
 
@@ -636,8 +639,6 @@ class BaseNode(object):
     nodes = {}
     uid = 0
     extensions = {}
-
-    __metaclass__ = _BaseNodeType
 
     def __init__(self, name):
         """Create a node with the given name."""
@@ -666,10 +667,10 @@ class BaseNode(object):
         if (self in marks):
             return True
         marks[self] = None
-        print '  node_%s [label="%s"]' % (self.uid, self.__name)
+        print('  node_%s [label="%s"]' % (self.uid, self.__name))
         if self.builder is not None:
             if self.builder.dot(marks):
-                print '  builder_%s -> node_%s' % (self.builder.uid, self.uid)
+                print('  builder_%s -> node_%s' % (self.builder.uid, self.uid))
         return True
 
     @classmethod
@@ -714,8 +715,7 @@ class BaseNode(object):
             if self.builder is None:
                 self.polish()
                 return
-            yield self.builder.run()
-            sched.coro_rethrow()
+            sched.coro_recurse((yield self.builder.run()))
         self.polish()
 
     def polish(self):
@@ -727,7 +727,7 @@ class BaseNode(object):
 
         >>> class MyNode (Node):
         ...   def polish(self):
-        ...     print 'Polishing.'
+        ...     print('Polishing.')
         >>> n = MyNode('/tmp/.drake.polish')
         >>> n.path().remove()
         >>> b = TouchBuilder(n)
@@ -790,14 +790,14 @@ class Node(BaseNode):
     def hash(self):
         """Digest of the file as a string."""
         if self.__hash is None:
-            self.__hash = hashlib.sha1(open(str(self.path())).read()).hexdigest()
+            self.__hash = hashlib.sha1(open(str(self.path()), 'rb').read()).hexdigest()
         return self.__hash
 
     def clean(self):
         """Clean this node's file if it is generated, and recursively its sources recursively."""
         BaseNode.clean(self)
         if self.builder is not None and self.path().exists():
-            print 'Deleting %s' % self
+            print('Deleting %s' % self)
             _OS.remove(str(self.path()))
 
     def path(self):
@@ -827,7 +827,8 @@ class Node(BaseNode):
         >>> n.path().remove()
         >>> n.build()
         Traceback (most recent call last):
-        NoBuilder: no builder to make /tmp/.drake.node
+            ...
+        drake.NoBuilder: no builder to make /tmp/.drake.node
 
         If the file exist, drake consider it is a provided input and
         building it does nothing.
@@ -845,7 +846,8 @@ class Node(BaseNode):
         >>> builder = EmptyBuilder([], [n])
         >>> n.build()
         Traceback (most recent call last):
-        Exception: /tmp/.drake.node wasn't created by EmptyBuilder
+            ...
+        drake.Exception: /tmp/.drake.node wasn't created by EmptyBuilder
         """
         debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
         with debug.indentation():
@@ -854,8 +856,7 @@ class Node(BaseNode):
                     raise NoBuilder(self)
                 self.polish()
                 return
-            yield self.builder.run()
-            sched.coro_rethrow()
+            sched.coro_recurse((yield self.builder.run()))
         self.polish()
 
     def __setattr__(self, name, value):
@@ -906,7 +907,7 @@ def nodes(*paths):
 
     nodes('foo', 'bar', ...) is equivalent to [node('foo'), node('bar'), ...]
     """
-    return map(node, paths)
+    return list(map(node, paths))
 
 
 def _cmd_escape(fmt, *args):
@@ -1033,7 +1034,7 @@ class Builder:
     def output(self, raw, pretty = None):
         """Output pretty, or raw if drake is in raw mode."""
         if not _SILENT:
-            print (not _RAW and pretty) or raw
+            print((not _RAW and pretty) or raw)
 
 
     def cachedir(self):
@@ -1095,8 +1096,7 @@ class Builder:
                 blocker = self.__building_semaphore
         if blocker is not None:
             debug.debug('Already being built, waiting.', debug.DEBUG_TRACE_PLUS)
-            yield blocker
-            sched.coro_rethrow()
+            sched.coro_recurse((yield blocker))
             return
 
         # The list of static dependencies is now fixed
@@ -1139,12 +1139,11 @@ class Builder:
         # Build static dependencies
         debug.debug('Build static dependencies')
         with debug.indentation():
-            for node in self.__sources.values() + self.__vsrcs.values():
+            for node in list(self.__sources.values()) + list(self.__vsrcs.values()):
                 if _can_skip_node(node):
                     continue
                 if _SCHEDULER.jobs() == 1:
-                    yield node.build_coro()
-                    sched.coro_rethrow()
+                    sched.coro_recurse((yield node.build_coro()))
                 else:
                     coroutines_static.append(Coroutine(node.build_coro(), str(node), _scheduler()))
 
@@ -1157,25 +1156,23 @@ class Builder:
                     if _can_skip_node(node):
                         continue
                     if _SCHEDULER.jobs() == 1:
-                        yield node.build_coro()
-                        sched.coro_rethrow()
+                        sched.coro_recurse((yield node.build_coro()))
                     else:
-                        coroutines_dynamic.append(Coroutine(node.build_coro(), str(node), _scheduler()))
-                except Exception, e:
+                        coroutines_dynamic.append(Coroutine(node.build_coro(), str(node),
+                                                            _scheduler(), parent = _scheduler().coroutine()))
+                except Exception as e:
                     debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
 
         if _SCHEDULER.jobs() != 1:
             for coro in coroutines_static:
-                yield coro
-                sched.coro_rethrow()
+                sched.coro_recurse((yield coro))
 
         if _SCHEDULER.jobs() != 1:
             for coro in coroutines_dynamic:
                 try:
-                    yield coro
-                    sched.coro_rethrow()
-                except Exception, e:
+                    sched.coro_recurse((yield coro))
+                except Exception as e:
                     debug.debug('Execution needed because dynamic dependency couldn\'t be built: %s.' % path)
                     execute = True
 
@@ -1229,15 +1226,13 @@ class Builder:
             self._depfiles = {}
             debug.debug('Recomputing dependencies', debug.DEBUG_TRACE_PLUS)
             with debug.indentation():
-                yield self.dependencies()
-                sched.coro_rethrow()
+                sched.coro_recurse((yield self.dependencies()))
 
             debug.debug('Rebuilding new dynamic dependencies', debug.DEBUG_TRACE_PLUS)
             with debug.indentation():
                 for node in self.__dynsrc.values():
                     # FIXME: parallelize
-                    yield node.build_coro()
-                    sched.coro_rethrow()
+                    sched.coro_recurse((yield node.build_coro()))
 
             if not self.execute():
                 with self.__built_semaphore:
@@ -1258,7 +1253,7 @@ class Builder:
                 depfile_builder.remove()
             else:
                 with open(str(depfile_builder), 'w') as f:
-                    print >> f, self.__builder_hash,
+                    print(self.__builder_hash, file = f)
             for name in self._depfiles:
                 self._depfiles[name].update()
             self.__built = True
@@ -1277,7 +1272,7 @@ class Builder:
 
     def clean(self):
         """Clean source nodes recursively."""
-        for node in self.__sources.values() + self.__vsrcs.values():
+        for node in list(self.__sources.values()) + list(self.__vsrcs.values()):
             node.clean()
 
 
@@ -1317,10 +1312,10 @@ class Builder:
             return True
         marks[self] = None
 
-        print '  builder_%s [label="%s", shape=rect]' % (self.uid, self.__class__)
+        print('  builder_%s [label="%s", shape=rect]' % (self.uid, self.__class__))
         for node in self.__sources.values() + self.__dynsrc.values():
             if node.dot(marks):
-                print '  node_%s -> builder_%s' % (node.uid, self.uid)
+                print('  node_%s -> builder_%s' % (node.uid, self.uid))
         return True
 
 
@@ -1382,7 +1377,7 @@ class Dictionary(VirtualNode):
         # FIXME: sha1 of the string repr ain't optimal
         items = list(self)
         items.sort()
-        return hashlib.sha1(str(items)).hexdigest()
+        return hashlib.sha1(str(items).encode('utf-8')).hexdigest()
 
     def __iter__(self):
         """Iterate over the (key, value) pairs."""
@@ -1437,12 +1432,13 @@ class Expander(Builder):
     >>> target = Node('/tmp/.drake.expander.3')
     >>> builder = MyExpander('Kiwis are @kiwi-color@.',
     ...                      [colors, lengths], target)
-    >>> print builder.missing_fatal()
+    >>> print(builder.missing_fatal())
     True
     >>> target.path().remove()
     >>> target.build()
     Traceback (most recent call last):
-    Exception: MyExpander failed
+      ...
+    drake.Exception: MyExpander failed
     >>> target.builder = None
     >>> builder = MyExpander('Kiwis are @kiwi-color@.',
     ...                      [colors, lengths], target, missing_fatal = False)
@@ -1489,10 +1485,11 @@ class Expander(Builder):
                 content = content.replace(match.group(0), str(vars[key]))
             except KeyError:
                 if self.__missing_fatal:
-                    print 'Missing expansion: %s' % key
+                    print('Missing expansion: %s' % key)
                     return False
 
-        print >> open(str(self.__target.path()), 'w'), content
+        with open(str(self.__target.path()), 'w') as f:
+            print(content, file = f)
         return True
 
     def dictionaries(self):
@@ -1507,9 +1504,10 @@ class FileExpander(Expander):
     """An Expander that takes its content from a file.
 
     >>> source = Node('/tmp/.drake.file.expander.source')
-    >>> print >> open(str(source.path()), 'w'), 'Expand @this@.'
+    >>> with open(str(source.path()), 'w') as f:
+    ...   print('Expand @this@.', file = f)
     >>> target = Node('/tmp/.drake.file.expander.target')
-    >>> builder = FileExpander(source, [Dictionary('d', { 'this': 'that' })], target)
+    >>> builder = FileExpander(source, [Dictionary('d_file', { 'this': 'that' })], target)
     >>> target.path().remove()
     >>> target.build()
     Expand /tmp/.drake.file.expander.target
@@ -1549,7 +1547,7 @@ class TextExpander(Expander):
     """An Expander with a static content.
 
     >>> target = Node('/tmp/.drake.text.expander')
-    >>> builder = TextExpander('Expand @this@.', [Dictionary('d', { 'this': 'that' })], target)
+    >>> builder = TextExpander('Expand @this@.', [Dictionary('d_text', { 'this': 'that' })], target)
     >>> target.path().remove()
     >>> target.build()
     Expand /tmp/.drake.text.expander
@@ -1666,7 +1664,9 @@ def include(path, *args, **kwargs):
 def _raw_include(path, *args, **kwargs):
 
     g = {}
-    execfile(str(srctree() / path), g)
+    path = str(srctree() / path)
+    #execfile(path, g)
+    exec(compile(open(path).read(), path, 'exec'), g)
     res = _Module(g)
     res.configure(*args, **kwargs)
     return res
@@ -1676,10 +1676,10 @@ def dot(node, *filters):
     # FIXME: coro!
     node.build()
     marks = {}
-    print 'digraph'
-    print '{'
+    print('digraph')
+    print('{')
     node.dot(marks)
-    print '}'
+    print('}')
 
 _MODES = {}
 
@@ -1731,7 +1731,7 @@ def _register_commands():
 
     def dot_show_cmd(nodes):
         if not len(nodes):
-            print '%s: dot-show: give me some nodes to show.' % sys.argv[0]
+            print('%s: dot-show: give me some nodes to show.' % sys.argv[0])
         for node in nodes:
             p = subprocess.Popen('dot -Tpng | xv -', shell = True, stdin = subprocess.PIPE)
             stdout = sys.stdout
@@ -1750,6 +1750,7 @@ def _scheduler():
     global _JOBS, _SCHEDULER
     if _SCHEDULER is None:
         _SCHEDULER = Scheduler(_JOBS)
+        debug._SCHEDULER = _SCHEDULER
     return _SCHEDULER
 
 def _jobs_set(n):
@@ -1768,25 +1769,25 @@ def _args_doc(doc):
 
 
 def help():
-    print '%s [OPTIONS] [CONFIG] [ACTIONS]' % sys.argv[0]
-    print '''\
+    print('%s [OPTIONS] [CONFIG] [ACTIONS]' % sys.argv[0])
+    print('''\
 
 OPTIONS:
 \t--help, -h: print this usage and exit.
 \t--jobs N, -j N: set number of concurrent jobs to N.
-'''
+''')
 
-    print 'CONFIG:'
+    print('CONFIG:')
     doc = {}
     if _CONFIG.__doc__ is not None:
         doc = _args_doc(_CONFIG.__doc__)
     for arg in inspect.getargspec(_CONFIG).args:
         sys.stdout.write('\t--%s=%s' % (arg, arg.upper()))
         if arg in doc:
-            print ': %s' % doc[arg]
+            print(': %s' % doc[arg])
         else:
-            print
-    print '''\
+            print()
+    print('''\
 
 ACTIONS:
 	--build [NODES]: build NODES, or all nodes in NODES is empty.
@@ -1795,7 +1796,7 @@ ACTIONS:
 	--dot NODES: generate a dot dependency graph on stdout for
 	  NODES (requires dot).
 	--dot-show NODES: show a dependency graph for NODES (requires
-	  dot and xv).'''
+	  dot and xv).''')
     exit(0)
 
 _OPTIONS = {
@@ -1826,7 +1827,9 @@ def run(root, *cfg, **kwcfg):
 
         # Load the root drakefile
         g = {}
-        execfile(str(srctree() / 'drakefile'), g)
+        path = str(srctree() / 'drakefile')
+        # execfile(path, g)
+        exec(compile(open(path).read(), path, 'exec'), g)
         root = _Module(g)
         _CONFIG = root.configure
 
@@ -1849,7 +1852,7 @@ def run(root, *cfg, **kwcfg):
                 continue
             i += 1
 
-        print '%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd())
+        print('%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd()))
         root.configure(*cfg, **kwcfg)
 
         mode = _MODES['build']
@@ -1879,13 +1882,13 @@ def run(root, *cfg, **kwcfg):
             if i == len(args):
                 break
 
-    except Exception, e:
-        print '%s: %s' % (sys.argv[0], e)
+    except Exception as e:
+        print('%s: %s' % (sys.argv[0], e))
         exit(1)
     except KeyboardInterrupt:
-        print '%s: interrupted.' % sys.argv[0]
+        print('%s: interrupted.' % sys.argv[0])
         exit(1)
-    print '%s: Leaving directory `%s\'' % (sys.argv[0], _OS.getcwd())
+    print('%s: Leaving directory `%s\'' % (sys.argv[0], _OS.getcwd()))
 
 
 class Copy(Builder):
@@ -1895,7 +1898,8 @@ class Copy(Builder):
     See the convenience function copy to copy multiple files easily.
 
     >>> source = node('/tmp/.drake.Copy.source')
-    >>> print >> open(str(source.path()), 'w'), 'Content.'
+    >>> with open(str(source.path()), 'w') as f:
+    ...   print('Content.', file = f)
     >>> builder = Copy(source, '/tmp/.drake.Copy.dest')
     >>> target = builder.target()
     >>> target

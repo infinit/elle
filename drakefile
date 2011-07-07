@@ -69,7 +69,7 @@ def configure(prefix = '.'):
       to = str(self.__exe.name().dirname())
       try:
         shutil.rmtree(to)
-      except OSError, e:
+      except OSError as e:
         if e.errno == 2:
           pass
         else:

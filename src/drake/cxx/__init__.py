@@ -127,18 +127,14 @@ class Config:
 class _ToolkitType(type):
 
     def __call__(c, *args, **kwargs):
-
         if c is Toolkit:
             return GccToolkit()
         return type.__call__(c, *args, **kwargs)
 
 
-class Toolkit:
-
-    __metaclass__ = _ToolkitType
+class Toolkit(metaclass = _ToolkitType):
 
     def __init__(self):
-
         self.includes = []
         self._hook_object_deps = []
         self._hook_bin_deps = []
@@ -206,7 +202,8 @@ class GccToolkit(Toolkit):
 
     def cppflags(self, cfg):
 
-        def print_define((name, v)):
+        def print_define(arg):
+            (name, v) = arg
             if v is None:
                 return '-D%s' % name
             else:
@@ -317,7 +314,8 @@ class VisualToolkit(Toolkit):
 
     def cppflags(self, cfg):
 
-        def print_define((name, v)):
+        def print_define(arg):
+            (name, v) = arg
             if v is None:
                 return '/D%s' % name
             else:
@@ -463,8 +461,7 @@ class Compiler(Builder):
     def hash(self):
         flags = self.config.flags
         flags.sort()
-        defines = self.config.defines().items()
-        defines.sort()
+        defines = sorted(self.config.defines().items())
         include_local = map(str, self.config.local_include_path())
         include_system = map(str, self.config.system_include_path())
         return '%s\n%s\n%s\n%s\n' % (defines, flags, include_local, include_system)
@@ -513,7 +510,7 @@ class Linker(Builder):
 
         return self.cmd('Link %s' % self.exe,
                         self.toolkit.link(self.config,
-                                          self.objs + self.sources_dynamic(),
+                                          self.objs + list(self.sources_dynamic()),
                                           self.exe))
 
     def __repr__(self):
@@ -556,7 +553,6 @@ class DynLibLinker(Builder):
         # This duplicates self.__sources, but preserves the order.
         self.objs = objs
         Builder.__init__(self, objs, [lib])
-
 
     def execute(self):
 
@@ -771,47 +767,47 @@ def dot_merge(nodes):
 
     def rec(n, d, marks = {}, skip = False):
         if not skip:
-            print '  node_%s [label="%s"]' % (n.uid, n.name())
+            print('  node_%s [label="%s"]' % (n.uid, n.name()))
         for s in d:
             rec(s, d[s], marks)
             k = (n.uid, s.uid)
             if k not in marks:
                 marks[k] = None
-                print '  node_%s -> node_%s' % k
+                print('  node_%s -> node_%s' % k)
 
-    print 'digraph'
-    print '{'
+    print('digraph')
+    print('{')
     deps = deps_merge(all_objects_if_none(nodes))
     marks = {}
-    print '  {'
-    print '    rank=same'
+    print('  {')
+    print('    rank=same')
     for n in deps:
-        print '    node_%s [label="%s"]' % (n.uid, n.name())
-    print '  }'
+        print('    node_%s [label="%s"]' % (n.uid, n.name()))
+    print('  }')
     for n in deps:
         rec(n, deps[n], marks, True)
-    print '}'
+    print('}')
 
 def dot_spread(nodes):
 
     def rec(n, d, i = 0):
         me = i
-        print '  node_%s [label="%s"]' % (me, n.name())
+        print('  node_%s [label="%s"]' % (me, n.name()))
         for s in d:
             si = i + 1
             i = rec(s, d[s], si)
             k = (s.uid, n.uid)
-            print '  node_%s -> node_%s' % (me, si)
+            print('  node_%s -> node_%s' % (me, si))
         return i
 
 
-    print 'digraph'
-    print '{'
+    print('digraph')
+    print('{')
     deps = deps_merge(all_objects_if_none(nodes))
     i = 0
     for n in deps:
         i = rec(n, deps[n], i) + 1
-    print '}'
+    print('}')
 
 command_add('cxx-deps-dot-merge', dot_merge)
 command_add('cxx-deps-dot', dot_spread)
