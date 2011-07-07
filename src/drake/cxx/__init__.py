@@ -531,6 +531,17 @@ class DynLibLinker(Builder):
     name = 'dynamic library linkage'
 
 
+    def hash(self):
+        flags = self.config.flags
+        flags.sort()
+        frameworks = self.config.frameworks()
+        frameworks.sort()
+        lib_paths = self.config.lib_paths.keys()
+        lib_paths.sort()
+        libs = self.config.libs.keys()
+        libs.sort()
+        return '%s\n%s\n%s\n%s\n' % (flags, frameworks, lib_paths, libs)
+
     def dependencies(self):
 
         for hook in self.toolkit.hook_bin_deps():
