@@ -16,6 +16,112 @@ from .. import ShellCommand, Builder, Node, Path, node, prefix, srctree, Excepti
 from .. import utils
 from copy import deepcopy
 
+
+class Config:
+
+    def __init__(self, model = None):
+
+        if model is None:
+            self._includes = {}
+            self._local_includes = {}
+            self._system_includes = {}
+            self.lib_paths = {}
+            self.libs = {}
+            self.flags = []
+            self.ldflags = []
+            self._framework = {}
+            self._defines = {}
+        else:
+            self._includes = deepcopy(model._includes)
+            self._local_includes = deepcopy(model._local_includes)
+            self._system_includes = deepcopy(model._system_includes)
+            self.lib_paths = deepcopy(model.lib_paths)
+            self.libs = deepcopy(model.libs)
+            self.flags = deepcopy(model.flags)
+            self.ldflags = deepcopy(model.ldflags)
+            self._framework = deepcopy(model._framework)
+            self._defines = deepcopy(model._defines)
+
+    def define(self, name, value = None):
+
+        self._defines[name] = value
+
+    def defines(self):
+        return self._defines
+
+    def flag(self, f):
+
+        self.flags.append(f)
+
+    def ldflag(self, f):
+
+        self.ldflags.append(f)
+
+    def framework_add(self, name):
+
+        self._framework[name] = None
+
+    def frameworks(self):
+
+        return self._framework.keys()
+
+    def add_local_include_path(self, path):
+
+        path = prefix() / Path(path)
+        self._local_includes[path] = None
+        self._includes[path] = None
+
+
+    def add_system_include_path(self, path):
+
+        path = Path(path)
+        if not path.absolute:
+            path = srctree() / prefix() / path
+        self._system_includes[path] = None
+        self._includes[path] = None
+
+
+    def include_path(self):
+
+        return list(self._includes)
+
+
+    def local_include_path(self):
+
+        return list(self._local_includes)
+
+
+    def system_include_path(self):
+
+        return list(self._system_includes)
+
+
+    def lib_path(self, path):
+
+        p = Path(path)
+        if not p.absolute:
+            p = srctree() / prefix() / p
+        self.lib_paths[p] = None
+
+
+    def lib(self, lib):
+
+        self.libs[lib] = None
+
+
+    def __add__(self, rhs):
+
+        res = Config(self)
+        res._local_includes.update(rhs._local_includes)
+        res._system_includes.update(rhs._system_includes)
+        res._includes.update(rhs._includes)
+        res._framework.update(rhs._framework)
+        res.lib_paths.update(rhs.lib_paths)
+        res.libs.update(rhs.libs)
+        res.flags += rhs.flags
+        res.ldflags += rhs.ldflags
+        return res
+
 # FIXME: Factor node and builder for executable and staticlib
 
 class _ToolkitType(type):
@@ -80,6 +186,19 @@ class GccToolkit(Toolkit):
 
         Toolkit.__init__(self)
         self.cxx = compiler
+
+    def preprocess(self, code, config = Config()):
+
+        p = subprocess.Popen([self.cxx, '-x',  'c++', '-E', '-'],
+                             stdin = subprocess.PIPE,
+                             stdout = subprocess.PIPE,
+                             stderr = subprocess.PIPE)
+        stdout, stderr = p.communicate(code)
+        if p.returncode != 0:
+            raise Exception(
+                'Preprocessing failed with return code %s.\nInput:\n%s\nStderr:\n%s\n' \
+                    % (code, code, stderr))
+        return stdout
 
     def object_extension(self):
 
@@ -241,112 +360,6 @@ class VisualToolkit(Toolkit):
 
         res = Path(path)
         res.extension = 'exe'
-        return res
-
-
-class Config:
-
-    def __init__(self, model = None):
-
-        if model is None:
-            self._includes = {}
-            self._local_includes = {}
-            self._system_includes = {}
-            self.lib_paths = {}
-            self.libs = {}
-            self.flags = []
-            self.ldflags = []
-            self._framework = {}
-            self._defines = {}
-        else:
-            self._includes = deepcopy(model._includes)
-            self._local_includes = deepcopy(model._local_includes)
-            self._system_includes = deepcopy(model._system_includes)
-            self.lib_paths = deepcopy(model.lib_paths)
-            self.libs = deepcopy(model.libs)
-            self.flags = deepcopy(model.flags)
-            self.ldflags = deepcopy(model.ldflags)
-            self._framework = deepcopy(model._framework)
-            self._defines = deepcopy(model._defines)
-
-    def define(self, name, value = None):
-
-        self._defines[name] = value
-
-    def defines(self):
-        return self._defines
-
-    def flag(self, f):
-
-        self.flags.append(f)
-
-    def ldflag(self, f):
-
-        self.ldflags.append(f)
-
-    def framework_add(self, name):
-
-        self._framework[name] = None
-
-    def frameworks(self):
-
-        return self._framework.keys()
-
-    def add_local_include_path(self, path):
-
-        path = prefix() / Path(path)
-        self._local_includes[path] = None
-        self._includes[path] = None
-
-
-    def add_system_include_path(self, path):
-
-        path = Path(path)
-        if not path.absolute:
-            path = srctree() / prefix() / path
-        self._system_includes[path] = None
-        self._includes[path] = None
-
-
-    def include_path(self):
-
-        return list(self._includes)
-
-
-    def local_include_path(self):
-
-        return list(self._local_includes)
-
-
-    def system_include_path(self):
-
-        return list(self._system_includes)
-
-
-    def lib_path(self, path):
-
-        p = Path(path)
-        if not p.absolute:
-            p = srctree() / prefix() / p
-        self.lib_paths[p] = None
-
-
-    def lib(self, lib):
-
-        self.libs[lib] = None
-
-
-    def __add__(self, rhs):
-
-        res = Config(self)
-        res._local_includes.update(rhs._local_includes)
-        res._system_includes.update(rhs._system_includes)
-        res._includes.update(rhs._includes)
-        res._framework.update(rhs._framework)
-        res.lib_paths.update(rhs.lib_paths)
-        res.libs.update(rhs.libs)
-        res.flags += rhs.flags
-        res.ldflags += rhs.ldflags
         return res
 
 def deps_handler(builder, path, t, data):
