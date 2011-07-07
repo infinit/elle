@@ -58,6 +58,10 @@ class Qt:
                     self.cfg_network.add_system_include_path(self.prefix / 'include' / subdir / 'QtNetwork')
                     self.cfg.lib('QtNetwork%s' % lib_suffix)
 
+                    self.cfg_webkit = Config()
+                    self.cfg_webkit.add_system_include_path(self.prefix / 'include' / subdir / 'QtWebKit')
+                    self.cfg.lib('QtWebKit%s' % lib_suffix)
+
                     return
 
         raise Exception('unable to find %s in %s' % (beacon, ', '.join(test)))
