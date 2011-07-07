@@ -2087,4 +2087,75 @@ def reset():
 
 # Configuration
 class Configuration:
-    pass
+
+  def _search(self, what, where):
+    what = Path(what)
+    for root in where:
+      if (root / what).exists():
+        return root
+    if len(where) <= 1:
+      desc = str(where[0])
+    else:
+      desc = '%s and %s' % (', '.join(map(str, where[:-1])), where[-1])
+    raise Exception('Unable to find %s in any of %s.' % (what, desc))
+
+  def __search_version(self, what, where, major, minor, subminor):
+    """ """
+    if major is not None:
+      if minor is not None:
+        if subminor is not None:
+          try:
+            what.extension = 'so.%s.%s.%s' % (major, minor, subminor)
+            return self._search(what, where) / what
+          except:
+            pass
+        try:
+          what.extension = 'so.%s.%s' % (major, minor)
+          return self._search(what, where) / what
+        except:
+          pass
+      try:
+        what.extension = 'so.%s' % (major)
+        return self._search(what, where) / what
+      except:
+        pass
+    what.extension = 'so'
+    return self._search(what, where) / what
+
+  def _search_lib(self, what, where, major, minor, subminor):
+    """ """
+    path = self.__search_version(what, where, major, minor, subminor)
+
+
+class Version:
+
+    def __init__(self, major = None, minor = None, subminor = None):
+        assert major is not None or minor is None and subminor is None
+        assert minor is not None or subminor is None
+        self.__major = major
+        self.__minor = minor
+        self.__subminor = subminor
+
+    def __str__(self):
+        if self.__major is not None:
+            if self.__minor is not None:
+                if self.__subminor is not None:
+                    return '%s.%s.%s' % (self.__major, self.__minor, self.__subminor)
+                else:
+                    return '%s.%s' % (self.__major, self.__minor)
+            else:
+                return '%s' % (self.__major)
+        else:
+            return 'any version'
+
+    def __contains__(self, other):
+        if self.__major is not None:
+            if other.__major != self.__major:
+                return False
+            if self.__minor is not None:
+                if other.__minor != self.__minor:
+                    return False
+                if self.__subminor is not None:
+                    if other.__subminor != self.__subminor:
+                        return False
+        return True
