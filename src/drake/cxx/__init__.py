@@ -574,6 +574,12 @@ class StaticLibLinker(ShellCommand):
 
     name = 'static library archiving'
 
+    def dependencies(self):
+
+        for hook in self.toolkit.hook_bin_deps():
+            hook(self)
+        yield
+
     def __init__(self, objs, lib, tk, cfg):
 
         self.objs = objs
