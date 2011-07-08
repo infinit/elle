@@ -2100,8 +2100,8 @@ class Configuration:
     if len(where) <= 1:
       desc = str(where[0])
     else:
-      desc = '%s and %s' % (', '.join(map(str, where[:-1])), where[-1])
-    raise Exception('Unable to find %s in any of %s.' % (what, desc))
+      desc = 'any of %s and %s' % (', '.join(map(str, where[:-1])), where[-1])
+    raise Exception('Unable to find %s in %s.' % (what, desc))
 
   def __search_version(self, what, where, major, minor, subminor):
     """ """
@@ -2131,14 +2131,92 @@ class Configuration:
     path = self.__search_version(what, where, major, minor, subminor)
 
 
+class Range:
+
+    """A numeric range."""
+
+    def __init__(self, inf, sup = True):
+        """Create a numeric range with the given boundaries
+
+        inf -- the inferior boundary.
+        sup -- the superior boundary. If unspecified, equals the
+               inferior boundary. If None, there is no upper bound
+               to the range (it includes any number superior or
+               equal to inf).
+
+        >>> 4 in Range(5)
+        False
+        >>> 5 in Range(5)
+        True
+        >>> 6 in Range(5)
+        False
+
+        >>> 4 in Range(5, 7)
+        False
+        >>> 5 in Range(5, 7)
+        True
+        >>> 6 in Range(5, 7)
+        True
+        >>> 7 in Range(5, 7)
+        True
+        >>> 8 in Range(5, 7)
+        False
+        >>> 42 in Range(5, None)
+        True
+        """
+        if isinstance(inf, Range):
+            assert sup is True
+            sup = inf.sup()
+            inf = inf.inf()
+        assert inf is not None
+        self.__inf = inf
+        if sup is True:
+            sup = inf
+        self.__sup = sup
+
+    def sup(self):
+        return self.__sup
+
+    def inf(self):
+        return self.__inf
+
+    def __contains__(self, val):
+        """Whether val is included in self."""
+        if isinstance(val, Range):
+            return val.inf() in self
+        return val >= self.__inf and (self.__sup is None or val <= self.__sup)
+
+    def __str__(self):
+        """A visual representation of the range.
+
+        >>> str(Range(5))
+        '5'
+        >>> str(Range(5, 7))
+        '[5, 7]'
+        >>> str(Range(5, None))
+        '[5, ...]'
+        """
+        if self.__sup == self.__inf:
+            return str(self.__inf)
+        elif self.__sup is None:
+            return '[%s, ...]' % self.__inf
+        return '[%s, %s]' % (self.__inf, self.__sup)
+
+    def __repr__(self):
+        if self.__sup == self.__inf:
+            return 'Range(%s)' % self.__inf
+        elif self.__sup is None:
+            return 'Range(%s, None)' % self.__inf
+        return 'Range(%s, %s)' % (self.__inf, self.__sup)
+
 class Version:
 
     def __init__(self, major = None, minor = None, subminor = None):
         assert major is not None or minor is None and subminor is None
         assert minor is not None or subminor is None
-        self.__major = major
-        self.__minor = minor
-        self.__subminor = subminor
+        self.__major = major and Range(major)
+        self.__minor = minor and Range(minor)
+        self.__subminor = subminor and Range(subminor)
 
     def __str__(self):
         if self.__major is not None:
@@ -2153,13 +2231,28 @@ class Version:
             return 'any version'
 
     def __contains__(self, other):
+        """Whether a version includes another.
+
+        >>> Version(1, 2, 3) in Version(1, 2, 3)
+        True
+        >>> Version(1, 2, 2) in Version(1, 2, 3)
+        False
+        >>> Version(1, 2, 4) in Version(1, 2, 3)
+        False
+        >>> Version(1, 2) in Version(1, 2, 3)
+        False
+        >>> Version(1, 2, 3) in Version(1, 2)
+        True
+        >>> Version(1, 3) in Version(1, Range(2, 4))
+        True
+        """
         if self.__major is not None:
-            if other.__major != self.__major:
+            if other.__major is None or not other.__major in self.__major:
                 return False
             if self.__minor is not None:
-                if other.__minor != self.__minor:
+                if other.__minor is None or not other.__minor in self.__minor:
                     return False
                 if self.__subminor is not None:
-                    if other.__subminor != self.__subminor:
+                    if other.__subminor is None or not other.__subminor in self.__subminor:
                         return False
         return True
