@@ -13,11 +13,14 @@ os.environ['PYTHONPATH'] = ':'.join(sys.path)
 
 import doctest
 import drake
+import drake.cxx
+import drake.cxx.boost
 import drake.git
 import drake.python
 import drake.utils
 
 assert(doctest.testmod(drake)[0] == 0)
+assert(doctest.testmod(drake.cxx.boost)[0] == 0)
 assert(doctest.testmod(drake.git)[0] == 0)
 assert(doctest.testmod(drake.python)[0] == 0)
 assert(doctest.testmod(drake.utils)[0] == 0)
