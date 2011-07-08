@@ -194,7 +194,7 @@ class GccToolkit(Toolkit):
             raise Exception(
                 'Preprocessing failed with return code %s.\nInput:\n%s\nStderr:\n%s\n' \
                     % (code, code, stderr))
-        return stdout
+        return stdout.decode("utf-8")
 
     def object_extension(self):
 
