@@ -17,11 +17,10 @@ import drake.git
 import drake.python
 import drake.utils
 
-doctest.testmod(drake)
-doctest.testmod(drake.git)
-doctest.testmod(drake.python)
-doctest.testmod(drake.utils)
-
+assert(doctest.testmod(drake)[0] == 0)
+assert(doctest.testmod(drake.git)[0] == 0)
+assert(doctest.testmod(drake.python)[0] == 0)
+assert(doctest.testmod(drake.utils)[0] == 0)
 assert os.system('src/drake/sched.py') == 0
 os.chdir('_build')
 assert os.system('./drake-build.py //check') == 0
