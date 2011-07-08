@@ -2093,15 +2093,23 @@ def reset():
 class Configuration:
 
   def _search(self, what, where):
+    return self._search_all(what, where)[0]
+
+  def _search_all(self, what, where):
     what = Path(what)
+    res = []
     for root in where:
       if (root / what).exists():
-        return root
+        res.append(root)
+    if len(res) > 0:
+      return res
+    raise Exception('Unable to find %s in %s.' % (what, self._format_search(where)))
+
+  def _format_search(self, where):
     if len(where) <= 1:
-      desc = str(where[0])
+      return str(where[0])
     else:
-      desc = 'any of %s and %s' % (', '.join(map(str, where[:-1])), where[-1])
-    raise Exception('Unable to find %s in %s.' % (what, desc))
+      return 'any of %s and %s' % (', '.join(map(str, where[:-1])), where[-1])
 
   def __search_version(self, what, where, major, minor, subminor):
     """ """
@@ -2244,6 +2252,8 @@ class Version:
         >>> Version(1, 2, 3) in Version(1, 2)
         True
         >>> Version(1, 3) in Version(1, Range(2, 4))
+        True
+        >>> Version(1, 2, 3) in Version()
         True
         """
         if self.__major is not None:
