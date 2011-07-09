@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.hh
 //
 // created       julien quintard   [fri apr 30 12:55:13 2010]
-// updated       julien quintard   [mon jun 27 10:53:43 2011]
+// updated       julien quintard   [wed jul  6 10:12:44 2011]
 //
 
 //
@@ -73,22 +73,20 @@ namespace lune
       {
 	static elle::Pattern	Root;
 
-	struct			Block
-	{
-	  static elle::Pattern	Immutable;
-	  static elle::Pattern	Mutable;
-	};
+	static elle::Pattern	ImmutableBlock;
+	static elle::Pattern	MutableBlock;
+
+	static elle::Pattern	History;
       };
 
       struct			Shelter
       {
 	static elle::Pattern	Root;
 
-	struct			Block
-	{
-	  static elle::Pattern	Immutable;
-	  static elle::Pattern	Mutable;
-	};
+	static elle::Pattern	ImmutableBlock;
+	static elle::Pattern	MutableBlock;
+
+	static elle::Pattern	History;
       };
     };
   };
