@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jul  4 13:38:51 2011]
+// updated       julien quintard   [sat jul  9 19:49:01 2011]
 //
 
 //
@@ -133,11 +133,25 @@ namespace agent
   ///
   /// this method cleans the agent.
   ///
+  /// the components are recycled just to make sure the memory is
+  /// released before the Meta allocator terminates.
+  ///
   elle::Status		Agent::Clean()
   {
     enter();
 
-    // nothing to do.
+    // recycle the identity.
+    if (Agent::Identity.Recycle<lune::Identity>() == elle::StatusError)
+      escape("unable to recycle the identity");
+
+    // recycle the subject.
+    if (Agent::Subject.Recycle<nucleus::Subject>() == elle::StatusError)
+      escape("unable to recycle the subject");
+
+    // recycle the configuration.
+    if (Agent::Configuration.Recycle<lune::Configuration>() ==
+	elle::StatusError)
+      escape("unable to recycle the configuration");
 
     leave();
   }
