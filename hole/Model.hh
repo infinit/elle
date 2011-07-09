@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Model.hh
 //
 // created       julien quintard   [fri may 20 17:46:53 2011]
-// updated       julien quintard   [mon jun 27 14:01:53 2011]
+// updated       julien quintard   [tue jul  5 17:18:43 2011]
 //
 
 #ifndef HOLE_MODEL_HH
@@ -43,6 +43,7 @@ namespace hole
 
 	TypeLocal,
 	TypeRemote,
+	TypeCirkle,
 	TypeKool,
 
 	Types = TypeKool,

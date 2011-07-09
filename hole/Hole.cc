@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [mon jul  4 13:38:28 2011]
+// updated       julien quintard   [sat jul  9 19:50:11 2011]
 //
 
 //
@@ -90,25 +90,14 @@ namespace hole
       case Model::TypeLocal:
 	{
 	  // allocate the instance.
-	  Hole::Implementation = new local::Local(network);
+	  Hole::Implementation = new implementations::local::Local(network);
 
 	  break;
 	}
       case Model::TypeRemote:
 	{
-	  /* XXX
-	  remote::Remote*        remote;
-
 	  // allocate the instance.
-	  remote = new remote::Remote(network);
-
-	  // set remote host.
-	  if (remote->Host(boot) == elle::StatusError)
-	    escape("unable to set the host");
-
-	  // set the implementation.
-	  Hole::Implementation = remote;
-	  */
+	  Hole::Implementation = new implementations::remote::Remote(network);
 
 	  break;
 	}
@@ -116,9 +105,9 @@ namespace hole
 	escape("unknown or not-yet-supported model");
       }
 
-    // set the root address.
-    if (Hole::Implementation->Root(Hole::Descriptor.root) == elle::StatusError)
-      escape("unable to set the root address");
+    // join the network
+    if (Hole::Implementation->Join() == elle::StatusError)
+      escape("unable to join the network");
 
     leave();
   }
@@ -126,11 +115,23 @@ namespace hole
   ///
   /// this method cleans the hole.
   ///
+  /// the components are recycled just to make sure the memory is
+  /// released before the Meta allocator terminates.
+  ///
   elle::Status		Hole::Clean()
   {
     enter();
 
-    // nothing to do.
+    // leave the network
+    if (Hole::Implementation->Leave() == elle::StatusError)
+      escape("unable to leave the network");
+
+    // delete the implementation.
+    delete Hole::Implementation;
+
+    // recycle the descriptor.
+    if (Hole::Descriptor.Recycle<lune::Descriptor>() == elle::StatusError)
+      escape("unable to recycle the descriptor");
 
     leave();
   }
@@ -162,7 +163,7 @@ namespace hole
     enter();
 
     // return the address.
-    address = Hole::Implementation->root;
+    address = Hole::Descriptor.root;
 
     leave();
   }

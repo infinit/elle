@@ -1,13 +1,12 @@
 PROJECT(Hole CXX)
 
 ADD_LIBRARY(hole
-  local/Local.cc
+  implementations/local/Local.cc
 
-# XXX
-#  remote/Client.cc
-#  remote/Node.cc
-#  remote/Remote.cc
-#  remote/Server.cc
+  implementations/remote/Client.cc
+  implementations/remote/Node.cc
+  implementations/remote/Remote.cc
+  implementations/remote/Server.cc
 
   Hole.cc
   Holeable.cc

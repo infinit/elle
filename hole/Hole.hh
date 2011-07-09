@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [sun jun 26 14:20:27 2011]
+// updated       julien quintard   [tue jul  5 17:23:14 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -76,7 +76,6 @@ namespace hole
 
 #include <hole/Model.hh>
 
-#include <hole/local/Local.hh>
-// XXX #include <hole/remote/Remote.hh>
+#include <hole/implementations/Implementations.hh>
 
 #endif

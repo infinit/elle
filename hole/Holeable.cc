@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.cc
 //
 // created       julien quintard   [thu may 12 10:20:19 2011]
-// updated       julien quintard   [tue jun 14 19:20:34 2011]
+// updated       julien quintard   [wed jul  6 15:02:54 2011]
 //
 
 //
@@ -37,23 +37,6 @@ namespace hole
   ///
   Holeable::~Holeable()
   {
-  }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-  ///
-  /// this method sets the address of the root directory for this network.
-  ///
-  elle::Status		Holeable::Root(const nucleus::Address&	address)
-  {
-    enter();
-
-    // set the root address.
-    this->root = address;
-
-    leave();
   }
 
 }

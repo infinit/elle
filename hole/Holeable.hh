@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.hh
 //
 // created       julien quintard   [wed may 11 14:55:32 2011]
-// updated       julien quintard   [tue jun 14 19:20:40 2011]
+// updated       julien quintard   [wed jul  6 15:22:45 2011]
 //
 
 #ifndef HOLE_HOLEABLE_HH
@@ -37,11 +37,6 @@ namespace hole
     virtual ~Holeable();
 
     //
-    // methods
-    //
-    elle::Status		Root(const nucleus::Address&);
-
-    //
     // interface
     //
     virtual elle::Status	Join() = 0;
@@ -62,7 +57,6 @@ namespace hole
     // attributes
     //
     nucleus::Network	network;
-    nucleus::Address	root;
   };
 
 }

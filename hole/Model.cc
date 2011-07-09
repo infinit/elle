@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Model.cc
 //
 // created       julien quintard   [mon jun 27 09:15:33 2011]
-// updated       julien quintard   [mon jun 27 15:39:26 2011]
+// updated       julien quintard   [tue jul  5 17:18:58 2011]
 //
 
 //
@@ -41,6 +41,7 @@ namespace hole
     {
       { Model::TypeLocal, "local" },
       { Model::TypeRemote, "remote" },
+      { Model::TypeCirkle, "cirkle" },
       { Model::TypeKool, "kool" },
     };
 
