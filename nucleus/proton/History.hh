@@ -5,29 +5,23 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/MutableBlock.hh
+// file          /home/mycure/infinit/nucleus/proton/History.hh
 //
-// created       julien quintard   [sat may 21 12:27:09 2011]
-// updated       julien quintard   [wed jul  6 09:43:01 2011]
+// created       julien quintard   [wed jul  6 09:12:10 2011]
+// updated       julien quintard   [wed jul  6 10:30:38 2011]
 //
 
-#ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH
-#define NUCLEUS_PROTON_MUTABLEBLOCK_HH
+#ifndef NUCLEUS_PROTON_HISTORY_HH
+#define NUCLEUS_PROTON_HISTORY_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
 
-#include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Family.hh>
 #include <nucleus/proton/Version.hh>
-#include <nucleus/proton/Base.hh>
-
-#include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -41,23 +35,40 @@ namespace nucleus
     ///
     /// XXX
     ///
-    /// the _base attribute is used internally to keep a view of the
-    /// block's original state i.e before being modified.
-    ///
-    class MutableBlock:
-      public Block
+    class History:
+      public elle::Object,
+      public virtual elle::Fileable<elle::FormatCustom>
     {
     public:
       //
-      // constructors & destructors
+      // constants
       //
-      MutableBlock();
-      MutableBlock(const Family,
-		   const neutron::Component);
+      static const elle::String		Extension;
+
+      //
+      // types
+      //
+      typedef std::vector<Version>			Container;
+      typedef typename Container::iterator		Iterator;
+      typedef typename Container::const_iterator	Scoutor;
+
+      //
+      // methods
+      //
+      elle::Status	Register(const Version&);
+
+      elle::Status	Select(const Version::Type,
+			       Version&) const;
+
+      elle::Status	Size(Version::Type&) const;
 
       //
       // interfaces
       //
+
+      // object
+      declare(History);
+      elle::Boolean	operator==(const History&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -68,22 +79,18 @@ namespace nucleus
 
       // fileable
       elle::Status	Load(const Network&,
-			     const Address&,
-			     const Version&);
+			     const Address&);
       elle::Status	Store(const Network&,
 			      const Address&) const;
       elle::Status	Erase(const Network&,
 			      const Address&) const;
       elle::Status	Exist(const Network&,
-			      const Address&,
-			      const Version&) const;
+			      const Address&) const;
 
       //
       // attributes
       //
-      Version		version;
-
-      Base		_base;
+      Container		container;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [fri jun 24 16:23:02 2011]
+// updated       julien quintard   [sat jul  9 20:24:14 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HXX

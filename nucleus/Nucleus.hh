@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [wed jun 22 12:35:50 2011]
+// updated       julien quintard   [fri jul  8 10:46:51 2011]
 //
 
 #ifndef NUCLEUS_NUCLEUS_HH
@@ -57,6 +57,8 @@ namespace nucleus
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <nucleus/Derivable.hh>
 
 #include <nucleus/neutron/Neutron.hh>
 #include <nucleus/proton/Proton.hh>

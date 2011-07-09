@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [wed jun 22 12:36:16 2011]
+// updated       julien quintard   [wed jul  6 10:10:23 2011]
 //
 
 //

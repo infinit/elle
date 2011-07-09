@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [wed jun 22 13:33:53 2011]
+// updated       julien quintard   [wed jul  6 10:10:12 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BLOCK_HH

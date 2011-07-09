@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [tue jun 28 23:16:45 2011]
+// updated       julien quintard   [wed jul  6 09:28:11 2011]
 //
 
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
@@ -67,14 +67,6 @@ namespace nucleus
 			       const TT&...);
 
       //
-      // attributes
-      //
-      Family			family;
-      neutron::Component	component;
-
-      elle::Digest*		digest;
-
-      //
       // interfaces
       //
 
@@ -89,6 +81,14 @@ namespace nucleus
       // archivable
       elle::Status	Serialize(elle::Archive&) const;
       elle::Status	Extract(elle::Archive&);
+
+      //
+      // attributes
+      //
+      Family			family;
+      neutron::Component	component;
+
+      elle::Digest*		digest;
     };
 
   }

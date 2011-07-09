@@ -8,11 +8,11 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [sun jul  3 23:44:33 2011]
+// updated       julien quintard   [wed jul  6 09:40:15 2011]
 //
 
-#ifndef NUCLEUS_NEUTRON_VERSION_HH
-#define NUCLEUS_NEUTRON_VERSION_HH
+#ifndef NUCLEUS_PROTON_VERSION_HH
+#define NUCLEUS_PROTON_VERSION_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -37,6 +37,11 @@ namespace nucleus
     {
     public:
       //
+      // types
+      //
+      typedef elle::Natural32		Type;
+
+      //
       // constants
       //
       static const Version		First;
@@ -48,12 +53,12 @@ namespace nucleus
       // constructors & destructors
       //
       Version();
-      Version(const elle::Natural64);
+      Version(const Type);
 
       //
       // methods
       //
-      elle::Status	Create(const elle::Natural64);
+      elle::Status	Create(const Type);
 
       //
       // interfaces
@@ -77,7 +82,7 @@ namespace nucleus
       //
       // attributes
       //
-      elle::Natural64	number;
+      Type		number;
     };
 
   }

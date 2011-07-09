@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [mon jul  4 09:45:09 2011]
+// updated       julien quintard   [wed jul  6 11:23:14 2011]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <nucleus/proton/MutableBlock.hh>
+#include <nucleus/proton/History.hh>
 
 #include <lune/Lune.hh>
 
@@ -133,7 +134,7 @@ namespace nucleus
 	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Block::Mutable) ==
+      if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
 	  elle::StatusError)
 	escape("unable to create the path");
 
@@ -183,6 +184,7 @@ namespace nucleus
       elle::Region		region;
       elle::String		string;
       elle::String		number;
+      nucleus::History		history;
 
       enter();
 
@@ -197,7 +199,7 @@ namespace nucleus
 	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
-      if (file.Create(lune::Lune::Network::Shelter::Block::Mutable) ==
+      if (file.Create(lune::Lune::Network::Shelter::MutableBlock) ==
 	  elle::StatusError)
 	escape("unable to create the path");
 
@@ -243,6 +245,22 @@ namespace nucleus
       if (elle::Link::Create(link, file) == elle::StatusError)
 	escape("unable to create the block link");
 
+      // if there is a history, load it.
+      if (history.Exist(network, address) == elle::StatusTrue)
+	{
+	  // load the history.
+	  if (history.Load(network, address) == elle::StatusError)
+	    escape("unable to load the history");
+	}
+
+      // register the new version.
+      if (history.Register(version) == elle::StatusError)
+	escape("unable to register the new version");
+
+      // store the history.
+      if (history.Store(network, address) == elle::StatusError)
+	escape("unable to store the history");
+
       leave();
     }
 
@@ -253,73 +271,76 @@ namespace nucleus
 					    const Address&	address) const
     {
       elle::Unique	unique;
-      Version		current;
-      Version		i;
+      elle::Path	path;
+      History		history;
+      Version::Type	size;
+      Version::Type	i;
 
       enter();
 
-      // XXX just to remove the warning
-      Network n = network;
-      Address a = address;
+      // turn the block's address into a hexadecimal string.
+      if (elle::Hexadecimal::Encode(address.digest->region,
+				    unique) == elle::StatusError)
+	escape("unable to convert the address in its hexadecimal form");
 
-      /* XXX
-      // first, turn the block's address into a string.
-      if (address.Save(unique) == elle::StatusError)
-	escape("unable to save the address' unique");
+      // create the shelter path.
+      if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
+	  elle::StatusError)
+	escape("unable to create the path");
 
-      // retrieve the latest version number.
-      {
-	elle::Path	p;
-	elle::Region	r;
+      // complete the path with the network name.
+      if (path.Complete(elle::Piece("%NETWORK%", network.name),
+			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+	escape("unable to complete the path");
 
-	// create the shelter path.
-	if (p.Create(lune::Lune::Network::Shelter::Block) ==
-	    elle::StatusError)
-	  escape("unable to create the path");
+      // load the history.
+      if (history.Load(network, address) == elle::StatusError)
+	escape("unable to load the history");
 
-	// complete the path with the network name.
-	if (p.Complete(elle::Piece("%NETWORK%", network.name),
-		       elle::Piece("%ADDRESS%", unique),
-		       elle::Piece("%VERSION%", "@")) == elle::StatusError)
-	  escape("unable to complete the path");
+      // retrieve the number of versions.
+      if (history.Size(size) == elle::StatusError)
+	escape("unable to retrieve the size of the history");
 
-	// read the file's content.
-	if (elle::File::Read(p, r) == elle::StatusError)
-	  escape("unable to read the file's content");
-
-	// create a stream in order to extract the number.
-	std::istringstream	iss(elle::String((char*)r.contents, r.size));
-
-	// extract the version number which is the latest.
-	iss >> current;
-      }
-
-      // for every version number down to zero.
-      for (i = current; i >= 0; i--)
+      // go through the versions.
+      for (i = 0; i < size; i++)
 	{
-	  elle::Path		p;
-	  std::ostringstream	oss;
+	  nucleus::Version	version;
+	  elle::String		number;
+	  elle::Path		file;
 
-	  // transfer the version number into the stream.
-	  oss << i;
+	  // select a particular version.
+	  if (history.Select(i, version) == elle::StatusError)
+	    escape("unable to select a particular version");
 
-	  // create the shelter path.
-	  if (p.Create(lune::Lune::Network::Shelter::Block) ==
-	      elle::StatusError)
-	    escape("unable to create the path");
+	  // convert the version number into a string.
+	  if (elle::Variable::Convert(version.number,
+				      number) == elle::StatusFalse)
+	    escape("unable to transform the version number into a string");
 
-	  // complete the path with the network name.
-	  if (p.Complete(elle::Piece("%NETWORK%", network.name),
-			 elle::Piece("%ADDRESS%", unique),
-			 elle::Piece("%VERSION%", oss.str())) ==
-	      elle::StatusError)
+	  // duplicate the generic path.
+	  file = path;
+
+	  // complete the path with the version number.
+	  if (file.Complete(elle::Piece("%VERSION%",
+					number)) == elle::StatusError)
 	    escape("unable to complete the path");
 
 	  // erase the file.
-	  if (elle::File::Erase(p) == elle::StatusError)
+	  if (elle::File::Erase(file) == elle::StatusError)
 	    escape("unable to erase the file");
 	}
-      */
+
+      // complete the path with the last version pointer.
+      if (path.Complete(elle::Piece("%VERSION%", "@")) == elle::StatusError)
+	escape("unable to complete the path");
+
+      // delete the link which references the latest version.
+      if (elle::Link::Erase(path) == elle::StatusError)
+	escape("unable to erase the block link");
+
+      // erase the history.
+      if (history.Erase(network, address) == elle::StatusError)
+	escape("unable to erase the history");
 
       leave();
     }
@@ -344,7 +365,7 @@ namespace nucleus
 	escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
-      if (path.Create(lune::Lune::Network::Shelter::Block::Mutable) ==
+      if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
 	  elle::StatusError)
 	escape("unable to create the path");
 

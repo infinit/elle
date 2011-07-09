@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.cc
 //
 // created       julien quintard   [sat may 21 13:41:42 2011]
-// updated       julien quintard   [sun jul  3 23:44:29 2011]
+// updated       julien quintard   [wed jul  6 09:26:16 2011]
 //
 
 //
@@ -35,7 +35,7 @@ namespace nucleus
     /// this constant represents the latest version.
     ///
     const Version		Version::Last(
-                                  elle::Type<elle::Natural64>::Maximum);
+				  elle::Type<Version::Type>::Maximum);
 
     ///
     /// this constant represents any version and is useful whenever
@@ -59,7 +59,7 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    Version::Version(const elle::Natural64			number):
+    Version::Version(const Type					number):
       number(number)
     {
     }
@@ -71,7 +71,7 @@ namespace nucleus
     ///
     /// this method creates a version.
     ///
-    elle::Status	Version::Create(const elle::Natural64	number)
+    elle::Status	Version::Create(const Type		number)
     {
       enter();
 

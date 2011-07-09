@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.cc
 //
 // created       julien quintard   [thu jan 28 22:01:03 2010]
-// updated       julien quintard   [fri jun 10 13:09:05 2011]
+// updated       julien quintard   [sat jul  9 19:46:59 2011]
 //
 
 //
@@ -43,16 +43,25 @@ namespace nucleus
     enter();
 
     // register the component types.
-    Nucleus::Factory.Register< neutron::Object >
-      (neutron::ComponentObject);
-    Nucleus::Factory.Register< neutron::Contents<neutron::Data> >
-      (neutron::ComponentData);
-    Nucleus::Factory.Register< neutron::Contents<neutron::Catalog> >
-      (neutron::ComponentCatalog);
-    Nucleus::Factory.Register< neutron::Contents<neutron::Reference> >
-      (neutron::ComponentReference);
-    Nucleus::Factory.Register< neutron::Access >
-      (neutron::ComponentAccess);
+    if (Nucleus::Factory.Register< neutron::Object >
+	  (neutron::ComponentObject) == elle::StatusError)
+      escape("unable to register the factory product");
+
+    if (Nucleus::Factory.Register< neutron::Contents<neutron::Data> >
+	  (neutron::ComponentData) == elle::StatusError)
+      escape("unable to register the factory product");
+
+    if (Nucleus::Factory.Register< neutron::Contents<neutron::Catalog> >
+	  (neutron::ComponentCatalog) == elle::StatusError)
+      escape("unable to register the factory product");
+
+    if (Nucleus::Factory.Register< neutron::Contents<neutron::Reference> >
+	  (neutron::ComponentReference) == elle::StatusError)
+      escape("unable to register the factory product");
+
+    if (Nucleus::Factory.Register< neutron::Access >
+	  (neutron::ComponentAccess) == elle::StatusError)
+      escape("unable to register the factory product");
 
     leave();
   }
@@ -60,11 +69,16 @@ namespace nucleus
   ///
   /// this method cleans the nucleus
   ///
+  /// the components are recycled just to make sure the memory is
+  /// released before the Meta allocator terminates.
+  ///
   elle::Status		Nucleus::Clean()
   {
     enter();
 
-    // XXX
+    // recycle the factory.
+    if (Nucleus::Factory.Recycle<elle::Factory>() == elle::StatusError)
+      escape("unable to recycle the factory");
 
     leave();
   }

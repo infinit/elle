@@ -7,6 +7,7 @@ ADD_LIBRARY(nucleus
   proton/Base.cc
   proton/Block.cc
   proton/ContentHashBlock.cc
+  proton/History.cc
   proton/ImmutableBlock.cc
   proton/ImprintBlock.cc
   proton/Location.cc
