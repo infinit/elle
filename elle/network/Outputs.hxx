@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Outputs.hxx
 //
 // created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [tue jun  7 06:59:11 2011]
+// updated       julien quintard   [fri jul  8 12:15:46 2011]
 //
 
 #ifndef ELLE_NETWORK_OUTPUTS_HXX
@@ -38,9 +38,9 @@ namespace elle
     template <const Tag G,
 	      typename... T>
     inline
-    Bundle<G, Parameters<T...> >	Outputs(T&...		objects)
+    typename Message<G>::B::Outputs	Outputs(T&...		objects)
     {
-      return (Bundle<G, Parameters<T...> >(objects...));
+      return (typename Message<G>::B::Outputs(objects...));
     }
 
   }

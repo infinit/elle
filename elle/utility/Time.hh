@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [fri mar 18 16:13:13 2011]
+// updated       julien quintard   [fri jul  8 16:21:47 2011]
 //
 
 #ifndef ELLE_UTILITY_TIME_HH

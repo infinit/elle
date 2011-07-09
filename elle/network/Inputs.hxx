@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Inputs.hxx
 //
 // created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [thu jun  9 16:00:29 2011]
+// updated       julien quintard   [fri jul  8 12:15:43 2011]
 //
 
 #ifndef ELLE_NETWORK_INPUTS_HXX
@@ -38,9 +38,9 @@ namespace elle
     template <const Tag G,
 	      typename... T>
     inline
-    Bundle<G, Parameters<const T...> >	Inputs(const T&...	objects)
+    typename Message<G>::B::Inputs	Inputs(const T&...	objects)
     {
-      return (Bundle<G, Parameters<const T...> >(objects...));
+      return (typename Message<G>::B::Inputs(objects...));
     }
 
   }

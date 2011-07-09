@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hxx
 //
 // created       julien quintard   [fri jun  3 22:22:21 2011]
-// updated       julien quintard   [thu jun 23 13:11:37 2011]
+// updated       julien quintard   [fri jul  8 12:15:51 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HXX
@@ -36,172 +36,166 @@ namespace elle
 // ---------- inputs bundle ---------------------------------------------------
 //
 
+    ///
+    /// XXX
+    ///
     template <const Tag G,
 	      typename... T>
-    class Bundle< G, Parameters<const T...> >:
-      public Entity,
-      public virtual Archivable
+    Bundle::Inputs< G,
+		    Parameters<const T...> >::Inputs(const T&... objects):
+      tag(G),
+      arguments(objects...)
     {
-    public:
-      //
-      // types
-      //
-      typedef Parameters<const T&...>	P;
+    }
 
-      //
-      // constructors & destructors
-      //
-      Bundle(const T&...					objects):
-	tag(G),
-	arguments(objects...)
-      {
-      }
-
-      //
-      // interfaces
-      //
-
-      // archivable
-
-      Status		Serialize(Archive&			archive)
-	const
-      {
-	Callback<
-	  typename Trait::Reference<
- 	    typename Trait::Constant<
-	      typename Message<G>::P
-	      >::Type
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
+    Status
+    Bundle::Inputs< G,
+		    Parameters<const T...> >::Serialize(Archive& archive) const
+    {
+      Callback<
+	typename Trait::Reference<
+	  typename Trait::Constant<
+	    typename Message<G>::P
 	    >::Type
-	  >		callback(&Archive::Serialize, &archive);
+	  >::Type
+	>	callback(&Archive::Serialize, &archive);
 
-	enter();
+      enter();
 
-	// trigger the serialization callback.
-	if (this->arguments.Trigger(callback) == StatusError)
-	  escape("unable to serialize the arguments");
+      // trigger the serialization callback.
+      if (this->arguments.Trigger(callback) == StatusError)
+	escape("unable to serialize the arguments");
 
-	leave();
-      }
+      leave();
+    }
 
-      Status		Extract(Archive&)
-      {
-	enter();
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
+    Status
+    Bundle::Inputs< G,
+		    Parameters<const T...> >::Extract(Archive&)
+    {
+      enter();
 
-	escape("unable to extract from an inputs bundle");
-      }
+      escape("unable to extract from an inputs bundle");
+    }
 
-      // dumpable
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
+    Status
+    Bundle::Inputs< G,
+		    Parameters<const T...> >::Dump(const Natural32 margin)
+      const
+    {
+      String	alignment(margin, ' ');
 
-      Status		Dump(const Natural32			margin = 0)
-	const
-      {
-	String		alignment(margin, ' ');
+      enter();
 
-	enter();
+      std::cout << alignment << "[Bundle] Inputs" << std::endl;
 
-	std::cout << alignment << "[Bundle] Inputs" << std::endl;
+      // dump the tag.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Tag]" << (Natural32)this->tag << std::endl;
 
-	// dump the tag.
-	std::cout << alignment << Dumpable::Shift
-		  << "[Tag]" << (Natural32)this->tag << std::endl;
+      // dump the arguments.
+      if (this->arguments.Dump() == StatusError)
+	escape("unable to dump the arguments");
 
-	// dump the arguments.
-	if (this->arguments.Dump() == StatusError)
-	  escape("unable to dump the arguments");
-
-	leave();
-      }
-
-      //
-      // attributes
-      //
-      Tag		tag;
-      Arguments<P>	arguments;
-    };
+      leave();
+    }
 
 //
 // ---------- outputs bundle --------------------------------------------------
 //
 
+    ///
+    /// XXX
+    ///
     template <const Tag G,
 	      typename... T>
-    class Bundle< G, Parameters<T...> >:
-      public Entity,
-      public virtual Archivable
+    Bundle::Outputs< G,
+		     Parameters<T...> >::Outputs(T&... objects):
+      tag(G),
+      arguments(objects...)
     {
-    public:
-      //
-      // types
-      //
-      typedef Parameters<T&...>		P;
+    }
 
-      //
-      // constructors & destructors
-      //
-      Bundle(T&...						objects):
-	tag(G),
-	arguments(objects...)
-      {
-      }
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
+    Status
+    Bundle::Outputs< G,
+		     Parameters<T...> >::Serialize(Archive&) const
+    {
+      enter();
 
-      //
-      // interfaces
-      //
+      escape("unable to serialize to an outputs bundle");
+    }
 
-      // archivable
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
+    Status
+    Bundle::Outputs< G,
+		     Parameters<T...> >::Extract(Archive& archive)
+    {
+      Callback<
+	typename Trait::Reference<
+	  typename Message<G>::P
+	  >::Type
+	>	callback(&Archive::Extract, &archive);
 
-      Status		Serialize(Archive&) const
-      {
-	enter();
+      enter();
 
-	escape("unable to serialize to an output bundle");
-      }
+      // trigger the serialization callback.
+      if (this->arguments.Trigger(callback) == StatusError)
+	escape("unable to extract the arguments");
 
-      Status		Extract(Archive&			archive)
-      {
-	Callback<
-	  typename Trait::Reference<
-	    typename Message<G>::P
-	    >::Type
-	  >		callback(&Archive::Extract, &archive);
+      leave();
+    }
 
-	enter();
 
-	// trigger the serialization callback.
-	if (this->arguments.Trigger(callback) == StatusError)
-	  escape("unable to extract the arguments");
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
+    Status
+    Bundle::Outputs< G,
+		     Parameters<T...> >::Dump(const Natural32 margin)
+      const
+    {
+      String	alignment(margin, ' ');
 
-	leave();
-      }
+      enter();
 
-      // dumpable
+      std::cout << alignment << "[Bundle] Outputs" << std::endl;
 
-      Status		Dump(const Natural32			margin = 0)
-	const
-      {
-	String		alignment(margin, ' ');
+      // dump the tag.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Tag]" << (Natural32)this->tag << std::endl;
 
-	enter();
+      // dump the arguments.
+      if (this->arguments.Dump() == StatusError)
+	escape("unable to dump the arguments");
 
-	std::cout << alignment << "[Bundle] Outputs" << std::endl;
-
-	// dump the tag.
-	std::cout << alignment << Dumpable::Shift
-		  << "[Tag]" << (Natural32)this->tag << std::endl;
-
-	// dump the arguments.
-	if (this->arguments.Dump() == StatusError)
-	  escape("unable to dump the arguments");
-
-	leave();
-      }
-
-      //
-      // attributes
-      //
-      Tag		tag;
-      Arguments<P>	arguments;
-    };
+      leave();
+    }
 
   }
 }

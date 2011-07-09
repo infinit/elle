@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [tue jun  7 07:55:18 2011]
+// updated       julien quintard   [wed jul  6 15:36:00 2011]
 //
 
 //
@@ -61,6 +61,9 @@ namespace elle
 							  this);
 
       enter();
+
+      std::cout << "[address]" << std::endl;
+      this->address.Dump();
 
       // register the message.
       if (Network::Register<TagChallenge>(challenge) == StatusError)

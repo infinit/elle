@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [fri jun 10 10:53:30 2011]
+// updated       julien quintard   [sat jul  9 18:35:30 2011]
 //
 
 #ifndef ELLE_UTILITY_FACTORY_HH
@@ -21,6 +21,7 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/radix/Status.hh>
+#include <elle/radix/Object.hh>
 #include <elle/radix/Entity.hh>
 
 #include <elle/utility/Product.hh>
@@ -46,7 +47,7 @@ namespace elle
     /// capable of generating types.
     ///
     class Factory:
-      public Entity
+      public Object
     {
     public:
       //
@@ -114,13 +115,18 @@ namespace elle
       typedef Container::const_iterator			Scoutor;
 
       //
+      // constructors & destructors
+      //
+      ~Factory();
+
+      //
       // methods
       //
       template <typename T>
       Status		Register(const Product&);
       template <typename U>
       Status		Build(const Product&,
-			      U*&);
+			      U*&) const;
 
       //
       // interfaces

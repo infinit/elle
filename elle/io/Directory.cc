@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Directory.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [mon jun 27 21:22:53 2011]
+// updated       julien quintard   [sat jul  9 16:17:44 2011]
 //
 
 //
@@ -219,6 +219,38 @@ namespace elle
 
       // close the directory.
       ::closedir(directory);
+
+      leave();
+    }
+
+    ///
+    /// this method returns a list of directory entries.
+    ///
+    Status		Directory::List(const Path&		path,
+					Set&			set)
+    {
+      ::DIR*		dp;
+      struct ::dirent*	entry;
+
+      enter();
+
+      // open the directory.
+      if ((dp = ::opendir(path.string.c_str())) == NULL)
+	escape("unable to open the directory");
+
+      // go through the entries.
+      while ((entry = ::readdir(dp)) != NULL)
+	{
+	  // ignore the '.' and '..' entries.
+	  if ((String(entry->d_name) == ".") ||
+	      (String(entry->d_name) == ".."))
+	    continue;
+
+	  // add the entry to the set.
+	  set.push_back(String(entry->d_name));
+	}
+
+      ::closedir(dp);
 
       leave();
     }

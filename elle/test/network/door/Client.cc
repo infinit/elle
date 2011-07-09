@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [tue jun  7 07:54:51 2011]
+// updated       julien quintard   [wed jul  6 15:39:35 2011]
 //
 
 //
@@ -21,6 +21,18 @@ namespace elle
 {
   namespace test
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Client::Client():
+      door(Socket::ModeAsynchronous)
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -49,7 +61,7 @@ namespace elle
 
       enter();
 
-      std::cout << "[bridge] " << this->line << std::endl;
+      std::cout << "[line] " << this->line << std::endl;
 
       // register the message.
       if (Network::Register<TagChallenge>(challenge) == StatusError)
@@ -61,7 +73,7 @@ namespace elle
 
       // connect the door.
       if (this->door.Connect(this->line) == StatusError)
-	escape("unable to connect to the bridge");
+	escape("unable to connect to the line");
 
       leave();
     }

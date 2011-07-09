@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [sun jun 19 17:51:08 2011]
+// updated       julien quintard   [tue jul  5 17:57:27 2011]
 //
 
 #ifndef ELLE_UTILITY_FACTORY_HXX
@@ -97,7 +97,7 @@ namespace elle
     ///
     template <typename U>
     Status		Factory::Build(const Product&		identifier,
-				       U*&			object)
+				       U*&			object) const
     {
       Factory::Scoutor	scoutor;
 

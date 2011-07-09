@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [sun jul  3 13:10:34 2011]
+// updated       julien quintard   [fri jul  8 16:36:20 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HH
@@ -157,6 +157,12 @@ namespace elle
 		typename... TT>
       Status		Serialize(const T&,
 				  const TT&...);
+      template <typename T>
+      Status		Serialize(const T*);
+      template <typename T,
+		typename... TT>
+      Status		Serialize(const T*,
+				  const TT*...);
 
       Status		Extract();
       template <typename T>
@@ -165,6 +171,12 @@ namespace elle
 		typename... TT>
       Status		Extract(T&,
 				TT&...);
+      template <typename T>
+      Status		Extract(T*);
+      template <typename T,
+		typename... TT>
+      Status		Extract(T*,
+				TT*...);
 
       template <typename T>
       Status		Update(const Natural64&,

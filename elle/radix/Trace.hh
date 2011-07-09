@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.hh
 //
 // created       julien quintard   [mon apr 26 21:04:49 2010]
-// updated       julien quintard   [sun jun 19 22:29:21 2011]
+// updated       julien quintard   [sat jul  9 19:21:41 2011]
 //
 
 #ifndef ELLE_RADIX_TRACE_HH
@@ -47,8 +47,12 @@ namespace elle
     /// this class represents a trace i.e a sequence of function calls
     /// performed within a stack.
     ///
+    /// note that this class exports fileable-like method but cannot
+    /// implement the interface as this would generate too much
+    /// inter-dependencies.
+    ///
     class Trace:
-      public Dumpable
+      public virtual Dumpable
     {
     public:
       //
@@ -56,15 +60,17 @@ namespace elle
       //
       static const Natural32		Capacity = 30;
 
+      static const String		Location;
+
       //
       // constructors & destructors
       //
-      Trace(const Void*);
+      Trace(Void*);
 
       //
       // methods
       //
-      Void		Generate();
+      Status		Generate();
 
       //
       // interfaces
@@ -76,10 +82,21 @@ namespace elle
       //
       // attributes
       //
-      const Void*	address;
+      Void*		address;
 
       Void*		frames[Capacity];
       Natural32		size;
+
+      //
+      // static methods
+      //
+      static Status	Store(Void*);
+      static Status	Erase(Void*);
+
+      static Status	Initialize();
+      static Status	Clean();
+
+      static Status	Show(const Natural32 = 0);
     };
 
   }

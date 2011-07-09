@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hh
 //
 // created       julien quintard   [fri jun  3 22:23:13 2011]
-// updated       julien quintard   [thu jun  9 17:27:47 2011]
+// updated       julien quintard   [fri jul  8 12:06:03 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HH
@@ -43,9 +43,99 @@ namespace elle
     /// note that this class is specialized for inputs (const) and ouptuts
     /// (non-const).
     ///
-    template <const Tag G,
-	      typename... T>
-    class Bundle;
+    struct Bundle
+    {
+      ///
+      /// XXX
+      ///
+      template <const Tag G,
+		typename... T>
+      class Inputs;
+
+      ///
+      /// XXX
+      ///
+      template <const Tag G,
+		typename... T>
+      class Inputs< G, Parameters<const T...> >:
+	public Entity,
+	public virtual Archivable
+      {
+      public:
+	//
+	// types
+	//
+	typedef Parameters<const T&...>				P;
+
+	//
+	// constructors & destructors
+	//
+	Inputs(const T&...);
+
+	//
+	// interfaces
+	//
+
+	// archivable
+	Status		Serialize(Archive&) const;
+	Status		Extract(Archive&);
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
+
+	//
+	// attributes
+	//
+	Tag		tag;
+	Arguments<P>	arguments;
+      };
+
+      ///
+      /// XXX
+      ///
+      template <const Tag G,
+		typename... T>
+      class Outputs;
+
+      ///
+      /// XXX
+      ///
+      template <const Tag G,
+		typename... T>
+      class Outputs< G, Parameters<T...> >:
+	public Entity,
+	public virtual Archivable
+      {
+      public:
+	//
+	// types
+	//
+	typedef Parameters<T&...>				P;
+
+	//
+	// constructors & destructors
+	//
+	Outputs(T&...);
+
+	//
+	// interfaces
+	//
+
+	// archivable
+	Status		Serialize(Archive&) const;
+	Status		Extract(Archive&);
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
+
+	//
+	// attributes
+	//
+	Tag		tag;
+	Arguments<P>	arguments;
+      };
+
+    };
 
   }
 }

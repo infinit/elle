@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [fri jun 10 11:49:51 2011]
+// updated       julien quintard   [tue jul  5 15:00:30 2011]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -24,10 +24,12 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/radix/Parameters.hh>
+#include <elle/radix/Trait.hh>
 
 #include <elle/network/Tag.hh>
 #include <elle/network/Range.hh>
 #include <elle/network/Message.hh>
+#include <elle/network/Bundle.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -94,5 +96,12 @@ procedure(inward(elle::TagHello,
 	  outward(elle::TagWorld,
 		  parameters(elle::core::String)))
 */
+
+// XXX
+
+message(666,
+	parameters(elle::core::Natural32));
+message(667,
+	parameters(elle::core::Natural32));
 
 #endif

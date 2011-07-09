@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [fri jul  1 19:21:40 2011]
+// updated       julien quintard   [fri jul  8 17:45:06 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HH

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed may 25 16:09:03 2011]
+// updated       julien quintard   [wed jul  6 15:33:50 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_DOOR_CLIENT_HH
@@ -38,6 +38,11 @@ namespace elle
     class Client
     {
     public:
+      //
+      // constructors & destructors
+      //
+      Client();
+
       //
       // methods
       //

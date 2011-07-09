@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [thu jun  9 21:41:39 2011]
+// updated       julien quintard   [fri jul  8 16:22:06 2011]
 //
 
 //

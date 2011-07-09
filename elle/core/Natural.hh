@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Natural.hh
 //
 // created       julien quintard   [thu nov 29 20:13:16 2007]
-// updated       julien quintard   [thu jun 23 11:50:00 2011]
+// updated       julien quintard   [fri jul  8 16:33:16 2011]
 //
 
 #ifndef ELLE_CORE_NATURAL_HH
@@ -35,10 +35,10 @@ namespace elle
     ///
     /// this is a generic type for positive integers.
     ///
-    typedef uint8_t	Natural8;
-    typedef uint16_t	Natural16;
-    typedef uint32_t	Natural32;
-    typedef uint64_t	Natural64;
+    typedef uint8_t		Natural8;
+    typedef uint16_t		Natural16;
+    typedef uint32_t		Natural32;
+    typedef uint64_t		Natural64;
 
   }
 }

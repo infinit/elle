@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [mon jul  4 11:22:06 2011]
+// updated       julien quintard   [tue jul  5 11:53:42 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
