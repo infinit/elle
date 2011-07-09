@@ -1,12 +1,39 @@
-- pour optimiser et simplifier, on pourrait merger Access::Grant et
-  Access::Update
+- peter une error si Disard (bien que modifs) ou Destroy (bien que modif)
+  etc.
+
+- timeout dans les sockets: en sychone le WaitForReadyRead a un timeout
+  par default de 30s alors qu'en asynchrone on fait Fiber::Wait qui
+  est infini.
+
+- remote impl authentication to be sure we're talking about the same net
+- changer les load/store/etc. pour prendre un pattern car actuellement
+  tout se passe dans shelter -> pas si simple car Erase par exemple
+  va prendre un pattern, tres bien mais il a besoin de fetcher history!!!
+  => a la limite history devient un fichier specifique genre au lieu de '@'
+  pour la derniere version, on utilise '!'.
+- se demerder pour avoir une Configuration meme dans Hole
+
+#
+# ---------- long-term --------------------------------------------------------
+#
 
 - pour le locking il faudrait deja faire en sorte que plusieurs scope
   reference un context. comme ca on lockera le contexte a partir d'un
   scope, rendant les autres scopes unusable.
-- hole/implementations/, hole/algorithms/ etc.
 
 - dans wall faire Transaction puis Apply. difference entre des ref
   en live et normal lorsqu'on l'extract
 - peut etre attacher des objects a une fibre: report, session ou autre.
   comment ca pas besoin de govern.
+
+- error si on destroy avec des modifs: comme ca si deux ouvertures et
+  un fait des modifs et ensuite se retract ben on peut faire une erreur.
+
+- wrapper de methodes: il faut lorsque l'on decrit une procedure indique
+  si 1) il y a des valeurs en retour auquel cas il faut les envoyer au
+  client 2) si il faut transmettre le resultat Ok/Error
+
+- pourquoi il reste autant de blocks
+  => un repertoire est mis a jour N fois puis est Destroy
+  => Destroy vire les Objects pour les N versions et les derniers blocks
+     de data. il reste donc N blocs de data!

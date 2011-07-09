@@ -37,4 +37,4 @@ ADD_EXECUTABLE(Infinit
 TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole pig
  			      ${QT_QTCORE_LIBRARIES}
   			      ${QT_QTNETWORK_LIBRARIES}
-			      ${QT_QTCORE_LIBRARIES})
+   			      ${QT_QTCORE_LIBRARIES})

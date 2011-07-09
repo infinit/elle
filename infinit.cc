@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [mon jul  4 19:15:20 2011]
+// updated       julien quintard   [sat jul  9 19:17:17 2011]
 //
 
 //
@@ -118,6 +118,12 @@ elle::Status		Main(elle::Natural32			argc,
   if (elle::Program::Launch() == elle::StatusError)
     escape("an error occured while processing events");
 
+  // delete the parser.
+  delete Infinit::Parser;
+
+  // waive.
+  waive(Infinit::Parser);
+
   // clean PIG.
   if (pig::PIG::Clean() == elle::StatusError)
     escape("unable to clean PIG");
@@ -149,12 +155,6 @@ elle::Status		Main(elle::Natural32			argc,
   // clean Elle.
   if (elle::Elle::Clean() == elle::StatusError)
     escape("unable to clean Elle");
-
-  // delete the parser.
-  delete Infinit::Parser;
-
-  // waive.
-  waive(Infinit::Parser);
 
   leave();
 }
