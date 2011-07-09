@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jun 27 22:12:12 2011]
+// updated       julien quintard   [sat jul  9 19:19:38 2011]
 //
 
 //
@@ -314,6 +314,12 @@ namespace application
 	}
       }
 
+    // delete the parser.
+    delete Infinit::Parser;
+
+    // waive.
+    waive(Infinit::Parser);
+
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
@@ -334,12 +340,6 @@ namespace application
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
 
-    // delete the parser.
-    delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
-
     leave();
   }
 
@@ -355,9 +355,22 @@ namespace application
 int			main(int				argc,
                              char**				argv)
 {
-  application::Main(argc, argv);
+  try
+    {
+      if (application::Main(argc, argv) == elle::StatusError)
+	{
+	  show();
 
-  expose();
+	  return (1);
+	}
+    }
+  catch (std::exception& e)
+    {
+      std::cout << "The program has been terminated following "
+		<< "a fatal error (" << e.what() << ")." << std::endl;
+
+      return (1);
+    }
 
   return (0);
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8shell/Shell.hh
 //
 // created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon jun 27 11:11:23 2011]
+// updated       julien quintard   [wed jul  6 14:02:33 2011]
 //
 
 #ifndef DEBUG_DEBUG_HH
@@ -19,7 +19,7 @@
 //
 
 #include <elle/Elle.hh>
-#include <etoile/Etoile.hh>
+#include <nucleus/Nucleus.hh>
 
 #include <elle/idiom/Close.hh>
 # include <readline/readline.h>
@@ -51,6 +51,7 @@ namespace application
     //
     // methods
     //
+    static elle::Status		Dump(const elle::String&);
     static elle::Status		Help(const elle::String&);
     static elle::Status		Quit(const elle::String&);
 
