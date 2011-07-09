@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.hh
 //
 // created       julien quintard   [fri jun  3 10:58:40 2011]
-// updated       julien quintard   [sat jun 25 13:36:30 2011]
+// updated       julien quintard   [sat jul  9 20:14:48 2011]
 //
 
 #ifndef ETOILE_GEAR_GEAR_HH
@@ -60,6 +60,9 @@ namespace etoile
 
       static elle::Status	Select(const Identifier&,
 				       Scope*&);
+
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
       static elle::Status	Show(const elle::Natural32 = 0);
 

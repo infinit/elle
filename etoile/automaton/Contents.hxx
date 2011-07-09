@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [sat jul  2 19:16:45 2011]
+// updated       julien quintard   [sat jul  9 20:29:20 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_CONTENTS_HXX
@@ -47,10 +47,6 @@ namespace etoile
 
       // otherwise create a new contents according to the context's type.
       context.contents = new nucleus::Contents<typename T::C>;
-
-      // create the contents.
-      if (context.contents->Create() == elle::StatusError)
-	escape("unable to create the contents");
 
       // check if there exists a contents. if so, load the block.
       if (context.object.data.contents != nucleus::Address::Null)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [sat jun 25 14:36:08 2011]
+// updated       julien quintard   [wed jul  6 11:34:09 2011]
 //
 
 //
@@ -284,11 +284,32 @@ namespace etoile
     elle::Status	Link::Destroy(
 			  const gear::Identifier&		identifier)
     {
+      gear::Scope*	scope;
+      gear::Link*	context;
+
       enter();
 
       printf("[XXX] Link::Destroy()\n");
 
-      // XXX
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
+
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
+
+      // apply the destroy automaton on the context.
+      if (automaton::Link::Destroy(*context) == elle::StatusError)
+	escape("unable to destroy the link");
+
+      // record the scope in the journal.
+      if (journal::Journal::Record(scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       leave();
     }

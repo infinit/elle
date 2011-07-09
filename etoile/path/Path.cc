@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [mon jul  4 16:01:13 2011]
+// updated       julien quintard   [wed jul  6 11:59:40 2011]
 //
 
 //

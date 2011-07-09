@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [fri jun 24 14:23:50 2011]
-// updated       julien quintard   [sat jul  2 15:17:19 2011]
+// updated       julien quintard   [fri jul  8 12:26:51 2011]
 //
 
 //
@@ -39,10 +39,6 @@ namespace etoile
       gear::Transcript::Scoutor		scoutor;
 
       enter();
-
-      printf("[XXX] Journal::Record(%qu)\n", scope->identifier.value);
-
-      // XXX for now just perform the operations.
 
       for (scoutor = scope->context->transcript.container.begin();
 	   scoutor != scope->context->transcript.container.end();

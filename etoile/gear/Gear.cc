@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.cc
 //
 // created       julien quintard   [tue jun 14 16:41:06 2011]
-// updated       julien quintard   [mon jul  4 07:29:02 2011]
+// updated       julien quintard   [sat jul  9 20:15:23 2011]
 //
 
 //
@@ -97,6 +97,31 @@ namespace etoile
 
       // return the scope.
       scope = scoutor->second;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    elle::Status	Gear::Initialize()
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    elle::Status	Gear::Clean()
+    {
+      enter();
+
+      // XXX
+      Gear::Show();
 
       leave();
     }

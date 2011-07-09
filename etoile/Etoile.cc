@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [fri jun 10 13:28:44 2011]
+// updated       julien quintard   [sat jul  9 20:14:32 2011]
 //
 
 //
@@ -39,6 +39,10 @@ namespace etoile
   elle::Status		Etoile::Initialize()
   {
     enter();
+
+    // initialize the gear.
+    if (gear::Gear::Initialize() == elle::StatusError)
+      escape("unable to initialize the gear");
 
     /* XXX
     // initialize the configuration.
@@ -75,6 +79,10 @@ namespace etoile
   elle::Status		Etoile::Clean()
   {
     enter();
+
+    // clean the gear.
+    if (gear::Gear::Clean() == elle::StatusError)
+      escape("unable to clean the gear");
 
     /* XXX
     // clean the user.

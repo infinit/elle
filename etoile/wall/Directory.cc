@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon jul  4 15:45:12 2011]
+// updated       julien quintard   [wed jul  6 11:33:55 2011]
 //
 
 //
@@ -399,11 +399,32 @@ namespace etoile
     elle::Status	Directory::Destroy(
 			  const gear::Identifier&		identifier)
     {
+      gear::Scope*	scope;
+      gear::Directory*	context;
+
       enter();
 
       printf("[XXX] Directory::Destroy()\n");
 
-      // XXX
+      // select the scope associated with the identifier.
+      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
+	escape("unable to select the scope");
+
+      // retrieve the context.
+      if (scope->context->Cast(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // import the scope, making it unusable through its identifier.
+      if (scope->Import() == elle::StatusError)
+	escape("unable to import the scope");
+
+      // apply the destroy automaton on the context.
+      if (automaton::Directory::Destroy(*context) == elle::StatusError)
+	escape("unable to destroy the directory");
+
+      // record the scope in the journal.
+      if (journal::Journal::Record(scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       leave();
     }

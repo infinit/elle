@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transcript.cc
 //
 // created       julien quintard   [wed jun 22 13:49:40 2011]
-// updated       julien quintard   [sat jun 25 13:40:11 2011]
+// updated       julien quintard   [wed jul  6 11:32:36 2011]
 //
 
 //
