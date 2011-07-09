@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Hexadecimal.cc
 //
 // created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [fri mar 18 16:12:42 2011]
+// updated       julien quintard   [fri jul  8 17:58:56 2011]
 //
 
 //

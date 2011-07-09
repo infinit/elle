@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.cc
 //
 // created       julien quintard   [mon apr 26 21:25:23 2010]
-// updated       julien quintard   [sun jun 19 22:29:28 2011]
+// updated       julien quintard   [sat jul  9 19:25:41 2011]
 //
 
 //
@@ -22,10 +22,35 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/io/Path.hh>
+#include <elle/io/Directory.hh>
+
+#include <elle/utility/Hexadecimal.hh>
+
+#include <elle/idiom/Close.hh>
+# include <sys/stat.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <libgen.h>
+# include <sys/types.h>
+# include <dirent.h>
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
+  using namespace utility;
+
   namespace radix
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this constant contains the path to traces directory.
+    ///
+    const String			Trace::Location = "/tmp/traces/";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -34,7 +59,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Trace::Trace(const Void*					address):
+    Trace::Trace(Void*						address):
       address(address),
       size(0)
     {
@@ -47,10 +72,14 @@ namespace elle
     ///
     /// this method generates a trace for the current stack.
     ///
-    Void		Trace::Generate()
+    Status		Trace::Generate()
     {
+      enter();
+
       // retrieve the frame addresses.
       this->size = ::backtrace(this->frames, Trace::Capacity);
+
+      leave();
     }
 
 //
@@ -80,9 +109,8 @@ namespace elle
       if ((symbols = ::backtrace_symbols(this->frames, this->size)) == NULL)
 	escape("unable to resolve the frame frames into symbols");
 
-      // go through the symbols, starting with 1 in order to
-      // ignore the last call which is irrelevant to the trace.
-      for (i = 1; i < this->size; i++)
+      // go through the symbols.
+      for (i = 0; i < this->size; i++)
 	{
 	  String	line(symbols[i]);
 	  Character*	symbol;
@@ -173,6 +201,268 @@ namespace elle
 
       // release the symbols array.
       ::free(symbols);
+
+      leave();
+    }
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this method stores an additional trace.
+    ///
+    Status		Trace::Store(Void*			address)
+    {
+      Trace		trace(address);
+      Natural32		size =
+	sizeof (Void*) +
+	Trace::Capacity * sizeof (Void*) +
+	sizeof (Natural32);
+      Byte		buffer[size];
+      Natural32		length = Trace::Location.length();
+      Character		path[length +
+			     1 +
+			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
+			     1];
+      int		fd;
+
+      enter();
+
+      // XXX
+      printf("Trace::Store(%p)\n", address);
+
+      // generate the trace.
+      if (trace.Generate() == StatusError)
+	escape("unable to generate the trace");
+
+      // copy the data into the buffer.
+      ::memcpy(buffer + 0,
+	       &trace.address,
+	       sizeof (Void*));
+
+      ::memcpy(buffer + sizeof (Void*),
+	       &trace.frames,
+	       Trace::Capacity * sizeof (Void*));
+
+      ::memcpy(buffer + sizeof (Void*) + Trace::Capacity * sizeof (Void*),
+	       &trace.size,
+	       sizeof (Natural32));
+
+      // build the path.
+      ::sprintf(path,
+		"%s/%p",
+		Trace::Location.c_str(), address);
+
+      // open the file.
+      if ((fd = ::open(path,
+		       O_CREAT | O_TRUNC | O_WRONLY,
+		       0600)) == -1)
+	escape(::strerror(errno));
+
+      // write the text to the file.
+      if (::write(fd,
+		  buffer,
+		  size) != (ssize_t)size)
+	{
+	  ::close(fd);
+
+	  escape(::strerror(errno));
+	}
+
+      // close the file.
+      ::close(fd);
+
+      leave();
+    }
+
+    ///
+    /// this method erases a trace.
+    ///
+    Status		Trace::Erase(Void*			address)
+    {
+      Natural32		length = Trace::Location.length();
+      Character		path[length +
+			     1 +
+			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
+			     1];
+      struct ::stat	stat;
+
+      enter();
+
+      // XXX
+      printf("Trace::Erase(%p)\n", address);
+
+      // build the path.
+      ::sprintf(path,
+		"%s/%p",
+		Trace::Location.c_str(), address);
+
+      // does the path points to something.
+      if (::stat(path, &stat) != 0)
+	{
+	  Trace		trace(address);
+
+	  // generate the trace.
+	  if (trace.Generate() == StatusError)
+	    escape("unable to generate the trace");
+
+	  // dump the trace.
+	  if (trace.Dump() == StatusError)
+	    escape("unable to dump the trace");
+
+	  escape("this trace does not seem to exist");
+	}
+
+      // unlink the file.
+      ::unlink(path);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Trace::Initialize()
+    {
+      Path		path;
+
+      enter();
+
+      // create the path.
+      if (path.Create(Trace::Location) == StatusError)
+	escape("unable to create the path");
+
+      // if the directory exists.
+      if (Directory::Exist(path) == StatusTrue)
+	{
+	  // clear the directory.
+	  if (Directory::Clear(path) == StatusError)
+	    escape("unable to clear the directory");
+	}
+      else
+	{
+	  // create the directory.
+	  if (Directory::Create(path) == StatusError)
+	    escape("unable to create the directory");
+	}
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Trace::Clean()
+    {
+      Path		path;
+
+      enter();
+
+      // create the path.
+      if (path.Create(Trace::Location) == StatusError)
+	escape("unable to create the path");
+
+      // if the directory exists.
+      if (Directory::Exist(path) == StatusTrue)
+	{
+	  // clear the directory.
+	  if (Directory::Clear(path) == StatusError)
+	    escape("unable to clear the directory");
+
+	  // remove the directory.
+	  if (Directory::Remove(path) == StatusError)
+	    escape("unable to remove the directory");
+	}
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Trace::Show(const Natural32		margin)
+    {
+      String		alignment(margin, ' ');
+      ::DIR*		dp;
+      struct ::dirent*	entry;
+
+      enter();
+
+      std::cout << alignment << "[Traces]" << std::endl;
+
+      // open the directory.
+      if ((dp = ::opendir(Trace::Location.c_str())) == NULL)
+	escape("unable to open the directory");
+
+      // go through the entries.
+      while ((entry = ::readdir(dp)) != NULL)
+	{
+	  Natural32	length = Trace::Location.length();
+	  Character	path[length +
+			     1 +
+			     ::strlen(entry->d_name) +
+			     1];
+	  struct ::stat	stat;
+
+	  // ignore the '.' and '..' entries.
+	  if ((::strcmp(entry->d_name, ".") == 0) ||
+	      (::strcmp(entry->d_name, "..") == 0))
+	    continue;
+
+	  // build the path.
+	  ::sprintf(path,
+		    "%s/%s",
+		    Trace::Location.c_str(), entry->d_name);
+
+	  // retrieve information on the file.
+	  if (::stat(path, &stat) != 0)
+	    escape("unable to retrieve information on the file");
+
+	  Character	buffer[stat.st_size];
+	  int		fd;
+
+	  // open the file.
+	  if ((fd = ::open(path, O_RDONLY)) == -1)
+	    escape(::strerror(errno));
+
+	  // read the file's content.
+	  if (::read(fd, buffer, stat.st_size) == -1)
+	    {
+	      ::close(fd);
+
+	      escape(::strerror(errno));
+	    }
+
+	  // close the file.
+	  ::close(fd);
+
+	  Void*		address;
+
+	  // copy the address.
+	  ::memcpy(&address,
+		   buffer + 0,
+		   sizeof (Void*));
+
+	  Trace		trace(address);
+
+	  // copy the frames.
+	  ::memcpy(&trace.frames,
+		   buffer + sizeof (Void*),
+		   Trace::Capacity * sizeof (Void*));
+
+	  // copy the size.
+	  ::memcpy(&trace.size,
+		   buffer + sizeof (Void*) + Trace::Capacity * sizeof (Void*),
+		   sizeof (Natural32));
+
+	  // dump the trace.
+	  if (trace.Dump(margin + 2) == StatusError)
+	    escape("unable to dump the trace");
+	}
+
+      // close the directory.
+      ::closedir(dp);
 
       leave();
     }

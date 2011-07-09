@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Derivable.hh
 //
 // created       julien quintard   [fri may 13 12:47:04 2011]
-// updated       julien quintard   [thu jun  9 22:18:01 2011]
+// updated       julien quintard   [fri jul  8 10:42:16 2011]
 //
 
 #ifndef ELLE_PACKAGE_DERIVABLE_HH
@@ -63,6 +63,7 @@ namespace elle
       //
       enum Policy
 	{
+	  PolicyUnknown,
 	  PolicyDynamic,
 	  PolicyStatic
 	};
@@ -70,9 +71,9 @@ namespace elle
       //
       // constructors & destructors
       //
+      Derivable();
       Derivable(const Product&,
 		const T&);
-
       Derivable(const Factory&);
       Derivable(const Factory&,
 		const T&);
@@ -102,10 +103,10 @@ namespace elle
       //
       // attributes
       //
-      Policy			policy;
-      Factory*			factory;
-      Product			product;
-      T*			object;
+      Policy		policy;
+      const Factory*	factory;
+      Product		product;
+      T*		object;
     };
 
   }

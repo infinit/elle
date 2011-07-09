@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.hh
 //
 // created       julien quintard   [sun nov 29 19:31:55 2009]
-// updated       julien quintard   [mon may  3 20:59:53 2010]
+// updated       julien quintard   [fri jul  8 18:12:00 2011]
 //
 
 #ifndef ELLE_RADIX_META_HH
@@ -46,10 +46,8 @@ namespace elle
     /// this class represents the root of the hierarchy. every class
     /// should directly or indirectly derive this class.
     ///
-    /// note that the container stores plain Trace objects, process
-    /// which involves copying data. this is required in order to avoid
-    /// allocating memory, which would obviously have the impact of
-    /// calling back the Meta allocator.
+    /// note that the traces are stored in files in order to avoid
+    /// maintaining a data structure which would require allocating memory
     ///
     class Meta
     {
@@ -57,14 +55,11 @@ namespace elle
       //
       // constants
       //
-      static const Boolean		Debug;
-
-      //
-      // types
-      //
-      typedef std::list<Trace*>			Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      struct				Debug
+      {
+	static Boolean			Status;
+	static Boolean			State;
+      };
 
       //
       // static methods
@@ -72,14 +67,7 @@ namespace elle
       static Status	Initialize();
       static Status	Clean();
 
-      static Status	Flush();
-
       static Status	Show(const Natural32 = 0);
-
-      //
-      // static attributes
-      //
-      static Container		Traces;
 
       //
       // operators

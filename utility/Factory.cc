@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Factory.cc
 //
 // created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [thu jun  9 21:48:42 2011]
+// updated       julien quintard   [sat jul  9 19:15:17 2011]
 //
 
 //
@@ -21,6 +21,30 @@ namespace elle
 {
   namespace utility
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// destructor.
+    ///
+    Factory::~Factory()
+    {
+      Factory::Scoutor	scoutor;
+
+      // go through the container.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  // delete the functionoid.
+	  delete scoutor->second;
+	}
+
+      // clear the container.
+      this->container.clear();
+    }
 
 //
 // ---------- dumpable --------------------------------------------------------

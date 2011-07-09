@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Elle.cc
 //
 // created       julien quintard   [wed mar  3 23:26:52 2010]
-// updated       julien quintard   [mon jun  6 12:24:51 2011]
+// updated       julien quintard   [fri jul  8 19:42:54 2011]
 //
 
 //
@@ -46,13 +46,13 @@ namespace elle
     if (System::Initialize() == StatusError)
       escape("unable to initialize the system module");
 
-    // initialize the standalone module.
-    if (Standalone::Initialize() == StatusError)
-      escape("unable to initialize the standalone module");
-
     // initialize the radix module.
     if (Radix::Initialize() == StatusError)
       escape("unable to initialize the radix module");
+
+    // initialize the standalone module.
+    if (Standalone::Initialize() == StatusError)
+      escape("unable to initialize the standalone module");
 
     // initialize the crypto module.
     if (Cryptography::Initialize() == StatusError)
@@ -88,13 +88,13 @@ namespace elle
     if (Cryptography::Clean() == StatusError)
       escape("unable to clean the cryptographic module");
 
-    // clean the radix module.
-    if (Radix::Clean() == StatusError)
-      escape("unable to clean the radix module");
-
     // clean the standalone module.
     if (Standalone::Clean() == StatusError)
       escape("unable to clean the standalone module");
+
+    // clean the radix module.
+    if (Radix::Clean() == StatusError)
+      escape("unable to clean the radix module");
 
     // clean the system module.
     if (System::Clean() == StatusError)

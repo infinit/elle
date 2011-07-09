@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Maid.hxx
 //
 // created       julien quintard   [sun feb 28 09:08:48 2010]
-// updated       julien quintard   [mon jun 27 07:17:21 2011]
+// updated       julien quintard   [sat jul  9 19:06:54 2011]
 //
 
 #ifndef ELLE_STANDALONE_MAID_HXX

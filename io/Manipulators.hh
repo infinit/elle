@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Manipulators.hh
 //
 // created       julien quintard   [mon jul  4 16:34:01 2011]
-// updated       julien quintard   [mon jul  4 19:28:14 2011]
+// updated       julien quintard   [wed jul  6 11:03:19 2011]
 //
 
 #ifndef ELLE_IO_MANIPULATORS_HH

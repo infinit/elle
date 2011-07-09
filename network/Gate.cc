@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [mon jul  4 11:56:05 2011]
+// updated       julien quintard   [sat jul  9 16:31:45 2011]
 //
 
 //
@@ -498,7 +498,7 @@ namespace elle
 	      Report*	report;
 
 	      // retrieve the report.
-	      if (Report::Instance(report) == StatusError)
+	      if (Report::Instance(report) == StatusFalse)
 		escape("unable to retrieve the report");
 
 	      // since an error occured, transmit it to the sender

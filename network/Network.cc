@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [fri jun 10 11:54:38 2011]
+// updated       julien quintard   [fri jul  8 11:10:26 2011]
 //
 
 //

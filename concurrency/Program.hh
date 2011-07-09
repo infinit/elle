@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [tue jun  7 06:03:23 2011]
+// updated       julien quintard   [wed jul  6 13:07:48 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -50,6 +50,11 @@ namespace elle
       public Entity
     {
     public:
+      //
+      // constants
+      //
+      static const Natural32	Quantum;
+
       //
       // enumerations
       //

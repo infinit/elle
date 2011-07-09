@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/File.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [sun jun 19 22:15:47 2011]
+// updated       julien quintard   [sat jul  9 16:45:28 2011]
 //
 
 //

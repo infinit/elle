@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [mon jun 27 19:37:44 2011]
+// updated       julien quintard   [mon jul  4 20:26:36 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX
@@ -166,7 +166,7 @@ namespace elle
 //
 
     ///
-    /// this template serializes a basic type.
+    /// this template serializes a single item.
     ///
     template <typename T>
     Status		Archive::Serialize(const T&		element)
@@ -200,12 +200,47 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this template serializes a single item.
+    ///
+    template <typename T>
+    Status		Archive::Serialize(const T*		element)
+    {
+      return
+	(Archive::Behaviour<T,
+	                    ArchiveType<T>::Value
+                              ==
+                            Archive::TypeUnknown>::Serialize(*this,
+							     *element));
+    }
+
+    ///
+    /// this method serializes a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
+    Status		Archive::Serialize(const T*		parameter,
+					   const TT*...		parameters)
+    {
+      enter();
+
+      // serialize the first items.
+      if (this->Serialize(parameter) == StatusError)
+	escape("unable to serialize the first item");
+
+      // serialize the additional items.
+      if (this->Serialize(parameters...) == StatusError)
+	escape("unable to serialize the additional parameters");
+
+      leave();
+    }
+
 //
 // ---------- extract ---------------------------------------------------------
 //
 
     ///
-    /// this template extracts a basic type.
+    /// this template extracts a single item.
     ///
     template <typename T>
     Status		Archive::Extract(T&			element)
@@ -225,6 +260,41 @@ namespace elle
 	      typename... TT>
     Status		Archive::Extract(T&			parameter,
 					 TT&...			parameters)
+    {
+      enter();
+
+      // extract the first item.
+      if (this->Extract(parameter) == StatusError)
+	escape("unable to extract the first item");
+
+      // extract the additional items.
+      if (this->Extract(parameters...) == StatusError)
+	escape("unable to extract the additional items");
+
+      leave();
+    }
+
+    ///
+    /// this template extracts a single item.
+    ///
+    template <typename T>
+    Status		Archive::Extract(T*			element)
+    {
+      return
+	(Archive::Behaviour<T,
+	                    ArchiveType<T>::Value
+                              ==
+                            Archive::TypeUnknown>::Extract(*this,
+							   *element));
+    }
+
+    ///
+    /// this method extracts a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
+    Status		Archive::Extract(T*			parameter,
+					 TT*...			parameters)
     {
       enter();
 

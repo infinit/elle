@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [mon jul  4 10:31:58 2011]
+// updated       julien quintard   [sat jul  9 23:38:01 2011]
 //
 
 //
@@ -20,10 +20,15 @@
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Maid.hh>
 
+#include <elle/io/Path.hh>
+#include <elle/io/File.hh>
+#include <elle/io/Directory.hh>
+
 namespace elle
 {
   using namespace core;
   using namespace standalone;
+  using namespace io;
 
   namespace radix
   {
@@ -33,18 +38,17 @@ namespace elle
 //
 
     ///
-    /// this contains holds the traces related to every memory
-    /// allocation performed.
-    ///
-    Meta::Container		Meta::Traces;
-
-    ///
     /// this value defines if the meta debugging must be activated.
     ///
     /// note that this configuration parameter cannot be put elsewhere
     /// as everything relies on Meta.
     ///
-    const Boolean		Meta::Debug = false;
+    Boolean			Meta::Debug::Status = false;
+
+    ///
+    /// this value states if the debugging has been started or not.
+    ///
+    Boolean			Meta::Debug::State = false;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -57,7 +61,16 @@ namespace elle
     {
       enter();
 
-      // nothing to do.
+      // if the debug has been activated.
+      if (Meta::Debug::Status == true)
+	{
+	  // initialize the traces.
+	  if (Trace::Initialize() == StatusError)
+	    escape("unable to initialize the trace system");
+
+	  // set the state.
+	  Meta::Debug::State = true;
+	}
 
       leave();
     }
@@ -70,34 +83,18 @@ namespace elle
       enter();
 
       // if traces exist, dump them.
-      if (Meta::Debug == true)
-	Meta::Show();
-
-      // flush the meta container.
-      if (Meta::Flush() == StatusError)
-	escape("unable to flush the meta container");
-
-      leave();
-    }
-
-    ///
-    /// this method removes all the traces.
-    ///
-    Status		Meta::Flush()
-    {
-      Meta::Scoutor	scoutor;
-
-      enter();
-
-      // release the traces.
-      for (scoutor = Meta::Traces.begin();
-	   scoutor != Meta::Traces.end();
-	   scoutor++)
+      if (Meta::Debug::Status == true)
 	{
-	  Trace*	trace = *scoutor;
+	  // set the state.
+	  Meta::Debug::State = false;
 
-	  // release the trace.
-	  ::free(trace);
+	  // show the traces.
+	  if (Meta::Show() == StatusError)
+	    escape("unable to show the meta");
+
+	  // clean the traces.
+	  if (Trace::Clean() == StatusError)
+	    escape("unable to clean the trace system");
 	}
 
       leave();
@@ -109,23 +106,17 @@ namespace elle
     Status		Meta::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
-      Meta::Scoutor	scoutor;
 
       enter();
 
-      std::cout << alignment << "[Meta] "
-		<< Meta::Traces.size() << std::endl;
+      std::cout << alignment << "[Meta]" << std::endl;
 
-      // go through the traces.
-      for (scoutor = Meta::Traces.begin();
-	   scoutor != Meta::Traces.end();
-	   scoutor++)
+      // if traces exist, dump them.
+      if (Meta::Debug::Status == true)
 	{
-	  Trace*	trace = *scoutor;
-
-	  // dump the trace.
-	  if (trace->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the trace");
+	  // show the traces.
+	  if (Trace::Show(margin + 2) == elle::StatusError)
+	    escape("unable to show the traces");
 	}
 
       leave();
@@ -149,19 +140,23 @@ namespace elle
       address = ::malloc(size);
 
       // only proceed if debugging has been activated.
-      if (Meta::Debug == true)
+      if ((Meta::Debug::Status == true) &&
+	  (Meta::Debug::State == true))
 	{
-	  Trace*	trace;
+	  // store the trace.
+	  if (Trace::Store(address) == StatusError)
+	    {
+	      report(Report::TypeError,
+		     "unable to store the trace for %p",
+		     address);
 
-	  // allocate a new trace
-	  trace = new (::malloc(sizeof (Trace))) Trace(address);
+	      show();
 
-	  // generate the trace.
-	  trace->Generate();
-
-	  // insert the trace in the container.
-	  Meta::Traces.push_back(trace);
+	      goto _corps;
+	    }
 	}
+
+    _corps:
 
       return (address);
     }
@@ -183,38 +178,23 @@ namespace elle
     Void		Meta::operator delete(Void*		address)
     {
       // only proceed if debugging has been activated.
-      if (Meta::Debug == true)
+      if ((Meta::Debug::Status == true) &&
+	  (Meta::Debug::State == true))
 	{
-	  Meta::Iterator	iterator;
-
-	  // go through the traces.
-	  for (iterator = Meta::Traces.begin();
-	       iterator != Meta::Traces.end();
-	       iterator++)
+	  // erase the trace.
+	  if (Trace::Erase(address) == StatusError)
 	    {
-	      Trace*		trace = *iterator;
+	      report(Report::TypeError,
+		     "unable to erase the trace for %p",
+		     address);
 
-	      // check if this trace corresponds to the given address.
-	      if (trace->address == address)
-		{
-		  // erase the trace.
-		  Meta::Traces.erase(iterator);
+	      show();
 
-		  // release the trace.
-		  ::free(trace);
-
-		  // release the memory.
-		  ::free(address);
-
-		  return;
-		}
+	      goto _corps;
 	    }
-
-	  // otherwise, the address seems not to be correct, therefore display
-	  // a message.
-	  std::cerr << "[warning] the address " << address << " seems to be "
-		    << "invalid" << std::endl;
 	}
+
+    _corps:
 
       // release the memory anyway.
       ::free(address);

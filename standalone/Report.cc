@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [mon jul  4 11:51:55 2011]
+// updated       julien quintard   [sat jul  9 16:32:07 2011]
 //
 
 //
@@ -77,20 +77,28 @@ namespace elle
       // delete the report.
       delete Report::Current;
 
+      // reset the pointer.
+      Report::Current = NULL;
+
       leave();
     }
 
     ///
     /// this method returns the current instance of the report.
     ///
+    /// note that this method returns true or false.
+    ///
     Status		Report::Instance(Report*&		report)
     {
       enter();
 
-      // return the report.
+      // verify the report's presence.
+      if (Report::Current == NULL)
+	false();
+
       report = Report::Current;
 
-      leave();
+      true();
     }
 
     ///

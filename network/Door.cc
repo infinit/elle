@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [mon jul  4 11:55:57 2011]
+// updated       julien quintard   [sat jul  9 16:31:26 2011]
 //
 
 //
@@ -20,6 +20,8 @@
 #include <elle/network/Raw.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
+
+#include <elle/Manifest.hh>
 
 namespace elle
 {
@@ -511,7 +513,7 @@ namespace elle
 	      Report*	report;
 
 	      // retrieve the report.
-	      if (Report::Instance(report) == StatusError)
+	      if (Report::Instance(report) == StatusFalse)
 		escape("unable to retrieve the report");
 
 	      // since an error occured, transmit it to the sender

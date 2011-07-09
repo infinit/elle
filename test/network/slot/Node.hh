@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [wed may 25 16:09:55 2011]
+// updated       julien quintard   [wed jul  6 15:38:56 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_NODE_HH
@@ -39,6 +39,11 @@ namespace elle
       // constants
       //
       static const Natural32			Rate = 10000;
+
+      //
+      // constructors & destructors
+      //
+      Node();
 
       //
       // methods

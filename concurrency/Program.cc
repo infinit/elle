@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [sun jun 26 22:20:31 2011]
+// updated       julien quintard   [wed jul  6 13:07:52 2011]
 //
 
 //
@@ -16,6 +16,7 @@
 //
 
 #include <elle/concurrency/Program.hh>
+#include <elle/concurrency/Callback.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>

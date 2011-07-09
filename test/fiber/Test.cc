@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun jun 19 23:09:34 2011]
+// updated       julien quintard   [tue jul  5 09:28:51 2011]
 //
 
 //
@@ -187,6 +187,12 @@ namespace elle
       // initialize the library.
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the library");
+
+      // XXX
+      {
+	exit(0);
+      }
+      // XXX
 
       // setup the program.
       if (Program::Setup() == StatusError)

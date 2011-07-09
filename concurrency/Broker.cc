@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.cc
 //
 // created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [mon jul  4 11:53:38 2011]
+// updated       julien quintard   [sat jul  9 20:12:44 2011]
 //
 
 //
@@ -86,6 +86,23 @@ namespace elle
     {
       enter();
 
+      //
+      // the following part should not be necessary but it turns out
+      // that QT triggers this even even though there is nothing to
+      // be read on the socket.
+      //
+      {
+	struct timeval	timeout = { 0, 0 };
+	::fd_set	set;
+
+	FD_ZERO(&set);
+
+	FD_SET(this->descriptor, &set);
+
+	if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == 0)
+	  leave();
+      }
+
       // trigger the callback.
       if (this->callback.Trigger(this->descriptor) == StatusError)
 	escape("an error occured while spawning the fiber");
@@ -104,14 +121,18 @@ namespace elle
     ///
     void		Broker::_trigger()
     {
-      Callback< Parameters<> >	callback(&Broker::Trigger, this);
-      Closure< Parameters<> >	closure(callback);
+      //Callback< Parameters<> >	callback(&Broker::Trigger, this);
+      //Closure< Parameters<> >	closure(callback);
 
       enter();
 
+      /* XXX
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
 	alert(_(), "unable to spawn a fiber");
+      */
+
+      this->Trigger();
 
       release();
     }

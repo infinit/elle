@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [mon jun 27 21:20:22 2011]
+// updated       julien quintard   [fri jul  8 14:49:45 2011]
 //
 
 //
@@ -117,6 +117,9 @@ namespace elle
 	  // delete the section.
 	  delete section;
 	}
+
+      // clear the container.
+      this->sections.clear();
     }
 
 //

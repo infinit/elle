@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Derivable.hxx
 //
 // created       julien quintard   [fri may 13 13:12:01 2011]
-// updated       julien quintard   [thu jun  9 22:17:47 2011]
+// updated       julien quintard   [fri jul  8 10:44:00 2011]
 //
 
 #ifndef ELLE_PACKAGE_DERIVABLE_HXX
@@ -28,6 +28,17 @@ namespace elle
 //
 // ---------- constructors & destructors --------------------------------------
 //
+
+    ///
+    /// default constructor.
+    ///
+    template <typename T>
+    Derivable<T>::Derivable():
+      policy(Derivable::PolicyUnknown),
+      factory(NULL),
+      object(NULL)
+    {
+    }
 
     ///
     /// specific constructor specifying the object; used whenever such

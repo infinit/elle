@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [mon jul  4 11:52:06 2011]
+// updated       julien quintard   [sat jul  9 16:31:03 2011]
 //
 
 //
@@ -146,8 +146,8 @@
 									\
       ::sprintf(_message_, _format_, ##_arguments_);			\
 									\
-      if (elle::standalone::Report::Instance(_report_) !=		\
-	  elle::radix::StatusError)					\
+      if (elle::standalone::Report::Instance(_report_) ==		\
+	  elle::radix::StatusTrue)					\
         _report_->Record(_type_,					\
 			 _location_,					\
 			 _time_,					\
@@ -162,8 +162,8 @@
     {									\
       elle::standalone::Report*	_report_;				\
 									\
-      if (elle::standalone::Report::Instance(_report_) !=		\
-	  elle::radix::StatusError)					\
+      if (elle::standalone::Report::Instance(_report_) ==		\
+	  elle::radix::StatusTrue)					\
         _report_->Record(_r_);						\
     } while (false)
 
@@ -297,8 +297,8 @@
     {									\
       elle::standalone::Report*	_report_;				\
 									\
-      if (elle::standalone::Report::Instance(_report_) !=		\
-	  elle::radix::StatusError)					\
+      if (elle::standalone::Report::Instance(_report_) ==		\
+	  elle::radix::StatusTrue)					\
 	{								\
           _report_->Dump();						\
 	  _report_->Flush();						\
@@ -314,8 +314,8 @@
     {									\
       elle::standalone::Report*	_report_;				\
 									\
-      if (elle::standalone::Report::Instance(_report_) !=		\
-	  elle::radix::StatusError)					\
+      if (elle::standalone::Report::Instance(_report_) ==		\
+	  elle::radix::StatusTrue)					\
 	{								\
 	  if (_report_->container.empty() == false)			\
 	    {								\
@@ -335,8 +335,8 @@
     {									\
       elle::standalone::Report*	_report_;				\
 									\
-      if (elle::standalone::Report::Instance(_report_) !=		\
-	  elle::radix::StatusError)					\
+      if (elle::standalone::Report::Instance(_report_) ==		\
+	  elle::radix::StatusTrue)					\
 	_report_->Flush();						\
     } while (false)
 
@@ -440,30 +440,23 @@
 /// interface.
 ///
 #define inward(_tag_, _parameters_)					\
-  namespace elle							\
-  {									\
-    namespace network							\
-    {									\
-      template <>							\
-      class Message< _tag_ >:						\
-        public Entity							\
-      {									\
-      public:								\
-        typedef Parameters< _parameters_ >	P;			\
-      };								\
-    }									\
-  }
+  message(_tag_, parameters(_parameters_))
 
 ///
 /// this macro-function defines an outward message i.e response
 /// to a previously received inward message.
 ///
-/// note that outward messages' tag is the negative counterpart
-/// of the corresponding inward message.
-///
 #define outward(_tag_, _parameters_)					\
+  message(_tag_, parameters(_parameters_))
+
+///
+/// this macro defines a message.
+///
+#define message(_tag_, _parameters_)					\
   namespace elle							\
   {									\
+    using namespace radix;						\
+									\
     namespace network							\
     {									\
       template <>							\
@@ -471,7 +464,20 @@
         public Entity							\
       {									\
       public:								\
+	static const Tag			G = _tag_;		\
+									\
         typedef Parameters< _parameters_ >	P;			\
+									\
+        struct					B			\
+        {								\
+  	  typedef Bundle::Inputs<G,					\
+				 typename				\
+				   Trait::Constant<			\
+				     P					\
+				   >::Type				\
+				 >		Inputs;			\
+	  typedef Bundle::Outputs<G, P>		Outputs;		\
+	};								\
       };								\
     }									\
   }
@@ -505,49 +511,3 @@
       };								\
     }									\
   }
-
-//
-// ---------- XXX -------------------------------------------------------------
-//
-
-/* XXX
-
-Stub:
-template <const Tag G, typename... I>
-Status		Stub(Bundle<G, Parameters<const I...> >& inputs)
-{
-
-}
-
-Skeleton:
-
-Procedure:
-template <const Tag G, typename... I, typename... O>
-Status		Stub(Bundle<G, Parameters<const I...> >& inputs,
-                     Bundle<G, Parameters<O...> >& outputs)
-{
-
-}
-
-Function:
-
-procedure(&Object::Load,
-	  inward(TagPath,
-		 parameters(const Path)))
-Status		Object::Load(const Path&		path, // input
-			     Identifer&			identifier) // output
-{
-}
-
-Stub: 
-  client.Send(path)
-  client.Receive(identifier)
-
-=> Message<Path>
-<= Message(Identifier)
-
-Skeleton:
-  server.Receive(path)
-  server.Send(identifier)
-
- */

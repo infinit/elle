@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [mon jul  4 11:56:14 2011]
+// updated       julien quintard   [sat jul  9 16:31:35 2011]
 //
 
 //
@@ -369,7 +369,7 @@ namespace elle
 	      Session*	session;
 
 	      // retrieve the report.
-	      if (Report::Instance(report) == StatusError)
+	      if (Report::Instance(report) == StatusFalse)
 		escape("unable to retrieve the report");
 
 	      // retrieve the session.

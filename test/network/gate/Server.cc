@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [tue jun  7 07:55:09 2011]
+// updated       julien quintard   [wed jul  6 15:35:24 2011]
 //
 
 //
@@ -70,6 +70,9 @@ namespace elle
       Callback< Parameters<Gate*> >	connection(&Server::Connection, this);
 
       enter();
+
+      std::cout << "[bridge]" << std::endl;
+      address.Dump();
 
       // listen for incoming connections.
       if (Bridge::Listen(address, connection) == StatusError)
