@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [mon jul  4 12:54:01 2011]
+// updated       julien quintard   [sat jul  9 19:55:53 2011]
 //
 
 //
@@ -164,7 +164,7 @@ namespace pig
 	"PIG",
 
 	"-s",
-	"-d",
+	"-f",
 	"-osubtype='infinit'",
 	ofsname.c_str(),
 	mountpoint.c_str()

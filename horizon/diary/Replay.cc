@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.cc
 //
 // created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [sun jul  3 14:09:23 2011]
+// updated       julien quintard   [fri jul  8 17:51:42 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace pig
     /// this variable contains the address of the diary which is
     /// being replayed.
     ///
-    Diary*				Replay::Pointer = NULL;
+    Diary*				Replay::Reference = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -61,7 +61,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.stbuf) == elle::StatusError)
 	escape("unable to extract the region");
 
-      res = Replay::Pointer->fuse.getattr(
+      res = Replay::Reference->fuse.getattr(
 	      inputs.path.c_str(),
 	      (struct ::stat*)inputs.stbuf.contents);
 
@@ -127,7 +127,7 @@ namespace pig
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
 	fail("unable to retrieve the file information");
 
-      res = Replay::Pointer->fuse.fgetattr(
+      res = Replay::Reference->fuse.fgetattr(
 	      inputs.path.c_str(),
 	      (struct ::stat*)inputs.stbuf.contents,
 	      fi);
@@ -180,7 +180,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.ts) == elle::StatusError)
 	escape("unable to extract the region");
 
-      res = Replay::Pointer->fuse.utimens(
+      res = Replay::Reference->fuse.utimens(
 	      inputs.path.c_str(),
 	      (struct ::timespec*)inputs.ts.contents);
 
@@ -218,7 +218,7 @@ namespace pig
       struct ::fuse_file_info*	fi =
 	(struct ::fuse_file_info*)inputs.fi.contents;
 
-      res = Replay::Pointer->fuse.opendir(
+      res = Replay::Reference->fuse.opendir(
 	      inputs.path.c_str(),
 	      fi);
 
@@ -279,7 +279,7 @@ namespace pig
 	fail("unable to retrieve the file information");
 
       /* XXX
-      res = Replay::Pointer->fuse.readdir(
+      res = Replay::Reference->fuse.readdir(
 	      inputs.path.c_str(),
 	      fi);
 
@@ -328,7 +328,7 @@ namespace pig
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
 	fail("unable to retrieve the file information");
 
-      res = Replay::Pointer->fuse.releasedir(
+      res = Replay::Reference->fuse.releasedir(
 	      inputs.path.c_str(),
 	      fi);
 
@@ -364,7 +364,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.mode) == elle::StatusError)
 	escape("unable to extract the number");
 
-      res = Replay::Pointer->fuse.mkdir(
+      res = Replay::Reference->fuse.mkdir(
 	      inputs.path.c_str(),
 	      (mode_t)inputs.mode);
 
@@ -390,7 +390,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
 	escape("unable to extract the string");
 
-      res = Replay::Pointer->fuse.rmdir(
+      res = Replay::Reference->fuse.rmdir(
 	      inputs.path.c_str());
 
       if (upcall.result != res)
@@ -419,7 +419,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.mask) == elle::StatusError)
 	escape("unable to extract the number");
 
-      res = Replay::Pointer->fuse.access(
+      res = Replay::Reference->fuse.access(
 	      inputs.path.c_str(),
 	      (int)inputs.mask);
 
@@ -449,7 +449,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.mode) == elle::StatusError)
 	escape("unable to extract the number");
 
-      res = Replay::Pointer->fuse.chmod(
+      res = Replay::Reference->fuse.chmod(
 	      inputs.path.c_str(),
 	      (mode_t)inputs.mode);
 
@@ -487,7 +487,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.gid) == elle::StatusError)
 	escape("unable to extract the number");
 
-      res = Replay::Pointer->fuse.chown(
+      res = Replay::Reference->fuse.chown(
 	      inputs.path.c_str(),
 	      (uid_t)inputs.uid,
 	      (gid_t)inputs.gid);
@@ -534,7 +534,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.flags) == elle::StatusError)
 	escape("unable to extract the number");
 
-      res = Replay::Pointer->fuse.setxattr(
+      res = Replay::Reference->fuse.setxattr(
 	      inputs.path.c_str(),
 	      inputs.name.c_str(),
 	      inputs.value.c_str(),
@@ -581,7 +581,7 @@ namespace pig
 
       char		value[inputs.size];
 
-      res = Replay::Pointer->fuse.getxattr(
+      res = Replay::Reference->fuse.getxattr(
 	      inputs.path.c_str(),
 	      inputs.name.c_str(),
 	      value,
@@ -629,7 +629,7 @@ namespace pig
 
       char		list[inputs.size];
 
-      res = Replay::Pointer->fuse.listxattr(
+      res = Replay::Reference->fuse.listxattr(
 	      inputs.path.c_str(),
 	      list,
 	      (size_t)inputs.size);
@@ -666,7 +666,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.name) == elle::StatusError)
 	escape("unable to extract the string");
 
-      res = Replay::Pointer->fuse.removexattr(
+      res = Replay::Reference->fuse.removexattr(
 	      inputs.path.c_str(),
 	      inputs.name.c_str());
 
@@ -696,7 +696,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.from) == elle::StatusError)
 	escape("unable to extract the string");
 
-      res = Replay::Pointer->fuse.symlink(
+      res = Replay::Reference->fuse.symlink(
 	      inputs.to.c_str(),
 	      inputs.from.c_str());
 
@@ -736,7 +736,7 @@ namespace pig
 
       char		buf[inputs.size];
 
-      res = Replay::Pointer->fuse.readlink(
+      res = Replay::Reference->fuse.readlink(
 	      inputs.path.c_str(),
 	      buf,
 	      (size_t)inputs.size);
@@ -785,7 +785,7 @@ namespace pig
       struct ::fuse_file_info*	fi =
 	(struct ::fuse_file_info*)inputs.fi.contents;
 
-      res = Replay::Pointer->fuse.create(
+      res = Replay::Reference->fuse.create(
 	      inputs.path.c_str(),
 	      (mode_t)inputs.mode,
 	      fi);
@@ -835,7 +835,7 @@ namespace pig
       struct ::fuse_file_info*	fi =
 	(struct ::fuse_file_info*)inputs.fi.contents;
 
-      res = Replay::Pointer->fuse.open(
+      res = Replay::Reference->fuse.open(
 	      inputs.path.c_str(),
 	      fi);
 
@@ -901,7 +901,7 @@ namespace pig
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
 	fail("unable to retrieve the file information");
 
-      res = Replay::Pointer->fuse.write(
+      res = Replay::Reference->fuse.write(
 	      inputs.path.c_str(),
 	      (char*)inputs.buf.contents,
 	      (size_t)inputs.size,
@@ -939,7 +939,7 @@ namespace pig
 	printf("-> %s\n", buffer);
 
 	/*
-	  Replay::Pointer->fuse.read(
+	  Replay::Reference->fuse.read(
 	  inputs.path.c_str(),
 	  (char*)inputs.buf.contents,
 	  (size_t)inputs.size,
@@ -1008,7 +1008,7 @@ namespace pig
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
 	fail("unable to retrieve the file information");
 
-      res = Replay::Pointer->fuse.read(
+      res = Replay::Reference->fuse.read(
 	      inputs.path.c_str(),
 	      (char*)inputs.buf.contents,
 	      (size_t)inputs.size,
@@ -1056,7 +1056,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.size) == elle::StatusError)
 	escape("unable to extract the number");
 
-      res = Replay::Pointer->fuse.truncate(
+      res = Replay::Reference->fuse.truncate(
 	      inputs.path.c_str(),
 	      (off_t)inputs.size);
 
@@ -1103,7 +1103,7 @@ namespace pig
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
 	fail("unable to retrieve the file information");
 
-      res = Replay::Pointer->fuse.ftruncate(
+      res = Replay::Reference->fuse.ftruncate(
 	      inputs.path.c_str(),
 	      (size_t)inputs.size,
 	      fi);
@@ -1151,7 +1151,7 @@ namespace pig
 	fail("unable to retrieve the file information");
 
 #include <elle/idiom/Close.hh>
-      res = Replay::Pointer->fuse.release(
+      res = Replay::Reference->fuse.release(
 	      inputs.path.c_str(),
 	      fi);
 #include <elle/idiom/Open.hh>
@@ -1188,7 +1188,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.to) == elle::StatusError)
 	escape("unable to extract the string");
 
-      res = Replay::Pointer->fuse.rename(
+      res = Replay::Reference->fuse.rename(
 	      inputs.from.c_str(),
 	      inputs.to.c_str());
 
@@ -1214,7 +1214,7 @@ namespace pig
       if (upcall.inputs.Extract(inputs.path) == elle::StatusError)
 	escape("unable to extract the string");
 
-      res = Replay::Pointer->fuse.unlink(
+      res = Replay::Reference->fuse.unlink(
 	      inputs.path.c_str());
 
       if (upcall.result != res)
@@ -1231,7 +1231,7 @@ namespace pig
       enter();
 
       // set the diary pointer.
-      Replay::Pointer = diary;
+      Replay::Reference = diary;
 
       // initialize the live system.
       if (Live::Initialize() == elle::StatusError)
@@ -1254,25 +1254,25 @@ namespace pig
 
       // first, go through the upcalls that must be ignored.
       for (i = 0;
-	   (i < from) && (Replay::Pointer->End() == elle::StatusFalse);
+	   (i < from) && (Replay::Reference->End() == elle::StatusFalse);
 	   i++)
 	{
 	  Upcall		upcall;
 
 	  // retrieve the upcall.
-	  if (Replay::Pointer->Read(upcall) == elle::StatusError)
+	  if (Replay::Reference->Read(upcall) == elle::StatusError)
 	    escape("unable to read the upcall");
 	}
 
       // then go through the remaining upcalls up to 'to'.
       for (;
-	   (i < to) && (Replay::Pointer->End() == elle::StatusFalse);
+	   (i < to) && (Replay::Reference->End() == elle::StatusFalse);
 	    i++)
 	{
 	  Upcall		upcall;
 
 	  // retrieve the upcall.
-	  if (Replay::Pointer->Read(upcall) == elle::StatusError)
+	  if (Replay::Reference->Read(upcall) == elle::StatusError)
 	    escape("unable to read the upcall");
 
 	  // XXX
@@ -1509,7 +1509,7 @@ namespace pig
       enter();
 
       // reset the diary pointer.
-      Replay::Pointer = NULL;
+      Replay::Reference = NULL;
 
       // clean the live system.
       if (Live::Clean() == elle::StatusError)

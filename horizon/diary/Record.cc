@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Record.cc
 //
 // created       julien quintard   [tue jun 28 22:17:27 2011]
-// updated       julien quintard   [fri jul  1 13:49:18 2011]
+// updated       julien quintard   [fri jul  8 17:51:09 2011]
 //
 
 //
@@ -37,7 +37,7 @@ namespace pig
     /// this variable contains the address of the diary which is
     /// being recorded.
     ///
-    Diary*				Record::Pointer = NULL;
+    Diary*				Record::Reference = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -62,7 +62,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.getattr(path, stbuf);
+      res = Record::Reference->fuse.getattr(path, stbuf);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)stbuf,
@@ -73,7 +73,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
 	fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
 	fail("unable to write the diay");
 
       return res;
@@ -101,7 +101,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.fgetattr(path, stbuf, fi);
+      res = Record::Reference->fuse.fgetattr(path, stbuf, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)stbuf,
@@ -114,7 +114,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -139,7 +139,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.utimens(path, ts);
+      res = Record::Reference->fuse.utimens(path, ts);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -147,7 +147,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -172,7 +172,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.opendir(path, fi);
+      res = Record::Reference->fuse.opendir(path, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)fi,
@@ -183,7 +183,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -212,7 +212,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.readdir(path, buf, filler, offset, fi);
+      res = Record::Reference->fuse.readdir(path, buf, filler, offset, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)fi,
@@ -223,7 +223,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -248,7 +248,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.releasedir(path, fi);
+      res = Record::Reference->fuse.releasedir(path, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)fi,
@@ -259,7 +259,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -283,7 +283,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.mkdir(path, mode);
+      res = Record::Reference->fuse.mkdir(path, mode);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -291,7 +291,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -313,7 +313,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.rmdir(path);
+      res = Record::Reference->fuse.rmdir(path);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -321,7 +321,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -345,7 +345,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.access(path, mask);
+      res = Record::Reference->fuse.access(path, mask);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -353,7 +353,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -377,7 +377,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.chmod(path, mode);
+      res = Record::Reference->fuse.chmod(path, mode);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -385,7 +385,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -411,7 +411,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.chown(path, uid, gid);
+      res = Record::Reference->fuse.chown(path, uid, gid);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -419,7 +419,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -451,7 +451,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.setxattr(path, name, value, size, flags);
+      res = Record::Reference->fuse.setxattr(path, name, value, size, flags);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -459,7 +459,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -487,7 +487,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.getxattr(path, name, value, size);
+      res = Record::Reference->fuse.getxattr(path, name, value, size);
 
       if (upcall.Outputs(
 	    elle::String(value)) ==
@@ -497,7 +497,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -523,7 +523,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.listxattr(path, list, size);
+      res = Record::Reference->fuse.listxattr(path, list, size);
 
       if (upcall.Outputs(
 	    elle::String(list)) ==
@@ -533,7 +533,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -557,7 +557,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.removexattr(path, name);
+      res = Record::Reference->fuse.removexattr(path, name);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -565,7 +565,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -591,7 +591,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.symlink(to, from);
+      res = Record::Reference->fuse.symlink(to, from);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -599,7 +599,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -625,7 +625,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.readlink(path, buf, size);
+      res = Record::Reference->fuse.readlink(path, buf, size);
 
       if (upcall.Outputs(
 	    elle::String(buf)) ==
@@ -635,7 +635,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -662,7 +662,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.create(path, mode, fi);
+      res = Record::Reference->fuse.create(path, mode, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)fi,
@@ -673,7 +673,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -698,7 +698,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.open(path, fi);
+      res = Record::Reference->fuse.open(path, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)fi,
@@ -709,7 +709,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -741,7 +741,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.write(path, buf, size, offset, fi);
+      res = Record::Reference->fuse.write(path, buf, size, offset, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)fi,
@@ -752,7 +752,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -784,7 +784,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.read(path, buf, size, offset, fi);
+      res = Record::Reference->fuse.read(path, buf, size, offset, fi);
 
       if (upcall.Outputs(
 	    elle::Region((elle::Byte*)buf,
@@ -795,7 +795,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -819,7 +819,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.truncate(path, size);
+      res = Record::Reference->fuse.truncate(path, size);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -827,7 +827,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -854,7 +854,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.ftruncate(path, size, fi);
+      res = Record::Reference->fuse.ftruncate(path, size, fi);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -862,7 +862,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -888,7 +888,7 @@ namespace pig
 	fail("unable to specify the upcall's inputs");
 
 #include <elle/idiom/Close.hh>
-      res = Record::Pointer->fuse.release(path, fi);
+      res = Record::Reference->fuse.release(path, fi);
 #include <elle/idiom/Open.hh>
 
       if (upcall.Outputs(
@@ -900,7 +900,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -924,7 +924,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.rename(from, to);
+      res = Record::Reference->fuse.rename(from, to);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -932,7 +932,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -954,7 +954,7 @@ namespace pig
 	  elle::StatusError)
 	fail("unable to specify the upcall's inputs");
 
-      res = Record::Pointer->fuse.unlink(path);
+      res = Record::Reference->fuse.unlink(path);
 
       if (upcall.Outputs() == elle::StatusError)
 	fail("unable to specify the upcall's outputs");
@@ -962,7 +962,7 @@ namespace pig
       if (upcall.Result(res) == elle::StatusError)
         fail("unable to specify the upcall's result");
 
-      if (Record::Pointer->Write(upcall) == elle::StatusError)
+      if (Record::Reference->Write(upcall) == elle::StatusError)
         fail("unable to write the diay");
 
       return res;
@@ -976,7 +976,7 @@ namespace pig
       enter();
 
       // set the diary pointer.
-      Record::Pointer = diary;
+      Record::Reference = diary;
 
       //
       // initialize the FUSE operations.
@@ -1077,7 +1077,7 @@ namespace pig
       enter();
 
       // reset the diary pointer.
-      Record::Pointer = NULL;
+      Record::Reference = NULL;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [tue jun 28 21:11:07 2011]
+// updated       julien quintard   [wed jul  6 12:48:08 2011]
 //
 
 #ifndef PIG_FUSE_HH

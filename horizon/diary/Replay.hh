@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.hh
 //
 // created       julien quintard   [thu jun 30 09:19:53 2011]
-// updated       julien quintard   [fri jul  1 21:06:42 2011]
+// updated       julien quintard   [fri jul  8 17:51:23 2011]
 //
 
 #ifndef PIG_DIARY_REPLAY_HH
@@ -109,7 +109,7 @@ namespace pig
       //
       // static attributes
       //
-      static Diary*		Pointer;
+      static Diary*		Reference;
     };
 
   }
