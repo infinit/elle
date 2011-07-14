@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat jul  9 19:49:01 2011]
+// updated       julien quintard   [mon jul 11 15:47:46 2011]
 //
 
 //
@@ -75,6 +75,10 @@ namespace agent
 	}
     }
 
+    // disable the meta logging.
+    if (elle::Meta::Disable() == elle::StatusError)
+      escape("unable to disable the meta logging");
+
     //
     // load the identity.
     //
@@ -127,6 +131,10 @@ namespace agent
 	escape("unable to pull the configuration parameters");
     }
 
+    // enable the meta logging.
+    if (elle::Meta::Enable() == elle::StatusError)
+      escape("unable to enable the meta logging");
+
     leave();
   }
 
@@ -140,18 +148,7 @@ namespace agent
   {
     enter();
 
-    // recycle the identity.
-    if (Agent::Identity.Recycle<lune::Identity>() == elle::StatusError)
-      escape("unable to recycle the identity");
-
-    // recycle the subject.
-    if (Agent::Subject.Recycle<nucleus::Subject>() == elle::StatusError)
-      escape("unable to recycle the subject");
-
-    // recycle the configuration.
-    if (Agent::Configuration.Recycle<lune::Configuration>() ==
-	elle::StatusError)
-      escape("unable to recycle the configuration");
+    // nothing to do.
 
     leave();
   }
