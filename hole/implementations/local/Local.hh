@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/local/Local.hh
 //
 // created       julien quintard   [tue apr 13 16:05:04 2010]
-// updated       julien quintard   [wed jul  6 15:22:40 2011]
+// updated       julien quintard   [mon jul 11 16:34:54 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_LOCAL_HH
@@ -65,6 +65,13 @@ namespace hole
 			    const nucleus::Version&,
 			    nucleus::MutableBlock&);
 	elle::Status	Kill(const nucleus::Address&);
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	elle::Status	Dump(const elle::Natural32 = 0) const;
       };
 
     }

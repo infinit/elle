@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [sat jul  9 19:50:11 2011]
+// updated       julien quintard   [mon jul 11 18:05:09 2011]
 //
 
 //
@@ -64,21 +64,34 @@ namespace hole
 	escape("unable to retrieve the network name");
       }
 
-    // does the network exist.
-    if (Hole::Descriptor.Exist(name) == elle::StatusFalse)
-      escape("this network does not seem to exist");
+    // disable the meta logging.
+    if (elle::Meta::Disable() == elle::StatusError)
+      escape("unable to disable the meta logging");
 
-    // load the descriptor.
-    if (Hole::Descriptor.Load(name) == elle::StatusError)
-      escape("unable to load the descriptor");
+    //
+    // build the descriptor.
+    //
+    {
+      // does the network exist.
+      if (Hole::Descriptor.Exist(name) == elle::StatusFalse)
+	escape("this network does not seem to exist");
 
-    // pull the attributes.
-    if (Hole::Descriptor.Pull() == elle::StatusError)
-      escape("unable to pull the descriptor's attributes");
+      // load the descriptor.
+      if (Hole::Descriptor.Load(name) == elle::StatusError)
+	escape("unable to load the descriptor");
 
-    // validate the descriptor.
-    if (Hole::Descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
-      escape("unable to validate the descriptor");
+      // pull the attributes.
+      if (Hole::Descriptor.Pull() == elle::StatusError)
+	escape("unable to pull the descriptor's attributes");
+
+      // validate the descriptor.
+      if (Hole::Descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
+	escape("unable to validate the descriptor");
+    }
+
+    // enable the meta logging.
+    if (elle::Meta::Enable() == elle::StatusError)
+      escape("unable to enable the meta logging");
 
     // create the network instance.
     if (network.Create(name) == elle::StatusError)
@@ -128,10 +141,6 @@ namespace hole
 
     // delete the implementation.
     delete Hole::Implementation;
-
-    // recycle the descriptor.
-    if (Hole::Descriptor.Recycle<lune::Descriptor>() == elle::StatusError)
-      escape("unable to recycle the descriptor");
 
     leave();
   }

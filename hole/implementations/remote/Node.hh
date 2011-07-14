@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Node.hh
 //
 // created       julien quintard   [thu may 26 09:46:18 2011]
-// updated       julien quintard   [tue jul  5 17:16:51 2011]
+// updated       julien quintard   [mon jul 11 16:37:49 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_NODE_HH
@@ -35,7 +35,8 @@ namespace hole
       ///
       /// this class represents a node being either a client or a server.
       ///
-      class Node
+      class Node:
+	public elle::Entity
       {
       public:
 	//
@@ -60,6 +61,13 @@ namespace hole
 				    const nucleus::Version&,
 				    nucleus::MutableBlock&) = 0;
 	virtual elle::Status	Kill(const nucleus::Address&) = 0;
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	elle::Status		Dump(const elle::Natural32 = 0) const;
 
 	//
 	// attributes

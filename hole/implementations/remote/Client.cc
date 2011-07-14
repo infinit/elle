@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [fri jul  8 12:15:57 2011]
+// updated       julien quintard   [thu jul 14 14:21:19 2011]
 //
 
 //
@@ -34,9 +34,7 @@ namespace hole
       ///
       Client::Client(const nucleus::Network&			network,
 		     const elle::Address&			host):
-	Node(network, host),
-
-	gate(elle::Socket::ModeAsynchronous)
+	Node(network, host)
       {
       }
 
@@ -58,19 +56,22 @@ namespace hole
 	if (this->gate.Create() == elle::StatusError)
 	  escape("unable to create the gate");
 
-	// register the error callback.
-	if (this->gate.Monitor(error) == elle::StatusError)
-	  escape("unable to monitor the connection");
-
 	// connect the gate.
 	if (this->gate.Connect(this->host) == elle::StatusError)
 	  escape("unable to connect to the bridge");
+
+	// register the error callback.
+	if (this->gate.Monitor(error) == elle::StatusError)
+	  escape("unable to monitor the connection");
 
 	leave();
       }
 
       ///
       /// this method cleans the client.
+      ///
+      /// the components are recycled just to make sure the memory is
+      /// released before the Meta allocator terminates.
       ///
       elle::Status	Client::Clean()
       {
@@ -194,6 +195,28 @@ namespace hole
 	enter();
 
 	// XXX log or display error.
+
+	leave();
+      }
+
+      ///
+      /// this method dumps the client.
+      ///
+      elle::Status	Client::Dump(const elle::Natural32	margin) const
+      {
+	elle::String	alignment(margin, ' ');
+
+	enter();
+
+	std::cout << alignment << "[Client]" << std::endl;
+
+	// dump the parent.
+	if (Node::Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the node");
+
+	// dump the gate.
+	if (this->gate.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the gate");
 
 	leave();
       }

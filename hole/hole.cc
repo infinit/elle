@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/hole.cc
 //
 // created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [mon jun 27 22:11:43 2011]
+// updated       julien quintard   [mon jul 11 22:53:05 2011]
 //
 
 //
@@ -102,6 +102,12 @@ namespace hole
     if (elle::Program::Launch() == elle::StatusError)
       escape("an error occured while processing events");
 
+    // delete the parser.
+    delete Infinit::Parser;
+
+    // waive.
+    waive(Infinit::Parser);
+
     // clean Hole.
     if (hole::Hole::Clean() == elle::StatusError)
       escape("unable to clean Hole");
@@ -121,12 +127,6 @@ namespace hole
     // clean Elle.
     if (elle::Elle::Clean() == elle::StatusError)
       escape("unable to clean Elle");
-
-    // delete the parser.
-    delete Infinit::Parser;
-
-    // waive.
-    waive(Infinit::Parser);
 
     leave();
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.hh
 //
 // created       julien quintard   [wed may 11 14:55:32 2011]
-// updated       julien quintard   [wed jul  6 15:22:45 2011]
+// updated       julien quintard   [mon jul 11 16:34:32 2011]
 //
 
 #ifndef HOLE_HOLEABLE_HH
@@ -27,7 +27,8 @@ namespace hole
   ///
   /// XXX
   ///
-  class Holeable
+  class Holeable:
+    public elle::Entity
   {
   public:
     //
@@ -52,6 +53,13 @@ namespace hole
 				    const nucleus::Version&,
 				    nucleus::MutableBlock&) = 0;
     virtual elle::Status	Kill(const nucleus::Address&) = 0;
+
+    //
+    // interfaces
+    //
+
+    // dumpable
+    elle::Status		Dump(const elle::Natural32 = 0) const;
 
     //
     // attributes

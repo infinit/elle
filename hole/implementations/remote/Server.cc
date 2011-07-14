@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [fri jul  8 13:33:26 2011]
+// updated       julien quintard   [tue jul 12 14:57:45 2011]
 //
 
 //
@@ -129,6 +129,10 @@ namespace hole
 	    if (this->gate->Disconnect() == elle::StatusError)
 	      escape("unable to disconnect the client gate");
 	  }
+
+	// block the incoming connections.
+	if (elle::Bridge::Block(this->host) == elle::StatusError)
+	  escape("unable to block bridge connections");
 
 	leave();
       }
@@ -423,11 +427,11 @@ namespace hole
 	      elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
 	  escape("unable to return the block to the caller");
 
-	// waive.
-	waive(block);
-
 	// delete the block.
 	delete block;
+
+	// waive.
+	waive(block);
 
 	leave();
       }
@@ -487,8 +491,47 @@ namespace hole
       {
 	enter();
 
+	// delete the gate.
+	delete this->gate;
+
 	// set the gate to null.
 	this->gate = NULL;
+
+	leave();
+      }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+      ///
+      /// this method dumps the server.
+      ///
+      elle::Status	Server::Dump(const elle::Natural32	margin) const
+      {
+	elle::String	alignment(margin, ' ');
+
+	enter();
+
+	std::cout << alignment << "[Server]" << std::endl;
+
+	// dump the parent.
+	if (Node::Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the node");
+
+	// dump the gate.
+	if (this->gate != NULL)
+	  {
+	    if (this->gate->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the gate");
+	  }
+	else
+	  {
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << "[Gate] " << elle::none
+		      << std::endl;
+	  }
+
 
 	leave();
       }

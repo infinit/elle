@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.hh
 //
 // created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [tue jul  5 17:43:28 2011]
+// updated       julien quintard   [mon jul 11 16:37:02 2011]
 //
  
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
@@ -70,6 +70,13 @@ namespace hole
 	// callbacks
 	//
 	elle::Status	Error(const elle::String&);
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	elle::Status	Dump(const elle::Natural32 = 0) const;
 
 	//
 	// attributes

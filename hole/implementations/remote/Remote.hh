@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.hh
 //
 // created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [fri jul  8 12:58:54 2011]
+// updated       julien quintard   [mon jul 11 16:36:42 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH
@@ -90,6 +90,13 @@ namespace hole
 			    const nucleus::Version&,
 			    nucleus::MutableBlock&);
 	elle::Status	Kill(const nucleus::Address&);
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	elle::Status	Dump(const elle::Natural32 = 0) const;
 
 	//
 	// attributes

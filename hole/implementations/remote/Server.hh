@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.hh
 //
 // created       julien quintard   [wed may 25 19:20:52 2011]
-// updated       julien quintard   [fri jul  8 10:55:46 2011]
+// updated       julien quintard   [tue jul 12 14:57:40 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
@@ -78,6 +78,13 @@ namespace hole
 
 	elle::Status	Connection(elle::Gate*&);
 	elle::Status	Error(const elle::String&);
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	elle::Status	Dump(const elle::Natural32 = 0) const;
 
 	//
 	// attributes

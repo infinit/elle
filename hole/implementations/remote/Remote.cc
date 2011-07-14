@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.cc
 //
 // created       julien quintard   [fri may 20 19:32:16 2011]
-// updated       julien quintard   [fri jul  8 12:57:16 2011]
+// updated       julien quintard   [mon jul 11 17:22:05 2011]
 //
 
 //
@@ -108,6 +108,9 @@ namespace hole
 
 	      leave();
 	    }
+
+	  // delete the client.
+	  delete client;
 	}
 
 	// purge the error messages.
@@ -136,6 +139,9 @@ namespace hole
 
 	      leave();
 	    }
+
+	  // delete the server.
+	  delete server;
 	}
 
 	escape("unable to create a client or a server");
@@ -246,6 +252,49 @@ namespace hole
 	// forward the request to the node.
 	if (this->node->Kill(address) == elle::StatusError)
 	  escape("unable to kill the block");
+
+	leave();
+      }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+      ///
+      /// this method dumps the implementation.
+      ///
+      elle::Status	Remote::Dump(const elle::Natural32	margin) const
+      {
+	elle::String	alignment(margin, ' ');
+
+	enter();
+
+	std::cout << alignment << "[Remote]" << std::endl;
+
+	// dump the parent.
+	if (Holeable::Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the holeabl");
+
+	// dump the host.
+	if (this->host.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the host");
+
+	std::cout << alignment << elle::Dumpable::Shift
+		  << "[Role] " << (elle::Natural32)this->role
+		  << std::endl;
+
+	// dump the node.
+	if (this->node != NULL)
+	  {
+	    if (this->node->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the node");
+	  }
+	else
+	  {
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << "[Node] " << elle::none
+		      << std::endl;
+	  }
 
 	leave();
       }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [fri jul  8 13:33:20 2011]
+// updated       julien quintard   [mon jul 11 16:49:14 2011]
 //
 
 //
@@ -220,6 +220,28 @@ namespace hole
 	      escape("unknown block family");
 	    }
 	  }
+
+	leave();
+      }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+      ///
+      /// this method dumps the implementation.
+      ///
+      elle::Status	Local::Dump(const elle::Natural32	margin) const
+      {
+	elle::String	alignment(margin, ' ');
+
+	enter();
+
+	std::cout << alignment << "[Local]" << std::endl;
+
+	// dump the parent.
+	if (Holeable::Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the holeabl");
 
 	leave();
       }
