@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.cc
 //
 // created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [fri jul  8 17:51:42 2011]
+// updated       julien quintard   [wed jul 13 18:14:07 2011]
 //
 
 //
@@ -32,6 +32,25 @@ namespace pig
     /// being replayed.
     ///
     Diary*				Replay::Reference = NULL;
+
+    ///
+    /// this variable contains the starting index.
+    ///
+    elle::Natural32			Replay::From = 0;
+
+    ///
+    /// this variable contains the ending index.
+    ///
+    elle::Natural32			Replay::To =
+      elle::Type<elle::Natural32>::Maximum;
+
+    ///
+    /// this variable contains the timer which triggers the replay.
+    ///
+    /// this timer is required in order to wait for program's loop to
+    /// start.
+    ///
+    elle::Timer				Replay::Timer;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -68,15 +87,17 @@ namespace pig
       if (upcall.outputs.Extract(outputs.stbuf) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       struct ::stat*	stbuf = (struct ::stat*)inputs.stbuf.contents;
       struct ::stat*	_stbuf = (struct ::stat*)outputs.stbuf.contents;
-
-      if (stbuf->st_uid != _stbuf->st_uid)
-	escape("invalid UID");
       /* XXX
+      if (stbuf->st_uid != _stbuf->st_uid)
+	escape("invalid UID: got(%u) expected(%u)",
+	       stbuf->st_uid, _stbuf->st_uid);
+
       if (stbuf->st_gid != _stbuf->st_gid)
 	escape("invalid GID");
 
@@ -138,15 +159,17 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       struct ::stat*	stbuf = (struct ::stat*)inputs.stbuf.contents;
       struct ::stat*	_stbuf = (struct ::stat*)outputs.stbuf.contents;
-
-      if (stbuf->st_uid != _stbuf->st_uid)
-	escape("invalid UID");
       /* XXX
+      if (stbuf->st_uid != _stbuf->st_uid)
+	escape("invalid UID: got(%u) expected(%u)",
+	       stbuf->st_uid, _stbuf->st_uid);
+
       if (stbuf->st_gid != _stbuf->st_gid)
 	escape("invalid GID");
 
@@ -184,8 +207,9 @@ namespace pig
 	      inputs.path.c_str(),
 	      (struct ::timespec*)inputs.ts.contents);
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -225,8 +249,9 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       struct ::fuse_file_info*	_fi =
 	(struct ::fuse_file_info*)outputs.fi.contents;
@@ -283,8 +308,9 @@ namespace pig
 	      inputs.path.c_str(),
 	      fi);
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
       */
 
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
@@ -335,8 +361,9 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       if (Live::Remove(identifier) == elle::StatusError)
 	fail("unable to remove the file information");
@@ -368,8 +395,9 @@ namespace pig
 	      inputs.path.c_str(),
 	      (mode_t)inputs.mode);
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -393,8 +421,9 @@ namespace pig
       res = Replay::Reference->fuse.rmdir(
 	      inputs.path.c_str());
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -423,8 +452,9 @@ namespace pig
 	      inputs.path.c_str(),
 	      (int)inputs.mask);
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -453,12 +483,9 @@ namespace pig
 	      inputs.path.c_str(),
 	      (mode_t)inputs.mode);
 
-      if (upcall.result != res)
-	{
-	  printf("EXPECTED(%d) GOT(%d)\n", upcall.result, res);
-
-	escape("invalid result");
-	}
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -492,12 +519,9 @@ namespace pig
 	      (uid_t)inputs.uid,
 	      (gid_t)inputs.gid);
 
-      if (upcall.result != res)
-	{
-	  printf("EXPECTED(%d) GOT(%d)\n", upcall.result, res);
-
-	escape("invalid result");
-	}
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -541,8 +565,9 @@ namespace pig
 	      (size_t)inputs.size,
 	      (int)inputs.flags);
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -590,11 +615,13 @@ namespace pig
       if (upcall.outputs.Extract(outputs.value) == elle::StatusError)
 	escape("unable to extract the string");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       if (elle::String(value, res) != outputs.value)
-	escape("invalid value");
+	escape("invalid value: got(%s) expected(%s)",
+	       elle::String(value, res).c_str(), outputs.value.c_str());
 
       leave();
     }
@@ -637,11 +664,13 @@ namespace pig
       if (upcall.outputs.Extract(outputs.list) == elle::StatusError)
 	escape("unable to extract the string");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       if (elle::String(list, res) != outputs.list)
-	escape("invalid value");
+	escape("invalid value: got(%s) expected(%s)",
+	       elle::String(list, res).c_str(), outputs.list.c_str());
 
       leave();
     }
@@ -670,8 +699,9 @@ namespace pig
 	      inputs.path.c_str(),
 	      inputs.name.c_str());
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -700,8 +730,9 @@ namespace pig
 	      inputs.to.c_str(),
 	      inputs.from.c_str());
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -744,11 +775,13 @@ namespace pig
       if (upcall.outputs.Extract(outputs.buf) == elle::StatusError)
 	escape("unable to extract the string");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       if (elle::String(buf) != outputs.buf)
-	escape("invalid value");
+	escape("invalid value: got(%s) expected(%s)",
+	       elle::String(buf).c_str(), outputs.buf.c_str());
 
       leave();
     }
@@ -793,8 +826,9 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       struct ::fuse_file_info*	_fi =
 	(struct ::fuse_file_info*)outputs.fi.contents;
@@ -842,8 +876,9 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       struct ::fuse_file_info*	_fi =
 	(struct ::fuse_file_info*)outputs.fi.contents;
@@ -953,12 +988,9 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	{
-	  printf("EXPECTED(%d) GOT(%d)\n", upcall.result, res);
-
-	escape("invalid result");
-	}
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -1020,10 +1052,9 @@ namespace pig
 
       printf("[read] EXPECTED(%d) GOT(%d)\n", upcall.result, res);
 
-      if (upcall.result != res)
-	{
-	  escape("invalid result");
-	}
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       if (inputs.buf != outputs.buf)
 	{
@@ -1060,8 +1091,9 @@ namespace pig
 	      inputs.path.c_str(),
 	      (off_t)inputs.size);
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -1111,8 +1143,9 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -1159,8 +1192,9 @@ namespace pig
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       if (Live::Remove(identifier) == elle::StatusError)
 	fail("unable to remove the file information");
@@ -1192,8 +1226,9 @@ namespace pig
 	      inputs.from.c_str(),
 	      inputs.to.c_str());
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -1217,8 +1252,9 @@ namespace pig
       res = Replay::Reference->fuse.unlink(
 	      inputs.path.c_str());
 
-      if (upcall.result != res)
-	escape("invalid result");
+      if (res != upcall.result)
+	escape("invalid result: got(%d) expected(%d)",
+	       res, upcall.result);
 
       leave();
     }
@@ -1246,15 +1282,44 @@ namespace pig
     elle::Status	Replay::Launch(const elle::Natural32	from,
 				       const elle::Natural32	to)
     {
+      elle::Callback<
+	elle::Parameters<>
+	>		callback(&Replay::Process);
+
+      enter();
+
+      // set the boundaries.
+      Replay::From = from;
+      Replay::To = to;
+
+      // create the timer which will start the replaying process.
+      if (Replay::Timer.Create(elle::Timer::ModeSingle,
+			       callback) == elle::StatusError)
+	escape("unable to create the timer");
+
+      // start the timer.
+      //
+      // note that the timer is started immediately so that as soon as
+      // the program enters its event loop, the timer is launched.
+      if (Replay::Timer.Start(0) == elle::StatusError)
+	escape("unable to start the timer");
+
+      leave();
+    }
+
+    ///
+    /// this method processes an upcall.
+    ///
+    elle::Status	Replay::Process()
+    {
       elle::Natural32	i;
 
       enter();
 
-      printf("%d ... %d\n", from, to);
-
       // first, go through the upcalls that must be ignored.
       for (i = 0;
-	   (i < from) && (Replay::Reference->End() == elle::StatusFalse);
+	   (i < Replay::From) &&
+	     (Replay::Reference->End() == elle::StatusFalse);
 	   i++)
 	{
 	  Upcall		upcall;
@@ -1266,10 +1331,11 @@ namespace pig
 
       // then go through the remaining upcalls up to 'to'.
       for (;
-	   (i < to) && (Replay::Reference->End() == elle::StatusFalse);
+	   (i < Replay::To) &&
+	     (Replay::Reference->End() == elle::StatusFalse);
 	    i++)
 	{
-	  Upcall		upcall;
+	  Upcall	upcall;
 
 	  // retrieve the upcall.
 	  if (Replay::Reference->Read(upcall) == elle::StatusError)
@@ -1497,6 +1563,10 @@ namespace pig
 	      }
 	    }
 	}
+
+      // exit the program.
+      if (elle::Program::Exit() == elle::StatusError)
+	escape("unable to exit the program");
 
       leave();
     }

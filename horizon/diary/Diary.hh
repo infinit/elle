@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.hh
 //
 // created       julien quintard   [sun jun 26 22:32:34 2011]
-// updated       julien quintard   [sun jul  3 13:28:31 2011]
+// updated       julien quintard   [tue jul 12 07:15:44 2011]
 //
 
 #ifndef PIG_DIARY_DIARY_HH
@@ -68,6 +68,7 @@ namespace pig
       // constructors & destructors
       //
       Diary();
+      ~Diary();
 
       //
       // methods

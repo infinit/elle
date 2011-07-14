@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Live.cc
 //
 // created       julien quintard   [fri jul  1 11:42:31 2011]
-// updated       julien quintard   [fri jul  1 14:57:47 2011]
+// updated       julien quintard   [tue jul 12 15:14:45 2011]
 //
 
 //
@@ -91,7 +91,7 @@ namespace pig
     /// XXX
     ///
     elle::Status	Live::Add(const elle::Natural64		passive,
-				  elle::Natural64		active)
+				  const elle::Natural64		active)
     {
       Live::Item*	item;
 

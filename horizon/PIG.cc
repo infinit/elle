@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [mon jul  4 13:39:33 2011]
+// updated       julien quintard   [tue jul 12 07:11:59 2011]
 //
 
 //
@@ -46,8 +46,7 @@ namespace pig
   lune::Dictionary			PIG::Dictionary;
 
   ///
-  /// this variable contains the diary which either records the PIG
-  /// events or replays them.
+  /// this variable contains the diary which replays the PIG events.
   ///
   pig::diary::Diary			PIG::Diary;
 
@@ -99,96 +98,90 @@ namespace pig
     }
 
     //
-    // launch the diary replaying if it has been activated instead
-    // of waiting for the program to be started.
+    // initialize the diary replaying process, if necessary.
     //
-    {
-      elle::String		string;
-      elle::Path		path;
-      elle::Natural32		from;
-      elle::Natural32		to;
+    if (Infinit::Parser->Test("Replay") == elle::StatusTrue)
+      {
+	elle::String		string;
+	elle::Path		path;
+	elle::Natural32		from;
+	elle::Natural32		to;
 
-      // test the option.
-      if (Infinit::Parser->Test("Replay") == elle::StatusTrue)
-	{
-	  // retrieve the path.
-	  if (Infinit::Parser->Value("Replay", string) == elle::StatusError)
-	    {
-	      // display the usage.
-	      Infinit::Parser->Usage();
+	// retrieve the path.
+	if (Infinit::Parser->Value("Replay", string) == elle::StatusError)
+	  {
+	    // display the usage.
+	    Infinit::Parser->Usage();
 
-	      escape("unable to retrieve the diary path");
-	    }
+	    escape("unable to retrieve the diary path");
+	  }
 
-	  // create the path.
-	  if (path.Create(string) == elle::StatusError)
-	    escape("unable to create the path");
+	// create the path.
+	if (path.Create(string) == elle::StatusError)
+	  escape("unable to create the path");
 
-	  // load the diary.
-	  if (PIG::Diary.Load(path) == elle::StatusError)
-	    escape("unable to load the diary");
+	// load the diary.
+	if (PIG::Diary.Load(path) == elle::StatusError)
+	  escape("unable to load the diary");
 
-	  // set up the diary.
-	  if (PIG::Diary.Setup(FUSE::System::Operations) == elle::StatusError)
-	    escape("unable to set up the diary");
+	// set up the diary.
+	if (PIG::Diary.Setup(FUSE::System::Operations) == elle::StatusError)
+	  escape("unable to set up the diary");
 
-	  // initialize the indexes.
-	  from = 0;
-	  to = elle::Variable::Maximum(to);
+	// initialize the indexes.
+	from = 0;
+	to = elle::Variable::Maximum(to);
 
-	  // retrieve the from.
-	  if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
-	      (Infinit::Parser->Value(
-	         "From",
-		 from) == elle::StatusError))
-	    {
-	      // display the usage.
-	      Infinit::Parser->Usage();
+	// retrieve the from.
+	if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
+	    (Infinit::Parser->Value(
+				    "From",
+				    from) == elle::StatusError))
+	  {
+	    // display the usage.
+	    Infinit::Parser->Usage();
 
-	      escape("unable to retrieve the from value");
-	    }
+	    escape("unable to retrieve the from value");
+	  }
 
-	  // retrieve the to.
-	  if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
-	      (Infinit::Parser->Value(
-	         "To",
-		 to) == elle::StatusError))
-	    {
-	      // display the usage.
-	      Infinit::Parser->Usage();
+	// retrieve the to.
+	if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
+	    (Infinit::Parser->Value(
+				    "To",
+				    to) == elle::StatusError))
+	  {
+	    // display the usage.
+	    Infinit::Parser->Usage();
 
-	      escape("unable to retrieve the to value");
-	    }
+	    escape("unable to retrieve the to value");
+	  }
 
-	  // replay the diary.
-	  if (PIG::Diary.Replay(from, to) == elle::StatusError)
-	    escape("unable to replay the diary");
+	printf("/ @%p %p\n", &Replay::Reference, Replay::Reference);
 
-	  // exit the program.
-	  if (elle::Program::Exit() == elle::StatusError)
-	    escape("unable to exit the program");
+	// replay the diary.
+	if (PIG::Diary.Replay(from, to) == elle::StatusError)
+	  escape("unable to replay the diary");
 
-	  leave();
-	}
-    }
+	printf("/ @%p %p\n", &Replay::Reference, Replay::Reference);
+      }
+    else
+      {
+	//
+	// otherwise, the replaying has not been activated, hence set up FUSE.
+	//
+	// retrieve the mount point.
+	if (Infinit::Parser->Value("Mountpoint",
+				   mountpoint) == elle::StatusError)
+	  {
+	    // display the usage.
+	    Infinit::Parser->Usage();
 
-    //
-    // set up FUSE.
-    //
-    {
-      // retrieve the mount point.
-      if (Infinit::Parser->Value("Mountpoint",
-				 mountpoint) == elle::StatusError)
-	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+	    escape("unable to retrieve the mount point");
+	  }
 
-	  escape("unable to retrieve the mount point");
-	}
-
-      if (FUSE::Setup(mountpoint) == elle::StatusError)
-	escape("unable to set up FUSE");
-    }
+	if (FUSE::Setup(mountpoint) == elle::StatusError)
+	  escape("unable to set up FUSE");
+      }
 
     leave();
   }

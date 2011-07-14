@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.hh
 //
 // created       julien quintard   [thu jun 30 09:19:53 2011]
-// updated       julien quintard   [fri jul  8 17:51:23 2011]
+// updated       julien quintard   [tue jul 12 07:15:26 2011]
 //
 
 #ifndef PIG_DIARY_REPLAY_HH
@@ -104,12 +104,18 @@ namespace pig
       static elle::Status	Initialize(Diary*);
       static elle::Status	Launch(const elle::Natural32,
 				       const elle::Natural32);
+      static elle::Status	Process();
       static elle::Status	Clean();
 
       //
       // static attributes
       //
       static Diary*		Reference;
+
+      static elle::Natural32	From;
+      static elle::Natural32	To;
+
+      static elle::Timer	Timer;
     };
 
   }
