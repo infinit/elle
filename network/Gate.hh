@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [fri jun 17 20:58:26 2011]
+// updated       julien quintard   [thu jul 14 14:08:16 2011]
 //
 
 ///
@@ -72,13 +72,11 @@ namespace elle
       // constants
       //
       static const Natural32		Timeout;
-      static const Natural64		Capacity;
 
       //
       // constructors & destructors
       //
       Gate();
-      Gate(const Socket::Mode);
       ~Gate();
 
       //
@@ -91,7 +89,9 @@ namespace elle
       Status		Disconnect();
 
       Status		Write(const Packet&);
-      Status		Read(Parcel*&);
+
+      Status		Read();
+      Status		Fetch();
 
       template <typename I>
       Status		Send(const I,
@@ -110,7 +110,7 @@ namespace elle
       // callbacks
       //
       Status		Error(const String&);
-      Status		Fetch();
+      Status		Dispatch();
 
       //
       // interfaces
@@ -125,15 +125,12 @@ namespace elle
       ::QTcpSocket*	socket;
       Port		port;
 
-      Region*		buffer;
-      Natural64		offset;
-
     private slots:
       //
       // slots
       //
       void		_error(const QAbstractSocket::SocketError);
-      void		_fetch();
+      void		_ready();
     };
 
   }

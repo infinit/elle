@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [tue jun  7 06:08:40 2011]
+// updated       julien quintard   [mon jul 11 17:51:38 2011]
 //
 
 ///
@@ -90,7 +90,7 @@ namespace elle
       //
       // methods
       //
-      Status		Listen(const String&);
+      Status		Create(const String&);
 
       //
       // callbacks
@@ -107,6 +107,7 @@ namespace elle
       //
       // attributes
       //
+      String				name;
       ::QLocalServer*			server;
       Callback< Parameters<Door*> >	callback;
 
@@ -140,6 +141,7 @@ namespace elle
 
       static Status	Listen(const String&,
 			       const Callback< Parameters<Door*> >&);
+      static Status	Block(const String&);
 
       static Status	Show(const Natural32 = 0);
 

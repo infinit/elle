@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [tue jun  7 06:48:47 2011]
+// updated       julien quintard   [wed jul 13 16:31:45 2011]
 //
 
 //
@@ -86,21 +86,26 @@ namespace elle
 
       // dump the session.
       if (this->session != NULL)
-	if (this->session->Dump(margin + 2) == StatusError)
-	  escape("unable to dump the session");
+	{
+	  if (this->session->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the session");
+	}
 
       // dump the header.
       if (this->header != NULL)
-	if (this->header->Dump(margin + 2) == StatusError)
-	  escape("unable to dump the header");
+	{
+	  if (this->header->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the header");
+	}
 
       // dump the data.
       if (this->data != NULL)
 	{
 	  std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
 
-	  if (this->data->Dump(margin + 4) == StatusError)
-	    escape("unable to dump the data");
+	  // XXX
+	  //if (this->data->Dump(margin + 4) == StatusError)
+	  //escape("unable to dump the data");
 	}
 
       leave();

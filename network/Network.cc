@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [fri jul  8 11:10:26 2011]
+// updated       julien quintard   [wed jul 13 19:56:23 2011]
 //
 
 //
@@ -75,6 +75,10 @@ namespace elle
       // clean the lane
       if (Lane::Clean() == StatusError)
 	escape("unable to clean the lane");
+
+      // recycle the bureau.
+      if (Network::Bureau.Recycle< Registrar<Tag> >() == StatusError)
+	escape("unable to recycle the bureau");
 
       leave();
     }

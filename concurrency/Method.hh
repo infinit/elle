@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [mon jun 27 18:35:32 2011]
+// updated       julien quintard   [thu jul 14 14:43:48 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HH
@@ -23,6 +23,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
 #include <elle/radix/Entity.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -36,13 +37,24 @@ namespace elle
   {
 
     ///
+    /// Method generic class.
+    ///
+    template <typename... T>
+    class Method;
+
+    ///
     /// this class represents a method.
     ///
     template <typename... T>
-    class Method:
+    class Method< Parameters<T...> >:
       public Object
     {
     public:
+      //
+      // types
+      //
+      typedef Parameters<T...>		P;
+
       //
       // classes
       //
@@ -55,7 +67,7 @@ namespace elle
       /// this class is a base for inheritance.
       ///
       class Shell:
-	public Entity
+	public Object
       {
       public:
 	//
@@ -82,12 +94,18 @@ namespace elle
 	//
 	Wrap(Handler,
 	     C*);
-	Wrap(const Wrap<C>&);
 
 	//
 	// methods
 	//
 	Status		Call(T...);
+
+	//
+	// interfaces
+	//
+
+	// object
+	declare(Wrap<C>);
 
 	// dumpable
 	Status		Dump(const Natural32 = 0) const;
@@ -105,6 +123,8 @@ namespace elle
       template <typename C>
       Method(Status (C::*)(T...),
 	     C*);
+      Method(const Method<P>&);
+      ~Method();
 
       //
       // methods
@@ -116,7 +136,7 @@ namespace elle
       //
 
       // object
-      declare(Method<T...>);
+      declare(Method<P>);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

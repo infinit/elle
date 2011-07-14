@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Registrar.hxx
 //
 // created       julien quintard   [mon jun  6 12:13:38 2011]
-// updated       julien quintard   [fri jul  1 11:51:51 2011]
+// updated       julien quintard   [mon jul 11 14:48:07 2011]
 //
 
 #ifndef ELLE_UTILITY_REGISTRAR_HXX
@@ -33,6 +33,28 @@ namespace elle
 
   namespace utility
   {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    template <typename T>
+    Registrar<T>::~Registrar()
+    {
+      Registrar::Scoutor	scoutor;
+
+      // go through the functionoids.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  // delete the functionoid.
+	  delete scoutor->second;
+	}
+
+      // clear the container.
+      this->container.clear();
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -103,6 +125,15 @@ namespace elle
 
       leave();
     }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// these are generated automatically.
+    ///
+    embed(Registrar<T>, _(template <typename T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

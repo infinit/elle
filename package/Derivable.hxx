@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Derivable.hxx
 //
 // created       julien quintard   [fri may 13 13:12:01 2011]
-// updated       julien quintard   [fri jul  8 10:44:00 2011]
+// updated       julien quintard   [tue jul 12 08:10:29 2011]
 //
 
 #ifndef ELLE_PACKAGE_DERIVABLE_HXX
@@ -80,6 +80,23 @@ namespace elle
       product(0),
       object(const_cast<T*>(&object))
     {
+    }
+
+    ///
+    /// copy constructor.
+    ///
+    template <typename T>
+    Derivable<T>::Derivable(const Derivable<T>&			derivable):
+      Object(derivable),
+
+      policy(derivable.policy),
+      factory(derivable.factory),
+      product(derivable.product)
+    {
+      // clone the object if necessary.
+      if ((this->policy == Derivable::PolicyDynamic) &&
+	  (this->object != NULL))
+	this->object = new T(*derivable.object);
     }
 
     ///

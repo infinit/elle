@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.hh
 //
 // created       julien quintard   [sun nov 29 19:31:55 2009]
-// updated       julien quintard   [fri jul  8 18:12:00 2011]
+// updated       julien quintard   [mon jul 11 15:40:45 2011]
 //
 
 #ifndef ELLE_RADIX_META_HH
@@ -66,6 +66,9 @@ namespace elle
       //
       static Status	Initialize();
       static Status	Clean();
+
+      static Status	Enable();
+      static Status	Disable();
 
       static Status	Show(const Natural32 = 0);
 

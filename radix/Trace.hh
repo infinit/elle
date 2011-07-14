@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.hh
 //
 // created       julien quintard   [mon apr 26 21:04:49 2010]
-// updated       julien quintard   [sat jul  9 19:21:41 2011]
+// updated       julien quintard   [mon jul 11 16:12:52 2011]
 //
 
 #ifndef ELLE_RADIX_TRACE_HH
@@ -60,7 +60,8 @@ namespace elle
       //
       static const Natural32		Capacity = 30;
 
-      static const String		Location;
+      static Character			Location[32];
+      static Natural32			Length;
 
       //
       // constructors & destructors
@@ -92,6 +93,7 @@ namespace elle
       //
       static Status	Store(Void*);
       static Status	Erase(Void*);
+      static Status	Exist(Void*);
 
       static Status	Initialize();
       static Status	Clean();

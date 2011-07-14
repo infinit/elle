@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.cc
 //
 // created       julien quintard   [sun may  2 12:21:39 2010]
-// updated       julien quintard   [mon jul  4 11:52:43 2011]
+// updated       julien quintard   [mon jul 11 13:40:09 2011]
 //
 
 //
@@ -43,7 +43,7 @@ namespace elle
     /// this method clones the current object by allocating a new
     /// one through the copy constructor.
     ///
-    Status		Object::Clone(Meta*&) const
+    Status		Object::Clone(Object*&) const
     {
       enter();
 

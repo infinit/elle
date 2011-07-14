@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Derivable.hh
 //
 // created       julien quintard   [fri may 13 12:47:04 2011]
-// updated       julien quintard   [fri jul  8 10:42:16 2011]
+// updated       julien quintard   [tue jul 12 08:04:08 2011]
 //
 
 #ifndef ELLE_PACKAGE_DERIVABLE_HH
@@ -77,6 +77,7 @@ namespace elle
       Derivable(const Factory&);
       Derivable(const Factory&,
 		const T&);
+      Derivable(const Derivable<T>&);
 
       ~Derivable();
 

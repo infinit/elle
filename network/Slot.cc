@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sat jul  9 16:31:35 2011]
+// updated       julien quintard   [thu jul 14 14:15:51 2011]
 //
 
 //
@@ -33,18 +33,7 @@ namespace elle
     /// default constructor.
     ///
     Slot::Slot():
-      Socket::Socket(Socket::TypeSlot, Socket::ModeUnknown),
-
-      socket(NULL),
-      port(0)
-    {
-    }
-
-    ///
-    /// specific mode constructor.
-    ///
-    Slot::Slot(const Socket::Mode				mode):
-      Socket::Socket(Socket::TypeSlot, mode),
+      Socket::Socket(Socket::TypeSlot),
 
       socket(NULL),
       port(0)
@@ -83,35 +72,16 @@ namespace elle
       this->port = this->socket->localPort();
 
       // connect the signals, depending on the mode.
-      switch (this->mode)
-	{
-	case Socket::ModeAsynchronous:
-	  {
-	    if (this->connect(this->socket, SIGNAL(readyRead()),
-			      this, SLOT(_fetch())) == false)
-	      escape("unable to connect the signal");
+      if (this->connect(this->socket, SIGNAL(readyRead()),
+			this, SLOT(_ready())) == false)
+	escape("unable to connect the signal");
 
-	    if (this->connect(
-		  this->socket,
-		  SIGNAL(error(const QAbstractSocket::SocketError)),
-		  this,
-		  SLOT(_error(const QAbstractSocket::SocketError))) == false)
-	      escape("unable to connect to signal");
-
-	    break;
-	  }
-	case Socket::ModeSynchronous:
-	  {
-	    // nothing to do.
-
-	    break;
-	  }
-	case Socket::ModeUnknown:
-	default:
-	  {
-	    escape("unknown mode");
-	  }
-	}
+      if (this->connect(
+	    this->socket,
+	    SIGNAL(error(const QAbstractSocket::SocketError)),
+	    this,
+	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
+	escape("unable to connect to signal");
 
       leave();
     }
@@ -161,7 +131,7 @@ namespace elle
     }
 
     ///
-    /// this method reads datagram(s) on the socket.
+    /// this method reads datagram(s) from the socket.
     ///
     /// note that since UDP datagrams are constrained by a maxium size,
     /// there is no need to buffer the fetched datagram hoping for the next
@@ -170,137 +140,44 @@ namespace elle
     /// therefore, whenever a datagram is fetched, the method tries to makes
     /// sense out of it. if unable, the fetched datagrams are simply dropped.
     ///
-    /// indeed there is no way to extract a following datagram since if
+    /// indeed there is no way to extract a following datagram if
     /// the first one is invalid since datagrams are variable in size.
     ///
-    /// the method returns true if at least one parcel has been extracted
-    /// or false otherwise.
+    /// the method returns a raw with the read data.
     ///
-    Status		Slot::Read(Parcel*&			parcel)
+    Status		Slot::Read(Address&			address,
+				   Raw&				raw)
     {
-      Raw		raw;
-      Address		address;
-      Natural32		offset;
+      Natural32		size;
 
       enter();
 
-      //printf("[XXX] Slot::Fetch(%u)\n", this->socket->pendingDatagramSize());
+      // retrieve the size of the pending packet.
+      size = this->socket->pendingDatagramSize();
 
-      //
-      // read the pending datagrams in a raw.
-      //
-      {
-	Natural32	size;
+      // check if there is data to be read.
+      if (size == 0)
+	leave();
 
-	// return if there is no pending datagrams.
-	if (this->socket->hasPendingDatagrams() == false)
-	  {
-	    // if there are bufferised packets, return one.
-	    if (this->queue.empty() == false)
-	      {
-		// finally, take the oldest parcel and return it.
-		parcel = this->queue.front();
+      // set the address as being an IP address.
+      if (address.host.Create(Host::TypeIP) == StatusError)
+	escape("unable to create an IP address");
 
-		// remove this packet.
-		this->queue.pop_front();
+      // prepare the raw
+      if (raw.Prepare(size) == StatusError)
+	escape("unable to prepare the raw");
 
-		true();
-	      }
-	    else
-	      {
-		// otherwise, there is no pending parcel at the moment.
+      // read the datagram from the socket.
+      if (this->socket->readDatagram((char*)raw.contents,
+				     size,
+				     &address.host.location,
+				     &address.port) != size)
+	escape(this->socket->errorString().toStdString().c_str());
 
-		false();
-	      }
-	  }
+      // set the raw's size.
+      raw.size = size;
 
-	// retrieve the size of the pending packet.
-	size = this->socket->pendingDatagramSize();
-
-	// prepare the raw
-	if (raw.Prepare(size) == StatusError)
-	  escape("unable to prepare the raw");
-
-	// set the address as being an IP address.
-	if (address.host.Create(Host::TypeIP) == StatusError)
-	  escape("unable to create an IP address");
-
-	// read the datagram from the socket.
-	if (this->socket->readDatagram((char*)raw.contents,
-				       size,
-				       &address.host.location,
-				       &address.port) != size)
-	  escape(this->socket->errorString().toStdString().c_str());
-
-	// set the raw's size.
-	raw.size = size;
-      }
-
-      // initialize the offset.
-      offset = 0;
-
-      //
-      // try to extract a serie of packet from the received raw.
-      //
-      {
-	Region		frame;
-	Packet		packet;
-	Parcel*		parcel;
-
-	enter(instance(parcel));
-
-	// create the frame based on the previously extracted raw.
-	if (frame.Wrap(raw.contents + offset,
-		       raw.size - offset) == StatusError)
-	  escape("unable to wrap a frame in the raw");
-
-	// prepare the packet based on the frame.
-	if (packet.Prepare(frame) == StatusError)
-	  escape("unable to prepare the packet");
-
-	// detach the frame from the packet so that the region is
-	// not released once the packet is destroyed. indeed, since the frame
-	// is a chunk, it must not be freed.
-	if (packet.Detach() == StatusError)
-	  escape("unable to detach the data from the packet");
-
-	// allocate the parcel.
-	parcel = new Parcel;
-
-	// extract the header.
-	if (parcel->header->Extract(packet) == StatusError)
-	  escape("unable to extract the header");
-
-	// extract the data.
-	if (packet.Extract(*parcel->data) == StatusError)
-	  escape("unable to extract the data");
-
-	// create the session.
-	if (parcel->session->Create(this,
-				    address,
-				    parcel->header->event) == StatusError)
-	  escape("unable to create the session");
-
-	// add the parcel to the container.
-	this->queue.push_back(parcel);
-
-	// stop tracking the parcel.
-	waive(parcel);
-
-	// move to the next frame by setting the offset at the end of
-	// the extracted frame.
-	offset = offset + packet.offset;
-
-	release();
-      }
-
-      // finally, take the oldest parcel and return it.
-      parcel = this->queue.front();
-
-      // remove this packet.
-      this->queue.pop_front();
-
-      true();
+      leave();
     }
 
 //
@@ -348,25 +225,88 @@ namespace elle
     }
 
     ///
-    /// this callback fetches packets from the socket.
+    /// this callback fetches parcels and dispatches them.
     ///
-    Status		Slot::Fetch()
+    Status		Slot::Dispatch()
     {
-      Parcel*		parcel;
+      Address		address;
+      Natural32		offset;
+      Raw		raw;
 
-      enter(instance(parcel));
+      enter();
 
-      // while there is packets on the socket, read them,
-      while (this->Read(parcel) == StatusTrue)
+      // read from the socket.
+      if (this->Read(address, raw) == StatusError)
+	escape("unable to read from the socket");
+
+      // initialize the offset.
+      offset = 0;
+
+      while (true)
 	{
+	  Region	frame;
+	  Packet	packet;
+	  Parcel*	parcel;
+
+	  enter(instance(parcel));
+
+	  // create the frame based on the previously extracted raw.
+	  if (frame.Wrap(raw.contents + offset,
+			 raw.size - offset) == StatusError)
+	    escape("unable to wrap a frame in the raw");
+
+	  // prepare the packet based on the frame.
+	  if (packet.Prepare(frame) == StatusError)
+	    escape("unable to prepare the packet");
+
+	  // detach the frame from the packet so that the region is
+	  // not released once the packet is destroyed. indeed, since the frame
+	  // is a chunk, it must not be freed.
+	  if (packet.Detach() == StatusError)
+	    escape("unable to detach the data from the packet");
+
+	  // allocate the parcel.
+	  parcel = new Parcel;
+
+	  // extract the header.
+	  if (parcel->header->Extract(packet) == StatusError)
+	    escape("unable to extract the header");
+
+	  // if there is not enough data in the raw to complete the parcel...
+	  if ((packet.size - packet.offset) < parcel->header->size)
+	    {
+	      // since the parcel will not be built, delete the instance.
+	      delete parcel;
+
+	      // waive tracking.
+	      waive(parcel);
+
+	      // exit the loop since there is not enough data anyway.
+	      break;
+	    }
+
+	  // extract the data.
+	  if (packet.Extract(*parcel->data) == StatusError)
+	    escape("unable to extract the data");
+
+	  // move to the next frame by setting the offset at the end of
+	  // the extracted frame.
+	  offset = offset + packet.offset;
+
+	  // create the session.
+	  if (parcel->session->Create(this,
+				      address,
+				      parcel->header->event) == StatusError)
+	    escape("unable to create the session");
+
 	  // dispatch this parcel to the network manager.
 	  //
-	  // note that a this point, the network is longer responsible for the
-	  // parcel and its memory.
+	  // note that a this point, the network is longer responsible
+	  // for the parcel and its memory.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
-	      Report*	report;
-	      Session*	session;
+	      Report*		report;
+	      Session*		session;
 
 	      // retrieve the report.
 	      if (Report::Instance(report) == StatusFalse)
@@ -394,6 +334,7 @@ namespace elle
 	  // stop tracking the parcel.
 	  waive(parcel);
 
+	  // release the resources.
 	  release();
 	}
 
@@ -427,11 +368,11 @@ namespace elle
     }
 
     ///
-    /// this slot fetches packets from the socket.
+    /// this slot fetches and dispatches packets from the socket.
     ///
-    void		Slot::_fetch()
+    void		Slot::_ready()
     {
-      Callback< Parameters<> >	callback(&Slot::Fetch, this);
+      Callback< Parameters<> >	callback(&Slot::Dispatch, this);
       Closure< Parameters<> >	closure(callback);
 
       enter();

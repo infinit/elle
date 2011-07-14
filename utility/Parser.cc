@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.cc
 //
 // created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [mon jun 27 22:14:53 2011]
+// updated       julien quintard   [mon jul 11 22:14:55 2011]
 //
 
 //

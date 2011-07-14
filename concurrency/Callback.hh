@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [mon jun 27 18:35:05 2011]
+// updated       julien quintard   [thu jul 14 14:40:43 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -63,11 +63,11 @@ namespace elle
       // constructors & destructors
       //
       Callback();
-      Callback(typename Function<T&...>::Handler);
+      Callback(typename Function< Parameters<T&...> >::Handler);
       template <typename C>
-      Callback(typename Method<T&...>:: template Wrap<C>::Handler,
+      Callback(typename Method< Parameters<T&...> >::template Wrap<C>::Handler,
 	       C*);
-      Callback(const Callback&);
+      Callback(const Callback< Parameters<T...> >&);
       ~Callback();
 
       //
@@ -92,8 +92,8 @@ namespace elle
 
       union
       {
-	Function<T&...>*	function;
-	Method<T&...>*		method;
+	Function< Parameters<T&...> >*	function;
+	Method< Parameters<T&...> >*	method;
       };
     };
 

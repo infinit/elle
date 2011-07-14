@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hxx
 //
 // created       julien quintard   [wed may 25 14:20:06 2011]
-// updated       julien quintard   [mon jul  4 11:22:19 2011]
+// updated       julien quintard   [thu jul 14 14:06:00 2011]
 //
 
 #ifndef ELLE_NETWORK_GATE_HXX
@@ -110,52 +110,9 @@ namespace elle
 
       enter(instance(parcel));
 
-      // process the call depending on the mode.
-      if (this->mode == Socket::ModeAsynchronous)
-	{
-	  // block the current fiber until the given event is received.
-	  if (Fiber::Wait(event, parcel) == StatusError)
-	    escape("an error occured while waiting for a specific event");
-	}
-      else
-	{
-	  // synchronously read data from the socket i.e block if not
-	  // available meaning that no even can be processed until
-	  // the data is received.
-
-	  // until a complete parcel has been received.
-	  while (true)
-	    {
-	      // wait for the ready signal.
-	      if (this->socket->waitForReadyRead() == false)
-		escape("an error occured while waiting for the ready signal");
-
-	      // try to read the parcel.
-	      switch (this->Read(parcel))
-		{
-		case StatusFalse:
-		  {
-		    // since the parcel is not complete, keep waiting...
-		    continue;
-		  }
-		case StatusError:
-		  {
-		    escape("unable to read a complete parcel from the door");
-		  }
-		case StatusTrue:
-		  {
-		    // everything is good.
-		  }
-		case StatusOk:
-		  {
-		    escape("unexpected return value");
-		  }
-		};
-
-	      // at this point, we should have a complete parcel.
-	      break;
-	    }
-	}
+      // block the current fiber until the given event is received.
+      if (Fiber::Wait(event, parcel) == StatusError)
+	escape("an error occured while waiting for a specific event");
 
       // check the tag.
       if (parcel->header->tag != outputs.tag)
