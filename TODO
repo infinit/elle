@@ -1,17 +1,6 @@
-- peter une error si Disard (bien que modifs) ou Destroy (bien que modif)
-  etc.
-
-- timeout dans les sockets: en sychone le WaitForReadyRead a un timeout
-  par default de 30s alors qu'en asynchrone on fait Fiber::Wait qui
-  est infini.
-
-- remote impl authentication to be sure we're talking about the same net
-- changer les load/store/etc. pour prendre un pattern car actuellement
-  tout se passe dans shelter -> pas si simple car Erase par exemple
-  va prendre un pattern, tres bien mais il a besoin de fetcher history!!!
-  => a la limite history devient un fichier specifique genre au lieu de '@'
-  pour la derniere version, on utilise '!'.
-- se demerder pour avoir une Configuration meme dans Hole
+- tenter de lancer replay sans avoir reinit le reseau -> ca segfault
+- trouver un synonyme de Resolve pour Wall:: Test, Analyse, Reduce, Settle
+  => Path::Resolve devrait retourner true/false ou error
 
 #
 # ---------- long-term --------------------------------------------------------
@@ -37,3 +26,7 @@
   => un repertoire est mis a jour N fois puis est Destroy
   => Destroy vire les Objects pour les N versions et les derniers blocks
      de data. il reste donc N blocs de data!
+
+- timeout dans les sockets: en sychone le WaitForReadyRead a un timeout
+  par default de 30s alors qu'en asynchrone on fait Fiber::Wait qui
+  est infini => le Fiber::Wait devrait prendre un timeout.
