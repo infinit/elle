@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.cc
 //
 // created       julien quintard   [thu jan 28 22:01:03 2010]
-// updated       julien quintard   [sat jul  9 19:46:59 2011]
+// updated       julien quintard   [mon jul 11 22:48:33 2011]
 //
 
 //
@@ -42,6 +42,10 @@ namespace nucleus
   {
     enter();
 
+    // disable the meta logging.
+    if (elle::Meta::Disable() == elle::StatusError)
+      escape("unable to disable the meta logging");
+
     // register the component types.
     if (Nucleus::Factory.Register< neutron::Object >
 	  (neutron::ComponentObject) == elle::StatusError)
@@ -63,22 +67,21 @@ namespace nucleus
 	  (neutron::ComponentAccess) == elle::StatusError)
       escape("unable to register the factory product");
 
+    // enable the meta logging.
+    if (elle::Meta::Enable() == elle::StatusError)
+      escape("unable to enable the meta logging");
+
     leave();
   }
 
   ///
   /// this method cleans the nucleus
   ///
-  /// the components are recycled just to make sure the memory is
-  /// released before the Meta allocator terminates.
-  ///
   elle::Status		Nucleus::Clean()
   {
     enter();
 
-    // recycle the factory.
-    if (Nucleus::Factory.Recycle<elle::Factory>() == elle::StatusError)
-      escape("unable to recycle the factory");
+    // nothing to do.
 
     leave();
   }

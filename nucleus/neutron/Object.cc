@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [fri jun 24 19:05:57 2011]
+// updated       julien quintard   [tue jul 12 12:17:04 2011]
 //
 
 //
@@ -457,7 +457,7 @@ namespace nucleus
 		<< "[Owner] " << std::endl;
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< elle::Dumpable::Shift << "[Permissions] "
+		<< elle::Dumpable::Shift << "[Permissions] " << std::dec
 		<< (elle::Natural32)this->meta.owner.permissions << std::endl;
 
       if (this->meta.owner.token.Dump(margin + 6) == elle::StatusError)
