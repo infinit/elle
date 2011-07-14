@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [mon jun 27 18:35:27 2011]
+// updated       julien quintard   [thu jul 14 14:44:01 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HH
@@ -22,6 +22,7 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -39,13 +40,24 @@ namespace elle
 //
 
     ///
+    /// Function generic class.
+    ///
+    template <typename... T>
+    class Function;
+
+    ///
     /// this class represents a function.
     ///
     template <typename... T>
-    class Function:
+    class Function< Parameters<T...> >:
       public Object
     {
     public:
+      //
+      // types
+      //
+      typedef Parameters<T...>		P;
+
       //
       // types
       //
@@ -55,7 +67,7 @@ namespace elle
       // constructors & destructors
       //
       Function(Handler);
-      Function(const Function<T...>&);
+      Function(const Function< Parameters<T...> >&);
 
       //
       // methods

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [fri jun 17 20:55:59 2011]
+// updated       julien quintard   [thu jul 14 14:08:10 2011]
 //
 
 #ifndef ELLE_NETWORK_CHANNEL_HH
@@ -18,14 +18,25 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/core/Natural.hh>
+
+#include <elle/standalone/Region.hh>
+
 #include <elle/radix/Status.hh>
 
 #include <elle/concurrency/Event.hh>
 
 #include <elle/network/Socket.hh>
+#include <elle/network/Parcel.hh>
+
+#include <elle/idiom/Close.hh>
+# include <list>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
+  using namespace core;
+  using namespace standalone;
   using namespace radix;
   using namespace concurrency;
 
@@ -45,17 +56,29 @@ namespace elle
     {
     public:
       //
+      // constants
+      //
+      static const Natural64		Capacity;
+
+      //
+      // types
+      //
+      typedef std::list<Parcel*>		Container;
+      typedef Container::iterator		Iterator;
+      typedef Container::const_iterator		Scoutor;
+
+      //
       // constructors & destructors
       //
-      Channel(Socket::Type,
-	      Socket::Mode);
+      Channel(Socket::Type);
+      ~Channel();
 
       //
       // methods
       //
       template <typename I>
-      Status	Send(const I,
-		     const Event& = Event::Null);
+      Status		Send(const I,
+			     const Event& = Event::Null);
       template <typename O>
       Status		Receive(const Event&,
 				O);
@@ -65,6 +88,14 @@ namespace elle
 			     O);
       template <typename I>
       Status		Reply(const I);
+
+      //
+      // attributes
+      //
+      Region*		buffer;
+      Natural64		offset;
+
+      Container		queue;
     };
 
   }

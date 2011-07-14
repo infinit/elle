@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.hh
 //
 // created       julien quintard   [tue mar 16 12:04:48 2010]
-// updated       julien quintard   [mon may  3 21:20:52 2010]
+// updated       julien quintard   [thu jul 14 13:38:31 2011]
 //
 
 #ifndef ELLE_NETWORK_PARCEL_HH
@@ -74,6 +74,7 @@ namespace elle
       // attributes
       //
       Session*		session;
+
       Header*		header;
       Data*		data;
     };

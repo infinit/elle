@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Registrar.hh
 //
 // created       julien quintard   [mon jun  6 12:07:32 2011]
-// updated       julien quintard   [wed jul  6 09:15:07 2011]
+// updated       julien quintard   [mon jul 11 14:47:43 2011]
 //
 
 #ifndef ELLE_UTILITY_REGISTRAR_HH
@@ -21,7 +21,7 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
+#include <elle/radix/Object.hh>
 #include <elle/radix/Variables.hh>
 
 #include <elle/package/Archive.hh>
@@ -58,7 +58,7 @@ namespace elle
     ///
     template <typename T>
     class Registrar:
-      public Entity
+      public Object
     {
     public:
       //
@@ -126,6 +126,11 @@ namespace elle
       typedef typename Container::const_iterator	Scoutor;
 
       //
+      // constructors & destructors
+      //
+      ~Registrar();
+
+      //
       // methods
       //
       template <typename C>
@@ -137,6 +142,9 @@ namespace elle
       //
       // interfaces
       //
+
+      // object
+      declare(Registrar<T>);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

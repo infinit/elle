@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sat jul  9 16:31:03 2011]
+// updated       julien quintard   [mon jul 11 14:00:40 2011]
 //
 
 //

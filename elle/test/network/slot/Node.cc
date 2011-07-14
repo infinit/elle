@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed jul  6 15:39:41 2011]
+// updated       julien quintard   [thu jul 14 14:22:17 2011]
 //
 
 //
@@ -21,18 +21,6 @@ namespace elle
 {
   namespace test
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    Node::Node():
-      slot(Socket::ModeAsynchronous)
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [wed jul  6 15:39:35 2011]
+// updated       julien quintard   [thu jul 14 14:21:41 2011]
 //
 
 //
@@ -21,18 +21,6 @@ namespace elle
 {
   namespace test
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    Client::Client():
-      door(Socket::ModeAsynchronous)
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------

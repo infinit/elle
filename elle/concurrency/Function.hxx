@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [mon jun 27 07:17:47 2011]
+// updated       julien quintard   [thu jul 14 14:45:02 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HXX
@@ -36,7 +36,7 @@ namespace elle
     /// the default constructor.
     ///
     template <typename... T>
-    Function<T...>::Function(Handler				handler):
+    Function< Parameters<T...> >::Function(Handler		handler):
       handler(handler)
     {
     }
@@ -45,7 +45,12 @@ namespace elle
     /// the copy constructor.
     ///
     template <typename... T>
-    Function<T...>::Function(const Function<T...>&		function):
+    Function< Parameters<T...> >::Function(
+				    const Function<
+				      Parameters<
+					T...
+					>
+				      >&			function):
       Object(function),
 
       handler(function.handler)
@@ -60,7 +65,8 @@ namespace elle
     /// this method calls the handler.
     ///
     template <typename... T>
-    Status		Function<T...>::Call(T...		arguments)
+    Status
+    Function< Parameters<T...> >::Call(T...			arguments)
     {
       return (this->handler(arguments...));
     }
@@ -72,7 +78,8 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Function<T...>, _(template <typename... T>));
+    embed(Function< Parameters<T...> >,
+	  _(template <typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -82,7 +89,8 @@ namespace elle
     /// this method dumps the function state.
     ///
     template <typename... T>
-    Status		Function<T...>::Dump(const Natural32	margin) const
+    Status
+    Function< Parameters<T...> >::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 

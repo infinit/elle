@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sat jul  9 16:31:26 2011]
+// updated       julien quintard   [thu jul 14 14:07:33 2011]
 //
 
 //
@@ -17,7 +17,6 @@
 
 #include <elle/network/Door.hh>
 #include <elle/network/Packet.hh>
-#include <elle/network/Raw.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
 
@@ -40,11 +39,6 @@ namespace elle
     ///
     const Natural32		Door::Timeout = 1000;
 
-    ///
-    /// this value defines the maximum capacity of a buffered packed, in bytes.
-    ///
-    const Natural64		Door::Capacity = 524288;
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -53,23 +47,9 @@ namespace elle
     /// the default constructor.
     ///
     Door::Door():
-      Channel::Channel(Socket::TypeDoor, Socket::ModeUnknown),
+      Channel::Channel(Socket::TypeDoor),
 
-      socket(NULL),
-      buffer(NULL),
-      offset(0)
-    {
-    }
-
-    ///
-    /// specific mode constructor.
-    ///
-    Door::Door(const Socket::Mode				mode):
-      Channel::Channel(Socket::TypeDoor, mode),
-
-      socket(NULL),
-      buffer(NULL),
-      offset(0)
+      socket(NULL)
     {
     }
 
@@ -81,10 +61,6 @@ namespace elle
       // check the socket presence.
       if (this->socket != NULL)
 	this->socket->deleteLater();
-
-      // delete the buffer.
-      if (this->buffer != NULL)
-	delete this->buffer;
     }
 
 //
@@ -118,8 +94,6 @@ namespace elle
     ///
     /// this method creates a door based on the given socket.
     ///
-    /// thus this door is already attached to a lane.
-    ///
     Status		Door::Create(::QLocalSocket*		socket)
     {
       enter();
@@ -128,35 +102,16 @@ namespace elle
       this->socket = socket;
 
       // connect the signals, depending on the mode.
-      switch (this->mode)
-	{
-	case Socket::ModeAsynchronous:
-	  {
-	    if (this->connect(this->socket, SIGNAL(readyRead()),
-			      this, SLOT(_fetch())) == false)
-	      escape("unable to connect the signal");
+      if (this->connect(this->socket, SIGNAL(readyRead()),
+			this, SLOT(_ready())) == false)
+	escape("unable to connect the signal");
 
-	    if (this->connect(
-		  this->socket,
-		  SIGNAL(error(const QLocalSocket::LocalSocketError)),
-		  this,
-		  SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
-	      escape("unable to connect to signal");
-
-	    break;
-	  }
-	case Socket::ModeSynchronous:
-	  {
-	    // nothing to do.
-
-	    break;
-	  }
-	case Socket::ModeUnknown:
-	default:
-	  {
-	    escape("unknown mode");
-	  }
-	}
+      if (this->connect(
+	    this->socket,
+	    SIGNAL(error(const QLocalSocket::LocalSocketError)),
+	    this,
+	    SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
+	escape("unable to connect to signal");
 
       leave();
     }
@@ -213,128 +168,70 @@ namespace elle
     }
 
     ///
-    /// this method reads data from the socket and returns true if a parcel
-    /// has been constructed or false if not enough data has been received
-    /// to complete a parcel.
+    /// this method reads data from the socket and places it in a buffer.
     ///
-    /// note that since doors are stream-based socket, the data fetched
-    /// may be incomplete. in such a case, the data should be stored in
-    /// a buffer, waiting for the completing data.
-    ///
-    /// note however that in order to prevent clients from sending huge
-    /// meaningless data the size of a meaningfull packet is limited.
-    ///
-    Status		Door::Read(Parcel*&			parcel)
+    Status		Door::Read()
     {
-      Address		address;
-
       enter();
 
       //
-      // read the pending datagrams in a raw.
+      // read the pending datagrams in the buffer.
       //
       {
-	Raw*		raw;
 	Natural32	size;
-
-	enter(instance(raw));
 
 	// retrieve the size of the data available.
 	size = this->socket->bytesAvailable();
 
 	// check if there is data to be read.
 	if (size == 0)
-	  {
-	    // if there are bufferised packets, return one.
-	    if (this->queue.empty() == false)
-	      {
-		// finally, take the oldest parcel and return it.
-		parcel = this->queue.front();
+	  leave();
 
-		// remove this packet.
-		this->queue.pop_front();
-
-		true();
-	      }
-	    else
-	      {
-		// otherwise, there is no pending parcel at the moment.
-
-		false();
-	      }
-	  }
-
-	// allocate a new raw.
-	raw = new Raw;
-
-	// prepare the raw
-	if (raw->Prepare(size) == StatusError)
-	  escape("unable to prepare the raw");
-
-	// set the address as being an IP address.
-	if (address.host.Create(Host::TypeIP) == StatusError)
-	  escape("unable to create an IP address");
-
-	// read the packet from the socket.
-	if (this->socket->read((char*)raw->contents, size) != size)
-	  escape(this->socket->errorString().toStdString().c_str());
-
-	// set the raw's size.
-	raw->size = size;
-
-	// append those raw data to the buffer.
+	// adjust the buffer.
 	if (this->buffer == NULL)
 	  {
 	    // assign the raw since there was no previous buffer.
-	    this->buffer = raw;
+	    this->buffer = new Region;
 
-	    // initialize the offset.
-	    this->offset = 0;
-
-	    // stop tracking raw.
-	    waive(raw);
+	    // prepare the capacity.
+	    if (this->buffer->Prepare(size) == StatusError)
+	      escape("unable to prepare the buffer");
 	  }
 	else
 	  {
-	    // if the offset is too far, first move the existing data to the
-	    // beginning of the buffer.
-	    if (this->offset >= Door::Capacity)
-	      {
-		// move the data.
-		::memmove(this->buffer->contents,
-			  this->buffer->contents + this->offset,
-			  this->buffer->size - this->offset);
-
-		// reinitialize the buffer size.
-		this->buffer->size = this->buffer->size - this->offset;
-
-		// reinitialize the offset.
-		this->offset = 0;
-	      }
-
-	    // then append the new data.
-	    if (this->buffer->Append(raw->contents, raw->size) == StatusError)
-	      escape("unable to append the fetched raw to the buffer");
-
-	    // delete the raw.
-	    delete raw;
-
-	    // stop tracking the raw.
-	    waive(raw);
+	    // adjust the buffer.
+	    if (this->buffer->Adjust(this->buffer->size + size) == StatusError)
+	      escape("unable to adjust the buffer");
 	  }
 
-	// release objects.
-	release();
+	// read the packet from the socket.
+	if (this->socket->read((char*)this->buffer->contents +
+			       this->buffer->size, size) != size)
+	  escape(this->socket->errorString().toStdString().c_str());
+
+	// set the new size.
+	this->buffer->size = this->buffer->size + size;
       }
+
+      leave();
+    }
+
+    ///
+    /// this method extracts as much parcels as possible from the
+    /// buffer.
+    ///
+    Status		Door::Fetch()
+    {
+      enter();
 
       //
       // try to extract a serie of packet from the received raw.
       //
       while ((this->buffer->size - this->offset) > 0)
 	{
-	  Parcel*	parcel;
 	  Region	frame;
 	  Packet	packet;
+	  Parcel*	parcel;
 
 	  enter(instance(parcel));
 
@@ -360,13 +257,19 @@ namespace elle
 	  if (parcel->header->Extract(packet) == StatusError)
 	    escape("unable to extract the header");
 
-	  // test if there is enough data.
+	  // act depending on the amount of data required against
+	  // the amount of data received.
 	  if ((packet.size - packet.offset) < parcel->header->size)
 	    {
+	      //
+	      // in this case, the future packet requires more data than
+	      // has been sent.
+	      //
+
 	      // test if we exceeded the buffer capacity meaning that the
 	      // waiting packet will probably never come. therefore just
 	      // discard everything!
-	      if ((this->buffer->size - this->offset) > Door::Capacity)
+	      if ((this->buffer->size - this->offset) > Channel::Capacity)
 		{
 		  // delete the buffer.
 		  delete this->buffer;
@@ -375,69 +278,94 @@ namespace elle
 		  this->buffer = NULL;
 		  this->offset = 0;
 
+		  /// XXX \todo make this one a warning instead of an error.
 		  escape("exceeded the buffer capacity without making sense "
 			 "out of the fetched data");
 		}
 
-	      // if there are bufferised packets, return one.
-	      if (this->queue.empty() == false)
-		{
-		  // finally, take the oldest parcel and return it.
-		  parcel = this->queue.front();
+	      // since the parcel will not be built, delete the instance.
+	      delete parcel;
 
-		  // remove this packet.
-		  this->queue.pop_front();
+	      // waive tracking.
+	      waive(parcel);
 
-		  true();
-		}
-
-	      false();
+	      // exit the loop since there is not enough data anyway.
+	      break;
 	    }
+	  else
+	    {
+	      //
+	      // otherwise, there is enough data in the buffer to extract
+	      // the parcel.
+	      //
+	      Address		address;
 
-	  // extract the data.
-	  if (packet.Extract(*parcel->data) == StatusError)
-	    escape("unable to extract the data");
+	      // extract the data.
+	      if (packet.Extract(*parcel->data) == StatusError)
+		escape("unable to extract the data");
 
-	  // create the session.
-	  if (parcel->session->Create(this,
-				      address,
-				      parcel->header->event) == StatusError)
-	    escape("unable to create the session");
+	      // set the address as being an IP address.
+	      if (address.host.Create(Host::TypeIP) == StatusError)
+		escape("unable to create an IP address");
 
-	  // add the parcel to the container.
-	  this->queue.push_back(parcel);
+	      // create the session.
+	      if (parcel->session->Create(
+		    this,
+		    address,
+		    parcel->header->event) == StatusError)
+		escape("unable to create the session");
 
-	  // stop tracking the parcel.
-	  waive(parcel);
+	      // add the parcel to the container.
+	      this->queue.push_back(parcel);
 
-	  // move to the next frame by setting the offset at the end of
-	  // the extracted frame.
-	  this->offset = this->offset + packet.offset;
+	      // stop tracking the parcel.
+	      waive(parcel);
+
+	      // move to the next frame by setting the offset at the end of
+	      // the extracted frame.
+	      this->offset = this->offset + packet.offset;
+	    }
 
 	  // release objects.
 	  release();
 	}
 
-      // if there is no more data in the buffer, delete it in order to avoid
-      // copying data whenever a new packet is received. indeed, if there
-      // is no buffer, the packet becomes the buffer, hence simplifying the
-      // process.
-      if (this->offset == this->buffer->size)
-	{
-	  // delete the buffer.
-	  delete this->buffer;
+      //
+      // perform some operations on the buffer.
+      //
+      {
+	// if there is no more data in the buffer, delete it in order to avoid
+	// copying data whenever a new packet is received. indeed, if there
+	// is no buffer, the packet becomes the buffer, hence simplifying the
+	// process.
+	if (this->offset == this->buffer->size)
+	  {
+	    // delete the buffer.
+	    delete this->buffer;
 
-	  // reinitialize the pointer to NULL.
-	  this->buffer = NULL;
-	}
+	    // reinitialize the pointer to NULL.
+	    this->buffer = NULL;
+	    this->offset = 0;
+	  }
 
-      // finally, take the oldest parcel and return it.
-      parcel = this->queue.front();
+	// if the offset is too far, move the existing data to the
+	// beginning of the buffer.
+	if (this->offset >= Channel::Capacity)
+	  {
+	    // move the data.
+	    ::memmove(this->buffer->contents,
+		      this->buffer->contents + this->offset,
+		      this->buffer->size - this->offset);
 
-      // remove this packet.
-      this->queue.pop_front();
+	    // reinitialize the buffer size.
+	    this->buffer->size = this->buffer->size - this->offset;
 
-      true();
+	    // reinitialize the offset.
+	    this->offset = 0;
+	  }
+      }
+
+      leave();
     }
 
 //
@@ -493,21 +421,32 @@ namespace elle
     }
 
     ///
-    /// this callback fetches packets from the socket.
+    /// this callback fetches parcels and dispatches them.
     ///
-    Status		Door::Fetch()
+    Status		Door::Dispatch()
     {
-      Parcel*		parcel;
+      enter();
 
-      enter(instance(parcel));
+      // first read from the socket.
+      if (this->Read() == StatusError)
+	escape("unable to read from the socket");
 
-      // while there is packets on the socket, read them,
-      while (this->Read(parcel) == StatusTrue)
+      // then, fetch the parcels from the buffer.
+      if (this->Fetch() == StatusError)
+	escape("unable to fetch the parcels from the buffer");
+
+      // process the queued parcels.
+      while (this->queue.empty() == false)
 	{
-	  // dispatch this parcel to the network manager.
-	  //
-	  // note that a this point, the network is longer responsible for the
-	  // parcel and its memory.
+	  Parcel*	parcel;
+
+	  // finally, take the oldest parcel and return it.
+	  parcel = this->queue.front();
+
+	  // remove this packet.
+	  this->queue.pop_front();
+
+	  // otherwise, trigger the network dispatching mechanism.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
 	      Report*	report;
@@ -566,11 +505,11 @@ namespace elle
     }
 
     ///
-    /// this slot fetches packets from the socket.
+    /// this slot fetches and dispatches packets from the socket.
     ///
-    void		Door::_fetch()
+    void		Door::_ready()
     {
-      Callback< Parameters<> >	callback(&Door::Fetch, this);
+      Callback< Parameters<> >	callback(&Door::Dispatch, this);
       Closure< Parameters<> >	closure(callback);
 
       enter();

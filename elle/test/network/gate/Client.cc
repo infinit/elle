@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [wed jul  6 15:36:00 2011]
+// updated       julien quintard   [thu jul 14 14:22:01 2011]
 //
 
 //
@@ -21,18 +21,6 @@ namespace elle
 {
   namespace test
   {
-
-//
-// ---------- constructors & destructors --------------------------------------
-//
-
-    ///
-    /// default constructor.
-    ///
-    Client::Client():
-      gate(Socket::ModeAsynchronous)
-    {
-    }
 
 //
 // ---------- methods ---------------------------------------------------------

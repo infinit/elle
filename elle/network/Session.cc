@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [tue jun  7 06:37:16 2011]
+// updated       julien quintard   [wed jul 13 16:26:25 2011]
 //
 
 //
@@ -215,8 +215,11 @@ namespace elle
       std::cout << alignment << "[Session] " << std::hex << this << std::endl;
 
       // dump the socket.
-      if (this->socket->Dump(margin + 2) == StatusError)
-	escape("unable to dump the socket");
+      if (this->socket != NULL)
+	{
+	  if (this->socket->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the socket");
+	}
 
       // dump the address.
       if (this->address.Dump(margin + 2) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [sat jul  9 23:38:01 2011]
+// updated       julien quintard   [mon jul 11 23:15:35 2011]
 //
 
 //
@@ -68,8 +68,9 @@ namespace elle
 	  if (Trace::Initialize() == StatusError)
 	    escape("unable to initialize the trace system");
 
-	  // set the state.
-	  Meta::Debug::State = true;
+	  // enable the logging.
+	  if (Meta::Enable() == StatusError)
+	    escape("unable to enable the meta logging");
 	}
 
       leave();
@@ -85,8 +86,9 @@ namespace elle
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
 	{
-	  // set the state.
-	  Meta::Debug::State = false;
+	  // disable the logging.
+	  if (Meta::Disable() == StatusError)
+	    escape("unable to disable the meta logging");
 
 	  // show the traces.
 	  if (Meta::Show() == StatusError)
@@ -96,6 +98,32 @@ namespace elle
 	  if (Trace::Clean() == StatusError)
 	    escape("unable to clean the trace system");
 	}
+
+      leave();
+    }
+
+    ///
+    /// this method enables the allocation logging.
+    ///
+    Status		Meta::Enable()
+    {
+      enter();
+
+      // set the state.
+      Meta::Debug::State = true;
+
+      leave();
+    }
+
+    ///
+    /// this method disables the allocation logging.
+    ///
+    Status		Meta::Disable()
+    {
+      enter();
+
+      // set the state.
+      Meta::Debug::State = false;
 
       leave();
     }

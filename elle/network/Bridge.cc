@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [mon jul  4 11:55:27 2011]
+// updated       julien quintard   [thu jul 14 14:09:49 2011]
 //
 
 //
@@ -54,6 +54,9 @@ namespace elle
     ///
     BridgePorter::~BridgePorter()
     {
+      // stop listening.
+      this->server->close();
+
       // if there is a server, release it.
       if (this->server != NULL)
 	this->server->deleteLater();
@@ -68,17 +71,21 @@ namespace elle
     //
 
     ///
-    /// this method starts listening on the given address.
+    /// this method creates and starts the porter.
     ///
-    Status		BridgePorter::Listen(const Address&	address)
+    Status		BridgePorter::Create(const Address&	address)
     {
       enter();
+
+      // set the address.
+      this->address = address;
 
       // allocate a new server.
       this->server = new ::QTcpServer;
 
       // start listening.
-      if (this->server->listen(address.host.location, address.port) == false)
+      if (this->server->listen(this->address.host.location,
+			       this->address.port) == false)
 	escape(this->server->errorString().toStdString().c_str());
 
       // connect the signals.
@@ -147,12 +154,14 @@ namespace elle
 
       enter(instance(porter));
 
+      // XXX check that there is not a porter for that address already!
+
       // allocate a new porter.
       porter = new BridgePorter(callback);
 
-      // start listening.
-      if (porter->Listen(address) == StatusError)
-	escape("unable to listen on the bridge");
+      // create the porter.
+      if (porter->Create(address) == StatusError)
+	escape("unable to create the porter");
 
       // add the porter to the container.
       Bridge::Porters.push_back(porter);
@@ -161,6 +170,39 @@ namespace elle
       waive(porter);
 
       leave();
+    }
+
+    ///
+    /// this method blocks the given address by deleting the associated
+    /// porter.
+    ///
+    Status		Bridge::Block(const Address&		address)
+    {
+      Bridge::Iterator	iterator;
+
+      enter();
+
+      // go through the porters.
+      for (iterator = Bridge::Porters.begin();
+	   iterator != Bridge::Porters.end();
+	   iterator++)
+	{
+	  BridgePorter*	porter = *iterator;
+
+	  // is this the porter we are looking for?
+	  if (porter->address == address)
+	    {
+	      // delete the porter.
+	      delete porter;
+
+	      // remove the entry from the container.
+	      Bridge::Porters.erase(iterator);
+
+	      leave();
+	    }
+	}
+
+      escape("unable to locate the porter associated with this address");
     }
 
 //
@@ -243,8 +285,7 @@ namespace elle
 	escape(this->server->errorString().toStdString().c_str());
 
       // allocate a new gate to this bridge.
-      /// XXX \todo we should be able to specify the mode somewhere.
-      gate = new Gate(Socket::ModeAsynchronous);
+      gate = new Gate;
 
       // create a gate with the specific socket.
       if (gate->Create(socket) == StatusError)

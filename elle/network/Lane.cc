@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [mon jul  4 11:56:37 2011]
+// updated       julien quintard   [thu jul 14 14:09:56 2011]
 //
 
 //
@@ -68,15 +68,18 @@ namespace elle
     ///
     /// this method starts listening on the given name.
     ///
-    Status		LanePorter::Listen(const String&		name)
+    Status		LanePorter::Create(const String&		name)
     {
       enter();
+
+      // set the name.
+      this->name = name;
 
       // allocate a new server.
       this->server = new ::QLocalServer;
 
       // start listening.
-      if (this->server->listen(name.c_str()) == false)
+      if (this->server->listen(this->name.c_str()) == false)
 	escape(this->server->errorString().toStdString().c_str());
 
       // connect the signals.
@@ -148,9 +151,9 @@ namespace elle
       // allocate a new porter.
       porter = new LanePorter(callback);
 
-      // start listening.
-      if (porter->Listen(name) == StatusError)
-	escape("unable to listen on the lane");
+      // create the porter.
+      if (porter->Create(name) == StatusError)
+	escape("unable to create the porter");
 
       // add the porter to the container.
       Lane::Porters.push_back(porter);
@@ -159,6 +162,39 @@ namespace elle
       waive(porter);
 
       leave();
+    }
+
+    ///
+    /// this method blocks the given address by deleting the associated
+    /// porter.
+    ///
+    Status		Lane::Block(const String&		name)
+    {
+      Lane::Iterator	iterator;
+
+      enter();
+
+      // go through the porters.
+      for (iterator = Lane::Porters.begin();
+	   iterator != Lane::Porters.end();
+	   iterator++)
+	{
+	  LanePorter*	porter = *iterator;
+
+	  // is this the porter we are looking for?
+	  if (porter->name == name)
+	    {
+	      // delete the porter.
+	      delete porter;
+
+	      // remove the entry from the container.
+	      Lane::Porters.erase(iterator);
+
+	      leave();
+	    }
+	}
+
+      escape("unable to locate the porter associated with this name");
     }
 
 //
@@ -243,8 +279,7 @@ namespace elle
 	escape(this->server->errorString().toStdString().c_str());
 
       // allocate a new door to this lane.
-      /// XXX \todo we should be able to specify the mode somewhere.
-      door = new Door(Socket::ModeAsynchronous);
+      door = new Door;
 
       // create a door with the specific socket.
       if (door->Create(socket) == StatusError)

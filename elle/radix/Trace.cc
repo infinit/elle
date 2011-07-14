@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.cc
 //
 // created       julien quintard   [mon apr 26 21:25:23 2010]
-// updated       julien quintard   [sat jul  9 19:25:41 2011]
+// updated       julien quintard   [mon jul 11 23:14:41 2011]
 //
 
 //
@@ -48,9 +48,14 @@ namespace elle
 //
 
     ///
-    /// this constant contains the path to traces directory.
+    /// this variable contains the path to traces directory.
     ///
-    const String			Trace::Location = "/tmp/traces/";
+    Character				Trace::Location[32];
+
+    ///
+    /// this variable contains the length of the location.
+    ///
+    Natural32				Trace::Length;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -210,117 +215,6 @@ namespace elle
 //
 
     ///
-    /// this method stores an additional trace.
-    ///
-    Status		Trace::Store(Void*			address)
-    {
-      Trace		trace(address);
-      Natural32		size =
-	sizeof (Void*) +
-	Trace::Capacity * sizeof (Void*) +
-	sizeof (Natural32);
-      Byte		buffer[size];
-      Natural32		length = Trace::Location.length();
-      Character		path[length +
-			     1 +
-			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
-			     1];
-      int		fd;
-
-      enter();
-
-      // XXX
-      printf("Trace::Store(%p)\n", address);
-
-      // generate the trace.
-      if (trace.Generate() == StatusError)
-	escape("unable to generate the trace");
-
-      // copy the data into the buffer.
-      ::memcpy(buffer + 0,
-	       &trace.address,
-	       sizeof (Void*));
-
-      ::memcpy(buffer + sizeof (Void*),
-	       &trace.frames,
-	       Trace::Capacity * sizeof (Void*));
-
-      ::memcpy(buffer + sizeof (Void*) + Trace::Capacity * sizeof (Void*),
-	       &trace.size,
-	       sizeof (Natural32));
-
-      // build the path.
-      ::sprintf(path,
-		"%s/%p",
-		Trace::Location.c_str(), address);
-
-      // open the file.
-      if ((fd = ::open(path,
-		       O_CREAT | O_TRUNC | O_WRONLY,
-		       0600)) == -1)
-	escape(::strerror(errno));
-
-      // write the text to the file.
-      if (::write(fd,
-		  buffer,
-		  size) != (ssize_t)size)
-	{
-	  ::close(fd);
-
-	  escape(::strerror(errno));
-	}
-
-      // close the file.
-      ::close(fd);
-
-      leave();
-    }
-
-    ///
-    /// this method erases a trace.
-    ///
-    Status		Trace::Erase(Void*			address)
-    {
-      Natural32		length = Trace::Location.length();
-      Character		path[length +
-			     1 +
-			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
-			     1];
-      struct ::stat	stat;
-
-      enter();
-
-      // XXX
-      printf("Trace::Erase(%p)\n", address);
-
-      // build the path.
-      ::sprintf(path,
-		"%s/%p",
-		Trace::Location.c_str(), address);
-
-      // does the path points to something.
-      if (::stat(path, &stat) != 0)
-	{
-	  Trace		trace(address);
-
-	  // generate the trace.
-	  if (trace.Generate() == StatusError)
-	    escape("unable to generate the trace");
-
-	  // dump the trace.
-	  if (trace.Dump() == StatusError)
-	    escape("unable to dump the trace");
-
-	  escape("this trace does not seem to exist");
-	}
-
-      // unlink the file.
-      ::unlink(path);
-
-      leave();
-    }
-
-    ///
     /// XXX
     ///
     Status		Trace::Initialize()
@@ -328,6 +222,15 @@ namespace elle
       Path		path;
 
       enter();
+
+      // create the location.
+      sprintf(Trace::Location, "/tmp/XXXXXX");
+
+      // generate a temporary location.
+      ::mkdtemp(Trace::Location);
+
+      // compute the location's length.
+      Trace::Length = ::strlen(Trace::Location);
 
       // create the path.
       if (path.Create(Trace::Location) == StatusError)
@@ -379,6 +282,115 @@ namespace elle
     }
 
     ///
+    /// this method stores an additional trace.
+    ///
+    Status		Trace::Store(Void*			address)
+    {
+      Trace		trace(address);
+      Natural32		size =
+	sizeof (Void*) +
+	Trace::Capacity * sizeof (Void*) +
+	sizeof (Natural32);
+      Byte		buffer[size];
+      Character		path[Trace::Length +
+			     1 +
+			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
+			     1];
+      int		fd;
+
+      enter();
+
+      // XXX
+      //printf("Trace::Store(%p)\n", address);
+
+      // generate the trace.
+      if (trace.Generate() == StatusError)
+	escape("unable to generate the trace");
+
+      // copy the data into the buffer.
+      ::memcpy(buffer + 0,
+	       &trace.address,
+	       sizeof (Void*));
+
+      ::memcpy(buffer + sizeof (Void*),
+	       &trace.frames,
+	       Trace::Capacity * sizeof (Void*));
+
+      ::memcpy(buffer + sizeof (Void*) + Trace::Capacity * sizeof (Void*),
+	       &trace.size,
+	       sizeof (Natural32));
+
+      // build the path.
+      ::sprintf(path,
+		"%s/%p",
+		Trace::Location, address);
+
+      // open the file.
+      if ((fd = ::open(path,
+		       O_CREAT | O_TRUNC | O_WRONLY,
+		       0600)) == -1)
+	escape(::strerror(errno));
+
+      // write the text to the file.
+      if (::write(fd,
+		  buffer,
+		  size) != (ssize_t)size)
+	{
+	  ::close(fd);
+
+	  escape(::strerror(errno));
+	}
+
+      // close the file.
+      ::close(fd);
+
+      leave();
+    }
+
+    ///
+    /// this method erases a trace.
+    ///
+    Status		Trace::Erase(Void*			address)
+    {
+      Character		path[Trace::Length +
+			     1 +
+			     2 + (sizeof (Void*) / sizeof (Byte)) * 2 +
+			     1];
+      struct ::stat	stat;
+
+      enter();
+
+      // XXX
+      //printf("Trace::Erase(%p)\n", address);
+
+      // build the path.
+      ::sprintf(path,
+		"%s/%p",
+		Trace::Location, address);
+
+      // does the path points to something.
+      if (::stat(path, &stat) != 0)
+	{
+	  Trace		trace(address);
+
+	  // generate the trace.
+	  if (trace.Generate() == StatusError)
+	    escape("unable to generate the trace");
+
+	  // dump the trace.
+	  if (trace.Dump() == StatusError)
+	    escape("unable to dump the trace");
+
+	  escape("this trace does not seem to exist");
+	}
+
+      // unlink the file.
+      ::unlink(path);
+
+      leave();
+    }
+
+    ///
     /// XXX
     ///
     Status		Trace::Show(const Natural32		margin)
@@ -392,14 +404,13 @@ namespace elle
       std::cout << alignment << "[Traces]" << std::endl;
 
       // open the directory.
-      if ((dp = ::opendir(Trace::Location.c_str())) == NULL)
+      if ((dp = ::opendir(Trace::Location)) == NULL)
 	escape("unable to open the directory");
 
       // go through the entries.
       while ((entry = ::readdir(dp)) != NULL)
 	{
-	  Natural32	length = Trace::Location.length();
-	  Character	path[length +
+	  Character	path[Trace::Length +
 			     1 +
 			     ::strlen(entry->d_name) +
 			     1];
@@ -413,7 +424,7 @@ namespace elle
 	  // build the path.
 	  ::sprintf(path,
 		    "%s/%s",
-		    Trace::Location.c_str(), entry->d_name);
+		    Trace::Location, entry->d_name);
 
 	  // retrieve information on the file.
 	  if (::stat(path, &stat) != 0)

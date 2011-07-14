@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [tue jun  7 06:14:58 2011]
+// updated       julien quintard   [thu jul 14 14:06:33 2011]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -71,27 +71,11 @@ namespace elle
 	  TypeSlot = 0x4
 	};
 
-      enum Mode
-	{
-	  ModeUnknown,
-
-	  ModeSynchronous,
-	  ModeAsynchronous
-	};
-
-      //
-      // types
-      //
-      typedef std::list<Parcel*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
-
       //
       // constructors & destructors
       //
       Socket();
-      Socket(const Type,
-	     const Mode);
+      Socket(const Type);
       ~Socket();
 
       //
@@ -103,12 +87,13 @@ namespace elle
       //
       // attributes
       //
-      Type					type;
-      Mode					mode;
+      Type		type;
 
-      Container					queue;
-
-      Callback< Parameters<const String> >*	callback;
+      Callback<
+	Parameters<
+	  const String
+	  >
+	>*		callback;
     };
 
   }

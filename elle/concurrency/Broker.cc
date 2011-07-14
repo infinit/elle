@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.cc
 //
 // created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [sat jul  9 20:12:44 2011]
+// updated       julien quintard   [sun jul 10 22:19:06 2011]
 //
 
 //
@@ -121,18 +121,14 @@ namespace elle
     ///
     void		Broker::_trigger()
     {
-      //Callback< Parameters<> >	callback(&Broker::Trigger, this);
-      //Closure< Parameters<> >	closure(callback);
+      Callback< Parameters<> >	callback(&Broker::Trigger, this);
+      Closure< Parameters<> >	closure(callback);
 
       enter();
 
-      /* XXX
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
 	alert(_(), "unable to spawn a fiber");
-      */
-
-      this->Trigger();
 
       release();
     }

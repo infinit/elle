@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [sat jul  9 17:27:42 2011]
+// updated       julien quintard   [mon jul 11 22:56:28 2011]
 //
 
 //
@@ -232,13 +232,17 @@ namespace elle
     Status		Fiber::Register(const
 					  Callback<
 					    Parameters<const Phase,
-						       Fiber*> >& callback)
+						       Fiber*> >& c)
     {
+      Callback< Parameters<const Phase, Fiber*> >*	callback;
+
       enter();
 
+      // clone the callback.
+      callback = new Callback< Parameters<const Phase, Fiber*> >(c);
+
       // store in the container.
-      Fiber::Phases.push_back(
-        new Callback< Parameters<const Phase, Fiber*> >(callback));
+      Fiber::Phases.push_back(callback);
 
       leave();
     }

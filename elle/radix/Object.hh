@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [thu jun 23 10:12:50 2011]
+// updated       julien quintard   [mon jul 11 13:40:04 2011]
 //
 
 #ifndef ELLE_RADIX_OBJECT_HH
@@ -115,7 +115,7 @@ namespace elle
       ///
       /// this method clones the current object.
       ///
-      virtual Status	Clone(Meta*&) const;
+      virtual Status	Clone(Object*&) const;
 
       //
       // operators
