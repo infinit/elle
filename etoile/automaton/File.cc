@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/File.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [wed jul  6 14:52:40 2011]
+// updated       julien quintard   [wed jul 13 19:57:00 2011]
 //
 
 //
@@ -103,9 +103,10 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
-      printf("------- Write size(%qu) to data of size(%qu)\n",
-	     region.size,
-	     context.contents->content->region.size);
+      // XXX
+      //printf("------- Write size(%qu) to data of size(%qu)\n",
+      //region.size,
+      //context.contents->content->region.size);
 
       // write the file.
       if (context.contents->content->Write(offset,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.cc
 //
 // created       julien quintard   [tue jun 14 16:41:06 2011]
-// updated       julien quintard   [sat jul  9 20:15:23 2011]
+// updated       julien quintard   [sun jul 10 22:17:29 2011]
 //
 
 //
@@ -120,8 +120,7 @@ namespace etoile
     {
       enter();
 
-      // XXX
-      Gear::Show();
+      // nothing to do.
 
       leave();
     }
