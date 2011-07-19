@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [sat jul  9 19:55:53 2011]
+// updated       julien quintard   [mon jul 18 09:57:55 2011]
 //
 
 //
@@ -219,6 +219,7 @@ namespace pig
     //
     {
       elle::Callback<
+	elle::Status,
 	elle::Parameters<
 	  const elle::Natural16> >	callback(&FUSE::Event);
       int				fd;
