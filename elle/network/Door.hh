@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [thu jul 14 14:08:21 2011]
+// updated       julien quintard   [sun jul 17 21:14:57 2011]
 //
 
 ///
@@ -41,6 +41,7 @@
 #include <elle/network/Channel.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Parcel.hh>
+#include <elle/network/Session.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -112,7 +113,8 @@ namespace elle
       Status		Call(const I,
 			     O);
       template <typename I>
-      Status		Reply(const I);
+      Status		Reply(const I,
+			      Session* = NULL);
 
       //
       // callbacks

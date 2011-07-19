@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [thu jul 14 14:15:51 2011]
+// updated       julien quintard   [mon jul 18 11:29:33 2011]
 //
 
 //
@@ -120,6 +120,11 @@ namespace elle
     {
       enter();
 
+      // check the size of the packet to make sure the receiver will
+      // have a buffer large enough to read it.
+      if (packet.size > Channel::Capacity)
+	escape("the packet seems to be too large");
+
       // push the datagram into the socket.
       if (this->socket->writeDatagram((char*)packet.contents,
 				      packet.size,
@@ -217,7 +222,7 @@ namespace elle
       if (this->callback != NULL)
 	{
 	  // trigger the callback.
-	  if (this->callback->Trigger(text) == StatusError)
+	  if (this->callback->Call(text) == StatusError)
 	    escape("an error occured in the callback");
 	}
 
@@ -305,24 +310,8 @@ namespace elle
 	  // for the parcel and its memory.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
-	      Report*		report;
-	      Session*		session;
-
-	      // retrieve the report.
-	      if (Report::Instance(report) == StatusFalse)
-		escape("unable to retrieve the report");
-
-	      // retrieve the session.
-	      if (Session::Instance(session) == StatusError)
-		escape("unable to retrieve the session");
-
-	      // since an error occured, transmit it to the sender
-	      if (this->Send(session->address,
-			     Inputs<TagError>(*report)) == StatusError)
-		escape("unable to send an error report");
-
-	      // flush the report since it has been sent to the sender.
-	      report->Flush();
+	      // display the errors.
+	      show();
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().
@@ -355,8 +344,10 @@ namespace elle
     void		Slot::_error(const QAbstractSocket::SocketError)
     {
       String		text(this->socket->errorString().toStdString());
-      Callback< Parameters<const String> >	callback(&Slot::Error, this);
-      Closure< Parameters<const String> >	closure(callback, text);
+      Callback< Status,
+		Parameters<const String> >	callback(&Slot::Error, this);
+      Closure< Status,
+	       Parameters<const String> >	closure(callback, text);
 
       enter();
 
@@ -372,8 +363,10 @@ namespace elle
     ///
     void		Slot::_ready()
     {
-      Callback< Parameters<> >	callback(&Slot::Dispatch, this);
-      Closure< Parameters<> >	closure(callback);
+      Callback< Status,
+		Parameters<> >	callback(&Slot::Dispatch, this);
+      Closure< Status,
+	       Parameters<> >	closure(callback);
 
       enter();
 

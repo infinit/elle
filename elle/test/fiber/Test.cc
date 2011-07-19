@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [tue jul  5 09:28:51 2011]
+// updated       julien quintard   [mon jul 18 09:37:45 2011]
 //
 
 //
@@ -76,8 +76,10 @@ namespace elle
     ///
     Status		Fiber3()
     {
-      Callback< Parameters<> >	fiber4(&Fiber4);
-      Closure< Parameters<> >	closure(fiber4);
+      Callback< Status,
+		Parameters<> >	fiber4(&Fiber4);
+      Closure< Status,
+	       Parameters<> >	closure(fiber4);
 
       enter();
 
@@ -178,21 +180,18 @@ namespace elle
     Status		Main(const Natural32,
 			     const Character*[])
     {
-      Callback< Parameters<> >	fiber1(&Fiber1);
-      Callback< Parameters<> >	fiber2(&Fiber2);
-      Callback< Parameters<> >	fiber3(&Fiber3);
+      Callback< Status,
+		Parameters<> >	fiber1(&Fiber1);
+      Callback< Status,
+		Parameters<> >	fiber2(&Fiber2);
+      Callback< Status,
+		Parameters<> >	fiber3(&Fiber3);
 
       enter();
 
       // initialize the library.
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the library");
-
-      // XXX
-      {
-	exit(0);
-      }
-      // XXX
 
       // setup the program.
       if (Program::Setup() == StatusError)

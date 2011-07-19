@@ -8,8 +8,19 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [thu jul 14 14:08:10 2011]
+// updated       julien quintard   [sun jul 17 21:11:36 2011]
 //
+
+///
+/// this very special include is required as Socket needs to know Channel
+/// while Channel inherits Socket. including Socket.hh normally makes moc,
+/// the QT meta object compiler, unable to detect the QObject classes.
+///
+/// therefore, Socket.hh is not included when moc processes a header file.
+///
+#ifndef Q_MOC_RUN
+# include <elle/network/Socket.hh>
+#endif
 
 #ifndef ELLE_NETWORK_CHANNEL_HH
 #define ELLE_NETWORK_CHANNEL_HH
@@ -87,7 +98,8 @@ namespace elle
       Status		Call(const I,
 			     O);
       template <typename I>
-      Status		Reply(const I);
+      Status		Reply(const I,
+			      Session* = NULL);
 
       //
       // attributes

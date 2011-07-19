@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [thu jul 14 14:07:13 2011]
+// updated       julien quintard   [mon jul 18 11:29:27 2011]
 //
 
 //
@@ -151,6 +151,11 @@ namespace elle
     Status		Gate::Write(const Packet&		packet)
     {
       enter();
+
+      // check the size of the packet to make sure the receiver will
+      // have a buffer large enough to read it.
+      if (packet.size > Channel::Capacity)
+	escape("the packet seems to be too large");
 
       // push the packet to the socket.
       if (this->socket->write((const char*)packet.contents,
@@ -399,7 +404,7 @@ namespace elle
       if (this->callback != NULL)
 	{
 	  // trigger the callback.
-	  if (this->callback->Trigger(text) == StatusError)
+	  if (this->callback->Call(text) == StatusError)
 	    escape("an error occured in the callback");
 	}
 
@@ -435,18 +440,8 @@ namespace elle
 	  // otherwise, trigger the network dispatching mechanism.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
-	      Report*	report;
-
-	      // retrieve the report.
-	      if (Report::Instance(report) == StatusFalse)
-		escape("unable to retrieve the report");
-
-	      // since an error occured, transmit it to the sender
-	      if (this->Send(Inputs<TagError>(*report)) == StatusError)
-		escape("unable to send an error report");
-
-	      // flush the report since it has been sent to the sender.
-	      report->Flush();
+	      // display the errors.
+	      show();
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().
@@ -478,8 +473,10 @@ namespace elle
     void		Gate::_error(const QAbstractSocket::SocketError)
     {
       String		text(this->socket->errorString().toStdString());
-      Callback< Parameters<const String> >	callback(&Gate::Error, this);
-      Closure< Parameters<const String> >	closure(callback, text);
+      Callback< Status,
+		Parameters<const String> >	callback(&Gate::Error, this);
+      Closure< Status,
+	       Parameters<const String> >	closure(callback, text);
 
       enter();
 
@@ -495,8 +492,10 @@ namespace elle
     ///
     void		Gate::_ready()
     {
-      Callback< Parameters<> >	callback(&Gate::Dispatch, this);
-      Closure< Parameters<> >	closure(callback);
+      Callback< Status,
+		Parameters<> >	callback(&Gate::Dispatch, this);
+      Closure< Status,
+	       Parameters<> >	closure(callback);
 
       enter();
 

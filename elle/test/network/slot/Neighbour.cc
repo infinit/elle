@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Neighbour.cc
 //
 // created       julien quintard   [wed mar 17 11:23:38 2010]
-// updated       julien quintard   [tue jun  7 07:53:02 2011]
+// updated       julien quintard   [mon jul 18 09:59:45 2011]
 //
 
 //
@@ -33,7 +33,8 @@ namespace elle
 					  const Address&	address,
 					  const String&		name)
     {
-      Callback< Parameters<> >	discard(&Neighbour::Discard, this);
+      Callback< Status,
+		Parameters<> >	discard(&Neighbour::Discard, this);
 
       enter();
 

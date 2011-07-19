@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Message.hh
 //
 // created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [sun may  2 19:59:59 2010]
+// updated       julien quintard   [mon jul 18 23:22:49 2011]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH
@@ -51,11 +51,5 @@ namespace elle
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <elle/network/Message.hxx>
 
 #endif

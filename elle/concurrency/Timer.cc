@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [mon jul 11 23:28:09 2011]
+// updated       julien quintard   [mon jul 18 11:28:38 2011]
 //
 
 //
@@ -58,6 +58,7 @@ namespace elle
     Status		Timer::Create(const Mode		mode,
 				      const
 				        Callback<
+					  Status,
 					  Parameters<> >&	callback)
     {
       enter();
@@ -135,7 +136,7 @@ namespace elle
       enter();
 
       // trigger the callback.
-      if (this->callback.Trigger() == StatusError)
+      if (this->callback.Call() == StatusError)
 	escape("an error occured while spawning the fiber");
 
       leave();
@@ -180,8 +181,10 @@ namespace elle
     ///
     void		Timer::_timeout()
     {
-      Callback< Parameters<> >	callback(&Timer::Timeout, this);
-      Closure< Parameters<> >	closure(callback);
+      Callback< Status,
+		Parameters<> >	callback(&Timer::Timeout, this);
+      Closure< Status,
+	       Parameters<> >	closure(callback);
 
       enter();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hxx
 //
 // created       julien quintard   [wed may 25 14:20:06 2011]
-// updated       julien quintard   [thu jul 14 14:06:00 2011]
+// updated       julien quintard   [tue jul 19 09:00:47 2011]
 //
 
 #ifndef ELLE_NETWORK_GATE_HXX
@@ -22,6 +22,9 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/network/Packet.hh>
+#include <elle/network/Header.hh>
+#include <elle/network/Data.hh>
+#include <elle/network/Parcel.hh>
 
 #include <elle/Manifest.hh>
 
@@ -82,6 +85,10 @@ namespace elle
       if (header.Create(event, inputs.tag, packet.size - point) == StatusError)
 	escape("unable to create the header");
 
+      // XXX
+      printf("Gate::Send\n");
+      header.Dump();
+
       // update the header.
       if (packet.Update(offset, header) == StatusError)
 	escape("unable to update the header");
@@ -105,7 +112,6 @@ namespace elle
     Status		Gate::Receive(const Event&		event,
 				      O				outputs)
     {
-      Report		report;
       Parcel*		parcel;
 
       enter(instance(parcel));
@@ -114,6 +120,10 @@ namespace elle
       if (Fiber::Wait(event, parcel) == StatusError)
 	escape("an error occured while waiting for a specific event");
 
+      // XXX
+      printf("Gate::Receive waiting(%u)\n", outputs.tag);
+      parcel->Dump();
+
       // check the tag.
       if (parcel->header->tag != outputs.tag)
 	{
@@ -121,15 +131,21 @@ namespace elle
 	  // the report to the local one.
 	  if (parcel->header->tag == TagError)
 	    {
+	      Report	report;
+
 	      // extract the error message.
 	      if (report.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the error message");
+
+	      // XXX
+	      report.Dump();
 
 	      // report the remote error.
 	      transpose(report);
 	    }
 
-	  escape("received a packet with an unexpected tag");
+	  escape("received a packet with an unexpected tag '%u'",
+		 parcel->header->tag);
 	}
 
       // extract the arguments.
@@ -176,15 +192,17 @@ namespace elle
     /// XXX
     ///
     template <typename I>
-    Status		Gate::Reply(const I			inputs)
+    Status		Gate::Reply(const I			inputs,
+				    Session*			session)
     {
-      Session*		session;
-
       enter();
 
-      // retrieve the current session.
-      if (Session::Instance(session) == StatusError)
-	escape("unable to retrieve the session instance");
+      // retrieve the current session, if necessary.
+      if (session == NULL)
+	{
+	  if (Session::Instance(session) == StatusError)
+	    escape("unable to retrieve the session instance");
+	}
 
       // send a message as a response by using the event of
       // the received message i.e the current session.

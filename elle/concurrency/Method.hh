@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [thu jul 14 14:43:48 2011]
+// updated       julien quintard   [mon jul 18 20:40:37 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HH
@@ -36,6 +36,10 @@ namespace elle
   namespace concurrency
   {
 
+//
+// ---------- classes ---------------------------------------------------------
+//
+
     ///
     /// Method generic class.
     ///
@@ -45,8 +49,10 @@ namespace elle
     ///
     /// this class represents a method.
     ///
-    template <typename... T>
-    class Method< Parameters<T...> >:
+    template <typename R,
+	      typename... T>
+    class Method< R,
+		  Parameters<T...> >:
       public Object
     {
     public:
@@ -73,7 +79,8 @@ namespace elle
 	//
 	// methods
 	//
-	virtual Status Call(T...) = 0;
+	virtual R	Call(T...) = 0;
+	virtual Void	Trigger(T...) = 0;
       };
 
       ///
@@ -87,7 +94,7 @@ namespace elle
 	//
 	// types
 	//
-	typedef Status		(C::*Handler)(T...);
+	typedef R			(C::*Handler)(T...);
 
 	//
 	// constructors & destructors
@@ -98,7 +105,8 @@ namespace elle
 	//
 	// methods
 	//
-	Status		Call(T...);
+	R		Call(T...);
+	Void		Trigger(T...);
 
 	//
 	// interfaces
@@ -121,22 +129,23 @@ namespace elle
       // constructors & destructors.
       //
       template <typename C>
-      Method(Status (C::*)(T...),
+      Method(R (C::*)(T...),
 	     C*);
-      Method(const Method<P>&);
+      Method(const Method<R, P>&);
       ~Method();
 
       //
       // methods
       //
-      Status		Call(T...);
+      R			Call(T...);
+      Void		Trigger(T...);
 
       //
       // interfaces
       //
 
       // object
-      declare(Method<P>);
+      declare(_(Method<R, P>));
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;

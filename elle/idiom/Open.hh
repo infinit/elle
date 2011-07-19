@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [mon jul 11 14:00:40 2011]
+// updated       julien quintard   [mon jul 18 15:41:15 2011]
 //
 
 //
@@ -30,6 +30,16 @@
 ///
 #define _(_parameters_...)						\
   _parameters_
+
+//
+// ---------- meta ------------------------------------------------------------
+//
+
+#define allege(_condition_)						\
+  do									\
+    {									\
+      elle::radix::Allege<(_condition_)>();				\
+    } while (0)
 
 //
 // ---------- object ----------------------------------------------------------

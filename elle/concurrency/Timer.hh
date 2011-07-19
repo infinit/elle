@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [sun jun 19 13:09:02 2011]
+// updated       julien quintard   [mon jul 18 09:17:22 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
@@ -76,7 +76,8 @@ namespace elle
       // methods
       //
       Status		Create(const Mode,
-			       const Callback< Parameters<> >&);
+			       const Callback< Status,
+					       Parameters<> >&);
       Status		Start(const Natural32 = 0);
       Status		Stop();
       Status		Restart(const Natural32 = 0);
@@ -99,7 +100,8 @@ namespace elle
       ::QTimer*			timer;
 
       Mode			mode;
-      Callback< Parameters<> >	callback;
+      Callback< Status,
+		Parameters<> >	callback;
 
     private slots:
       //

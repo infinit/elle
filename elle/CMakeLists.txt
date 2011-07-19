@@ -96,5 +96,5 @@ ADD_LIBRARY(elle
 
 TARGET_LINK_LIBRARIES(elle comet crypto ssl dl readline)
 
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+# XXX ADD_SUBDIRECTORY(test)
+# XXX ADD_SUBDIRECTORY(benchmark)

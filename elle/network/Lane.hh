@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [mon jul 11 17:51:38 2011]
+// updated       julien quintard   [mon jul 18 09:18:28 2011]
 //
 
 ///
@@ -84,7 +84,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      LanePorter(const Callback< Parameters<Door*> >&);
+      LanePorter(const Callback< Status,
+				 Parameters<Door*> >&);
       ~LanePorter();
 
       //
@@ -109,7 +110,8 @@ namespace elle
       //
       String				name;
       ::QLocalServer*			server;
-      Callback< Parameters<Door*> >	callback;
+      Callback< Status,
+		Parameters<Door*> >	callback;
 
       //
       // slots
@@ -140,7 +142,8 @@ namespace elle
       static Status	Clean();
 
       static Status	Listen(const String&,
-			       const Callback< Parameters<Door*> >&);
+			       const Callback< Status,
+					       Parameters<Door*> >&);
       static Status	Block(const String&);
 
       static Status	Show(const Natural32 = 0);

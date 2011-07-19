@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed jul  6 15:34:51 2011]
+// updated       julien quintard   [mon jul 18 09:37:57 2011]
 //
 
 //
@@ -44,7 +44,8 @@ namespace elle
     ///
     Status		Server::Run()
     {
-      Callback< Parameters<Door*> >	connection(&Server::Connection, this);
+      Callback< Status,
+		Parameters<Door*> >	connection(&Server::Connection, this);
 
       enter();
 

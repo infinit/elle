@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Closure.hxx
 //
 // created       julien quintard   [thu mar 25 11:55:10 2010]
-// updated       julien quintard   [sat jun 18 00:35:26 2011]
+// updated       julien quintard   [mon jul 18 11:43:36 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HXX
@@ -26,9 +26,10 @@ namespace elle
     ///
     /// the constructor.
     ///
-    template <typename... U>
-    Closure< Parameters<U...> >::Closure(
-        Callback< Parameters<U...> >&				callback,
+    template <typename R,
+	      typename... U>
+    Closure< R, Parameters<U...> >::Closure(
+        Callback< R, Parameters<U...> >&			callback,
 	U&...							objects):
       callback(callback),
       arguments(objects...)
@@ -36,13 +37,24 @@ namespace elle
     }
 
     ///
-    /// this method triggers the closure by calling the callback with
+    /// this method calls the closure by calling the callback with
     /// the pre-defined arguments.
     ///
-    template <typename... U>
-    Status	Closure< Parameters<U...> >::Trigger()
+    template <typename R,
+	      typename... U>
+    R		Closure< R, Parameters<U...> >::Call()
     {
-      return (this->arguments.Trigger(this->callback));
+      return (this->arguments.Call(this->callback));
+    }
+
+    ///
+    /// this method triggers the closure without checking the return value.
+    ///
+    template <typename R,
+	      typename... U>
+    Void	Closure< R, Parameters<U...> >::Trigger()
+    {
+      this->arguments.Trigger(this->callback);
     }
 
 //
@@ -52,11 +64,13 @@ namespace elle
     ///
     /// the constructor.
     ///
-    template <typename... U,
+    template <typename R,
+	      typename... U,
 	      typename... V>
-    Closure< Parameters<U...>,
+    Closure< R,
+	     Parameters<U...>,
 	     Parameters<V...> >::Closure(
-        Callback< Parameters<U..., V...> >&			callback,
+	Callback< R, Parameters<U..., V...> >&			callback,
 	U&...							objects):
       callback(callback),
       arguments(objects...)
@@ -64,15 +78,30 @@ namespace elle
     }
 
     ///
-    /// this method triggers the closure by calling the callback with
+    /// this method calls the closure by calling the callback with
     /// the pre-defined arguments.
     ///
-    template <typename... U,
+    template <typename R,
+	      typename... U,
 	      typename... V>
-    Status	Closure< Parameters<U...>,
-			 Parameters<V...> >::Trigger(V&...	objects)
+    R		Closure< R,
+			 Parameters<U...>,
+			 Parameters<V...> >::Call(V&...		objects)
     {
       return (this->arguments.Trigger(this->callback, objects...));
+    }
+
+    ///
+    /// this method triggers the closure without checking the return value.
+    ///
+    template <typename R,
+	      typename... U,
+	      typename... V>
+    Void	Closure< R,
+			 Parameters<U...>,
+			 Parameters<V...> >::Trigger(V&...	objects)
+    {
+      this->arguments.Trigger(this->callback, objects...);
     }
 
   }

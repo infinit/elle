@@ -5,21 +5,21 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Channel.hxx
+// file          /home/mycure/infinit/elle/network/Socket.hxx
 //
-// created       julien quintard   [thu mar 18 21:23:33 2010]
-// updated       julien quintard   [sun jul 17 21:11:56 2011]
+// created       julien quintard   [sun jul 17 15:39:02 2011]
+// updated       julien quintard   [tue jul 19 08:48:45 2011]
 //
 
-#ifndef ELLE_NETWORK_CHANNEL_HXX
-#define ELLE_NETWORK_CHANNEL_HXX
+#ifndef ELLE_NETWORK_SOCKET_HXX
+#define ELLE_NETWORK_SOCKET_HXX
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Door.hh>
-#include <elle/network/Gate.hh>
+#include <elle/network/Channel.hh>
+#include <elle/network/Slot.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -37,24 +37,26 @@ namespace elle
     /// this method sends a packet in an asynchronous manner.
     ///
     template <typename I>
-    Status		Channel::Send(const I			inputs,
-				      const Event&		event)
+    Status		Socket::Send(const I			inputs,
+				     const Event&		event,
+				     const Address&		address)
     {
       enter();
 
       switch (this->type)
 	{
 	case Socket::TypeDoor:
-	  {
-	    Door*	channel = static_cast<Door*>(this);
-
-	    return (channel->Send(inputs, event));
-	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    Channel*	socket = static_cast<Channel*>(this);
 
-	    return (channel->Send(inputs, event));
+	    return (socket->Send(inputs, event));
+	  }
+	case Socket::TypeSlot:
+	  {
+	    Slot*	socket = static_cast<Slot*>(this);
+
+	    return (socket->Send(address, inputs, event));
 	  }
 	default:
 	  {
@@ -70,24 +72,25 @@ namespace elle
     /// this method receives a packet by blocking.
     ///
     template <typename O>
-    Status		Channel::Receive(const Event&		event,
-					 O			outputs)
+    Status		Socket::Receive(const Event&		event,
+					O			outputs)
     {
       enter();
 
       switch (this->type)
 	{
 	case Socket::TypeDoor:
-	  {
-	    Door*	channel = static_cast<Door*>(this);
-
-	    return (channel->Receive(event, outputs));
-	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    Channel*	socket = static_cast<Channel*>(this);
 
-	    return (channel->Receive(event, outputs));
+	    return (socket->Receive(event, outputs));
+	  }
+	case Socket::TypeSlot:
+	  {
+	    Slot*	socket = static_cast<Slot*>(this);
+
+	    return (socket->Receive(event, outputs));
 	  }
 	default:
 	  {
@@ -105,24 +108,26 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		Channel::Call(const I			inputs,
-				      O				outputs)
+    Status		Socket::Call(const I			inputs,
+				     O				outputs,
+				     const Address&		address)
     {
       enter();
 
       switch (this->type)
 	{
 	case Socket::TypeDoor:
-	  {
-	    Door*	channel = static_cast<Door*>(this);
-
-	    return (channel->Call(inputs, outputs));
-	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    Channel*	socket = static_cast<Channel*>(this);
 
-	    return (channel->Call(inputs, outputs));
+	    return (socket->Call(inputs, outputs));
+	  }
+	case Socket::TypeSlot:
+	  {
+	    Slot*	socket = static_cast<Slot*>(this);
+
+	    return (socket->Call(address, inputs, outputs));
 	  }
 	default:
 	  {
@@ -138,28 +143,29 @@ namespace elle
     /// this method replies to the freshly received call.
     ///
     template <typename I>
-    Status		Channel::Reply(const I			inputs,
-				       Session*			session)
+    Status		Socket::Reply(const I			inputs,
+				      Session*			session)
     {
       enter();
 
       switch (this->type)
 	{
 	case Socket::TypeDoor:
-	  {
-	    Door*	channel = static_cast<Door*>(this);
-
-	    return (channel->Reply(inputs, session));
-	  }
 	case Socket::TypeGate:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    Channel*	socket = static_cast<Channel*>(this);
 
-	    return (channel->Reply(inputs, session));
+	    return (socket->Reply(inputs, session));
+	  }
+	case Socket::TypeSlot:
+	  {
+	    Slot*	socket = static_cast<Slot*>(this);
+
+	    return (socket->Reply(inputs, session));
 	  }
 	default:
 	  {
-	    escape("unknown or unhandled socket type '%u'\n",
+	    escape("unknown or unhandled socket type '%u'",
 		   this->type);
 	  }
 	}
@@ -171,4 +177,3 @@ namespace elle
 }
 
 #endif
-

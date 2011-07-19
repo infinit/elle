@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [thu jul 14 14:09:49 2011]
+// updated       julien quintard   [mon jul 18 11:29:07 2011]
 //
 
 //
@@ -43,6 +43,7 @@ namespace elle
     ///
     BridgePorter::BridgePorter(const
 			         Callback<
+				   Status,
 				   Parameters<Gate*> >&		callback):
       server(NULL),
       callback(callback)
@@ -148,6 +149,7 @@ namespace elle
     Status		Bridge::Listen(const Address&		address,
 				       const
 				         Callback<
+					   Status,
 					   Parameters<Gate*> >&	callback)
     {
       BridgePorter*	porter;
@@ -291,8 +293,8 @@ namespace elle
       if (gate->Create(socket) == StatusError)
 	escape("unable to create the gate");
 
-      // trigger the callback.
-      if (this->callback.Trigger(gate) == StatusError)
+      // call the callback.
+      if (this->callback.Call(gate) == StatusError)
 	escape("an error occured in the callback");
 
       // stop tracking gate as it has been handed to the callback.
@@ -307,8 +309,10 @@ namespace elle
 
     void		BridgePorter::_accept()
     {
-      Callback< Parameters<> >	callback(&BridgePorter::Accept, this);
-      Closure< Parameters<> >	closure(callback);
+      Callback< Status,
+		Parameters<> >	callback(&BridgePorter::Accept, this);
+      Closure< Status,
+	       Parameters<> >	closure(callback);
 
       enter();
 

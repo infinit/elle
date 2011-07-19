@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [thu jul 14 14:43:05 2011]
+// updated       julien quintard   [mon jul 18 21:40:39 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -35,8 +35,9 @@ namespace elle
     ///
     /// default constructor.
     ///
-    template <typename... T>
-    Callback< Parameters<T...> >::Callback():
+    template <typename R,
+	      typename... T>
+    Callback< R, Parameters<T...> >::Callback():
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeUnknown)
@@ -46,54 +47,60 @@ namespace elle
     ///
     /// function-based constructor.
     ///
-    template <typename... T>
-    Callback< Parameters<T...> >::Callback(
-				    typename
-				      Function<
-					Parameters<
-					  T&...
-					  >
-					>::Handler		handler):
+    template <typename R,
+	      typename... T>
+    Callback< R, Parameters<T...> >::Callback(
+				       typename
+				         Function<
+					   R,
+					   Parameters<
+					     T&...
+					     >
+					   >::Handler		handler):
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeFunction),
-      function(new Function< Parameters<T&...> >(handler))
+      function(new Function< R, Parameters<T&...> >(handler))
     {
     }
 
     ///
     /// method-based constructor.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     template <typename C>
-    Callback< Parameters<T...> >::Callback(
-				    typename
-				      Method<
-					Parameters<
-					  T&...
-					  >
-					>::
-				        template Wrap<C>::Handler
-								handler,
-				    C*				object):
+    Callback< R, Parameters<T...> >::Callback(
+				       typename
+				         Method<
+					   R,
+					   Parameters<
+					     T&...
+					     >
+					   >::
+				           template
+				             Wrap<C>::Handler	handler,
+				       C*			object):
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeMethod),
-      method(new Method< Parameters<T&...> >(handler, object))
+      method(new Method< R, Parameters<T&...> >(handler, object))
     {
     }
 
     ///
     /// copy constructor.
     ///
-    template <typename... T>
-    Callback< Parameters<T...> >::Callback(
-				    const
-				      Callback<
-					Parameters<
-					  T...
-					  >
-					>&			callback):
+    template <typename R,
+	      typename... T>
+    Callback< R, Parameters<T...> >::Callback(
+				       const
+				         Callback<
+					   R,
+					   Parameters<
+					     T...
+					     >
+					   >&			callback):
       Routine(callback),
 
       scheme(callback.scheme)
@@ -107,7 +114,7 @@ namespace elle
 	  {
 	    // clone the function.
 	    this->function =
-	      new Function< Parameters<T&...> >(*callback.function);
+	      new Function< R, Parameters<T&...> >(*callback.function);
 
 	    break;
 	  }
@@ -115,7 +122,7 @@ namespace elle
 	  {
 	    // clone the method.
 	    this->method =
-	      new Method< Parameters<T&...> >(*callback.method);
+	      new Method< R, Parameters<T&...> >(*callback.method);
 
 	    break;
 	  }
@@ -131,8 +138,9 @@ namespace elle
     ///
     /// destructor.
     ///
-    template <typename... T>
-    Callback< Parameters<T...> >::~Callback()
+    template <typename R,
+	      typename... T>
+    Callback< R, Parameters<T...> >::~Callback()
     {
       // release the the content.
       switch (this->scheme)
@@ -165,8 +173,9 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Callback< Parameters<T...> >,
-	  _(template <typename... T>));
+    embed(_(Callback< R, Parameters<T...> >),
+	  _(template <typename R,
+		      typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -175,9 +184,10 @@ namespace elle
     ///
     /// this method dumps the callback.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     Status
-    Callback< Parameters<T...> >::Dump(const Natural32		margin) const
+    Callback< R, Parameters<T...> >::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
 
@@ -224,9 +234,10 @@ namespace elle
     ///
     /// this method calls the callback implementation.
     ///
-    template <typename... T>
-    Status
-    Callback< Parameters<T...> >::Trigger(T&...			arguments)
+    template <typename R,
+	      typename... T>
+    R
+    Callback< R, Parameters<T...> >::Call(T&...			arguments)
       const
     {
       enter();
@@ -257,6 +268,44 @@ namespace elle
 	}
 
       leave();
+    }
+
+    ///
+    /// this method triggers the callback implementation without checking
+    /// the return value.
+    ///
+    template <typename R,
+	      typename... T>
+    Void
+    Callback< R, Parameters<T...> >::Trigger(T&...		arguments)
+      const
+    {
+      enter();
+
+      // call depending on the scheme.
+      switch (this->scheme)
+	{
+	case Routine::SchemeFunction:
+	  {
+	    // triggerl the function.
+	    this->function->Call(arguments...);
+
+	    break;
+	  }
+	case Routine::SchemeMethod:
+	  {
+	    // trigger the method.
+	    this->method->Call(arguments...);
+
+	    break;
+	  }
+	case Routine::SchemeUnknown:
+	  {
+	    alert(_(), "unknown scheme");
+	  }
+	}
+
+      release();
     }
 
   }

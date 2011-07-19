@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [tue jul  5 15:00:30 2011]
+// updated       julien quintard   [mon jul 18 23:26:40 2011]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -71,8 +71,11 @@ namespace elle
   //
   enum Tag
     {
-      // error
-      TagError = elle::network::Range<Component>::First
+      TagNone = elle::network::Range<Component>::First,
+
+      // status
+      TagOk,
+      TagError
     };
 
 }
@@ -86,22 +89,16 @@ namespace elle
 /// relying on the Elle library.
 ///
 
+// None
+message(elle::TagNone,
+	parameters());
+
+// Ok
+message(elle::TagOk,
+	parameters());
+
 // Error
-outward(elle::TagError,
+message(elle::TagError,
 	parameters(elle::standalone::Report));
-
-/* XXX
-procedure(inward(elle::TagHello,
-		 parameters()),
-	  outward(elle::TagWorld,
-		  parameters(elle::core::String)))
-*/
-
-// XXX
-
-message(666,
-	parameters(elle::core::Natural32));
-message(667,
-	parameters(elle::core::Natural32));
 
 #endif

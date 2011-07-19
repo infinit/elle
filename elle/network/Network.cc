@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [wed jul 13 19:56:23 2011]
+// updated       julien quintard   [mon jul 18 22:32:01 2011]
 //
 
 //
@@ -27,9 +27,9 @@ namespace elle
 //
 
     ///
-    /// this container holds the list of registered callbacks.
+    /// this container holds the list of registered procedures.
     ///
-    Registrar<Tag>			Network::Bureau;
+    Network::Container			Network::Procedures;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -76,9 +76,24 @@ namespace elle
       if (Lane::Clean() == StatusError)
 	escape("unable to clean the lane");
 
-      // recycle the bureau.
-      if (Network::Bureau.Recycle< Registrar<Tag> >() == StatusError)
-	escape("unable to recycle the bureau");
+      //
+      // clear the container.
+      //
+      {
+	Network::Scoutor	scoutor;
+
+	// go through the functionoids.
+	for (scoutor = Network::Procedures.begin();
+	     scoutor != Network::Procedures.end();
+	     scoutor++)
+	  {
+	    // delete the functionoid.
+	    delete scoutor->second;
+	  }
+
+	// clear the container.
+	Network::Procedures.clear();
+      }
 
       leave();
     }
@@ -91,7 +106,7 @@ namespace elle
     ///
     Status		Network::Dispatch(Parcel*		p)
     {
-      Parcel*			parcel;
+      Parcel*		parcel;
 
       enter(instance(parcel));
 
@@ -116,20 +131,20 @@ namespace elle
       // if no slot is waiting for this event, dispatch it right away.
       //
       {
+	Network::Scoutor	scoutor;
+
+        // retrieve the procedure's functionoid associated to the header's tag.
+	if ((scoutor = Network::Procedures.find(parcel->header->tag)) ==
+	    Network::Procedures.end())
+	  leave();
+
 	// assign the new session.
 	if (Session::Assign(parcel->session) == StatusError)
 	  escape("unable to assign the session");
 
-	// dispatch the call.
-	if (Network::Bureau.Dispatch(parcel->header->tag,
-				     *parcel->data) == StatusError)
-	  {
-	    // clear the session.
-	    if (Session::Clear() == StatusError)
-	      escape("unable to clear the session");
-
-	    escape("unable to dispatch the event through the registrar");
-	  }
+        // call the functionoid.
+        if (scoutor->second->Call(*parcel->data) == StatusError)
+	  escape("an error occured while processing the event");
 
 	// clear the session.
 	if (Session::Clear() == StatusError)
@@ -151,14 +166,21 @@ namespace elle
     Status		Network::Show(const Natural32		margin)
     {
       String		alignment(margin, ' ');
+      Network::Scoutor	scoutor;
 
       enter();
 
       std::cout << alignment << "[Network]" << std::endl;
 
-      // dump the registrar.
-      if (Network::Bureau.Dump(margin + 2) == StatusError)
-	escape("unable to dump the registrar");
+      // go through the functionoids.
+      for (scoutor = Network::Procedures.begin();
+	   scoutor != Network::Procedures.end();
+	   scoutor++)
+	{
+	  // dump the functionoid.
+	  if (scoutor->second->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the functionoid");
+	}
 
       leave();
     }

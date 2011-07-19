@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [thu jul 14 14:40:43 2011]
+// updated       julien quintard   [mon jul 18 21:38:24 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -49,8 +49,10 @@ namespace elle
     /// this class represents a callback i.e a reference-based routine
     /// according to the given types.
     ///
-    template <typename... T>
-    class Callback< Parameters<T...> >:
+    template <typename R,
+	      typename... T>
+    class Callback< R,
+		    Parameters<T...> >:
       public Routine
     {
     public:
@@ -63,24 +65,26 @@ namespace elle
       // constructors & destructors
       //
       Callback();
-      Callback(typename Function< Parameters<T&...> >::Handler);
+      Callback(typename Function< R, Parameters<T&...> >::Handler);
       template <typename C>
-      Callback(typename Method< Parameters<T&...> >::template Wrap<C>::Handler,
+      Callback(typename Method< R, Parameters<T&...> >::
+		 template Wrap<C>::Handler,
 	       C*);
-      Callback(const Callback< Parameters<T...> >&);
+      Callback(const Callback< R, Parameters<T...> >&);
       ~Callback();
 
       //
       // methods
       //
-      Status		Trigger(T&...) const;
+      R			Call(T&...) const;
+      Void		Trigger(T&...) const;
 
       //
       // interfaces
       //
 
       // object
-      declare(Callback< Parameters<T...> >);
+      declare(_(Callback< R, Parameters<T...> >));
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -88,12 +92,14 @@ namespace elle
       //
       // attributes
       //
-      typename Routine::Scheme	scheme;
+      typename Routine::Scheme		scheme;
 
       union
       {
-	Function< Parameters<T&...> >*	function;
-	Method< Parameters<T&...> >*	method;
+	Function< R,
+		  Parameters<T&...> >*	function;
+	Method< R,
+		Parameters<T&...> >*	method;
       };
     };
 

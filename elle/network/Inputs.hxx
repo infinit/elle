@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Inputs.hxx
 //
 // created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [fri jul  8 12:15:43 2011]
+// updated       julien quintard   [mon jul 18 13:08:15 2011]
 //
 
 #ifndef ELLE_NETWORK_INPUTS_HXX

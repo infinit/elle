@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [tue jul  5 09:27:12 2011]
+// updated       julien quintard   [mon jul 18 22:06:20 2011]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -35,19 +35,78 @@ namespace elle
     /// whenever a message is received, these types are extracted and the
     /// callback is triggered.
     ///
-    template <const Tag G>
-    Status		Network::Register(
-			  const Callback<
-			    typename Trait::Constant<
-			      typename Message<G>::P
-			      >::Type
-			    >&					callback)
+    template <const Tag I,
+	      const Tag O>
+    Status		Network::Register(const Procedure<I, O>& procedure)
+    {
+      Selectionoid< Procedure<I, O> >*		selectionoid;
+      std::pair<Network::Iterator, Boolean>	result;
+
+      enter(instance(selectionoid));
+
+      // check if this tag has already been recorded.
+      if (Network::Procedures.find(I) != Network::Procedures.end())
+	escape("this tag seems to have already been recorded");
+
+      // create a new selectionoid.
+      selectionoid = new Selectionoid< Procedure<I, O> >(procedure);
+
+      // insert the selectionoid in the container.
+      result = Network::Procedures.insert(
+	         std::pair<const Tag,
+			   Network::Functionoid*>(I,
+						  selectionoid));
+
+      // check if the insertion was successful.
+      if (result.second == false)
+	escape("unable to insert the selectoinoid in the container");
+
+      // waive the selectionoid tracking.
+      waive(selectionoid);
+
+      leave();
+    }
+
+//
+// ---------- selectonoid -----------------------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    template <typename P>
+    Network::Selectionoid<P>::Selectionoid(const P&		procedure):
+      procedure(procedure)
+    {
+    }
+
+    ///
+    /// this method forwards the request by calling the procedure's
+    /// Skeleton() method.
+    ///
+    template <typename P>
+    Status	Network::Selectionoid<P>::Call(Archive&		archive) const
     {
       enter();
 
-      // register the callback through the registrar.
-      if (Network::Bureau.Register(G, callback) == StatusError)
-	escape("unable to register the callback to the registrar");
+      // call the procedure's skeleton.
+      if (this->procedure.Skeleton(archive) == StatusError)
+	escape("an error occured in the procedure's skeleton");
+
+      leave();
+    }
+
+    ///
+    /// this method dumps the selectionoid.
+    ///
+    template <typename P>
+    Status	Network::Selectionoid<P>::Dump(const Natural32	margin) const
+    {
+      enter();
+
+      // dump the object.
+      if (this->procedure.Dump(margin) == StatusError)
+	escape("unable to dump the object");
 
       leave();
     }

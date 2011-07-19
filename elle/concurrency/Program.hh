@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [wed jul  6 13:07:48 2011]
+// updated       julien quintard   [mon jul 18 09:26:53 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -71,8 +71,10 @@ namespace elle
       static Status		Initialize();
       static Status		Clean();
 
-      static Status		Setup(Callback< Parameters<> >* = NULL,
-				      Callback< Parameters<> >* = NULL);
+      static Status		Setup(Callback< Status,
+						Parameters<> >* = NULL,
+				      Callback< Status,
+						Parameters<> >* = NULL);
       static Status		Launch();
       static Void		Signal(int);
       static Status		Exit();
@@ -93,8 +95,10 @@ namespace elle
 
       State			state;
 
-      Callback< Parameters<> >*	prolog;
-      Callback< Parameters<> >*	epilog;
+      Callback< Status,
+		Parameters<> >*	prolog;
+      Callback< Status,
+		Parameters<> >*	epilog;
     };
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [thu jul 14 14:45:02 2011]
+// updated       julien quintard   [mon jul 18 11:45:09 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HXX
@@ -35,8 +35,9 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    template <typename... T>
-    Function< Parameters<T...> >::Function(Handler		handler):
+    template <typename R,
+	      typename... T>
+    Function< R, Parameters<T...> >::Function(Handler		handler):
       handler(handler)
     {
     }
@@ -44,13 +45,15 @@ namespace elle
     ///
     /// the copy constructor.
     ///
-    template <typename... T>
-    Function< Parameters<T...> >::Function(
-				    const Function<
-				      Parameters<
-					T...
-					>
-				      >&			function):
+    template <typename R,
+	      typename... T>
+    Function< R, Parameters<T...> >::Function(
+				       const Function<
+					 R,
+				         Parameters<
+					   T...
+					   >
+				         >&			function):
       Object(function),
 
       handler(function.handler)
@@ -64,11 +67,23 @@ namespace elle
     ///
     /// this method calls the handler.
     ///
-    template <typename... T>
-    Status
-    Function< Parameters<T...> >::Call(T...			arguments)
+    template <typename R,
+	      typename... T>
+    R
+    Function< R, Parameters<T...> >::Call(T...			arguments)
     {
       return (this->handler(arguments...));
+    }
+
+    ///
+    /// this method triggers the handler without checking the return value.
+    ///
+    template <typename R,
+	      typename... T>
+    Void
+    Function< R, Parameters<T...> >::Trigger(T...		arguments)
+    {
+      this->handler(arguments...);
     }
 
 //
@@ -78,8 +93,9 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Function< Parameters<T...> >,
-	  _(template <typename... T>));
+    embed(_(Function< R, Parameters<T...> >),
+	  _(template <typename R,
+		      typename... T>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -88,9 +104,10 @@ namespace elle
     ///
     /// this method dumps the function state.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     Status
-    Function< Parameters<T...> >::Dump(const Natural32		margin) const
+    Function< R, Parameters<T...> >::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
 

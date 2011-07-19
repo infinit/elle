@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trait.hh
 //
 // created       julien quintard   [tue jun  7 13:43:54 2011]
-// updated       julien quintard   [fri jun 10 12:39:03 2011]
+// updated       julien quintard   [fri jul 15 14:49:11 2011]
 //
 
 #ifndef ELLE_RADIX_TRAIT_HH
@@ -46,71 +46,11 @@ namespace elle
 	typedef T				Type;
       };
 
-      template <typename T>
-      struct Bare<const T>
-      {
-	typedef T				Type;
-      };
-
-      template <typename T>
-      struct Bare<const T&>
-      {
-	typedef T				Type;
-      };
-
-      template <typename T>
-      struct Bare<const T*>
-      {
-	typedef T				Type;
-      };
-
-      template <typename... T>
-      struct Bare< Parameters<T...> >
-      {
-	typedef Parameters<T...>		Type;
-      };
-
-      template <typename... T>
-      struct Bare< Parameters<const T...> >
-      {
-	typedef Parameters<T...>		Type;
-      };
-
-      template <typename... T>
-      struct Bare< Parameters<T&...> >
-      {
-	typedef Parameters<T...>		Type;
-      };
-
-      template <typename... T>
-      struct Bare< Parameters<T*...> >
-      {
-	typedef Parameters<T...>		Type;
-      };
-
       // constant
       template <typename T>
       struct Constant
       {
 	typedef const T				Type;
-      };
-
-      template <typename T>
-      struct Constant<const T>
-      {
-	typedef const T				Type;
-      };
-
-      template <typename... T>
-      struct Constant< Parameters<T...> >
-      {
-	typedef Parameters<const T...>		Type;
-      };
-
-      template <typename... T>
-      struct Constant< Parameters<const T...> >
-      {
-	typedef Parameters<const T...>		Type;
       };
 
       // pointer
@@ -120,47 +60,11 @@ namespace elle
 	typedef T*				Type;
       };
 
-      template <typename T>
-      struct Pointer<T*>
-      {
-	typedef T*				Type;
-      };
-
-      template <typename... T>
-      struct Pointer< Parameters<T...> >
-      {
-	typedef Parameters<T*...>		Type;
-      };
-
-      template <typename... T>
-      struct Pointer< Parameters<T*...> >
-      {
-	typedef Parameters<T*...>		Type;
-      };
-
       // reference
       template <typename T>
       struct Reference
       {
 	typedef T&				Type;
-      };
-
-      template <typename T>
-      struct Reference<T&>
-      {
-	typedef T&				Type;
-      };
-
-      template <typename... T>
-      struct Reference< Parameters<T...> >
-      {
-	typedef Parameters<T&...>		Type;
-      };
-
-      template <typename... T>
-      struct Reference< Parameters<T&...> >
-      {
-	typedef Parameters<T&...>		Type;
       };
 
       // iterator
@@ -188,9 +92,16 @@ namespace elle
       {
 	typedef typename T::const_iterator	Type;
       };
+
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <elle/radix/Trait.hxx>
 
 #endif

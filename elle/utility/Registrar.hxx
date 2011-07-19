@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Registrar.hxx
 //
 // created       julien quintard   [mon jun  6 12:13:38 2011]
-// updated       julien quintard   [mon jul 11 14:48:07 2011]
+// updated       julien quintard   [mon jul 18 21:07:38 2011]
 //
 
 #ifndef ELLE_UTILITY_REGISTRAR_HXX
@@ -184,47 +184,18 @@ namespace elle
     }
 
     ///
-    /// this method extracts the necessary variables from the archive
-    /// and triggers the callback/closure/etc.
-    ///
-    /// note that in order for the variables to be extracted from the
-    /// archive, the extract callback is built from the given object's
-    /// parameters except that the types are un-traited i.e bared in
-    /// order to remove the constness for instance. the same goes for
-    /// the variables as they need not to be const, references, pointers
-    /// etc. but the original type.
+    /// this method forwards the request by calling the callback,
+    /// closure or else with the archive.
     ///
     template <typename T>
     template <typename C>
     Status	Registrar<T>::Selectionoid<C>::Call(Archive&	archive) const
     {
-      Callback<
-	typename Trait::Bare<
-	  typename C::P
-	  >::Type
-	>			callback(&Archive::Extract, &archive);
-      Variables<
-	typename Trait::Bare<
-	  typename C::P
-	  >::Type
-	>			variables;
-
       enter();
 
-      // extract some values from the archive given the types required
-      // for the callback/closure/etc. C.
-      if (variables.Trigger(callback) == StatusError)
-	escape("unable to extract from the archive");
-
-      // check that the end of the archive has been reached i.e all
-      // the information has been extracted. this step ensures that
-      // the archive does not contain more variables that extracted.
-      if (archive.offset != archive.size)
-	escape("the archive seems to contain additional information");
-
-      // trigger the callback/closure/etc.
-      if (variables.Trigger(this->object) == StatusError)
-	escape("unable to trigger the object");
+      // call the callback/closure/etc.
+      if (this->object.Call(archive) == StatusError)
+	escape("unable to call the object");
 
       leave();
     }
