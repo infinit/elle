@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [tue jul 12 07:09:04 2011]
+// updated       julien quintard   [fri jul 15 10:30:07 2011]
 //
 
 //
@@ -39,6 +39,12 @@ elle::Status		Main(elle::Natural32			argc,
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::StatusError)
     escape("unable to initialize Elle");
+
+  // XXX
+  {
+    typedef elle::Parameters<> P;
+    typedef typename elle::Trait::Bare<P>::Type B;
+  }
 
   // initialize the nucleus library.
   if (nucleus::Nucleus::Initialize() == elle::StatusError)
