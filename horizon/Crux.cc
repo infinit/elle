@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [mon jul  4 16:35:23 2011]
+// updated       julien quintard   [tue jul 19 16:55:55 2011]
 //
 
 //
@@ -83,12 +83,9 @@ namespace pig
 	     __FUNCTION__,
 	     path, stat);
 
-    // XXX un moyen de tester si l'objet exist: Path::Exist?
-
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
-      error("unable to resolve the path",
-	    ENOENT);
+      skip(ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
