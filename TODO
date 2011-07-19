@@ -1,33 +1,4 @@
-- faire prolog pour Server/Client: authenticated?
-- faire un type Result/Return template avec la donnee que l'on attend
-  vraiment -> si error, rien n'est retourne => necessaire car si une
-  procedure doit retourner un Block, elle pourrait aussi retourner une erreur!
-- dans Registrar: faire que le Register prenne une classe container
-  avec premier param Status et ensuite des Parameters
-- classe Return
-- return type pour Function/Method et Closure
-- return-specific pour Void: function, method, callback, closure
-- systeme de reservation de tag un a un : static counter
-- appliquer le concept de Procedure aux tests
-- union pour Variables aussi
-- trigger pour Arguments/Variables
-- le constructeur de Arguments ne devrait pas etre aussi precis: juste X<Q>
-  et ensuite l'assignment fera le reste -> permettra de gerer non-const->const
-  meme chose pour Variables
-- simplifier les doublons dans Arguments/Variables en ne gardant que les
-  methodes const (pire cas)
-
-- error: could not convert template argument ‘(hole::implementations::remote::Tag)7u’ to ‘elle::Tag’
-- faire que Network::Register register aupres de Registrar le callback
-  qui est dans la procedure associee avec le tag! sauf si le method appellee
-  est Register(Procedure) -> mieux: ca prend tjs une procedure
-- wrapper de methodes: il faut lorsque l'on decrit une procedure indiquer
-  si 1) il y a des valeurs en retour auquel cas il faut les envoyer au
-  client 2) si il faut transmettre le resultat Ok/Error 3) prolog/epilog
-
 - tenter de lancer replay sans avoir reinit le reseau -> ca segfault
-- trouver un synonyme de Resolve pour Wall:: Test, Analyse, Reduce, Settle
-  => Path::Resolve devrait retourner true/false ou error
 
 #
 # ---------- long-term --------------------------------------------------------
