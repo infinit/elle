@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [mon jul 18 09:38:18 2011]
+// updated       julien quintard   [tue jul 19 16:51:32 2011]
 //
 
 //
@@ -46,7 +46,8 @@ namespace elle
     Status		Client::Run()
     {
       Callback< Status,
-		Parameters<const String> >	challenge(&Client::Challenge,
+		Parameters<const String,
+			   String> >		challenge(&Client::Challenge,
 							  this);
 
       enter();
@@ -55,7 +56,9 @@ namespace elle
       this->address.Dump();
 
       // register the message.
-      if (Network::Register<TagChallenge>(challenge) == StatusError)
+      if (Network::Register(
+	    Procedure<TagChallenge,
+		      TagResponse>(challenge)) == StatusError)
 	escape("unable to register the challenge message");
 
       // create the gate.
@@ -76,18 +79,16 @@ namespace elle
     ///
     /// this method handles messages.
     ///
-    Status		Client::Challenge(const String&		text)
+    Status		Client::Challenge(const String&		text,
+					  String&		response)
     {
-      String		response("RESPONSE");
-
       enter();
 
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;
 
-      // respond.
-      if (this->gate.Reply(Inputs<TagResponse>(response)) == StatusError)
-	escape("unable to reply to the challenge");
+      // assign the response.
+      response.assign("RESPONSE");
 
       leave();
     }

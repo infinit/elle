@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hxx
 //
 // created       julien quintard   [mon jul 18 17:40:44 2011]
-// updated       julien quintard   [tue jul 19 08:34:41 2011]
+// updated       julien quintard   [tue jul 19 18:30:17 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
@@ -161,7 +161,7 @@ namespace elle
 		typename Message<O>::P
 		>::Type
 	    >::Type
-	>		arguments(inputs, outputs);
+	>		arguments = Arguments<>::Union(inputs, outputs);
 
       // call the routine.
       status = arguments.Call(this->routine);
@@ -172,8 +172,6 @@ namespace elle
 	  if (this->epilog->Call() == StatusError)
 	    escape("an error occured in the procedure's epilog");
 	}
-
-      printf("status: %u\n", status);
 
       //
       // send back the report to the client if an error occured.
@@ -220,8 +218,6 @@ namespace elle
 	    // in this case, a TagOk message is sent back in order to
 	    // acknowledge the success of the request.
 	    //
-
-	    printf("TagOk\n");
 
 	    // check the socket.
 	    if (session->socket == NULL)

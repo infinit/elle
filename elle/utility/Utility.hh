@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Utility.hh
 //
 // created       julien quintard   [fri apr  2 12:55:50 2010]
-// updated       julien quintard   [mon jul  4 19:28:41 2011]
+// updated       julien quintard   [tue jul 19 11:56:31 2011]
 //
 
 #ifndef ELLE_UTILITY_UTILITY_HH
@@ -36,7 +36,6 @@ namespace elle
 #include <elle/utility/Hexadecimal.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/utility/Product.hh>
-#include <elle/utility/Registrar.hh>
 #include <elle/utility/Settings.hh>
 #include <elle/utility/Time.hh>
 

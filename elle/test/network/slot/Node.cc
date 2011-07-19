@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [mon jul 18 09:38:29 2011]
+// updated       julien quintard   [tue jul 19 16:48:54 2011]
 //
 
 //
@@ -67,7 +67,8 @@ namespace elle
       std::cout << "[port] " << this->slot.port << std::endl;
 
       // register the probe message.
-      if (Network::Register<TagProbe>(handle) == StatusError)
+      if (Network::Register(
+	    Procedure<TagProbe>(handle)) == StatusError)
 	escape("unable to register the probe message");
 
       // create the table.

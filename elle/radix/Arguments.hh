@@ -8,11 +8,17 @@
 // file          /home/mycure/infinit/elle/radix/Arguments.hh
 //
 // created       julien quintard   [wed feb 24 08:03:32 2010]
-// updated       julien quintard   [thu jun  9 23:44:43 2011]
+// updated       julien quintard   [tue jul 19 16:08:36 2011]
 //
 
 #ifndef ELLE_RADIX_ARGUMENTS_HH
 #define ELLE_RADIX_ARGUMENTS_HH
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/radix/Parameters.hh>
 
 namespace elle
 {
@@ -37,6 +43,27 @@ namespace elle
     template <typename... T>
     class Arguments
     {
+    };
+
+    ///
+    /// this specialized class is meaningless but is used to hold
+    /// the Arguments-related functionalities together.
+    ///
+    template <>
+    class Arguments<>
+    {
+    public:
+      //
+      // methods
+      //
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename... U,
+		typename... V>
+      static
+      Arguments< Parameters<U..., V...> >
+      Union(E1< Parameters<U...> >&,
+	    E2< Parameters<V...> >&);
     };
 
   }

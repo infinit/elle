@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Variables.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [mon jul 18 15:58:28 2011]
+// updated       julien quintard   [tue jul 19 16:38:18 2011]
 //
 
 #ifndef ELLE_RADIX_VARIABLES_HXX
@@ -67,28 +67,22 @@ namespace elle
 
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble)
+      Variables(E< Parameters<U...> >&				ensemble)
       {
 	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<> >&)
+      {
       }
 
       //
       // methods 
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call());
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call());
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -104,6 +98,23 @@ namespace elle
 	const
       {
 	return (object.Call(elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(elements...);
       }
 
       //
@@ -152,31 +163,41 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1):
+	element1(element1)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1)
       {
 	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1> >&				ensemble2):
+	element1(ensemble2.element1)
+      {
       }
 
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -194,6 +215,25 @@ namespace elle
       {
 	return (object.Call(this->element1,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    elements...);
       }
 
       //
@@ -244,34 +284,59 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2):
+	element1(element1),
+	element2(element2)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2)
       {
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2> >&			ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -291,6 +356,28 @@ namespace elle
 	return (object.Call(this->element1,
 			    this->element2,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    elements...);
+
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    elements...);
       }
 
       //
@@ -343,9 +430,18 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2,
+		T3&						element3):
+	element1(element1),
+	element2(element2),
+	element3(element3)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2),
 	element3(ensemble.element3)
@@ -353,27 +449,62 @@ namespace elle
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3>
+      Variables(E1< Parameters<U1, U2, U3> >&			ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename V3>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<V3> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2,
+		typename V3>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2, V3> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1),
+	element3(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2,
+		typename V3>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2, V3> >&			ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2),
+	element3(ensemble2.element3)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -395,6 +526,29 @@ namespace elle
 			    this->element2,
 			    this->element3,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    elements...);
       }
 
       //
@@ -449,9 +603,20 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2,
+		T3&						element3,
+		T4&						element4):
+	element1(element1),
+	element2(element2),
+	element3(element3),
+	element4(element4)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2),
 	element3(ensemble.element3),
@@ -460,29 +625,85 @@ namespace elle
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4>
+      Variables(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename V4>
+      Variables(E1< Parameters<U1, U2, U3> >&			ensemble1,
+		E2< Parameters<V4> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename V3,
+		typename V4>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<V3, V4> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble2.element1),
+	element4(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2,
+		typename V3,
+		typename V4>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2, V3, V4> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1),
+	element3(ensemble2.element2),
+	element4(ensemble2.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2,
+		typename V3,
+		typename V4>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2, V3, V4> >&		ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2),
+	element3(ensemble2.element3),
+	element4(ensemble2.element4)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -506,6 +727,31 @@ namespace elle
 			    this->element3,
 			    this->element4,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    elements...);
       }
 
       //
@@ -562,9 +808,22 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2,
+		T3&						element3,
+		T4&						element4,
+		T5&						element5):
+	element1(element1),
+	element2(element2),
+	element3(element3),
+	element4(element4),
+	element5(element5)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2),
 	element3(ensemble.element3),
@@ -574,31 +833,112 @@ namespace elle
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename V5>
+      Variables(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
+		E2< Parameters<V5> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename V4,
+		typename V5>
+      Variables(E1< Parameters<U1, U2, U3> >&			ensemble1,
+		E2< Parameters<V4, V5> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble2.element1),
+	element5(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename V3,
+		typename V4,
+		typename V5>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<V3, V4, V5> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble2.element1),
+	element4(ensemble2.element2),
+	element5(ensemble2.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2, V3, V4, V5> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1),
+	element3(ensemble2.element2),
+	element4(ensemble2.element3),
+	element5(ensemble2.element4)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2, V3, V4, V5> >&		ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2),
+	element3(ensemble2.element3),
+	element4(ensemble2.element4),
+	element5(ensemble2.element5)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -624,6 +964,33 @@ namespace elle
 			    this->element4,
 			    this->element5,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    elements...);
       }
 
       //
@@ -684,9 +1051,24 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2,
+		T3&						element3,
+		T4&						element4,
+		T5&						element5,
+		T6&						element6):
+	element1(element1),
+	element2(element2),
+	element3(element3),
+	element4(element4),
+	element5(element5),
+	element6(element6)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2),
 	element3(ensemble.element3),
@@ -697,33 +1079,145 @@ namespace elle
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6> >&				ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename V6>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
+		E2< Parameters<V6> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename V5,
+		typename V6>
+      Variables(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
+		E2< Parameters<V5, V6> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble2.element1),
+	element6(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename V4,
+		typename V5,
+		typename V6>
+      Variables(E1< Parameters<U1, U2, U3> >&			ensemble1,
+		E2< Parameters<V4, V5, V6> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble2.element1),
+	element5(ensemble2.element2),
+	element6(ensemble2.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<V3, V4, V5, V6> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble2.element1),
+	element4(ensemble2.element2),
+	element5(ensemble2.element3),
+	element6(ensemble2.element4)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2, V3, V4, V5, V6> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1),
+	element3(ensemble2.element2),
+	element4(ensemble2.element3),
+	element5(ensemble2.element4),
+	element6(ensemble2.element5)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2, V3, V4, V5,
+			       V6> >&				ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2),
+	element3(ensemble2.element3),
+	element4(ensemble2.element4),
+	element5(ensemble2.element5),
+	element6(ensemble2.element6)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -751,6 +1245,35 @@ namespace elle
 			    this->element5,
 			    this->element6,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    elements...);
       }
 
       //
@@ -813,9 +1336,26 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2,
+		T3&						element3,
+		T4&						element4,
+		T5&						element5,
+		T6&						element6,
+		T7&						element7):
+	element1(element1),
+	element2(element2),
+	element3(element3),
+	element4(element4),
+	element5(element5),
+	element6(element6),
+	element7(element7)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2),
 	element3(ensemble.element3),
@@ -827,35 +1367,182 @@ namespace elle
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename U7>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6, U7> >&			ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble1.element7)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename V7>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6> >&				ensemble1,
+		E2< Parameters<V7> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename V6,
+		typename V7>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
+		E2< Parameters<V6, V7> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble2.element1),
+	element7(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename V5,
+		typename V6,
+		typename V7>
+      Variables(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
+		E2< Parameters<V5, V6, V7> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble2.element1),
+	element6(ensemble2.element2),
+	element7(ensemble2.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7>
+      Variables(E1< Parameters<U1, U2, U3> >&			ensemble1,
+		E2< Parameters<V4, V5, V6, V7> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble2.element1),
+	element5(ensemble2.element2),
+	element6(ensemble2.element3),
+	element7(ensemble2.element4)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<V3, V4, V5, V6, V7> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble2.element1),
+	element4(ensemble2.element2),
+	element5(ensemble2.element3),
+	element6(ensemble2.element4),
+	element7(ensemble2.element5)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2, V3, V4, V5, V6,
+			       V7> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1),
+	element3(ensemble2.element2),
+	element4(ensemble2.element3),
+	element5(ensemble2.element4),
+	element6(ensemble2.element5),
+	element7(ensemble2.element6)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2, V3, V4, V5,
+			       V6, V7> >&			ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2),
+	element3(ensemble2.element3),
+	element4(ensemble2.element4),
+	element5(ensemble2.element5),
+	element6(ensemble2.element6),
+	element7(ensemble2.element7)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -885,6 +1572,37 @@ namespace elle
 			    this->element6,
 			    this->element7,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    this->element7,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    this->element7,
+		    elements...);
       }
 
       //
@@ -949,9 +1667,28 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2,
+		T3&						element3,
+		T4&						element4,
+		T5&						element5,
+		T6&						element6,
+		T7&						element7,
+		T8&						element8):
+	element1(element1),
+	element2(element2),
+	element3(element3),
+	element4(element4),
+	element5(element5),
+	element6(element6),
+	element7(element7),
+	element8(element8)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2),
 	element3(ensemble.element3),
@@ -964,37 +1701,223 @@ namespace elle
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename U7,
+		typename U8>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6, U7, U8> >&			ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble1.element7),
+	element8(ensemble1.element8)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename U7,
+		typename V8>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6, U7> >&			ensemble1,
+		E2< Parameters<V8> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble1.element7),
+	element8(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename V7,
+		typename V8>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6> >&				ensemble1,
+		E2< Parameters<V7, V8> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble2.element1),
+	element8(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename V6,
+		typename V7,
+		typename V8>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
+		E2< Parameters<V6, V7, V8> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble2.element1),
+	element7(ensemble2.element2),
+	element8(ensemble2.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8>
+      Variables(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
+		E2< Parameters<V5, V6, V7, V8> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble2.element1),
+	element6(ensemble2.element2),
+	element7(ensemble2.element3),
+	element8(ensemble2.element4)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8>
+      Variables(E1< Parameters<U1, U2, U3> >&			ensemble1,
+		E2< Parameters<V4, V5, V6, V7, V8> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble2.element1),
+	element5(ensemble2.element2),
+	element6(ensemble2.element3),
+	element7(ensemble2.element4),
+	element8(ensemble2.element5)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<V3, V4, V5, V6, V7,
+			       V8> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble2.element1),
+	element4(ensemble2.element2),
+	element5(ensemble2.element3),
+	element6(ensemble2.element4),
+	element7(ensemble2.element5),
+	element8(ensemble2.element6)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2, V3, V4, V5, V6,
+			       V7, V8> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1),
+	element3(ensemble2.element2),
+	element4(ensemble2.element3),
+	element5(ensemble2.element4),
+	element6(ensemble2.element5),
+	element7(ensemble2.element6),
+	element8(ensemble2.element7)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2, V3, V4, V5,
+			       V6, V7, V8> >&			ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2),
+	element3(ensemble2.element3),
+	element4(ensemble2.element4),
+	element5(ensemble2.element5),
+	element6(ensemble2.element6),
+	element7(ensemble2.element7),
+	element8(ensemble2.element8)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -1026,6 +1949,39 @@ namespace elle
 			    this->element7,
 			    this->element8,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    this->element7,
+		    this->element8,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    this->element7,
+		    this->element8,
+		    elements...);
       }
 
       //
@@ -1092,9 +2048,30 @@ namespace elle
       {
       }
 
+      Variables(T1&						element1,
+		T2&						element2,
+		T3&						element3,
+		T4&						element4,
+		T5&						element5,
+		T6&						element6,
+		T7&						element7,
+		T8&						element8,
+		T9&						element9):
+	element1(element1),
+	element2(element2),
+	element3(element3),
+	element4(element4),
+	element5(element5),
+	element6(element6),
+	element7(element7),
+	element8(element8),
+	element9(element9)
+      {
+      }
+
       template <template <typename...> class E,
 		typename... U>
-      Variables(const E< Parameters<U...> >&			ensemble):
+      Variables(E< Parameters<U...> >&				ensemble):
 	element1(ensemble.element1),
 	element2(ensemble.element2),
 	element3(ensemble.element3),
@@ -1108,39 +2085,268 @@ namespace elle
 	allege(Parameters<U...>::Quantum == P::Quantum);
       }
 
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename U7,
+		typename U8,
+		typename U9>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6, U7, U8, U9> >&		ensemble1,
+		E2< Parameters<> >&):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble1.element7),
+	element8(ensemble1.element8),
+	element9(ensemble1.element9)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename U7,
+		typename U8,
+		typename V9>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6, U7, U8> >&			ensemble1,
+		E2< Parameters<V9> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble1.element7),
+	element8(ensemble1.element8),
+	element9(ensemble2.element1)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename U7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6, U7> >&			ensemble1,
+		E2< Parameters<V8, V9> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble1.element7),
+	element8(ensemble2.element1),
+	element9(ensemble2.element2)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename U6,
+		typename V7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5,
+			       U6> >&				ensemble1,
+		E2< Parameters<V7, V8, V9> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble1.element6),
+	element7(ensemble2.element1),
+	element8(ensemble2.element2),
+	element9(ensemble2.element3)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename U5,
+		typename V6,
+		typename V7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<U1, U2, U3, U4, U5> >&		ensemble1,
+		E2< Parameters<V6, V7, V8, V9> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble1.element5),
+	element6(ensemble2.element1),
+	element7(ensemble2.element2),
+	element8(ensemble2.element3),
+	element9(ensemble2.element4)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename U4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<U1, U2, U3, U4> >&		ensemble1,
+		E2< Parameters<V5, V6, V7, V8, V9> >&		ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble1.element4),
+	element5(ensemble2.element1),
+	element6(ensemble2.element2),
+	element7(ensemble2.element3),
+	element8(ensemble2.element4),
+	element9(ensemble2.element5)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename U3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<U1, U2, U3> >&			ensemble1,
+		E2< Parameters<V4, V5, V6, V7, V8,
+			       V9> >&				ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble1.element3),
+	element4(ensemble2.element1),
+	element5(ensemble2.element2),
+	element6(ensemble2.element3),
+	element7(ensemble2.element4),
+	element8(ensemble2.element5),
+	element9(ensemble2.element6)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename U2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<U1, U2> >&			ensemble1,
+		E2< Parameters<V3, V4, V5, V6, V7,
+			       V8, V9> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble1.element2),
+	element3(ensemble2.element1),
+	element4(ensemble2.element2),
+	element5(ensemble2.element3),
+	element6(ensemble2.element4),
+	element7(ensemble2.element5),
+	element8(ensemble2.element6),
+	element9(ensemble2.element7)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename U1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<U1> >&				ensemble1,
+		E2< Parameters<V2, V3, V4, V5, V6,
+			       V7, V8, V9> >&			ensemble2):
+	element1(ensemble1.element1),
+	element2(ensemble2.element1),
+	element3(ensemble2.element2),
+	element4(ensemble2.element3),
+	element5(ensemble2.element4),
+	element6(ensemble2.element5),
+	element7(ensemble2.element6),
+	element8(ensemble2.element7),
+	element9(ensemble2.element8)
+      {
+      }
+
+      template <template <typename...> class E1,
+		template <typename...> class E2,
+		typename V1,
+		typename V2,
+		typename V3,
+		typename V4,
+		typename V5,
+		typename V6,
+		typename V7,
+		typename V8,
+		typename V9>
+      Variables(E1< Parameters<> >&,
+		E2< Parameters<V1, V2, V3, V4, V5,
+			       V6, V7, V8, V9> >&		ensemble2):
+	element1(ensemble2.element1),
+	element2(ensemble2.element2),
+	element3(ensemble2.element3),
+	element4(ensemble2.element4),
+	element5(ensemble2.element5),
+	element6(ensemble2.element6),
+	element7(ensemble2.element7),
+	element8(ensemble2.element8),
+	element9(ensemble2.element9)
+      {
+      }
+
       //
       // methods
       //
 
-      template <typename C>
-      Status		Call(const C&				object)
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8,
-			    this->element9));
-      }
-
-      template <typename C>
-      Status		Call(const C&				object)
-	const
-      {
-	return (object.Call(this->element1,
-			    this->element2,
-			    this->element3,
-			    this->element4,
-			    this->element5,
-			    this->element6,
-			    this->element7,
-			    this->element8,
-			    this->element9));
-      }
-
       template <typename C,
 		typename... U>
       Status		Call(const C&				object,
@@ -1174,6 +2380,41 @@ namespace elle
 			    this->element8,
 			    this->element9,
 			    elements...));
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    this->element7,
+		    this->element8,
+		    this->element9,
+		    elements...);
+      }
+
+      template <typename C,
+		typename... U>
+      Void		Trigger(const C&			object,
+				U&...				elements)
+	const
+      {
+	object.Call(this->element1,
+		    this->element2,
+		    this->element3,
+		    this->element4,
+		    this->element5,
+		    this->element6,
+		    this->element7,
+		    this->element8,
+		    this->element9,
+		    elements...);
       }
 
       //
@@ -1195,6 +2436,26 @@ namespace elle
 	leave();
       }
     };
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+ 
+    ///
+    /// this method merges an ensemble with another hence returning
+    /// an Variables class referencing the inner elements of the two
+    /// ensembles.
+    ///
+    template <template <typename...> class E1,
+	      template <typename...> class E2,
+	      typename... U,
+	      typename... V>
+    Variables< Parameters<U..., V...> >
+    Variables<>::Union(E1< Parameters<U...> >&			ensemble1,
+		       E2< Parameters<V...> >&			ensemble2)
+    {
+      return (Variables< Parameters<U..., V...> >(ensemble1, ensemble2));
+    }
 
   }
 }
