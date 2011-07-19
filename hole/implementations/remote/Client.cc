@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [thu jul 14 14:21:19 2011]
+// updated       julien quintard   [mon jul 18 22:37:19 2011]
 //
 
 //
@@ -17,6 +17,8 @@
 
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Manifest.hh>
+
+#include <hole/Hole.hh>
 
 namespace hole
 {
@@ -34,8 +36,20 @@ namespace hole
       ///
       Client::Client(const nucleus::Network&			network,
 		     const elle::Address&			host):
-	Node(network, host)
+	Node(network, host),
+
+	gate(NULL)
       {
+      }
+
+      ///
+      /// the destructor.
+      ///
+      Client::~Client()
+      {
+	// delete the gate.
+	if (this->gate != NULL)
+	  delete this->gate;
       }
 
 //
@@ -47,22 +61,52 @@ namespace hole
       ///
       elle::Status	Client::Initialize()
       {
-	elle::Callback< elle::Parameters<const elle::String> >
-	  error(&Client::Error, this);
-
 	enter();
 
-	// create the gate.
-	if (this->gate.Create() == elle::StatusError)
-	  escape("unable to create the gate");
+	//
+	// register the messages.
+	//
+	{
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      elle::Cipher
+	      >
+	    >				challenge(&Client::Challenge, this);
 
-	// connect the gate.
-	if (this->gate.Connect(this->host) == elle::StatusError)
-	  escape("unable to connect to the bridge");
+	  // register the challenge message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagChallenge,
+				TagResponse>(challenge)) == elle::StatusError)
+	    escape("unable to register the callback");
+	}
 
-	// register the error callback.
-	if (this->gate.Monitor(error) == elle::StatusError)
-	  escape("unable to monitor the connection");
+	//
+	// connect to the server.
+	//
+	{
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const elle::String
+	      >
+	    >				error(&Client::Error, this);
+
+	  // allocate the gate.
+	  this->gate = new elle::Gate;
+
+	  // create the gate.
+	  if (this->gate->Create() == elle::StatusError)
+	    escape("unable to create the gate");
+
+	  // connect the gate.
+	  if (this->gate->Connect(this->host) == elle::StatusError)
+	    escape("unable to connect to the bridge");
+
+	  // register the error callback.
+	  if (this->gate->Monitor(error) == elle::StatusError)
+	    escape("unable to monitor the connection");
+	}
 
 	leave();
       }
@@ -78,8 +122,11 @@ namespace hole
 	enter();
 
 	// disconnect.
-	if (this->gate.Disconnect() == elle::StatusError)
-	  escape("unable to transfer the request");
+	if (this->gate != NULL)
+	  {
+	    if (this->gate->Disconnect() == elle::StatusError)
+	      escape("unable to transfer the request");
+	  }
 
 	leave();
       }
@@ -95,8 +142,12 @@ namespace hole
 
 	enter();
 
+	// check that the client is connected.
+	if (this->gate == NULL)
+	  escape("the client seems to have been disconnected");
+
 	// transfer to the remote.
-	if (this->gate.Call(
+	if (this->gate->Call(
 	      elle::Inputs<TagPush>(address,
 				    derivable),
 	      elle::Outputs<TagOk>()) == elle::StatusError)
@@ -116,8 +167,12 @@ namespace hole
 
 	enter();
 
+	// check that the client is connected.
+	if (this->gate == NULL)
+	  escape("the client seems to have been disconnected");
+
 	// transfer to the remote.
-	if (this->gate.Call(
+	if (this->gate->Call(
 	      elle::Inputs<TagPush>(address,
 				    derivable),
 	      elle::Outputs<TagOk>()) == elle::StatusError)
@@ -136,8 +191,12 @@ namespace hole
 
 	enter();
 
+	// check that the client is connected.
+	if (this->gate == NULL)
+	  escape("the client seems to have been disconnected");
+
 	// transfer to the remote.
-	if (this->gate.Call(
+	if (this->gate->Call(
 	      elle::Inputs<TagPull>(address,
 				    nucleus::Version::Any),
 	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
@@ -157,8 +216,12 @@ namespace hole
 
 	enter();
 
+	// check that the client is connected.
+	if (this->gate == NULL)
+	  escape("the client seems to have been disconnected");
+
 	// transfer to the remote.
-	if (this->gate.Call(
+	if (this->gate->Call(
 	      elle::Inputs<TagPull>(address,
 				    version),
 	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
@@ -174,8 +237,12 @@ namespace hole
       {
 	enter();
 
+	// check that the client is connected.
+	if (this->gate == NULL)
+	  escape("the client seems to have been disconnected");
+
 	// transfer to the remote.
-	if (this->gate.Call(
+	if (this->gate->Call(
 	      elle::Inputs<TagWipe>(address),
 	      elle::Outputs<TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
@@ -188,13 +255,56 @@ namespace hole
 //
 
       ///
+      /// this callback is triggered whenever the client is challenged
+      /// by the server.
+      ///
+      /// the challenge consists in responding to the server with the
+      /// network's name it is supposed to support, this being encrypted
+      /// with the remote key provided in the network descriptor.
+      ///
+      elle::Status	Client::Challenge(elle::Cipher&		cipher)
+      {
+	elle::SecretKey	key;
+	elle::String	string;
+
+	enter();
+
+	// retrieve the key.
+	if (Hole::Descriptor.Get("remote", "key",
+				 string) == elle::StatusError)
+	  escape("unable to retrieve the remote key from the "
+		 "network descriptor");
+
+	// create a key with the given string.
+	if (key.Create(string) == elle::StatusError)
+	  escape("unable to create the secret key");
+
+	// encrypt the network's name with the key.
+	if (key.Encrypt(Hole::Descriptor.name, cipher) == elle::StatusError)
+	  escape("unable to encrypt the network's name");
+
+	/* XXX needless with procedures
+	// transfer to the remote.
+	if (this->gate->Send(
+	      elle::Inputs<TagResponse>(cipher)) == elle::StatusError)
+	  escape("unable to transfer the request");
+	*/
+
+	leave();
+      }
+
+      ///
       /// this callback is triggered whenever the connection is shut down.
       ///
       elle::Status	Client::Error(const elle::String&)
       {
 	enter();
 
-	// XXX log or display error.
+	// delete the gate.
+	delete this->gate;
+
+	// reset the gate.
+	this->gate = NULL;
 
 	leave();
       }
@@ -215,8 +325,16 @@ namespace hole
 	  escape("unable to dump the node");
 
 	// dump the gate.
-	if (this->gate.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the gate");
+	if (this->gate != NULL)
+	  {
+	    if (this->gate->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the gate");
+	  }
+	else
+	  {
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << "[Gate] " << elle::none << std::endl;
+	  }
 
 	leave();
       }

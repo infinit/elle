@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.hh
 //
 // created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [mon jul 11 16:37:02 2011]
+// updated       julien quintard   [mon jul 18 20:20:34 2011]
 //
  
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
@@ -46,6 +46,7 @@ namespace hole
 	//
 	Client(const nucleus::Network&,
 	       const elle::Address&);
+	~Client();
 
 	//
 	// interfaces
@@ -69,6 +70,8 @@ namespace hole
 	//
 	// callbacks
 	//
+	elle::Status	Challenge(elle::Cipher&);
+
 	elle::Status	Error(const elle::String&);
 
 	//
@@ -81,7 +84,7 @@ namespace hole
 	//
 	// attributes
 	//
-	elle::Gate	gate;
+	elle::Gate*	gate;
       };
 
     }

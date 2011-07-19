@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [tue jul 12 14:57:45 2011]
+// updated       julien quintard   [tue jul 19 08:32:50 2011]
 //
 
 //
@@ -17,6 +17,8 @@
 
 #include <hole/implementations/remote/Server.hh>
 #include <hole/implementations/remote/Manifest.hh>
+
+#include <hole/Hole.hh>
 
 namespace hole
 {
@@ -36,6 +38,7 @@ namespace hole
 		     const elle::Address&			host):
 	Node(network, host),
 
+	state(Server::StateUnknown),
 	gate(NULL)
       {
       }
@@ -66,33 +69,55 @@ namespace hole
 	//
 	{
 	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const elle::Cipher
+	      >
+	    >				response(&Server::Response, this);
+	  elle::Callback<
+	    elle::Status,
 	    elle::Parameters<
 	      const nucleus::Address,
 	      const nucleus::Derivable<nucleus::Block>
 	      >
-	    >					push(&Server::Push, this);
+	    >				push(&Server::Push, this);
 	  elle::Callback<
+	    elle::Status,
 	    elle::Parameters<
 	      const nucleus::Address,
-	      const nucleus::Version
+	      const nucleus::Version,
+	      nucleus::Derivable<nucleus::Block>
 	      >
-	    >					pull(&Server::Pull, this);
+	    >				pull(&Server::Pull, this);
 	  elle::Callback<
+	    elle::Status,
 	    elle::Parameters<
 	      const nucleus::Address
 	      >
-	    >					wipe(&Server::Wipe, this);
+	    >				wipe(&Server::Wipe, this);
+
+	  // register the response message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagResponse>(response)) ==
+	      elle::StatusError)
+	    escape("unable to register the callback");
 
 	  // register the push message.
-	  if (elle::Network::Register<TagPush>(push) == elle::StatusError)
+	  if (elle::Network::Register(
+	        elle::Procedure<TagPush,
+				elle::TagOk>(push)) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the pull message.
-	  if (elle::Network::Register<TagPull>(pull) == elle::StatusError)
+	  if (elle::Network::Register(
+	        elle::Procedure<TagPull,
+				TagBlock>(pull)) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the wipe message.
-	  if (elle::Network::Register<TagWipe>(wipe) == elle::StatusError)
+	  if (elle::Network::Register(
+	        elle::Procedure<TagWipe,
+				elle::TagOk>(wipe)) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -101,6 +126,7 @@ namespace hole
 	//
 	{
 	  elle::Callback<
+	    elle::Status,
 	    elle::Parameters<
 	      elle::Gate*
 	    >
@@ -300,6 +326,90 @@ namespace hole
 //
 
       ///
+      /// this callback handles new connections.
+      ///
+      elle::Status	Server::Connection(elle::Gate*&		gate)
+      {
+	elle::Callback<
+	  elle::Status,
+	  elle::Parameters<
+	    const elle::String
+	  >
+	>				error(&Server::Error, this);
+
+	enter();
+
+	// check if there already is a client.
+	if (this->gate != NULL)
+	  escape("a client seems to already be connected");
+
+	// register the client.
+	this->gate = gate;
+
+	// register the error callback.
+	if (this->gate->Monitor(error) == elle::StatusError)
+	  escape("unable to monitor the connection");
+
+	// set the state.
+	this->state = Server::StateConnected;
+
+	// send a message to the client in order to challenge it.
+	if (this->gate->Send(
+	      elle::Inputs<TagChallenge>()) == elle::StatusError)
+	  escape("unable to send a message to the client");
+
+	leave();
+      }
+
+      ///
+      /// this callback is triggered whenever the client responds to
+      /// the initial challenge.
+      ///
+      elle::Status	Server::Response(const elle::Cipher&	cipher)
+      {
+	elle::SecretKey	key;
+	elle::String	string;
+	elle::String	name;
+
+	enter();
+
+	// retrieve the key.
+	if (Hole::Descriptor.Get("remote", "key",
+				 string) == elle::StatusError)
+	  escape("unable to retrieve the remote key from the "
+		 "network descriptor");
+
+	// create a key with the given string.
+	if (key.Create(string) == elle::StatusError)
+	  escape("unable to create the secret key");
+
+	// decrypt the cipher.
+	if (key.Decrypt(cipher, name) == elle::StatusError)
+	  escape("unable to decrypt the cipher");
+
+	// compare the network with the network being handled.
+	if (Hole::Descriptor.name != name)
+	  {
+	    // disconnect.
+	    if (this->gate->Disconnect() == elle::StatusError)
+	      escape("unable to disconnect the client gate");
+
+	    // delete the gate.
+	    delete this->gate;
+
+	    // reset the pointer.
+	    this->gate = NULL;
+	  }
+	else
+	  {
+	    // set the state as authenticated.
+	    this->state = Server::StateAuthenticated;
+	  }
+
+	leave();
+      }
+
+      ///
       /// this method stores the given block.
       ///
       elle::Status	Server::Push(const nucleus::Address&	address,
@@ -312,6 +422,10 @@ namespace hole
 	enter();
 
 	printf("Server::Push\n");
+
+	// check that the client has been authenticated.
+	if (this->state != Server::StateAuthenticated)
+	  escape("the client has not been authenticated");
 
 	// infer the block from the derivable.
 	if (derivable.Infer(object) == elle::StatusError)
@@ -355,11 +469,14 @@ namespace hole
 	    }
 	  }
 
+	printf("/Server::Push\n");
+
+	/* XXX
 	// answer to the caller.
 	if (this->gate->Reply(
 	      elle::Inputs<TagOk>()) == elle::StatusError)
 	  escape("unable to answer to the caller");
-
+	*/
 	leave();
       }
 
@@ -367,13 +484,19 @@ namespace hole
       /// this method returns the block associated with the given address.
       ///
       elle::Status	Server::Pull(const nucleus::Address&	address,
-				     const nucleus::Version&	version)
+				     const nucleus::Version&	version,
+				     nucleus::Derivable<
+				       nucleus::Block>&		derivable)
       {
 	nucleus::Block*	block;
 
 	enter(instance(block));
 
 	printf("Server::Pull\n");
+
+	// check that the client has been authenticated.
+	if (this->state != Server::StateAuthenticated)
+	  escape("the client has not been authenticated");
 
 	// build the block according to the component.
 	if (nucleus::Nucleus::Factory.Build(address.component,
@@ -419,6 +542,16 @@ namespace hole
 	    }
 	  }
 
+	// set the derivable and make the policy dynamic so that
+	// the block gets deleted along with the derivable.
+	derivable.product = address.component;
+	derivable.object = block;
+	derivable.policy = nucleus::Derivable<nucleus::Block>::PolicyDynamic;
+
+	// waive the block.
+	waive(block);
+
+	/* XXX
 	nucleus::Derivable<nucleus::Block>	derivable(address.component,
 							  *block);
 
@@ -432,6 +565,7 @@ namespace hole
 
 	// waive.
 	waive(block);
+	*/
 
 	leave();
       }
@@ -445,6 +579,10 @@ namespace hole
 
 	printf("Server::Wipe\n");
 
+ 	// check that the client has been authenticated.
+	if (this->state != Server::StateAuthenticated)
+	  escape("the client has not been authenticated");
+
 	// forward the kill request to the implementation.
 	if (this->Kill(address) == elle::StatusError)
 	  escape("unable to erase the block");
@@ -453,33 +591,6 @@ namespace hole
 	if (this->gate->Reply(
 	      elle::Inputs<TagOk>()) == elle::StatusError)
 	  escape("unable to answer to the caller");
-
-	leave();
-      }
-
-      ///
-      /// this method handles new connections.
-      ///
-      elle::Status	Server::Connection(elle::Gate*&		gate)
-      {
-	elle::Callback<
-	  elle::Parameters<
-	    const elle::String
-	  >
-	>				error(&Server::Error, this);
-
-	enter();
-
-	// check if there already is a client.
-	if (this->gate != NULL)
-	  escape("a client seems to already be connected");
-
-	// register the client.
-	this->gate = gate;
-
-	// register the error callback.
-	if (this->gate->Monitor(error) == elle::StatusError)
-	  escape("unable to monitor the connection");
 
 	leave();
       }
@@ -496,6 +607,9 @@ namespace hole
 
 	// set the gate to null.
 	this->gate = NULL;
+
+	// reset the state.
+	this->state = Server::StateUnknown;
 
 	leave();
       }

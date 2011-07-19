@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [fri jul  8 10:56:18 2011]
+// updated       julien quintard   [mon jul 18 20:15:29 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
@@ -76,6 +76,9 @@ namespace hole
 	{
 	  TagOk = elle::Range<Component>::First,
 
+	  TagChallenge,
+	  TagResponse,
+
 	  TagPush,
 	  TagPull,
 	  TagBlock,
@@ -96,6 +99,11 @@ namespace hole
 
 outward(hole::implementations::remote::TagOk,
 	parameters());
+
+outward(hole::implementations::remote::TagChallenge,
+	parameters())
+inward(hole::implementations::remote::TagResponse,
+       parameters(elle::Cipher));
 
 inward(hole::implementations::remote::TagPush,
        parameters(nucleus::Address,

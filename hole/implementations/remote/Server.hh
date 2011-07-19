@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.hh
 //
 // created       julien quintard   [wed may 25 19:20:52 2011]
-// updated       julien quintard   [tue jul 12 14:57:40 2011]
+// updated       julien quintard   [mon jul 18 22:55:11 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
@@ -42,6 +42,16 @@ namespace hole
       {
       public:
 	//
+	// enumerations
+	//
+	enum State
+	  {
+	    StateUnknown,
+	    StateConnected,
+	    StateAuthenticated
+	  };
+
+	//
 	// constructors & destructors
 	//
 	Server(const nucleus::Network&,
@@ -70,13 +80,16 @@ namespace hole
 	//
 	// callbacks
 	//
+	elle::Status	Connection(elle::Gate*&);
+	elle::Status	Response(const elle::Cipher&);
+
 	elle::Status	Push(const nucleus::Address&,
 			     const nucleus::Derivable<nucleus::Block>&);
 	elle::Status	Pull(const nucleus::Address&,
-			     const nucleus::Version&);
+			     const nucleus::Version&,
+			     nucleus::Derivable<nucleus::Block>&);
 	elle::Status	Wipe(const nucleus::Address&);
 
-	elle::Status	Connection(elle::Gate*&);
 	elle::Status	Error(const elle::String&);
 
 	//
@@ -89,6 +102,8 @@ namespace hole
 	//
 	// attributes
 	//
+	State		state;
+
 	elle::Gate*	gate;
       };
 
