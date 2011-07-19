@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [mon jul 18 22:37:19 2011]
+// updated       julien quintard   [tue jul 19 11:34:59 2011]
 //
 
 //
@@ -150,7 +150,7 @@ namespace hole
 	if (this->gate->Call(
 	      elle::Inputs<TagPush>(address,
 				    derivable),
-	      elle::Outputs<TagOk>()) == elle::StatusError)
+	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
 
 	leave();
@@ -175,7 +175,7 @@ namespace hole
 	if (this->gate->Call(
 	      elle::Inputs<TagPush>(address,
 				    derivable),
-	      elle::Outputs<TagOk>()) == elle::StatusError)
+	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
 
 	leave();
@@ -244,7 +244,7 @@ namespace hole
 	// transfer to the remote.
 	if (this->gate->Call(
 	      elle::Inputs<TagWipe>(address),
-	      elle::Outputs<TagOk>()) == elle::StatusError)
+	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
 
 	leave();
@@ -282,13 +282,6 @@ namespace hole
 	// encrypt the network's name with the key.
 	if (key.Encrypt(Hole::Descriptor.name, cipher) == elle::StatusError)
 	  escape("unable to encrypt the network's name");
-
-	/* XXX needless with procedures
-	// transfer to the remote.
-	if (this->gate->Send(
-	      elle::Inputs<TagResponse>(cipher)) == elle::StatusError)
-	  escape("unable to transfer the request");
-	*/
 
 	leave();
       }

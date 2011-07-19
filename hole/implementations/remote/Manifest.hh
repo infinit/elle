@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [mon jul 18 20:15:29 2011]
+// updated       julien quintard   [tue jul 19 11:31:23 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
@@ -74,9 +74,7 @@ namespace hole
       //
       enum Tag
 	{
-	  TagOk = elle::Range<Component>::First,
-
-	  TagChallenge,
+	  TagChallenge = elle::Range<Component>::First + 1,
 	  TagResponse,
 
 	  TagPush,
@@ -96,9 +94,6 @@ namespace hole
 ///
 /// below are the definitions of the inward and outward messages.
 ///
-
-outward(hole::implementations::remote::TagOk,
-	parameters());
 
 outward(hole::implementations::remote::TagChallenge,
 	parameters())

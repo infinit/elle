@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [tue jul 19 08:32:50 2011]
+// updated       julien quintard   [tue jul 19 14:05:11 2011]
 //
 
 //
@@ -64,6 +64,30 @@ namespace hole
       {
 	enter();
 
+	// XXX
+	elle::Variables<
+	  elle::Parameters<
+	    elle::Natural32,
+	    elle::String
+	    >
+	  >	v;
+        elle::Natural32	i = 42;
+        elle::Natural64	j = 43;
+        elle::Arguments<
+	  elle::Parameters<
+	    elle::Natural32,
+	    elle::Natural64
+	    >
+	  >	a(i, j);
+	elle::Arguments<
+	  elle::Parameters<
+	    elle::Natural32,
+	    elle::String,
+	    elle::Natural32,
+	    elle::Natural64
+	    >
+	  >	u = elle::Arguments<>::Union(v, a);
+
 	//
 	// register the messages.
 	//
@@ -74,6 +98,12 @@ namespace hole
 	      const elle::Cipher
 	      >
 	    >				response(&Server::Response, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      >
+	    >				authenticated(&Server::Authenticated,
+						      this);
 	  elle::Callback<
 	    elle::Status,
 	    elle::Parameters<
@@ -105,19 +135,25 @@ namespace hole
 	  // register the push message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagPush,
-				elle::TagOk>(push)) == elle::StatusError)
+				elle::TagOk>(push,
+					     &authenticated,
+					     NULL)) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the pull message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagPull,
-				TagBlock>(pull)) == elle::StatusError)
+				TagBlock>(pull,
+					  &authenticated,
+					  NULL)) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the wipe message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagWipe,
-				elle::TagOk>(wipe)) == elle::StatusError)
+				elle::TagOk>(wipe,
+					     &authenticated,
+					     NULL)) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -410,6 +446,21 @@ namespace hole
       }
 
       ///
+      /// this method returns an error if the client has not completed
+      /// the authentication process.
+      ///
+      elle::Status	Server::Authenticated()
+      {
+	enter();
+
+	// check that the client has been authenticated.
+	if (this->state != Server::StateAuthenticated)
+	  escape("the client has not been authenticated");
+
+	leave();
+      }
+
+      ///
       /// this method stores the given block.
       ///
       elle::Status	Server::Push(const nucleus::Address&	address,
@@ -422,10 +473,6 @@ namespace hole
 	enter();
 
 	printf("Server::Push\n");
-
-	// check that the client has been authenticated.
-	if (this->state != Server::StateAuthenticated)
-	  escape("the client has not been authenticated");
 
 	// infer the block from the derivable.
 	if (derivable.Infer(object) == elle::StatusError)
@@ -469,14 +516,6 @@ namespace hole
 	    }
 	  }
 
-	printf("/Server::Push\n");
-
-	/* XXX
-	// answer to the caller.
-	if (this->gate->Reply(
-	      elle::Inputs<TagOk>()) == elle::StatusError)
-	  escape("unable to answer to the caller");
-	*/
 	leave();
       }
 
@@ -493,10 +532,6 @@ namespace hole
 	enter(instance(block));
 
 	printf("Server::Pull\n");
-
-	// check that the client has been authenticated.
-	if (this->state != Server::StateAuthenticated)
-	  escape("the client has not been authenticated");
 
 	// build the block according to the component.
 	if (nucleus::Nucleus::Factory.Build(address.component,
@@ -551,22 +586,6 @@ namespace hole
 	// waive the block.
 	waive(block);
 
-	/* XXX
-	nucleus::Derivable<nucleus::Block>	derivable(address.component,
-							  *block);
-
-	// return the block to the caller.
-	if (this->gate->Reply(
-	      elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
-	  escape("unable to return the block to the caller");
-
-	// delete the block.
-	delete block;
-
-	// waive.
-	waive(block);
-	*/
-
 	leave();
       }
 
@@ -579,17 +598,13 @@ namespace hole
 
 	printf("Server::Wipe\n");
 
- 	// check that the client has been authenticated.
-	if (this->state != Server::StateAuthenticated)
-	  escape("the client has not been authenticated");
-
 	// forward the kill request to the implementation.
 	if (this->Kill(address) == elle::StatusError)
 	  escape("unable to erase the block");
 
 	// answer the caller.
 	if (this->gate->Reply(
-	      elle::Inputs<TagOk>()) == elle::StatusError)
+	      elle::Inputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to answer to the caller");
 
 	leave();
