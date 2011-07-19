@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Set.hxx
 //
 // created       julien quintard   [fri jul 15 14:51:42 2011]
-// updated       julien quintard   [fri jul 15 15:55:29 2011]
+// updated       julien quintard   [tue jul 19 16:06:56 2011]
 //
 
 #ifndef ELLE_RADIX_SET_HXX

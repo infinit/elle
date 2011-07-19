@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hh
 //
 // created       julien quintard   [fri jun  3 22:23:13 2011]
-// updated       julien quintard   [mon jul 18 15:38:47 2011]
+// updated       julien quintard   [tue jul 19 13:42:15 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HH
@@ -74,7 +74,7 @@ namespace elle
 	Inputs(const T&...);
 	template <template <typename...> class E,
 		  typename... U>
-	Inputs(const E<U...>&);
+	Inputs(E< Parameters<U...> >&);
 
 	//
 	// interfaces
@@ -122,7 +122,7 @@ namespace elle
 	Outputs(T&...);
 	template <template <typename...> class E,
 		  typename... U>
-	Outputs(E<U...>&);
+	Outputs(E< Parameters<U...> >&);
 
 	//
 	// interfaces

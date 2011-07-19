@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hxx
 //
 // created       julien quintard   [fri jun  3 22:22:21 2011]
-// updated       julien quintard   [mon jul 18 15:40:39 2011]
+// updated       julien quintard   [tue jul 19 12:40:28 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HXX
@@ -56,7 +56,12 @@ namespace elle
     template <template <typename...> class E,
 	      typename... U>
     Bundle::Inputs< G,
-		    Parameters<const T...> >::Inputs(const E<U...>& ensemble):
+		    Parameters<const T...> >::Inputs(
+					        E<
+						  Parameters<
+						    U...
+						    >
+						  >&		ensemble):
       tag(G),
       arguments(ensemble)
     {
@@ -121,7 +126,7 @@ namespace elle
 
       // dump the tag.
       std::cout << alignment << Dumpable::Shift
-		<< "[Tag]" << (Natural32)this->tag << std::endl;
+		<< "[Tag] " << (Natural32)this->tag << std::endl;
 
       // dump the arguments.
       if (this->arguments.Dump() == StatusError)
@@ -140,7 +145,7 @@ namespace elle
     template <const Tag G,
 	      typename... T>
     Bundle::Outputs< G,
-		     Parameters<T...> >::Outputs(T&... objects):
+		     Parameters<T...> >::Outputs(T&...		objects):
       tag(G),
       arguments(objects...)
     {
@@ -154,7 +159,12 @@ namespace elle
     template <template <typename...> class E,
 	      typename... U>
     Bundle::Outputs< G,
-		     Parameters<T...> >::Outputs(E<U...>& ensemble):
+		     Parameters<T...> >::Outputs(
+					   E<
+					     Parameters<
+					       U...
+					       >
+					     >&			ensemble):
       tag(G),
       arguments(ensemble)
     {
@@ -218,7 +228,7 @@ namespace elle
 
       // dump the tag.
       std::cout << alignment << Dumpable::Shift
-		<< "[Tag]" << (Natural32)this->tag << std::endl;
+		<< "[Tag] " << (Natural32)this->tag << std::endl;
 
       // dump the arguments.
       if (this->arguments.Dump() == StatusError)

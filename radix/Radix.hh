@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Radix.hh
 //
 // created       julien quintard   [sun may  2 11:55:25 2010]
-// updated       julien quintard   [mon jul 18 14:59:51 2011]
+// updated       julien quintard   [tue jul 19 16:05:23 2011]
 //
 
 #ifndef ELLE_RADIX_RADIX_HH

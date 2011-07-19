@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [mon jun 27 18:33:31 2011]
+// updated       julien quintard   [tue jul 19 16:06:50 2011]
 //
 
 #ifndef ELLE_RADIX_PARAMETERS_HXX

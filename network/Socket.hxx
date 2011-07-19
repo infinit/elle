@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hxx
 //
 // created       julien quintard   [sun jul 17 15:39:02 2011]
-// updated       julien quintard   [tue jul 19 08:48:45 2011]
+// updated       julien quintard   [tue jul 19 11:35:15 2011]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HXX

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hxx
 //
 // created       julien quintard   [wed may 25 14:20:06 2011]
-// updated       julien quintard   [tue jul 19 09:00:47 2011]
+// updated       julien quintard   [tue jul 19 11:42:10 2011]
 //
 
 #ifndef ELLE_NETWORK_GATE_HXX
@@ -85,10 +85,6 @@ namespace elle
       if (header.Create(event, inputs.tag, packet.size - point) == StatusError)
 	escape("unable to create the header");
 
-      // XXX
-      printf("Gate::Send\n");
-      header.Dump();
-
       // update the header.
       if (packet.Update(offset, header) == StatusError)
 	escape("unable to update the header");
@@ -120,10 +116,6 @@ namespace elle
       if (Fiber::Wait(event, parcel) == StatusError)
 	escape("an error occured while waiting for a specific event");
 
-      // XXX
-      printf("Gate::Receive waiting(%u)\n", outputs.tag);
-      parcel->Dump();
-
       // check the tag.
       if (parcel->header->tag != outputs.tag)
 	{
@@ -136,9 +128,6 @@ namespace elle
 	      // extract the error message.
 	      if (report.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the error message");
-
-	      // XXX
-	      report.Dump();
 
 	      // report the remote error.
 	      transpose(report);
