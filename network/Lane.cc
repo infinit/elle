@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [thu jul 14 14:09:56 2011]
+// updated       julien quintard   [mon jul 18 11:29:02 2011]
 //
 
 //
@@ -41,7 +41,8 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    LanePorter::LanePorter(const Callback< Parameters<Door*> >&	callback):
+    LanePorter::LanePorter(const Callback< Status,
+					   Parameters<Door*> >&	callback):
       server(NULL),
       callback(callback)
     {
@@ -142,6 +143,7 @@ namespace elle
     Status		Lane::Listen(const String&		name,
 				     const
 				       Callback<
+					 Status,
 					 Parameters<Door*> >&	callback)
     {
       LanePorter*	porter;
@@ -285,8 +287,8 @@ namespace elle
       if (door->Create(socket) == StatusError)
 	escape("unable to create the door");
 
-      // trigger the callback.
-      if (this->callback.Trigger(door) == StatusError)
+      // call the callback.
+      if (this->callback.Call(door) == StatusError)
 	escape("an error occured in the callback");
 
       // stop tracking door as it has been handed to the callback.
@@ -301,8 +303,10 @@ namespace elle
 
     void		LanePorter::_accept()
     {
-      Callback< Parameters<> >	callback(&LanePorter::Accept, this);
-      Closure< Parameters<> >	closure(callback);
+      Callback< Status,
+		Parameters<> >	callback(&LanePorter::Accept, this);
+      Closure< Status,
+	       Parameters<> >	closure(callback);
 
       enter();
 

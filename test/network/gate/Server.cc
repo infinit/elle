@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [wed jul  6 15:35:24 2011]
+// updated       julien quintard   [mon jul 18 09:38:12 2011]
 //
 
 //
@@ -67,7 +67,8 @@ namespace elle
     ///
     Status		Server::Run()
     {
-      Callback< Parameters<Gate*> >	connection(&Server::Connection, this);
+      Callback< Status,
+		Parameters<Gate*> >	connection(&Server::Connection, this);
 
       enter();
 

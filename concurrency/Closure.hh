@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Closure.hh
 //
 // created       julien quintard   [thu mar 25 03:25:25 2010]
-// updated       julien quintard   [mon jun 27 18:35:16 2011]
+// updated       julien quintard   [mon jul 18 11:43:22 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HH
@@ -52,8 +52,10 @@ namespace elle
     /// once triggered, the arguments attached to the closure are passed
     /// to the callback.
     ///
-    template <typename... U>
-    class Closure< Parameters<U...> >:
+    template <typename R,
+	      typename... U>
+    class Closure< R,
+		   Parameters<U...> >:
       public Entity
     {
     public:
@@ -65,18 +67,19 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback< Parameters<U...> >&,
+      Closure(Callback< R, Parameters<U...> >&,
 	      U&...);
 
       //
       // methods
       //
-      Status		Trigger();
+      R			Call();
+      Void		Trigger();
 
       //
       // attributes
       //
-      Callback< Parameters<U...> >	callback;
+      Callback< R, Parameters<U...> >	callback;
       Arguments< Parameters<U...> >	arguments;
     };
 
@@ -93,6 +96,7 @@ namespace elle
     /// but also takes a String once the closure is triggered. thus,
     /// such a closure would be used as follows:
     ///
+    ///   closure.Call(string);
     ///   closure.Trigger(string);
     ///
     /// such a call would result in the callback being triggered with both
@@ -101,9 +105,11 @@ namespace elle
     ///
     ///   Callback< Parameters<Natural32, String> >
     ///
-    template <typename... U,
+    template <typename R,
+	      typename... U,
 	      typename... V>
-    class Closure< Parameters<U...>,
+    class Closure< R,
+		   Parameters<U...>,
 		   Parameters<V...> >:
       public Entity
     {
@@ -116,18 +122,19 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback< Parameters<U..., V...> >&,
+      Closure(Callback< R, Parameters<U..., V...> >&,
 	      U&...);
 
       //
       // methods
       //
-      Status		Trigger(V&...);
+      R			Call(V&...);
+      Void		Trigger(V&...);
 
       //
       // attributes
       //
-      Callback< Parameters<U..., V...> >	callback;
+      Callback< R, Parameters<U..., V...> >	callback;
       Arguments< Parameters<U...> >		arguments;
     };
 

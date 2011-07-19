@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Arguments.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [mon jun 27 18:34:25 2011]
+// updated       julien quintard   [mon jul 18 23:06:18 2011]
 //
 
 #ifndef ELLE_RADIX_ARGUMENTS_HXX
@@ -24,6 +24,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Parameters.hh>
+#include <elle/radix/Allege.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -43,7 +44,7 @@ namespace elle
     /// note that the template specializations give meaning to the
     /// parameters i.e P<T...>.
     ///
-    /// the Trigger() method is also provided in constant should the calling
+    /// the Call() method is also provided in constant should the calling
     /// instance have no choice. note however that this would imply every
     /// callback/closure/etc. argument to be constant as well.
     ///
@@ -62,67 +63,58 @@ namespace elle
       typedef Parameters<>					P;
 
       //
+      // constructors & destructors
+      //
+      Arguments()
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<> >&)
+      {
+      }
+
+      //
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger() == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call());
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger() == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call());
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(elements...));
       }
 
       //
@@ -161,13 +153,37 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
+      T1&		element1;
 
       //
       // constructors & destructors
       //
       Arguments(T1&						o1):
-	argument1(o1)
+	element1(o1)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<> >&):
+	element1(x1.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1> >&				x2):
+	element1(x2.element1)
       {
       }
 
@@ -175,68 +191,36 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    elements...));
       }
 
       //
@@ -276,16 +260,52 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
+      T1&		element1;
+      T2&		element2;
 
       //
       // constructors & destructors
       //
       Arguments(T1&						o1,
 		T2&						o2):
-	argument1(o1),
-	argument2(o2)
+	element1(o1),
+	element2(o2)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<> >&):
+	element1(x1.element1),
+	element2(x1.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2> >&				x2):
+	element1(x1.element1),
+	element2(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2> >&			x2):
+	element1(x2.element1),
+	element2(x2.element2)
       {
       }
 
@@ -293,72 +313,41 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
+	return (object.Call(this->element1,
+			    this->element2,
+			    elements...));
 
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    elements...));
       }
 
       //
@@ -399,9 +388,9 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
-      T3		argument3;
+      T1&		element1;
+      T2&		element2;
+      T3&		element3;
 
       //
       // constructors & destructors
@@ -409,9 +398,49 @@ namespace elle
       Arguments(T1&						o1,
 		T2&						o2,
 		T3&						o3):
-	argument1(o1),
-	argument2(o2),
-	argument3(o3)
+	element1(o1),
+	element2(o2),
+	element3(o3)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2),
+	element3(ensemble.element3)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<T3> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2, T3> >&			x2):
+	element1(x1.element1),
+	element2(x2.element1),
+	element3(x2.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2, T3> >&			x2):
+	element1(x2.element1),
+	element2(x2.element2),
+	element3(x2.element3)
       {
       }
 
@@ -419,76 +448,44 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    elements...));
       }
 
       //
@@ -530,10 +527,10 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
-      T3		argument3;
-      T4		argument4;
+      T1&		element1;
+      T2&		element2;
+      T3&		element3;
+      T4&		element4;
 
       //
       // constructors & destructors
@@ -542,10 +539,76 @@ namespace elle
 		T2&						o2,
 		T3&						o3,
 		T4&						o4):
-	argument1(o1),
-	argument2(o2),
-	argument3(o3),
-	argument4(o4)
+	element1(o1),
+	element2(o2),
+	element3(o3),
+	element4(o4)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2),
+	element3(ensemble.element3),
+	element4(ensemble.element4)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4> >&		x1,
+		X2< Parameters<> >&):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3> >&			x1,
+		X2< Parameters<T4> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<T3, T4> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x2.element1),
+	element4(x2.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2, T3, T4> >&			x2):
+	element1(x1.element1),
+	element2(x2.element1),
+	element3(x2.element2),
+	element4(x2.element3)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2, T3, T4> >&		x2):
+	element1(x2.element1),
+	element2(x2.element2),
+	element3(x2.element3),
+	element4(x2.element4)
       {
       }
 
@@ -553,80 +616,48 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    elements...));
       }
 
       //
@@ -669,11 +700,11 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
-      T3		argument3;
-      T4		argument4;
-      T5		argument5;
+      T1&		element1;
+      T2&		element2;
+      T3&		element3;
+      T4&		element4;
+      T5&		element5;
 
       //
       // constructors & destructors
@@ -683,11 +714,95 @@ namespace elle
 		T3&						o3,
 		T4&						o4,
 		T5&						o5):
-	argument1(o1),
-	argument2(o2),
-	argument3(o3),
-	argument4(o4),
-	argument5(o5)
+	element1(o1),
+	element2(o2),
+	element3(o3),
+	element4(o4),
+	element5(o5)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2),
+	element3(ensemble.element3),
+	element4(ensemble.element4),
+	element5(ensemble.element5)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5> >&		x1,
+		X2< Parameters<> >&):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4> >&		x1,
+		X2< Parameters<T5> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3> >&			x1,
+		X2< Parameters<T4, T5> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x2.element1),
+	element5(x2.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<T3, T4, T5> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x2.element1),
+	element4(x2.element2),
+	element5(x2.element3)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2, T3, T4, T5> >&		x2):
+	element1(x1.element1),
+	element2(x2.element1),
+	element3(x2.element2),
+	element4(x2.element3),
+	element5(x2.element4)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2, T3, T4, T5> >&		x2):
+	element1(x2.element1),
+	element2(x2.element2),
+	element3(x2.element3),
+	element4(x2.element4),
+	element5(x2.element5)
       {
       }
 
@@ -695,84 +810,52 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    elements...));
       }
 
       //
@@ -818,12 +901,12 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
-      T3		argument3;
-      T4		argument4;
-      T5		argument5;
-      T6		argument6;
+      T1&		element1;
+      T2&		element2;
+      T3&		element3;
+      T4&		element4;
+      T5&		element5;
+      T6&		element6;
 
       //
       // constructors & destructors
@@ -834,12 +917,116 @@ namespace elle
 		T4&						o4,
 		T5&						o5,
 		T6&						o6):
-	argument1(o1),
-	argument2(o2),
-	argument3(o3),
-	argument4(o4),
-	argument5(o5),
-	argument6(o6)
+	element1(o1),
+	element2(o2),
+	element3(o3),
+	element4(o4),
+	element5(o5),
+	element6(o6)
+      {
+      }
+
+      template <template <typename...> class X>
+      Arguments(X< Parameters<T1, T2, T3, T4, T5,
+			      T6> >&				x):
+	element1(x.element1),
+	element2(x.element2),
+	element3(x.element3),
+	element4(x.element4),
+	element5(x.element5),
+	element6(x.element6)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2),
+	element3(ensemble.element3),
+	element4(ensemble.element4),
+	element5(ensemble.element5),
+	element6(ensemble.element6)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5> >&		x1,
+		X2< Parameters<T6> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4> >&		x1,
+		X2< Parameters<T5, T6> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x2.element1),
+	element6(x2.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3> >&			x1,
+		X2< Parameters<T4, T5, T6> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x2.element1),
+	element5(x2.element2),
+	element6(x2.element3)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<T3, T4, T5, T6> >&		x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x2.element1),
+	element4(x2.element2),
+	element5(x2.element3),
+	element6(x2.element4)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2, T3, T4, T5, T6> >&		x2):
+	element1(x1.element1),
+	element2(x2.element1),
+	element3(x2.element2),
+	element4(x2.element3),
+	element5(x2.element4),
+	element6(x2.element5)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2, T3, T4, T5,
+			       T6> >&				x2):
+	element1(x2.element1),
+	element2(x2.element2),
+	element3(x2.element3),
+	element4(x2.element4),
+	element5(x2.element5),
+	element6(x2.element6)
       {
       }
 
@@ -847,90 +1034,56 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    elements...));
       }
 
       //
@@ -977,13 +1130,13 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
-      T3		argument3;
-      T4		argument4;
-      T5		argument5;
-      T6		argument6;
-      T7		argument7;
+      T1&		element1;
+      T2&		element2;
+      T3&		element3;
+      T4&		element4;
+      T5&		element5;
+      T6&		element6;
+      T7&		element7;
 
       //
       // constructors & destructors
@@ -995,13 +1148,143 @@ namespace elle
 		T5&						o5,
 		T6&						o6,
 		T7&						o7):
-	argument1(o1),
-	argument2(o2),
-	argument3(o3),
-	argument4(o4),
-	argument5(o5),
-	argument6(o6),
-	argument7(o7)
+	element1(o1),
+	element2(o2),
+	element3(o3),
+	element4(o4),
+	element5(o5),
+	element6(o6),
+	element7(o7)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2),
+	element3(ensemble.element3),
+	element4(ensemble.element4),
+	element5(ensemble.element5),
+	element6(ensemble.element6),
+	element7(ensemble.element7)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7> >&			x1,
+		X2< Parameters<> >&):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x1.element7)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6> >&				x1,
+		X2< Parameters<T7> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5> >&		x1,
+		X2< Parameters<T6, T7> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x2.element1),
+	element7(x2.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4> >&		x1,
+		X2< Parameters<T5, T6, T7> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x2.element1),
+	element6(x2.element2),
+	element7(x2.element3)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3> >&			x1,
+		X2< Parameters<T4, T5, T6, T7> >&		x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x2.element1),
+	element5(x2.element2),
+	element6(x2.element3),
+	element7(x2.element4)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<T3, T4, T5, T6, T7> >&		x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x2.element1),
+	element4(x2.element2),
+	element5(x2.element3),
+	element6(x2.element4),
+	element7(x2.element5)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2, T3, T4, T5, T6,
+			       T7> >&				x2):
+	element1(x1.element1),
+	element2(x2.element1),
+	element3(x2.element2),
+	element4(x2.element3),
+	element5(x2.element4),
+	element6(x2.element5),
+	element7(x2.element6)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7> >&			x2):
+	element1(x2.element1),
+	element2(x2.element2),
+	element3(x2.element3),
+	element4(x2.element4),
+	element5(x2.element5),
+	element6(x2.element6),
+	element7(x2.element7)
       {
       }
 
@@ -1009,94 +1292,60 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6, T7,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6, T7,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    elements...));
       }
 
       //
@@ -1144,14 +1393,14 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
-      T3		argument3;
-      T4		argument4;
-      T5		argument5;
-      T6		argument6;
-      T7		argument7;
-      T8		argument8;
+      T1&		element1;
+      T2&		element2;
+      T3&		element3;
+      T4&		element4;
+      T5&		element5;
+      T6&		element6;
+      T7&		element7;
+      T8&		element8;
 
       //
       // constructors & destructors
@@ -1164,14 +1413,170 @@ namespace elle
 		T6&						o6,
 		T7&						o7,
 		T8&						o8):
-	argument1(o1),
-	argument2(o2),
-	argument3(o3),
-	argument4(o4),
-	argument5(o5),
-	argument6(o6),
-	argument7(o7),
-	argument8(o8)
+	element1(o1),
+	element2(o2),
+	element3(o3),
+	element4(o4),
+	element5(o5),
+	element6(o6),
+	element7(o7),
+	element8(o8)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2),
+	element3(ensemble.element3),
+	element4(ensemble.element4),
+	element5(ensemble.element5),
+	element6(ensemble.element6),
+	element7(ensemble.element7),
+	element8(ensemble.element8)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7, T8> >&			x1,
+		X2< Parameters<> >&):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x1.element7),
+	element8(x1.element8)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7> >&			x1,
+		X2< Parameters<T8> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x1.element7),
+	element8(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6> >&				x1,
+		X2< Parameters<T7, T8> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x2.element1),
+	element8(x2.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5> >&		x1,
+		X2< Parameters<T6, T7, T8> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x2.element1),
+	element7(x2.element2),
+	element8(x2.element3)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4> >&		x1,
+		X2< Parameters<T5, T6, T7, T8> >&		x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x2.element1),
+	element6(x2.element2),
+	element7(x2.element3),
+	element8(x2.element4)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3> >&			x1,
+		X2< Parameters<T4, T5, T6, T7, T8> >&		x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x2.element1),
+	element5(x2.element2),
+	element6(x2.element3),
+	element7(x2.element4),
+	element8(x2.element5)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<T3, T4, T5, T6, T7,
+			       T8> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x2.element1),
+	element4(x2.element2),
+	element5(x2.element3),
+	element6(x2.element4),
+	element7(x2.element5),
+	element8(x2.element6)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2, T3, T4, T5, T6,
+			       T7, T8> >&			x2):
+	element1(x1.element1),
+	element2(x2.element1),
+	element3(x2.element2),
+	element4(x2.element3),
+	element5(x2.element4),
+	element6(x2.element5),
+	element7(x2.element6),
+	element8(x2.element7)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7, T8> >&			x2):
+	element1(x2.element1),
+	element2(x2.element2),
+	element3(x2.element3),
+	element4(x2.element4),
+	element5(x2.element5),
+	element6(x2.element6),
+	element7(x2.element7),
+	element8(x2.element8)
       {
       }
 
@@ -1179,98 +1584,64 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6, T7, T8,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6, T7, T8,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8,
+			    elements...));
       }
 
       //
@@ -1319,15 +1690,15 @@ namespace elle
       //
       // attributes
       //
-      T1		argument1;
-      T2		argument2;
-      T3		argument3;
-      T4		argument4;
-      T5		argument5;
-      T6		argument6;
-      T7		argument7;
-      T8		argument8;
-      T9		argument9;
+      T1&		element1;
+      T2&		element2;
+      T3&		element3;
+      T4&		element4;
+      T5&		element5;
+      T6&		element6;
+      T7&		element7;
+      T8&		element8;
+      T9&		element9;
 
       //
       // constructors & destructors
@@ -1341,15 +1712,199 @@ namespace elle
 		T7&						o7,
 		T8&						o8,
 		T9&						o9):
-	argument1(o1),
-	argument2(o2),
-	argument3(o3),
-	argument4(o4),
-	argument5(o5),
-	argument6(o6),
-	argument7(o7),
-	argument8(o8),
-	argument9(o9)
+	element1(o1),
+	element2(o2),
+	element3(o3),
+	element4(o4),
+	element5(o5),
+	element6(o6),
+	element7(o7),
+	element8(o8),
+	element9(o9)
+      {
+      }
+
+      template <template <typename...> class E,
+		typename... U>
+      Arguments(const E< Parameters<U...> >&			ensemble):
+	element1(ensemble.element1),
+	element2(ensemble.element2),
+	element3(ensemble.element3),
+	element4(ensemble.element4),
+	element5(ensemble.element5),
+	element6(ensemble.element6),
+	element7(ensemble.element7),
+	element8(ensemble.element8),
+	element9(ensemble.element9)
+      {
+	allege(Parameters<U...>::Quantum == P::Quantum);
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7, T8, T9> >&		x1,
+		X2< Parameters<> >&):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x1.element7),
+	element8(x1.element8),
+	element9(x1.element9)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7, T8> >&			x1,
+		X2< Parameters<T9> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x1.element7),
+	element8(x1.element8),
+	element9(x2.element1)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7> >&			x1,
+		X2< Parameters<T8, T9> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x1.element7),
+	element8(x2.element1),
+	element9(x2.element2)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5,
+			       T6> >&				x1,
+		X2< Parameters<T7, T8, T9> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x1.element6),
+	element7(x2.element1),
+	element8(x2.element2),
+	element9(x2.element3)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4, T5> >&		x1,
+		X2< Parameters<T6, T7, T8, T9> >&		x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x1.element5),
+	element6(x2.element1),
+	element7(x2.element2),
+	element8(x2.element3),
+	element9(x2.element4)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3, T4> >&		x1,
+		X2< Parameters<T5, T6, T7, T8, T9> >&		x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x1.element4),
+	element5(x2.element1),
+	element6(x2.element2),
+	element7(x2.element3),
+	element8(x2.element4),
+	element9(x2.element5)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2, T3> >&			x1,
+		X2< Parameters<T4, T5, T6, T7, T8,
+			       T9> >&				x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x1.element3),
+	element4(x2.element1),
+	element5(x2.element2),
+	element6(x2.element3),
+	element7(x2.element4),
+	element8(x2.element5),
+	element9(x2.element6)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1, T2> >&			x1,
+		X2< Parameters<T3, T4, T5, T6, T7,
+			       T8, T9> >&			x2):
+	element1(x1.element1),
+	element2(x1.element2),
+	element3(x2.element1),
+	element4(x2.element2),
+	element5(x2.element3),
+	element6(x2.element4),
+	element7(x2.element5),
+	element8(x2.element6),
+	element9(x2.element7)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<T1> >&				x1,
+		X2< Parameters<T2, T3, T4, T5, T6,
+			       T7, T8, T9> >&			x2):
+	element1(x1.element1),
+	element2(x2.element1),
+	element3(x2.element2),
+	element4(x2.element3),
+	element5(x2.element4),
+	element6(x2.element5),
+	element7(x2.element6),
+	element8(x2.element7),
+	element9(x2.element8)
+      {
+      }
+
+      template <template <typename...> class X1,
+		template <typename...> class X2>
+      Arguments(X1< Parameters<> >&,
+		X2< Parameters<T1, T2, T3, T4, T5,
+			       T6, T7, T8, T9> >&		x2):
+	element1(x2.element1),
+	element2(x2.element2),
+	element3(x2.element3),
+	element4(x2.element4),
+	element5(x2.element5),
+	element6(x2.element6),
+	element7(x2.element7),
+	element8(x2.element8),
+	element9(x2.element9)
       {
       }
 
@@ -1357,102 +1912,68 @@ namespace elle
       // methods
       //
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8,
-			   this->argument9) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8,
+			    this->element9));
       }
 
-      template <template <typename...> class C, typename...>
-      Status		Trigger(const C<P>&			object)
+      template <typename C>
+      Status		Call(const C&				object)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8,
-			   this->argument9) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8,
+			    this->element9));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6, T7, T8, T9,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8,
-			   this->argument9,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8,
+			    this->element9,
+			    elements...));
       }
 
-      template <template <typename...> class C, typename...,
+      template <typename C,
 		typename... U>
-      Status		Trigger(const
-				C<
-				  Parameters<
-				    T1, T2, T3, T4, T5,
-				    T6, T7, T8, T9,
-				    U...> >&			object,
-				U&...				arguments)
+      Status		Call(const C&				object,
+			     U&...				elements)
 	const
       {
-	enter();
-
-	// trigger the object.
-	if (object.Trigger(this->argument1,
-			   this->argument2,
-			   this->argument3,
-			   this->argument4,
-			   this->argument5,
-			   this->argument6,
-			   this->argument7,
-			   this->argument8,
-			   this->argument9,
-			   arguments...) == StatusError)
-	  escape("unable to trigger the object");
-
-	leave();
+	return (object.Call(this->element1,
+			    this->element2,
+			    this->element3,
+			    this->element4,
+			    this->element5,
+			    this->element6,
+			    this->element7,
+			    this->element8,
+			    this->element9,
+			    elements...));
       }
 
       //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [wed jul 13 15:28:50 2011]
+// updated       julien quintard   [mon jul 18 11:24:29 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -36,7 +36,7 @@ namespace elle
     /// and jumping back.
     ///
     template <typename... T>
-    Void		Fiber::Launch(Closure<T...>*		closure)
+    Void		Fiber::Launch(Closure<Status, T...>*	closure)
     {
       enter();
 
@@ -44,7 +44,7 @@ namespace elle
       //Fiber::Current);
 
       // trigger the closure and, should there are errors, display them.
-      if (closure->Trigger() == StatusError)
+      if (closure->Call() == StatusError)
 	alert(_(), "an error occured in the fiber");
 
       // set the fiber state.
@@ -69,7 +69,7 @@ namespace elle
     /// this method spawns a fiber.
     ///
     template <typename... T>
-    Status		Fiber::Spawn(Closure<T...>&		closure)
+    Status		Fiber::Spawn(Closure<Status, T...>&	closure)
     {
       enter();
 
@@ -89,7 +89,7 @@ namespace elle
 	{
 	  // declare a launch function pointer in order to bypass the type
 	  // checking system through casts.
-	  Void		(*launch)(Closure<T...>*) = &Fiber::Launch;
+	  Void		(*launch)(Closure<Status, T...>*) = &Fiber::Launch;
 	  Fiber*	fiber;
 
 	  //printf("[XXX 0x%x] Fiber::Spawn() :: Parent\n",

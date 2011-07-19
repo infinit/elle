@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Registrar.hh
 //
 // created       julien quintard   [mon jun  6 12:07:32 2011]
-// updated       julien quintard   [mon jul 11 14:47:43 2011]
+// updated       julien quintard   [mon jul 18 20:48:32 2011]
 //
 
 #ifndef ELLE_UTILITY_REGISTRAR_HH
@@ -45,9 +45,8 @@ namespace elle
 
     ///
     /// this class associates identifier with a callback, closure or else
-    /// so that whenever an archive is received, it can be transformed
-    /// into its associated function call by simply calling the
-    /// Forward() method.
+    /// so that whenever an archive is received, its associated callback,
+    /// closure or else is triggered.
     ///
     /// this class can be used, for instance, for associating network
     /// messages, which are identified by a tag, to a method for handling them.

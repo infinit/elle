@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hh
 //
 // created       julien quintard   [fri jun  3 22:23:13 2011]
-// updated       julien quintard   [fri jul  8 12:06:03 2011]
+// updated       julien quintard   [mon jul 18 15:38:47 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HH
@@ -21,6 +21,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Arguments.hh>
+#include <elle/radix/Variables.hh>
 
 #include <elle/network/Tag.hh>
 #include <elle/network/Message.hh>
@@ -71,6 +72,9 @@ namespace elle
 	// constructors & destructors
 	//
 	Inputs(const T&...);
+	template <template <typename...> class E,
+		  typename... U>
+	Inputs(const E<U...>&);
 
 	//
 	// interfaces
@@ -116,6 +120,9 @@ namespace elle
 	// constructors & destructors
 	//
 	Outputs(T&...);
+	template <template <typename...> class E,
+		  typename... U>
+	Outputs(E<U...>&);
 
 	//
 	// interfaces

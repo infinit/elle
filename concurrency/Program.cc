@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [wed jul  6 13:07:52 2011]
+// updated       julien quintard   [mon jul 18 11:27:24 2011]
 //
 
 //
@@ -69,8 +69,10 @@ namespace elle
     ///
     /// this method sets up the program for startup.
     ///
-    Status		Program::Setup(Callback< Parameters<> >* prolog,
-				       Callback< Parameters<> >* epilog)
+    Status		Program::Setup(Callback< Status,
+						 Parameters<> >* prolog,
+				       Callback< Status,
+						 Parameters<> >* epilog)
     {
       int		n;
 
@@ -133,7 +135,7 @@ namespace elle
 	  // call the prolog, if provided.
 	  if (program->prolog != NULL)
 	    {
-	      if (program->prolog->Trigger() == StatusError)
+	      if (program->prolog->Call() == StatusError)
 		escape("an error occured in the prolog");
 	    }
 
@@ -143,7 +145,7 @@ namespace elle
 	  // call the epilog, if provided.
 	  if (program->epilog != NULL)
 	    {
-	      if (program->epilog->Trigger() == StatusError)
+	      if (program->epilog->Call() == StatusError)
 		escape("an error occured in the epilog");
 	    }
 

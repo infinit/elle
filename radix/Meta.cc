@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [mon jul 11 23:15:35 2011]
+// updated       julien quintard   [thu jul 14 21:49:25 2011]
 //
 
 //
@@ -185,7 +185,6 @@ namespace elle
 	}
 
     _corps:
-
       return (address);
     }
 
@@ -195,6 +194,51 @@ namespace elle
     ///
     Void*		Meta::operator new(Natural32,
 					   Void*		address)
+    {
+      // return the address of the already reserved memory area.
+      return (address);
+    }
+
+    ///
+    /// this operator allocates memory for an array.
+    ///
+    /// note that since new operators cannot return NULL, all the errors
+    /// handling is skipped.
+    ///
+    Void*		Meta::operator new[](Natural32		size)
+    {
+      Void*		address;
+
+      // allocate memory on the heap
+      address = ::malloc(size);
+
+      // only proceed if debugging has been activated.
+      if ((Meta::Debug::Status == true) &&
+	  (Meta::Debug::State == true))
+	{
+	  // store the trace.
+	  if (Trace::Store(address) == StatusError)
+	    {
+	      report(Report::TypeError,
+		     "unable to store the trace for %p",
+		     address);
+
+	      show();
+
+	      goto _corps;
+	    }
+	}
+
+    _corps:
+      return (address);
+    }
+
+    ///
+    /// this operator is called whenever an object is allocated in
+    /// a given memory area referenced by _address_.
+    ///
+    Void*		Meta::operator new[](Natural32,
+					     Void*		address)
     {
       // return the address of the already reserved memory area.
       return (address);

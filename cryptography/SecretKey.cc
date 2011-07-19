@@ -1,14 +1,14 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       il
+// project       elle
 //
 // license       infinit
 //
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [mon jun 27 07:16:48 2011]
+// updated       julien quintard   [fri jul 15 11:29:14 2011]
 //
 
 //

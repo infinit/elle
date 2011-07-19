@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [thu jul 14 14:07:33 2011]
+// updated       julien quintard   [mon jul 18 11:29:22 2011]
 //
 
 //
@@ -155,6 +155,11 @@ namespace elle
     Status		Door::Write(const Packet&		packet)
     {
       enter();
+
+      // check the size of the packet to make sure the receiver will
+      // have a buffer large enough to read it.
+      if (packet.size > Channel::Capacity)
+	escape("the packet seems to be too large");
 
       // push the packet to the socket.
       if (this->socket->write((const char*)packet.contents,
@@ -413,7 +418,7 @@ namespace elle
       if (this->callback != NULL)
 	{
 	  // trigger the callback.
-	  if (this->callback->Trigger(text) == StatusError)
+	  if (this->callback->Call(text) == StatusError)
 	    escape("an error occured in the callback");
 	}
 
@@ -449,18 +454,8 @@ namespace elle
 	  // otherwise, trigger the network dispatching mechanism.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
-	      Report*	report;
-
-	      // retrieve the report.
-	      if (Report::Instance(report) == StatusFalse)
-		escape("unable to retrieve the report");
-
-	      // since an error occured, transmit it to the sender
-	      if (this->Send(Inputs<TagError>(*report)) == StatusError)
-		escape("unable to send an error report");
-
-	      // flush the report since it has been sent to the sender.
-	      report->Flush();
+	      // display the errors.
+	      show();
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().
@@ -492,8 +487,10 @@ namespace elle
     void		Door::_error(const QLocalSocket::LocalSocketError)
     {
       String		text(this->socket->errorString().toStdString());
-      Callback< Parameters<const String> >	callback(&Door::Error, this);
-      Closure< Parameters<const String> >	closure(callback, text);
+      Callback< Status,
+		Parameters<const String> >	callback(&Door::Error, this);
+      Closure< Status,
+	       Parameters<const String> >	closure(callback, text);
 
       enter();
 
@@ -509,8 +506,10 @@ namespace elle
     ///
     void		Door::_ready()
     {
-      Callback< Parameters<> >	callback(&Door::Dispatch, this);
-      Closure< Parameters<> >	closure(callback);
+      Callback< Status,
+		Parameters<> >	callback(&Door::Dispatch, this);
+      Closure< Status,
+	       Parameters<> >	closure(callback);
 
       enter();
 

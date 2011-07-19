@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Tag.hh
 //
 // created       julien quintard   [sun nov 29 20:23:37 2009]
-// updated       julien quintard   [sun may  2 20:40:00 2010]
+// updated       julien quintard   [mon jul 18 23:27:40 2011]
 //
 
 #ifndef ELLE_NETWORK_CODE_HH
@@ -41,9 +41,9 @@ namespace elle
 //
 
     ///
-    /// this defines that unused tag value.
+    /// this defines that unknown tag value.
     ///
-    const Tag			TagNone = 0;
+    const Tag			TagUnknown = 0;
 
   }
 }

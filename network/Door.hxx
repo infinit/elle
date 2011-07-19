@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [thu jul 14 14:06:09 2011]
+// updated       julien quintard   [tue jul 19 09:00:57 2011]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -22,6 +22,9 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/network/Packet.hh>
+#include <elle/network/Header.hh>
+#include <elle/network/Data.hh>
+#include <elle/network/Parcel.hh>
 
 #include <elle/Manifest.hh>
 
@@ -105,7 +108,6 @@ namespace elle
     Status		Door::Receive(const Event&		event,
 				      O				outputs)
     {
-      Report		report;
       Parcel*		parcel;
 
       enter(instance(parcel));
@@ -121,6 +123,8 @@ namespace elle
 	  // the report to the local one.
 	  if (parcel->header->tag == TagError)
 	    {
+	      Report	report;
+
 	      // extract the error message.
 	      if (report.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the error message");
@@ -129,7 +133,8 @@ namespace elle
 	      transpose(report);
 	    }
 
-	  escape("received a packet with an unexpected tag");
+	  escape("received a packet with an unexpected tag '%u'",
+		 parcel->header->tag);
 	}
 
       // extract the arguments.
@@ -176,15 +181,17 @@ namespace elle
     /// XXX
     ///
     template <typename I>
-    Status		Door::Reply(const I			inputs)
+    Status		Door::Reply(const I			inputs,
+				    Session*			session)
     {
-      Session*		session;
-
       enter();
 
-      // retrieve the current session.
-      if (Session::Instance(session) == StatusError)
-	escape("unable to retrieve the session instance");
+      // retrieve the current session, if necessary.
+      if (session == NULL)
+	{
+	  if (Session::Instance(session) == StatusError)
+	    escape("unable to retrieve the session instance");
+	}
 
       // send a message as a response by using the event of
       // the received message i.e the current session.

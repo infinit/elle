@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [thu jul 14 14:08:16 2011]
+// updated       julien quintard   [sun jul 17 21:14:47 2011]
 //
 
 ///
@@ -41,6 +41,7 @@
 #include <elle/network/Socket.hh>
 #include <elle/network/Parcel.hh>
 #include <elle/network/Port.hh>
+#include <elle/network/Session.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -104,7 +105,8 @@ namespace elle
       Status		Call(const I,
 			     O);
       template <typename I>
-      Status		Reply(const I);
+      Status		Reply(const I,
+			      Session* = NULL);
 
       //
       // callbacks

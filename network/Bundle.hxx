@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hxx
 //
 // created       julien quintard   [fri jun  3 22:22:21 2011]
-// updated       julien quintard   [fri jul  8 12:15:51 2011]
+// updated       julien quintard   [mon jul 18 15:40:39 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HXX
@@ -53,11 +53,26 @@ namespace elle
     ///
     template <const Tag G,
 	      typename... T>
+    template <template <typename...> class E,
+	      typename... U>
+    Bundle::Inputs< G,
+		    Parameters<const T...> >::Inputs(const E<U...>& ensemble):
+      tag(G),
+      arguments(ensemble)
+    {
+    }
+
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
     Status
     Bundle::Inputs< G,
 		    Parameters<const T...> >::Serialize(Archive& archive) const
     {
       Callback<
+	Status,
 	typename Trait::Reference<
 	  typename Trait::Constant<
 	    typename Message<G>::P
@@ -68,7 +83,7 @@ namespace elle
       enter();
 
       // trigger the serialization callback.
-      if (this->arguments.Trigger(callback) == StatusError)
+      if (this->arguments.Call(callback) == StatusError)
 	escape("unable to serialize the arguments");
 
       leave();
@@ -136,6 +151,20 @@ namespace elle
     ///
     template <const Tag G,
 	      typename... T>
+    template <template <typename...> class E,
+	      typename... U>
+    Bundle::Outputs< G,
+		     Parameters<T...> >::Outputs(E<U...>& ensemble):
+      tag(G),
+      arguments(ensemble)
+    {
+    }
+
+    ///
+    /// XXX
+    ///
+    template <const Tag G,
+	      typename... T>
     Status
     Bundle::Outputs< G,
 		     Parameters<T...> >::Serialize(Archive&) const
@@ -155,6 +184,7 @@ namespace elle
 		     Parameters<T...> >::Extract(Archive& archive)
     {
       Callback<
+	Status,
 	typename Trait::Reference<
 	  typename Message<G>::P
 	  >::Type
@@ -163,7 +193,7 @@ namespace elle
       enter();
 
       // trigger the serialization callback.
-      if (this->arguments.Trigger(callback) == StatusError)
+      if (this->arguments.Call(callback) == StatusError)
 	escape("unable to extract the arguments");
 
       leave();

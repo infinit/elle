@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.cc
 //
 // created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [sun jul 10 22:19:06 2011]
+// updated       julien quintard   [mon jul 18 11:22:35 2011]
 //
 
 //
@@ -35,6 +35,7 @@ namespace elle
     ///
     Broker::Broker(const Natural16				descriptor,
 		   const Callback<
+		     Status,
 		     Parameters<const Natural16> >&		callback):
       descriptor(descriptor),
       callback(callback),
@@ -104,7 +105,7 @@ namespace elle
       }
 
       // trigger the callback.
-      if (this->callback.Trigger(this->descriptor) == StatusError)
+      if (this->callback.Call(this->descriptor) == StatusError)
 	escape("an error occured while spawning the fiber");
 
       leave();
@@ -121,8 +122,10 @@ namespace elle
     ///
     void		Broker::_trigger()
     {
-      Callback< Parameters<> >	callback(&Broker::Trigger, this);
-      Closure< Parameters<> >	closure(callback);
+      Callback< Status,
+		Parameters<> >	callback(&Broker::Trigger, this);
+      Closure< Status,
+	       Parameters<> >	closure(callback);
 
       enter();
 

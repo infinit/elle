@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [thu jul 14 14:16:49 2011]
+// updated       julien quintard   [mon jul 18 09:34:31 2011]
 //
 
 //
@@ -66,6 +66,7 @@ namespace elle
     ///
     Status		Socket::Monitor(const
 					  Callback<
+					    Status,
 					    Parameters<
 					      const String
 					      >
@@ -78,7 +79,8 @@ namespace elle
 	escape("this socket is already monitored");
 
       // allocate and copy a new callback.
-      this->callback = new Callback< Parameters<const String> >(callback);
+      this->callback = new Callback< Status,
+				     Parameters<const String> >(callback);
 
       leave();
     }

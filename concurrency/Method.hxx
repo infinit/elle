@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [thu jul 14 14:38:28 2011]
+// updated       julien quintard   [mon jul 18 11:45:55 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HXX
@@ -35,10 +35,11 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     template <typename C>
-    Method< Parameters<T...> >::Wrap<C>::Wrap(Handler		handler,
-					      C*		object):
+    Method< R, Parameters<T...> >::Wrap<C>::Wrap(Handler	handler,
+						 C*		object):
       object(object),
       handler(handler)
     {
@@ -47,27 +48,35 @@ namespace elle
     ///
     /// this method calls the handler.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     template <typename C>
-    Status
-    Method< Parameters<T...> >::Wrap<C>::Call(T...		arguments)
+    R
+    Method< R, Parameters<T...> >::Wrap<C>::Call(T...		arguments)
     {
-      enter();
+      return ((this->object->*this->handler)(arguments...));
+    }
 
-      // trigger the callback.
-      if ((this->object->*this->handler)(arguments...) == StatusError)
-	escape("an error occured in the callback");
-
-      leave();
+    ///
+    /// this method triggers the handler without checking the return value.
+    ///
+    template <typename R,
+	      typename... T>
+    template <typename C>
+    Void
+    Method< R, Parameters<T...> >::Wrap<C>::Trigger(T...	arguments)
+    {
+      (this->object->*this->handler)(arguments...);
     }
 
     ///
     /// this method dumps the method state.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     template <typename C>
     Status
-    Method< Parameters<T...> >::Wrap<C>::Dump(const Natural32	margin)
+    Method< R, Parameters<T...> >::Wrap<C>::Dump(const Natural32 margin)
       const
     {
       String		alignment(margin, ' ');
@@ -92,8 +101,9 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Method< Parameters<T...> >::Wrap<C>,
-	  _(template <typename... T>
+    embed(_(Method< R, Parameters<T...> >::Wrap<C>),
+	  _(template <typename R,
+		      typename... T>
 	    template <typename C>));
 
 //
@@ -103,20 +113,26 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     template <typename C>
-    Method< Parameters<T...> >::Method(Status		(C::*handler)(T...),
-				       C*		object):
-      shell(new Method< Parameters<T...> >::Wrap<C>(handler, object))
+    Method< R, Parameters<T...> >::Method(R		(C::*handler)(T...),
+					  C*		object):
+      shell(new Method< R, Parameters<T...> >::Wrap<C>(handler, object))
     {
     }
 
     ///
     /// the copy constructor.
     ///
-    template <typename... T>
-    Method< Parameters<T...> >::Method(
-				  const Method< Parameters<T...> >& method):
+    template <typename R,
+	      typename... T>
+    Method< R, Parameters<T...> >::Method(
+				     const
+				       Method<
+					 R,
+					 Parameters<T...>
+					 >&			method):
       Object(method)
     {
       // clone the shell.
@@ -130,8 +146,9 @@ namespace elle
     ///
     /// destructor.
     ///
-    template <typename... T>
-    Method< Parameters<T...> >::~Method()
+    template <typename R,
+	      typename... T>
+    Method< R, Parameters<T...> >::~Method()
     {
       // delete the shell, if present.
       if (this->shell != NULL)
@@ -141,19 +158,32 @@ namespace elle
     ///
     /// this method calls the handler.
     ///
-    template <typename... T>
-    Status
-    Method< Parameters<T...> >::Call(T...			arguments)
+    template <typename R,
+	      typename... T>
+    R
+    Method< R, Parameters<T...> >::Call(T...			arguments)
     {
       return (this->shell->Call(arguments...));
     }
 
     ///
+    /// this method triggers the handler without checking the return value.
+    ///
+    template <typename R,
+	      typename... T>
+    Void
+    Method< R, Parameters<T...> >::Trigger(T...			arguments)
+    {
+      this->shell->Trigger(arguments...);
+    }
+
+    ///
     /// this method dumps the method state.
     ///
-    template <typename... T>
+    template <typename R,
+	      typename... T>
     Status
-    Method< Parameters<T...> >::Dump(const Natural32		margin) const
+    Method< R, Parameters<T...> >::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
@@ -161,6 +191,7 @@ namespace elle
 
       std::cout << alignment << "[Method]" << std::endl;
 
+      // dump the shell.
       if (this->shell->Dump(margin) == StatusError)
 	escape("unable to dump the shell");
 
@@ -174,8 +205,9 @@ namespace elle
     ///
     /// these are generated automatically.
     ///
-    embed(Method< Parameters<T...> >,
-	  _(template <typename... T>));
+    embed(_(Method< R, Parameters<T...> >),
+	  _(template <typename R,
+		      typename... T>));
 
   }
 }

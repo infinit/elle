@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [mon jul 11 22:56:28 2011]
+// updated       julien quintard   [mon jul 18 11:24:36 2011]
 //
 
 //
@@ -123,7 +123,9 @@ namespace elle
 	     scoutor != Fiber::Phases.end();
 	     scoutor++)
 	  {
-	    Callback< Parameters<const Phase, Fiber*> >* callback = *scoutor;
+	    Callback<
+	      Status,
+	      Parameters<const Phase, Fiber*> >*	callback = *scoutor;
 
 	    // delete the callback.
 	    delete callback;
@@ -198,8 +200,9 @@ namespace elle
     ///
     Status		Fiber::Sleep(const Natural32		duration)
     {
-      Callback< Parameters<> >		callback(&Fiber::Timeout,
-						 Fiber::Current);
+      Callback< Status,
+		Parameters<> >	callback(&Fiber::Timeout,
+					 Fiber::Current);
 
       enter();
 
@@ -231,15 +234,18 @@ namespace elle
     ///
     Status		Fiber::Register(const
 					  Callback<
+					    Status,
 					    Parameters<const Phase,
-						       Fiber*> >& c)
+						       Fiber*> >&	c)
     {
-      Callback< Parameters<const Phase, Fiber*> >*	callback;
+      Callback< Status,
+		Parameters<const Phase, Fiber*> >*	callback;
 
       enter();
 
       // clone the callback.
-      callback = new Callback< Parameters<const Phase, Fiber*> >(c);
+      callback = new Callback< Status,
+			       Parameters<const Phase, Fiber*> >(c);
 
       // store in the container.
       Fiber::Phases.push_back(callback);
@@ -262,7 +268,7 @@ namespace elle
 	   scoutor++)
 	{
 	  // trigger the callback, passing the current fiber.
-	  if ((*scoutor)->Trigger(phase, Fiber::Current) == StatusError)
+	  if ((*scoutor)->Call(phase, Fiber::Current) == StatusError)
 	    escape("an error occured in the callback");
 	}
 
