@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.cc
 //
 // created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [mon jul 18 09:58:32 2011]
+// updated       julien quintard   [tue jul 19 20:18:54 2011]
 //
 
 //
@@ -93,11 +93,11 @@ namespace pig
 
       struct ::stat*	stbuf = (struct ::stat*)inputs.stbuf.contents;
       struct ::stat*	_stbuf = (struct ::stat*)outputs.stbuf.contents;
-      /* XXX
+
       if (stbuf->st_uid != _stbuf->st_uid)
 	escape("invalid UID: got(%u) expected(%u)",
 	       stbuf->st_uid, _stbuf->st_uid);
-
+      /*
       if (stbuf->st_gid != _stbuf->st_gid)
 	escape("invalid GID");
 
@@ -165,11 +165,11 @@ namespace pig
 
       struct ::stat*	stbuf = (struct ::stat*)inputs.stbuf.contents;
       struct ::stat*	_stbuf = (struct ::stat*)outputs.stbuf.contents;
-      /* XXX
+
       if (stbuf->st_uid != _stbuf->st_uid)
 	escape("invalid UID: got(%u) expected(%u)",
 	       stbuf->st_uid, _stbuf->st_uid);
-
+      /* XXX
       if (stbuf->st_gid != _stbuf->st_gid)
 	escape("invalid GID");
 
