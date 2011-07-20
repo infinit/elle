@@ -1,5 +1,3 @@
-- tenter de lancer replay sans avoir reinit le reseau -> ca segfault
-
 #
 # ---------- long-term --------------------------------------------------------
 #
@@ -24,3 +22,6 @@
 - timeout dans les sockets: en sychone le WaitForReadyRead a un timeout
   par default de 30s alors qu'en asynchrone on fait Fiber::Wait qui
   est infini => le Fiber::Wait devrait prendre un timeout.
+
+- ameliorer le replay: quand on avance jusqu'au from, activer un flag. si
+  le flag est active, ne pas appeler FUSE mais quand meme gerer Live.
