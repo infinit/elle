@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [tue jul 19 14:05:11 2011]
+// updated       julien quintard   [wed jul 20 09:13:03 2011]
 //
 
 //
@@ -63,30 +63,6 @@ namespace hole
       elle::Status	Server::Initialize()
       {
 	enter();
-
-	// XXX
-	elle::Variables<
-	  elle::Parameters<
-	    elle::Natural32,
-	    elle::String
-	    >
-	  >	v;
-        elle::Natural32	i = 42;
-        elle::Natural64	j = 43;
-        elle::Arguments<
-	  elle::Parameters<
-	    elle::Natural32,
-	    elle::Natural64
-	    >
-	  >	a(i, j);
-	elle::Arguments<
-	  elle::Parameters<
-	    elle::Natural32,
-	    elle::String,
-	    elle::Natural32,
-	    elle::Natural64
-	    >
-	  >	u = elle::Arguments<>::Union(v, a);
 
 	//
 	// register the messages.
@@ -601,11 +577,6 @@ namespace hole
 	// forward the kill request to the implementation.
 	if (this->Kill(address) == elle::StatusError)
 	  escape("unable to erase the block");
-
-	// answer the caller.
-	if (this->gate->Reply(
-	      elle::Inputs<elle::TagOk>()) == elle::StatusError)
-	  escape("unable to answer to the caller");
 
 	leave();
       }
