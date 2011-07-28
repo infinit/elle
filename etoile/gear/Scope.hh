@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.hh
 //
 // created       julien quintard   [fri jun  3 11:01:57 2011]
-// updated       julien quintard   [sat jun 25 13:38:54 2011]
+// updated       julien quintard   [thu jul 28 14:06:52 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HH
@@ -24,6 +24,7 @@
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Chronicle.hh>
 #include <etoile/gear/Nature.hh>
+#include <etoile/gear/Actor.hh>
 
 #include <etoile/path/Chemin.hh>
 
@@ -49,6 +50,13 @@ namespace etoile
     {
     public:
       //
+      // types
+      //
+      typedef std::list<Actor*>				Container;
+      typedef typename Container::iterator		Iterator;
+      typedef typename Container::const_iterator	Scoutor;
+
+      //
       // constructors & destructors
       //
       Scope(const Nature);
@@ -70,12 +78,14 @@ namespace etoile
       //
       // attributes
       //
-      Identifier	identifier;
+      Identifier	identifier; // XXX remove
 
       path::Chemin	chemin;
 
       Context*		context;
       Chronicle*	chronicle;
+
+      Container		actors;
     };
 
   }

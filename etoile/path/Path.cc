@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [wed jul  6 11:59:40 2011]
+// updated       julien quintard   [tue jul 26 19:54:54 2011]
 //
 
 //
@@ -143,6 +143,8 @@ namespace etoile
 	  if (location.Create(address, version) == elle::StatusError)
 	    escape("unable to create the location");
 
+	  // XXX it could be a Link rather than a Directory!
+
 	  // fetch the directory.
 	  if (automaton::Directory::Load(context,
 					 location) == elle::StatusError)
@@ -209,11 +211,11 @@ namespace etoile
 
       // compute the start index.
       start = slab.find_last_of(
-	        agent::Agent::Configuration.history.indicator.slab);
+	        Infinit::Configuration.history.indicator.slab);
 
       // if the in-path versioning has been activated and a version
       // seems to have been found.
-      if ((agent::Agent::Configuration.history.status == true) &&
+      if ((Infinit::Configuration.history.status == true) &&
 	  (start != elle::String::npos))
 	{
 	  // retrieve the slab's length.

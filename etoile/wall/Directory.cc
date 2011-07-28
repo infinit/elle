@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [wed jul  6 11:33:55 2011]
+// updated       julien quintard   [fri jul 22 09:14:14 2011]
 //
 
 //

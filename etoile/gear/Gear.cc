@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.cc
 //
 // created       julien quintard   [tue jun 14 16:41:06 2011]
-// updated       julien quintard   [sun jul 10 22:17:29 2011]
+// updated       julien quintard   [fri jul 22 09:15:27 2011]
 //
 
 //
@@ -27,9 +27,14 @@ namespace etoile
 //
 
     ///
+    /// the set of chemins related to the scopes.
+    ///
+    Gear::C::Container			Gear::Chemins;
+
+    ///
     /// the set of exported scopes.
     ///
-    Gear::Container			Gear::Scopes;
+    Gear::S::Container			Gear::Scopes;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -42,7 +47,8 @@ namespace etoile
     elle::Status	Gear::Add(const Identifier&		identifier,
 				  Scope*			scope)
     {
-      std::pair<Gear::Iterator, elle::Boolean>	result;
+      std::pair<Gear::S::Iterator,
+		elle::Boolean>	result;
 
       enter();
 
@@ -67,7 +73,7 @@ namespace etoile
     ///
     elle::Status	Gear::Remove(const Identifier&		identifier)
     {
-      Gear::Iterator	iterator;
+      Gear::S::Iterator	iterator;
 
       enter();
 
@@ -87,7 +93,7 @@ namespace etoile
     elle::Status	Gear::Select(const Identifier&		identifier,
 				     Scope*&			scope)
     {
-      Gear::Scoutor		scoutor;
+      Gear::S::Scoutor	scoutor;
 
       enter();
 
@@ -131,7 +137,7 @@ namespace etoile
     elle::Status	Gear::Show(const elle::Natural32	margin)
     {
       elle::String	alignment(margin, ' ');
-      Gear::Scoutor	scoutor;
+      Gear::S::Scoutor	scoutor;
 
       enter();
 
