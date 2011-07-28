@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [mon jul  4 11:19:18 2011]
+// updated       julien quintard   [wed jul 27 09:25:25 2011]
 //
 
 #ifndef ELLE_STANDALONE_REPORT_HH
@@ -116,28 +116,6 @@ namespace elle
     {
     public:
       //
-      // enumerations
-      //
-
-      ///
-      /// errors are commonly reported when something wrong occurs being
-      /// in a normal method/function or in a function/method returns
-      /// a boolean.
-      ///
-      /// failures are critical errors. every failure notification is
-      /// followed by the program stopping.
-      ///
-      /// warning are additional messages than can be issued by
-      /// methods/functions.
-      ///
-      enum Type
-	{
-	  TypeWarning,
-	  TypeError,
-	  TypeFailure
-	};
-
-      //
       // structures
       //
 
@@ -154,7 +132,6 @@ namespace elle
 	//
 	// attributes
 	//
-	Type		type;
 	String		location;
 	String		time;
 	String		message;
@@ -195,8 +172,7 @@ namespace elle
       //
       Void		Flush();
 
-      Void		Record(Type,
-			       const String&,
+      Void		Record(const String&,
 			       const String&,
 			       const String&);
       Void		Record(const Report&);

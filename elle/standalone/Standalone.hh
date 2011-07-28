@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Standalone.hh
 //
 // created       julien quintard   [sun may  2 10:57:51 2010]
-// updated       julien quintard   [mon may  3 20:57:34 2010]
+// updated       julien quintard   [wed jul 27 09:25:44 2011]
 //
 
 #ifndef ELLE_STANDALONE_HH
@@ -55,6 +55,7 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/standalone/Log.hh>
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Region.hh>
 #include <elle/standalone/Report.hh>
