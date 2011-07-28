@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [sun jun 19 22:44:30 2011]
+// updated       julien quintard   [thu jul 28 15:18:34 2011]
 //
 
 //
@@ -96,7 +96,7 @@ namespace nucleus
 
       // compare the address with the given one.
       if (address != self)
-	flee("the recorded address does not correspond to this block");
+	escape("the recorded address does not correspond to this block");
 
       true();
     }

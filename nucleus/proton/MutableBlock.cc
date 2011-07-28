@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [wed jul  6 11:23:14 2011]
+// updated       julien quintard   [thu jul 28 15:22:24 2011]
 //
 
 //
@@ -362,12 +362,12 @@ namespace nucleus
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
 				    unique) == elle::StatusError)
-	escape("unable to convert the address in its hexadecimal form");
+	flee("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
 	  elle::StatusError)
-	escape("unable to create the path");
+	flee("unable to create the path");
 
       // if the requested version is the latest...
       if (version == Version::Last)
@@ -380,7 +380,7 @@ namespace nucleus
 	  // convert the version number.
 	  if (elle::Variable::Convert(version.number,
 				      number) == elle::StatusFalse)
-	    escape("unable to convert the version number into a string");
+	    flee("unable to convert the version number into a string");
 	}
 
       // complete the path with the network name.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Stamp.cc
 //
 // created       julien quintard   [fri jun 17 14:01:30 2011]
-// updated       julien quintard   [fri jun 17 14:58:49 2011]
+// updated       julien quintard   [thu jul 28 15:12:59 2011]
 //
 
 //
@@ -69,10 +69,10 @@ namespace nucleus
       // sign the attributes.
       if (Infinit::Authority.K.Verify(
 	    this->signature,
-	    this->master, this->slave) != elle::StatusTrue)
-	flee("this stamp seems not to have been issued by the oracle");
+	    this->master, this->slave) == elle::StatusError)
+	escape("this stamp seems not to have been issued by the oracle");
 
-      true();
+      leave();
     }
 
 //

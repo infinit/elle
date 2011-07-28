@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.cc
 //
 // created       julien quintard   [fri may  6 15:34:18 2011]
-// updated       julien quintard   [wed jun 22 12:48:57 2011]
+// updated       julien quintard   [thu jul 28 15:12:27 2011]
 //
 
 //
@@ -128,10 +128,10 @@ namespace nucleus
 
       // verify the owner's key signature with the block's public key.
       if (this->K.Verify(this->owner.signature,
-			 this->owner.K) != elle::StatusTrue)
-	flee("unable to verify the owner's signature");
+			 this->owner.K) == elle::StatusError)
+	escape("unable to verify the owner's signature");
 
-      true();
+      leave();
     }
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/History.cc
 //
 // created       julien quintard   [wed jul  6 09:21:17 2011]
-// updated       julien quintard   [wed jul  6 11:12:21 2011]
+// updated       julien quintard   [thu jul 28 15:23:59 2011]
 //
 
 //
@@ -362,7 +362,7 @@ namespace nucleus
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
 				    unique) == elle::StatusError)
-	escape("unable to convert the address in its hexadecimal form");
+	flee("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==

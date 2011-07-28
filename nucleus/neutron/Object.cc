@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [tue jul 12 12:17:04 2011]
+// updated       julien quintard   [thu jul 28 15:15:51 2011]
 //
 
 //
@@ -329,8 +329,8 @@ namespace nucleus
       // (i)
       {
 	// call the parent class.
-	if (proton::ImprintBlock::Validate(address) == elle::StatusFalse)
-	  flee("unable to verify the underlying physical block");
+	if (proton::ImprintBlock::Validate(address) == elle::StatusError)
+	  escape("unable to verify the underlying physical block");
       }
 
       // (ii)
@@ -359,7 +359,7 @@ namespace nucleus
 				     this->meta.version,
 
 				     fingerprint) == elle::StatusError)
-	      flee("unable to verify the meta's signature");
+	      escape("unable to verify the meta's signature");
 	  }
 	else
 	  {
@@ -371,7 +371,7 @@ namespace nucleus
 				     this->meta.stamp,
 				     this->meta.attributes,
 				     this->meta.version) == elle::StatusError)
-	      flee("unable to verify the meta's signature");
+	      escape("unable to verify the meta's signature");
 	  }
       }
 
@@ -404,18 +404,18 @@ namespace nucleus
 			   this->data.version,
 
 			   this->meta.owner.token,
-			   this->meta.access) != elle::StatusTrue)
-	  flee("unable to verify the data signature");
+			   this->meta.access) == elle::StatusError)
+	  escape("unable to verify the data signature");
       }
 
       // (v)
       {
 	// check the mutable block's general version.
 	if (this->version != (this->data.version + this->meta.version))
-	  flee("invalid version number");
+	  escape("invalid version number");
       }
 
-      true();
+      leave();
     }
 
 //

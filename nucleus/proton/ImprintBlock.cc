@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [thu jun 23 10:04:03 2011]
+// updated       julien quintard   [thu jul 28 15:12:37 2011]
 //
 
 //
@@ -121,7 +121,7 @@ namespace nucleus
       if (address != self)
 	escape("the address does not correspond to the block's public key");
 
-      true();
+      leave();
     }
 
 //

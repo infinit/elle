@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [mon jul  4 11:45:37 2011]
+// updated       julien quintard   [thu jul 28 15:33:51 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
@@ -80,7 +80,7 @@ namespace nucleus
 
 	  // add the item to the container.
 	  if (this->Add(item) == elle::StatusError)
-	    alert(_(), "unable to add the item to the container");
+	    fail("unable to add the item to the container");
 	}
 
       release();
