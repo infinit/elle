@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun mar 20 13:37:37 2011]
+// updated       julien quintard   [thu jul 28 15:07:51 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
@@ -328,17 +328,17 @@ namespace elle
 
       // create the archive.
       if (archive.Create() == StatusError)
-	flee("unable to create the archive");
+	escape("unable to create the archive");
 
       // serialize the object.
       if (archive.Serialize(parameter, parameters...) == StatusError)
-	flee("unable to serialize the object");
+	escape("unable to serialize the object");
 
       // call the Verify() method.
-      if (this->Verify(signature, archive) != StatusTrue)
-	flee("unable to verify the signature against the object's archive");
+      if (this->Verify(signature, archive) == StatusError)
+	escape("unable to verify the signature against the object's archive");
 
-      true();
+      leave();
     }
 
     //

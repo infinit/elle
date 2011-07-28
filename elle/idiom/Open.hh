@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [wed jul 27 09:45:06 2011]
+// updated       julien quintard   [thu jul 28 15:35:48 2011]
 //
 
 //
@@ -249,13 +249,13 @@
     } while (false)
 
 ///
-/// this macro-function indicates that an error occured
-/// and return StatusFalse.
+/// this macro-function logs the fact that an error occured
+/// and returns StatusFalse.
 ///
 #define flee(_format_, _arguments_...)					\
   do									\
     {									\
-      report(_format_, ##_arguments_);					\
+      log(_format_, ##_arguments_);					\
 									\
       release();							\
 									\
@@ -263,15 +263,15 @@
     } while (false)							\
 
 ///
-/// this macro-function reports an error and returns.
+/// this macro-function logs an error and returns.
 ///
 /// note that the return object is specifed, hence this function
-/// perfectly fits when an error occurs in operators etc.
+/// perfectly fits when an error occurs in operators for instance.
 ///
 #define yield(_return_, _format_, _arguments_...)			\
   do									\
     {									\
-      report(_format_, ##_arguments_);					\
+      log(_format_, ##_arguments_);					\
 									\
       release();							\
       									\
@@ -287,7 +287,7 @@
 #define alert(_return_, _format_, _arguments_...)			\
   do									\
     {									\
-      report(_format_, ##_arguments_);					\
+      log(_format_, ##_arguments_);					\
 									\
       show();								\
 									\
@@ -299,6 +299,8 @@
 ///
 /// this macro-function adds an failure, displays the stack and
 /// stops the program.
+///
+/// this macro-function is especially useful in constructors.
 ///
 #define fail(_format_, _arguments_...)					\
   do									\

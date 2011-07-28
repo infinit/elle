@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Log.hh
 //
 // created       julien quintard   [wed jul 27 09:24:44 2011]
-// updated       julien quintard   [wed jul 27 10:17:49 2011]
+// updated       julien quintard   [thu jul 28 17:06:23 2011]
 //
 
 #ifndef ELLE_STANDALONE_LOG_HH
@@ -23,13 +23,10 @@
 
 #include <elle/radix/Meta.hh>
 
-#include <elle/io/Path.hh>
-
 namespace elle
 {
   using namespace core;
   using namespace radix;
-  using namespace io;
 
   namespace standalone
   {
@@ -48,9 +45,7 @@ namespace elle
       //
       // static methods
       //
-      static Status	Initialize(const Path&);
-      static Status	Clean();
-
+      static Status	Setup(const String&);
       static Status	Instance(Log*&);
 
       //
@@ -61,7 +56,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Log(const Path&);
+      Log(const String&);
       ~Log();
 
       //
@@ -74,7 +69,6 @@ namespace elle
       //
       // attributes
       //
-      Path		path;
       int		fd;
     };
 

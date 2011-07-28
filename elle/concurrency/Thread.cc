@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Thread.cc
 //
 // created       julien quintard   [tue mar  9 18:52:40 2010]
-// updated       julien quintard   [mon jul  4 11:54:45 2011]
+// updated       julien quintard   [thu jul 28 16:22:46 2011]
 //
 
 //
@@ -19,6 +19,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {

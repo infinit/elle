@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [wed jul 27 10:18:38 2011]
+// updated       julien quintard   [thu jul 28 15:01:50 2011]
 //
 
 //
@@ -174,10 +174,8 @@ namespace elle
 	  // store the trace.
 	  if (Trace::Store(address) == StatusError)
 	    {
-	      report("unable to store the trace for %p",
-		     address);
-
-	      show();
+	      log("unable to store the trace for %p",
+		  address);
 
 	      goto _corps;
 	    }
@@ -218,10 +216,8 @@ namespace elle
 	  // store the trace.
 	  if (Trace::Store(address) == StatusError)
 	    {
-	      report("unable to store the trace for %p",
-		     address);
-
-	      show();
+	      log("unable to store the trace for %p",
+		  address);
 
 	      goto _corps;
 	    }
@@ -254,10 +250,8 @@ namespace elle
 	  // erase the trace.
 	  if (Trace::Erase(address) == StatusError)
 	    {
-	      report("unable to erase the trace for %p",
-		     address);
-
-	      show();
+	      log("unable to erase the trace for %p",
+		  address);
 
 	      goto _corps;
 	    }
