@@ -1,3 +1,27 @@
+- virer les report(), etc. et utiliser log!
+- virer diary/ de pig et mettre dans 8diary. si lance avec option
+  infinit, on link avec infinit et on bande.
+- copier video -> ca chie et Infinit passe a 480 Mo de RAM!
+  => ca doit marcher et avec peu de RAM => plante car block Data trop gros
+  => il faudrait decouper!
+
+Scope::Load -> scope
+new Actor -> actor
+actor->Create(); // -> new ID
+scope->Attach(actor);
+[...]
+scope->Detach(actor);
+scope->Store()
+
+
+operation quelconque: ID
+XXX
+
+
+il faut pouvoir:
+- recuperer un actor a partir de son ID => container d'actors (Gear)
+- recuperer un scope a partir de son chemin => container de scopes (Gear)
+
 #
 # ---------- long-term --------------------------------------------------------
 #

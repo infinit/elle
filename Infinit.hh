@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.hh
 //
 // created       julien quintard   [tue may  4 22:00:43 2010]
-// updated       julien quintard   [mon jun 27 07:40:42 2011]
+// updated       julien quintard   [thu jul 21 09:16:34 2011]
 //
 
 #ifndef INFINIT_HH
@@ -39,6 +39,7 @@ public:
   // globals
   //
   static lune::Authority		Authority;
+  static lune::Configuration		Configuration;
 
   static elle::Parser*			Parser;
 
