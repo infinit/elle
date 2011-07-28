@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [wed jul 27 10:41:05 2011]
+// updated       julien quintard   [thu jul 28 16:10:02 2011]
 //
 
 //
@@ -31,9 +31,7 @@ namespace pig
 #define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      report(_text_);							\
-									\
-      show();								\
+      log(_text_);							\
 									\
       Crux::Release(_identifiers_);					\
 									\

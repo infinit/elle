@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/SequentialFUker.cc
 //
 // created       julien quintard   [tue jul 26 15:33:54 2011]
-// updated       julien quintard   [wed jul 27 00:00:07 2011]
+// updated       julien quintard   [thu jul 28 17:20:04 2011]
 //
 
 //
