@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat jul  9 19:20:25 2011]
+// updated       julien quintard   [thu jul 21 09:09:54 2011]
 //
 
 //
@@ -45,7 +45,6 @@ namespace application
     lune::Authority	authority;
     lune::Identity	identity;
     lune::Dictionary	dictionary;
-    lune::Configuration	configuration;
 
     enter();
 
@@ -111,18 +110,6 @@ namespace application
     if (dictionary.Store(name) == elle::StatusError)
       escape("unable to store the dictionary");
 
-    // pull the default parameters.
-    if (configuration.Pull() == elle::StatusError)
-      escape("unable to pull the configuration parameters");
-
-    // push the current parameters.
-    if (configuration.Push() == elle::StatusError)
-      escape("unable to pus the parameters");
-
-    // store the configuration.
-    if (configuration.Store(name) == elle::StatusError)
-      escape("unable to store the configuration");
-
     leave();
   }
 
@@ -179,21 +166,6 @@ namespace application
 	  // remove it.
 	  if (phrase.Erase(name) == elle::StatusError)
 	    escape("unable to erase the phrase");
-	}
-    }
-
-    //
-    // remove the configuration, if necessary.
-    //
-    {
-      lune::Configuration	configuration;
-
-      // if the configuration exists...
-      if (configuration.Exist(name) == elle::StatusTrue)
-	{
-	  // remove it.
-	  if (configuration.Erase(name) == elle::StatusError)
-	    escape("unable to erase the configuration");
 	}
     }
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8setup/Setup.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat jul  9 19:20:12 2011]
+// updated       julien quintard   [thu jul 21 09:16:06 2011]
 //
 
 //
@@ -38,21 +38,50 @@ namespace application
   ///
   elle::Status		Setup::Initialize()
   {
-    elle::Path	path;
+    elle::Path		path;
+    lune::Configuration	configuration;
 
     enter();
 
-    // create the home path.
-    if (path.Create(lune::Lune::Home) == elle::StatusError)
-      escape("unable to create the path");
+    //
+    // initialize the infinit path.
+    //
+    {
+      // create the home path.
+      if (path.Create(lune::Lune::Home) == elle::StatusError)
+	escape("unable to create the path");
 
-    // if the user directory does not exist, create it.
-    if (elle::Directory::Exist(path) == elle::StatusFalse)
-      {
-	// create the directory.
-	if (elle::Directory::Create(path) == elle::StatusError)
-	  escape("unable to create the directory");
-      }
+      // if the user directory does not exist, create it.
+      if (elle::Directory::Exist(path) == elle::StatusFalse)
+	{
+	  // create the directory.
+	  if (elle::Directory::Create(path) == elle::StatusError)
+	    escape("unable to create the directory");
+	}
+      else
+	{
+	  // clear the directory.
+	  if (elle::Directory::Clear(path) == elle::StatusError)
+	    escape("unable to clear the directory");
+	}
+    }
+
+    //
+    // create the configuration file.
+    //
+    {
+      // pull the default parameters.
+      if (configuration.Pull() == elle::StatusError)
+	escape("unable to pull the configuration parameters");
+
+      // push the current parameters.
+      if (configuration.Push() == elle::StatusError)
+	escape("unable to pus the parameters");
+
+      // store the configuration.
+      if (configuration.Store() == elle::StatusError)
+	escape("unable to store the configuration");
+    }
 
     leave();
   }
@@ -62,25 +91,45 @@ namespace application
   ///
   elle::Status		Setup::Clean()
   {
-    elle::Path	path;
+    elle::Path		path;
 
     enter();
 
-    // create the home path.
-    if (path.Create(lune::Lune::Home) == elle::StatusError)
-      escape("unable to create the path");
+    //
+    // remove the configuration, if necessary.
+    //
+    {
+      lune::Configuration	configuration;
 
-    // if the user directory exists, clear it and remove it.
-    if (elle::Directory::Exist(path) == elle::StatusTrue)
-      {
-	// clear the content.
-	if (elle::Directory::Clear(path) == elle::StatusError)
-	  escape("unable to clear the directory");
+      // if the configuration exists...
+      if (configuration.Exist() == elle::StatusTrue)
+	{
+	  // remove it.
+	  if (configuration.Erase() == elle::StatusError)
+	    escape("unable to erase the configuration");
+	}
+    }
 
-	// remove the directory.
-	if (elle::Directory::Remove(path) == elle::StatusError)
-	  escape("unable to remove the directory");
-      }
+    //
+    // reinitialize the infinit directory.
+    //
+    {
+      // create the home path.
+      if (path.Create(lune::Lune::Home) == elle::StatusError)
+	escape("unable to create the path");
+
+      // if the user directory exists, clear it and remove it.
+      if (elle::Directory::Exist(path) == elle::StatusTrue)
+	{
+	  // clear the content.
+	  if (elle::Directory::Clear(path) == elle::StatusError)
+	    escape("unable to clear the directory");
+
+	  // remove the directory.
+	  if (elle::Directory::Remove(path) == elle::StatusError)
+	    escape("unable to remove the directory");
+	}
+    }
 
     leave();
   }
