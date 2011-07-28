@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.cc
 //
 // created       julien quintard   [sat may  1 21:19:13 2010]
-// updated       julien quintard   [mon jun 27 21:13:34 2011]
+// updated       julien quintard   [thu jul 28 15:10:12 2011]
 //
 
 //
@@ -80,10 +80,10 @@ namespace lune
     if (authority.K.Verify(this->signature,
 			   this->name,
 			   this->model,
-			   this->root) != elle::StatusTrue)
-      false();
+			   this->root) == elle::StatusError)
+      escape("unable to verify the signature");
 
-    true();
+    leave();
   }
 
   ///

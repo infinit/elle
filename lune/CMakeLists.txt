@@ -6,6 +6,7 @@ ADD_LIBRARY(lune
   Descriptor.cc
   Dictionary.cc
   Identity.cc
+  Log.cc
   Lune.cc
   Phrase.cc
 )

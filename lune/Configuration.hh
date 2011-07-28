@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [wed jul 27 09:06:49 2011]
+// updated       julien quintard   [thu jul 28 17:01:08 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH

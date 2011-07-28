@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [wed jul 27 09:08:56 2011]
+// updated       julien quintard   [thu jul 28 17:02:29 2011]
 //
 
 //
