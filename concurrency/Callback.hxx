@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [mon jul 18 21:40:39 2011]
+// updated       julien quintard   [thu jul 28 15:29:52 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -301,7 +301,9 @@ namespace elle
 	  }
 	case Routine::SchemeUnknown:
 	  {
-	    alert(_(), "unknown scheme");
+	    alert(_(),
+		  "unknown scheme '%u'",
+		  this->scheme);
 	  }
 	}
 

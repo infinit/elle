@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [mon jul  4 20:26:36 2011]
+// updated       julien quintard   [thu jul 28 16:21:45 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX
@@ -22,6 +22,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 namespace elle
 {

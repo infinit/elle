@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hh
 //
 // created       julien quintard   [sun may  2 12:01:53 2010]
-// updated       julien quintard   [mon jun 27 18:10:06 2011]
+// updated       julien quintard   [thu jul 28 16:16:21 2011]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HH
@@ -22,6 +22,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/standalone/Log.hh>
 
 #include <elle/radix/Status.hh>
 
@@ -33,6 +34,7 @@
 namespace elle
 {
   using namespace core;
+  using namespace standalone;
   using namespace radix;
   using namespace package;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Log.cc
 //
 // created       julien quintard   [wed jul 27 09:53:07 2011]
-// updated       julien quintard   [wed jul 27 10:17:43 2011]
+// updated       julien quintard   [thu jul 28 17:18:09 2011]
 //
 
 //
@@ -46,31 +46,15 @@ namespace elle
 //
 
     ///
-    /// this method initializes the log by allocating a default
+    /// this method sets up the log by allocating a default
     /// log object.
     ///
-    Status		Log::Initialize(const Path&		path)
+    Status		Log::Setup(const String&		path)
     {
       enter();
 
       // allocate the log for the initial thread/fiber.
       Log::Current = new Log(path);
-
-      leave();
-    }
-
-    ///
-    /// this method cleans the log system.
-    ///
-    Status		Log::Clean()
-    {
-      enter();
-
-      // delete the log.
-      delete Log::Current;
-
-      // reset the pointer.
-      Log::Current = NULL;
 
       leave();
     }
@@ -100,11 +84,10 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Log::Log(const Path&					path):
-      path(path)
+    Log::Log(const String&					path)
     {
       // open the file.
-      this->fd = ::open(path.string.c_str(),
+      this->fd = ::open(path.c_str(),
 			O_WRONLY | O_APPEND | O_CREAT,
 			0600);
     }
@@ -129,7 +112,13 @@ namespace elle
 				    const String&		time,
 				    const String&		message)
     {
-      // XXX
+      std::ostringstream	stream;
+
+      // build the string.
+      stream << message << " (" << location << ") @ " << time << std::endl;
+
+      // write it to the log.
+      ::write(this->fd, stream.str().c_str(), stream.str().length());
     }
 
   }
