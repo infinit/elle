@@ -17,6 +17,7 @@ ADD_LIBRARY(elle
   core/Natural.cc
   core/Type.cc
 
+  standalone/Log.cc
   standalone/Maid.cc
   standalone/Region.cc
   standalone/Report.cc

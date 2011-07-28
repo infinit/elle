@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [mon jul 18 15:41:15 2011]
+// updated       julien quintard   [wed jul 27 09:45:06 2011]
 //
 
 //
@@ -136,13 +136,37 @@
 //
 
 ///
+/// this macro-function registers a log entry.
+///
+#define log(_format_, _arguments_...)					\
+  do									\
+    {									\
+      elle::standalone::Log*	_log_;					\
+      std::ostringstream	_tmp_;					\
+      elle::Character		_message_[1024];			\
+									\
+      _tmp_ << __FILE__ << ":" << __LINE__ << " # " << __FUNCTION__;	\
+									\
+      elle::core::String	_location_(_tmp_.str());		\
+      elle::core::String	_time_(__DATE__ " " __TIME__);		\
+									\
+      ::sprintf(_message_, _format_, ##_arguments_);			\
+									\
+      if (elle::standalone::Log::Instance(_log_) ==			\
+	  elle::radix::StatusTrue)					\
+        _log_->Record(_location_,					\
+		      _time_,						\
+		      elle::String(_message_));				\
+    } while (false)
+
+///
 /// this macro-function registers a report entry.
 ///
 /// note that this macro function should never be called directly. instead
 /// the macro functions below should be used: leave, escape, true, alert
 /// etc.
 ///
-#define report(_type_, _format_, _arguments_...)			\
+#define report(_format_, _arguments_...)				\
   do									\
     {									\
       elle::standalone::Report*	_report_;				\
@@ -158,8 +182,7 @@
 									\
       if (elle::standalone::Report::Instance(_report_) ==		\
 	  elle::radix::StatusTrue)					\
-        _report_->Record(_type_,					\
-			 _location_,					\
+        _report_->Record(_location_,					\
 			 _time_,					\
 			 elle::String(_message_));			\
     } while (false)
@@ -212,21 +235,13 @@
     } while (false)
 
 ///
-/// this macro-function reports a warning.
-///
-#define warn(_format_, _arguments_...)					\
-  report(elle::standalone::Report::TypeWarning,				\
-	 _format_, ##_arguments_)
-
-///
 /// this macro-function indicates that an error occured
 /// and returns StatusError.
 ///
 #define escape(_format_, _arguments_...)				\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError,			\
-	     _format_, ##_arguments_);					\
+      report(_format_, ##_arguments_);					\
 									\
       release();							\
 									\
@@ -240,8 +255,7 @@
 #define flee(_format_, _arguments_...)					\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError,			\
-	     _format_, ##_arguments_);					\
+      report(_format_, ##_arguments_);					\
 									\
       release();							\
 									\
@@ -257,8 +271,7 @@
 #define yield(_return_, _format_, _arguments_...)			\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError,			\
-	     _format_, ##_arguments_);					\
+      report(_format_, ##_arguments_);					\
 									\
       release();							\
       									\
@@ -274,8 +287,7 @@
 #define alert(_return_, _format_, _arguments_...)			\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError,			\
-	     _format_, ##_arguments_);					\
+      report(_format_, ##_arguments_);					\
 									\
       show();								\
 									\
@@ -291,8 +303,7 @@
 #define fail(_format_, _arguments_...)					\
   do									\
     {									\
-      report(elle::standalone::Report::TypeFailure,			\
-	     _format_, ##_arguments_);					\
+      report(_format_, ##_arguments_);					\
 									\
       show();								\
 									\
@@ -423,8 +434,8 @@
     (elle::core::Void*)							\
       alloca(								\
         sizeof (elle::standalone::Maid::Slab<elle::core::Void*,		\
-	                                    elle::core::Void		\
-                                              (*)(elle::core::Void*)>)),\
+					     elle::core::Void		\
+					      (*)(elle::core::Void*)>)),\
     _pointer_, _function_)
 
 ///

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [mon jul 18 09:19:23 2011]
+// updated       julien quintard   [wed jul 27 10:17:38 2011]
 //
 
 //
@@ -183,8 +183,7 @@ namespace elle
 	  Report::Entry*	entry = *scoutor;
 
 	  // record the entry.
-	  this->Record(entry->type,
-		       entry->location,
+	  this->Record(entry->location,
 		       entry->time,
 		       entry->message);
 	}
@@ -227,8 +226,7 @@ namespace elle
     ///
     /// this method adds a message to the report.
     ///
-    Void		Report::Record(Report::Type		type,
-				       const String&		location,
+    Void		Report::Record(const String&		location,
 				       const String&		time,
 				       const String&		message)
     {
@@ -238,7 +236,6 @@ namespace elle
       entry = new Report::Entry;
 
       // set the fields.
-      entry->type = type;
       entry->location = location;
       entry->time = time;
       entry->message = message;
@@ -265,8 +262,7 @@ namespace elle
 	  entry->message = String("  ") + entry->message;
 
 	  // store the entry.
-	  this->Record(entry->type,
-		       entry->location,
+	  this->Record(entry->location,
 		       entry->time,
 		       entry->message);
 	}
@@ -294,31 +290,6 @@ namespace elle
 	   scoutor++)
 	{
 	  Report::Entry*	entry = *scoutor;
-
-	  // display the error type.
-	  switch (entry->type)
-	    {
-	    case Report::TypeWarning:
-	      {
-		std::cout << alignment << Dumpable::Shift << "[Warning] ";
-		break;
-	      }
-	    case Report::TypeError:
-	      {
-		std::cout << alignment << Dumpable::Shift << "[Error] ";
-		break;
-	      }
-	    case Report::TypeFailure:
-	      {
-		std::cout << alignment << Dumpable::Shift << "[Failure] ";
-		break;
-	      }
-	    default:
-	      {
-		std::cout << alignment << Dumpable::Shift << "[Unknown] ";
-		break;
-	      }
-	    }
 
 	  // display the entry.
 	  std::cout << entry->message
@@ -357,8 +328,7 @@ namespace elle
 	  Report::Entry*	entry = *scoutor;
 
 	  // serialize the entry.
-	  if (archive.Serialize((Natural8&)entry->type,
-				entry->location,
+	  if (archive.Serialize(entry->location,
 				entry->time,
 				entry->message) == StatusError)
 	    escape("unable to serialize the entry");
@@ -385,19 +355,15 @@ namespace elle
       for (i = 0; i < size; i++)
 	{
 	  Report::Entry*	entry;
-	  Natural8		type;
 
 	  // allocate a new entry.
 	  entry = new Report::Entry;
 
 	  // extract the entry.
-	  if (archive.Extract(type,
-			      entry->location,
+	  if (archive.Extract(entry->location,
 			      entry->time,
 			      entry->message) == StatusError)
 	    escape("unable to serialize the entry");
-
-	  entry->type = static_cast<Report::Type>(type);
 
 	  // push the extract entry in the container.
 	  this->container.push_front(entry);
