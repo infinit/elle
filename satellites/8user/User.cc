@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8user/User.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu jul 21 09:09:54 2011]
+// updated       julien quintard   [thu jul 28 15:11:27 2011]
 //
 
 //
@@ -230,7 +230,7 @@ namespace application
       escape("unable to load the identity");
 
     // verify the identity.
-    if (identity.Validate(Infinit::Authority) != elle::StatusTrue)
+    if (identity.Validate(Infinit::Authority) == elle::StatusError)
       escape("the identity seems to be invalid");
 
     // decrypt the identity.

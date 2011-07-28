@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat jul  9 19:20:04 2011]
+// updated       julien quintard   [thu jul 28 15:11:17 2011]
 //
 
 //
@@ -313,7 +313,7 @@ namespace application
 	escape("unable to pull the descriptor's attributes");
 
       // validate the descriptor.
-      if (descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
+      if (descriptor.Validate(Infinit::Authority) == elle::StatusError)
 	escape("unable to validate the descriptor");
     }
 
