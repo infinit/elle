@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu jul 21 09:21:46 2011]
+// updated       julien quintard   [thu jul 28 15:10:59 2011]
 //
 
 //
@@ -96,7 +96,7 @@ namespace agent
 	escape("unable to load the identity");
 
       // verify the identity.
-      if (Agent::Identity.Validate(Infinit::Authority) != elle::StatusTrue)
+      if (Agent::Identity.Validate(Infinit::Authority) == elle::StatusError)
 	escape("the identity seems to be invalid");
 
       // decrypt the identity.
