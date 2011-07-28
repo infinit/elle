@@ -1,9 +1,5 @@
-- virer les report(), etc. et utiliser log!
 - virer diary/ de pig et mettre dans 8diary. si lance avec option
   infinit, on link avec infinit et on bande.
-- copier video -> ca chie et Infinit passe a 480 Mo de RAM!
-  => ca doit marcher et avec peu de RAM => plante car block Data trop gros
-  => il faudrait decouper!
 
 Scope::Load -> scope
 new Actor -> actor
@@ -49,3 +45,7 @@ il faut pouvoir:
 
 - ameliorer le replay: quand on avance jusqu'au from, activer un flag. si
   le flag est active, ne pas appeler FUSE mais quand meme gerer Live.
+
+- copier video -> ca chie et Infinit passe a 480 Mo de RAM!
+  => ca doit marcher et avec peu de RAM => plante car block Data trop gros
+  => il faudrait decouper!
