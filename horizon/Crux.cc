@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [wed jul 20 11:05:12 2011]
+// updated       julien quintard   [wed jul 27 10:41:05 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace pig
 #define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      report(elle::standalone::Report::TypeError, _text_);		\
+      report(_text_);							\
 									\
       show();								\
 									\
@@ -78,7 +78,7 @@ namespace pig
     struct ::fuse_file_info	info;
     int				result;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -106,7 +106,7 @@ namespace pig
       error("unable to discard the object",
 	    EINTR);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -127,7 +127,7 @@ namespace pig
     etoile::path::Way			way(path);
     elle::String*			name;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -277,7 +277,7 @@ namespace pig
 	}
       }
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -291,7 +291,7 @@ namespace pig
   int			Crux::Utimens(const char*		path,
 				      const struct timespec[2])
   {
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, ...)\n",
 	     __FUNCTION__,
 	     path);
@@ -300,7 +300,7 @@ namespace pig
     // not supported
     //
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, ...)\n",
 	     __FUNCTION__,
 	     path);
@@ -319,7 +319,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     nucleus::Record*		record;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -362,7 +362,7 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(identifier);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -383,7 +383,7 @@ namespace pig
     etoile::gear::Identifier*		identifier;
     off_t				next;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, filler, offset, info);
@@ -444,7 +444,7 @@ namespace pig
 	  break;
       }
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, filler, offset, info);
@@ -460,7 +460,7 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -480,7 +480,7 @@ namespace pig
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -501,7 +501,7 @@ namespace pig
     etoile::gear::Identifier	subdirectory;
     nucleus::Permissions	permissions;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -556,7 +556,7 @@ namespace pig
       error("unable to store the directory",
 	    EINTR);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -576,7 +576,7 @@ namespace pig
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	subdirectory;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s)\n",
 	     __FUNCTION__,
 	     path);
@@ -621,7 +621,7 @@ namespace pig
       error("unable to destroy the directory",
 	    EINTR);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s)\n",
 	     __FUNCTION__,
 	     path);
@@ -642,7 +642,7 @@ namespace pig
     etoile::path::Chemin		chemin;
     nucleus::Record*			record;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mask);
@@ -762,7 +762,7 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mask);
@@ -782,7 +782,7 @@ namespace pig
     nucleus::Permissions		permissions;
     etoile::miscellaneous::Information	information;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -871,7 +871,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -886,7 +886,7 @@ namespace pig
 				    uid_t			uid,
 				    gid_t			gid)
   {
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %u, %u)\n",
 	     __FUNCTION__,
 	     path, uid, gid);
@@ -912,7 +912,7 @@ namespace pig
 
     // XXX todo
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %u, %u)\n",
 	     __FUNCTION__,
 	     path, uid, gid);
@@ -936,7 +936,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s, %p, %u, 0x%x)\n",
 	     __FUNCTION__,
 	     path, name, value, size, flags);
@@ -965,7 +965,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %s, %p, %u, 0x%x)\n",
 	     __FUNCTION__,
 	     path, name, value, size, flags);
@@ -986,7 +986,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     nucleus::Trait*		trait;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, name, value, size);
@@ -1019,7 +1019,7 @@ namespace pig
       error("unable to locate this attribute",
 	    ENOATTR);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, name, value, size);
@@ -1054,7 +1054,7 @@ namespace pig
     nucleus::Range<nucleus::Trait>::Scoutor	scoutor;
     size_t					offset;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, list, size);
@@ -1081,7 +1081,7 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, list, size);
@@ -1133,7 +1133,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     path, name);
@@ -1161,7 +1161,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     path, name);
@@ -1183,7 +1183,7 @@ namespace pig
     etoile::path::Way		to(target);
     etoile::path::Chemin	chemin;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     target, source);
@@ -1229,7 +1229,7 @@ namespace pig
       error("unable to store the directory",
 	    ENOENT);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     target, source);
@@ -1249,7 +1249,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::path::Way		target;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, buffer, size);
@@ -1282,7 +1282,7 @@ namespace pig
 	        target.path.length() + 1 :
 	        size);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, buffer, size);
@@ -1304,7 +1304,7 @@ namespace pig
     etoile::gear::Identifier	file;
     nucleus::Permissions	permissions;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o, %p)\n",
 	     __FUNCTION__,
 	     path, mode, info);
@@ -1391,7 +1391,7 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(file);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, 0%o, %p)\n",
 	     __FUNCTION__,
 	     path, mode, info);
@@ -1409,7 +1409,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	identifier;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1428,7 +1428,7 @@ namespace pig
     info->fh =
       (uint64_t)new etoile::gear::Identifier(identifier);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1448,7 +1448,7 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
@@ -1468,7 +1468,7 @@ namespace pig
       error("unable to write the file",
 	    EACCES);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
@@ -1488,7 +1488,7 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
@@ -1507,7 +1507,7 @@ namespace pig
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
@@ -1527,7 +1527,7 @@ namespace pig
     struct ::fuse_file_info	info;
     int				result;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %qu)\n",
 	     __FUNCTION__,
 	     path, size);
@@ -1553,7 +1553,7 @@ namespace pig
       error("unable to store the file",
 	    EINTR);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %qu)\n",
 	     __FUNCTION__,
 	     path, size);
@@ -1570,7 +1570,7 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, size, info);
@@ -1584,7 +1584,7 @@ namespace pig
       error("unable to adjust the size of the file",
 	    ENOENT);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, size, info);
@@ -1601,7 +1601,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::gear::Identifier*	identifier;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1620,7 +1620,7 @@ namespace pig
     // reset the file handle.
     info->fh = 0;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1640,7 +1640,7 @@ namespace pig
     etoile::path::Way		to(etoile::path::Way(target), t);
     etoile::gear::Identifier	object;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     source, target);
@@ -1769,7 +1769,7 @@ namespace pig
 		ENOENT);
       }
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     source, target);
@@ -1790,7 +1790,7 @@ namespace pig
     etoile::gear::Identifier		identifier;
     etoile::miscellaneous::Information	information;
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s)\n",
 	     __FUNCTION__,
 	     path);
@@ -1894,7 +1894,7 @@ namespace pig
       error("unable to store the directory",
 	    EINTR);
 
-    if (agent::Agent::Configuration.debug.pig == true)
+    if (Infinit::Configuration.debug.pig == true)
       printf("[/pig] %s(%s)\n",
 	     __FUNCTION__,
 	     path);

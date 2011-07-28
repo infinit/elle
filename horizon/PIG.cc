@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [tue jul 12 07:11:59 2011]
+// updated       julien quintard   [tue jul 26 20:52:01 2011]
 //
 
 //
@@ -125,7 +125,7 @@ namespace pig
 	  escape("unable to load the diary");
 
 	// set up the diary.
-	if (PIG::Diary.Setup(FUSE::System::Operations) == elle::StatusError)
+	if (PIG::Diary.Setup(FUSE::Operations) == elle::StatusError)
 	  escape("unable to set up the diary");
 
 	// initialize the indexes.

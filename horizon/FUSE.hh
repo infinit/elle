@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.hh
 //
 // created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [wed jul  6 12:48:08 2011]
+// updated       julien quintard   [tue jul 26 20:52:55 2011]
 //
 
 #ifndef PIG_FUSE_HH
@@ -31,9 +31,10 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
+#include <pig/FUker.hh>
+
 #include <elle/idiom/Close.hh>
 # include <fuse/fuse.h>
-# include <fuse/fuse_lowlevel.h>
 #include <elle/idiom/Open.hh>
 
 namespace pig
@@ -57,25 +58,12 @@ namespace pig
     static elle::Status		Clean();
 
     //
-    // static callbacks
-    //
-    static elle::Status		Event(const elle::Natural16&);
-
-    //
     // static attributes
     //
-    static elle::Broker*		Broker;
+    static elle::String			Mountpoint;
+    static FUker*			Fuker;
 
-    struct				System
-    {
-      static struct ::fuse*		Core;
-      static char*			Mountpoint;
-      static struct ::fuse_session*	Session;
-      static struct ::fuse_chan*	Channel;
-      static size_t			Size;
-      static char*			Buffer;
-      static struct ::fuse_operations	Operations;
-    };
+    static struct ::fuse_operations	Operations;
   };
 
 }
