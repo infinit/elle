@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [mon jul 11 16:32:09 2011]
+// updated       julien quintard   [thu jul 28 15:07:37 2011]
 //
 
 //
@@ -311,7 +311,7 @@ namespace elle
 
       // compute the plain's digest.
       if (OneWay::Hash(plain, digest) == StatusError)
-	flee("unable to hash the plain");
+	escape("unable to hash the plain");
 
       // verify.
       if (::EVP_PKEY_verify(this->contexts.verify,
@@ -319,9 +319,9 @@ namespace elle
 			    signature.region.size,
 			    (const unsigned char*)digest.region.contents,
 			    digest.region.size) <= 0)
-        flee(::ERR_error_string(ERR_get_error(), NULL));
+        escape(::ERR_error_string(ERR_get_error(), NULL));
 
-      true();
+      leave();
     }
 
     ///
