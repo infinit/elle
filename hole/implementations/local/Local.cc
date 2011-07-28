@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [mon jul 11 16:49:14 2011]
+// updated       julien quintard   [thu jul 28 16:28:00 2011]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <hole/implementations/local/Local.hh>
+
+#include <Infinit.hh>
 
 namespace hole
 {
@@ -47,6 +49,10 @@ namespace hole
       {
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  printf("[hole] %s()\n",
+		 __FUNCTION__);
+
 	// nothing to do.
 
 	leave();
@@ -58,6 +64,10 @@ namespace hole
       elle::Status	Local::Leave()
       {
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  printf("[hole] %s()\n",
+		 __FUNCTION__);
 
 	// nothing to do
 
@@ -71,6 +81,10 @@ namespace hole
 				   const nucleus::ImmutableBlock& block)
       {
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  printf("[hole] %s(Immutable)\n",
+		 __FUNCTION__);
 
 	// does the block already exist.
 	if (block.Exist(this->network, address) == elle::StatusTrue)
@@ -90,6 +104,10 @@ namespace hole
 				   const nucleus::MutableBlock&	block)
       {
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  printf("[hole] %s(Mutable)\n",
+		 __FUNCTION__);
 
 	// does the block already exist.
 	if (block.Exist(this->network,
@@ -141,6 +159,10 @@ namespace hole
       {
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  printf("[hole] %s(Immutable)\n",
+		 __FUNCTION__);
+
 	// does the block exist.
 	if (block.Exist(this->network, address) == elle::StatusFalse)
 	  escape("the block does not seem to exist");
@@ -150,7 +172,7 @@ namespace hole
 	  escape("unable to load the block");
 
 	// validate the block.
-	if (block.Validate(address) == elle::StatusFalse)
+	if (block.Validate(address) == elle::StatusError)
 	  escape("the block seems to be invalid");
 
 	leave();
@@ -165,6 +187,10 @@ namespace hole
       {
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  printf("[hole] %s(Mutable)\n",
+		 __FUNCTION__);
+
 	// does the block exist.
 	if (block.Exist(this->network, address, version) == elle::StatusFalse)
 	  escape("the block does not seem to exist");
@@ -174,7 +200,7 @@ namespace hole
 	  escape("unable to load the block");
 
 	// validate the block.
-	if (block.Validate(address) == elle::StatusFalse)
+	if (block.Validate(address) == elle::StatusError)
 	  escape("the block seems to be invalid");
 
 	leave();
@@ -188,6 +214,10 @@ namespace hole
 	nucleus::Block	block;
 
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  printf("[hole] %s()\n",
+		 __FUNCTION__);
 
 	// treat the request depending on the nature of the block which
 	// the addres indicates.

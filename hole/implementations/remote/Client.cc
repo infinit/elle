@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [tue jul 26 17:37:42 2011]
+// updated       julien quintard   [thu jul 28 17:32:04 2011]
 //
 
 //
@@ -19,6 +19,8 @@
 #include <hole/implementations/remote/Manifest.hh>
 
 #include <hole/Hole.hh>
+
+#include <Infinit.hh>
 
 namespace hole
 {
@@ -142,6 +144,10 @@ namespace hole
 
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Put[Immutable]()"
+		    << std::endl;
+
 	// check that the client is connected.
 	if (this->gate == NULL)
 	  escape("the client seems to have been disconnected");
@@ -167,6 +173,10 @@ namespace hole
 
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Put[Mutable]()"
+		    << std::endl;
+
 	// check that the client is connected.
 	if (this->gate == NULL)
 	  escape("the client seems to have been disconnected");
@@ -190,6 +200,10 @@ namespace hole
 	nucleus::Derivable<nucleus::Block>	derivable(block);
 
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Get[Immutable]()"
+		    << std::endl;
 
 	// check that the client is connected.
 	if (this->gate == NULL)
@@ -216,6 +230,10 @@ namespace hole
 
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Get[Mutable]()"
+		    << std::endl;
+
 	// check that the client is connected.
 	if (this->gate == NULL)
 	  escape("the client seems to have been disconnected");
@@ -236,6 +254,10 @@ namespace hole
       elle::Status	Client::Kill(const nucleus::Address&	address)
       {
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Kill()"
+		    << std::endl;
 
 	// check that the client is connected.
 	if (this->gate == NULL)

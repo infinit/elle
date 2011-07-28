@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [mon jul 11 18:05:09 2011]
+// updated       julien quintard   [thu jul 28 16:09:35 2011]
 //
 
 //
@@ -85,7 +85,7 @@ namespace hole
 	escape("unable to pull the descriptor's attributes");
 
       // validate the descriptor.
-      if (Hole::Descriptor.Validate(Infinit::Authority) != elle::StatusTrue)
+      if (Hole::Descriptor.Validate(Infinit::Authority) == elle::StatusError)
 	escape("unable to validate the descriptor");
     }
 
@@ -115,7 +115,8 @@ namespace hole
 	  break;
 	}
       default:
-	escape("unknown or not-yet-supported model");
+	escape("unknown or not-yet-supported model '%u'",
+	       Hole::Descriptor.model.type);
       }
 
     // join the network
@@ -219,7 +220,8 @@ namespace hole
 	}
       default:
 	{
-	  escape("unknown block family");
+	  escape("unknown block family '%u'",
+		 address.family);
 	}
       }
 
@@ -270,7 +272,8 @@ namespace hole
 	}
       default:
 	{
-	  escape("unknown block family");
+	  escape("unknown block family '%u'",
+		 address.family);
 	}
       }
 

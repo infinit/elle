@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [wed jul 20 09:13:03 2011]
+// updated       julien quintard   [thu jul 28 17:31:44 2011]
 //
 
 //
@@ -19,6 +19,8 @@
 #include <hole/implementations/remote/Manifest.hh>
 
 #include <hole/Hole.hh>
+
+#include <Infinit.hh>
 
 namespace hole
 {
@@ -183,6 +185,10 @@ namespace hole
       {
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Put[Immutable]()"
+		    << std::endl;
+
 	// does the block already exist.
 	if (block.Exist(this->network, address) == elle::StatusTrue)
 	  escape("this immutable block seems to already exist");
@@ -201,6 +207,10 @@ namespace hole
 				    const nucleus::MutableBlock& block)
       {
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Put[Mutable]()"
+		    << std::endl;
 
 	// does the block already exist.
 	if (block.Exist(this->network,
@@ -250,6 +260,10 @@ namespace hole
       {
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Get[Immutable]()"
+		    << std::endl;
+
 	// does the block exist.
 	if (block.Exist(this->network, address) == elle::StatusFalse)
 	  escape("the block does not seem to exist");
@@ -259,7 +273,7 @@ namespace hole
 	  escape("unable to load the block");
 
 	// validate the block.
-	if (block.Validate(address) == elle::StatusFalse)
+	if (block.Validate(address) == elle::StatusError)
 	  escape("the block seems to be invalid");
 
 	leave();
@@ -274,6 +288,10 @@ namespace hole
       {
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Get[Mutable]()"
+		    << std::endl;
+
 	// does the block exist.
 	if (block.Exist(this->network, address, version) == elle::StatusFalse)
 	  escape("the block does not seem to exist");
@@ -283,7 +301,7 @@ namespace hole
 	  escape("unable to load the block");
 
 	// validate the block.
-	if (block.Validate(address) == elle::StatusFalse)
+	if (block.Validate(address) == elle::StatusError)
 	  escape("the block seems to be invalid");
 
 	leave();
@@ -297,6 +315,10 @@ namespace hole
 	nucleus::Block	block;
 
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Kill()"
+		    << std::endl;
 
 	// treat the request depending on the nature of the block which
 	// the addres indicates.
@@ -351,6 +373,10 @@ namespace hole
 
 	enter();
 
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Connection()"
+		    << std::endl;
+
 	// check if there already is a client.
 	if (this->gate != NULL)
 	  escape("a client seems to already be connected");
@@ -384,6 +410,10 @@ namespace hole
 	elle::String	name;
 
 	enter();
+
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Response()"
+		    << std::endl;
 
 	// retrieve the key.
 	if (Hole::Descriptor.Get("remote", "key",
@@ -448,7 +478,9 @@ namespace hole
 
 	enter();
 
-	printf("Server::Push\n");
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Push()"
+		    << std::endl;
 
 	// infer the block from the derivable.
 	if (derivable.Infer(object) == elle::StatusError)
@@ -507,7 +539,9 @@ namespace hole
 
 	enter(instance(block));
 
-	printf("Server::Pull\n");
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Pull()"
+		    << std::endl;
 
 	// build the block according to the component.
 	if (nucleus::Nucleus::Factory.Build(address.component,
@@ -572,7 +606,9 @@ namespace hole
       {
 	enter();
 
-	printf("Server::Wipe\n");
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Server::Wipe()"
+		    << std::endl;
 
 	// forward the kill request to the implementation.
 	if (this->Kill(address) == elle::StatusError)
