@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.cc
 //
 // created       julien quintard   [fri apr 30 16:29:27 2010]
-// updated       julien quintard   [wed jul  6 10:13:25 2011]
+// updated       julien quintard   [thu jul 21 09:07:59 2011]
 //
 
 //
@@ -34,6 +34,12 @@ namespace lune
   /// file.
   ///
   elle::Pattern			Lune::Authority;
+
+  ///
+  /// this variable contains the pattern-based path to the configuration
+  /// file.
+  ///
+  elle::Pattern			Lune::Configuration;
 
   ///
   /// this variable contains the path to the users directory.
@@ -67,12 +73,6 @@ namespace lune
   /// file.
   ///
   elle::Pattern			Lune::User::Phrase;
-
-  ///
-  /// this variable contains the pattern-based path to the user configuration
-  /// file.
-  ///
-  elle::Pattern			Lune::User::Configuration;
 
   ///
   /// this variable contains the pattern-based path to a specific network
@@ -163,6 +163,14 @@ namespace lune
 	  Authority::Extension) == elle::StatusError)
       escape("unable to create the pattern");
 
+    // create the configuration path pattern.
+    if (Lune::Configuration.Create(
+	  home +
+	  elle::System::Path::Separator +
+	  "infinit" +
+	  Configuration::Extension) == elle::StatusError)
+      escape("unable to create the pattern");
+
     // create the users path pattern.
     if (Lune::Users.Create(
 	  home +
@@ -220,18 +228,6 @@ namespace lune
 	  elle::System::Path::Separator +
 	  "%USER%" +
 	  Phrase::Extension) == elle::StatusError)
-      escape("unable to create the pattern");
-
-    // create the configuration path pattern.
-    if (Lune::User::Configuration.Create(
-	  home +
-	  elle::System::Path::Separator +
-	  "users" +
-	  elle::System::Path::Separator +
-	  "%USER%" +
-	  elle::System::Path::Separator +
-	  "%USER%" +
-	  Configuration::Extension) == elle::StatusError)
       escape("unable to create the pattern");
 
     // create the network path pattern.

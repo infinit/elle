@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [mon jul  4 15:57:52 2011]
+// updated       julien quintard   [wed jul 27 09:06:49 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
@@ -73,6 +73,11 @@ namespace lune
 	  static const elle::Character	Slab;
 	};
       };
+
+      struct				FUSE
+      {
+	static const elle::String	FUker;
+      };
     };
 
     //
@@ -92,10 +97,10 @@ namespace lune
     elle::Status	Dump(const elle::Natural32 = 0) const;
 
     // fileable
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
-    elle::Status	Erase(const elle::String&) const;
-    elle::Status	Exist(const elle::String&) const;
+    elle::Status	Load();
+    elle::Status	Store() const;
+    elle::Status	Erase() const;
+    elle::Status	Exist() const;
 
     //
     // attributes
@@ -138,6 +143,12 @@ namespace lune
 	elle::Character		slab;
       }				indicator;
     }				history;
+
+    struct
+    {
+      elle::String		fuker;
+    }				fuse;
+
   };
 
 }

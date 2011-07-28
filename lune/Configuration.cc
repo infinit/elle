@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [mon jul  4 15:59:19 2011]
+// updated       julien quintard   [wed jul 27 09:08:56 2011]
 //
 
 //
@@ -18,6 +18,8 @@
 #include <lune/Configuration.hh>
 
 #include <lune/Lune.hh>
+
+#include <pig/PIG.hh>
 
 namespace lune
 {
@@ -56,6 +58,9 @@ namespace lune
     '@';
   const elle::Character	Configuration::Default::History::Indicator::Slab =
     '%';
+
+  const elle::String	Configuration::Default::FUSE::FUker =
+    pig::FUker::TypeSequential;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -116,6 +121,11 @@ namespace lune
     if (elle::Settings::Set(
 	  "history", "indicator.slab",
 	  this->history.indicator.slab) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "fuse", "fuker",
+	  this->fuse.fuker) == elle::StatusError)
       escape("unable to update the parameter");
 
     leave();
@@ -189,6 +199,12 @@ namespace lune
 	elle::StatusError)
       escape("unable to update the parameter");
 
+    if (elle::Settings::Get(
+	  "fuse", "fuker",
+	  this->fuse.fuker,
+	  Configuration::Default::FUSE::FUker) == elle::StatusError)
+      escape("unable to update the parameter");
+
     leave();
   }
 
@@ -233,19 +249,15 @@ namespace lune
   ///
   /// this method loads the system's configuration file.
   ///
-  elle::Status		Configuration::Load(const elle::String& name)
+  elle::Status		Configuration::Load()
   {
     elle::Path		path;
 
     enter();
 
     // create the path.
-    if (path.Create(Lune::User::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::StatusError)
       escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
-      escape("unable to complete the path");
 
     // call the setting's method.
     if (elle::Settings::Load(path) == elle::StatusError)
@@ -257,19 +269,15 @@ namespace lune
   ///
   /// this method stores the configuration.
   ///
-  elle::Status		Configuration::Store(const elle::String& name) const
+  elle::Status		Configuration::Store() const
   {
     elle::Path		path;
 
     enter();
 
     // create the path.
-    if (path.Create(Lune::User::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::StatusError)
       escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
-      escape("unable to complete the path");
 
     // call the setting's method.
     if (elle::Settings::Store(path) == elle::StatusError)
@@ -281,19 +289,15 @@ namespace lune
   ///
   /// this method erases the configuration.
   ///
-  elle::Status		Configuration::Erase(const elle::String& name) const
+  elle::Status		Configuration::Erase() const
   {
     elle::Path		path;
 
     enter();
 
     // create the path.
-    if (path.Create(Lune::User::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::StatusError)
       escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
-      escape("unable to complete the path");
 
     // erase the file.
     if (elle::File::Erase(path) == elle::StatusError)
@@ -305,19 +309,15 @@ namespace lune
   ///
   /// this method tests the configuration.
   ///
-  elle::Status		Configuration::Exist(const elle::String& name) const
+  elle::Status		Configuration::Exist() const
   {
     elle::Path		path;
 
     enter();
 
     // create the path.
-    if (path.Create(Lune::User::Configuration) == elle::StatusError)
+    if (path.Create(Lune::Configuration) == elle::StatusError)
       escape("unable to create the path");
-
-    // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", name)) == elle::StatusError)
-      escape("unable to complete the path");
 
     // test the file.
     if (elle::File::Exist(path) == elle::StatusFalse)
