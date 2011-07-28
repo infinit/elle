@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [mon jul 11 15:47:46 2011]
+// updated       julien quintard   [thu jul 21 09:21:46 2011]
 //
 
 //
@@ -40,11 +40,6 @@ namespace agent
   /// this variable represents the user subject.
   ///
   nucleus::Subject		Agent::Subject;
-
-  ///
-  /// this variable contains the system configuration
-  ///
-  lune::Configuration		Agent::Configuration;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -116,19 +111,6 @@ namespace agent
       // create the subject.
       if (Agent::Subject.Create(Agent::Identity.pair.K) == elle::StatusError)
 	escape("unable to create the user's subject");
-    }
-
-    //
-    // load the configuration.
-    //
-    {
-      // load the configuration file.
-      if (Agent::Configuration.Load(name) == elle::StatusError)
-	escape("unable to load the configuration");
-
-      // pull the parameters.
-      if (Agent::Configuration.Pull() == elle::StatusError)
-	escape("unable to pull the configuration parameters");
     }
 
     // enable the meta logging.
