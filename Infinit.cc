@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.cc
 //
 // created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [thu jul 21 09:17:21 2011]
+// updated       julien quintard   [mon aug  1 10:23:27 2011]
 //
 
 //
@@ -68,6 +68,10 @@ elle::Status		Infinit::Initialize()
 {
   enter();
 
+  // disable the meta logging.
+  if (elle::Meta::Disable() == elle::StatusError)
+    escape("unable to disable the meta logging");
+
   //
   // create the autority.
   //
@@ -95,6 +99,10 @@ elle::Status		Infinit::Initialize()
     if (Infinit::Configuration.Pull() == elle::StatusError)
       escape("unable to pull the configuration parameters");
   }
+
+  // enable the meta logging.
+  if (elle::Meta::Enable() == elle::StatusError)
+    escape("unable to enable the meta logging");
 
   leave();
 }

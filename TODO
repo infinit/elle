@@ -1,22 +1,9 @@
+- ajouter un check qui dit: l'actor Discard mais si modifs performed -> ERROR
 - virer diary/ de pig et mettre dans 8diary. si lance avec option
   infinit, on link avec infinit et on bande.
+- note that the data modifications should probably update the object's data as well such as the size, timestamps etc. so that, say, a file being opened, modified and reopened in order to get the current size returns the new size instead of the "current" one. => quand on fait un Information, si data have been modified, make it consistent
 
-Scope::Load -> scope
-new Actor -> actor
-actor->Create(); // -> new ID
-scope->Attach(actor);
-[...]
-scope->Detach(actor);
-scope->Store()
-
-
-operation quelconque: ID
-XXX
-
-
-il faut pouvoir:
-- recuperer un actor a partir de son ID => container d'actors (Gear)
-- recuperer un scope a partir de son chemin => container de scopes (Gear)
+- copier tous les PROJECTS (linux inclus) -> segfault => en fait c'est linux
 
 #
 # ---------- long-term --------------------------------------------------------
