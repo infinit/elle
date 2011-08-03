@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Crux.cc
 //
 // created       julien quintard   [tue jun 28 12:46:13 2011]
-// updated       julien quintard   [sat jul  2 13:58:07 2011]
+// updated       julien quintard   [sun jul 31 13:32:47 2011]
 //
 
 //

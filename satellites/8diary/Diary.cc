@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Diary.cc
 //
 // created       julien quintard   [mon jun 27 22:38:51 2011]
-// updated       julien quintard   [sat jul  9 19:19:46 2011]
+// updated       julien quintard   [sun jul 31 13:32:29 2011]
 //
 
 //
@@ -284,7 +284,7 @@ namespace application
 		 to) == elle::StatusError))
 	    escape("unable to retrieve the to value");
 
-	      // replay the diary.
+	  // replay the diary.
 	  if (diary.Replay(from, to) == elle::StatusError)
 	    escape("unable to replay the diary");
 
