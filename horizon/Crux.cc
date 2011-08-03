@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [thu jul 28 16:10:02 2011]
+// updated       julien quintard   [wed aug  3 19:00:34 2011]
 //
 
 //
@@ -57,7 +57,7 @@ namespace pig
   ///
   /// this constant holds the number of directory entries to retrieve at once.
   ///
-  const nucleus::Size			Crux::Range = 32;
+  const nucleus::Size			Crux::Range = 256;
 
 //
 // ---------- callbacks -------------------------------------------------------
@@ -182,9 +182,6 @@ namespace pig
 
     // set the size.
     stat->st_size = (off_t)information.size;
-
-    // XXX
-    printf("SIZE(%qu)\n", (off_t)stat->st_size);
 
     // convert the times into time_t structures.
     stat->st_atime = time(NULL);
@@ -429,7 +426,14 @@ namespace pig
 
 	    // fill the buffer with filler().
 	    if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
-	      return (0);
+	      {
+		if (Infinit::Configuration.debug.pig == true)
+		  printf("[/pig] %s(%s, %p, %p, %qu, %p)\n",
+			 __FUNCTION__,
+			 path, buffer, filler, offset, info);
+
+		return (0);
+	      }
 
 	    // compute the offset of the next entry.
 	    next++;
@@ -1300,7 +1304,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	file;
-    nucleus::Permissions	permissions;
+    nucleus::Permissions	permissions = nucleus::PermissionNone;
 
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o, %p)\n",

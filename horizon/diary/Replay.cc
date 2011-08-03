@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.cc
 //
 // created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [tue jul 19 20:18:54 2011]
+// updated       julien quintard   [wed aug  3 18:10:00 2011]
 //
 
 //
@@ -50,7 +50,7 @@ namespace pig
     /// this timer is required in order to wait for program's loop to
     /// start.
     ///
-    elle::Timer				Replay::Timer;
+    elle::Timer*			Replay::Timer = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -146,7 +146,7 @@ namespace pig
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
-	fail("unable to retrieve the file information");
+	escape("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.fgetattr(
 	      inputs.path.c_str(),
@@ -259,7 +259,7 @@ namespace pig
       identifier = _fi->fh;
 
       if (Live::Add(identifier, fi->fh) == elle::StatusError)
-	fail("unable to add the file information");
+	escape("unable to add the file information");
 
       leave();
     }
@@ -301,9 +301,9 @@ namespace pig
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
-	fail("unable to retrieve the file information");
+	escape("unable to retrieve the file information");
 
-      /* XXX
+      /* XXX implement a filler-like function which must be passed
       res = Replay::Reference->fuse.readdir(
 	      inputs.path.c_str(),
 	      fi);
@@ -352,7 +352,7 @@ namespace pig
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
-	fail("unable to retrieve the file information");
+	escape("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.releasedir(
 	      inputs.path.c_str(),
@@ -366,7 +366,7 @@ namespace pig
 	       res, upcall.result);
 
       if (Live::Remove(identifier) == elle::StatusError)
-	fail("unable to remove the file information");
+	escape("unable to remove the file information");
 
       leave();
     }
@@ -836,7 +836,7 @@ namespace pig
       identifier = _fi->fh;
 
       if (Live::Add(identifier, fi->fh) == elle::StatusError)
-	fail("unable to add the file information");
+	escape("unable to add the file information");
 
       leave();
     }
@@ -886,7 +886,7 @@ namespace pig
       identifier = _fi->fh;
 
       if (Live::Add(identifier, fi->fh) == elle::StatusError)
-	fail("unable to add the file information");
+	escape("unable to add the file information");
 
       leave();
     }
@@ -934,7 +934,7 @@ namespace pig
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
-	fail("unable to retrieve the file information");
+	escape("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.write(
 	      inputs.path.c_str(),
@@ -942,48 +942,6 @@ namespace pig
 	      (size_t)inputs.size,
 	      (off_t)inputs.off,
 	      fi);
-
-      // XXX
-      printf("----------------------------------------------------\n");
-      if (inputs.path == "/fuse-2.8.3/conftest.err")
-      {
-	char		b[inputs.size];
-
-	printf("[conftest.err] path(%s) size(%u) offset(%qu) handle(%d)\n",
-	       inputs.path.c_str(),
-	       (size_t)inputs.size,
-	       (off_t)inputs.off,
-	       (int)fi->fh);
-
-	char buffer[4096];
-	memset(buffer, 0x0, sizeof(buffer));
-
-	/*
-	int fd;
-	int r;
-
-	if ((fd = open("/tmp/XXX/fuse-2.8.3/conftest.err", O_RDONLY)) == -1)
-	  escape("XXX open");
-
-	if ((r = pread(fd, buffer, sizeof(buffer), 0)) == -1)
-	  escape("XXX pread");
-
-	close(fd);
-	*/
-
-	printf("-> %s\n", buffer);
-
-	/*
-	  Replay::Reference->fuse.read(
-	  inputs.path.c_str(),
-	  (char*)inputs.buf.contents,
-	  (size_t)inputs.size,
-	  (off_t)inputs.off,
-	  fi);
-	*/
-      }
-      printf("----------------------------------------------------\n");
-      // XXX
 
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
@@ -1038,7 +996,7 @@ namespace pig
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
-	fail("unable to retrieve the file information");
+	escape("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.read(
 	      inputs.path.c_str(),
@@ -1133,7 +1091,7 @@ namespace pig
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
-	fail("unable to retrieve the file information");
+	escape("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.ftruncate(
 	      inputs.path.c_str(),
@@ -1181,7 +1139,7 @@ namespace pig
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::StatusError)
-	fail("unable to retrieve the file information");
+	escape("unable to retrieve the file information");
 
 #include <elle/idiom/Close.hh>
       res = Replay::Reference->fuse.release(
@@ -1197,7 +1155,7 @@ namespace pig
 	       res, upcall.result);
 
       if (Live::Remove(identifier) == elle::StatusError)
-	fail("unable to remove the file information");
+	escape("unable to remove the file information");
 
       leave();
     }
@@ -1293,16 +1251,19 @@ namespace pig
       Replay::From = from;
       Replay::To = to;
 
+      // allocate the timer.
+      Replay::Timer = new elle::Timer;
+
       // create the timer which will start the replaying process.
-      if (Replay::Timer.Create(elle::Timer::ModeSingle,
-			       callback) == elle::StatusError)
+      if (Replay::Timer->Create(elle::Timer::ModeSingle,
+				callback) == elle::StatusError)
 	escape("unable to create the timer");
 
       // start the timer.
       //
       // note that the timer is started immediately so that as soon as
       // the program enters its event loop, the timer is launched.
-      if (Replay::Timer.Start(0) == elle::StatusError)
+      if (Replay::Timer->Start(0) == elle::StatusError)
 	escape("unable to start the timer");
 
       leave();
@@ -1327,7 +1288,7 @@ namespace pig
 
 	  // retrieve the upcall.
 	  if (Replay::Reference->Read(upcall) == elle::StatusError)
-	    escape("unable to read the upcall");
+	    goto _error;
 	}
 
       // then go through the remaining upcalls up to 'to'.
@@ -1340,11 +1301,12 @@ namespace pig
 
 	  // retrieve the upcall.
 	  if (Replay::Reference->Read(upcall) == elle::StatusError)
-	    escape("unable to read the upcall");
+	    goto _error;
 
-	  // XXX
-	  printf("n(%u) :: opcode(%u)\n",
-		 i, upcall.operation);
+	  // log the upcall.
+	  log("[Replay] index(%u) opcode(%u)\n",
+	      i,
+	      upcall.operation);
 
 	  // forward the call to a specific method depending on
 	  // the operation code.
@@ -1354,7 +1316,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Getattr(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1362,7 +1324,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Fgetattr(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1370,7 +1332,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Utimens(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1378,7 +1340,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Opendir(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1386,7 +1348,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Readdir(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1394,7 +1356,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Releasedir(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1402,7 +1364,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Mkdir(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1410,7 +1372,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Rmdir(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1418,7 +1380,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Access(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1426,7 +1388,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Chmod(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1434,7 +1396,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Chown(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1442,7 +1404,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Setxattr(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1450,7 +1412,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Getxattr(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1458,7 +1420,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Listxattr(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1466,7 +1428,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Removexattr(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1474,7 +1436,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Symlink(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1482,7 +1444,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Readlink(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1490,7 +1452,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Create(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1498,7 +1460,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Open(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1506,7 +1468,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Write(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1514,7 +1476,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Read(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1522,7 +1484,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Truncate(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1530,7 +1492,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Ftruncate(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1538,7 +1500,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Release(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1546,7 +1508,7 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Rename(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
@@ -1554,20 +1516,23 @@ namespace pig
 	      {
 		// call the method.
 		if (Replay::Unlink(upcall) == elle::StatusError)
-		  escape("an error occured in the replay method");
+		  goto _error;
 
 		break;
 	      }
 	    default:
 	      {
-		escape("unknown operation code");
+		report("unknown operation code '%u'",
+		       upcall.operation);
+
+		goto _error;
 	      }
 	    }
 	}
 
+    _error:
       // exit the program.
-      if (elle::Program::Exit() == elle::StatusError)
-	escape("unable to exit the program");
+      elle::Program::Exit();
 
       leave();
     }
@@ -1578,6 +1543,10 @@ namespace pig
     elle::Status	Replay::Clean()
     {
       enter();
+
+      // delete the timer.
+      if (Replay::Timer != NULL)
+	delete Replay::Timer;
 
       // reset the diary pointer.
       Replay::Reference = NULL;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.cc
 //
 // created       julien quintard   [sun jun 26 22:48:13 2011]
-// updated       julien quintard   [tue jul 12 07:14:36 2011]
+// updated       julien quintard   [tue aug  2 11:53:17 2011]
 //
 
 //
@@ -109,6 +109,12 @@ namespace pig
       if (Record::Launch(mountpoint) == elle::StatusError)
 	escape("unable to launch the record");
 
+      /* XXX
+      // clean the record.
+      if (Record::Clean() == elle::StatusError)
+	escape("unable to clean the record");
+      */
+
       leave();
     }
 
@@ -134,6 +140,12 @@ namespace pig
       // launch the replay.
       if (Replay::Launch(from, to) == elle::StatusError)
 	escape("unable to launch the replay");
+
+      /* XXX bordel: le replay revient, appelle clean -> ca se lance pas
+      // clean the replay.
+      if (Replay::Clean() == elle::StatusError)
+	escape("unable to clean the replay");
+      */
 
       leave();
     }
