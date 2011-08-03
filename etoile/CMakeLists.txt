@@ -17,6 +17,7 @@ ADD_LIBRARY(etoile
 #  depot/Unit.cc
 
   gear/Action.cc
+  gear/Actor.cc
   gear/Chronicle.cc
   gear/Context.cc
   gear/Directory.cc
@@ -53,4 +54,4 @@ ADD_LIBRARY(etoile
   Etoile.cc
 )
 
-TARGET_LINK_LIBRARIES(etoile elle nucleus lune)
+TARGET_LINK_LIBRARIES(etoile elle nucleus lune agent)

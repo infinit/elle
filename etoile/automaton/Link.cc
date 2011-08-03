@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Link.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [sat jun 25 14:33:25 2011]
+// updated       julien quintard   [mon aug  1 13:23:35 2011]
 //
 
 //
@@ -41,6 +41,10 @@ namespace etoile
 
       enter();
 
+      // return an error if the context has already been manipulated.
+      if (context.state != gear::StateUnknown)
+	escape("unable to create a link from a non-virgin context");
+
       // create the link.
       if (context.object.Create(
 	    nucleus::GenreLink,
@@ -55,6 +59,9 @@ namespace etoile
       if (context.location.Create(address) == elle::StatusError)
 	escape("unable to create the location");
 
+      // set the context's state.
+      context.state = gear::StateInitialized;
+
       leave();
     }
 
@@ -68,6 +75,10 @@ namespace etoile
     {
       enter();
 
+      // return if the context has already been loaded.
+      if (context.state != gear::StateUnknown)
+	leave();
+
       // load the object.
       if (Object::Load(context, location) == elle::StatusError)
 	escape("unable to fetch the object");
@@ -75,6 +86,9 @@ namespace etoile
       // check that the object is a link.
       if (context.object.meta.genre != nucleus::GenreLink)
 	escape("this object does not seem to be a link");
+
+      // set the context's state.
+      context.state = gear::StateInitialized;
 
       leave();
     }
@@ -104,6 +118,9 @@ namespace etoile
       // bind the link.
       if (context.contents->content->Bind(way.path) == elle::StatusError)
 	escape("unable to bind the link");
+
+      // set the context's state.
+      context.state = gear::StateModified;
 
       leave();
     }
@@ -167,6 +184,9 @@ namespace etoile
       if (Object::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the object");
 
+      // set the context's state.
+      context.state = gear::StateDestroyed;
+
       leave();
     }
 
@@ -186,6 +206,9 @@ namespace etoile
       // store the object-related information.
       if (Object::Store(context) == elle::StatusError)
 	escape("unable to store the object");
+
+      // set the context's state.
+      context.state = gear::StateStored;
 
       leave();
     }

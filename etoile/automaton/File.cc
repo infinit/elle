@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/File.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [wed jul 13 19:57:00 2011]
+// updated       julien quintard   [mon aug  1 13:29:31 2011]
 //
 
 //
@@ -41,6 +41,10 @@ namespace etoile
 
       enter();
 
+      // return an error if the context has already been manipulated.
+      if (context.state != gear::StateUnknown)
+	escape("unable to create a file from a non-virgin context");
+
       // create the file.
       if (context.object.Create(
 	    nucleus::GenreFile,
@@ -54,6 +58,9 @@ namespace etoile
       // create the context's location with an initial version number.
       if (context.location.Create(address) == elle::StatusError)
 	escape("unable to create the location");
+
+      // set the context's state.
+      context.state = gear::StateInitialized;
 
       leave();
     }
@@ -69,6 +76,10 @@ namespace etoile
     {
       enter();
 
+      // return if the context has already been loaded.
+      if (context.state != gear::StateUnknown)
+	leave();
+
       // load the object.
       if (Object::Load(context, location) == elle::StatusError)
 	escape("unable to fetch the object");
@@ -76,6 +87,9 @@ namespace etoile
       // check that the object is a file.
       if (context.object.meta.genre != nucleus::GenreFile)
 	escape("this object does not seem to be a file");
+
+      // set the context's state.
+      context.state = gear::StateInitialized;
 
       leave();
     }
@@ -103,15 +117,13 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
-      // XXX
-      //printf("------- Write size(%qu) to data of size(%qu)\n",
-      //region.size,
-      //context.contents->content->region.size);
-
       // write the file.
       if (context.contents->content->Write(offset,
 					   region) == elle::StatusError)
 	escape("unable to write the file");
+
+      // set the context's state.
+      context.state = gear::StateModified;
 
       leave();
     }
@@ -175,6 +187,9 @@ namespace etoile
       if (context.contents->content->Adjust(size) == elle::StatusError)
 	escape("unable to adjust the file size");
 
+      // set the context's state.
+      context.state = gear::StateModified;
+
       leave();
     }
 
@@ -208,6 +223,9 @@ namespace etoile
       if (Object::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the object");
 
+      // set the context's state.
+      context.state = gear::StateDestroyed;
+
       leave();
     }
 
@@ -227,6 +245,9 @@ namespace etoile
       // store the object-related information.
       if (Object::Store(context) == elle::StatusError)
 	escape("unable to store the object");
+
+      // set the context's state.
+      context.state = gear::StateStored;
 
       leave();
     }

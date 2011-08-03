@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Context.hxx
 //
 // created       julien quintard   [fri jun 24 12:25:31 2011]
-// updated       julien quintard   [fri jun 24 13:17:30 2011]
+// updated       julien quintard   [fri jul 29 14:35:48 2011]
 //
 
 #ifndef ETOILE_GEAR_CONTEXT_HXX
@@ -20,24 +20,27 @@ namespace etoile
   {
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- types -----------------------------------------------------------
 //
 
     ///
-    /// this method returns the context by checking that it complies
-    /// with the required type.
+    /// this base template allows for specialized-template.
     ///
-    template <typename T>
-    elle::Status	Context::Cast(T*&			context)
+    template <const Nature N>
+    struct ContextType
     {
-      enter();
+    };
 
-      // dynamic cast the context into the given type.
-      if ((context = dynamic_cast<T*>(this)) == NULL)
-	escape("unable to cast the context into the given type");
-
-      leave();
-    }
+    ///
+    /// this macro-function links the type to the enum value in a simple
+    /// call.
+    ///
+#define ContextDeclare(_type_)						\
+  template <>								\
+  struct ContextType<Nature ## _type_>					\
+  {									\
+    typedef _type_				T;			\
+  };
 
   }
 }

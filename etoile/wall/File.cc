@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [wed jul  6 11:33:37 2011]
+// updated       julien quintard   [mon aug  1 13:23:54 2011]
 //
 
 //
@@ -47,31 +47,36 @@ namespace etoile
     {
       gear::Scope*	scope;
       gear::File*	context;
+      gear::Actor*	actor;
 
-      enter(instance(scope));
+      enter(instance(actor));
 
       printf("[XXX] File::Create()\n");
 
-      // allocate the scope.
-      scope = new gear::Scope(gear::NatureFile);
+      // acquire the scope.
+      if (gear::Scope::Supply(scope) == elle::StatusError)
+	escape("unable to supply the scope");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (scope->Use<gear::NatureFile>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
+
+      // allocate an actor.
+      actor = new gear::Actor(scope);
+
+      // attach the actor to the scope.
+      if (actor->Attach() == elle::StatusError)
+	escape("unable to attach the actor to the scope");
+
+      // return the identifier.
+      identifier = actor->identifier;
+
+      // waive the actor.
+      waive(actor);
 
       // apply the create automaton on the context.
       if (automaton::File::Create(*context) == elle::StatusError)
 	escape("unable to create the file");
-
-      // export the scope.
-      if (scope->Export() == elle::StatusError)
-	escape("unable to export the context");
-
-      // return the identifier.
-      identifier = scope->identifier;
-
-      // waive.
-      waive(scope);
 
       leave();
     }
@@ -86,18 +91,33 @@ namespace etoile
     {
       gear::Scope*	scope;
       gear::File*	context;
+      gear::Actor*	actor;
       nucleus::Location	location;
 
-      enter(instance(scope));
+      enter(instance(actor));
 
       printf("[XXX] File::Load()\n");
 
-      // allocate the scope.
-      scope = new gear::Scope(gear::NatureFile);
+      // acquire the scope.
+      if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
+	escape("unable to acquire the scope");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (scope->Use<gear::NatureFile>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
+
+      // allocate an actor.
+      actor = new gear::Actor(scope);
+
+      // attach the actor to the scope.
+      if (actor->Attach() == elle::StatusError)
+	escape("unable to attach the actor to the scope");
+
+      // return the identifier.
+      identifier = actor->identifier;
+
+      // waive the actor.
+      waive(actor);
 
       // locate the object based on the chemin.
       if (chemin.Locate(location) == elle::StatusError)
@@ -107,16 +127,6 @@ namespace etoile
       if (automaton::File::Load(*context,
 				location) == elle::StatusError)
 	escape("unable to load the file");
-
-      // export the scope.
-      if (scope->Export() == elle::StatusError)
-	escape("unable to export the context");
-
-      // return the identifier.
-      identifier = scope->identifier;
-
-      // waive.
-      waive(scope);
 
       leave();
     }
@@ -162,19 +172,19 @@ namespace etoile
 			  const nucleus::Offset&		offset,
 			  const elle::Region&			region)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::File*	context;
 
       enter();
 
       printf("[XXX] File::Write()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the write automaton on the context.
@@ -195,19 +205,19 @@ namespace etoile
 			  const nucleus::Size&			size,
 			  elle::Region&				region)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::File*	context;
 
       enter();
 
       printf("[XXX] File::Read()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the read automaton on the context.
@@ -227,19 +237,19 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  const nucleus::Size&			size)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::File*	context;
 
       enter();
 
       printf("[XXX] File::Adjust()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the adjust automaton on the context.
@@ -257,22 +267,33 @@ namespace etoile
     elle::Status	File::Discard(
 			  const gear::Identifier&		identifier)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
 
-      enter();
+      enter(instance(actor));
 
       printf("[XXX] File::Discard()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
-      // import the scope, making it unusable through its identifier.
-      if (scope->Import() == elle::StatusError)
-	escape("unable to import the scope");
+      // specify the closing operation performed on the scope.
+      if (actor->scope->Operate(gear::OperationDiscard) == elle::StatusError)
+	escape("unable to specify the operation being performed on the scope");
 
-      // delete the scope.
-      delete scope;
+      // detach the actor.
+      if (actor->Detach() == elle::StatusError)
+	escape("unable to detach the actor from the scope");
+
+      // relinquish the scope.
+      if (gear::Scope::Relinquish(actor->scope) == elle::StatusError)
+	escape("unable to relinquish the scope");
+
+      // delete the actor.
+      delete actor;
+
+      // waive actor.
+      waive(actor);
 
       leave();
     }
@@ -284,32 +305,42 @@ namespace etoile
     elle::Status	File::Store(
 			  const gear::Identifier&		identifier)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::File*	context;
 
-      enter();
+      enter(instance(actor));
 
       printf("[XXX] File::Store()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
+
+      // specify the closing operation performed on the scope.
+      if (actor->scope->Operate(gear::OperationStore) == elle::StatusError)
+	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
-
-      // import the scope, making it unusable through its identifier.
-      if (scope->Import() == elle::StatusError)
-	escape("unable to import the scope");
 
       // apply the store automaton on the context.
       if (automaton::File::Store(*context) == elle::StatusError)
-	escape("unable to store the file");
+	escape("unable to store the object");
+
+      // detach the actor.
+      if (actor->Detach() == elle::StatusError)
+	escape("unable to detach the actor from the scope");
 
       // record the scope in the journal.
-      if (journal::Journal::Record(scope) == elle::StatusError)
+      if (journal::Journal::Record(actor->scope) == elle::StatusError)
 	escape("unable to record the scope in the journal");
+
+      // delete the actor.
+      delete actor;
+
+      // waive actor.
+      waive(actor);
 
       leave();
     }
@@ -320,32 +351,42 @@ namespace etoile
     elle::Status	File::Destroy(
 			  const gear::Identifier&		identifier)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::File*	context;
 
-      enter();
+      enter(instance(actor));
 
       printf("[XXX] File::Destroy()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
+
+      // specify the closing operation performed on the scope.
+      if (actor->scope->Operate(gear::OperationDestroy) == elle::StatusError)
+	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
-
-      // import the scope, making it unusable through its identifier.
-      if (scope->Import() == elle::StatusError)
-	escape("unable to import the scope");
 
       // apply the destroy automaton on the context.
       if (automaton::File::Destroy(*context) == elle::StatusError)
-	escape("unable to destroy the file");
+	escape("unable to destroy the object");
+
+      // detach the actor.
+      if (actor->Detach() == elle::StatusError)
+	escape("unable to detach the actor from the scope");
 
       // record the scope in the journal.
-      if (journal::Journal::Record(scope) == elle::StatusError)
+      if (journal::Journal::Record(actor->scope) == elle::StatusError)
 	escape("unable to record the scope in the journal");
+
+      // delete the actor.
+      delete actor;
+
+      // waive actor.
+      waive(actor);
 
       leave();
     }

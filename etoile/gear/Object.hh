@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Object.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [thu jul 21 09:46:52 2011]
+// updated       julien quintard   [fri jul 29 14:31:57 2011]
 //
 
 #ifndef ETOILE_GEAR_OBJECT_HH
@@ -69,11 +69,6 @@ namespace etoile
     {
     public:
       //
-      // constants
-      //
-      static const Nature		N = NatureObject;
-
-      //
       // constructors & destructors
       //
       Object();
@@ -111,5 +106,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <etoile/gear/Object.hxx>
 
 #endif

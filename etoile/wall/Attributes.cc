@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [mon jul  4 15:43:46 2011]
+// updated       julien quintard   [fri jul 29 15:03:24 2011]
 //
 
 //
@@ -41,19 +41,19 @@ namespace etoile
 			  const elle::String&			name,
 			  const elle::String&			value)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Attributes::Set()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the set automaton on the context.
@@ -74,19 +74,19 @@ namespace etoile
 			  const elle::String&			name,
 			  nucleus::Trait*&			trait)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Attributes::Get()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the get automaton on the context.
@@ -105,19 +105,19 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  nucleus::Range<nucleus::Trait>&	range)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Attributes::Fetch()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the fetch automaton on the context.
@@ -135,19 +135,19 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  const elle::String&			name)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Attributes::Omit()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the omit automaton on the context.

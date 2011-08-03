@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Chemin.cc
 //
 // created       julien quintard   [tue jun 14 22:25:57 2011]
-// updated       julien quintard   [thu jun 23 09:11:10 2011]
+// updated       julien quintard   [sat jul 30 17:16:14 2011]
 //
 
 //
@@ -21,6 +21,26 @@ namespace etoile
 {
   namespace path
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this defines a null chemin.
+    ///
+    const Chemin			Chemin::Null;
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Chemin::Chemin()
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -82,6 +102,24 @@ namespace etoile
 	false();
 
       true();
+    }
+
+    ///
+    /// this operator compares two objects.
+    ///
+    elle::Boolean	Chemin::operator<(const Chemin&		element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	false();
+
+      // compare the route only.
+      if (this->route < element.route)
+	true();
+
+      false();
     }
 
     ///

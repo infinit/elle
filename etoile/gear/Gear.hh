@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.hh
 //
 // created       julien quintard   [fri jun  3 10:58:40 2011]
-// updated       julien quintard   [thu jul 28 12:46:21 2011]
+// updated       julien quintard   [fri jul 29 14:28:30 2011]
 //
 
 #ifndef ETOILE_GEAR_GEAR_HH
@@ -44,63 +44,12 @@ namespace etoile
     class Gear
     {
     public:
-      //
-      // types
-      //
-      struct C
-      {
-	typedef std::map<const path::Chemin,
-			 const Identifier>		Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
-
-      struct S
-      {
-	typedef std::map<const Identifier,
-			 Scope*>			Container;
-	typedef Container::iterator			Iterator;
-	typedef Container::const_iterator		Scoutor;
-      };
-
-      //
-      // static methods
-      //
-
-      // XXX to do these two!
-      template <typename T>
-      static elle::Status	New(const path::Chemin&,
-				    T*&);
-      template <typename T>
-      static elle::Status	Delete(T*);
-
-      static elle::Status	Add(const Identifier&,
-				    Scope*);
-      static elle::Status	Remove(const Identifier&);
-
-      static elle::Status	Select(const Identifier&,
-				       Scope*&);
-
       static elle::Status	Initialize();
       static elle::Status	Clean();
-
-      static elle::Status	Show(const elle::Natural32 = 0);
-
-      //
-      // static attributes
-      //
-      static C::Container	Chemins;
-      static S::Container	Scopes;
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <etoile/gear/Gear.hxx>
 
 //
 // ---------- includes --------------------------------------------------------

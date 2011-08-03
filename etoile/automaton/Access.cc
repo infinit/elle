@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Access.cc
 //
 // created       julien quintard   [mon jun 20 14:59:09 2011]
-// updated       julien quintard   [mon jul  4 16:29:30 2011]
+// updated       julien quintard   [mon aug  1 13:17:06 2011]
 //
  
 //
@@ -157,6 +157,9 @@ namespace etoile
 	  if (Rights::Update(context, permissions) == elle::StatusError)
 	    escape("unable to update the rigths");
 	}
+
+      // set the context's state.
+      context.state = gear::StateModified;
 
       leave();
     }
@@ -345,6 +348,9 @@ namespace etoile
 	    escape("unable to update the rigths");
 	}
 
+      // set the context's state.
+      context.state = gear::StateModified;
+
       leave();
     }
 
@@ -412,6 +418,9 @@ namespace etoile
 	    escape("unable to recompute the rights");
 	}
 
+      // set the context's state.
+      context.state = gear::StateModified;
+
       leave();
     }
 
@@ -448,6 +457,9 @@ namespace etoile
 	  if (Rights::Recompute(context) == elle::StatusError)
 	    escape("unable to recompute the rights");
 	}
+
+      // set the context's state.
+      context.state = gear::StateModified;
 
       leave();
     }

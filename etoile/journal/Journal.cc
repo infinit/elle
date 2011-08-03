@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [fri jun 24 14:23:50 2011]
-// updated       julien quintard   [fri jul  8 12:26:51 2011]
+// updated       julien quintard   [mon aug  1 13:28:24 2011]
 //
 
 //
@@ -40,6 +40,12 @@ namespace etoile
 
       enter();
 
+      // first, if actors are still operating on the scope, delay the
+      // journal processing.
+      if (scope->actors.empty() == false)
+	leave();
+
+      // go through the transcript's actions.
       for (scoutor = scope->context->transcript.container.begin();
 	   scoutor != scope->context->transcript.container.end();
 	   scoutor++)
@@ -73,8 +79,16 @@ namespace etoile
 	    }
 	}
 
-      // delete the scope.
-      delete scope;
+      // clear the transcript since the actions have been performed.
+      if (scope->context->transcript.Clear() == elle::StatusError)
+	escape("unable to clear the transcript");
+
+      // set the context's state.
+      scope->context->state = gear::StateCleaned;
+
+      // relinquish the scope.
+      if (gear::Scope::Relinquish(scope) == elle::StatusError)
+	escape("unable to relinquish the scope");
 
       leave();
     }

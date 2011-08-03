@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transcript.cc
 //
 // created       julien quintard   [wed jun 22 13:49:40 2011]
-// updated       julien quintard   [wed jul  6 11:32:36 2011]
+// updated       julien quintard   [mon aug  1 10:53:37 2011]
 //
 
 //
@@ -88,6 +88,33 @@ namespace etoile
 
       // waive.
       waive(action);
+
+      leave();
+    }
+
+    ///
+    /// this method clears the transcript from the previously registered
+    /// actions.
+    ///
+    elle::Status	Transcript::Clear()
+    {
+      Transcript::Iterator	iterator;
+
+      enter();
+
+      // for every action.
+      for (iterator = this->container.begin();
+	   iterator != this->container.end();
+	   iterator++)
+	{
+	  Action*	action = *iterator;
+
+	  // delete the action.
+	  delete action;
+	}
+
+      // clear the container.
+      this->container.clear();
 
       leave();
     }

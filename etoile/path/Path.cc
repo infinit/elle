@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [tue jul 26 19:54:54 2011]
+// updated       julien quintard   [mon aug  1 13:37:06 2011]
 //
 
 //
@@ -144,6 +144,9 @@ namespace etoile
 	    escape("unable to create the location");
 
 	  // XXX it could be a Link rather than a Directory!
+	  // XXX it therefore appears that PIG always provides absolute
+	  // paths!
+	  // XXX handle links or state that it cannot accept non-absolute paths
 
 	  // fetch the directory.
 	  if (automaton::Directory::Load(context,

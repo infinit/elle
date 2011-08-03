@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Directory.cc
 //
 // created       julien quintard   [mon jun 20 13:22:27 2011]
-// updated       julien quintard   [sat jul  9 20:28:45 2011]
+// updated       julien quintard   [wed aug  3 17:45:29 2011]
 //
 
 //
@@ -41,6 +41,10 @@ namespace etoile
 
       enter();
 
+      // return an error if the context has already been manipulated.
+      if (context.state != gear::StateUnknown)
+	escape("unable to create a directory from a non-virgin context");
+
       // create the directory.
       if (context.object.Create(
 	    nucleus::GenreDirectory,
@@ -55,6 +59,9 @@ namespace etoile
       if (context.location.Create(address) == elle::StatusError)
 	escape("unable to create the location");
 
+      // set the context's state.
+      context.state = gear::StateInitialized;
+
       leave();
     }
 
@@ -68,6 +75,10 @@ namespace etoile
     {
       enter();
 
+      // return if the context has already been loaded.
+      if (context.state != gear::StateUnknown)
+	leave();
+
       // load the object.
       if (Object::Load(context, location) == elle::StatusError)
 	escape("unable to fetch the object");
@@ -75,6 +86,9 @@ namespace etoile
       // check that the object is a directory.
       if (context.object.meta.genre != nucleus::GenreDirectory)
 	escape("this object does not seem to be a directory");
+
+      // set the context's state.
+      context.state = gear::StateInitialized;
 
       leave();
     }
@@ -113,6 +127,9 @@ namespace etoile
 
       // stop tracking since the entry has been properly added to the catalog.
       waive(entry);
+
+      // set the context's state.
+      context.state = gear::StateModified;
 
       leave();
     }
@@ -187,9 +204,10 @@ namespace etoile
     ///
     /// this method renames a directory entry.
     ///
-    elle::Status	Directory::Rename(gear::Directory&	context,
-					  const path::Slice&	from,
-					  const path::Slice&	to)
+    elle::Status	Directory::Rename(
+			  gear::Directory&			context,
+			  const path::Slice&			from,
+			  const path::Slice&			to)
     {
       enter();
 
@@ -210,14 +228,18 @@ namespace etoile
       if (context.contents->content->Rename(from, to) == elle::StatusError)
 	escape("unable to rename the directory's entry");
 
+      // set the context's state.
+      context.state = gear::StateModified;
+
       leave();
     }
 
     ///
     /// this method removes a directory entry.
     ///
-    elle::Status	Directory::Remove(gear::Directory&	context,
-					  const path::Slice&	name)
+    elle::Status	Directory::Remove(
+			  gear::Directory&			context,
+			  const path::Slice&			name)
     {
       enter();
 
@@ -238,6 +260,9 @@ namespace etoile
       if (context.contents->content->Remove(name) == elle::StatusError)
 	escape("unable to remove the directory's entry");
 
+      // set the context's state.
+      context.state = gear::StateModified;
+
       leave();
     }
 
@@ -245,7 +270,8 @@ namespace etoile
     /// this method destroys the directory by marking all the blocks
     /// as dying for future removal.
     ///
-    elle::Status	Directory::Destroy(gear::Directory&	context)
+    elle::Status	Directory::Destroy(
+			  gear::Directory&			context)
     {
       enter();
 
@@ -270,6 +296,9 @@ namespace etoile
       if (Object::Destroy(context) == elle::StatusError)
 	escape("unable to destroy the object");
 
+      // set the context's state.
+      context.state = gear::StateDestroyed;
+
       leave();
     }
 
@@ -277,7 +306,8 @@ namespace etoile
     /// this method terminates the automaton by making the whole directory
     /// consistent according to the set of modifications having been performed.
     ///
-    elle::Status	Directory::Store(gear::Directory&	context)
+    elle::Status	Directory::Store(
+			  gear::Directory&			context)
     {
       enter();
 
@@ -288,6 +318,9 @@ namespace etoile
       // store the object-related information.
       if (Object::Store(context) == elle::StatusError)
 	escape("unable to store the object");
+
+      // set the context's state.
+      context.state = gear::StateStored;
 
       leave();
     }

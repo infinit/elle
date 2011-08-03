@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transcript.hh
 //
 // created       julien quintard   [fri jun 17 13:10:45 2011]
-// updated       julien quintard   [sat jun 25 13:40:05 2011]
+// updated       julien quintard   [sun jul 31 11:20:20 2011]
 //
 
 #ifndef ETOILE_GEAR_TRANSCRIPT_HH
@@ -57,6 +57,8 @@ namespace etoile
       elle::Status	Push(const nucleus::Address&,
 			     const nucleus::Block*);
       elle::Status	Wipe(const nucleus::Address&);
+
+      elle::Status	Clear();
 
       //
       // interfaces

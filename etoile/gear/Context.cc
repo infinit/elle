@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Context.cc
 //
 // created       julien quintard   [thu jun 16 10:37:02 2011]
-// updated       julien quintard   [fri jun 24 13:15:59 2011]
+// updated       julien quintard   [mon aug  1 13:12:13 2011]
 //
 
 //
@@ -30,7 +30,8 @@ namespace etoile
     /// default constructor.
     ///
     Context::Context(const Nature				nature):
-      nature(nature)
+      nature(nature),
+      state(StateUnknown)
     {
     }
 
@@ -50,9 +51,17 @@ namespace etoile
       // display the name.
       std::cout << alignment << "[Context] " << std::endl;
 
-      // display the family.
+      // display the nature.
       std::cout << alignment << elle::Dumpable::Shift << "[Nature] "
 		<< (elle::Natural32)this->nature << std::endl;
+
+      // display the state.
+      std::cout << alignment << elle::Dumpable::Shift << "[State] "
+		<< (elle::Natural32)this->state << std::endl;
+
+      // dump the transcript.
+      if (this->transcript.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the transcript");
 
       leave();
     }
@@ -69,8 +78,8 @@ namespace etoile
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize((elle::Natural8&)this->nature) ==
-	  elle::StatusError)
+      if (archive.Serialize((elle::Natural8&)this->nature,
+			    (elle::Natural8&)this->state) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -84,7 +93,8 @@ namespace etoile
       enter();
 
       // extract the attributes.
-      if (archive.Extract((elle::Natural8&)this->nature) == elle::StatusError)
+      if (archive.Extract((elle::Natural8&)this->nature,
+			  (elle::Natural8&)this->state) == elle::StatusError)
 	escape("unable to extract the attributes");
 
       leave();

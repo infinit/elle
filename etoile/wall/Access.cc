@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [mon jul  4 16:24:20 2011]
+// updated       julien quintard   [fri jul 29 15:04:17 2011]
 //
 
 //
@@ -42,19 +42,19 @@ namespace etoile
 			  const nucleus::Subject&		subject,
 			  nucleus::Record*&			record)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Access::Lookup()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the lookup automaton on the context.
@@ -75,19 +75,19 @@ namespace etoile
 			  const nucleus::Size&			size,
 			  nucleus::Range<nucleus::Record>&	range)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Access::Consult()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the consult automaton on the context.
@@ -108,19 +108,19 @@ namespace etoile
 			  const nucleus::Subject&		subject,
 			  const nucleus::Permissions&		permissions)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Access::Grant()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the grant automaton on the context.
@@ -140,19 +140,19 @@ namespace etoile
 			  const gear::Identifier&		identifier,
 			  const nucleus::Subject&		subject)
     {
-      gear::Scope*	scope;
+      gear::Actor*	actor;
       gear::Object*	context;
 
       enter();
 
       printf("[XXX] Access::Revoke()\n");
 
-      // select the scope associated with the identifier.
-      if (gear::Gear::Select(identifier, scope) == elle::StatusError)
-	escape("unable to select the scope");
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
 
       // retrieve the context.
-      if (scope->context->Cast(context) == elle::StatusError)
+      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the revoke automaton on the context.

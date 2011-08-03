@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Attributes.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [mon jul  4 15:47:10 2011]
+// updated       julien quintard   [mon aug  1 13:18:12 2011]
 //
 
 //
@@ -83,6 +83,9 @@ namespace etoile
 	    context.object.meta.owner.token) == elle::StatusError)
 	escape("unable to update the object's meta section");
 
+      // set the context's state.
+      context.state = gear::StateModified;
+
       leave();
     }
 
@@ -153,6 +156,9 @@ namespace etoile
 	    context.object.meta.owner.permissions,
 	    context.object.meta.owner.token) == elle::StatusError)
 	escape("unable to update the object's meta section");
+
+      // set the context's state.
+      context.state = gear::StateModified;
 
       leave();
     }

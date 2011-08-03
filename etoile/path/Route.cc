@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [thu jul 21 09:18:04 2011]
+// updated       julien quintard   [sat jul 30 17:14:25 2011]
 //
 
 //
@@ -172,6 +172,41 @@ namespace etoile
 	  false();
 
       true();
+    }
+
+    ///
+    /// this operator compares two objects.
+    ///
+    elle::Boolean	Route::operator<(const Route&		element) const
+    {
+      Route::Scoutor	s;
+      Route::Scoutor	t;
+
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	false();
+
+      // compare the size.
+      if (this->elements.size() < element.elements.size())
+	true();
+      else if (this->elements.size() > element.elements.size())
+	false();
+
+      // for every element.
+      for (s = this->elements.begin(), t = element.elements.begin();
+	   s != this->elements.end();
+	   s++, t++)
+	{
+	  if (*s < *t)
+	    true();
+	  else if (*s > *t)
+	    false();
+	}
+
+      // at this point, both routes seem identical.
+      false();
     }
 
     ///
