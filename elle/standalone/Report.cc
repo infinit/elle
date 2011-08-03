@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [wed jul 27 10:17:38 2011]
+// updated       julien quintard   [sat jul 30 22:08:44 2011]
 //
 
 //
@@ -292,7 +292,8 @@ namespace elle
 	  Report::Entry*	entry = *scoutor;
 
 	  // display the entry.
-	  std::cout << entry->message
+	  std::cout << "  "
+		    << entry->message
 		    << " ("
 		    << entry->location
 		    << ") @ "

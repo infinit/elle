@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Log.cc
 //
 // created       julien quintard   [wed jul 27 09:53:07 2011]
-// updated       julien quintard   [thu jul 28 17:18:09 2011]
+// updated       julien quintard   [mon aug  1 10:28:16 2011]
 //
 
 //
@@ -18,6 +18,7 @@
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Region.hh>
 #include <elle/standalone/Maid.hh>
+#include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>
 # include <sys/types.h>
@@ -44,6 +45,32 @@ namespace elle
 //
 // ---------- static methods --------------------------------------------------
 //
+
+    ///
+    /// this method initializes the log system.
+    ///
+    Status		Log::Initialize()
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the log system.
+    ///
+    Status		Log::Clean()
+    {
+      enter();
+
+      // if the log exists, delete it.
+      if (Log::Current != NULL)
+	delete Log::Current;
+
+      leave();
+    }
 
     ///
     /// this method sets up the log by allocating a default
@@ -112,13 +139,55 @@ namespace elle
 				    const String&		time,
 				    const String&		message)
     {
-      std::ostringstream	stream;
+      Report*			report;
 
-      // build the string.
-      stream << message << " (" << location << ") @ " << time << std::endl;
+      //
+      // log the actual message.
+      //
+      {
+	std::ostringstream	stream;
 
-      // write it to the log.
-      ::write(this->fd, stream.str().c_str(), stream.str().length());
+	// build the string.
+	stream << message << " (" << location << ") @ " << time << std::endl;
+
+	// write it to the log.
+	::write(this->fd, stream.str().c_str(), stream.str().length());
+      }
+
+      //
+      // log the report, if present.
+      //
+      {
+	// retrieve the report.
+	if (Report::Instance(report) == StatusTrue)
+	  {
+	    Report::Scoutor	scoutor;
+
+	    // go through the report messages.
+	    for (scoutor = report->container.begin();
+		 scoutor != report->container.end();
+		 scoutor++)
+	      {
+		Report::Entry*		entry = *scoutor;
+		std::ostringstream	stream;
+
+		// build the report.
+		stream << "  "
+		       << entry->message
+		       << " ("
+		       << entry->location
+		       << ") @ "
+		       << entry->time
+		       << std::endl;
+
+		// write it to the log.
+		::write(this->fd, stream.str().c_str(), stream.str().length());
+	      }
+
+	    // flush the report.
+	    report->Flush();
+	  }
+      }
     }
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [thu jul 28 15:01:50 2011]
+// updated       julien quintard   [tue aug  2 19:18:15 2011]
 //
 
 //
@@ -42,6 +42,8 @@ namespace elle
     ///
     /// note that this configuration parameter cannot be put elsewhere
     /// as everything relies on Meta.
+    ///
+    /// this value can obviously be changed to true to activate debugging.
     ///
     Boolean			Meta::Debug::Status = false;
 

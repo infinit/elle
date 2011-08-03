@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [thu jul 28 16:21:45 2011]
+// updated       julien quintard   [fri jul 29 12:58:26 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX
@@ -42,18 +42,18 @@ namespace elle
     template <typename T>
     struct ArchiveType
     {
-      static const Byte		Value = Archive::TypeUnknown;
+      static const Natural8	Value = Archive::TypeUnknown;
     };
 
     ///
-    /// this macro-function link the type to the enum value in a simple
+    /// this macro-function links the type to the enum value in a simple
     /// call.
     ///
 #define ArchiveDeclare(_type_)						\
   template <>								\
   struct ArchiveType<_type_>						\
   {									\
-    static const Byte		Value = Archive::Type ## _type_;	\
+    static const Natural8	Value = Archive::Type ## _type_;	\
   };
 
     ///
@@ -88,7 +88,7 @@ namespace elle
     Status	Archive::Behaviour<T, C>::Serialize(Archive&	archive,
 						    const T&	element)
     {
-      const Byte	type = ArchiveType<T>::Value;
+      const Natural8	type = ArchiveType<T>::Value;
 
       enter();
 
@@ -114,7 +114,7 @@ namespace elle
     Status	Archive::Behaviour<T, C>::Extract(Archive&	archive,
 						  T&		element)
     {
-      Byte		type;
+      Natural8		type;
 
       enter();
 
