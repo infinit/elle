@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [thu jul 28 16:28:00 2011]
+// updated       julien quintard   [wed aug  3 17:58:07 2011]
 //
 
 //
