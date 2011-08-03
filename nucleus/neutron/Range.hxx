@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Range.hxx
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [thu jul 28 15:33:51 2011]
+// updated       julien quintard   [wed aug  3 17:40:05 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_RANGE_HXX
@@ -303,7 +303,8 @@ namespace nucleus
 
       enter();
 
-      std::cout << alignment << "[Range]" << std::endl;
+      std::cout << alignment << "[Range] "
+		<< std::dec << this->container.size() << std::endl;
 
       // dump the options.
       std::cout << alignment << elle::Dumpable::Shift << "[Options] "

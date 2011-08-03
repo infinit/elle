@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [thu jul 28 15:15:51 2011]
+// updated       julien quintard   [mon aug  1 10:16:01 2011]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.hh
 //
 // created       julien quintard   [sat may  7 23:26:59 2011]
-// updated       julien quintard   [wed jun 22 12:40:58 2011]
+// updated       julien quintard   [mon aug  1 13:29:15 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH

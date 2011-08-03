@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [sun jun 19 22:48:16 2011]
+// updated       julien quintard   [mon aug  1 12:11:24 2011]
 //
 
 //
@@ -30,7 +30,8 @@ namespace nucleus
     /// the constructor
     ///
     Subject::Subject():
-      type(Subject::TypeUnknown)
+      type(Subject::TypeUnknown),
+      user(NULL)
     {
     }
 
