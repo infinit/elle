@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Size.hh
 //
 // created       julien quintard   [thu apr  1 22:36:01 2010]
-// updated       julien quintard   [mon jun 27 10:41:06 2011]
+// updated       julien quintard   [wed aug  3 23:48:51 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_SIZE_HH
@@ -30,7 +30,7 @@ namespace nucleus
 //
 
     ///
-    /// this type represents the size of the contents being a catlaog,
+    /// this type represents the size of the contents being a catalog,
     /// data or reference.
     ///
     typedef elle::Natural64		Size;

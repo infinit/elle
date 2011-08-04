@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:22:14 2011]
-// updated       julien quintard   [mon aug  1 10:10:55 2011]
+// updated       julien quintard   [thu aug  4 12:01:06 2011]
 //
 
 //
@@ -18,6 +18,7 @@
 #include <nucleus/proton/ImmutableBlock.hh>
 
 #include <lune/Lune.hh>
+#include <Infinit.hh>
 
 namespace nucleus
 {
@@ -60,6 +61,11 @@ namespace nucleus
 				    unique) == elle::StatusError)
 	escape("unable to convert the address in its hexadecimal form");
 
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[nucleus] proton::ImmutableBlock::Load(%s)\n",
+	       unique.c_str());
+
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
 	  elle::StatusError)
@@ -101,8 +107,10 @@ namespace nucleus
 				    unique) == elle::StatusError)
 	escape("unable to convert the address in its hexadecimal form");
 
-      // XXX
-      printf("ImmutableBlock::Store(%s)\n", unique.c_str());
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[nucleus] proton::ImmutableBlock::Store(%s)\n",
+	       unique.c_str());
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==
@@ -145,6 +153,11 @@ namespace nucleus
       if (elle::Hexadecimal::Encode(address.digest->region,
 				    unique) == elle::StatusError)
 	escape("unable to convert the address in its hexadecimal form");
+
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[nucleus] proton::ImmutableBlock::Erase(%s)\n",
+	       unique.c_str());
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==

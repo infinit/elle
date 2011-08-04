@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [sat jul  2 14:11:18 2011]
+// updated       julien quintard   [wed aug  3 20:28:43 2011]
 //
 
 //
@@ -124,9 +124,6 @@ namespace nucleus
 
       // then, manually set the region size.
       this->region.size = size;
-
-      // XXX
-      printf("ADJUST: %qu\n", this->region.size);
 
       // set the data as dirty.
       this->_state = proton::StateDirty;
