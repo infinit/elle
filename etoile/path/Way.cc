@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [mon jul  4 12:44:40 2011]
+// updated       julien quintard   [thu aug  4 12:40:59 2011]
 //
 
 //
@@ -101,6 +101,24 @@ namespace etoile
 //
 // ---------- object ----------------------------------------------------------
 //
+
+    ///
+    /// this operator compares two objects.
+    ///
+    elle::Boolean	Way::operator==(const Way&		element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the attributes..
+      if (this->path != element.path)
+	false();
+
+      true();
+    }
 
     ///
     /// this macro-function call generates the object.

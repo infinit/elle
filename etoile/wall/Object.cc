@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [mon aug  1 13:24:17 2011]
+// updated       julien quintard   [thu aug  4 12:42:06 2011]
 //
 
 //
@@ -28,6 +28,8 @@
 #include <etoile/journal/Journal.hh>
 
 #include <etoile/miscellaneous/Information.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -54,7 +56,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Object::Load()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Load()\n");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
@@ -96,11 +100,13 @@ namespace etoile
     /// otherwise.
     ///
     elle::Status	Object::Lock(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Object::Lock()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Lock()\n");
 
       // XXX
 
@@ -111,11 +117,13 @@ namespace etoile
     /// this method releases a previously locked object.
     ///
     elle::Status	Object::Release(
-			  const gear::Identifier&		identifer)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Object::Release()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Release()\n");
 
       // XXX
 
@@ -135,7 +143,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Object::Information()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Information()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -164,7 +174,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Object::Discard()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Discard()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -203,7 +215,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Object::Store()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Store()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -246,11 +260,13 @@ namespace etoile
     /// the genre-specific Destroy() method should always be preferred.
     ///
     elle::Status	Object::Destroy(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Object::Destroy()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Destroy()\n");
 
       // XXX
 
@@ -266,11 +282,13 @@ namespace etoile
     /// the genre-specific Destroy() method should always be preferred.
     ///
     elle::Status	Object::Purge(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Object::Purge()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Object::Purge()\n");
 
       // XXX
 

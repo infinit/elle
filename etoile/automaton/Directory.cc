@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Directory.cc
 //
 // created       julien quintard   [mon jun 20 13:22:27 2011]
-// updated       julien quintard   [wed aug  3 17:45:29 2011]
+// updated       julien quintard   [thu aug  4 12:34:13 2011]
 //
 
 //

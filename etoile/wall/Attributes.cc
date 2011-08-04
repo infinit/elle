@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [fri jul 29 15:03:24 2011]
+// updated       julien quintard   [wed aug  3 23:02:33 2011]
 //
 
 //
@@ -23,6 +23,8 @@
 #include <etoile/gear/Gear.hh>
 
 #include <etoile/automaton/Attributes.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -46,7 +48,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Attributes::Set()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Attributes::Set()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -79,7 +83,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Attributes::Get()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Attributes::Get()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -110,7 +116,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Attributes::Fetch()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Attributes::Fetch()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -140,7 +148,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Attributes::Omit()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Attributes::Omit()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)

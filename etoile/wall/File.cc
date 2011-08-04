@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon aug  1 13:23:54 2011]
+// updated       julien quintard   [wed aug  3 23:05:17 2011]
 //
 
 //
@@ -26,6 +26,8 @@
 #include <etoile/automaton/File.hh>
 
 #include <etoile/journal/Journal.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -51,7 +53,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] File::Create()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Create()\n");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::StatusError)
@@ -96,7 +100,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] File::Load()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Load()\n");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
@@ -138,11 +144,13 @@ namespace etoile
     /// otherwise.
     ///
     elle::Status	File::Lock(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] File::Lock()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Lock()\n");
 
       // XXX
 
@@ -153,11 +161,13 @@ namespace etoile
     /// this method releases a previously locked file.
     ///
     elle::Status	File::Release(
-			  const gear::Identifier&		identifer)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] File::Release()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Release()\n");
 
       // XXX
 
@@ -177,7 +187,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] File::Write()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Write()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -210,7 +222,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] File::Read()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Read()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -242,7 +256,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] File::Adjust()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Adjust()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -271,7 +287,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] File::Discard()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Discard()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -310,7 +328,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] File::Store()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Store()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -356,7 +376,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] File::Destroy()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Destroy()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -396,11 +418,13 @@ namespace etoile
     /// the versions associated with this file.
     ///
     elle::Status	File::Purge(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] File::Purge()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::File::Purge()\n");
 
       // XXX
 

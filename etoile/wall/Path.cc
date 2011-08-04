@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Path.cc
 //
 // created       julien quintard   [tue jun 14 12:57:24 2011]
-// updated       julien quintard   [mon jul  4 12:42:29 2011]
+// updated       julien quintard   [wed aug  3 23:41:42 2011]
 //
 //
 
@@ -19,6 +19,8 @@
 #include <etoile/wall/Path.hh>
 
 #include <etoile/path/Path.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -45,6 +47,10 @@ namespace etoile
       path::Venue	venue;
 
       enter();
+
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Path::Resolve()\n");
 
       // create a route from the way.
       if (route.Create(way) == elle::StatusError)

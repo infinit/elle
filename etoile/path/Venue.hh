@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.hh
 //
 // created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [thu jun 23 09:29:23 2011]
+// updated       julien quintard   [thu aug  4 11:25:32 2011]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH
@@ -63,6 +63,8 @@ namespace etoile
       //
       elle::Status	Record(const nucleus::Address&,
 			       const nucleus::Version&);
+
+      elle::Status	Clear();
 
       //
       // interfaces

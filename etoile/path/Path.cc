@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [mon aug  1 13:37:06 2011]
+// updated       julien quintard   [thu aug  4 00:32:17 2011]
 //
 
 //
@@ -18,6 +18,8 @@
 #include <etoile/path/Path.hh>
 
 #include <etoile/gear/Directory.hh>
+#include <etoile/gear/Scope.hh>
+#include <etoile/gear/Actor.hh>
 
 #include <etoile/automaton/Directory.hh>
 
@@ -134,24 +136,15 @@ namespace etoile
 	  // container.
 	  //
 
-	  gear::Directory	context;
+	  Chemin		chemin;
+	  gear::Scope*		scope;
+	  gear::Directory*	context;
+	  gear::Actor*		actor;
 	  Slice			slice;
 	  nucleus::Entry*	entry;
 	  nucleus::Location	location;
 
-	  // create the location.
-	  if (location.Create(address, version) == elle::StatusError)
-	    escape("unable to create the location");
-
-	  // XXX it could be a Link rather than a Directory!
-	  // XXX it therefore appears that PIG always provides absolute
-	  // paths!
-	  // XXX handle links or state that it cannot accept non-absolute paths
-
-	  // fetch the directory.
-	  if (automaton::Directory::Load(context,
-					 location) == elle::StatusError)
-	    escape("unable to fetch the directory object");
+	  enter(instance(actor));
 
 	  // extract the slice/version from the current slab.
 	  if (Path::Parse(*scoutor,
@@ -164,32 +157,93 @@ namespace etoile
 	  if (slice.empty() == true)
 	    escape("the slice should never be empty");
 
+	  // create the chemin.
+	  if (chemin.Create(route, venue,
+			    venue.elements.size()) == elle::StatusError)
+	    escape("unable to create the chemin");
+
+	  // acquire the scope.
+	  if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
+	    escape("unable to acquire the scope");
+
+	  // XXX it could be a Link rather than a Directory!
+	  // XXX it therefore appears that PIG always provides absolute
+	  // paths!
+	  // XXX handle links or state that it cannot accept non-absolute paths
+
+	  // retrieve the context.
+	  if (scope->Use<gear::NatureDirectory>(context) == elle::StatusError)
+	    escape("unable to retrieve the context");
+
+	  // allocate an actor.
+	  actor = new gear::Actor(scope);
+
+	  // attach the actor to the scope.
+	  if (actor->Attach() == elle::StatusError)
+	    escape("unable to attach the actor to the scope");
+
+	  // create the location.
+	  if (location.Create(address, version) == elle::StatusError)
+	    escape("unable to create the location");
+	  // XXX alternative with chemin.Locate(location) as in wall::
+
+	  // fetch the directory.
+	  if (automaton::Directory::Load(*context,
+					 location) == elle::StatusError)
+	    escape("unable to fetch the directory object");
+
 	  // look up for the name.
-	  if (automaton::Directory::Lookup(context,
+	  if (automaton::Directory::Lookup(*context,
 					   slice,
 					   entry) == elle::StatusError)
 	    escape("unable to find one of the route's entries");
 
+	  // set the address; the version is already set i.e it has
+	  // been extracted from the slab.
+	  if (entry != NULL)
+	    address = entry->address;
+
+	  // specify the closing operation performed on the scope.
+	  if (actor->scope->Operate(gear::OperationDiscard) ==
+	      elle::StatusError)
+	    escape("unable to specify the operation being performed "
+		   "on the scope");
+
+	  // detach the actor.
+	  if (actor->Detach() == elle::StatusError)
+	    escape("unable to detach the actor from the scope");
+
+	  // relinquish the scope.
+	  if (gear::Scope::Relinquish(actor->scope) == elle::StatusError)
+	    escape("unable to relinquish the scope");
+
+	  // delete the actor.
+	  delete actor;
+
+	  // waive the actor.
+	  waive(actor);
+
 	  // if there is no such entry, abort.
+	  //
+	  // note that the pointer is used to know whether or not the
+	  // lookup has succeded. however, the entry's content cannot be
+	  // accessed as it has potentially been released with the context
+	  // through the call to Relinquish().
 	  if (entry == NULL)
 	    escape("unable to locate the directory entry '%s'",
 		   slice.c_str());
 
-	  // set the address; the version is already set i.e it has
-	  // been extracted from the slab.
-	  address = entry->address;
-
 	  // first, record the address/version in the venue.
 	  if (venue.Record(address, version) == elle::StatusError)
 	    escape("unable to record the venue address");
+
+	  // release the resources.
+	  release();
 	}
 
       // update the resolved path to the cache.
       //if (Cache::Update(route, venue) == elle::StatusError)
       //escape("unable to update the cache");
-
-      //printf("[XXX] /Path::Resolve()\n");
-      //std::cout << address << std::endl;
 
       leave();
     }

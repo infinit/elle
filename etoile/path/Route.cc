@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [sat jul 30 17:14:25 2011]
+// updated       julien quintard   [thu aug  4 11:26:23 2011]
 //
 
 //
@@ -138,6 +138,19 @@ namespace etoile
 
       // add the slab.
       this->elements.push_back(slab);
+
+      leave();
+    }
+
+    ///
+    /// this method clears the route's content.
+    ///
+    elle::Status	Route::Clear()
+    {
+      enter();
+
+      // clear the container.
+      this->elements.clear();
 
       leave();
     }

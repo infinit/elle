@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.cc
 //
 // created       julien quintard   [fri aug 14 12:57:57 2009]
-// updated       julien quintard   [wed aug  3 17:55:52 2011]
+// updated       julien quintard   [wed aug  3 20:22:41 2011]
 //
 
 //
@@ -16,9 +16,6 @@
 //
 
 #include <etoile/wall/Wall.hh>
-
-// XXX
-#include <agent/Agent.hh>
 
 namespace etoile
 {

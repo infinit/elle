@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.hh
 //
 // created       julien quintard   [tue mar 30 23:31:29 2010]
-// updated       julien quintard   [fri may 28 17:49:44 2010]
+// updated       julien quintard   [thu aug  4 12:39:20 2011]
 //
 
 #ifndef ETOILE_PATH_WAY_HH
@@ -64,6 +64,7 @@ namespace etoile
 
       // object
       declare(Way);
+      elle::Boolean	operator==(const Way&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

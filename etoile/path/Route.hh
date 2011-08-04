@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [sat jul 30 17:09:18 2011]
+// updated       julien quintard   [thu aug  4 11:25:25 2011]
 //
 
 #ifndef ETOILE_PATH_ROUTE_HH
@@ -64,6 +64,8 @@ namespace etoile
       elle::Status	Create(const Way&);
       elle::Status	Create(const Route&,
 			       const Slab&);
+
+      elle::Status	Clear();
 
       //
       // interfaces

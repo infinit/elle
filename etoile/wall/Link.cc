@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Link.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [sun jul 31 11:31:34 2011]
+// updated       julien quintard   [wed aug  3 23:05:31 2011]
 //
 
 //
@@ -26,6 +26,8 @@
 #include <etoile/automaton/Link.hh>
 
 #include <etoile/journal/Journal.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -51,7 +53,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Link::Create()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Create()\n");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::StatusError)
@@ -96,7 +100,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Link::Load()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Load()\n");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
@@ -138,11 +144,13 @@ namespace etoile
     /// otherwise.
     ///
     elle::Status	Link::Lock(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Link::Lock()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Lock()\n");
 
       // XXX
 
@@ -153,11 +161,13 @@ namespace etoile
     /// this method releases a previously locked link.
     ///
     elle::Status	Link::Release(
-			  const gear::Identifier&		identifer)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Link::Release()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Release()\n");
 
       // XXX
 
@@ -176,7 +186,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Link::Bind()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Bind()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -206,7 +218,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Link::Resolve()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Resolve()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -235,7 +249,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Link::Discard()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Discard()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -274,7 +290,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Link::Store()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Store()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -320,7 +338,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Link::Destroy()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Destroy()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -360,11 +380,13 @@ namespace etoile
     /// the versions associated with this link.
     ///
     elle::Status	Link::Purge(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Link::Purge()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Link::Purge()\n");
 
       // XXX
 

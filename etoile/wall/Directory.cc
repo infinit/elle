@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [wed aug  3 15:39:20 2011]
+// updated       julien quintard   [thu aug  4 12:34:08 2011]
 //
 
 //
@@ -27,6 +27,8 @@
 #include <etoile/automaton/Directory.hh>
 
 #include <etoile/journal/Journal.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -52,7 +54,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Directory::Create()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Create()\n");
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::StatusError)
@@ -97,7 +101,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Directory::Load()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Load()\n");
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
@@ -143,7 +149,9 @@ namespace etoile
     {
       enter();
 
-      printf("[XXX] Directory::Lock()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Lock()\n");
 
       // XXX
 
@@ -158,7 +166,9 @@ namespace etoile
     {
       enter();
 
-      printf("[XXX] Directory::Release()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Release()\n");
 
       // XXX
 
@@ -180,7 +190,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Directory::Add()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Add()\n");
 
       // select the actor.
       if (gear::Actor::Select(child, actor) == elle::StatusError)
@@ -226,7 +238,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Directory::Lookup()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Lookup()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -261,7 +275,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Directory::Consult()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Consult()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -295,7 +311,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Directory::Rename()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Rename()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -327,7 +345,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Directory::Remove()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Remove()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -357,7 +377,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Directory::Discard()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Discard()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -396,7 +418,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Directory::Store()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Store()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -443,7 +467,9 @@ namespace etoile
 
       enter(instance(actor));
 
-      printf("[XXX] Directory::Destroy()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Destroy()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -484,11 +510,13 @@ namespace etoile
     /// the versions associated with this directory.
     ///
     elle::Status	Directory::Purge(
-			  const gear::Identifier&		identifier)
+			  const gear::Identifier&)
     {
       enter();
 
-      printf("[XXX] Directory::Purge()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Directory::Purge()\n");
 
       // XXX
 

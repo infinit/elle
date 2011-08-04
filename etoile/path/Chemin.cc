@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Chemin.cc
 //
 // created       julien quintard   [tue jun 14 22:25:57 2011]
-// updated       julien quintard   [sat jul 30 17:16:14 2011]
+// updated       julien quintard   [thu aug  4 12:39:30 2011]
 //
 
 //
@@ -50,13 +50,53 @@ namespace etoile
     /// this method creates a chemin.
     ///
     elle::Status	Chemin::Create(const Route&		route,
-				       const Venue&		venue)
+				       const Venue&		venue,
+				       const nucleus::Size	size)
     {
       enter();
 
-      // set the attributes.
-      this->route = route;
-      this->venue = venue;
+      // clear the route because the chemin may have been used for
+      // something else before.
+      if (this->route.Clear() == elle::StatusError)
+	escape("unable to clear the route");
+
+      // do the same for the venue.
+      if (this->venue.Clear() == elle::StatusError)
+	escape("unable to clear the venue");
+
+      //
+      // import the route.
+      //
+      {
+	Route::Scoutor	scoutor;
+	nucleus::Size	i;
+
+	// go through the route.
+	for (scoutor = route.elements.begin(), i = 0;
+	     (scoutor != route.elements.end()) && (i < size);
+	     scoutor++, i++)
+	  {
+	    // record the route element.
+	    this->route.elements.push_back(*scoutor);
+	  }
+      }
+
+      //
+      // import the venue.
+      //
+      {
+	Venue::Scoutor	scoutor;
+	nucleus::Size	i;
+
+	// go through the venue.
+	for (scoutor = venue.elements.begin(), i = 0;
+	     (scoutor != venue.elements.end()) && (i < size);
+	     scoutor++, i++)
+	  {
+	    // record the venue element.
+	    this->venue.elements.push_back(*scoutor);
+	  }
+      }
 
       leave();
     }

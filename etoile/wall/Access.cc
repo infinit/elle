@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [fri jul 29 15:04:17 2011]
+// updated       julien quintard   [wed aug  3 23:02:28 2011]
 //
 
 //
@@ -23,6 +23,8 @@
 #include <etoile/gear/Gear.hh>
 
 #include <etoile/automaton/Access.hh>
+
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -47,7 +49,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Access::Lookup()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Access::Lookup()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -80,7 +84,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Access::Consult()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Access::Consult()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -113,7 +119,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Access::Grant()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Access::Grant()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
@@ -145,7 +153,9 @@ namespace etoile
 
       enter();
 
-      printf("[XXX] Access::Revoke()\n");
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] wall::Access::Revoke()\n");
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)

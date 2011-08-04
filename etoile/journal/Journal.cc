@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [fri jun 24 14:23:50 2011]
-// updated       julien quintard   [mon aug  1 13:28:24 2011]
+// updated       julien quintard   [wed aug  3 23:31:17 2011]
 //
 
 //
@@ -43,7 +43,11 @@ namespace etoile
       // first, if actors are still operating on the scope, delay the
       // journal processing.
       if (scope->actors.empty() == false)
+	{
+	  printf("XXX DO NOT STORE SINCE ANOTHER ACTOR IS ALSO OPERATING "
+		 "ON THIS SCOPE\n");
 	leave();
+	}
 
       // go through the transcript's actions.
       for (scoutor = scope->context->transcript.container.begin();

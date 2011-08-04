@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Chemin.hh
 //
 // created       julien quintard   [tue jun 14 13:24:13 2011]
-// updated       julien quintard   [sat jul 30 17:05:35 2011]
+// updated       julien quintard   [thu aug  4 12:39:14 2011]
 //
 
 #ifndef ETOILE_PATH_CHEMIN_HH
@@ -58,7 +58,9 @@ namespace etoile
       // methods
       //
       elle::Status	Create(const Route&,
-			       const Venue&);
+			       const Venue&,
+			       const nucleus::Size =
+			         elle::Type<nucleus::Size>::Maximum);
 
       elle::Status	Locate(nucleus::Location&) const;
 
