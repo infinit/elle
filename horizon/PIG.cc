@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [tue jul 26 20:52:01 2011]
+// updated       julien quintard   [wed aug  3 20:26:07 2011]
 //
 
 //
@@ -156,13 +156,9 @@ namespace pig
 	    escape("unable to retrieve the to value");
 	  }
 
-	printf("/ @%p %p\n", &Replay::Reference, Replay::Reference);
-
 	// replay the diary.
 	if (PIG::Diary.Replay(from, to) == elle::StatusError)
 	  escape("unable to replay the diary");
-
-	printf("/ @%p %p\n", &Replay::Reference, Replay::Reference);
       }
     else
       {

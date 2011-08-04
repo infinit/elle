@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.hh
 //
 // created       julien quintard   [wed jun  1 09:19:13 2011]
-// updated       julien quintard   [fri jul  1 23:09:21 2011]
+// updated       julien quintard   [wed aug  3 20:27:44 2011]
 //
 
 #ifndef PIG_CRUX_HH
@@ -144,18 +144,6 @@ namespace pig
     static int		Rename(const char*,
 			       const char*);
     static int		Unlink(const char*);
-
-    /* XXX
-    // sync
-    static int		Fsync(const char*,
-			      int,
-			      struct ::fuse_file_info*);
-    static int		Fsyncdir(const char*,
-				 int,
-				 struct ::fuse_file_info*);
-    static int		Flush(const char*,
-			      struct ::fuse_file_info*);
-    */
 
     //
     // static methods

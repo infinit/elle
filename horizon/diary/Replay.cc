@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.cc
 //
 // created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [wed aug  3 18:10:00 2011]
+// updated       julien quintard   [wed aug  3 20:36:30 2011]
 //
 
 //
@@ -1008,19 +1008,12 @@ namespace pig
       if (upcall.outputs.Extract(outputs.buf) == elle::StatusError)
 	escape("unable to extract the region");
 
-      printf("[read] EXPECTED(%d) GOT(%d)\n", upcall.result, res);
-
       if (res != upcall.result)
 	escape("invalid result: got(%d) expected(%d)",
 	       res, upcall.result);
 
       if (inputs.buf != outputs.buf)
-	{
-	  inputs.buf.Dump();
-	  outputs.buf.Dump();
-
-	  escape("invalid buffer");
-	}
+	escape("invalid buffer");
 
       leave();
     }
@@ -1304,7 +1297,7 @@ namespace pig
 	    goto _error;
 
 	  // log the upcall.
-	  log("[Replay] index(%u) opcode(%u)\n",
+	  log("[Replay] index(%u) opcode(%u)",
 	      i,
 	      upcall.operation);
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [wed aug  3 19:00:34 2011]
+// updated       julien quintard   [thu aug  4 12:23:07 2011]
 //
 
 //
@@ -31,7 +31,8 @@ namespace pig
 #define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      log(_text_);							\
+      report(_text_);							\
+      show(); \
 									\
       Crux::Release(_identifiers_);					\
 									\
@@ -105,7 +106,7 @@ namespace pig
 	    EINTR);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p)\n",
+      printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
 
@@ -273,7 +274,7 @@ namespace pig
       }
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p)\n",
+      printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
 
@@ -296,7 +297,7 @@ namespace pig
     //
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, ...)\n",
+      printf("[pig] /%s(%s, ...)\n",
 	     __FUNCTION__,
 	     path);
 
@@ -358,7 +359,7 @@ namespace pig
       (uint64_t)new etoile::gear::Identifier(identifier);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p)\n",
+      printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
 
@@ -428,7 +429,7 @@ namespace pig
 	    if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
 	      {
 		if (Infinit::Configuration.debug.pig == true)
-		  printf("[/pig] %s(%s, %p, %p, %qu, %p)\n",
+		  printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 			 __FUNCTION__,
 			 path, buffer, filler, offset, info);
 
@@ -447,7 +448,7 @@ namespace pig
       }
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p, %p, %qu, %p)\n",
+      printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, filler, offset, info);
 
@@ -483,7 +484,7 @@ namespace pig
     info->fh = 0;
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p)\n",
+      printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
 
@@ -559,7 +560,7 @@ namespace pig
 	    EINTR);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, 0%o)\n",
+      printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
 
@@ -624,7 +625,7 @@ namespace pig
 	    EINTR);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s)\n",
+      printf("[pig] /%s(%s)\n",
 	     __FUNCTION__,
 	     path);
 
@@ -765,7 +766,7 @@ namespace pig
 	    ENOENT);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, 0%o)\n",
+      printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mask);
 
@@ -874,7 +875,7 @@ namespace pig
 	    ENOENT);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, 0%o)\n",
+      printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
 
@@ -915,7 +916,7 @@ namespace pig
     // XXX todo
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %u, %u)\n",
+      printf("[pig] /%s(%s, %u, %u)\n",
 	     __FUNCTION__,
 	     path, uid, gid);
 
@@ -968,7 +969,7 @@ namespace pig
 	    ENOENT);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %s, %p, %u, 0x%x)\n",
+      printf("[pig] /%s(%s, %s, %p, %u, 0x%x)\n",
 	     __FUNCTION__,
 	     path, name, value, size, flags);
 
@@ -1022,7 +1023,7 @@ namespace pig
 	    ENOATTR);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %s, %p, %u)\n",
+      printf("[pig] /%s(%s, %s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, name, value, size);
 
@@ -1084,7 +1085,7 @@ namespace pig
 	    ENOENT);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p, %u)\n",
+      printf("[pig] /%s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, list, size);
 
@@ -1164,7 +1165,7 @@ namespace pig
 	    ENOENT);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %s)\n",
+      printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
 	     path, name);
 
@@ -1232,7 +1233,7 @@ namespace pig
 	    ENOENT);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %s)\n",
+      printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
 	     target, source);
 
@@ -1285,7 +1286,7 @@ namespace pig
 	        size);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p, %u)\n",
+      printf("[pig] /%s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, buffer, size);
 
@@ -1394,7 +1395,7 @@ namespace pig
       (uint64_t)new etoile::gear::Identifier(file);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, 0%o, %p)\n",
+      printf("[pig] /%s(%s, 0%o, %p)\n",
 	     __FUNCTION__,
 	     path, mode, info);
 
@@ -1431,7 +1432,7 @@ namespace pig
       (uint64_t)new etoile::gear::Identifier(identifier);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p)\n",
+      printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
 
@@ -1471,7 +1472,7 @@ namespace pig
 	    EACCES);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p, %u, %qu, %p)\n",
+      printf("[pig] /%s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
 
@@ -1510,7 +1511,7 @@ namespace pig
     ::memcpy(buffer, region.contents, region.size);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p, %u, %qu, %p)\n",
+      printf("[pig] /%s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
 
@@ -1556,7 +1557,7 @@ namespace pig
 	    EINTR);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %qu)\n",
+      printf("[pig] /%s(%s, %qu)\n",
 	     __FUNCTION__,
 	     path, size);
 
@@ -1587,7 +1588,7 @@ namespace pig
 	    ENOENT);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %qu, %p)\n",
+      printf("[pig] /%s(%s, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, size, info);
 
@@ -1623,7 +1624,7 @@ namespace pig
     info->fh = 0;
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %p)\n",
+      printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
 
@@ -1646,13 +1647,6 @@ namespace pig
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     source, target);
-
-    // call the Unlink() method in order to remove, if present, the
-    // target.
-    Crux::Unlink(target);
-
-    // ignore the result, hence remove the errors message.
-    purge();
 
     // if the source and target directories are identical.
     if (from == to)
@@ -1772,7 +1766,7 @@ namespace pig
       }
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s, %s)\n",
+      printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
 	     source, target);
 
@@ -1828,12 +1822,6 @@ namespace pig
     if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
 	    ENOENT);
-
-    // remove the entry.
-    if (etoile::wall::Directory::Remove(directory, name) == elle::StatusError)
-      error("unable to remove a directory entry",
-	    EACCES,
-	    directory);
 
     // remove the object according to its type: file or link.
     switch (information.genre)
@@ -1891,77 +1879,24 @@ namespace pig
 	}
       };
 
+    // remove the entry.
+    if (etoile::wall::Directory::Remove(directory, name) == elle::StatusError)
+      error("unable to remove a directory entry",
+	    EACCES,
+	    directory);
+
     // store the directory.
     if (etoile::wall::Directory::Store(directory) == elle::StatusError)
       error("unable to store the directory",
 	    EINTR);
 
     if (Infinit::Configuration.debug.pig == true)
-      printf("[/pig] %s(%s)\n",
+      printf("[pig] /%s(%s)\n",
 	     __FUNCTION__,
 	     path);
 
     return (0);
   }
-
-  /* XXX
-  ///
-  /// this method forces the updates to be commited.
-  ///
-  int			Crux::Fsync(const char*			path,
-				    int				datasync,
-				    struct ::fuse_file_info*	info)
-  {
-    printf("[XXX] %s(%s, %u, %p)\n",
-	   __FUNCTION__,
-	   path, datasync, info);
-
-    // XXX Publish blocs: Journal::Load(), Journal::Publish()
-
-    printf("[/XXX] %s(%s, %u, %p)\n",
-	   __FUNCTION__,
-	   path, datasync, info);
-
-    return (0);
-  }
-
-  ///
-  /// this method forces thes updates to be commited.
-  ///
-  int			Crux::Fsyncdir(const char*		path,
-				       int			datasync,
-				       struct ::fuse_file_info*	info)
-  {
-    printf("[XXX] %s(%s, %u, %p)\n",
-	   __FUNCTION__,
-	   path, datasync, info);
-
-    // XXX Publish blocs: Journal::Load(), Journal::Publish()
-
-    printf("[/XXX] %s(%s, %u, %p)\n",
-	   __FUNCTION__,
-	   path, datasync, info);
-
-    return (0);
-  }
-
-  // XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  int			Crux::Flush(const char*			path,
-				    struct ::fuse_file_info*	info)
-  {
-    printf("[XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
-
-    // XXX
-
-    printf("[/XXX] %s(%s, %p)\n",
-	   __FUNCTION__,
-	   path, info);
-
-    return (0);
-  }
-  */
 
 //
 // ---------- static methods --------------------------------------------------
