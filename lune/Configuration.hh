@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [thu jul 28 17:01:08 2011]
+// updated       julien quintard   [wed aug  3 20:30:10 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
@@ -60,6 +60,7 @@ namespace lune
       {
 	static const elle::Boolean	PIG;
 	static const elle::Boolean	Etoile;
+	static const elle::Boolean	Nucleus;
 	static const elle::Boolean	Hole;
       };
 
@@ -130,6 +131,7 @@ namespace lune
     {
       elle::Boolean		pig;
       elle::Boolean		etoile;
+      elle::Boolean		nucleus;
       elle::Boolean		hole;
     }				debug;
 

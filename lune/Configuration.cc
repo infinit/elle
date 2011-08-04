@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [thu jul 28 17:02:29 2011]
+// updated       julien quintard   [wed aug  3 20:30:48 2011]
 //
 
 //
@@ -48,6 +48,8 @@ namespace lune
   const elle::Boolean	Configuration::Default::Debug::PIG =
     false;
   const elle::Boolean	Configuration::Default::Debug::Etoile =
+    false;
+  const elle::Boolean	Configuration::Default::Debug::Nucleus =
     false;
   const elle::Boolean	Configuration::Default::Debug::Hole =
     false;
@@ -101,6 +103,11 @@ namespace lune
     if (elle::Settings::Set(
 	  "debug", "etoile",
 	  this->debug.etoile) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "debug", "nucleus",
+	  this->debug.nucleus) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -171,6 +178,12 @@ namespace lune
 	  "debug", "etoile",
 	  this->debug.etoile,
 	  Configuration::Default::Debug::Etoile) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "debug", "nucleus",
+	  this->debug.nucleus,
+	  Configuration::Default::Debug::Nucleus) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
