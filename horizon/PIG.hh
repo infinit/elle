@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [tue may 31 10:32:37 2011]
-// updated       julien quintard   [wed jul 27 09:07:51 2011]
+// updated       julien quintard   [sat aug  6 17:19:12 2011]
 //
 
 #ifndef PIG_PIG_HH
