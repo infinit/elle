@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.hh
 //
 // created       julien quintard   [fri jun  3 10:58:40 2011]
-// updated       julien quintard   [fri jul 29 14:28:30 2011]
+// updated       julien quintard   [fri aug  5 12:18:05 2011]
 //
 
 #ifndef ETOILE_GEAR_GEAR_HH
@@ -68,7 +68,6 @@ namespace etoile
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Operation.hh>
 #include <etoile/gear/Scope.hh>
-#include <etoile/gear/State.hh>
 #include <etoile/gear/Transaction.hh>
 #include <etoile/gear/Transcript.hh>
 

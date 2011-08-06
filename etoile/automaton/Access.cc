@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Access.cc
 //
 // created       julien quintard   [mon jun 20 14:59:09 2011]
-// updated       julien quintard   [mon aug  1 13:17:06 2011]
+// updated       julien quintard   [fri aug  5 12:09:18 2011]
 //
  
 //
@@ -159,7 +159,7 @@ namespace etoile
 	}
 
       // set the context's state.
-      context.state = gear::StateModified;
+      context.state = gear::Context::StateModified;
 
       leave();
     }
@@ -349,7 +349,7 @@ namespace etoile
 	}
 
       // set the context's state.
-      context.state = gear::StateModified;
+      context.state = gear::Context::StateModified;
 
       leave();
     }
@@ -419,7 +419,7 @@ namespace etoile
 	}
 
       // set the context's state.
-      context.state = gear::StateModified;
+      context.state = gear::Context::StateModified;
 
       leave();
     }
@@ -459,7 +459,7 @@ namespace etoile
 	}
 
       // set the context's state.
-      context.state = gear::StateModified;
+      context.state = gear::Context::StateModified;
 
       leave();
     }
@@ -575,7 +575,6 @@ namespace etoile
 	  if (context.transcript.Push(address,
 				      context.access) == elle::StatusError)
 	    escape("unable to record the object for storing");
-
 	}
 
       leave();

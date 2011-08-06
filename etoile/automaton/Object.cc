@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Object.cc
 //
 // created       julien quintard   [mon jun 20 12:47:31 2011]
-// updated       julien quintard   [mon aug  1 13:21:48 2011]
+// updated       julien quintard   [fri aug  5 12:07:45 2011]
 //
 
 //
@@ -42,7 +42,7 @@ namespace etoile
       enter();
 
       // return if the context has already been loaded.
-      if (context.state != gear::StateUnknown)
+      if (context.state != gear::Context::StateUnknown)
 	leave();
 
       // set the location.
@@ -59,7 +59,7 @@ namespace etoile
 	escape("unable to compute the base");
 
       // set the context's state.
-      context.state = gear::StateInitialized;
+      context.state = gear::Context::StateInitialized;
 
       leave();
     }
@@ -119,7 +119,7 @@ namespace etoile
 	escape("unable to record the object for removal");
 
       // set the context's state.
-      context.state = gear::StateDestroyed;
+      context.state = gear::Context::StateDestroyed;
 
       leave();
     }
@@ -152,7 +152,7 @@ namespace etoile
 	}
 
       // set the context's state.
-      context.state = gear::StateStored;
+      context.state = gear::Context::StateStored;
 
       leave();
     }

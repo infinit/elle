@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Link.cc
 //
 // created       julien quintard   [fri aug 14 19:00:57 2009]
-// updated       julien quintard   [mon aug  1 13:23:35 2011]
+// updated       julien quintard   [fri aug  5 12:08:51 2011]
 //
 
 //
@@ -42,7 +42,7 @@ namespace etoile
       enter();
 
       // return an error if the context has already been manipulated.
-      if (context.state != gear::StateUnknown)
+      if (context.state != gear::Context::StateUnknown)
 	escape("unable to create a link from a non-virgin context");
 
       // create the link.
@@ -60,7 +60,7 @@ namespace etoile
 	escape("unable to create the location");
 
       // set the context's state.
-      context.state = gear::StateInitialized;
+      context.state = gear::Context::StateInitialized;
 
       leave();
     }
@@ -76,7 +76,7 @@ namespace etoile
       enter();
 
       // return if the context has already been loaded.
-      if (context.state != gear::StateUnknown)
+      if (context.state != gear::Context::StateUnknown)
 	leave();
 
       // load the object.
@@ -88,7 +88,7 @@ namespace etoile
 	escape("this object does not seem to be a link");
 
       // set the context's state.
-      context.state = gear::StateInitialized;
+      context.state = gear::Context::StateInitialized;
 
       leave();
     }
@@ -120,7 +120,7 @@ namespace etoile
 	escape("unable to bind the link");
 
       // set the context's state.
-      context.state = gear::StateModified;
+      context.state = gear::Context::StateModified;
 
       leave();
     }
@@ -185,7 +185,7 @@ namespace etoile
 	escape("unable to destroy the object");
 
       // set the context's state.
-      context.state = gear::StateDestroyed;
+      context.state = gear::Context::StateDestroyed;
 
       leave();
     }
@@ -208,7 +208,7 @@ namespace etoile
 	escape("unable to store the object");
 
       // set the context's state.
-      context.state = gear::StateStored;
+      context.state = gear::Context::StateStored;
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Attributes.cc
 //
 // created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [mon aug  1 13:18:12 2011]
+// updated       julien quintard   [fri aug  5 12:49:04 2011]
 //
 
 //
@@ -84,7 +84,7 @@ namespace etoile
 	escape("unable to update the object's meta section");
 
       // set the context's state.
-      context.state = gear::StateModified;
+      context.state = gear::Context::StateModified;
 
       leave();
     }
@@ -158,7 +158,7 @@ namespace etoile
 	escape("unable to update the object's meta section");
 
       // set the context's state.
-      context.state = gear::StateModified;
+      context.state = gear::Context::StateModified;
 
       leave();
     }

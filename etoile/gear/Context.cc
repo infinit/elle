@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Context.cc
 //
 // created       julien quintard   [thu jun 16 10:37:02 2011]
-// updated       julien quintard   [mon aug  1 13:12:13 2011]
+// updated       julien quintard   [fri aug  5 12:05:15 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace etoile
     ///
     Context::Context(const Nature				nature):
       nature(nature),
-      state(StateUnknown)
+      state(Context::StateUnknown)
     {
     }
 

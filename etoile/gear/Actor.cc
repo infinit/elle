@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Actor.cc
 //
 // created       julien quintard   [thu jul 28 13:05:00 2011]
-// updated       julien quintard   [sat jul 30 13:31:37 2011]
+// updated       julien quintard   [fri aug  5 12:42:40 2011]
 //
 
 //
@@ -109,7 +109,8 @@ namespace etoile
     /// default constructor.
     ///
     Actor::Actor(Scope*						scope):
-      scope(scope)
+      scope(scope),
+      state(Actor::StateClean)
     {
       // generate an identifier.
       if (this->identifier.Generate() == elle::StatusError)
@@ -152,6 +153,69 @@ namespace etoile
       // unregister the actor.
       if (Actor::Remove(this->identifier) == elle::StatusError)
 	escape("unable to unregister the actor");
+
+      leave();
+    }
+
+    ///
+    /// this method is called to indicate the operation being performed
+    /// by the actor.
+    ///
+    /// let us recall that multiple actors operate on the same scope.
+    ///
+    /// therefore, since modifications are directly applied on the context
+    /// when requested, an actor cannot perform modifications and finally
+    /// decide to discard them.
+    ///
+    /// this method therefore checks that the operation is consistent
+    /// regarding the previous requests i.e the actor's state.
+    ///
+    elle::Status	Actor::Operate(const Operation		operation)
+    {
+      enter();
+
+      // process the operation.
+      switch (operation)
+	{
+	case OperationDiscard:
+	  {
+	    //
+	    // the actor is discarding the context.
+	    //
+	    // thus, the actor must never have performed a modification
+	    // on the context.
+	    //
+
+	    // check the state.
+	    if (this->state != Actor::StateClean)
+	      escape("unable to discard previously performed modifications");
+
+	    break;
+	  }
+	case OperationStore:
+	  {
+	    //
+	    // the actor is storing the potentially modified context.
+	    //
+	    // there is nothing to do here: should the actor have updated
+	    // the context or not, the store operation can be requested.
+	    //
+
+	    break;
+	  }
+	case OperationDestroy:
+	  {
+	    //
+	    // the actor is destroying the context, even though it
+	    // has been modified.
+	    //
+	    // as for the store operation, this operation is valid
+	    // no matter the actor's state.
+	    //
+
+	    break;
+	  }
+	}
 
       leave();
     }

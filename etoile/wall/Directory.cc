@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [thu aug  4 12:34:08 2011]
+// updated       julien quintard   [fri aug  5 12:16:56 2011]
 //
 
 //
@@ -221,6 +221,9 @@ namespace etoile
 				    address) == elle::StatusError)
 	escape("unable to add the directory entry");
 
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
+
       leave();
     }
 
@@ -330,6 +333,9 @@ namespace etoile
 				       to) == elle::StatusError)
 	escape("unable to rename the directory entry");
 
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
+
       leave();
     }
 
@@ -363,6 +369,9 @@ namespace etoile
 				       name) == elle::StatusError)
 	escape("unable to remove the directory entry");
 
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
+
       leave();
     }
 
@@ -385,6 +394,10 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
+
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationDiscard) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
@@ -393,9 +406,9 @@ namespace etoile
       if (actor->Detach() == elle::StatusError)
 	escape("unable to detach the actor from the scope");
 
-      // relinquish the scope.
-      if (gear::Scope::Relinquish(actor->scope) == elle::StatusError)
-	escape("unable to relinquish the scope");
+      // record the scope in the journal.
+      if (journal::Journal::Record(actor->scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       // delete the actor.
       delete actor;
@@ -425,6 +438,10 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationStore) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationStore) == elle::StatusError)
@@ -474,6 +491,10 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationDestroy) == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Access.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [wed aug  3 23:02:28 2011]
+// updated       julien quintard   [fri aug  5 12:11:17 2011]
 //
 
 //
@@ -137,6 +137,9 @@ namespace etoile
 				   permissions) == elle::StatusError)
 	escape("unable to grant access to the subject");
 
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
+
       leave();
     }
 
@@ -169,6 +172,9 @@ namespace etoile
       if (automaton::Access::Revoke(*context,
 				    subject) == elle::StatusError)
 	escape("unable to revoke the subject's access permissions");
+
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
 
       leave();
     }

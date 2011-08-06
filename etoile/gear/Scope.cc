@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.cc
 //
 // created       julien quintard   [wed jun 15 13:09:29 2011]
-// updated       julien quintard   [sun jul 31 11:26:49 2011]
+// updated       julien quintard   [fri aug  5 12:48:14 2011]
 //
 
 //
@@ -350,8 +350,15 @@ namespace etoile
 	  {
 	    //
 	    // the target is to be stored; therefore, the previously
-	    // transcripted actions must be cleaned since no longer relevant.
+	    // transcripted actions must be cleared since no longer relevant.
 	    //
+	    // note however that should the current state be Destroyed---i.e
+	    // a previous actor destroyed the context---, the Store
+	    // operation would simply be ignored.
+
+	    // check the current state and return if necessary.
+	    if (this->context->state == Context::StateDestroyed)
+	      leave();
 
 	    // clear the transcript.
 	    this->context->transcript.Clear();
@@ -362,11 +369,16 @@ namespace etoile
 	  {
 	    //
 	    // the target is to be destroyed; therefore, the previously
-	    // transcripted actions must be cleaned since no longer relevant.
+	    // transcripted actions must be cleared since no longer relevant.
 	    //
 	    // note that should have a previous Destroy operation been invoked,
-	    // clearing the transcript would be needless.
+	    // clearing the transcript would be needless; thus the clearing
+	    // is triggered only if necessary.
 	    //
+
+	    // check the state.
+	    if (this->context->state == Context::StateDestroyed)
+	      leave();
 
 	    // clear the transcript.
 	    this->context->transcript.Clear();

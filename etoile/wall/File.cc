@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [wed aug  3 23:05:17 2011]
+// updated       julien quintard   [fri aug  5 12:50:42 2011]
 //
 
 //
@@ -205,6 +205,9 @@ namespace etoile
 				 region) == elle::StatusError)
 	escape("unable to write the file");
 
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
+
       leave();
     }
 
@@ -273,6 +276,9 @@ namespace etoile
 				  size) == elle::StatusError)
 	escape("unable to adjust the file's size");
 
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
+
       leave();
     }
 
@@ -294,6 +300,10 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationDiscard) == elle::StatusError)
@@ -335,6 +345,10 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationStore) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationStore) == elle::StatusError)
@@ -383,6 +397,10 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationDestroy) == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [wed aug  3 23:02:33 2011]
+// updated       julien quintard   [fri aug  5 12:11:12 2011]
 //
 
 //
@@ -65,6 +65,9 @@ namespace etoile
 				     name,
 				     value) == elle::StatusError)
 	escape("unable to set the attribute");
+
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
 
       leave();
     }
@@ -164,6 +167,9 @@ namespace etoile
       if (automaton::Attributes::Omit(*context,
 				      name) == elle::StatusError)
 	escape("unable to omit the attribute");
+
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
 
       leave();
     }

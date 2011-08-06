@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [thu aug  4 12:42:06 2011]
+// updated       julien quintard   [fri aug  5 12:15:59 2011]
 //
 
 //
@@ -182,6 +182,10 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
+
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationDiscard) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
@@ -222,6 +226,10 @@ namespace etoile
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationStore) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
       if (actor->scope->Operate(gear::OperationStore) == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Actor.hh
 //
 // created       julien quintard   [thu jul 28 12:45:43 2011]
-// updated       julien quintard   [sat jul 30 13:30:25 2011]
+// updated       julien quintard   [fri aug  5 12:43:04 2011]
 //
 
 #ifndef ETOILE_GEAR_ACTOR_HH
@@ -21,6 +21,7 @@
 #include <elle/Elle.hh>
 
 #include <etoile/gear/Identifier.hh>
+#include <etoile/gear/Operation.hh>
 
 namespace etoile
 {
@@ -47,6 +48,15 @@ namespace etoile
       public elle::Object
     {
     public:
+      //
+      // enumerations
+      //
+      enum State
+	{
+	  StateClean,
+	  StateUpdated
+	};
+
       //
       // types
       //
@@ -80,6 +90,8 @@ namespace etoile
       elle::Status	Attach();
       elle::Status	Detach();
 
+      elle::Status	Operate(const Operation);
+
       //
       // interfaces
       //
@@ -92,6 +104,7 @@ namespace etoile
       //
       Identifier	identifier;
       Scope*		scope;
+      State		state;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Context.hh
 //
 // created       julien quintard   [thu jun 16 09:55:55 2011]
-// updated       julien quintard   [fri jul 29 13:00:31 2011]
+// updated       julien quintard   [fri aug  5 12:40:34 2011]
 //
 
 #ifndef ETOILE_GEAR_CONTEXT_HH
@@ -21,7 +21,6 @@
 #include <elle/Elle.hh>
 
 #include <etoile/gear/Nature.hh>
-#include <etoile/gear/State.hh>
 #include <etoile/gear/Transcript.hh>
 
 namespace etoile
@@ -43,6 +42,24 @@ namespace etoile
       public elle::Object
     {
     public:
+      //
+      // enumerations
+      //
+      enum State
+	{
+	  StateUnknown,
+
+	  StateInitialized,
+
+	  StateModified,
+
+	  StateDiscarded,
+	  StateStored,
+	  StateDestroyed,
+
+	  StateCleaned
+	};
+
       //
       // constructors & destructors
       //
