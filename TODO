@@ -1,8 +1,12 @@
-- ajouter un check qui dit: l'actor Discard mais si modifs performed -> ERROR
+- refaire marcher diary::record -> record make de linux (sans la copie)
 - virer diary/ de pig et mettre dans 8diary. si lance avec option
   infinit, on link avec infinit et on bande.
+
 - note that the data modifications should probably update the object's data as well such as the size, timestamps etc. so that, say, a file being opened, modified and reopened in order to get the current size returns the new size instead of the "current" one. => quand on fait un Information, si data have been modified, make it consistent
 - passer les versions en 64-bit car un script qui update un fichier toutes les secondes -> vite fait le tour!
+
+- utiliser une bsddb ou autre bref une DB local plutot que de stocker les blocs
+  dans le FS car pas optimise pour ca => ca devrait ameliorer les perfs.
 
 #
 # ---------- long-term --------------------------------------------------------
