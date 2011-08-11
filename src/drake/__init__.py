@@ -1712,7 +1712,7 @@ def _register_commands():
         for node in nodes:
             coroutines.append(Coroutine(node.build_coro(), str(node), _scheduler()))
 
-        if _SCHEDULER.jobs() == 1:
+        if _scheduler().jobs() == 1:
             for c in coroutines:
                 c.run()
         else:
