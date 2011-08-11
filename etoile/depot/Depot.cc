@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [tue jun 14 22:03:59 2011]
+// updated       julien quintard   [mon aug  8 14:28:17 2011]
 //
 
 //
@@ -33,11 +33,7 @@ namespace etoile
     {
       enter();
 
-      /* XXX
-      // initialize the repository.
-      if (Repository::Initialize() == elle::StatusError)
-	escape("unable to initialize the repository");
-      */
+      // nothing to do.
 
       leave();
     }
@@ -49,11 +45,7 @@ namespace etoile
     {
       enter();
 
-      /* XXX
-      // clean the repository.
-      if (Repository::Clean() == elle::StatusError)
-	escape("unable to clean the repository");
-      */
+      // nothing to do.
 
       leave();
     }

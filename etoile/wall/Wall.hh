@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.hh
 //
 // created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [mon jul  4 15:48:35 2011]
+// updated       julien quintard   [sat aug  6 17:28:50 2011]
 //
 
 #ifndef ETOILE_WALL_WALL_HH
@@ -26,24 +26,7 @@ namespace etoile
   namespace wall
   {
 
-//
-// ---------- classes ---------------------------------------------------------
-//
-
-    ///
-    /// the Wal method deal with identifying, authenticating and connecting
-    /// clients so that once authenticated/connected, an application can
-    /// issue requests.
-    ///
-    class Wall
-    {
-    public:
-      //
-      // static methods
-      //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
-    };
+    // nothing
 
   }
 }

@@ -1,8 +1,6 @@
 PROJECT(Etoile CXX)
 
 ADD_LIBRARY(etoile
-#  path/Cache.cc
-#  path/Item.cc
   path/Path.cc
   path/Route.cc
   path/Chemin.cc
@@ -45,11 +43,14 @@ ADD_LIBRARY(etoile
   wall/Link.cc
   wall/Object.cc
   wall/Path.cc
-  wall/Wall.cc
 
   miscellaneous/Information.cc
 
   journal/Journal.cc
+
+  shrub/Shrub.cc
+  shrub/Riffle.cc
+  shrub/Queue.cc
 
   Etoile.cc
 )

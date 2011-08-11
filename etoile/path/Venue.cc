@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [thu aug  4 11:26:10 2011]
+// updated       julien quintard   [mon aug  8 14:17:32 2011]
 //
 
 //
@@ -47,6 +47,19 @@ namespace etoile
 //
 
     ///
+    /// this method records the location.
+    ///
+    elle::Status	Venue::Record(const nucleus::Location&	location)
+    {
+      enter();
+
+      // store the location in the container.
+      this->elements.push_back(location);
+
+      leave();
+    }
+
+    ///
     /// this method records the next step of the venue.
     ///
     elle::Status	Venue::Record(const nucleus::Address&	address,
@@ -60,8 +73,9 @@ namespace etoile
       if (location.Create(address, version) == elle::StatusError)
 	escape("unable to create the location");
 
-      // store the address in the container.
-      this->elements.push_back(location);
+      // record the location.
+      if (this->Record(location) == elle::StatusError)
+	escape("unable to record the location");
 
       leave();
     }

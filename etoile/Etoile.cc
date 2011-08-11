@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [wed aug  3 15:12:16 2011]
+// updated       julien quintard   [mon aug  8 14:35:30 2011]
 //
 
 //
@@ -40,34 +40,26 @@ namespace etoile
   {
     enter();
 
-    // initialize the gear.
-    if (gear::Gear::Initialize() == elle::StatusError)
-      escape("unable to initialize the gear");
-
-    /* XXX
-    // initialize the configuration.
-    if (configuration::Configuration::Initialize() == elle::StatusError)
-      escape("unable to initialize the configuration");
+    // initialize the path.
+    if (path::Path::Initialize() == elle::StatusError)
+      escape("unable to initialize the path");
 
     // initialize the depot.
     if (depot::Depot::Initialize() == elle::StatusError)
       escape("unable to initialize the depot");
 
+    // initialize the gear.
+    if (gear::Gear::Initialize() == elle::StatusError)
+      escape("unable to initialize the gear");
+
+    // initialize the shrub.
+    if (shrub::Shrub::Initialize() == elle::StatusError)
+      escape("unable to initialize the shrub");
+
+    /* XXX
     // initialize the journal.
     if (journal::Journal::Initialize() == elle::StatusError)
       escape("unable to initialize the journal");
-
-    // initialize the path.
-    if (path::Path::Initialize() == elle::StatusError)
-      escape("unable to initialize the path");
-
-    // initialize the wall.
-    if (wall::Wall::Initialize() == elle::StatusError)
-      escape("unable to initialize the wall");
-
-    // initialize the user.
-    if (user::User::Initialize() == elle::StatusError)
-      escape("unable to initialize the user");
     */
 
     leave();
@@ -80,34 +72,26 @@ namespace etoile
   {
     enter();
 
+    // clean the shrub.
+    if (shrub::Shrub::Clean() == elle::StatusError)
+      escape("unable to clean the shrub");
+
     // clean the gear.
     if (gear::Gear::Clean() == elle::StatusError)
       escape("unable to clean the gear");
-
-    /* XXX
-    // clean the user.
-    if (user::User::Clean() == elle::StatusError)
-      escape("unable to clean the user");
-
-    // clean the wall.
-    if (wall::Wall::Clean() == elle::StatusError)
-      escape("unable to clean the wall");
-
-    // clean the path.
-    if (path::Path::Clean() == elle::StatusError)
-      escape("unable to clean the path");
-
-    // clean the journal.
-    if (journal::Journal::Clean() == elle::StatusError)
-      escape("unable to clean the journal");
 
     // clean the depot.
     if (depot::Depot::Clean() == elle::StatusError)
       escape("unable to clean the depot");
 
-    // clean the configuration.
-    if (configuration::Configuration::Clean() == elle::StatusError)
-      escape("unable to clean the configuration");
+    // clean the path.
+    if (path::Path::Clean() == elle::StatusError)
+      escape("unable to clean the path");
+
+    /* XXX
+    // clean the journal.
+    if (journal::Journal::Clean() == elle::StatusError)
+      escape("unable to clean the journal");
     */
 
     leave();

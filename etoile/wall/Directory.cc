@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [fri aug  5 12:16:56 2011]
+// updated       julien quintard   [mon aug  8 16:26:28 2011]
 //
 
 //
@@ -27,6 +27,8 @@
 #include <etoile/automaton/Directory.hh>
 
 #include <etoile/journal/Journal.hh>
+
+#include <etoile/shrub/Shrub.hh>
 
 #include <Infinit.hh>
 
@@ -180,7 +182,7 @@ namespace etoile
     ///
     elle::Status	Directory::Add(
 			  const gear::Identifier&		parent,
-			  const path::Slice&			name,
+			  const path::Slab&			name,
 			  const gear::Identifier&		child)
     {
       gear::Actor*	actor;
@@ -233,7 +235,7 @@ namespace etoile
     ///
     elle::Status	Directory::Lookup(
 			  const gear::Identifier&		identifier,
-			  const path::Slice&			name,
+			  const path::Slab&			name,
 			  nucleus::Entry*&			entry)
     {
       gear::Actor*	actor;
@@ -306,11 +308,12 @@ namespace etoile
     ///
     elle::Status	Directory::Rename(
 			  const gear::Identifier&		identifier,
-			  const path::Slice&			from,
-			  const path::Slice&			to)
+			  const path::Slab&			from,
+			  const path::Slab&			to)
     {
       gear::Actor*	actor;
       gear::Directory*	context;
+      path::Route	route;
 
       enter();
 
@@ -336,6 +339,15 @@ namespace etoile
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;
 
+      // build the route associated with the previous version of
+      // the renamed entry.
+      if (route.Create(actor->scope->chemin.route, from) == elle::StatusError)
+	escape("unable to create the route");
+
+      // evict the route from the shrub.
+      if (shrub::Shrub::Evict(route) == elle::StatusError)
+	escape("unable to evict the route from the shrub");
+
       leave();
     }
 
@@ -344,10 +356,11 @@ namespace etoile
     ///
     elle::Status	Directory::Remove(
 			  const gear::Identifier&		identifier,
-			  const path::Slice&			name)
+			  const path::Slab&			name)
     {
       gear::Actor*	actor;
       gear::Directory*	context;
+      path::Route	route;
 
       enter();
 
@@ -371,6 +384,14 @@ namespace etoile
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;
+
+      // build the route associated with the removed entry.
+      if (route.Create(actor->scope->chemin.route, name) == elle::StatusError)
+	escape("unable to create the route");
+
+      // evict the route from the shrub.
+      if (shrub::Shrub::Evict(route) == elle::StatusError)
+	escape("unable to evict the route from the shrub");
 
       leave();
     }

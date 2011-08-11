@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.hh
 //
 // created       julien quintard   [fri aug 14 15:36:23 2009]
-// updated       julien quintard   [mon jul  4 15:44:50 2011]
+// updated       julien quintard   [mon aug  8 16:23:40 2011]
 //
 
 #ifndef ETOILE_WALL_DIRECTORY_HH
@@ -22,7 +22,7 @@
 #include <nucleus/Nucleus.hh>
 
 #include <etoile/path/Chemin.hh>
-#include <etoile/path/Slice.hh>
+#include <etoile/path/Slab.hh>
 
 #include <etoile/gear/Identifier.hh>
 
@@ -51,20 +51,20 @@ namespace etoile
       static elle::Status	Lock(const gear::Identifier&);
       static elle::Status	Release(const gear::Identifier&);
       static elle::Status	Add(const gear::Identifier&,
-				    const path::Slice&,
+				    const path::Slab&,
 				    const gear::Identifier&);
       static elle::Status	Lookup(const gear::Identifier&,
-				       const path::Slice&,
+				       const path::Slab&,
 				       nucleus::Entry*&);
       static elle::Status	Consult(const gear::Identifier&,
 					const nucleus::Index&,
 					const nucleus::Size&,
 					nucleus::Range<nucleus::Entry>&);
       static elle::Status	Rename(const gear::Identifier&,
-				       const path::Slice&,
-				       const path::Slice&);
+				       const path::Slab&,
+				       const path::Slab&);
       static elle::Status	Remove(const gear::Identifier&,
-				       const path::Slice&);
+				       const path::Slab&);
 
       static elle::Status	Discard(const gear::Identifier&);
       static elle::Status	Store(const gear::Identifier&);

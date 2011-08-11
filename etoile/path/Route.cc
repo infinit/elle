@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [thu aug  4 11:26:23 2011]
+// updated       julien quintard   [mon aug  8 15:03:08 2011]
 //
 
 //
@@ -24,6 +24,63 @@ namespace etoile
 {
   namespace path
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this route represents a null route.
+    ///
+    const Route				Route::Null;
+
+    ///
+    /// this route represents the root directory.
+    ///
+    Route				Route::Root;
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this method initializes the path system.
+    ///
+    elle::Status	Route::Initialize()
+    {
+      Way		root(elle::System::Path::Separator);
+
+      enter();
+
+      // create the reference root route.
+      if (Route::Root.Create(root) == elle::StatusError)
+	escape("unable to create the route");
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the path system.
+    ///
+    elle::Status	Route::Clean()
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Route::Route()
+    {
+    }
 
 //
 // ---------- methods ---------------------------------------------------------

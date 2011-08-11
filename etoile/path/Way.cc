@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Way.cc
 //
 // created       julien quintard   [wed apr  7 00:29:12 2010]
-// updated       julien quintard   [thu aug  4 12:40:59 2011]
+// updated       julien quintard   [mon aug  8 14:56:18 2011]
 //
 
 //
@@ -53,10 +53,18 @@ namespace etoile
     }
 
     ///
-    /// simple constructor
+    /// character constructor
     ///
-    Way::Way(const elle::String&				path):
-      path(path)
+    Way::Way(const elle::Character&				character):
+      path(1, character)
+    {
+    }
+
+    ///
+    /// string constructor
+    ///
+    Way::Way(const elle::String&				string):
+      path(string)
     {
     }
 

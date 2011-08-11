@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [thu aug  4 00:32:17 2011]
+// updated       julien quintard   [tue aug  9 10:17:34 2011]
 //
 
 //
@@ -25,6 +25,8 @@
 
 #include <etoile/depot/Depot.hh>
 
+#include <etoile/shrub/Shrub.hh>
+
 #include <agent/Agent.hh>
 
 namespace etoile
@@ -33,37 +35,33 @@ namespace etoile
   {
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- static methods --------------------------------------------------
 //
 
     ///
-    /// this method initialises the path component.
+    /// this method initializes the path system.
     ///
     elle::Status	Path::Initialize()
     {
       enter();
 
-      /* XXX
-      // initialize the cache.
-      if (Cache::Initialize() == elle::StatusError)
-	escape("unable to initialize the cache");
-      */
+      // initialize the route.
+      if (Route::Initialize() == elle::StatusError)
+	escape("unable to initialize the route");
 
       leave();
     }
 
     ///
-    /// this method cleans the path module.
+    /// this method cleans the path system.
     ///
     elle::Status	Path::Clean()
     {
       enter();
 
-      /* XXX
-      // clean the cache.
-      if (Cache::Clean() == elle::StatusError)
-	escape("unable to clean the cache");
-      */
+      // clean the route.
+      if (Route::Clean() == elle::StatusError)
+	escape("unable to clean the route");
 
       leave();
     }
@@ -85,9 +83,9 @@ namespace etoile
 
       enter();
 
-      // first ask the cache to resolve as much as it can.
-      //if (Cache::Resolve(route, venue) == elle::StatusError)
-      //escape("unable to resolve part of the route through the cache");
+      // first ask the shrub i.e path cache to resolve as much as it can.
+      if (shrub::Shrub::Resolve(route, venue) == elle::StatusError)
+	escape("unable to resolve part of the route through the shrub");
 
       // if complete, return the address i.e without updating the cache.
       if (route.elements.size() == venue.elements.size())
@@ -241,9 +239,9 @@ namespace etoile
 	  release();
 	}
 
-      // update the resolved path to the cache.
-      //if (Cache::Update(route, venue) == elle::StatusError)
-      //escape("unable to update the cache");
+      // update the shrub with the resolved path.
+      if (shrub::Shrub::Update(route, venue) == elle::StatusError)
+	escape("unable to update the shrub");
 
       leave();
     }
