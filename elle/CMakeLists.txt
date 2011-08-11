@@ -84,6 +84,7 @@ ADD_LIBRARY(elle
   network/Socket.cc
 
   utility/Base64.cc
+  utility/Duration.cc
   utility/Factory.cc
   utility/Hexadecimal.cc
   utility/Parser.cc
