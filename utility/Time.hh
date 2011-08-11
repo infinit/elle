@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [fri jul  8 16:21:47 2011]
+// updated       julien quintard   [thu aug 11 10:58:50 2011]
 //
 
 #ifndef ELLE_UTILITY_TIME_HH
@@ -26,7 +26,10 @@
 
 #include <elle/package/Archive.hh>
 
+#include <elle/utility/Duration.hh>
+
 #include <elle/idiom/Close.hh>
+# include <QDateTime>
 # include <ctime>
 #include <elle/idiom/Open.hh>
 
@@ -46,6 +49,9 @@ namespace elle
     ///
     /// this class represents a time stamp.
     ///
+    /// XXX \todo use QTime or QDateTime -> precise with ms so no conflict
+    ///  possible + handles all cases + portable
+    ///
     class Time:
       public Object
     {
@@ -60,7 +66,11 @@ namespace elle
       //
       Status		Current();
 
-      Status		Convert(::time_t&) const;
+      Status		Get(::time_t&) const;
+      Status		Get(::QDateTime&) const;
+
+      Status		Set(const ::time_t&);
+      Status		Set(const ::QDateTime&);
 
       //
       // interfaces
@@ -70,7 +80,12 @@ namespace elle
       declare(Time);
       Boolean		operator==(const Time&) const;
       Boolean		operator<(const Time&) const;
+
       Time		operator+(const Time&);
+      Time		operator-(const Time&);
+
+      Time		operator+(const Duration&);
+      Time		operator-(const Duration&);
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -82,6 +97,7 @@ namespace elle
       //
       // attributes
       //
+      Natural16		millisecond;
       Natural8		second;
       Natural8		minute;
       Natural8		hour;
@@ -89,8 +105,6 @@ namespace elle
       Natural8		day;
       Natural8		month;
       Natural16		year;
-
-      Natural8		dst;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [thu jul 28 15:07:37 2011]
+// updated       julien quintard   [thu aug 11 08:24:17 2011]
 //
 
 //
