@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8dictionary/Dictionary.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat jul  9 19:19:52 2011]
+// updated       julien quintard   [thu aug 11 11:14:38 2011]
 //
 
 //
@@ -377,6 +377,10 @@ namespace application
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
 
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
       escape("unable to initialize Nucleus");
@@ -395,10 +399,6 @@ namespace application
 
     // initialize the operation.
     operation = Dictionary::OperationUnknown;
-
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);

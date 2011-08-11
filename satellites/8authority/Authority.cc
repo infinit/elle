@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8authority/Authority.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat jul  9 19:19:38 2011]
+// updated       julien quintard   [thu aug 11 11:13:14 2011]
 //
 
 //
@@ -165,6 +165,10 @@ namespace application
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
 
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
       escape("unable to initialize Nucleus");
@@ -177,16 +181,12 @@ namespace application
     if (Infinit::Initialize() == elle::StatusError)
       escape("unable to initialize Infinit");
 
-    // initialize the Etoile library.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
-      escape("unable to initialize Etoile");
-
     // initialize the operation.
     operation = Authority::OperationUnknown;
 
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
+    // initialize the Etoile library.
+    if (etoile::Etoile::Initialize() == elle::StatusError)
+      escape("unable to initialize Etoile");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);

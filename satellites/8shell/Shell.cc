@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8shell/Shell.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat jul  9 19:20:19 2011]
+// updated       julien quintard   [thu aug 11 11:15:20 2011]
 //
 
 //
@@ -121,6 +121,10 @@ namespace application
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
 
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
       escape("unable to initialize Nucleus");
@@ -136,10 +140,6 @@ namespace application
     // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
-
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);

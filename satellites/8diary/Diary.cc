@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Diary.cc
 //
 // created       julien quintard   [mon jun 27 22:38:51 2011]
-// updated       julien quintard   [sun jul 31 13:32:29 2011]
+// updated       julien quintard   [thu aug 11 11:14:23 2011]
 //
 
 //
@@ -50,6 +50,10 @@ namespace application
     if (elle::Elle::Initialize() == elle::StatusError)
       escape("unable to initialize Elle");
 
+    // set up the program.
+    if (elle::Program::Setup() == elle::StatusError)
+      escape("unable to set up the program");
+
     // initialize the nucleus library.
     if (nucleus::Nucleus::Initialize() == elle::StatusError)
       escape("unable to initialize Nucleus");
@@ -68,10 +72,6 @@ namespace application
 
     // initialize the operation.
     operation = Diary::OperationUnknown;
-
-    // set up the program.
-    if (elle::Program::Setup() == elle::StatusError)
-      escape("unable to set up the program");
 
     // allocate a new parser.
     Infinit::Parser = new elle::Parser(argc, argv);
