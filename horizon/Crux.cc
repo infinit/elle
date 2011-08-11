@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [fri aug  5 08:05:04 2011]
+// updated       julien quintard   [wed aug 10 23:17:26 2011]
 //
 
 //
@@ -32,7 +32,7 @@ namespace pig
   do									\
     {									\
       report(_text_);							\
-      show(); \
+      show();								\
 									\
       Crux::Release(_identifiers_);					\
 									\
@@ -58,7 +58,7 @@ namespace pig
   ///
   /// this constant holds the number of directory entries to retrieve at once.
   ///
-  const nucleus::Size			Crux::Range = 256;
+  const nucleus::Size			Crux::Range = 128;
 
 //
 // ---------- callbacks -------------------------------------------------------
@@ -187,12 +187,11 @@ namespace pig
     // convert the times into time_t structures.
     stat->st_atime = time(NULL);
 
-    if (information.stamps.creation.Convert(stat->st_ctime) ==
-	elle::StatusError)
+    if (information.stamps.creation.Get(stat->st_ctime) == elle::StatusError)
       error("unable to convert the time stamps",
 	    EINTR);
 
-    if (information.stamps.modification.Convert(stat->st_mtime) ==
+    if (information.stamps.modification.Get(stat->st_mtime) ==
 	elle::StatusError)
       error("unable to convert the time stamps",
 	    EINTR);
@@ -497,7 +496,7 @@ namespace pig
   int			Crux::Mkdir(const char*			path,
 				    mode_t			mode)
   {
-    etoile::path::Slice		name;
+    etoile::path::Slab		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
@@ -572,7 +571,7 @@ namespace pig
   ///
   int			Crux::Rmdir(const char*			path)
   {
-    etoile::path::Slice		name;
+    etoile::path::Slab		name;
     etoile::path::Way		child(path);
     etoile::path::Way		parent(child, name);
     etoile::path::Chemin	chemin;
@@ -1181,7 +1180,7 @@ namespace pig
   {
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	link;
-    etoile::path::Slice		name;
+    etoile::path::Slab		name;
     etoile::path::Way		from(etoile::path::Way(source), name);
     etoile::path::Way		to(target);
     etoile::path::Chemin	chemin;
@@ -1300,7 +1299,7 @@ namespace pig
 				     mode_t			mode,
 				     struct ::fuse_file_info*	info)
   {
-    etoile::path::Slice		name;
+    etoile::path::Slab		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
@@ -1637,9 +1636,9 @@ namespace pig
   int			Crux::Rename(const char*		source,
 				     const char*		target)
   {
-    etoile::path::Slice		f;
+    etoile::path::Slab		f;
     etoile::path::Way		from(etoile::path::Way(source), f);
-    etoile::path::Slice		t;
+    etoile::path::Slab		t;
     etoile::path::Way		to(etoile::path::Way(target), t);
     etoile::gear::Identifier	object;
 
@@ -1778,7 +1777,7 @@ namespace pig
   ///
   int			Crux::Unlink(const char*			path)
   {
-    etoile::path::Slice			name;
+    etoile::path::Slab			name;
     etoile::path::Way			child(path);
     etoile::path::Way			parent(child, name);
     etoile::path::Chemin		chemin;

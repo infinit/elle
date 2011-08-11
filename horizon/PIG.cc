@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [wed aug  3 20:26:07 2011]
+// updated       julien quintard   [thu aug 11 11:11:03 2011]
 //
 
 //
@@ -46,6 +46,7 @@ namespace pig
   lune::Dictionary			PIG::Dictionary;
 
   ///
+
   /// this variable contains the diary which replays the PIG events.
   ///
   pig::diary::Diary			PIG::Diary;
