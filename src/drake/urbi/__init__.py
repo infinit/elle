@@ -1,37 +1,29 @@
 import drake
 import drake.cxx
 
-class SDK:
+class SDK(drake.Configuration):
 
-  def __init__(self, root = None):
-
-    if root is None:
+  def __init__(self, prefix = None, version = drake.Version()):
+    if prefix is None:
       paths = [drake.Path('/usr'), drake.Path('/usr/local')]
     else:
-      paths = [drake.Path(root)]
-    self.__root = self.__search('bin/urbi', paths)
+      paths = [drake.Path(prefix)]
+    self.__prefix = self._search('bin/urbi', paths)
+    v = drake.cmd_output([str(self.urbi()), '--quiet', '--expression', 'System.version;shutdown;'])
+    v = v.decode('utf-8').split(' ')[1].strip().split('"')[1].split('.')
+    v = drake.Version(*map(int, v))
+    if v not in version:
+      raise Exception('Urbi SDK version (%s) does not match the requested version (%s).' % (v, version))
     self.__config = drake.cxx.Config()
-    self.__config.add_system_include_path(self.__root / 'include')
+    self.__config.add_system_include_path(self.__prefix / 'include')
     self.__config.lib('boost_system')
 
   def config(self):
 
     return self.__config
 
-  def __search(self, what, where):
-
-    what = drake.Path(what)
-    for root in where:
-      if (root / what).exists():
-        return root
-    if len(where) <= 1:
-      desc = str(where[0])
-    else:
-      desc = '%s and %s' % (', '.join(map(str, where[:-1])), where[-1])
-    raise drake.Exception('Unable to find %s in any of %s.' % (what, desc))
-
   def urbi(self):
-    return self.__root / 'bin/urbi'
+    return self.__prefix / 'bin/urbi'
 
 class UObject(drake.cxx.Module):
 
