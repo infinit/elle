@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [wed aug  3 20:30:10 2011]
+// updated       julien quintard   [thu aug 11 10:36:50 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
@@ -41,9 +41,12 @@ namespace lune
 
     struct				Default
     {
-      struct				Path
+      struct				Shrub
       {
+	static const elle::Boolean	Status;
 	static const elle::Natural32	Capacity;
+	static const elle::Natural32	Lifespan;
+	static const elle::Natural32	Frequence;
       };
 
       struct				Cache
@@ -109,21 +112,20 @@ namespace lune
     struct
     {
       elle::Boolean		status;
-
       elle::Natural32		capacity;
-    }				path;
+      elle::Natural32		lifespan;
+      elle::Natural32		frequence;
+    }				shrub;
 
     struct
     {
       elle::Boolean		status;
-
       elle::Natural32		capacity;
     }				cache;
 
     struct
     {
       elle::Boolean		status;
-
       elle::Natural32		capacity;
     }				reserve;
 

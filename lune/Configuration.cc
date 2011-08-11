@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [wed aug  3 20:30:48 2011]
+// updated       julien quintard   [thu aug 11 11:53:11 2011]
 //
 
 //
@@ -36,8 +36,14 @@ namespace lune
   ///
   /// these are the default parameters.
   ///
-  const elle::Natural32	Configuration::Default::Path::Capacity =
-    4096;
+  const elle::Boolean	Configuration::Default::Shrub::Status =
+    true;
+  const elle::Natural32	Configuration::Default::Shrub::Capacity =
+    1024;
+  const elle::Natural32	Configuration::Default::Shrub::Lifespan =
+    300;
+  const elle::Natural32	Configuration::Default::Shrub::Frequence =
+    120000;
 
   const elle::Natural32	Configuration::Default::Cache::Capacity =
     2097152;
@@ -81,8 +87,23 @@ namespace lune
     //
 
     if (elle::Settings::Set(
-	  "path", "capacity",
-	  this->path.capacity) == elle::StatusError)
+	  "shrub", "status",
+	  this->shrub.status) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "shrub", "capacity",
+	  this->shrub.capacity) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "shrub", "lifespan",
+	  this->shrub.lifespan) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "shrub", "frequence",
+	  this->shrub.frequence) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -151,9 +172,27 @@ namespace lune
     //
 
     if (elle::Settings::Get(
-	  "path", "capacity",
-	  this->path.capacity,
-	  Configuration::Default::Path::Capacity) == elle::StatusError)
+	  "shrub", "status",
+	  this->shrub.status,
+	  Configuration::Default::Shrub::Status) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "shrub", "capacity",
+	  this->shrub.capacity,
+	  Configuration::Default::Shrub::Capacity) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "shrub", "lifespan",
+	  this->shrub.lifespan,
+	  Configuration::Default::Shrub::Lifespan) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "shrub", "frequence",
+	  this->shrub.frequence,
+	  Configuration::Default::Shrub::Frequence) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
