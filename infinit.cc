@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/infinit.cc
 //
 // created       julien quintard   [wed jun  1 10:53:21 2011]
-// updated       julien quintard   [wed aug  3 17:55:56 2011]
+// updated       julien quintard   [thu aug 11 11:13:54 2011]
 //
 
 //
@@ -40,11 +40,9 @@ elle::Status		Main(elle::Natural32			argc,
   if (elle::Elle::Initialize() == elle::StatusError)
     escape("unable to initialize Elle");
 
-  // XXX
-  {
-    typedef elle::Parameters<> P;
-    typedef typename elle::Trait::Bare<P>::Type B;
-  }
+  // set up the program.
+  if (elle::Program::Setup() == elle::StatusError)
+    escape("unable to set up the program");
 
   // initialize the nucleus library.
   if (nucleus::Nucleus::Initialize() == elle::StatusError)
@@ -61,10 +59,6 @@ elle::Status		Main(elle::Natural32			argc,
   // initialize the Etoile library.
   if (etoile::Etoile::Initialize() == elle::StatusError)
     escape("unable to initialize Etoile");
-
-  // set up the program.
-  if (elle::Program::Setup() == elle::StatusError)
-    escape("unable to set up the program");
 
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);

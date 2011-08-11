@@ -1,3 +1,5 @@
+- make: Warning: File `Makefile' has modification time 3557 s in the future
+
 - refaire marcher diary::record -> record make de linux (sans la copie)
 - virer diary/ de pig et mettre dans 8diary. si lance avec option
   infinit, on link avec infinit et on bande.
