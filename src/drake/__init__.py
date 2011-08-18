@@ -1529,11 +1529,20 @@ class FileExpander(Expander):
             target = node(target)
         else:
             assert isinstance(target, BaseNode)
+            self.__target = target
         Expander.__init__(self,
                           dicts = dicts,
                           sources = [source],
                           target = target,
                           *args, **kwargs)
+
+    def execute(self):
+        if Expander.execute(self):
+            shutil.copymode(str(self.__source.path()),
+                            str(self.__target.path()))
+            return True
+        else:
+            return False
 
     def content(self):
         """The content of the source file."""
@@ -1932,7 +1941,7 @@ class Copy(Builder):
         self.output('Copy %s to %s' % (self.__source.path(), self.__target.path()),
                     'Copy %s' % self.__target,)
         # FIXME: errors!
-        shutil.copyfile(str(self.__source.path()), str(self.__target.path()))
+        shutil.copy2(str(self.__source.path()), str(self.__target.path()))
         return True
 
 
