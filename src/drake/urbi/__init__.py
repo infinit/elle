@@ -29,6 +29,7 @@ class SDK(drake.Configuration):
   def runtime_nodes(self):
     res = []
     res.append('bin/urbi')
+    res.append('bin/urbi-launch')
     res.append('lib/gostai/engine/libuobject.so')
     res.append('lib/gostai/remote/libuobject.so')
     res.append('lib/gostai/uobjects/urbi/fusion.so')
