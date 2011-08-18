@@ -58,7 +58,7 @@ class Git(VirtualNode):
 
     def __cmd(self, args):
         cmd = ['git'] + args
-        return cmd_output(cmd, cwd = str(self.__path))[:-1]
+        return cmd_output(cmd, cwd = str(self.__path)).decode('utf-8').strip()
 
     def ls_files(self, *paths):
         """Run git ls-files and return the list of Paths.
@@ -67,9 +67,9 @@ class Git(VirtualNode):
         """
         if not paths:
             paths = [Path('.')]
-        out = self.__cmd(['ls-files'] + map(str, paths))
+        out = self.__cmd(['ls-files'] + list(map(str, paths)))
         out = out.split('\n')
-        return map(drake.Path, out)
+        return list(map(drake.Path, out))
 
     def hash(self):
         return self.__cmd(['rev-parse', 'HEAD'])[:-1]
