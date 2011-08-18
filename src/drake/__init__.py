@@ -121,6 +121,7 @@ class Path(object):
         elif path.__class__ == Path:
             self.__path = deepcopy(path.__path)
             self.__absolute = path.__absolute
+            self.virtual = path.virtual
         else:
             if not path:
                 self.__path = []
