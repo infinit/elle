@@ -17,7 +17,6 @@ class SDK(drake.Configuration):
     self.__config = drake.cxx.Config()
     self.__config.add_system_include_path(self.__prefix / 'include')
     self.__config.lib_path(self.__prefix / 'lib')
-    self.__config.lib('boost_system')
 
   def config(self):
 
