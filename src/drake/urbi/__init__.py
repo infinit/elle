@@ -16,6 +16,7 @@ class SDK(drake.Configuration):
       raise Exception('Urbi SDK version (%s) does not match the requested version (%s).' % (v, version))
     self.__config = drake.cxx.Config()
     self.__config.add_system_include_path(self.__prefix / 'include')
+    self.__config.lib_path(self.__prefix / 'lib')
     self.__config.lib('boost_system')
 
   def config(self):
