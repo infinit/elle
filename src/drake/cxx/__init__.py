@@ -462,9 +462,10 @@ class Compiler(Builder):
         flags = self.config.flags
         flags.sort()
         defines = sorted(self.config.defines().items())
-        include_local = map(str, self.config.local_include_path())
-        include_system = map(str, self.config.system_include_path())
-        return '%s\n%s\n%s\n%s\n' % (defines, flags, include_local, include_system)
+        include_local = list(map(str, self.config.local_include_path()))
+        include_system = list(map(str, self.config.system_include_path()))
+        res = '%s\n%s\n%s\n%s\n' % (defines, flags, include_local, include_system)
+        return res
 
     def mkdeps(self):
 
@@ -531,11 +532,11 @@ class DynLibLinker(Builder):
     def hash(self):
         flags = self.config.flags
         flags.sort()
-        frameworks = self.config.frameworks()
+        frameworks = list(self.config.frameworks())
         frameworks.sort()
-        lib_paths = self.config.lib_paths.keys()
+        lib_paths = list(self.config.lib_paths.keys())
         lib_paths.sort()
-        libs = self.config.libs.keys()
+        libs = list(self.config.libs.keys())
         libs.sort()
         return '%s\n%s\n%s\n%s\n' % (flags, frameworks, lib_paths, libs)
 
@@ -558,7 +559,7 @@ class DynLibLinker(Builder):
 
         return self.cmd('Link %s' % self.lib,
                         self.toolkit.dynlink(self.config,
-                                             self.objs + self.sources_dynamic(),
+                                             self.objs + list(self.sources_dynamic()),
                                              self.lib))
 
     def __repr__(self):

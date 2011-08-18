@@ -1191,7 +1191,7 @@ class Builder:
         if not execute:
             for p in self.__sources:
                 path = self.__sources[p].name()
-                if path not in self._depfile.sha1s():
+                if str(path) not in self._depfile.sha1s():
                     debug.debug('Execution needed because a new dependency appeared: %s.' % path, debug.DEBUG_DEPS)
                     execute = True
                     break
@@ -1254,7 +1254,7 @@ class Builder:
                 depfile_builder.remove()
             else:
                 with open(str(depfile_builder), 'w') as f:
-                    print(self.__builder_hash, file = f)
+                    print(self.__builder_hash, file = f, end = '')
             for name in self._depfiles:
                 self._depfiles[name].update()
             self.__built = True
