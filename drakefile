@@ -26,6 +26,7 @@ def configure(prefix = '.'):
     'src/drake/cxx/__init__.py',
     'src/drake/cxx/bison.py',
     'src/drake/cxx/boost.py',
+    'src/drake/cxx/curl.py',
     'src/drake/cxx/flex.py',
     'src/drake/cxx/opengl.py',
     'src/drake/cxx/qt.py',
