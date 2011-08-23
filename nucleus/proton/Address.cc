@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed jul  6 09:28:38 2011]
+// updated       julien quintard   [fri aug 12 13:17:21 2011]
 //
 
 //
@@ -124,29 +124,10 @@ namespace nucleus
 	true();
       else if (element.digest == NULL)
 	false();
-      else
-	{
-	  elle::Natural32	i;
 
-	  // test the sizes.
-	  if (this->digest->region.size < element.digest->region.size)
-	    true();
-	  else if (this->digest->region.size > element.digest->region.size)
-	    false();
-
-	  // finally, go through the data and compare.
-	  for (i = 0; i < this->digest->region.size; i++)
-	    {
-	      // if the elements are different.
-	      if (this->digest->region.contents[i] !=
-		  element.digest->region.contents[i])
-		{
-		  return (this->digest->region.contents[i] <
-			  element.digest->region.contents[i] ?
-			  elle::StatusTrue : elle::StatusFalse);
-		}
-	    }
-	}
+      // compare the digests.
+      if (*this->digest < *element.digest)
+	true();
 
       false();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [mon aug  1 13:29:08 2011]
+// updated       julien quintard   [thu aug 11 17:40:14 2011]
 //
 
 //
@@ -59,7 +59,8 @@ namespace nucleus
 	escape("unable to retrieve the current time");
 
       // generate a random number.
-      this->seed.salt = (elle::Natural64)::rand();
+      if (elle::Random::Generate(this->seed.salt) == elle::StatusError)
+	escape("unable to generate the seed");
 
       // set the owner public key.
       this->owner.K = owner;

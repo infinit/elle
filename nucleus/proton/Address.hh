@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [wed jul  6 09:28:11 2011]
+// updated       julien quintard   [thu aug 11 14:39:03 2011]
 //
 
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
@@ -23,9 +23,6 @@
 #include <nucleus/proton/Family.hh>
 
 #include <nucleus/neutron/Component.hh>
-
-#include <ostream>
-#include <sstream>
 
 namespace nucleus
 {
