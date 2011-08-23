@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/comet/RSA.cc
+// file          /home/mycure/XX/infinit/comet/RSA.cc
 //
 // created       julien quintard   [fri mar 18 16:20:57 2011]
-// updated       julien quintard   [wed mar 23 14:43:33 2011]
+// updated       julien quintard   [tue aug 23 13:24:17 2011]
 //
 
 //
@@ -54,7 +54,7 @@ namespace comet
     BIGNUM *r0=NULL,*r1=NULL,*r2=NULL,*r3=NULL,*tmp;
     BIGNUM local_r0,local_d,local_p;
     BIGNUM *pr0,*d,*p;
-    int bitse,bitsp,bitsq,ok= -1,n=0;
+    int bitse,bitsp,bitsq,ok= -1;
     BN_CTX *ctx=NULL;
 
     ctx=BN_CTX_new();
