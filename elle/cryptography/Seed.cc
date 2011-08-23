@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Seed.cc
 //
 // created       julien quintard   [sat mar 19 14:10:58 2011]
-// updated       julien quintard   [wed mar 23 15:22:55 2011]
+// updated       julien quintard   [fri aug 12 12:54:07 2011]
 //
 
 //
@@ -16,8 +16,7 @@
 //
 
 #include <elle/cryptography/Seed.hh>
-#include <elle/cryptography/Digest.hh>
-#include <elle/cryptography/OneWay.hh>
+#include <elle/cryptography/Random.hh>
 
 namespace elle
 {
@@ -57,15 +56,9 @@ namespace elle
       // compute the size in bytes.
       size = length / 8;
 
-      // prepare the initial seed.
-      if (this->region.Prepare(size) == StatusError)
-	escape("unable to prepare the seed");
-
-      // generate the seed.
-      ::RAND_pseudo_bytes((unsigned char*)this->region.contents, size);
-
-      // manually update the size.
-      this->region.size = size;
+      // randomize the region.
+      if (Random::Generate(this->region, size) == StatusError)
+	escape("unable to generate the region");
 
       leave();
     }

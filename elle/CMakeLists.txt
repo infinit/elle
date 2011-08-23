@@ -65,6 +65,7 @@ ADD_LIBRARY(elle
   cryptography/OneWay.cc
   cryptography/PrivateKey.cc
   cryptography/PublicKey.cc
+  cryptography/Random.cc
   cryptography/SecretKey.cc
   cryptography/Seed.cc
   cryptography/Signature.cc
