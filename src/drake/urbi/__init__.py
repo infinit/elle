@@ -1,5 +1,6 @@
 import drake
 import drake.cxx
+import drake.cxx.boost
 
 class SDK(drake.Configuration):
 
@@ -17,13 +18,16 @@ class SDK(drake.Configuration):
     self.__config = drake.cxx.Config()
     self.__config.add_system_include_path(self.__prefix / 'include')
     self.__config.lib_path(self.__prefix / 'lib')
+    self.__boost = drake.cxx.boost.Boost(prefix = self.__prefix)
 
   def config(self):
-
     return self.__config
 
   def urbi(self):
     return self.__prefix / 'bin/urbi'
+
+  def boost(self):
+    return self.__boost
 
   def runtime_nodes(self):
     res = []
