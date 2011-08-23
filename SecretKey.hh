@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [tue apr 26 11:47:01 2011]
+// updated       julien quintard   [thu aug 11 17:54:37 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
