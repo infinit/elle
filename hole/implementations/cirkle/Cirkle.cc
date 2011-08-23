@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Remote.cc
+// file          /home/mycure/infinit/hole/implementations/cirkle/Cirkle.cc
 //
-// created       julien quintard   [fri may 20 19:32:16 2011]
-// updated       julien quintard   [fri aug 12 14:02:53 2011]
+// created       julien quintard   [fri aug 12 14:03:04 2011]
+// updated       julien quintard   [fri aug 12 14:04:31 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/implementations/remote/Remote.hh>
+#include <hole/implementations/cirkle/Cirkle.hh>
 
 #include <hole/Hole.hh>
 
@@ -23,7 +23,7 @@ namespace hole
 {
   namespace implementations
   {
-    namespace remote
+    namespace cirkle
     {
 
 //
@@ -33,7 +33,7 @@ namespace hole
       ///
       /// this value defines the component's name.
       ///
-      const elle::Character		Component[] = "remote";
+      const elle::Character		Component[] = "cirkle";
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -42,10 +42,9 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Remote::Remote(const nucleus::Network&			network):
+      Cirkle::Cirkle(const nucleus::Network&			network):
 	Holeable(network),
 
-	role(Remote::RoleUnknown),
 	node(NULL)
       {
       }
@@ -53,7 +52,7 @@ namespace hole
       ///
       /// the destructor.
       ///
-      Remote::~Remote()
+      Cirkle::~Cirkle()
       {
 	// if a node is present.
 	if (this->node != NULL)
@@ -68,7 +67,7 @@ namespace hole
       /// this method tries to connect to the server. if impossible, a server
       /// is created.
       ///
-      elle::Status	Remote::Join()
+      elle::Status	Cirkle::Join()
       {
 	elle::String	string;
 	elle::Address	address;
@@ -76,9 +75,9 @@ namespace hole
 	enter();
 
 	// retrieve the server's address.
-	if (Hole::Descriptor.Get("remote", "host",
+	if (Hole::Descriptor.Get("cirkle", "host",
 				 string) == elle::StatusError)
-	  escape("unable to retrieve the remote's host address from the "
+	  escape("unable to retrieve the cirkle's host address from the "
 		 "network descriptor");
 
 	// build the host address.
@@ -101,7 +100,7 @@ namespace hole
 	      this->node = client;
 
 	      // set the role.
-	      this->role = Remote::RoleClient;
+	      this->role = Cirkle::RoleClient;
 
 	      // waive.
 	      waive(client);
@@ -132,7 +131,7 @@ namespace hole
 	      this->node = server;
 
 	      // set the role.
-	      this->role = Remote::RoleServer;
+	      this->role = Cirkle::RoleServer;
 
 	      // waive.
 	      waive(server);
@@ -150,7 +149,7 @@ namespace hole
       ///
       /// this method cleans the node.
       ///
-      elle::Status	Remote::Leave()
+      elle::Status	Cirkle::Leave()
       {
 	enter();
 
@@ -164,14 +163,14 @@ namespace hole
       ///
       /// this method stores an immutable block.
       ///
-      elle::Status	Remote::Put(const nucleus::Address&	address,
+      elle::Status	Cirkle::Put(const nucleus::Address&	address,
 				    const nucleus::ImmutableBlock& block)
       {
 	enter();
 
 	// check if this node is a client.
-	if (this->role != Remote::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+	if (this->role != Cirkle::RoleClient)
+	  escape("the hole is not acting as a cirkle client as it should");
 
 	// forward the request to the node.
 	if (this->node->Put(address, block) == elle::StatusError)
@@ -183,14 +182,14 @@ namespace hole
       ///
       /// this method stores a mutable block.
       ///
-      elle::Status	Remote::Put(const nucleus::Address&	address,
+      elle::Status	Cirkle::Put(const nucleus::Address&	address,
 				    const nucleus::MutableBlock& block)
       {
 	enter();
 
 	// check if this node is a client.
-	if (this->role != Remote::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+	if (this->role != Cirkle::RoleClient)
+	  escape("the hole is not acting as a cirkle client as it should");
 
 	// forward the request to the node.
 	if (this->node->Put(address, block) == elle::StatusError)
@@ -202,14 +201,14 @@ namespace hole
       ///
       /// this method retrieves an immutable block.
       ///
-      elle::Status	Remote::Get(const nucleus::Address&	address,
+      elle::Status	Cirkle::Get(const nucleus::Address&	address,
 				    nucleus::ImmutableBlock&	block)
       {
 	enter();
 
 	// check if this node is a client.
-	if (this->role != Remote::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+	if (this->role != Cirkle::RoleClient)
+	  escape("the hole is not acting as a cirkle client as it should");
 
 	// forward the request to the node.
 	if (this->node->Get(address, block) == elle::StatusError)
@@ -221,15 +220,15 @@ namespace hole
       ///
       /// this method retrieves a mutable block.
       ///
-      elle::Status	Remote::Get(const nucleus::Address&	address,
+      elle::Status	Cirkle::Get(const nucleus::Address&	address,
 				    const nucleus::Version&	version,
 				    nucleus::MutableBlock&	block)
       {
 	enter();
 
 	// check if this node is a client.
-	if (this->role != Remote::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+	if (this->role != Cirkle::RoleClient)
+	  escape("the hole is not acting as a cirkle client as it should");
 
 	// forward the request to the node.
 	if (this->node->Get(address, version, block) == elle::StatusError)
@@ -241,13 +240,13 @@ namespace hole
       ///
       /// this method removes a block.
       ///
-      elle::Status	Remote::Kill(const nucleus::Address&	address)
+      elle::Status	Cirkle::Kill(const nucleus::Address&	address)
       {
 	enter();
 
 	// check if this node is a client.
-	if (this->role != Remote::RoleClient)
-	  escape("the hole is not acting as a remote client as it should");
+	if (this->role != Cirkle::RoleClient)
+	  escape("the hole is not acting as a cirkle client as it should");
 
 	// forward the request to the node.
 	if (this->node->Kill(address) == elle::StatusError)
@@ -263,13 +262,13 @@ namespace hole
       ///
       /// this method dumps the implementation.
       ///
-      elle::Status	Remote::Dump(const elle::Natural32	margin) const
+      elle::Status	Cirkle::Dump(const elle::Natural32	margin) const
       {
 	elle::String	alignment(margin, ' ');
 
 	enter();
 
-	std::cout << alignment << "[Remote]" << std::endl;
+	std::cout << alignment << "[Cirkle]" << std::endl;
 
 	// dump the parent.
 	if (Holeable::Dump(margin + 2) == elle::StatusError)

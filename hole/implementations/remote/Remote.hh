@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.hh
 //
 // created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [mon jul 11 16:36:42 2011]
+// updated       julien quintard   [fri aug 12 15:16:50 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH

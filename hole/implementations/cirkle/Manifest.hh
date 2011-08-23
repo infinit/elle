@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
+// file          /home/mycure/infinit/hole/implementations/cirkle/Manifest.hh
 //
-// created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [fri aug 12 15:18:03 2011]
+// created       julien quintard   [fri aug 12 15:18:12 2011]
+// updated       julien quintard   [fri aug 12 15:56:18 2011]
 //
 
-#ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
+#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MANIFEST_HH
+#define HOLE_IMPLEMENTATIONS_CIRKLE_MANIFEST_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -30,7 +30,7 @@ namespace hole
 {
   namespace implementations
   {
-    namespace remote
+    namespace cirkle
     {
 
       ///
@@ -54,8 +54,8 @@ namespace hole
 ///
 /// XXX
 ///
-range(hole::implementations::remote::Component,
-      hole::implementations::remote::Tags,
+range(hole::implementations::cirkle::Component,
+      hole::implementations::cirkle::Tags,
       elle::Component);
 
 //
@@ -66,7 +66,7 @@ namespace hole
 {
   namespace implementations
   {
-    namespace remote
+    namespace cirkle
     {
 
       //
@@ -74,8 +74,7 @@ namespace hole
       //
       enum Tag
 	{
-	  TagChallenge = elle::Range<Component>::First + 1,
-	  TagResponse,
+	  TagPropagate = elle::Range<Component>::First + 1,
 
 	  TagPush,
 	  TagPull,
@@ -95,20 +94,18 @@ namespace hole
 /// below are the definitions of the inward and outward messages.
 ///
 
-outward(hole::implementations::remote::TagChallenge,
-	parameters())
-inward(hole::implementations::remote::TagResponse,
-       parameters(elle::Cipher));
+message(hole::implementations::cirkle::TagPropagate,
+	parameters(hole::implementations::cirkle::RoutingTable))
 
-inward(hole::implementations::remote::TagPush,
+inward(hole::implementations::cirkle::TagPush,
        parameters(nucleus::Address,
 		  nucleus::Derivable<nucleus::Block>));
-inward(hole::implementations::remote::TagPull,
+inward(hole::implementations::cirkle::TagPull,
        parameters(nucleus::Address,
 		  nucleus::Version));
-outward(hole::implementations::remote::TagBlock,
+outward(hole::implementations::cirkle::TagBlock,
 	parameters(nucleus::Derivable<nucleus::Block>));
-inward(hole::implementations::remote::TagWipe,
+inward(hole::implementations::cirkle::TagWipe,
        parameters(nucleus::Address));
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [thu jul 28 16:09:35 2011]
+// updated       julien quintard   [fri aug 12 15:25:51 2011]
 //
 
 //
@@ -34,6 +34,11 @@ namespace hole
   /// this variable contains the network descriptor.
   ///
   lune::Descriptor		Hole::Descriptor;
+
+  ///
+  /// this variable contains the device passport.
+  ///
+  lune::Passport		Hole::Passport;
 
   ///
   /// this variable holds the hole implementation.
@@ -69,7 +74,7 @@ namespace hole
       escape("unable to disable the meta logging");
 
     //
-    // build the descriptor.
+    // retrieve the descriptor.
     //
     {
       // does the network exist.
@@ -87,6 +92,23 @@ namespace hole
       // validate the descriptor.
       if (Hole::Descriptor.Validate(Infinit::Authority) == elle::StatusError)
 	escape("unable to validate the descriptor");
+    }
+
+    //
+    // retrieve the passport.
+    //
+    {
+      // does the network exist.
+      if (Hole::Passport.Exist() == elle::StatusFalse)
+	escape("the device passport does not seem to exist");
+
+      // load the passport.
+      if (Hole::Passport.Load() == elle::StatusError)
+	escape("unable to load the passport");
+
+      // validate the passport.
+      if (Hole::Passport.Validate(Infinit::Authority) == elle::StatusError)
+	escape("unable to validate the passport");
     }
 
     // enable the meta logging.
@@ -111,6 +133,13 @@ namespace hole
 	{
 	  // allocate the instance.
 	  Hole::Implementation = new implementations::remote::Remote(network);
+
+	  break;
+	}
+      case Model::TypeCirkle:
+	{
+	  // allocate the instance.
+	  Hole::Implementation = new implementations::cirkle::Cirkle(network);
 
 	  break;
 	}

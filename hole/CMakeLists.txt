@@ -10,6 +10,7 @@ ADD_LIBRARY(hole
 
   Hole.cc
   Holeable.cc
+  Label.cc
   Model.cc
 )
 

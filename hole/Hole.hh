@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [tue jul  5 17:23:14 2011]
+// updated       julien quintard   [fri aug 12 14:53:37 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -64,6 +64,7 @@ namespace hole
     // static attributes
     //
     static lune::Descriptor	Descriptor;
+    static lune::Passport	Passport;
 
     static Holeable*		Implementation;
   };
@@ -74,6 +75,7 @@ namespace hole
 // ---------- includes --------------------------------------------------------
 //
 
+#include <hole/Label.hh>
 #include <hole/Model.hh>
 
 #include <hole/implementations/Implementations.hh>
