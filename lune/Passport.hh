@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Identity.hh
+// file          /home/mycure/infinit/lune/Passport.hh
 //
-// created       julien quintard   [wed may  5 20:55:12 2010]
-// updated       julien quintard   [thu aug 11 14:23:26 2011]
+// created       julien quintard   [thu aug 11 13:13:51 2011]
+// updated       julien quintard   [thu aug 11 16:05:22 2011]
 //
 
-#ifndef LUNE_IDENTITY_HH
-#define LUNE_IDENTITY_HH
+#ifndef LUNE_PASSPORT_HH
+#define LUNE_PASSPORT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -22,6 +22,8 @@
 
 #include <lune/Authority.hh>
 
+#include <hole/Label.hh>
+
 namespace lune
 {
 
@@ -30,13 +32,9 @@ namespace lune
 //
 
   ///
-  /// this class represents a identity, issued by the Infinit authority,
-  /// which represents a user.
+  /// this class uniquely identify a device.
   ///
-  /// note that the name attribute is supposed to be unique as it plays the
-  /// role of identifier.
-  ///
-  class Identity:
+  class Passport:
     public elle::Object,
     public virtual elle::Fileable<elle::FormatCustom>
   {
@@ -47,19 +45,9 @@ namespace lune
     static const elle::String		Extension;
 
     //
-    // constructors & destructors
-    //
-    Identity();
-    ~Identity();
-
-    //
     // methods
     //
-    elle::Status	Create(const elle::String&,
-			       const elle::KeyPair&);
-
-    elle::Status	Encrypt(const elle::String&);
-    elle::Status	Decrypt(const elle::String&);
+    elle::Status	Create(const hole::Label&);
 
     elle::Status	Seal(const Authority&);
     elle::Status	Validate(const Authority&) const;
@@ -69,7 +57,7 @@ namespace lune
     //
 
     // object
-    declare(Identity);
+    declare(Passport);
 
     // dumpable
     elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -79,19 +67,16 @@ namespace lune
     elle::Status	Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
-    elle::Status	Erase(const elle::String&) const;
-    elle::Status	Exist(const elle::String&) const;
+    elle::Status	Load();
+    elle::Status	Store() const;
+    elle::Status	Erase() const;
+    elle::Status	Exist() const;
 
     //
     // attributes
     //
-    elle::String	name;
-    elle::KeyPair	pair;
+    hole::Label		label;
     elle::Signature	signature;
-
-    elle::Cipher*	cipher;
   };
 
 }

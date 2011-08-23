@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.hh
 //
 // created       julien quintard   [fri apr 30 12:55:13 2010]
-// updated       julien quintard   [thu jul 28 17:07:31 2011]
+// updated       julien quintard   [thu aug 11 15:06:57 2011]
 //
 
 //
@@ -51,6 +51,8 @@ namespace lune
     static elle::Pattern	Home;
 
     static elle::Pattern	Authority;
+    static elle::Pattern	Passport;
+
     static elle::Pattern	Configuration;
     static elle::Pattern	Log;
 
@@ -104,6 +106,7 @@ namespace lune
 #include <lune/Dictionary.hh>
 #include <lune/Identity.hh>
 #include <lune/Log.hh>
+#include <lune/Passport.hh>
 #include <lune/Phrase.hh>
 
 #endif

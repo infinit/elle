@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.cc
 //
 // created       julien quintard   [fri apr 30 16:29:27 2010]
-// updated       julien quintard   [thu jul 28 17:06:11 2011]
+// updated       julien quintard   [thu aug 11 15:07:31 2011]
 //
 
 //
@@ -34,6 +34,12 @@ namespace lune
   /// file.
   ///
   elle::Pattern			Lune::Authority;
+
+  ///
+  /// this variable contains the path to the Infinit passport
+  /// file.
+  ///
+  elle::Pattern			Lune::Passport;
 
   ///
   /// this variable contains the pattern-based path to the configuration
@@ -171,6 +177,14 @@ namespace lune
 	    elle::System::Path::Separator +
 	    "infinit" +
 	    Authority::Extension) == elle::StatusError)
+	escape("unable to create the pattern");
+
+      // create the passport path pattern.
+      if (Lune::Passport.Create(
+	    home +
+	    elle::System::Path::Separator +
+	    "infinit" +
+	    Passport::Extension) == elle::StatusError)
 	escape("unable to create the pattern");
 
       // create the configuration path pattern.

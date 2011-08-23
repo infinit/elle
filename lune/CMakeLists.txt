@@ -8,6 +8,7 @@ ADD_LIBRARY(lune
   Identity.cc
   Log.cc
   Lune.cc
+  Passport.cc
   Phrase.cc
 )
 
