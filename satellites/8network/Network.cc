@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8network/Network.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu aug 11 11:14:50 2011]
+// updated       julien quintard   [fri aug 12 13:56:59 2011]
 //
 
 //
@@ -144,7 +144,7 @@ namespace application
     }
 
     //
-    // create the network's memento.
+    // create the network's descriptor.
     //
     {
       // create the descriptor.
@@ -304,7 +304,7 @@ namespace application
     // retrieve the descriptor.
     //
     {
-      // load the descripto.
+      // load the descriptor.
       if (descriptor.Load(name) == elle::StatusError)
 	escape("unable to load the descriptor");
 
