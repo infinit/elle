@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [fri may 28 12:15:36 2010]
+// updated       julien quintard   [thu aug 11 17:38:33 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_EVENT_HH
@@ -27,7 +27,6 @@
 #include <elle/package/Archive.hh>
 
 #include <elle/idiom/Close.hh>
-# include <openssl/rand.h>
 # include <openssl/err.h>
 #include <elle/idiom/Open.hh>
 

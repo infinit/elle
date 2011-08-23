@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [fri jul  8 16:36:20 2011]
+// updated       julien quintard   [thu aug 11 16:10:16 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HH

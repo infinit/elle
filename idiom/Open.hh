@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sat jul 30 20:52:28 2011]
+// updated       julien quintard   [fri aug 12 13:15:23 2011]
 //
 
 //
@@ -92,19 +92,19 @@
   _template_								\
   elle::core::Boolean	_type_::operator!=(const _type_& object) const	\
   {									\
-    return (!(*this == object));					\
+    return (!(this->operator==(object)));				\
   }									\
 									\
   _template_								\
   elle::core::Boolean	_type_::operator<=(const _type_& object) const	\
   {									\
-    return ((*this == object) || (*this < object));			\
+    return ((this->operator<(object) || this->operator==(object)));	\
   }									\
 									\
   _template_								\
   elle::core::Boolean	_type_::operator>=(const _type_& object) const	\
   {									\
-    return ((*this == object) || (*this > object));			\
+    return ((this->operator>(object) || this->operator==(object)));	\
   }									\
 									\
   _template_								\

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [wed may 25 17:46:21 2011]
+// updated       julien quintard   [fri aug 12 16:22:47 2011]
 //
 
 //
@@ -120,6 +120,49 @@ namespace elle
 	false();
 
       true();
+    }
+
+    ///
+    /// compare two objects.
+    ///
+    Boolean		Host::operator<(const Host&		element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	false;
+
+      // compare the type
+      if (this->type < element.type)
+	true();
+      else if (this->type > element.type)
+	false();
+      else
+	{
+	  ::QString	first;
+	  ::QString	second;
+
+	  // generate the string.
+	  first = this->location.toString();
+	  second = element.location.toString();
+
+	  // compare the string.
+	  if (first < second)
+	    true();
+	  else if (first > second)
+	    false();
+	}
+
+      false();
+    }
+
+    ///
+    /// compare two objects.
+    ///
+    Boolean		Host::operator>(const Host&		element) const
+    {
+      return (!(this->operator<=(element)));
     }
 
     ///

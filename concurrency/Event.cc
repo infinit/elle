@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.cc
 //
 // created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [mon jun 27 07:17:58 2011]
+// updated       julien quintard   [thu aug 11 17:53:37 2011]
 //
 
 //
@@ -20,8 +20,12 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/cryptography/Random.hh>
+
 namespace elle
 {
+  using namespace cryptography;
+
   namespace concurrency
   {
 
@@ -60,10 +64,9 @@ namespace elle
       // try until the generated event is different from Null.
       do
 	{
-	  // generate random bytes.
-	  if (::RAND_bytes((unsigned char*)&this->identifier,
-			   sizeof (this->identifier)) == 0)
-	    escape(::ERR_error_string(ERR_get_error(), NULL));
+	  // generate the identifier.
+	  if (Random::Generate(this->identifier) == StatusError)
+	    escape("unable to generate the identifier");
 	} while (*this == Event::Null);
 
       leave();

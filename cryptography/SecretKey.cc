@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [fri jul 15 11:29:14 2011]
+// updated       julien quintard   [thu aug 11 17:54:04 2011]
 //
 
 //
@@ -18,6 +18,7 @@
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Digest.hh>
 #include <elle/cryptography/OneWay.hh>
+#include <elle/cryptography/Random.hh>
 
 namespace elle
 {
@@ -113,10 +114,8 @@ namespace elle
 	escape("unable to prepare the key");
 
       // generate the key.
-      ::RAND_pseudo_bytes((unsigned char*)this->region.contents, size);
-
-      // manually update the size.
-      this->region.size = size;
+      if (Random::Generate(this->region, size) == StatusError)
+	escape("unable to generate the region");
 
       leave();
     }

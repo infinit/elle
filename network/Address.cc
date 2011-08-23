@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Address.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [wed may 25 16:24:43 2011]
+// updated       julien quintard   [fri aug 12 16:25:39 2011]
 //
 
 //
@@ -110,6 +110,40 @@ namespace elle
 	false();
 
       true();
+    }
+
+    ///
+    /// compare two objects.
+    ///
+    Boolean		Address::operator<(const Address&	element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	false();
+
+      // compare the host.
+      if (this->host < element.host)
+	true();
+      else if (this->host > element.host)
+	false();
+
+      // compare the port.
+      if (this->port < element.port)
+	true();
+      else if (this->port > element.port)
+	false();
+
+      false();
+    }
+
+    ///
+    /// compare two objects.
+    ///
+    Boolean		Address::operator>(const Address&	element) const
+    {
+      return (!(this->operator<=(element)));
     }
 
     ///

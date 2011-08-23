@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [thu jul 28 16:20:00 2011]
+// updated       julien quintard   [fri aug 12 13:18:13 2011]
 //
 
 //
@@ -460,30 +460,40 @@ namespace elle
 	false();
 
       // check the content.
-      if (::memcmp(this->contents, element.contents, element.size) != 0)
+      if (::memcmp(this->contents, element.contents, element.size) == 0)
+	true();
+
+      false();
+    }
+
+    ///
+    /// this operator compares two regions.
+    ///
+    Boolean		Region::operator<(const Region&		element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // check the size.
+      if (this->size != element.size)
 	false();
 
-      true();
+      // check the content.
+      if (::memcmp(this->contents, element.contents, element.size) < 0)
+	true();
+
+      false();
     }
 
     ///
     /// this operator compares two regions.
     ///
-    Boolean		Region::operator<(const Region&) const
+    Boolean		Region::operator>(const Region&		element) const
     {
-      enter();
-
-      flee("this method should never have been called");
-    }
-
-    ///
-    /// this operator compares two regions.
-    ///
-    Boolean		Region::operator>(const Region&) const
-    {
-      enter();
-
-      flee("this method should never have been called");
+      return (!(this->operator<=(element)));
     }
 
     ///
@@ -511,27 +521,23 @@ namespace elle
     ///
     Boolean		Region::operator!=(const Region&	element) const
     {
-      return (!(*this == element));
+      return (!(this->operator==(element)));
     }
 
     ///
     /// this operator compares two regions.
     ///
-    Boolean		Region::operator<=(const Region&) const
+    Boolean		Region::operator<=(const Region&	element) const
     {
-      enter();
-
-      flee("this method should never have been called");
+      return (this->operator<(element) || this->operator==(element));
     }
 
     ///
     /// this operator compares two regions.
     ///
-    Boolean		Region::operator>=(const Region&) const
+    Boolean		Region::operator>=(const Region&	element) const
     {
-      enter();
-
-      flee("this method should never have been called");
+      return (this->operator>(element) || this->operator==(element));
     }
 
   }

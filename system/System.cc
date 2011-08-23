@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/system/System.cc
 //
 // created       julien quintard   [mon jan 26 20:23:52 2009]
-// updated       julien quintard   [sun may  2 12:31:33 2010]
+// updated       julien quintard   [fri aug 12 14:01:54 2011]
 //
 
 //
@@ -71,8 +71,15 @@ namespace elle
       System::Path::Current =
 	::QDir::current().canonicalPath().toStdString();
 
-      System::Path::Home =
-	::QDir::home().canonicalPath().toStdString();
+      if (::getenv("INFINIT_HOME") == NULL)
+	{
+	  System::Path::Home =
+	    ::QDir::home().canonicalPath().toStdString();
+	}
+      else
+	{
+	  System::Path::Home.assign(::getenv("INFINIT_HOME"));
+	}
 
       // define the endianness.
       switch (::QSysInfo::ByteOrder)

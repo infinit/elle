@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.cc
 //
 // created       julien quintard   [tue oct 30 12:16:42 2007]
-// updated       julien quintard   [mon jun 27 07:16:56 2011]
+// updated       julien quintard   [thu aug 11 17:38:16 2011]
 //
 
 //
@@ -23,7 +23,6 @@
 #include <elle/idiom/Close.hh>
 # include <openssl/engine.h>
 # include <openssl/err.h>
-# include <openssl/rand.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -45,37 +44,17 @@ namespace elle
     ///
     Status		Cryptography::Initialize()
     {
-      uint8_t		temporary[256];
-      int		fd;
-
       enter();
-
-      // initialise the random generator.
-      ::srand(::getpid()); 
-
-      // get some random data.
-      if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
-	escape(::strerror(errno));
-
-      // read random data.
-      if (::read(fd, temporary, sizeof (temporary)) == -1)
-	{
-	  ::close(fd);
-
-	  escape(::strerror(errno));
-	}
-
-      // close the file descriptor.
-      ::close(fd);
-
-      // seed the random generator.
-      ::RAND_seed(temporary, sizeof (temporary));
 
       // load the crypto error strings.
       ::ERR_load_crypto_strings();
 
       // enable the SSL algorithms, especially for RSA.
       ::SSLeay_add_all_algorithms();
+
+      // initialize the random generator.
+      if (Random::Initialize() == StatusError)
+	escape("unable to initialize the random generator");
 
       // initialize the key pair generation context.
       if (KeyPair::Initialize() == StatusError)
@@ -94,6 +73,10 @@ namespace elle
       // clean the key pair generation context.
       if (KeyPair::Clean() == StatusError)
 	escape("unable to initialize the key pair generation context");
+
+      // clean the random generator.
+      if (Random::Clean() == StatusError)
+	escape("unable to clean the random generator");
 
       // free the current threads error queue.
       ::ERR_remove_state(0);
