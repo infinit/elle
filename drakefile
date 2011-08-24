@@ -31,6 +31,7 @@ def configure(prefix = '.'):
     'src/drake/cxx/opengl.py',
     'src/drake/cxx/qt.py',
     'src/drake/cxx/sdl.py',
+    'src/drake/cxx/sofia_sip.py',
     'src/drake/debug.py',
     'src/drake/git.py',
     'src/drake/opencv.py',
