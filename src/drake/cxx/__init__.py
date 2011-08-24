@@ -593,7 +593,7 @@ class StaticLibLinker(ShellCommand):
 
         return self.cmd('Link %s' % self.lib,
                         self.toolkit.archive(self.config,
-                                             self.objs + self.sources_dynamic(),
+                                             self.objs + list(self.sources_dynamic()),
                                              self.lib))
 
 class Source(Node):
