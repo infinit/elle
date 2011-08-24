@@ -913,7 +913,7 @@ def nodes(*paths):
 
 def _cmd_escape(fmt, *args):
     rg = re.compile('\'')
-    args = map(str, args)
+    args = list(map(str, args))
     for arg in args:
         if rg.match(arg):
             pass
