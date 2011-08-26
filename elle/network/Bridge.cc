@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [mon jul 18 11:29:07 2011]
+// updated       julien quintard   [thu aug 25 11:38:19 2011]
 //
 
 //
@@ -74,19 +74,19 @@ namespace elle
     ///
     /// this method creates and starts the porter.
     ///
-    Status		BridgePorter::Create(const Address&	address)
+    Status		BridgePorter::Create(const Point&	point)
     {
       enter();
 
-      // set the address.
-      this->address = address;
+      // set the point.
+      this->point = point;
 
       // allocate a new server.
       this->server = new ::QTcpServer;
 
       // start listening.
-      if (this->server->listen(this->address.host.location,
-			       this->address.port) == false)
+      if (this->server->listen(this->point.host.location,
+			       this->point.port) == false)
 	escape(this->server->errorString().toStdString().c_str());
 
       // connect the signals.
@@ -146,7 +146,7 @@ namespace elle
     /// since the Bridge class is static), all the slots registered on the
     /// signal would be triggered which is not want we want.
     ///
-    Status		Bridge::Listen(const Address&		address,
+    Status		Bridge::Listen(const Point&		point,
 				       const
 				         Callback<
 					   Status,
@@ -156,13 +156,13 @@ namespace elle
 
       enter(instance(porter));
 
-      // XXX check that there is not a porter for that address already!
+      // XXX check that there is not a porter for that point already!
 
       // allocate a new porter.
       porter = new BridgePorter(callback);
 
       // create the porter.
-      if (porter->Create(address) == StatusError)
+      if (porter->Create(point) == StatusError)
 	escape("unable to create the porter");
 
       // add the porter to the container.
@@ -175,10 +175,10 @@ namespace elle
     }
 
     ///
-    /// this method blocks the given address by deleting the associated
+    /// this method blocks the given point by deleting the associated
     /// porter.
     ///
-    Status		Bridge::Block(const Address&		address)
+    Status		Bridge::Block(const Point&		point)
     {
       Bridge::Iterator	iterator;
 
@@ -192,7 +192,7 @@ namespace elle
 	  BridgePorter*	porter = *iterator;
 
 	  // is this the porter we are looking for?
-	  if (porter->address == address)
+	  if (porter->point == point)
 	    {
 	      // delete the porter.
 	      delete porter;
@@ -204,7 +204,7 @@ namespace elle
 	    }
 	}
 
-      escape("unable to locate the porter associated with this address");
+      escape("unable to locate the porter associated with this point");
     }
 
 //
@@ -226,7 +226,7 @@ namespace elle
 
       std::cout << alignment << "[Porter]" << std::endl;
 
-      // dump the server address.
+      // dump the server point.
       std::cout << alignment << Dumpable::Shift << "[Server] "
 		<< std::hex << this->server << std::endl;
 

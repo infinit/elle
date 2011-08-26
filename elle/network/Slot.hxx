@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [tue jul 19 09:01:05 2011]
+// updated       julien quintard   [thu aug 25 11:55:29 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -39,11 +39,11 @@ namespace elle
 
     ///
     /// this method converts a set of values into a UDP packet and sends it
-    /// to the given address in an asynchronous way meaning that the sender
+    /// to the given point in an asynchronous way meaning that the sender
     /// does not wait for an acknowledgment for continuing.
     ///
     template <typename I>
-    Status		Slot::Send(const Address&		address,
+    Status		Slot::Send(const Point&			point,
 				   const I			inputs,
 				   const Event&			event)
     {
@@ -51,7 +51,7 @@ namespace elle
       Header		header;
       Data		data;
       Natural64		offset;
-      Natural64		point;
+      Natural64		size;
 
       enter();
 
@@ -78,14 +78,14 @@ namespace elle
 	escape("unable to serialize the header");
 
       // save the offset just following the header's serialization.
-      point = packet.size;
+      size = packet.size;
 
       // serialize the the data.
       if (packet.Serialize(data) == StatusError)
 	escape("unable to serialize the data");
 
       // create the header now that we know that final archive's size.
-      if (header.Create(event, inputs.tag, packet.size - point) == StatusError)
+      if (header.Create(event, inputs.tag, packet.size - size) == StatusError)
 	escape("unable to create the header");
 
       // update the header.
@@ -93,7 +93,7 @@ namespace elle
 	escape("unable to update the header");
 
       // write the datagram to the socket.
-      if (this->Write(address, packet) == StatusError)
+      if (this->Write(point, packet) == StatusError)
 	escape("unable to write the packet");
 
       leave();
@@ -156,7 +156,7 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		Slot::Call(const Address&		address,
+    Status		Slot::Call(const Point&			point,
 				   const I			inputs,
 				   O				outputs)
     {
@@ -169,7 +169,7 @@ namespace elle
 	escape("unable to generate the event");
 
       // send the inputs.
-      if (this->Send(address, inputs, event) == StatusError)
+      if (this->Send(point, inputs, event) == StatusError)
 	escape("unable to send the inputs");
 
       // wait for the reply.
@@ -197,7 +197,7 @@ namespace elle
 
       // send a message as a response by using the event of
       // the received message i.e the current session.
-      if (this->Send(session->address, inputs, session->event) == StatusError)
+      if (this->Send(session->point, inputs, session->event) == StatusError)
 	escape("unable to send the reply");
 
       leave();

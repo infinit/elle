@@ -24,6 +24,7 @@ ADD_LIBRARY(elle
   standalone/Standalone.cc
 
   radix/Meta.cc
+  radix/Morgue.cc
   radix/Object.cc
   radix/Radix.cc
   radix/Trace.cc
@@ -70,7 +71,6 @@ ADD_LIBRARY(elle
   cryptography/Seed.cc
   cryptography/Signature.cc
 
-  network/Address.cc
   network/Bridge.cc
   network/Channel.cc
   network/Door.cc
@@ -80,6 +80,7 @@ ADD_LIBRARY(elle
   network/Lane.cc
   network/Network.cc
   network/Parcel.cc
+  network/Point.cc
   network/Session.cc
   network/Slot.cc
   network/Socket.cc

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hxx
 //
 // created       julien quintard   [sun jul 17 15:39:02 2011]
-// updated       julien quintard   [tue jul 19 11:35:15 2011]
+// updated       julien quintard   [thu aug 25 11:39:34 2011]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HXX
@@ -39,7 +39,7 @@ namespace elle
     template <typename I>
     Status		Socket::Send(const I			inputs,
 				     const Event&		event,
-				     const Address&		address)
+				     const Point&		point)
     {
       enter();
 
@@ -56,7 +56,7 @@ namespace elle
 	  {
 	    Slot*	socket = static_cast<Slot*>(this);
 
-	    return (socket->Send(address, inputs, event));
+	    return (socket->Send(point, inputs, event));
 	  }
 	default:
 	  {
@@ -110,7 +110,7 @@ namespace elle
 	      typename O>
     Status		Socket::Call(const I			inputs,
 				     O				outputs,
-				     const Address&		address)
+				     const Point&		point)
     {
       enter();
 
@@ -127,7 +127,7 @@ namespace elle
 	  {
 	    Slot*	socket = static_cast<Slot*>(this);
 
-	    return (socket->Call(address, inputs, outputs));
+	    return (socket->Call(point, inputs, outputs));
 	  }
 	default:
 	  {

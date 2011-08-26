@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Neighbour.cc
 //
 // created       julien quintard   [wed mar 17 11:23:38 2010]
-// updated       julien quintard   [mon jul 18 09:59:45 2011]
+// updated       julien quintard   [thu aug 25 11:41:41 2011]
 //
 
 //
@@ -30,7 +30,7 @@ namespace elle
     /// XXX
     ///
     Status		Neighbour::Create(Node*			node,
-					  const Address&	address,
+					  const Point&		point,
 					  const String&		name)
     {
       Callback< Status,
@@ -41,7 +41,7 @@ namespace elle
       // assign the attributes.
       this->node = node;
 
-      this->address = address;
+      this->point = point;
       this->name = name;
 
       // create the timer.
@@ -93,8 +93,8 @@ namespace elle
     {
       enter();
 
-      // serialize the address and name.
-      if (archive.Serialize(this->address,
+      // serialize the point and name.
+      if (archive.Serialize(this->point,
 			    this->name) == StatusError)
 	escape("unable to serialize the neighbour attributes");
 
@@ -108,8 +108,8 @@ namespace elle
     {
       enter();
 
-      // extract the address and name.
-      if (archive.Extract(this->address,
+      // extract the point and name.
+      if (archive.Extract(this->point,
 			  this->name) == StatusError)
 	escape("unable to extract the neighbour attributes");
 
@@ -131,9 +131,9 @@ namespace elle
 
       std::cout << alignment << "[Neighbour]" << std::endl;
 
-      // dump the address.
-      if (this->address.Dump(margin + 2) == StatusError)
-	escape("unable to dump the address");
+      // dump the point.
+      if (this->point.Dump(margin + 2) == StatusError)
+	escape("unable to dump the point");
 
       // dump the name.
       std::cout << alignment << Dumpable::Shift
@@ -154,7 +154,7 @@ namespace elle
       enter();
 
       // discard the current neighbour as it has not been refreshed in time.
-      if (this->node->table.Remove(this->address) == StatusError)
+      if (this->node->table.Remove(this->point) == StatusError)
 	escape("unable to remove the current neighbour");
 
       leave();

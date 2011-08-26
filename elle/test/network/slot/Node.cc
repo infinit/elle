@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [tue jul 19 16:48:54 2011]
+// updated       julien quintard   [thu aug 25 11:40:57 2011]
 //
 
 //
@@ -52,7 +52,7 @@ namespace elle
 	Status,
 	Parameters<const String, const Table> >	handle(&Node::Handle, this);
       Host					local;
-      Address					remote;
+      Point					remote;
 
       enter();
 
@@ -75,7 +75,7 @@ namespace elle
       if (this->table.Create(this) == StatusError)
 	escape("unable to create the table");
 
-      // create an address.
+      // create an point.
       if (remote.Create(local, this->port) == StatusError)
 	escape("unable to create a location");
 
@@ -107,11 +107,11 @@ namespace elle
 	escape("unable to retrieve the instance of the current session");
 
       // simply add the sender to the table.
-      if (this->table.Update(session->address, name) == StatusError)
+      if (this->table.Update(session->point, name) == StatusError)
 	escape("unable to add the new neighbour");
 
       // refresh the sender.
-      if (this->table.Refresh(session->address) == StatusError)
+      if (this->table.Refresh(session->point) == StatusError)
 	escape("unable to refresh the sender's entry");
 
       // merge the table with the received one.

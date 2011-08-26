@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [mon jul 18 09:36:19 2011]
+// updated       julien quintard   [thu aug 25 11:34:52 2011]
 //
 
 //
@@ -187,14 +187,14 @@ namespace elle
     /// this method sets the arguments.
     ///
     Status		Session::Create(Socket*			socket,
-					const Address&		address,
+					const Point&		point,
 					const Event&		event)
     {
       enter();
 
       // set the attributes.
       this->socket = socket;
-      this->address = address;
+      this->point = point;
       this->event = event;
 
       leave();
@@ -222,9 +222,9 @@ namespace elle
 	    escape("unable to dump the socket");
 	}
 
-      // dump the address.
-      if (this->address.Dump(margin + 2) == StatusError)
-	escape("unable to dump the address");
+      // dump the point.
+      if (this->point.Dump(margin + 2) == StatusError)
+	escape("unable to dump the point");
 
       // dump the event.
       if (this->event.Dump(margin + 2) == StatusError)

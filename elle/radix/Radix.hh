@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Radix.hh
 //
 // created       julien quintard   [sun may  2 11:55:25 2010]
-// updated       julien quintard   [tue jul 19 16:05:23 2011]
+// updated       julien quintard   [fri aug 26 17:08:12 2011]
 //
 
 #ifndef ELLE_RADIX_RADIX_HH
@@ -53,6 +53,7 @@ namespace elle
 #include <elle/radix/Arguments.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Meta.hh>
+#include <elle/radix/Morgue.hh>
 #include <elle/radix/Object.hh>
 #include <elle/radix/Parameters.hh>
 #include <elle/radix/Set.hh>

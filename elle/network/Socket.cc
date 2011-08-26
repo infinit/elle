@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [mon jul 18 09:34:31 2011]
+// updated       julien quintard   [thu aug 25 16:44:12 2011]
 //
 
 //
@@ -67,9 +67,7 @@ namespace elle
     Status		Socket::Monitor(const
 					  Callback<
 					    Status,
-					    Parameters<
-					      const String
-					      >
+					    Parameters<>
 					    >&			callback)
     {
       enter();
@@ -80,7 +78,7 @@ namespace elle
 
       // allocate and copy a new callback.
       this->callback = new Callback< Status,
-				     Parameters<const String> >(callback);
+				     Parameters<> >(callback);
 
       leave();
     }
@@ -99,6 +97,28 @@ namespace elle
 
       // set the callback to null.
       this->callback = NULL;
+
+      leave();
+    }
+
+//
+// ---------- callbacks -------------------------------------------------------
+//
+
+    ///
+    /// this callback is triggered whenever the socket state changes.
+    ///
+    Status		Socket::Signal()
+    {
+      enter();
+
+      // only process the error if a monitor callback has been registered.
+      if (this->callback != NULL)
+	{
+	  // trigger the callback.
+	  if (this->callback->Call() == StatusError)
+	    escape("an error occured in the callback");
+	}
 
       leave();
     }

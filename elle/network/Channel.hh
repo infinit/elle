@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [sun jul 17 21:11:36 2011]
+// updated       julien quintard   [thu aug 25 13:52:13 2011]
 //
 
 ///
@@ -67,6 +67,17 @@ namespace elle
     {
     public:
       //
+      // enumerations
+      //
+      enum State
+	{
+	  StateUnconnected,
+	  StateConnecting,
+	  StateConnected,
+	  StateDisconnected
+	};
+
+      //
       // constants
       //
       static const Natural64		Capacity;
@@ -104,10 +115,14 @@ namespace elle
       //
       // attributes
       //
+      State		state;
+
       Region*		buffer;
       Natural64		offset;
 
       Container		queue;
+
+      Timer*		timer;
     };
 
   }

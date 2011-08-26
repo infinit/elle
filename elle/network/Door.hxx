@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hxx
 //
 // created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [tue jul 19 09:00:57 2011]
+// updated       julien quintard   [thu aug 25 11:55:44 2011]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX
@@ -48,7 +48,7 @@ namespace elle
       Header		header;
       Data		data;
       Natural64		offset;
-      Natural64		point;
+      Natural64		size;
 
       enter();
 
@@ -75,14 +75,14 @@ namespace elle
 	escape("unable to serialize the header");
 
       // save the offset just following the header's serialization.
-      point = packet.size;
+      size = packet.size;
 
       // serialize the the data.
       if (packet.Serialize(data) == StatusError)
 	escape("unable to serialize the data");
 
       // create the header now that we know that final archive's size.
-      if (header.Create(event, inputs.tag, packet.size - point) == StatusError)
+      if (header.Create(event, inputs.tag, packet.size - size) == StatusError)
 	escape("unable to create the header");
 
       // update the header.

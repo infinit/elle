@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [tue jul 19 16:51:32 2011]
+// updated       julien quintard   [thu aug 25 11:40:21 2011]
 //
 
 //
@@ -33,9 +33,9 @@ namespace elle
     {
       enter();
 
-      // create the address.
-      if (this->address.Create(line) == StatusError)
-	escape("unable to create the address");
+      // create the point.
+      if (this->point.Create(line) == StatusError)
+	escape("unable to create the point");
 
       leave();
     }
@@ -52,8 +52,8 @@ namespace elle
 
       enter();
 
-      std::cout << "[address]" << std::endl;
-      this->address.Dump();
+      std::cout << "[point]" << std::endl;
+      this->point.Dump();
 
       // register the message.
       if (Network::Register(
@@ -66,7 +66,7 @@ namespace elle
 	escape("unable to create the gate");
 
       // connect the gate.
-      if (this->gate.Connect(this->address) == StatusError)
+      if (this->gate.Connect(this->point) == StatusError)
 	escape("unable to connect to the bridge");
 
       leave();

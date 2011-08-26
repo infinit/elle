@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [mon jul 18 11:29:22 2011]
+// updated       julien quintard   [fri aug 26 19:12:50 2011]
 //
 
 //
@@ -37,7 +37,7 @@ namespace elle
     ///
     /// this value is set by default to 1 second.
     ///
-    const Natural32		Door::Timeout = 1000;
+    const Natural32		Door::Duration = 1000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -101,7 +101,15 @@ namespace elle
       // set the socket.
       this->socket = socket;
 
-      // connect the signals, depending on the mode.
+      // connect the signals.
+      if (this->connect(this->socket, SIGNAL(connected()),
+			this, SLOT(_connected())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(this->socket, SIGNAL(disconnected()),
+			this, SLOT(_disconnected())) == false)
+	escape("unable to connect the signal");
+
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(_ready())) == false)
 	escape("unable to connect the signal");
@@ -122,16 +130,29 @@ namespace elle
     ///
     Status		Door::Connect(const String&		name)
     {
+      Callback< Status,
+		Parameters<> >	callback(&Door::Timeout, this);
+
       enter();
 
       /// XXX \todo ca segfault si le client est lance sans serveur...???
 
+      // allocate a timer.
+      this->timer = new Timer;
+
+      // create a timer.
+      if (this->timer->Create(Timer::ModeSingle, callback) == StatusError)
+	escape("unable to create the callback");
+
+      // start the timer.
+      if (this->timer->Start(Door::Duration) == StatusError)
+	escape("unable to start the timer");
+
+      // update the state.
+      this->state = Channel::StateConnecting;
+
       // connect the socket to the server.
       this->socket->connectToServer(name.c_str());
-
-      // wait for the socket to connect.
-      if (this->socket->waitForConnected(Door::Timeout) == false)
-	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
     }
@@ -303,20 +324,20 @@ namespace elle
 	      // otherwise, there is enough data in the buffer to extract
 	      // the parcel.
 	      //
-	      Address		address;
+	      Point		point;
 
 	      // extract the data.
 	      if (packet.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the data");
 
-	      // set the address as being an IP address.
-	      if (address.host.Create(Host::TypeIP) == StatusError)
-		escape("unable to create an IP address");
+	      // set the point as being an IP point.
+	      if (point.host.Create(Host::TypeIP) == StatusError)
+		escape("unable to create an IP point");
 
 	      // create the session.
 	      if (parcel->session->Create(
 		    this,
-		    address,
+		    point,
 		    parcel->header->event) == StatusError)
 		escape("unable to create the session");
 
@@ -373,6 +394,19 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method returns the name the door is connected to.
+    ///
+    Status		Door::Target(String&			name) const
+    {
+      enter();
+
+      // retrieve the server name.
+      name = this->socket->serverName().toStdString();
+
+      leave();
+    }
+
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -386,7 +420,7 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Door]" << std::endl;
+      std::cout << alignment << "[Door] " << std::hex << this << std::endl;
 
       // dump the state.
       std::cout << alignment << Dumpable::Shift << "[Valid] "
@@ -406,24 +440,6 @@ namespace elle
 //
 // ---------- callbacks -------------------------------------------------------
 //
-
-    ///
-    /// this callback is triggered whenever an error occurs.
-    ///
-    Status		Door::Error(const String&		text)
-    {
-      enter();
-
-      // only process the error if a monitor callback has been registered.
-      if (this->callback != NULL)
-	{
-	  // trigger the callback.
-	  if (this->callback->Call(text) == StatusError)
-	    escape("an error occured in the callback");
-	}
-
-      leave();
-    }
 
     ///
     /// this callback fetches parcels and dispatches them.
@@ -473,30 +489,64 @@ namespace elle
       leave();
     }
 
+    ///
+    /// XXX
+    ///
+    Status		Door::Timeout()
+    {
+      enter();
+
+      // delete the timer.
+      delete this->timer;
+
+      // reset the pointer.
+      this->timer = NULL;
+
+      // if the socket has not been connected yet, abort the process.
+      if (this->state != Channel::StateConnected)
+	{
+	  // disconnect the socket.
+	  if (this->Disconnect() == StatusError)
+	    escape("unable to disconnect the socket");
+	}
+
+      leave();
+    }
+
 //
 // ---------- slots -----------------------------------------------------------
 //
 
     ///
-    /// this slot is triggered whenever an error occurs.
+    /// XXX
     ///
-    /// note here that the type QLocalSocket::LocalSocketError cannot be
-    /// written completely ::QLocalSocket::LocalSocketError because the
-    /// QT parser is incapable of recognising the type.
-    ///
-    void		Door::_error(const QLocalSocket::LocalSocketError)
+    void		Door::_connected()
     {
-      String		text(this->socket->errorString().toStdString());
-      Callback< Status,
-		Parameters<const String> >	callback(&Door::Error, this);
-      Closure< Status,
-	       Parameters<const String> >	closure(callback, text);
-
       enter();
 
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+      // update the state.
+      this->state = Channel::StateConnected;
+
+      // finally, notify the monitoring callback.
+      if (this->Signal() == StatusError)
+	alert(_(), "unable to signal the change of state");
+
+      release();
+    }
+
+    ///
+    /// XXX
+    ///
+    void		Door::_disconnected()
+    {
+      enter();
+
+      // update the state.
+      this->state = Channel::StateDisconnected;
+
+      // finally, notify the monitoring callback.
+      if (this->Signal() == StatusError)
+	alert(_(), "unable to signal the change of state");
 
       release();
     }
@@ -516,6 +566,68 @@ namespace elle
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
 	alert(_(), "unable to spawn a fiber");
+
+      release();
+    }
+
+    ///
+    /// this slot is triggered whenever an error occurs.
+    ///
+    /// note here that the type QLocalSocket::LocalSocketError cannot be
+    /// written completely ::QLocalSocket::LocalSocketError because the
+    /// QT parser is incapable of recognising the type.
+    ///
+    void		Door::_error(const QLocalSocket::LocalSocketError)
+    {
+      enter();
+
+      switch (this->state)
+	{
+	case Channel::StateConnecting:
+	  {
+	    //
+	    // if the socket was connecting and an error occured, set
+	    // the state as disconnected and signal it.
+	    //
+
+	    // update the state.
+	    this->state = Channel::StateDisconnected;
+
+	    Callback< Status,
+		      Parameters<> >	callback(&Channel::Signal, this);
+	    Closure< Status,
+		     Parameters<> >	closure(callback);
+
+	    // spawn a fiber.
+	    if (Fiber::Spawn(closure) == StatusError)
+	      alert(_(), "unable to spawn a fiber");
+
+	    break;
+	  }
+	case Channel::StateConnected:
+	  {
+	    //
+	    // if the socket is connected and an error occured, close
+	    // the socket.
+	    //
+
+	    Callback< Status,
+		      Parameters<> >	callback(&Door::Disconnect, this);
+	    Closure< Status,
+		     Parameters<> >	closure(callback);
+
+	    // spawn a fiber.
+	    if (Fiber::Spawn(closure) == StatusError)
+	      alert(_(), "unable to spawn a fiber");
+
+	    break;
+	  }
+	default:
+	  {
+	    alert(_(), "unexpected socket state '%u'",
+		  this->state);
+	  }
+	}
 
       release();
     }

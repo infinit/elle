@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [sun jul 17 21:15:09 2011]
+// updated       julien quintard   [thu aug 25 16:43:50 2011]
 //
 
 ///
@@ -87,13 +87,13 @@ namespace elle
       Status		Create();
       Status		Create(const Port);
 
-      Status		Write(const Address&,
+      Status		Write(const Point&,
 			      const Packet&);
-      Status		Read(Address&,
+      Status		Read(Point&,
 			     Raw&);
 
       template <typename I>
-      Status		Send(const Address&,
+      Status		Send(const Point&,
 			     const I,
 			     const Event& = Event::Null);
       template <typename O>
@@ -101,7 +101,7 @@ namespace elle
 				O);
       template <typename I,
 		typename O>
-      Status		Call(const Address&,
+      Status		Call(const Point&,
 			     const I,
 			     O);
       template <typename I>
@@ -111,7 +111,6 @@ namespace elle
       //
       // callbacks
       //
-      Status		Error(const String&);
       Status		Dispatch();
 
       //
@@ -131,8 +130,8 @@ namespace elle
       //
       // slots
       //
-      void		_error(const QAbstractSocket::SocketError);
       void		_ready();
+      void		_error(const QAbstractSocket::SocketError);
     };
 
   }

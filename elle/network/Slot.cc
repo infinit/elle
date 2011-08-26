@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [mon jul 18 11:29:33 2011]
+// updated       julien quintard   [fri aug 26 19:13:02 2011]
 //
 
 //
@@ -113,9 +113,9 @@ namespace elle
 
     ///
     /// this method writes a packet on the socket so that it gets sent
-    /// to the given address.
+    /// to the given point.
     ///
-    Status		Slot::Write(const Address&		address,
+    Status		Slot::Write(const Point&		point,
 				    const Packet&		packet)
     {
       enter();
@@ -128,8 +128,8 @@ namespace elle
       // push the datagram into the socket.
       if (this->socket->writeDatagram((char*)packet.contents,
 				      packet.size,
-				      address.host.location,
-				      address.port) != (::qint64)packet.size)
+				      point.host.location,
+				      point.port) != (::qint64)packet.size)
 	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
@@ -150,7 +150,7 @@ namespace elle
     ///
     /// the method returns a raw with the read data.
     ///
-    Status		Slot::Read(Address&			address,
+    Status		Slot::Read(Point&			point,
 				   Raw&				raw)
     {
       Natural32		size;
@@ -164,9 +164,9 @@ namespace elle
       if (size == 0)
 	leave();
 
-      // set the address as being an IP address.
-      if (address.host.Create(Host::TypeIP) == StatusError)
-	escape("unable to create an IP address");
+      // set the point as being an IP point.
+      if (point.host.Create(Host::TypeIP) == StatusError)
+	escape("unable to create an IP point");
 
       // prepare the raw
       if (raw.Prepare(size) == StatusError)
@@ -175,8 +175,8 @@ namespace elle
       // read the datagram from the socket.
       if (this->socket->readDatagram((char*)raw.contents,
 				     size,
-				     &address.host.location,
-				     &address.port) != size)
+				     &point.host.location,
+				     &point.port) != size)
 	escape(this->socket->errorString().toStdString().c_str());
 
       // set the raw's size.
@@ -198,7 +198,7 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Slot]" << std::endl;
+      std::cout << alignment << "[Slot] " << std::hex << this << std::endl;
 
       // XXX hasPendingDatagrams, BindMode, SocketState, Valid,
       // XXX TransportProtocol, ...
@@ -211,37 +211,18 @@ namespace elle
 //
 
     ///
-    /// this callback is triggered whenever the socket changes state or
-    /// if an error occurs.
-    ///
-    Status		Slot::Error(const String&		text)
-    {
-      enter();
-
-      // only process the error if a monitor callback has been registered.
-      if (this->callback != NULL)
-	{
-	  // trigger the callback.
-	  if (this->callback->Call(text) == StatusError)
-	    escape("an error occured in the callback");
-	}
-
-      leave();
-    }
-
-    ///
     /// this callback fetches parcels and dispatches them.
     ///
     Status		Slot::Dispatch()
     {
-      Address		address;
+      Point		point;
       Natural32		offset;
       Raw		raw;
 
       enter();
 
       // read from the socket.
-      if (this->Read(address, raw) == StatusError)
+      if (this->Read(point, raw) == StatusError)
 	escape("unable to read from the socket");
 
       // initialize the offset.
@@ -300,7 +281,7 @@ namespace elle
 
 	  // create the session.
 	  if (parcel->session->Create(this,
-				      address,
+				      point,
 				      parcel->header->event) == StatusError)
 	    escape("unable to create the session");
 
@@ -335,19 +316,14 @@ namespace elle
 //
 
     ///
-    /// this slot is triggered whenever an error occurs.
+    /// this slot fetches and dispatches packets from the socket.
     ///
-    /// note here that the type QLocalSocket::LocalSocketError cannot be
-    /// written completely ::QLocalSocket::LocalSocketError because the
-    /// QT parser is incapable of recognising the type.
-    ///
-    void		Slot::_error(const QAbstractSocket::SocketError)
+    void		Slot::_ready()
     {
-      String		text(this->socket->errorString().toStdString());
       Callback< Status,
-		Parameters<const String> >	callback(&Slot::Error, this);
+		Parameters<> >	callback(&Slot::Dispatch, this);
       Closure< Status,
-	       Parameters<const String> >	closure(callback, text);
+	       Parameters<> >	closure(callback);
 
       enter();
 
@@ -359,12 +335,16 @@ namespace elle
     }
 
     ///
-    /// this slot fetches and dispatches packets from the socket.
+    /// this slot is triggered whenever an error occurs.
     ///
-    void		Slot::_ready()
+    /// note here that the type QLocalSocket::LocalSocketError cannot be
+    /// written completely ::QLocalSocket::LocalSocketError because the
+    /// QT parser is incapable of recognising the type.
+    ///
+    void		Slot::_error(const QAbstractSocket::SocketError)
     {
       Callback< Status,
-		Parameters<> >	callback(&Slot::Dispatch, this);
+		Parameters<> >	callback(&Socket::Signal, this);
       Closure< Status,
 	       Parameters<> >	closure(callback);
 

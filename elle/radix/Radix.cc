@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Radix.cc
 //
 // created       julien quintard   [tue apr 27 12:11:16 2010]
-// updated       julien quintard   [sun may  2 11:56:40 2010]
+// updated       julien quintard   [fri aug 26 17:21:16 2011]
 //
 
 //
@@ -40,6 +40,10 @@ namespace elle
       if (Meta::Initialize() == StatusError)
 	escape("unable to initialize the meta class");
 
+      // initialize the morgue.
+      if (Morgue::Initialize() == StatusError)
+	escape("unable to initialize the morgue");
+
       leave();
     }
 
@@ -49,6 +53,10 @@ namespace elle
     Status		Radix::Clean()
     {
       enter();
+
+      // clean the morgue class.
+      if (Morgue::Clean() == StatusError)
+	escape("unable to clean the morgue");
 
       // clean the meta class.
       if (Meta::Clean() == StatusError)

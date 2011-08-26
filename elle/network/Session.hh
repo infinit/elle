@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [sun jul 17 15:57:58 2011]
+// updated       julien quintard   [thu aug 25 11:35:02 2011]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH
@@ -27,7 +27,7 @@
 #include <elle/concurrency/Phase.hh>
 #include <elle/concurrency/Event.hh>
 
-#include <elle/network/Address.hh>
+#include <elle/network/Point.hh>
 
 namespace elle
 {
@@ -53,7 +53,7 @@ namespace elle
 
     ///
     /// this class contains metadata related to an event such as the
-    /// socket and sender's address for instance.
+    /// socket and sender's point for instance.
     ///
     class Session:
       public Entity
@@ -87,7 +87,7 @@ namespace elle
       // methods
       //
       Status		Create(Socket*,
-			       const Address&,
+			       const Point&,
 			       const Event&);
 
       //
@@ -101,7 +101,7 @@ namespace elle
       // attributes
       //
       Socket*		socket;
-      Address		address;
+      Point		point;
       Event		event;
     };
 
