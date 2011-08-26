@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Close.hh
 //
 // created       julien quintard   [wed mar 10 20:18:19 2010]
-// updated       julien quintard   [wed jul 27 10:26:08 2011]
+// updated       julien quintard   [fri aug 26 17:43:27 2011]
 //
 
 //
@@ -34,10 +34,15 @@
 #undef embed
 
 //
-// ---------- report ----------------------------------------------------------
+// ---------- log -------------------------------------------------------------
 //
 
 #undef log
+
+//
+// ---------- report ----------------------------------------------------------
+//
+
 #undef report
 #undef transpose
 #undef leave
@@ -51,6 +56,12 @@
 #undef show
 #undef expose
 #undef purge
+
+//
+// ---------- morgue ----------------------------------------------------------
+//
+
+#undef bury
 
 //
 // ---------- maid ------------------------------------------------------------

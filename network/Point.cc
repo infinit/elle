@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Address.cc
+// file          /home/mycure/infinit/elle/network/Point.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [fri aug 12 16:25:39 2011]
+// updated       julien quintard   [fri aug 26 15:08:24 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Address.hh>
+#include <elle/network/Point.hh>
 
 #include <elle/core/String.hh>
 
@@ -32,9 +32,9 @@ namespace elle
 //
 
     ///
-    /// the definition of a Null address.
+    /// the definition of a Null point.
     ///
-    const Address		Address::Null;
+    const Point			Point::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Address::Address():
+    Point::Point():
       port(0)
     {
     }
@@ -53,10 +53,10 @@ namespace elle
 //
 
     ///
-    /// this method creates an address from a string of the form
+    /// this method creates an point from a string of the form
     /// 'host:port'.
     ///
-    Status		Address::Create(const String&		string)
+    Status		Point::Create(const String&		string)
     {
       Natural32		separator;
 
@@ -76,10 +76,10 @@ namespace elle
     }
 
     ///
-    /// this method creates an address.
+    /// this method creates an point.
     ///
-    Status		Address::Create(const Host&		host,
-					const Port		port)
+    Status		Point::Create(const Host&		host,
+				      const Port		port)
     {
       enter();
 
@@ -96,11 +96,11 @@ namespace elle
     ///
     /// checks if two objects match.
     ///
-    Boolean		Address::operator==(const Address&	element) const
+    Boolean		Point::operator==(const Point&		element) const
     {
       enter();
 
-      // check the address as this may actually be the same object.
+      // check the point as this may actually be the same object.
       if (this == &element)
 	true();
 
@@ -115,11 +115,11 @@ namespace elle
     ///
     /// compare two objects.
     ///
-    Boolean		Address::operator<(const Address&	element) const
+    Boolean		Point::operator<(const Point&		element) const
     {
       enter();
 
-      // check the address as this may actually be the same object.
+      // check the point as this may actually be the same object.
       if (this == &element)
 	false();
 
@@ -141,7 +141,7 @@ namespace elle
     ///
     /// compare two objects.
     ///
-    Boolean		Address::operator>(const Address&	element) const
+    Boolean		Point::operator>(const Point&		element) const
     {
       return (!(this->operator<=(element)));
     }
@@ -149,38 +149,38 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Address, _());
+    embed(Point, _());
 
 //
 // ---------- archivable ------------------------------------------------------
 //
 
     ///
-    /// this method serializes the address.
+    /// this method serializes the point.
     ///
-    Status		Address::Serialize(Archive&		archive) const
+    Status		Point::Serialize(Archive&		archive) const
     {
       enter();
 
       // serialize the host and port.
       if (archive.Serialize(this->host,
 			    this->port) == StatusError)
-	escape("unable to serialize the address attributes");
+	escape("unable to serialize the point attributes");
 
       leave();
     }
 
     ///
-    /// this method extracts an address.
+    /// this method extracts an point.
     ///
-    Status		Address::Extract(Archive&		archive)
+    Status		Point::Extract(Archive&			archive)
     {
       enter();
 
-      // extract the address.
+      // extract the point.
       if (archive.Extract(this->host,
 			  this->port) == StatusError)
-	escape("unable to extract the address attributes");
+	escape("unable to extract the point attributes");
 
       leave();
     }
@@ -190,15 +190,15 @@ namespace elle
 //
 
     ///
-    /// this method dumps an address.
+    /// this method dumps an point.
     ///
-    Status		Address::Dump(const Natural32		margin) const
+    Status		Point::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Address]" << std::endl;
+      std::cout << alignment << "[Point]" << std::endl;
 
       if (this->host.Dump(margin + 2) == StatusError)
 	escape("unable to dump the host");

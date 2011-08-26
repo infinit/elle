@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Address.hh
+// file          /home/mycure/infinit/elle/network/Point.hh
 //
 // created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [fri aug 12 16:23:46 2011]
+// updated       julien quintard   [fri aug 26 14:34:28 2011]
 //
 
-#ifndef ELLE_NETWORK_ADDRESS_HH
-#define ELLE_NETWORK_ADDRESS_HH
+#ifndef ELLE_NETWORK_POINT_HH
+#define ELLE_NETWORK_POINT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -45,21 +45,21 @@ namespace elle
 //
 
     ///
-    /// this class represents an address i.e a host and port.
+    /// this class represents a network point i.e a host and port.
     ///
-    class Address:
+    class Point:
       public Object
     {
     public:
       //
       // constants
       //
-      static const Address		Null;
+      static const Point		Null;
 
       //
       // constructors & destructors
       //
-      Address();
+      Point();
 
       //
       // methods
@@ -73,10 +73,10 @@ namespace elle
       //
 
       // object
-      declare(Address);
-      Boolean		operator==(const Address&) const;
-      Boolean		operator<(const Address&) const;
-      Boolean		operator>(const Address&) const;
+      declare(Point);
+      Boolean		operator==(const Point&) const;
+      Boolean		operator<(const Point&) const;
+      Boolean		operator>(const Point&) const;
 
       // archivable
       Status		Serialize(Archive&) const;

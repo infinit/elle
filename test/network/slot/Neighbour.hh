@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Neighbour.hh
 //
 // created       julien quintard   [wed mar 17 11:22:38 2010]
-// updated       julien quintard   [sun may  2 22:58:28 2010]
+// updated       julien quintard   [thu aug 25 11:41:28 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_NEIGHBOUR_HH
@@ -51,14 +51,14 @@ namespace elle
 
       Timer		timer;
 
-      Address		address;
+      Point		point;
       String		name;
 
       //
       // methods
       //
       Status		Create(Node*,
-			       const Address&,
+			       const Point&,
 			       const String&);
       Status		Update(const String&);
       Status		Refresh();

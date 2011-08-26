@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [mon jul 18 11:29:27 2011]
+// updated       julien quintard   [fri aug 26 19:12:38 2011]
 //
 
 //
@@ -33,9 +33,9 @@ namespace elle
     /// this value defines the time to wait for a gate to connect to
     /// a bridge after which the connection is assumed to have failed.
     ///
-    /// this value is set by default to 1 second.
+    /// this value is set by default to 5 seconds.
     ///
-    const Natural32		Gate::Timeout = 1000;
+    const Natural32		Gate::Duration = 5000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -100,7 +100,15 @@ namespace elle
       // set the socket.
       this->socket = socket;
 
-      // connect the signals, depending on the mode.
+      // connect the signals.
+      if (this->connect(this->socket, SIGNAL(connected()),
+			this, SLOT(_connected())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(this->socket, SIGNAL(disconnected()),
+			this, SLOT(_disconnected())) == false)
+	escape("unable to connect the signal");
+
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(_ready())) == false)
 	escape("unable to connect the signal");
@@ -118,16 +126,29 @@ namespace elle
     ///
     /// this method connects the gate.
     ///
-    Status		Gate::Connect(const Address&		address)
+    Status		Gate::Connect(const Point&		point)
     {
+      Callback< Status,
+		Parameters<> >	callback(&Gate::Timeout, this);
+
       enter();
 
-      // connect the socket to the server.
-      this->socket->connectToHost(address.host.location, address.port);
+      // allocate a timer.
+      this->timer = new Timer;
 
-      // wait for the socket to connect.
-      if (this->socket->waitForConnected(Gate::Timeout) == false)
-	escape(this->socket->errorString().toStdString().c_str());
+      // create a timer.
+      if (this->timer->Create(Timer::ModeSingle, callback) == StatusError)
+	escape("unable to create the callback");
+
+      // start the timer.
+      if (this->timer->Start(Gate::Duration) == StatusError)
+	escape("unable to start the timer");
+
+      // update the state.
+      this->state = Channel::StateConnecting;
+
+      // connect the socket to the server.
+      this->socket->connectToHost(point.host.location, point.port);
 
       leave();
     }
@@ -299,20 +320,20 @@ namespace elle
 	      // otherwise, there is enough data in the buffer to extract
 	      // the parcel.
 	      //
-	      Address		address;
+	      Point		point;
 
 	      // extract the data.
 	      if (packet.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the data");
 
-	      // set the address as being an IP address.
-	      if (address.host.Create(Host::TypeIP) == StatusError)
-		escape("unable to create an IP address");
+	      // set the point as being an IP point.
+	      if (point.host.Create(Host::TypeIP) == StatusError)
+		escape("unable to create an IP point");
 
 	      // create the session.
 	      if (parcel->session->Create(
 		    this,
-		    address,
+		    point,
 		    parcel->header->event) == StatusError)
 		escape("unable to create the session");
 
@@ -369,6 +390,31 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method returns the point the gate is connected to.
+    ///
+    Status		Gate::Target(Point&			point) const
+    {
+      Host		host;
+      Port		port;
+
+      enter();
+
+      // create the host.
+      if (host.Create(this->socket->peerAddress().toString().toStdString()) ==
+	  StatusError)
+	escape("unable to create the host");
+
+      // create the port.
+      port = this->socket->peerPort();
+
+      // create the point.
+      if (point.Create(host, port) == StatusError)
+	escape("unable to create the point");
+
+      leave();
+    }
+
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -382,7 +428,7 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Gate]" << std::endl;
+      std::cout << alignment << "[Gate] " << std::hex << this << std::endl;
 
       // XXX
 
@@ -392,24 +438,6 @@ namespace elle
 //
 // ---------- callbacks -------------------------------------------------------
 //
-
-    ///
-    /// this callback is triggered whenever an error occurs.
-    ///
-    Status		Gate::Error(const String&		text)
-    {
-      enter();
-
-      // only process the error if a monitor callback has been registered.
-      if (this->callback != NULL)
-	{
-	  // trigger the callback.
-	  if (this->callback->Call(text) == StatusError)
-	    escape("an error occured in the callback");
-	}
-
-      leave();
-    }
 
     ///
     /// this callback fetches parcels and dispatches them.
@@ -459,30 +487,64 @@ namespace elle
       leave();
     }
 
+    ///
+    /// XXX
+    ///
+    Status		Gate::Timeout()
+    {
+      enter();
+
+      // delete the timer.
+      delete this->timer;
+
+      // reset the pointer.
+      this->timer = NULL;
+
+      // if the socket has not been connected yet, abort the process.
+      if (this->state != Channel::StateConnected)
+	{
+	  // disconnect the socket.
+	  if (this->Disconnect() == StatusError)
+	    escape("unable to disconnect the socket");
+	}
+
+      leave();
+    }
+
 //
 // ---------- slots -----------------------------------------------------------
 //
 
     ///
-    /// this slot is triggered whenever an error occurs.
+    /// XXX
     ///
-    /// note here that the type QAbstractSocket::SocketError cannot be
-    /// written completely ::QAbstractSocket::SocketError because the
-    /// QT parser is incapable of recognising the type.
-    ///
-    void		Gate::_error(const QAbstractSocket::SocketError)
+    void		Gate::_connected()
     {
-      String		text(this->socket->errorString().toStdString());
-      Callback< Status,
-		Parameters<const String> >	callback(&Gate::Error, this);
-      Closure< Status,
-	       Parameters<const String> >	closure(callback, text);
-
       enter();
 
-      // spawn a fiber.
-      if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+      // update the state.
+      this->state = Channel::StateConnected;
+
+      // finally, notify the monitoring callback.
+      if (this->Signal() == StatusError)
+	alert(_(), "unable to signal the change of state");
+
+      release();
+    }
+
+    ///
+    /// XXX
+    ///
+    void		Gate::_disconnected()
+    {
+      enter();
+
+      // update the state.
+      this->state = Channel::StateDisconnected;
+
+      // finally, notify the monitoring callback.
+      if (this->Signal() == StatusError)
+	alert(_(), "unable to signal the change of state");
 
       release();
     }
@@ -502,6 +564,68 @@ namespace elle
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
 	alert(_(), "unable to spawn a fiber");
+
+      release();
+    }
+
+    ///
+    /// this slot is triggered whenever an error occurs.
+    ///
+    /// note here that the type QAbstractSocket::SocketError cannot be
+    /// written completely ::QAbstractSocket::SocketError because the
+    /// QT parser is incapable of recognising the type.
+    ///
+    void		Gate::_error(const QAbstractSocket::SocketError)
+    {
+      enter();
+
+      switch (this->state)
+	{
+	case Channel::StateConnecting:
+	  {
+	    //
+	    // if the socket was connecting and an error occured, set
+	    // the state as disconnected and signal it.
+	    //
+
+	    // update the state.
+	    this->state = Channel::StateDisconnected;
+
+	    Callback< Status,
+		      Parameters<> >	callback(&Channel::Signal, this);
+	    Closure< Status,
+		     Parameters<> >	closure(callback);
+
+	    // spawn a fiber.
+	    if (Fiber::Spawn(closure) == StatusError)
+	      alert(_(), "unable to spawn a fiber");
+
+	    break;
+	  }
+	case Channel::StateConnected:
+	  {
+	    //
+	    // if the socket is connected and an error occured, close
+	    // the socket.
+	    //
+
+	    Callback< Status,
+		      Parameters<> >	callback(&Gate::Disconnect, this);
+	    Closure< Status,
+		     Parameters<> >	closure(callback);
+
+	    // spawn a fiber.
+	    if (Fiber::Spawn(closure) == StatusError)
+	      alert(_(), "unable to spawn a fiber");
+
+	    break;
+	  }
+	default:
+	  {
+	    alert(_(), "unexpected socket state '%u'",
+		  this->state);
+	  }
+	}
 
       release();
     }

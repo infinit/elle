@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [mon jul 18 09:38:12 2011]
+// updated       julien quintard   [fri aug 26 00:18:15 2011]
 //
 
 //
@@ -55,9 +55,9 @@ namespace elle
     {
       enter();
 
-      // set the address.
-      if (this->address.Create(line) == StatusError)
-	escape("unable to create the address");
+      // set the point.
+      if (this->point.Create(line) == StatusError)
+	escape("unable to create the point");
 
       leave();
     }
@@ -73,10 +73,10 @@ namespace elle
       enter();
 
       std::cout << "[bridge]" << std::endl;
-      address.Dump();
+      point.Dump();
 
       // listen for incoming connections.
-      if (Bridge::Listen(address, connection) == StatusError)
+      if (Bridge::Listen(point, connection) == StatusError)
 	escape("unable to listen for bridge connections");
 
       leave();

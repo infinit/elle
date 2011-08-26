@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.cc
 //
 // created       julien quintard   [thu mar 18 21:20:27 2010]
-// updated       julien quintard   [thu jul 14 14:13:48 2011]
+// updated       julien quintard   [thu aug 25 13:37:09 2011]
 //
 
 //
@@ -41,8 +41,10 @@ namespace elle
     Channel::Channel(Socket::Type				type):
       Socket(type),
 
+      state(StateUnconnected),
       buffer(NULL),
-      offset(0)
+      offset(0),
+      timer(NULL)
     {
     }
 
@@ -70,6 +72,10 @@ namespace elle
 
       // clear the container.
       this->queue.clear();
+
+      // delete the timer.
+      if (this->timer != NULL)
+	delete this->timer;
     }
 
   }

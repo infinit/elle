@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [wed may 25 15:53:18 2011]
-// updated       julien quintard   [mon jul 18 09:17:56 2011]
+// updated       julien quintard   [thu aug 25 11:38:06 2011]
 //
 
 ///
@@ -92,7 +92,7 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Address&);
+      Status		Create(const Point&);
 
       //
       // callbacks
@@ -109,7 +109,7 @@ namespace elle
       //
       // attributes
       //
-      Address				address;
+      Point				point;
       ::QTcpServer*			server;
       Callback< Status,
 		Parameters<Gate*> >	callback;
@@ -142,10 +142,10 @@ namespace elle
       static Status	Initialize();
       static Status	Clean();
 
-      static Status	Listen(const Address&,
+      static Status	Listen(const Point&,
 			       const Callback< Status,
 					       Parameters<Gate*> >&);
-      static Status	Block(const Address&);
+      static Status	Block(const Point&);
 
       static Status	Show(const Natural32 = 0);
 

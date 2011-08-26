@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Client.hh
 //
 // created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [tue jul 19 16:50:47 2011]
+// updated       julien quintard   [thu aug 25 11:40:15 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_GATE_CLIENT_HH
@@ -53,7 +53,7 @@ namespace elle
       //
       // attributes
       //
-      Address		address;
+      Point		point;
       Gate		gate;
     };
 

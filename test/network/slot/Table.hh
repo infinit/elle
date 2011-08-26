@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.hh
 //
 // created       julien quintard   [wed mar 17 13:07:53 2010]
-// updated       julien quintard   [sun may  2 22:58:20 2010]
+// updated       julien quintard   [thu aug 25 11:41:11 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_TABLE_HH
@@ -56,11 +56,11 @@ namespace elle
       //
       Status		Create(Node*);
 
-      Status		Update(const Address&,
+      Status		Update(const Point&,
 			       const String&);
-      Status		Refresh(const Address&);
-      Status		Remove(const Address&);
-      Status		Locate(const Address&,
+      Status		Refresh(const Point&);
+      Status		Remove(const Point&);
+      Status		Locate(const Point&,
 			       Iterator&);
 
       Status		Merge(const Table&);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [mon jul 18 09:34:36 2011]
+// updated       julien quintard   [thu aug 25 16:44:25 2011]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -23,7 +23,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 
-#include <elle/network/Address.hh>
+#include <elle/network/Point.hh>
 #include <elle/network/Session.hh>
 
 #include <elle/concurrency/Event.hh>
@@ -88,7 +88,7 @@ namespace elle
       template <typename I>
       Status		Send(const I,
 			     const Event& = Event::Null,
-			     const Address& = Address::Null);
+			     const Point& = Point::Null);
       template <typename O>
       Status		Receive(const Event&,
 				O);
@@ -96,14 +96,19 @@ namespace elle
 		typename O>
       Status		Call(const I,
 			     O,
-			     const Address& = Address::Null);
+			     const Point& = Point::Null);
       template <typename I>
       Status		Reply(const I,
 			      Session* = NULL);
 
       Status		Monitor(const Callback< Status,
-						Parameters<const String> >&);
+						Parameters<> >&);
       Status		Withdraw();
+
+      //
+      // callbacks
+      //
+      Status		Signal();
 
       //
       // attributes
@@ -112,9 +117,7 @@ namespace elle
 
       Callback<
 	Status,
-	Parameters<
-	  const String
-	  >
+	Parameters<>
 	>*		callback;
     };
 

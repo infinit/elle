@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [sun jul 17 21:14:57 2011]
+// updated       julien quintard   [thu aug 25 16:47:48 2011]
 //
 
 ///
@@ -80,7 +80,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Timeout;
+      static const Natural32		Duration;
 
       //
       // constructors & destructors
@@ -102,6 +102,8 @@ namespace elle
       Status		Read();
       Status		Fetch();
 
+      Status		Target(String&) const;
+
       template <typename I>
       Status		Send(const I,
 			     const Event& = Event::Null);
@@ -119,8 +121,8 @@ namespace elle
       //
       // callbacks
       //
-      Status		Error(const String&);
       Status		Dispatch();
+      Status		Timeout();
 
       //
       // interfaces
@@ -139,8 +141,10 @@ namespace elle
       // slots
       //
     private slots:
-      void		_error(const QLocalSocket::LocalSocketError);
+      void		_connected();
+      void		_disconnected();
       void		_ready();
+      void		_error(const QLocalSocket::LocalSocketError);
     };
 
   }

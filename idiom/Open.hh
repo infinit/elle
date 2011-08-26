@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [fri aug 12 13:15:23 2011]
+// updated       julien quintard   [fri aug 26 17:57:33 2011]
 //
 
 //
@@ -132,7 +132,7 @@
   }
 
 //
-// ---------- report ----------------------------------------------------------
+// ---------- log -------------------------------------------------------------
 //
 
 ///
@@ -158,6 +158,10 @@
 		      _time_,						\
 		      elle::String(_message_));				\
     } while (false)
+
+//
+// ---------- report ----------------------------------------------------------
+//
 
 ///
 /// this macro-function registers a report entry.
@@ -235,6 +239,17 @@
     } while (false)
 
 ///
+/// this macro-function just returns StatusFalse.
+///
+#define false()								\
+  do									\
+    {									\
+      release();							\
+									\
+      return (elle::radix::StatusFalse);				\
+    } while (false)
+
+///
 /// this macro-function indicates that an error occured
 /// and returns StatusError.
 ///
@@ -288,8 +303,6 @@
   do									\
     {									\
       log(_format_, ##_arguments_);					\
-									\
-      show();								\
 									\
       release();							\
 									\
@@ -361,6 +374,27 @@
       if (elle::standalone::Report::Instance(_report_) ==		\
 	  elle::radix::StatusTrue)					\
 	_report_->Flush();						\
+    } while (false)
+
+//
+// ---------- morgue ----------------------------------------------------------
+//
+
+///
+/// XXX
+///
+#define bury(_instance_)						\
+  do									\
+    {									\
+      elle::radix::Morgue*	_morgue_;				\
+									\
+      if (elle::radix::Morgue::Instance(_morgue_) ==			\
+	  elle::radix::StatusTrue)					\
+	{								\
+	  if (_morgue_->Register(_instance_) ==				\
+	      elle::radix::StatusError)					\
+	    log("unable to register the instance for burial");		\
+	}								\
     } while (false)
 
 //

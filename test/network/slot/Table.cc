@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.cc
 //
 // created       julien quintard   [wed mar 17 13:23:40 2010]
-// updated       julien quintard   [mon jul 18 10:00:03 2011]
+// updated       julien quintard   [thu aug 25 11:41:22 2011]
 //
 
 //
@@ -53,7 +53,7 @@ namespace elle
     ///
     /// this method adds/updates a neighbour.
     ///
-    Status		Table::Update(const Address&		address,
+    Status		Table::Update(const Point&		point,
 				      const String&		name)
     {
       Table::Iterator	iterator;
@@ -61,7 +61,7 @@ namespace elle
       enter();
 
       // try to locate a previous entry.
-      if (this->Locate(address, iterator) == StatusOk)
+      if (this->Locate(point, iterator) == StatusOk)
 	{
 	  // update the neighbour.
 	  if ((*iterator)->Update(name) == StatusError)
@@ -77,7 +77,7 @@ namespace elle
 	  neighbour = new Neighbour;
 
 	  // create a new neighbour.
-	  if (neighbour->Create(this->node, address, name) == StatusError)
+	  if (neighbour->Create(this->node, point, name) == StatusError)
 	    escape("unable to create the neighbour");
 
 	  // add the neighbour to the list.
@@ -95,15 +95,15 @@ namespace elle
     ///
     /// this method refreshes an entry.
     ///
-    Status		Table::Refresh(const Address&		address)
+    Status		Table::Refresh(const Point&		point)
     {
       Table::Iterator	iterator;
 
       enter();
 
       // locate the neighbour.
-      if (this->Locate(address, iterator) != StatusOk)
-	escape("unable to locate the given address");
+      if (this->Locate(point, iterator) != StatusOk)
+	escape("unable to locate the given point");
 
       // refresh the neighbour.
       if ((*iterator)->Refresh() == StatusError)
@@ -115,14 +115,14 @@ namespace elle
     ///
     /// this method removes a neighbour.
     ///
-    Status		Table::Remove(const Address&		address)
+    Status		Table::Remove(const Point&		point)
     {
       Table::Iterator	iterator;
 
       enter();
 
       // try to locate a previous entry.
-      if (this->Locate(address, iterator) == StatusError)
+      if (this->Locate(point, iterator) == StatusError)
 	escape("unable to locate this neighbour");
 
       // delete the neighbour.
@@ -137,7 +137,7 @@ namespace elle
     ///
     /// this method locates a neighbour in the list.
     ///
-    Status		Table::Locate(const Address&		address,
+    Status		Table::Locate(const Point&		point,
 				      Table::Iterator&		iterator)
     {
       enter();
@@ -147,8 +147,8 @@ namespace elle
 	   iterator != this->container.end();
 	   iterator++)
 	{
-	  // if the address is found, return.
-	  if ((*iterator)->address == address)
+	  // if the point is found, return.
+	  if ((*iterator)->point == point)
 	    leave();
 	}
 
@@ -170,7 +170,7 @@ namespace elle
 	   scoutor++)
 	{
 	  // add/update the table.
-	  if (this->Update((*scoutor)->address,
+	  if (this->Update((*scoutor)->point,
 			   (*scoutor)->name) == StatusError)
 	    escape("unable to update the table");
 	}
@@ -296,7 +296,7 @@ namespace elle
 	   scoutor++)
 	{
 	  // send a probe message.
-	  if (this->node->slot.Send((*scoutor)->address,
+	  if (this->node->slot.Send((*scoutor)->point,
 				    Inputs<TagProbe>(this->node->name,
 						     this->node->table)) ==
 	      StatusError)

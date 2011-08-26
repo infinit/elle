@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Host.cc
 //
 // created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [fri aug 12 16:22:47 2011]
+// updated       julien quintard   [fri aug 26 14:25:42 2011]
 //
 
 //
@@ -131,7 +131,7 @@ namespace elle
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	false;
+	false();
 
       // compare the type
       if (this->type < element.type)
@@ -202,8 +202,7 @@ namespace elle
       enter();
 
       // extract the host.
-      if (archive.Extract(type,
-			  host) == StatusError)
+      if (archive.Extract(type, host) == StatusError)
 	escape("unable to extract the host");
 
       // set the type.
