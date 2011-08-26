@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...e/implementations/cirkle/RoutingTable.hh
+// file          /home/mycure/infinit/hole/implementations/cirkle/Cluster.hh
 //
-// created       julien quintard   [fri aug 12 15:56:25 2011]
-// updated       julien quintard   [fri aug 26 17:07:01 2011]
+// created       julien quintard   [fri aug 26 13:05:26 2011]
+// updated       julien quintard   [fri aug 26 14:47:00 2011]
 //
 
-#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH
-#define HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH
+#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_CLUSTER_HH
+#define HOLE_IMPLEMENTATIONS_CIRKLE_CLUSTER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -20,8 +20,11 @@
 
 #include <elle/Elle.hh>
 
-#include <hole/Label.hh>
-#include <hole/implementations/cirkle/Neighbour.hh>
+#include <hole/implementations/cirkle/RoutingTable.hh>
+
+#include <elle/idiom/Close.hh>
+# include <list>
+#include <elle/idiom/Open.hh>
 
 namespace hole
 {
@@ -37,40 +40,40 @@ namespace hole
       ///
       /// XXX
       ///
-      class RoutingTable:
-	public elle::Entity
+      class Cluster:
+	public elle::Object
       {
       public:
 	//
 	// types
 	//
-	typedef std::map<const Label, Neighbour*>	Container;
+	typedef std::list<elle::Point>			Container;
 	typedef typename Container::iterator		Iterator;
 	typedef typename Container::const_iterator	Scoutor;
 
 	//
 	// constructors & destructors
 	//
-	~RoutingTable();
+	~Cluster();
 
 	//
 	// methods
 	//
-	elle::Status		Add(const Label&,
-				    Neighbour*);
-	elle::Status		Exist(const Label&);
-	elle::Status		Retrieve(const Label&,
-					 Neighbour*&);
-	elle::Status		Remove(const Label&);
-	elle::Status		Locate(const Label&,
-				       Iterator* = NULL);
+	elle::Status		Create(const RoutingTable&);
 
 	//
 	// interfaces
 	//
 
+	// object
+	declare(Cluster);
+
 	// dumpable
 	elle::Status		Dump(const elle::Natural32 = 0) const;
+
+	// archivable
+	elle::Status		Serialize(elle::Archive&) const;
+	elle::Status		Extract(elle::Archive&);
 
 	//
 	// attributes

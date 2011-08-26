@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Manifest.hh
 //
 // created       julien quintard   [fri aug 12 15:18:12 2011]
-// updated       julien quintard   [fri aug 12 15:56:18 2011]
+// updated       julien quintard   [fri aug 26 14:17:51 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MANIFEST_HH
@@ -19,8 +19,10 @@
 //
 
 #include <elle/Elle.hh>
-
 #include <elle/Manifest.hh>
+
+#include <hole/implementations/remote/Manifest.hh>
+#include <hole/implementations/cirkle/Cluster.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -56,7 +58,7 @@ namespace hole
 ///
 range(hole::implementations::cirkle::Component,
       hole::implementations::cirkle::Tags,
-      elle::Component);
+      hole::implementations::remote::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -74,7 +76,7 @@ namespace hole
       //
       enum Tag
 	{
-	  TagPropagate = elle::Range<Component>::First + 1,
+	  TagGossip = elle::Range<Component>::First + 1,
 
 	  TagPush,
 	  TagPull,
@@ -94,8 +96,8 @@ namespace hole
 /// below are the definitions of the inward and outward messages.
 ///
 
-message(hole::implementations::cirkle::TagPropagate,
-	parameters(hole::implementations::cirkle::RoutingTable))
+message(hole::implementations::cirkle::TagGossip,
+	parameters(hole::implementations::cirkle::Cluster))
 
 inward(hole::implementations::cirkle::TagPush,
        parameters(nucleus::Address,

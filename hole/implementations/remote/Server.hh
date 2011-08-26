@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.hh
 //
 // created       julien quintard   [wed may 25 19:20:52 2011]
-// updated       julien quintard   [tue jul 19 11:44:26 2011]
+// updated       julien quintard   [thu aug 25 17:02:10 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
@@ -21,7 +21,7 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <hole/implementations/remote/Node.hh>
+#include <hole/implementations/remote/Peer.hh>
 
 namespace hole
 {
@@ -38,7 +38,7 @@ namespace hole
       /// XXX
       ///
       class Server:
-	public Node
+	public Peer
       {
       public:
 	//
@@ -54,59 +54,59 @@ namespace hole
 	//
 	// constructors & destructors
 	//
-	Server(const nucleus::Network&,
-	       const elle::Address&);
+	Server(const nucleus::Network&);
 	~Server();
 
 	//
 	// interfaces
 	//
 
-	// node
-	elle::Status	Initialize();
-	elle::Status	Clean();
+	// peer
+	elle::Status		Initialize(const elle::Point&);
+	elle::Status		Clean();
 
-	elle::Status	Put(const nucleus::Address&,
-			    const nucleus::ImmutableBlock&);
-	elle::Status	Put(const nucleus::Address&,
-			    const nucleus::MutableBlock&);
-	elle::Status	Get(const nucleus::Address&,
-			    nucleus::ImmutableBlock&);
-	elle::Status	Get(const nucleus::Address&,
-			    const nucleus::Version&,
-			    nucleus::MutableBlock&);
-	elle::Status	Kill(const nucleus::Address&);
+	elle::Status		Put(const nucleus::Address&,
+				    const nucleus::ImmutableBlock&);
+	elle::Status		Put(const nucleus::Address&,
+				    const nucleus::MutableBlock&);
+	elle::Status		Get(const nucleus::Address&,
+				    nucleus::ImmutableBlock&);
+	elle::Status		Get(const nucleus::Address&,
+				    const nucleus::Version&,
+				    nucleus::MutableBlock&);
+	elle::Status		Kill(const nucleus::Address&);
 
 	//
 	// callbacks
 	//
-	elle::Status	Connection(elle::Gate*&);
-	elle::Status	Response(const elle::Cipher&);
+	elle::Status		Connection(elle::Gate*&);
+	elle::Status		Response(const elle::Cipher&);
 
-	elle::Status	Authenticated();
+	elle::Status		Authenticated();
 
-	elle::Status	Push(const nucleus::Address&,
-			     const nucleus::Derivable<nucleus::Block>&);
-	elle::Status	Pull(const nucleus::Address&,
-			     const nucleus::Version&,
-			     nucleus::Derivable<nucleus::Block>&);
-	elle::Status	Wipe(const nucleus::Address&);
+	elle::Status		Push(const nucleus::Address&,
+				     const
+				       nucleus::Derivable<nucleus::Block>&);
+	elle::Status		Pull(const nucleus::Address&,
+				     const nucleus::Version&,
+				     nucleus::Derivable<nucleus::Block>&);
+	elle::Status		Wipe(const nucleus::Address&);
 
-	elle::Status	Error(const elle::String&);
+	elle::Status		Monitor();
 
 	//
 	// interfaces
 	//
 
 	// dumpable
-	elle::Status	Dump(const elle::Natural32 = 0) const;
+	elle::Status		Dump(const elle::Natural32 = 0) const;
 
 	//
 	// attributes
 	//
-	State		state;
+	State			state;
 
-	elle::Gate*	gate;
+	elle::Gate*		gate;
       };
 
     }

@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Client.hh
+// file          /home/mycure/infinit/hole/implementations/cirkle/Peer.hh
 //
 // created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [thu aug 25 17:01:57 2011]
+// updated       julien quintard   [fri aug 26 18:42:07 2011]
 //
  
-#ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
+#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_PEER_HH
+#define HOLE_IMPLEMENTATIONS_CIRKLE_PEER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,13 +21,16 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <hole/implementations/remote/Peer.hh>
+#include <hole/implementations/cirkle/Neighbourhood.hh>
+#include <hole/implementations/cirkle/RoutingTable.hh>
+#include <hole/implementations/cirkle/Cluster.hh>
+#include <hole/implementations/cirkle/Neighbour.hh>
 
 namespace hole
 {
   namespace implementations
   {
-    namespace remote
+    namespace cirkle
     {
 
 //
@@ -37,22 +40,15 @@ namespace hole
       ///
       /// XXX
       ///
-      class Client:
-	public Peer
+      class Peer:
+	public elle::Entity
       {
       public:
 	//
-	// constructors & destructors
+	// methods
 	//
-	Client(const nucleus::Network&);
-	~Client();
-
-	//
-	// interfaces
-	//
-
-	// peer
-	elle::Status		Initialize(const elle::Point&);
+	elle::Status		Initialize(const elle::Natural16,
+					   const elle::Point&);
 	elle::Status		Clean();
 
 	elle::Status		Put(const nucleus::Address&,
@@ -66,12 +62,18 @@ namespace hole
 				    nucleus::MutableBlock&);
 	elle::Status		Kill(const nucleus::Address&);
 
+	elle::Status		Propagate(Neighbour*);
+
+	//
+	// interfaces
+	//
+
 	//
 	// callbacks
 	//
-	elle::Status		Challenge(elle::Cipher&);
+	elle::Status		Connection(elle::Gate*&);
 
-	elle::Status		Monitor();
+	elle::Status		Update(const Cluster&);
 
 	//
 	// interfaces
@@ -83,7 +85,8 @@ namespace hole
 	//
 	// attributes
 	//
-	elle::Gate*		gate;
+	Neighbourhood		neighbourhood;
+	RoutingTable		table;
       };
 
     }

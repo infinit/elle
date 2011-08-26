@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.cc
 //
 // created       julien quintard   [fri may 20 19:32:16 2011]
-// updated       julien quintard   [fri aug 12 14:02:53 2011]
+// updated       julien quintard   [thu aug 25 11:43:45 2011]
 //
 
 //
@@ -46,7 +46,7 @@ namespace hole
 	Holeable(network),
 
 	role(Remote::RoleUnknown),
-	node(NULL)
+	peer(NULL)
       {
       }
 
@@ -55,9 +55,9 @@ namespace hole
       ///
       Remote::~Remote()
       {
-	// if a node is present.
-	if (this->node != NULL)
-	  delete this->node;
+	// if a peer is present.
+	if (this->peer != NULL)
+	  delete this->peer;
       }
 
 //
@@ -71,18 +71,18 @@ namespace hole
       elle::Status	Remote::Join()
       {
 	elle::String	string;
-	elle::Address	address;
+	elle::Point	address;
 
 	enter();
 
 	// retrieve the server's address.
-	if (Hole::Descriptor.Get("remote", "host",
+	if (Hole::Descriptor.Get("remote", "server",
 				 string) == elle::StatusError)
-	  escape("unable to retrieve the remote's host address from the "
+	  escape("unable to retrieve the server's address from the "
 		 "network descriptor");
 
 	// build the host address.
-	if (this->host.Create(string) == elle::StatusError)
+	if (address.Create(string) == elle::StatusError)
 	  escape("unable to create the host address");
 
 	// try to connect to the server's host.
@@ -92,13 +92,13 @@ namespace hole
 	  enter(instance(client));
 
 	  // allocate a client.
-	  client = new Client(this->network, this->host);
+	  client = new Client(this->network);
 
 	  // initialize the client.
-	  if (client->Initialize() == elle::StatusOk)
+	  if (client->Initialize(address) == elle::StatusOk)
 	    {
-	      // set the client as the node.
-	      this->node = client;
+	      // set the client as the host.
+	      this->peer = client;
 
 	      // set the role.
 	      this->role = Remote::RoleClient;
@@ -123,13 +123,13 @@ namespace hole
 	  enter(instance(server));
 
 	  // allocate a server.
-	  server = new Server(this->network, this->host);
+	  server = new Server(this->network);
 
 	  // initialize the server.
-	  if (server->Initialize() == elle::StatusOk)
+	  if (server->Initialize(address) == elle::StatusOk)
 	    {
-	      // set the server as the node.
-	      this->node = server;
+	      // set the server as the host.
+	      this->peer = server;
 
 	      // set the role.
 	      this->role = Remote::RoleServer;
@@ -148,15 +148,15 @@ namespace hole
       }
 
       ///
-      /// this method cleans the node.
+      /// this method cleans the peer.
       ///
       elle::Status	Remote::Leave()
       {
 	enter();
 
-	// clean the node.
-	if (this->node->Clean() == elle::StatusError)
-	  escape("unable to clean the node");
+	// clean the peer.
+	if (this->peer->Clean() == elle::StatusError)
+	  escape("unable to clean the peer");
 
 	leave();
       }
@@ -169,12 +169,12 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
+	// check if this peer is a client.
 	if (this->role != Remote::RoleClient)
 	  escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the node.
-	if (this->node->Put(address, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (this->peer->Put(address, block) == elle::StatusError)
 	  escape("unable to put the block");
 
 	leave();
@@ -188,12 +188,12 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
+	// check if this peer is a client.
 	if (this->role != Remote::RoleClient)
 	  escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the node.
-	if (this->node->Put(address, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (this->peer->Put(address, block) == elle::StatusError)
 	  escape("unable to put the block");
 
 	leave();
@@ -207,12 +207,12 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
+	// check if this peer is a client.
 	if (this->role != Remote::RoleClient)
 	  escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the node.
-	if (this->node->Get(address, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (this->peer->Get(address, block) == elle::StatusError)
 	  escape("unable to get the block");
 
 	leave();
@@ -227,12 +227,12 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
+	// check if this peer is a client.
 	if (this->role != Remote::RoleClient)
 	  escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the node.
-	if (this->node->Get(address, version, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (this->peer->Get(address, version, block) == elle::StatusError)
 	  escape("unable to get the block");
 
 	leave();
@@ -245,12 +245,12 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
+	// check if this peer is a client.
 	if (this->role != Remote::RoleClient)
 	  escape("the hole is not acting as a remote client as it should");
 
-	// forward the request to the node.
-	if (this->node->Kill(address) == elle::StatusError)
+	// forward the request to the peer.
+	if (this->peer->Kill(address) == elle::StatusError)
 	  escape("unable to kill the block");
 
 	leave();
@@ -275,24 +275,20 @@ namespace hole
 	if (Holeable::Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the holeabl");
 
-	// dump the host.
-	if (this->host.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the host");
-
 	std::cout << alignment << elle::Dumpable::Shift
 		  << "[Role] " << (elle::Natural32)this->role
 		  << std::endl;
 
-	// dump the node.
-	if (this->node != NULL)
+	// dump the peer.
+	if (this->peer != NULL)
 	  {
-	    if (this->node->Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the node");
+	    if (this->peer->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the peer");
 	  }
 	else
 	  {
 	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Node] " << elle::none
+		      << "[Peer] " << elle::none
 		      << std::endl;
 	  }
 

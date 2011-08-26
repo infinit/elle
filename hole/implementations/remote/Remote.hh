@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.hh
 //
 // created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [fri aug 12 15:16:50 2011]
+// updated       julien quintard   [wed aug 24 09:59:33 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH
@@ -23,7 +23,7 @@
 
 #include <hole/Holeable.hh>
 
-#include <hole/implementations/remote/Node.hh>
+#include <hole/implementations/remote/Peer.hh>
 
 namespace hole
 {
@@ -36,7 +36,7 @@ namespace hole
     /// join a network at startup.
     ///
     /// if this network relies on a remote model, the implementation starts
-    /// by trying to connect to the host. should this step fail, a server
+    /// by trying to connect to the server. should this step fail, a server
     /// is spawn in order to wait for connections.
     ///
     /// this way a single implementation emulates both the client and server.
@@ -101,11 +101,9 @@ namespace hole
 	//
 	// attributes
 	//
-	elle::Address	host;
-
 	Role		role;
 
-	Node*		node;
+	Peer*		peer;
       };
 
     }

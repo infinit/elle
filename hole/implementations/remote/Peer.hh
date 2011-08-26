@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Node.hh
+// file          /home/mycure/infinit/hole/implementations/remote/Peer.hh
 //
 // created       julien quintard   [thu may 26 09:46:18 2011]
-// updated       julien quintard   [mon jul 11 16:37:49 2011]
+// updated       julien quintard   [thu aug 25 11:44:03 2011]
 //
 
-#ifndef HOLE_IMPLEMENTATIONS_REMOTE_NODE_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_NODE_HH
+#ifndef HOLE_IMPLEMENTATIONS_REMOTE_PEER_HH
+#define HOLE_IMPLEMENTATIONS_REMOTE_PEER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -33,22 +33,21 @@ namespace hole
 //
 
       ///
-      /// this class represents a node being either a client or a server.
+      /// this class represents a peer being either a client or a server.
       ///
-      class Node:
+      class Peer:
 	public elle::Entity
       {
       public:
 	//
 	// constructors & destructors
 	//
-	Node(const nucleus::Network&,
-	     const elle::Address&);
+	Peer(const nucleus::Network&);
 
 	//
 	// interface
 	//
-	virtual elle::Status	Initialize() = 0;
+	virtual elle::Status	Initialize(const elle::Point&) = 0;
 	virtual elle::Status	Clean() = 0;
 
 	virtual elle::Status	Put(const nucleus::Address&,
@@ -73,7 +72,6 @@ namespace hole
 	// attributes
 	//
 	nucleus::Network	network;
-	elle::Address		host;
       };
 
     }

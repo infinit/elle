@@ -4,9 +4,16 @@ ADD_LIBRARY(hole
   implementations/local/Local.cc
 
   implementations/remote/Client.cc
-  implementations/remote/Node.cc
+  implementations/remote/Peer.cc
   implementations/remote/Remote.cc
   implementations/remote/Server.cc
+
+  implementations/cirkle/Cirkle.cc
+  implementations/cirkle/Cluster.cc
+  implementations/cirkle/Neighbour.cc
+  implementations/cirkle/Neighbourhood.cc
+  implementations/cirkle/Peer.cc
+  implementations/cirkle/RoutingTable.cc
 
   Hole.cc
   Holeable.cc

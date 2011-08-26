@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...e/implementations/cirkle/RoutingTable.hh
+// file          /home/mycure/infi.../implementations/cirkle/Neighbourhood.hh
 //
-// created       julien quintard   [fri aug 12 15:56:25 2011]
-// updated       julien quintard   [fri aug 26 17:07:01 2011]
+// created       julien quintard   [thu aug 25 10:56:32 2011]
+// updated       julien quintard   [fri aug 26 13:53:10 2011]
 //
 
-#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH
-#define HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH
+#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_NEIGHBOURHOOD_HH
+#define HOLE_IMPLEMENTATIONS_CIRKLE_NEIGHBOURHOOD_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -37,32 +37,32 @@ namespace hole
       ///
       /// XXX
       ///
-      class RoutingTable:
+      class Neighbourhood:
 	public elle::Entity
       {
       public:
 	//
 	// types
 	//
-	typedef std::map<const Label, Neighbour*>	Container;
+	typedef std::map<const elle::Point, Neighbour*>	Container;
 	typedef typename Container::iterator		Iterator;
 	typedef typename Container::const_iterator	Scoutor;
 
 	//
 	// constructors & destructors
 	//
-	~RoutingTable();
+	~Neighbourhood();
 
 	//
 	// methods
 	//
-	elle::Status		Add(const Label&,
+	elle::Status		Add(const elle::Point&,
 				    Neighbour*);
-	elle::Status		Exist(const Label&);
-	elle::Status		Retrieve(const Label&,
+	elle::Status		Exist(const elle::Point&);
+	elle::Status		Retrieve(const elle::Point&,
 					 Neighbour*&);
-	elle::Status		Remove(const Label&);
-	elle::Status		Locate(const Label&,
+	elle::Status		Remove(const elle::Point&);
+	elle::Status		Locate(const elle::Point&,
 				       Iterator* = NULL);
 
 	//

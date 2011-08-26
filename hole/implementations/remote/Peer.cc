@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Node.cc
+// file          /home/mycure/infinit/hole/implementations/remote/Peer.cc
 //
 // created       julien quintard   [thu may 26 11:21:43 2011]
-// updated       julien quintard   [mon jul 11 16:39:40 2011]
+// updated       julien quintard   [wed aug 24 10:00:04 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/implementations/remote/Node.hh>
+#include <hole/implementations/remote/Peer.hh>
 
 namespace hole
 {
@@ -31,10 +31,8 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Node::Node(const nucleus::Network&			network,
-		 const elle::Address&				host):
-	network(network),
-	host(host)
+      Peer::Peer(const nucleus::Network&			network):
+	network(network)
       {
       }
 
@@ -43,23 +41,19 @@ namespace hole
 //
 
       ///
-      /// this method dumps the node.
+      /// this method dumps the peer.
       ///
-      elle::Status	Node::Dump(const elle::Natural32	margin) const
+      elle::Status	Peer::Dump(const elle::Natural32	margin) const
       {
 	elle::String	alignment(margin, ' ');
 
 	enter();
 
-	std::cout << alignment << "[Node]" << std::endl;
+	std::cout << alignment << "[Peer]" << std::endl;
 
 	// dump the network.
 	if (this->network.Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the network");
-
-	// dump the host.
-	if (this->host.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the host");
 
 	leave();
       }

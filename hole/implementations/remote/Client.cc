@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [thu jul 28 17:32:04 2011]
+// updated       julien quintard   [thu aug 25 22:10:59 2011]
 //
 
 //
@@ -36,9 +36,8 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Client::Client(const nucleus::Network&			network,
-		     const elle::Address&			host):
-	Node(network, host),
+      Client::Client(const nucleus::Network&			network):
+	Peer(network),
 
 	gate(NULL)
       {
@@ -55,13 +54,13 @@ namespace hole
       }
 
 //
-// ---------- node ------------------------------------------------------------
+// ---------- peer ------------------------------------------------------------
 //
 
       ///
       /// this method initializes the client.
       ///
-      elle::Status	Client::Initialize()
+      elle::Status	Client::Initialize(const elle::Point&	point)
       {
 	enter();
 
@@ -89,25 +88,23 @@ namespace hole
 	{
 	  elle::Callback<
 	    elle::Status,
-	    elle::Parameters<
-	      const elle::String
-	      >
-	    >				error(&Client::Error, this);
+	    elle::Parameters<>
+	    >				monitor(&Client::Monitor, this);
 
 	  // allocate the gate.
 	  this->gate = new elle::Gate;
+
+	  // register the error callback.
+	  if (this->gate->Monitor(monitor) == elle::StatusError)
+	    escape("unable to monitor the connection");
 
 	  // create the gate.
 	  if (this->gate->Create() == elle::StatusError)
 	    escape("unable to create the gate");
 
 	  // connect the gate.
-	  if (this->gate->Connect(this->host) == elle::StatusError)
+	  if (this->gate->Connect(point) == elle::StatusError)
 	    escape("unable to connect to the bridge");
-
-	  // register the error callback.
-	  if (this->gate->Monitor(error) == elle::StatusError)
-	    escape("unable to monitor the connection");
 	}
 
 	leave();
@@ -115,9 +112,6 @@ namespace hole
 
       ///
       /// this method cleans the client.
-      ///
-      /// the components are recycled just to make sure the memory is
-      /// released before the Meta allocator terminates.
       ///
       elle::Status	Client::Clean()
       {
@@ -309,20 +303,28 @@ namespace hole
       }
 
       ///
-      /// this callback is triggered whenever the connection is shut down.
+      /// this callback is triggered whenever something unexpected
+      /// occurs on the connection.
       ///
-      elle::Status	Client::Error(const elle::String&)
+      elle::Status	Client::Monitor()
       {
 	enter();
 
-	// delete the gate.
-	delete this->gate;
+	if (this->gate->state == elle::Channel::StateDisconnected)
+	  {
+	    // delete the gate.
+	    delete this->gate;
 
-	// reset the gate.
-	this->gate = NULL;
+	    // reset the gate.
+	    this->gate = NULL;
+	  }
 
 	leave();
       }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
 
       ///
       /// this method dumps the client.
@@ -336,8 +338,8 @@ namespace hole
 	std::cout << alignment << "[Client]" << std::endl;
 
 	// dump the parent.
-	if (Node::Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the node");
+	if (Peer::Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the peer");
 
 	// dump the gate.
 	if (this->gate != NULL)

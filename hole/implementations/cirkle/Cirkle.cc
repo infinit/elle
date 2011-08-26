@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Cirkle.cc
 //
 // created       julien quintard   [fri aug 12 14:03:04 2011]
-// updated       julien quintard   [fri aug 12 14:04:31 2011]
+// updated       julien quintard   [fri aug 26 15:15:54 2011]
 //
 
 //
@@ -35,6 +35,16 @@ namespace hole
       ///
       const elle::Character		Component[] = "cirkle";
 
+      ///
+      /// XXX
+      ///
+      const elle::Natural16		Cirkle::Port = 4242;
+
+      ///
+      /// XXX
+      ///
+      Peer				Cirkle::Machine;
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -43,20 +53,8 @@ namespace hole
       /// default constructor.
       ///
       Cirkle::Cirkle(const nucleus::Network&			network):
-	Holeable(network),
-
-	node(NULL)
+	Holeable(network)
       {
-      }
-
-      ///
-      /// the destructor.
-      ///
-      Cirkle::~Cirkle()
-      {
-	// if a node is present.
-	if (this->node != NULL)
-	  delete this->node;
       }
 
 //
@@ -70,92 +68,52 @@ namespace hole
       elle::Status	Cirkle::Join()
       {
 	elle::String	string;
-	elle::Address	address;
+	elle::Point	point;
+	elle::Port	port;
 
 	enter();
 
-	// retrieve the server's address.
-	if (Hole::Descriptor.Get("cirkle", "host",
-				 string) == elle::StatusError)
-	  escape("unable to retrieve the cirkle's host address from the "
-		 "network descriptor");
+	// XXX improve this with getting a list of hosts.
 
-	// build the host address.
-	if (this->host.Create(string) == elle::StatusError)
-	  escape("unable to create the host address");
-
-	// try to connect to the server's host.
+	//
+	// retrieve the parameters.
+	//
 	{
-	  Client*		client;
+	  // retrieve the neighbours' points.
+	  if (Hole::Descriptor.Get("cirkle", "neighbours",
+				   string) == elle::StatusError)
+	    escape("unable to retrieve the cirkle's host address from the "
+		   "network descriptor");
 
-	  enter(instance(client));
+	  // build the host point.
+	  if (point.Create(string) == elle::StatusError)
+	    escape("unable to create the host point");
 
-	  // allocate a client.
-	  client = new Client(this->network, this->host);
-
-	  // initialize the client.
-	  if (client->Initialize() == elle::StatusOk)
-	    {
-	      // set the client as the node.
-	      this->node = client;
-
-	      // set the role.
-	      this->role = Cirkle::RoleClient;
-
-	      // waive.
-	      waive(client);
-
-	      leave();
-	    }
-
-	  // delete the client.
-	  delete client;
+	  // retrieve the peer's listening port.
+	  if (Hole::Descriptor.Get("cirkle", "port",
+				   port,
+				   Cirkle::Port) == elle::StatusError)
+	    escape("unable to retrieve the cirkle's local port from the "
+		   "network descriptor");
 	}
 
-	// purge the error messages.
-	purge();
+	// initialize the machine.
+	if (Cirkle::Machine.Initialize(port, point) == elle::StatusError)
+	  escape("unable to initialize the machine");
 
-	// if the client did not succeed, create a server a wait for a client.
-	{
-	  Server*		server;
-
-	  enter(instance(server));
-
-	  // allocate a server.
-	  server = new Server(this->network, this->host);
-
-	  // initialize the server.
-	  if (server->Initialize() == elle::StatusOk)
-	    {
-	      // set the server as the node.
-	      this->node = server;
-
-	      // set the role.
-	      this->role = Cirkle::RoleServer;
-
-	      // waive.
-	      waive(server);
-
-	      leave();
-	    }
-
-	  // delete the server.
-	  delete server;
-	}
-
-	escape("unable to create a client or a server");
+	leave();
       }
 
       ///
-      /// this method cleans the node.
+      /// this method cleans the peer.
       ///
       elle::Status	Cirkle::Leave()
       {
 	enter();
 
-	// clean the node.
-	if (this->node->Clean() == elle::StatusError)
-	  escape("unable to clean the node");
+	// clean the machine.
+	if (Cirkle::Machine.Clean() == elle::StatusError)
+	  escape("unable to clean the machine");
 
 	leave();
       }
@@ -168,12 +126,8 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
-	if (this->role != Cirkle::RoleClient)
-	  escape("the hole is not acting as a cirkle client as it should");
-
-	// forward the request to the node.
-	if (this->node->Put(address, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (Cirkle::Machine.Put(address, block) == elle::StatusError)
 	  escape("unable to put the block");
 
 	leave();
@@ -187,12 +141,8 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
-	if (this->role != Cirkle::RoleClient)
-	  escape("the hole is not acting as a cirkle client as it should");
-
-	// forward the request to the node.
-	if (this->node->Put(address, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (Cirkle::Machine.Put(address, block) == elle::StatusError)
 	  escape("unable to put the block");
 
 	leave();
@@ -206,12 +156,8 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
-	if (this->role != Cirkle::RoleClient)
-	  escape("the hole is not acting as a cirkle client as it should");
-
-	// forward the request to the node.
-	if (this->node->Get(address, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (Cirkle::Machine.Get(address, block) == elle::StatusError)
 	  escape("unable to get the block");
 
 	leave();
@@ -226,12 +172,8 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
-	if (this->role != Cirkle::RoleClient)
-	  escape("the hole is not acting as a cirkle client as it should");
-
-	// forward the request to the node.
-	if (this->node->Get(address, version, block) == elle::StatusError)
+	// forward the request to the peer.
+	if (Cirkle::Machine.Get(address, version, block) == elle::StatusError)
 	  escape("unable to get the block");
 
 	leave();
@@ -244,12 +186,8 @@ namespace hole
       {
 	enter();
 
-	// check if this node is a client.
-	if (this->role != Cirkle::RoleClient)
-	  escape("the hole is not acting as a cirkle client as it should");
-
-	// forward the request to the node.
-	if (this->node->Kill(address) == elle::StatusError)
+	// forward the request to the peer.
+	if (Cirkle::Machine.Kill(address) == elle::StatusError)
 	  escape("unable to kill the block");
 
 	leave();
@@ -274,26 +212,27 @@ namespace hole
 	if (Holeable::Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the holeabl");
 
-	// dump the host.
-	if (this->host.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the host");
+	leave();
+      }
 
-	std::cout << alignment << elle::Dumpable::Shift
-		  << "[Role] " << (elle::Natural32)this->role
-		  << std::endl;
+//
+// ---------- static methods --------------------------------------------------
+//
 
-	// dump the node.
-	if (this->node != NULL)
-	  {
-	    if (this->node->Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the node");
-	  }
-	else
-	  {
-	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Node] " << elle::none
-		      << std::endl;
-	  }
+      ///
+      /// this method dumps the static attributes.
+      ///
+      elle::Status	Cirkle::Show(const elle::Natural32	margin)
+      {
+	elle::String	alignment(margin, ' ');
+
+	enter();
+
+	std::cout << alignment << "[Cirkle]" << std::endl;
+
+	// dump the machine.
+	if (Cirkle::Machine.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the machine");
 
 	leave();
       }

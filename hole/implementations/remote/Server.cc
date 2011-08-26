@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [thu jul 28 17:31:44 2011]
+// updated       julien quintard   [thu aug 25 22:11:16 2011]
 //
 
 //
@@ -36,9 +36,8 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Server::Server(const nucleus::Network&			network,
-		     const elle::Address&			host):
-	Node(network, host),
+      Server::Server(const nucleus::Network&			network):
+	Peer(network),
 
 	state(Server::StateUnknown),
 	gate(NULL)
@@ -56,13 +55,13 @@ namespace hole
       }
 
 //
-// ---------- node ------------------------------------------------------------
+// ---------- peer ------------------------------------------------------------
 //
 
       ///
       /// initialize the server by waiting for incoming connections.
       ///
-      elle::Status	Server::Initialize()
+      elle::Status	Server::Initialize(const elle::Point&	point)
       {
 	enter();
 
@@ -147,7 +146,7 @@ namespace hole
 	  >				connection(&Server::Connection, this);
 
 	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(this->host,
+	  if (elle::Bridge::Listen(point,
 				   connection) == elle::StatusError)
 	    escape("unable to listen for bridge connections");
 	}
@@ -160,7 +159,13 @@ namespace hole
       ///
       elle::Status	Server::Clean()
       {
+	elle::Point	point;
+
 	enter();
+
+	// retrieve the address.
+	if (this->gate->Target(point) == elle::StatusError)
+	  escape("unable to retrieve the target");
 
 	// close the client connection, if necessary.
 	if (this->gate != NULL)
@@ -171,7 +176,7 @@ namespace hole
 	  }
 
 	// block the incoming connections.
-	if (elle::Bridge::Block(this->host) == elle::StatusError)
+	if (elle::Bridge::Block(point) == elle::StatusError)
 	  escape("unable to block bridge connections");
 
 	leave();
@@ -366,10 +371,8 @@ namespace hole
       {
 	elle::Callback<
 	  elle::Status,
-	  elle::Parameters<
-	    const elle::String
-	  >
-	>				error(&Server::Error, this);
+	  elle::Parameters<>
+	>				monitor(&Server::Monitor, this);
 
 	enter();
 
@@ -385,7 +388,7 @@ namespace hole
 	this->gate = gate;
 
 	// register the error callback.
-	if (this->gate->Monitor(error) == elle::StatusError)
+	if (this->gate->Monitor(monitor) == elle::StatusError)
 	  escape("unable to monitor the connection");
 
 	// set the state.
@@ -618,20 +621,24 @@ namespace hole
       }
 
       ///
-      /// this callback is triggered whenever the connection is shut down.
+      /// this callback is triggered whenever something unexpected occurs
+      /// on the connection.
       ///
-      elle::Status	Server::Error(const elle::String&)
+      elle::Status	Server::Monitor()
       {
 	enter();
 
-	// delete the gate.
-	delete this->gate;
+	if (this->gate->state == elle::Channel::StateDisconnected)
+	  {
+	    // delete the gate.
+	    delete this->gate;
 
-	// set the gate to null.
-	this->gate = NULL;
+	    // set the gate to null.
+	    this->gate = NULL;
 
-	// reset the state.
-	this->state = Server::StateUnknown;
+	    // reset the state.
+	    this->state = Server::StateUnknown;
+	  }
 
 	leave();
       }
@@ -652,8 +659,8 @@ namespace hole
 	std::cout << alignment << "[Server]" << std::endl;
 
 	// dump the parent.
-	if (Node::Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the node");
+	if (Peer::Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the peer");
 
 	// dump the gate.
 	if (this->gate != NULL)
