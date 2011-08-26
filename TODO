@@ -1,5 +1,28 @@
-- virer tag pig-1 (dans pig)
-- virer tag hole-chord (dans hole)
+protocole:
+  - A se connecte a B
+  - B envoie son passport (sa partie publique)
+  - A verifie le passport/node
+  - A ajoute une entree a sa routing table
+
+#
+# ---------- XXX --------------------------------------------------------------
+#
+
+- systeme de signal
+  [QT] connect(this->gate, _connected, this, _connected)
+  [Elle] dans gate, Register("suce", Parameters<...>);
+  [Elle] this->gate.Attach("suce", Callback(...));
+  [Elle] this->gate.Signal("suce", parameters);
+
+- dump Channel (call by Gate/Door)
+- meme chose avec Socket.
+
+- trouver un terme pour remplacer Address dans elle
+
+- changer le protocole pour que les passports soient echanges car pour
+  l'instant label = h(IP)
+
+- passer alpha en prototype: rajouter un tag (cote serveur)
 
 - renommer Node en Host dans remote.
 
@@ -47,3 +70,5 @@
 
 - utiliser une bsddb ou autre bref une DB local plutot que de stocker les blocs
   dans le FS car pas optimise pour ca => ca devrait ameliorer les perfs.
+
+- rajouter des timeouts sur les I/Os, sur les sockets etc.

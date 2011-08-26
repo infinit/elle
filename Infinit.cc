@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.cc
 //
 // created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [mon aug  1 10:23:27 2011]
+// updated       julien quintard   [fri aug 26 00:42:34 2011]
 //
 
 //
@@ -91,13 +91,17 @@ elle::Status		Infinit::Initialize()
   // load the configuration.
   //
   {
-    // load the configuration file.
-    if (Infinit::Configuration.Load() == elle::StatusError)
-      escape("unable to load the configuration");
+    // if the configuration file exists...
+    if (Infinit::Configuration.Exist() == elle::StatusTrue)
+      {
+	// load the configuration file.
+	if (Infinit::Configuration.Load() == elle::StatusError)
+	  escape("unable to load the configuration");
 
-    // pull the parameters.
-    if (Infinit::Configuration.Pull() == elle::StatusError)
-      escape("unable to pull the configuration parameters");
+	// pull the parameters.
+	if (Infinit::Configuration.Pull() == elle::StatusError)
+	  escape("unable to pull the configuration parameters");
+      }
   }
 
   // enable the meta logging.
