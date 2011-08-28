@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:22:14 2011]
-// updated       julien quintard   [sun aug 28 22:50:14 2011]
+// updated       julien quintard   [sun aug 28 22:52:55 2011]
 //
 
 //
@@ -62,7 +62,7 @@ namespace nucleus
 	escape("unable to convert the address in its hexadecimal form");
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.debug.nucleus == true)
 	printf("[nucleus] proton::ImmutableBlock::Load(%s)\n",
 	       unique.c_str());
 
@@ -108,7 +108,7 @@ namespace nucleus
 	escape("unable to convert the address in its hexadecimal form");
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.debug.nucleus == true)
 	printf("[nucleus] proton::ImmutableBlock::Store(%s)\n",
 	       unique.c_str());
 
@@ -155,7 +155,7 @@ namespace nucleus
 	escape("unable to convert the address in its hexadecimal form");
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.debug.nucleus == true)
 	printf("[nucleus] proton::ImmutableBlock::Erase(%s)\n",
 	       unique.c_str());
 
@@ -193,7 +193,7 @@ namespace nucleus
 	flee("unable to convert the address in its hexadecimal form");
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.debug.nucleus == true)
 	printf("[nucleus] proton::ImmutableBlock::Exist(%s)\n",
 	       unique.c_str());
 
