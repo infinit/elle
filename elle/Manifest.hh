@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [mon jul 18 23:26:40 2011]
+// updated       julien quintard   [sun aug 28 20:52:45 2011]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -46,7 +46,7 @@ namespace elle
   ///
   /// XXX
   ///
-  const Natural32		Tags = 2;
+  const Natural32		Tags = 10;
 
 }
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.cc
 //
 // created       julien quintard   [thu mar 18 21:20:27 2010]
-// updated       julien quintard   [thu aug 25 13:37:09 2011]
+// updated       julien quintard   [sat aug 27 00:42:11 2011]
 //
 
 //
@@ -76,6 +76,33 @@ namespace elle
       // delete the timer.
       if (this->timer != NULL)
 	delete this->timer;
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Status		Channel::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Channel]" << std::endl;
+
+      // dump the socket.
+      if (Socket::Dump(margin + 2) == StatusError)
+	escape("unable to dump the socket");
+
+      std::cout << alignment << Dumpable::Shift
+		<< "[State] " << std::dec << this->state << std::endl;
+
+      // XXX others?
+
+      leave();
     }
 
   }

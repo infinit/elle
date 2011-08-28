@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [wed may 25 15:53:18 2011]
-// updated       julien quintard   [thu aug 25 11:38:06 2011]
+// updated       julien quintard   [sun aug 28 14:01:53 2011]
 //
 
 ///
@@ -41,6 +41,7 @@
 #include <elle/network/Gate.hh>
 
 #include <elle/idiom/Close.hh>
+# include <map>
 # include <QObject>
 # include <QTcpServer>
 #include <elle/idiom/Open.hh>
@@ -132,9 +133,9 @@ namespace elle
       //
       // types
       //
-      typedef std::list<BridgePorter*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::map<const Point, BridgePorter*>	Container;
+      typedef Container::iterator			Iterator;
+      typedef Container::const_iterator			Scoutor;
 
       //
       // static methods
@@ -146,6 +147,10 @@ namespace elle
 			       const Callback< Status,
 					       Parameters<Gate*> >&);
       static Status	Block(const Point&);
+      static Status	Retrieve(const Point&,
+				 BridgePorter*&);
+      static Status	Locate(const Point&,
+			       Iterator* = NULL);
 
       static Status	Show(const Natural32 = 0);
 

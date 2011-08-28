@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [thu aug 25 13:52:13 2011]
+// updated       julien quintard   [sun aug 28 17:25:51 2011]
 //
 
 ///
@@ -69,6 +69,12 @@ namespace elle
       //
       // enumerations
       //
+      enum Mode
+	{
+	  ModeAsynchronous,
+	  ModeSynchronous
+	};
+
       enum State
 	{
 	  StateUnconnected,
@@ -80,7 +86,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural64		Capacity;
+      static const Natural64			Capacity;
 
       //
       // types
@@ -111,6 +117,13 @@ namespace elle
       template <typename I>
       Status		Reply(const I,
 			      Session* = NULL);
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

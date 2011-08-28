@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [thu aug 25 16:49:11 2011]
+// updated       julien quintard   [sun aug 28 17:22:33 2011]
 //
 
 ///
@@ -86,7 +86,8 @@ namespace elle
       Status		Create();
       Status		Create(::QTcpSocket*);
 
-      Status		Connect(const Point&);
+      Status		Connect(const Point&,
+				Channel::Mode = Channel::ModeAsynchronous);
       Status		Disconnect();
 
       Status		Write(const Packet&);
@@ -127,7 +128,6 @@ namespace elle
       // attributes
       //
       ::QTcpSocket*	socket;
-      Port		port;
 
     private slots:
       //

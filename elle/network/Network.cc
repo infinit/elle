@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [mon jul 18 22:32:01 2011]
+// updated       julien quintard   [sun aug 28 21:20:13 2011]
 //
 
 //
@@ -136,7 +136,26 @@ namespace elle
         // retrieve the procedure's functionoid associated to the header's tag.
 	if ((scoutor = Network::Procedures.find(parcel->header->tag)) ==
 	    Network::Procedures.end())
-	  leave();
+	  {
+	    // test if the message received is an error, if so, log it.
+	    if (parcel->header->tag == TagError)
+	      {
+		Report	report;
+
+		// extract the error message.
+		if (report.Extract(*parcel->data) == StatusError)
+		  escape("unable to extract the error message");
+
+		// report the remote error.
+		transpose(report);
+
+		// log the error.
+		log("an error message has been received with no registered "
+		    "procedure");
+	      }
+
+	    leave();
+	  }
 
 	// assign the new session.
 	if (Session::Assign(parcel->session) == StatusError)

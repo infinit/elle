@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [mon jul 18 09:18:28 2011]
+// updated       julien quintard   [sun aug 28 14:02:05 2011]
 //
 
 ///
@@ -40,6 +40,7 @@
 #include <elle/network/Door.hh>
 
 #include <elle/idiom/Close.hh>
+# include <map>
 # include <QObject>
 # include <QLocalServer>
 #include <elle/idiom/Open.hh>
@@ -131,9 +132,9 @@ namespace elle
       //
       // types
       //
-      typedef std::list<LanePorter*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      typedef std::map<const String, LanePorter*>	Container;
+      typedef Container::iterator			Iterator;
+      typedef Container::const_iterator			Scoutor;
 
       //
       // static methods
@@ -145,6 +146,10 @@ namespace elle
 			       const Callback< Status,
 					       Parameters<Door*> >&);
       static Status	Block(const String&);
+      static Status	Retrieve(const String&,
+				 LanePorter*&);
+      static Status	Locate(const String&,
+			       Iterator* = NULL);
 
       static Status	Show(const Natural32 = 0);
 

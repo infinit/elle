@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hxx
 //
 // created       julien quintard   [wed may 25 14:20:06 2011]
-// updated       julien quintard   [thu aug 25 11:55:59 2011]
+// updated       julien quintard   [sun aug 28 21:08:32 2011]
 //
 
 #ifndef ELLE_NETWORK_GATE_HXX

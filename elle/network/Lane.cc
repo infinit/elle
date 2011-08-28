@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [mon jul 18 11:29:02 2011]
+// updated       julien quintard   [sun aug 28 14:02:34 2011]
 //
 
 //
@@ -121,7 +121,7 @@ namespace elle
 	   scoutor != Lane::Porters.end();
 	   scoutor++)
 	{
-	  LanePorter*	porter = *scoutor;
+	  LanePorter*	porter = scoutor->second;
 
 	  // delete the porter.
 	  delete porter;
@@ -146,9 +146,14 @@ namespace elle
 					 Status,
 					 Parameters<Door*> >&	callback)
     {
-      LanePorter*	porter;
+      std::pair<Lane::Iterator, Boolean>	result;
+      LanePorter*				porter;
 
       enter(instance(porter));
+
+      // check if this name is not already listened on.
+      if (Lane::Locate(name) == StatusTrue)
+	escape("this name seems to have already been registered");
 
       // allocate a new porter.
       porter = new LanePorter(callback);
@@ -157,8 +162,13 @@ namespace elle
       if (porter->Create(name) == StatusError)
 	escape("unable to create the porter");
 
-      // add the porter to the container.
-      Lane::Porters.push_back(porter);
+      // insert the porter in the container.
+      result = Lane::Porters.insert(
+	         std::pair<const String, LanePorter*>(name, porter));
+
+      // check if the insertion was successful.
+      if (result.second == false)
+	escape("unable to insert the porter in the container");
 
       // stop tracking porter.
       waive(porter);
@@ -167,36 +177,72 @@ namespace elle
     }
 
     ///
-    /// this method blocks the given address by deleting the associated
+    /// this method blocks the given name by deleting the associated
     /// porter.
     ///
     Status		Lane::Block(const String&		name)
     {
       Lane::Iterator	iterator;
+      LanePorter*	porter;
 
       enter();
 
-      // go through the porters.
-      for (iterator = Lane::Porters.begin();
-	   iterator != Lane::Porters.end();
-	   iterator++)
+      // locate the porter.
+      if (Lane::Locate(name, &iterator) == StatusFalse)
+	escape("unable to locate the given porter");
+
+      // retrieve the porter.
+      porter = iterator->second;
+      
+      // delete the porter.
+      delete porter;
+
+      // remove the entry from the container.
+      Lane::Porters.erase(iterator);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Lane::Retrieve(const String&		name,
+				       LanePorter*&		porter)
+    {
+      Lane::Iterator	iterator;
+
+      enter();
+
+      // locate the porter.
+      if (Lane::Locate(name, &iterator) == StatusFalse)
+	escape("unable to locate the given porter");
+
+      // retrieve the porter.
+      porter = iterator->second;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Lane::Locate(const String&		name,
+				     Iterator*			iterator)
+    {
+      Lane::Iterator	i;
+
+      enter();
+
+      // try to locate the porter.
+      if ((i = Lane::Porters.find(name)) != Lane::Porters.end())
 	{
-	  LanePorter*	porter = *iterator;
+	  if (iterator != NULL)
+	    *iterator = i;
 
-	  // is this the porter we are looking for?
-	  if (porter->name == name)
-	    {
-	      // delete the porter.
-	      delete porter;
-
-	      // remove the entry from the container.
-	      Lane::Porters.erase(iterator);
-
-	      leave();
-	    }
+	  true();
 	}
 
-      escape("unable to locate the porter associated with this name");
+      false();
     }
 
 //
@@ -254,8 +300,10 @@ namespace elle
 	   scoutor != Lane::Porters.end();
 	   scoutor++)
 	{
+	  LanePorter*	porter = scoutor->second;
+
 	  // dump the porter.
-	  if ((*scoutor)->Dump(margin + 2) == StatusError)
+	  if (porter->Dump(margin + 2) == StatusError)
 	    escape("unable to dump the porter");
 	}
 

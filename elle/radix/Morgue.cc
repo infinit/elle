@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Morgue.cc
 //
 // created       julien quintard   [fri aug 26 17:10:36 2011]
-// updated       julien quintard   [fri aug 26 18:14:28 2011]
+// updated       julien quintard   [sat aug 27 13:12:32 2011]
 //
 
 //
@@ -36,9 +36,9 @@ namespace elle
     ///
     /// XXX
     ///
-    /// XXX 3 minutes
+    /// XXX 3 minutes: 180000
     ///
-    const Natural32			Morgue::Frequency = 180000;
+    const Natural32			Morgue::Frequency = 1000;
 
 //
 // ---------- static methods --------------------------------------------------

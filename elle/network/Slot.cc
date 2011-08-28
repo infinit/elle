@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [fri aug 26 19:13:02 2011]
+// updated       julien quintard   [sun aug 28 21:11:45 2011]
 //
 
 //
@@ -198,7 +198,11 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Slot] " << std::hex << this << std::endl;
+      std::cout << alignment << "[Slot]" << std::endl;
+
+      // dump the socket.
+      if (Socket::Dump(margin + 2) == StatusError)
+	escape("unable to dump the socket");
 
       // XXX hasPendingDatagrams, BindMode, SocketState, Valid,
       // XXX TransportProtocol, ...
@@ -291,8 +295,8 @@ namespace elle
 	  // for the parcel and its memory.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
-	      // display the errors.
-	      show();
+	      // log the errors.
+	      log("an error occured while dispatching a message");
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().
