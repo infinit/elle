@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [thu aug 25 11:38:19 2011]
+// updated       julien quintard   [sun aug 28 18:57:48 2011]
 //
 
 //
@@ -127,11 +127,14 @@ namespace elle
 	   scoutor != Bridge::Porters.end();
 	   scoutor++)
 	{
-	  BridgePorter*	porter = *scoutor;
+	  BridgePorter*	porter = scoutor->second;
 
 	  // delete the porter.
 	  delete porter;
 	}
+
+      // clear the container.
+      Bridge::Porters.clear();
 
       leave();
     }
@@ -152,11 +155,14 @@ namespace elle
 					   Status,
 					   Parameters<Gate*> >&	callback)
     {
-      BridgePorter*	porter;
+      std::pair<Bridge::Iterator, Boolean>	result;
+      BridgePorter*				porter;
 
       enter(instance(porter));
 
-      // XXX check that there is not a porter for that point already!
+      // check if this point is not already listened on.
+      if (Bridge::Locate(point) == StatusTrue)
+	escape("this point seems to have already been registered");
 
       // allocate a new porter.
       porter = new BridgePorter(callback);
@@ -165,8 +171,13 @@ namespace elle
       if (porter->Create(point) == StatusError)
 	escape("unable to create the porter");
 
-      // add the porter to the container.
-      Bridge::Porters.push_back(porter);
+      // insert the porter in the container.
+      result = Bridge::Porters.insert(
+	         std::pair<const Point, BridgePorter*>(point, porter));
+
+      // check if the insertion was successful.
+      if (result.second == false)
+	escape("unable to insert the porter in the container");
 
       // stop tracking porter.
       waive(porter);
@@ -181,30 +192,66 @@ namespace elle
     Status		Bridge::Block(const Point&		point)
     {
       Bridge::Iterator	iterator;
+      BridgePorter*	porter;
 
       enter();
 
-      // go through the porters.
-      for (iterator = Bridge::Porters.begin();
-	   iterator != Bridge::Porters.end();
-	   iterator++)
+      // locate the porter.
+      if (Bridge::Locate(point, &iterator) == StatusFalse)
+	escape("unable to locate the given porter");
+
+      // retrieve the porter.
+      porter = iterator->second;
+      
+      // delete the porter.
+      delete porter;
+
+      // remove the entry from the container.
+      Bridge::Porters.erase(iterator);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Bridge::Retrieve(const Point&		point,
+					 BridgePorter*&		porter)
+    {
+      Bridge::Iterator	iterator;
+
+      enter();
+
+      // locate the porter.
+      if (Bridge::Locate(point, &iterator) == StatusFalse)
+	escape("unable to locate the given porter");
+
+      // retrieve the porter.
+      porter = iterator->second;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    Status		Bridge::Locate(const Point&		point,
+				       Iterator*		iterator)
+    {
+      Bridge::Iterator	i;
+
+      enter();
+
+      // try to locate the porter.
+      if ((i = Bridge::Porters.find(point)) != Bridge::Porters.end())
 	{
-	  BridgePorter*	porter = *iterator;
+	  if (iterator != NULL)
+	    *iterator = i;
 
-	  // is this the porter we are looking for?
-	  if (porter->point == point)
-	    {
-	      // delete the porter.
-	      delete porter;
-
-	      // remove the entry from the container.
-	      Bridge::Porters.erase(iterator);
-
-	      leave();
-	    }
+	  true();
 	}
 
-      escape("unable to locate the porter associated with this point");
+      false();
     }
 
 //
@@ -226,11 +273,13 @@ namespace elle
 
       std::cout << alignment << "[Porter]" << std::endl;
 
+      // dump the point.
+      if (this->point.Dump(margin + 2) == StatusError)
+	escape("unable to dump the point");
+
       // dump the server point.
       std::cout << alignment << Dumpable::Shift << "[Server] "
 		<< std::hex << this->server << std::endl;
-
-      // XXX
 
       // dump the callback.
       if (this->callback.Dump(margin + 2) == StatusError)
@@ -260,8 +309,10 @@ namespace elle
 	   scoutor != Bridge::Porters.end();
 	   scoutor++)
 	{
+	  BridgePorter*	porter = scoutor->second;
+
 	  // dump the porter.
-	  if ((*scoutor)->Dump(margin + 2) == StatusError)
+	  if (porter->Dump(margin + 2) == StatusError)
 	    escape("unable to dump the porter");
 	}
 

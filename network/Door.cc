@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [fri aug 26 19:12:50 2011]
+// updated       julien quintard   [sun aug 28 21:11:39 2011]
 //
 
 //
@@ -75,18 +75,30 @@ namespace elle
     ///
     Status		Door::Create()
     {
-      ::QLocalSocket*	socket;
-
-      // note that the following socket is not tracked for automatic
-      // deletion because the next Create() method should take care of it.
       enter();
 
       // allocate a new socket.
-      socket = new ::QLocalSocket;
+      this->socket = new ::QLocalSocket;
 
-      // create the door.
-      if (this->Create(socket) == StatusError)
-	escape("unable to create the door");
+      // connect the signals.
+      if (this->connect(this->socket, SIGNAL(connected()),
+			this, SLOT(_connected())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(this->socket, SIGNAL(disconnected()),
+			this, SLOT(_disconnected())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(this->socket, SIGNAL(readyRead()),
+			this, SLOT(_ready())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(
+	    this->socket,
+	    SIGNAL(error(const QLocalSocket::LocalSocketError)),
+	    this,
+	    SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
+	escape("unable to connect to signal");
 
       leave();
     }
@@ -121,6 +133,9 @@ namespace elle
 	    SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
 	escape("unable to connect to signal");
 
+      // update the state.
+      this->state = Channel::StateConnected;
+
       leave();
     }
 
@@ -147,9 +162,6 @@ namespace elle
       // start the timer.
       if (this->timer->Start(Door::Duration) == StatusError)
 	escape("unable to start the timer");
-
-      // update the state.
-      this->state = Channel::StateConnecting;
 
       // connect the socket to the server.
       this->socket->connectToServer(name.c_str());
@@ -331,6 +343,7 @@ namespace elle
 		escape("unable to extract the data");
 
 	      // set the point as being an IP point.
+	      // XXX is it correct? probably not!
 	      if (point.host.Create(Host::TypeIP) == StatusError)
 		escape("unable to create an IP point");
 
@@ -420,7 +433,11 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Door] " << std::hex << this << std::endl;
+      std::cout << alignment << "[Door]" << std::endl;
+
+      // dump the channel.
+      if (Channel::Dump(margin + 2) == StatusError)
+	escape("unable to dump the channel");
 
       // dump the state.
       std::cout << alignment << Dumpable::Shift << "[Valid] "
@@ -470,8 +487,8 @@ namespace elle
 	  // otherwise, trigger the network dispatching mechanism.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
-	      // display the errors.
-	      show();
+	      // log the errors.
+	      log("an error occured while dispatching a message");
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().

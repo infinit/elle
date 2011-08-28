@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [fri aug 26 19:12:38 2011]
+// updated       julien quintard   [sun aug 28 21:11:26 2011]
 //
 
 //
@@ -47,8 +47,7 @@ namespace elle
     Gate::Gate():
       Channel::Channel(Socket::TypeGate),
 
-      socket(NULL),
-      port(0)
+      socket(NULL)
     {
     }
 
@@ -74,18 +73,30 @@ namespace elle
     ///
     Status		Gate::Create()
     {
-      ::QTcpSocket*	socket;
-
-      // note that the following socket is not tracked for automatic
-      // deletion because the next Create() method should take care of it.
       enter();
 
       // allocate a new socket.
-      socket = new ::QTcpSocket;
+      this->socket = new ::QTcpSocket;
 
-      // create the gate.
-      if (this->Create(socket) == StatusError)
-	escape("unable to create the gate");
+      // connect the signals.
+      if (this->connect(this->socket, SIGNAL(connected()),
+			this, SLOT(_connected())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(this->socket, SIGNAL(disconnected()),
+			this, SLOT(_disconnected())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(this->socket, SIGNAL(readyRead()),
+			this, SLOT(_ready())) == false)
+	escape("unable to connect the signal");
+
+      if (this->connect(
+	    this->socket,
+	    SIGNAL(error(const QAbstractSocket::SocketError)),
+	    this,
+	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
+	escape("unable to connect to signal");
 
       leave();
     }
@@ -120,13 +131,17 @@ namespace elle
 	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
 	escape("unable to connect to signal");
 
+      // set the gate as being connected.
+      this->state = Channel::StateConnected;
+
       leave();
     }
 
     ///
     /// this method connects the gate.
     ///
-    Status		Gate::Connect(const Point&		point)
+    Status		Gate::Connect(const Point&		point,
+				      const Channel::Mode	mode)
     {
       Callback< Status,
 		Parameters<> >	callback(&Gate::Timeout, this);
@@ -149,6 +164,25 @@ namespace elle
 
       // connect the socket to the server.
       this->socket->connectToHost(point.host.location, point.port);
+
+      // depending on the mode.
+      switch (mode)
+	{
+	case Channel::ModeAsynchronous:
+	  {
+	    // do nothing and wait for the 'connected' signal.
+
+	    break;
+	  }
+	case Channel::ModeSynchronous:
+	  {
+	    // deliberately wait for the connection to terminate.
+	    if (this->socket->waitForConnected(Gate::Duration) == false)
+	      escape(this->socket->errorString().toStdString().c_str());
+
+	    break;
+	  }
+	}
 
       leave();
     }
@@ -326,9 +360,9 @@ namespace elle
 	      if (packet.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the data");
 
-	      // set the point as being an IP point.
-	      if (point.host.Create(Host::TypeIP) == StatusError)
-		escape("unable to create an IP point");
+	      // retrieve the gate's target.
+	      if (this->Target(point) == StatusError)
+		escape("unable to retrieve the source point");
 
 	      // create the session.
 	      if (parcel->session->Create(
@@ -400,6 +434,11 @@ namespace elle
 
       enter();
 
+      // check the socket state.
+      if (this->state != Channel::StateConnected)
+	escape("unable to retrieve the target address of a non-connected "
+	       "gate");
+
       // create the host.
       if (host.Create(this->socket->peerAddress().toString().toStdString()) ==
 	  StatusError)
@@ -425,12 +464,23 @@ namespace elle
     Status		Gate::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
+      Point		point;
 
       enter();
 
-      std::cout << alignment << "[Gate] " << std::hex << this << std::endl;
+      std::cout << alignment << "[Gate]" << std::endl;
 
-      // XXX
+      // dump the channel.
+      if (Channel::Dump(margin + 2) == StatusError)
+	escape("unable to dump the channel");
+
+      // retrieve the target.
+      if (this->Target(point) == StatusError)
+	escape("unable to retrieve the target");
+
+      // dump the point.
+      if (point.Dump(margin + 2) == StatusError)
+	escape("unable to dump the point");
 
       leave();
     }
@@ -468,8 +518,8 @@ namespace elle
 	  // otherwise, trigger the network dispatching mechanism.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {
-	      // display the errors.
-	      show();
+	      // log the errors.
+	      log("an error occured while dispatching a message");
 
 	      // stop tracking the parcel since it should have been deleted
 	      // in Dispatch().

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Morgue.hxx
 //
 // created       julien quintard   [fri aug 26 17:08:22 2011]
-// updated       julien quintard   [fri aug 26 17:56:45 2011]
+// updated       julien quintard   [sat aug 27 11:46:08 2011]
 //
 
 #ifndef ELLE_RADIX_MORGUE_HXX

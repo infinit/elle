@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Parcel.cc
 //
 // created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [wed jul 13 16:31:45 2011]
+// updated       julien quintard   [sat aug 27 00:41:20 2011]
 //
 
 //
@@ -103,9 +103,8 @@ namespace elle
 	{
 	  std::cout << alignment << Dumpable::Shift << "[Data]" << std::endl;
 
-	  // XXX
-	  //if (this->data->Dump(margin + 4) == StatusError)
-	  //escape("unable to dump the data");
+	  if (this->data->Dump(margin + 4) == StatusError)
+	    escape("unable to dump the data");
 	}
 
       leave();

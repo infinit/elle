@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [thu aug 25 16:44:12 2011]
+// updated       julien quintard   [sat aug 27 00:43:46 2011]
 //
 
 //
@@ -118,6 +118,40 @@ namespace elle
 	  // trigger the callback.
 	  if (this->callback->Call() == StatusError)
 	    escape("an error occured in the callback");
+	}
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Status		Socket::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Socket] " << std::hex << this << std::endl;
+
+      // dump the type.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Type] " << std::dec << this->type << std::endl;
+
+      // dump the callback.
+      if (this->callback != NULL)
+	{
+	  if (this->callback->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the callback");
+	}
+      else
+	{
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Callback] " << none << std::endl;
 	}
 
       leave();
