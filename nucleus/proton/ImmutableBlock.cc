@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:22:14 2011]
-// updated       julien quintard   [thu aug  4 12:01:06 2011]
+// updated       julien quintard   [sun aug 28 22:50:14 2011]
 //
 
 //
@@ -191,6 +191,11 @@ namespace nucleus
       if (elle::Hexadecimal::Encode(address.digest->region,
 				    unique) == elle::StatusError)
 	flee("unable to convert the address in its hexadecimal form");
+
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[nucleus] proton::ImmutableBlock::Exist(%s)\n",
+	       unique.c_str());
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::ImmutableBlock) ==

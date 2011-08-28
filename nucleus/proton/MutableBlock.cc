@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [thu aug  4 12:01:26 2011]
+// updated       julien quintard   [sun aug 28 22:50:00 2011]
 //
 
 //
@@ -379,6 +379,11 @@ namespace nucleus
       if (elle::Hexadecimal::Encode(address.digest->region,
 				    unique) == elle::StatusError)
 	flee("unable to convert the address in its hexadecimal form");
+
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[nucleus] proton::MutableBlock::Exist(%s)\n",
+	       unique.c_str());
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::MutableBlock) ==
