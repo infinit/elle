@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Cluster.cc
 //
 // created       julien quintard   [fri aug 26 13:57:10 2011]
-// updated       julien quintard   [fri aug 26 14:46:44 2011]
+// updated       julien quintard   [sun aug 28 13:05:21 2011]
 //
 
 //
@@ -45,21 +45,35 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Cluster::Create(const RoutingTable&	table)
+      elle::Status	Cluster::Create(const Neighbourhood&	neighbourhood)
       {
-	RoutingTable::Scoutor	scoutor;
+	Neighbourhood::Scoutor	scoutor;
 
 	enter();
 
-	// go through the routing table entries.
-	for (scoutor = table.container.begin();
-	     scoutor != table.container.end();
+	// go through the entries.
+	for (scoutor = neighbourhood.container.begin();
+	     scoutor != neighbourhood.container.end();
 	     scoutor++)
 	  {
-	    Neighbour*	neighbour = scoutor->second;
+	    Neighbour*		neighbour = scoutor->second;
+	    Cluster::Atom	atom;
+
+	    // ignore non-authenticated neighbours.
+	    if (neighbour->state != Neighbour::StateAuthenticated)
+	      continue;
+
+	    // ignore null-point neighbours i.e neighbours which have
+	    // not provided their listening point.
+	    if (neighbour->point == elle::Point::Null)
+	      continue;
+
+	    // create the atom.
+	    atom.label = neighbour->label;
+	    atom.point = neighbour->point;
 
 	    // add the neighbour's point.
-	    this->container.push_back(neighbour->point);
+	    this->container.push_back(atom);
 	  }
 
 	leave();
@@ -101,9 +115,12 @@ namespace hole
 	     scoutor != this->container.end();
 	     scoutor++)
 	  {
+	    Cluster::Atom	atom = *scoutor;
+
 	    // serialize the point.
-	    if (archive.Serialize(*scoutor) == elle::StatusError)
-	      escape("unable to serialize the point");
+	    if (archive.Serialize(atom.label,
+				  atom.point) == elle::StatusError)
+	      escape("unable to serialize the atom");
 	  }
 
 	leave();
@@ -126,14 +143,15 @@ namespace hole
 	// go through the entries.
 	for (i = 0; i < size; i++)
 	  {
-	    elle::Point	point;
+	    Cluster::Atom	atom;
 
 	    // extract the point.
-	    if (archive.Extract(point) == elle::StatusError)
-	      escape("unable to extract the point");
+	    if (archive.Extract(atom.label,
+				atom.point) == elle::StatusError)
+	      escape("unable to extract the atom");
 
 	    // record the point.
-	    this->container.push_back(point);
+	    this->container.push_back(atom);
 	  }
 
 	leave();
@@ -161,8 +179,14 @@ namespace hole
 	     scoutor != this->container.end();
 	     scoutor++)
 	  {
+	    Cluster::Atom	atom = *scoutor;
+
+	    // dump the label.
+	    if (atom.label.Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the label");
+
 	    // dump the point.
-	    if (scoutor->Dump(margin + 2) == elle::StatusError)
+	    if (atom.point.Dump(margin + 2) == elle::StatusError)
 	      escape("unable to dump the point");
 	  }
 

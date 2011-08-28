@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.hh
 //
 // created       julien quintard   [wed may 25 19:20:52 2011]
-// updated       julien quintard   [thu aug 25 17:02:10 2011]
+// updated       julien quintard   [sun aug 28 20:30:00 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
@@ -22,6 +22,7 @@
 #include <nucleus/Nucleus.hh>
 
 #include <hole/implementations/remote/Peer.hh>
+#include <hole/implementations/remote/Customer.hh>
 
 namespace hole
 {
@@ -42,20 +43,28 @@ namespace hole
       {
       public:
 	//
-	// enumerations
+	// types
 	//
-	enum State
-	  {
-	    StateUnknown,
-	    StateConnected,
-	    StateAuthenticated
-	  };
+	typedef std::map<elle::Gate*, Customer*>	Container;
+	typedef typename Container::iterator		Iterator;
+	typedef typename Container::const_iterator	Scoutor;
 
 	//
 	// constructors & destructors
 	//
 	Server(const nucleus::Network&);
 	~Server();
+
+	//
+	// methods
+	//
+	elle::Status		Add(elle::Gate*,
+				    Customer*);
+	elle::Status		Remove(elle::Gate*);
+	elle::Status		Retrieve(elle::Gate*,
+					 Customer*&);
+	elle::Status		Locate(elle::Gate*,
+				       Iterator* = NULL);
 
 	//
 	// interfaces
@@ -88,11 +97,8 @@ namespace hole
 				     const
 				       nucleus::Derivable<nucleus::Block>&);
 	elle::Status		Pull(const nucleus::Address&,
-				     const nucleus::Version&,
-				     nucleus::Derivable<nucleus::Block>&);
+				     const nucleus::Version&);
 	elle::Status		Wipe(const nucleus::Address&);
-
-	elle::Status		Monitor();
 
 	//
 	// interfaces
@@ -104,9 +110,7 @@ namespace hole
 	//
 	// attributes
 	//
-	State			state;
-
-	elle::Gate*		gate;
+	Container		container;
       };
 
     }

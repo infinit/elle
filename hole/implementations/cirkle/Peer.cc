@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Peer.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [fri aug 26 19:10:32 2011]
+// updated       julien quintard   [sun aug 28 18:07:51 2011]
 //
 
 //
@@ -18,6 +18,7 @@
 #include <hole/implementations/cirkle/Peer.hh>
 #include <hole/implementations/cirkle/Manifest.hh>
 #include <hole/implementations/cirkle/Neighbour.hh>
+#include <hole/Hole.hh>
 
 #include <Infinit.hh>
 
@@ -27,6 +28,18 @@ namespace hole
   {
     namespace cirkle
     {
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+      ///
+      /// XXX
+      ///
+      Peer::Peer():
+	state(StateUnauthenticated)
+      {
+      }
 
 //
 // ---------- peer ------------------------------------------------------------
@@ -46,14 +59,78 @@ namespace hole
 	{
 	  elle::Callback<
 	    elle::Status,
+	    elle::Parameters<>
+	    >				challenge(&Peer::Challenge, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const lune::Passport
+	      >
+	    >				authenticate(&Peer::Authenticate,
+						     this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<>
+	    >				authenticated(&Peer::Authenticated,
+						      this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<>
+	    >				listen(&Peer::Listen, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const elle::Port
+	      >
+	    >				port(&Peer::Port, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<>
+	    >				request(&Peer::Request, this);
+	  elle::Callback<
+	    elle::Status,
 	    elle::Parameters<
 	      const Cluster
 	      >
-	    >				update(&Peer::Update, this);
+	    >				gossip(&Peer::Gossip, this);
 
-	  // register the challenge message.
+	  // register the message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagGossip>(update)) == elle::StatusError)
+	        elle::Procedure<TagChallenge>(challenge)) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagAuthenticate>(authenticate)) ==
+	      elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagAuthenticated>(authenticated)) ==
+	      elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagListen>(listen)) ==
+	      elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagPort>(port)) ==
+	      elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagRequest>(request)) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagGossip>(gossip)) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -269,29 +346,6 @@ namespace hole
 	leave();
       }
 
-      ///
-      /// XXX
-      ///
-      elle::Status	Peer::Propagate(Neighbour*		neighbour)
-      {
-	Cluster		cluster;
-
-	enter();
-
-	printf("[XXX] Peer::Propagate()\n");
-
-	// generate a cluster from the current routing table.
-	if (cluster.Create(this->table) == elle::StatusError)
-	  escape("unable to create the cluster");
-
-	// send the cluster.
-	if (neighbour->gate->Send(
-	      elle::Inputs<TagGossip>(cluster)) == elle::StatusError)
-	  escape("unable to send the cluster");
-
-	leave();
-      }
-
 //
 // ---------- callbacks -------------------------------------------------------
 //
@@ -305,6 +359,8 @@ namespace hole
 
 	enter(instance(neighbour));
 
+	printf("CONNECTION\n");
+
 	// allocate the neighbour.
 	neighbour = new Neighbour;
 
@@ -317,9 +373,10 @@ namespace hole
 	    elle::StatusError)
 	  escape("unable to add the neighbour to the neighbourhood");
 
-	// challenge the neighbour.
-	if (neighbour->Challenge() == elle::StatusError)
-	  escape("unable to challenge the neighbour");
+	// challenge the peer.
+	if (neighbour->gate->Send(
+	      elle::Inputs<TagChallenge>()) == elle::StatusError)
+	  escape("unable to send the challenge");
 
 	// waive.
 	waive(neighbour);
@@ -330,23 +387,280 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Peer::Update(const Cluster&		cluster)
+      elle::Status	Peer::Challenge()
       {
+	Neighbour*	neighbour;
 	elle::Session*	session;
 
 	enter();
 
-	printf("[XXX] Peer::Update()\n");
+	printf("CHALLENGE\n");
 
-	elle::Session::Instance(session);
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
 
-	session->Dump();
+	// retrieve the neighbour from the neighbourhood.
+	if (this->neighbourhood.Retrieve(session->point,
+					 neighbour) == elle::StatusError)
+	  escape("unable to retrieve the neighbour");
 
-	// XXX recuperer la socket dans Session.
+	// send the passport.
+	if (neighbour->gate->Send(
+	      elle::Inputs<TagAuthenticate>(Hole::Passport)) ==
+	    elle::StatusError)
+	  escape("unable to authenticate");
 
-	// XXX retrouver l'entree dans la RoutingTable
-	// -> si aucune, on rejete
-	// -> sinon on update la notre
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Peer::Authenticate(const lune::Passport& passport)
+      {
+	Neighbour*	neighbour;
+	elle::Session*	session;
+
+	enter();
+
+	printf("AUTHENTICATE\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the neighbour from the neighbourhood.
+	if (this->neighbourhood.Retrieve(session->point,
+					 neighbour) == elle::StatusError)
+	  escape("unable to retrieve the neighbour");
+
+	// check the neighbour's state, ignore 
+	if (neighbour->state == Neighbour::StateAuthenticated)
+	  leave();
+
+	// validate the passport.
+	if (passport.Validate(Infinit::Authority) == elle::StatusError)
+	  escape("unable to validate the passport");
+
+	// set the neighbour as authenticated.
+	neighbour->state = Neighbour::StateAuthenticated;
+
+	// set the neighbour's label.
+	neighbour->label = passport.label;
+
+	// register the neighbour in the routing table.
+	if (this->table.Add(neighbour->label, neighbour) == elle::StatusError)
+	  escape("unable to add the neighbour to the routing table");
+
+	// acknowledge the authentication.
+	if (neighbour->gate->Reply(
+	      elle::Inputs<TagAuthenticated>()) == elle::StatusError)
+	  escape("unable to acknowledge the authentication");
+
+	// XXX
+	Cirkle::Machine.Dump();
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Peer::Authenticated()
+      {
+	Neighbour*	neighbour;
+	elle::Session*	session;
+
+	enter();
+
+	printf("AUTHENTICATED\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the neighbour from the neighbourhood.
+	if (this->neighbourhood.Retrieve(session->point,
+					 neighbour) == elle::StatusError)
+	  escape("unable to retrieve the neighbour");
+
+	// if the machine has not retrieve the cirkle's members yet, do it.
+	if (this->state == Peer::StateUnauthenticated)
+	  {
+	    // request the cluster of peers.
+	    if (neighbour->gate->Send(
+		  elle::Inputs<TagRequest>()) ==
+		elle::StatusError)
+	      escape("unable to request the cluster of peers");
+
+	    // set the state.
+	    this->state = Peer::StateAuthenticated;
+	  }
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Peer::Listen()
+      {
+	Neighbour*	neighbour;
+	elle::Session*	session;
+
+	enter();
+
+	printf("LISTEN\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the neighbour from the neighbourhood.
+	if (this->neighbourhood.Retrieve(session->point,
+					 neighbour) == elle::StatusError)
+	  escape("unable to retrieve the neighbour");
+
+	// XXX retrieve currently listening port.
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Peer::Port(const elle::Port&		port)
+      {
+	Neighbour*	neighbour;
+	elle::Session*	session;
+
+	enter();
+
+	printf("POINT\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the neighbour from the neighbourhood.
+	if (this->neighbourhood.Retrieve(session->point,
+					 neighbour) == elle::StatusError)
+	  escape("unable to retrieve the neighbour");
+
+	// update the neighbour's listening point.
+	// XXX clone gate's target with this port.
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Peer::Request()
+      {
+	Neighbour*	neighbour;
+	elle::Session*	session;
+	Cluster		cluster;
+
+	enter();
+
+	printf("REQUEST\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the neighbour from the neighbourhood.
+	if (this->neighbourhood.Retrieve(session->point,
+					 neighbour) == elle::StatusError)
+	  escape("unable to retrieve the neighbour");
+
+	// check that the neighbour has been authenticated.
+	if (neighbour->state != Neighbour::StateAuthenticated)
+	  escape("unable to deal with unauthenticated peers");
+
+	/// XXX create from routing table.
+	// create the cluster.
+	if (cluster.Create(this->neighbourhood) == elle::StatusError)
+	  escape("unable to create the cluster");
+
+	// return the cluster.
+	if (neighbour->gate->Reply(
+	      elle::Inputs<TagGossip>(cluster)) ==
+	    elle::StatusError)
+	  escape("unable to return the cluster of peers peers");
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Peer::Gossip(const Cluster&		cluster)
+      {
+	Neighbour*		neighbour;
+	elle::Session*		session;
+	Cluster::Scoutor	scoutor;
+
+	enter();
+
+	printf("GOSSIP\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the neighbour from the neighbourhood.
+	if (this->neighbourhood.Retrieve(session->point,
+					 neighbour) == elle::StatusError)
+	  escape("unable to retrieve the neighbour");
+
+	// check that the neighbour has been authenticated.
+	if (neighbour->state != Neighbour::StateAuthenticated)
+	  escape("unable to deal with unauthenticated peers");
+
+	// go through the cluster.
+	for (scoutor = cluster.container.begin();
+	     scoutor != cluster.container.end();
+	     scoutor++)
+	  {
+	    Cluster::Atom	atom = *scoutor;
+	    Neighbour*		neighbour;
+
+	    /* XXX
+	    enter(instance(neighbour));
+
+	    // check if this point is already registered.
+	    if (this->neighbourhood.Exist(atom.label) == elle::StatusTrue)
+	      continue;
+
+	    printf("NEW POINT\n");
+	    scoutor->Dump();
+
+	    // allocate the neighbour.
+	    neighbour = new Neighbour;
+
+	    // create the neighbour.
+	    if (neighbour->Create(*scoutor) == elle::StatusError)
+	      escape("unable to create the neighbour");
+
+	    // add the neighbour to the neighbourhood.
+	    if (this->neighbourhood.Add(neighbour->point, neighbour) ==
+		elle::StatusError)
+	      escape("unable to add the neighbour to the neighbourhood");
+
+	    // connect the neighbour.
+	    if (neighbour->Connect() == elle::StatusError)
+	      escape("unable to connect the neighbour");
+
+	    // waive.
+	    waive(neighbour);
+
+	    // release.
+	    release();
+	    */
+	  }
 
 	leave();
       }

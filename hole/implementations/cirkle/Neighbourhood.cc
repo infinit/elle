@@ -8,7 +8,7 @@
 // file          /home/mycure/infi.../implementations/cirkle/Neighbourhood.cc
 //
 // created       julien quintard   [thu aug 25 12:19:28 2011]
-// updated       julien quintard   [fri aug 26 18:35:32 2011]
+// updated       julien quintard   [sun aug 28 13:48:02 2011]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/hole.cc
 //
 // created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [mon jul 11 22:53:05 2011]
+// updated       julien quintard   [sun aug 28 17:40:58 2011]
 //
 
 //

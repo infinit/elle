@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Peer.hh
 //
 // created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [fri aug 26 18:42:07 2011]
+// updated       julien quintard   [sun aug 28 14:04:47 2011]
 //
  
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_PEER_HH
@@ -20,6 +20,7 @@
 
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
+#include <lune/Lune.hh>
 
 #include <hole/implementations/cirkle/Neighbourhood.hh>
 #include <hole/implementations/cirkle/RoutingTable.hh>
@@ -45,6 +46,20 @@ namespace hole
       {
       public:
 	//
+	// enumerations
+	//
+	enum State
+	  {
+	    StateUnauthenticated,
+	    StateAuthenticated
+	  };
+
+	//
+	// constructors & destructors
+	//
+	Peer();
+
+	//
 	// methods
 	//
 	elle::Status		Initialize(const elle::Natural16,
@@ -62,8 +77,6 @@ namespace hole
 				    nucleus::MutableBlock&);
 	elle::Status		Kill(const nucleus::Address&);
 
-	elle::Status		Propagate(Neighbour*);
-
 	//
 	// interfaces
 	//
@@ -72,8 +85,13 @@ namespace hole
 	// callbacks
 	//
 	elle::Status		Connection(elle::Gate*&);
-
-	elle::Status		Update(const Cluster&);
+	elle::Status		Challenge();
+	elle::Status		Authenticate(const lune::Passport&);
+	elle::Status		Authenticated();
+	elle::Status		Listen();
+	elle::Status		Port(const elle::Port&);
+	elle::Status		Request();
+	elle::Status		Gossip(const Cluster&);
 
 	//
 	// interfaces
@@ -85,6 +103,8 @@ namespace hole
 	//
 	// attributes
 	//
+	State			state;
+
 	Neighbourhood		neighbourhood;
 	RoutingTable		table;
       };

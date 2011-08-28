@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.cc
 //
 // created       julien quintard   [fri may 20 19:32:16 2011]
-// updated       julien quintard   [thu aug 25 11:43:45 2011]
+// updated       julien quintard   [sun aug 28 21:36:32 2011]
 //
 
 //
@@ -34,6 +34,11 @@ namespace hole
       /// this value defines the component's name.
       ///
       const elle::Character		Component[] = "remote";
+
+      ///
+      /// XXX
+      ///
+      Remote*				Remote::Machine = NULL;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -71,19 +76,22 @@ namespace hole
       elle::Status	Remote::Join()
       {
 	elle::String	string;
-	elle::Point	address;
+	elle::Point	point;
 
 	enter();
 
-	// retrieve the server's address.
+	// set the static variable.
+	Remote::Machine = this;
+
+	// retrieve the server's point.
 	if (Hole::Descriptor.Get("remote", "server",
 				 string) == elle::StatusError)
-	  escape("unable to retrieve the server's address from the "
+	  escape("unable to retrieve the server's point from the "
 		 "network descriptor");
 
-	// build the host address.
-	if (address.Create(string) == elle::StatusError)
-	  escape("unable to create the host address");
+	// build the host point.
+	if (point.Create(string) == elle::StatusError)
+	  escape("unable to create the host point");
 
 	// try to connect to the server's host.
 	{
@@ -95,7 +103,7 @@ namespace hole
 	  client = new Client(this->network);
 
 	  // initialize the client.
-	  if (client->Initialize(address) == elle::StatusOk)
+	  if (client->Initialize(point) == elle::StatusOk)
 	    {
 	      // set the client as the host.
 	      this->peer = client;
@@ -126,7 +134,7 @@ namespace hole
 	  server = new Server(this->network);
 
 	  // initialize the server.
-	  if (server->Initialize(address) == elle::StatusOk)
+	  if (server->Initialize(point) == elle::StatusOk)
 	    {
 	      // set the server as the host.
 	      this->peer = server;

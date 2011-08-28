@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...hole/implementations/cirkle/Neighbour.hh
 //
 // created       julien quintard   [wed aug 24 10:33:01 2011]
-// updated       julien quintard   [fri aug 26 18:41:22 2011]
+// updated       julien quintard   [sat aug 27 20:46:03 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_NEIGHBOUR_HH
@@ -41,6 +41,15 @@ namespace hole
       {
       public:
 	//
+	// enumerations
+	//
+	enum State
+	  {
+	    StateUnauthenticated,
+	    StateAuthenticated
+	  };
+
+	//
 	// constructors & destructors
 	//
 	Neighbour();
@@ -54,8 +63,6 @@ namespace hole
 
 	elle::Status	Connect();
 
-	elle::Status	Challenge();
-
 	//
 	// callbacks
 	//
@@ -67,7 +74,6 @@ namespace hole
 
 	// object
 	declare(Neighbour);
-	elle::Boolean	operator==(const Neighbour&) const;
 
 	// dumpable
 	elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -79,6 +85,8 @@ namespace hole
 	//
 	// attributes
 	//
+	State		state;
+
 	elle::Point	point;
 
 	Label		label;

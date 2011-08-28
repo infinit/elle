@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [fri aug 12 15:18:03 2011]
+// updated       julien quintard   [sun aug 28 20:53:00 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
@@ -41,7 +41,7 @@ namespace hole
       ///
       /// XXX
       ///
-      const elle::Natural32		Tags = 10;
+      const elle::Natural32		Tags = 20;
 
     }
   }

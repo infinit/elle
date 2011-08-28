@@ -8,7 +8,7 @@
 // file          /home/mycure/infi.../implementations/cirkle/Neighbourhood.hh
 //
 // created       julien quintard   [thu aug 25 10:56:32 2011]
-// updated       julien quintard   [fri aug 26 13:53:10 2011]
+// updated       julien quintard   [sun aug 28 17:50:40 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_NEIGHBOURHOOD_HH

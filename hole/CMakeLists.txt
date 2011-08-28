@@ -4,6 +4,7 @@ ADD_LIBRARY(hole
   implementations/local/Local.cc
 
   implementations/remote/Client.cc
+  implementations/remote/Customer.cc
   implementations/remote/Peer.cc
   implementations/remote/Remote.cc
   implementations/remote/Server.cc

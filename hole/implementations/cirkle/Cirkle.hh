@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Cirkle.hh
 //
 // created       julien quintard   [fri aug 12 13:49:49 2011]
-// updated       julien quintard   [thu aug 25 19:47:03 2011]
+// updated       julien quintard   [sun aug 28 19:06:53 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_CIRKLE_HH

@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...hole/implementations/cirkle/Neighbour.cc
 //
 // created       julien quintard   [wed aug 24 13:12:46 2011]
-// updated       julien quintard   [fri aug 26 18:47:32 2011]
+// updated       julien quintard   [sun aug 28 13:02:17 2011]
 //
 
 //
@@ -17,6 +17,7 @@
 
 #include <hole/implementations/cirkle/Neighbour.hh>
 #include <hole/implementations/cirkle/Cirkle.hh>
+#include <hole/implementations/cirkle/Manifest.hh>
 
 namespace hole
 {
@@ -33,6 +34,7 @@ namespace hole
       /// XXX
       ///
       Neighbour::Neighbour():
+	state(StateUnauthenticated),
 	gate(NULL)
       {
       }
@@ -69,14 +71,31 @@ namespace hole
       ///
       elle::Status	Neighbour::Create(elle::Gate*		gate)
       {
+	elle::Callback<
+	  elle::Status,
+	  elle::Parameters<>
+	  >				monitor(&Neighbour::Monitor, this);
+
 	enter();
 
 	// set the gate.
 	this->gate = gate;
 
-	// retrieve the point.
-	if (this->gate->Target(this->point) == elle::StatusError)
-	  escape("unable to retrieve the target");
+	// register the monitor callback.
+	if (this->gate->Monitor(monitor) == elle::StatusError)
+	  escape("unable to monitor the connection");
+
+	//
+	// in this case, we do not know the point the neiighbour is listening
+	// on for incoming connections.
+	//
+	// therefore, this information must be requested.
+	//
+
+	// request the listening point.
+	if (this->gate->Send(
+	      elle::Inputs<TagListen>()) == elle::StatusError)
+	  escape("unable to request the listening point");
 
 	leave();
       }
@@ -111,29 +130,6 @@ namespace hole
 	leave();
       }
 
-      ///
-      /// XXX
-      ///
-      elle::Status	Neighbour::Challenge()
-      {
-	enter();
-
-	// XXX de maniere temporaire, plutot que de s'envoyer le passport,
-	// generer un label a partir de l'adresse par exemple.
-	if (this->label.Create(this->point) == elle::StatusError)
-	  escape("unable to generate the label");
-
-	// add the neighbour to the routing table.
-	if (Cirkle::Machine.table.Add(this->label, this) == elle::StatusError)
-	  escape("unable to add the neighbour to the routing table");
-
-	// propagate the list of neighbours to the new neighbour.
-	if (Cirkle::Machine.Propagate(this) == elle::StatusError)
-	  escape("unable to propagate the neighbourhood");
-
-	leave();
-      }
-
 //
 // ---------- callbacks -------------------------------------------------------
 //
@@ -150,9 +146,10 @@ namespace hole
 	  {
 	  case elle::Channel::StateConnected:
 	    {
-	      // at this point, challenge the peer.
-	      if (this->Challenge() == elle::StatusError)
-		escape("unable to challenge the peer");
+	      // challenge the peer.
+	      if (this->gate->Send(
+		    elle::Inputs<TagChallenge>()) == elle::StatusError)
+		escape("unable to send the challenge");
 
 	      break;
 	    }
@@ -186,34 +183,12 @@ namespace hole
 	    }
 	  }
 
-	// XXX
-	printf("/MONITOR\n");
-	Cirkle::Machine.Dump();
-
 	leave();
       }
 
 //
 // ---------- object ----------------------------------------------------------
 //
-
-      ///
-      /// this operator compares two objects.
-      ///
-      elle::Boolean	Neighbour::operator==(const Neighbour&	element) const
-      {
-	enter();
-
-	// check the address as this may actually be the same object.
-	if (this == &element)
-	  true();
-
-	printf("[XXX] Neighbour::operator==()\n");
-
-	// XXX
-
-	true();
-      }
 
       ///
       /// this macro-function call generates the object.
@@ -236,6 +211,10 @@ namespace hole
 	// display the name.
 	std::cout << alignment << "[Neighbour] "
 		  << std::hex << this << std::endl;
+
+	// display the state.
+	std::cout << alignment << elle::Dumpable::Shift << "[State] "
+		  << this->state << std::endl;
 
 	// dump the point.
 	if (this->point.Dump(margin + 2) == elle::StatusError)
@@ -278,6 +257,8 @@ namespace hole
 	if (archive.Serialize(this->point) == elle::StatusError)
 	  escape("unable to serialize the attributes");
 
+	// XXX serialize the other stuff? label at least
+
 	leave();
       }
 
@@ -291,6 +272,8 @@ namespace hole
 	// extract the attributes.
 	if (archive.Extract(this->point) == elle::StatusError)
 	  escape("unable to extract the attributes");
+
+	// XXX extract the other stuff? label at least
 
 	leave();
       }

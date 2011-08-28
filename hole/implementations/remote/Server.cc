@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [thu aug 25 22:11:16 2011]
+// updated       julien quintard   [sun aug 28 21:39:57 2011]
 //
 
 //
@@ -37,10 +37,7 @@ namespace hole
       /// default constructor.
       ///
       Server::Server(const nucleus::Network&			network):
-	Peer(network),
-
-	state(Server::StateUnknown),
-	gate(NULL)
+	Peer(network)
       {
       }
 
@@ -49,9 +46,111 @@ namespace hole
       ///
       Server::~Server()
       {
-	// if present, delete the gate.
-	if (this->gate != NULL)
-	  delete this->gate;
+	Server::Scoutor	scoutor;
+
+	// go though the customer.
+	for (scoutor = this->container.begin();
+	     scoutor != this->container.end();
+	     scoutor++)
+	  {
+	    Customer*	customer = scoutor->second;
+
+	    // delete the customer.
+	    delete customer;
+	  }
+
+	// clear the container.
+	this->container.clear();
+      }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Server::Add(elle::Gate*			gate,
+				    Customer*			customer)
+      {
+	std::pair<Server::Iterator, elle::Boolean>	result;
+
+	enter();
+
+	// check if this customer already exists.
+	if (this->Locate(gate) == elle::StatusTrue)
+	  escape("this gate has already been registered");
+
+	// insert the customer in the container.
+	result = this->container.insert(
+		   std::pair<elle::Gate*, Customer*>(gate, customer));
+
+	// check if the insertion was successful.
+	if (result.second == false)
+	  escape("unable to insert the customer in the container");
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Server::Remove(elle::Gate*		gate)
+      {
+	Server::Iterator	iterator;
+
+	enter();
+
+	// locate the customer.
+	if (this->Locate(gate, &iterator) == elle::StatusFalse)
+	  escape("unable to locate the given customer");
+
+	// remove the entry from the container.
+	this->container.erase(iterator);
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Server::Retrieve(elle::Gate*		gate,
+					 Customer*&		customer)
+      {
+	Server::Iterator	iterator;
+
+	enter();
+
+	// locate the customer.
+	if (this->Locate(gate, &iterator) == elle::StatusFalse)
+	  escape("unable to locate the given customer");
+
+	// retrieve the customer.
+	customer = iterator->second;
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Server::Locate(elle::Gate*		gate,
+				       Iterator*		iterator)
+      {
+	Server::Iterator	i;
+
+	enter();
+
+	// try to locate the customer.
+	if ((i = this->container.find(gate)) != this->container.end())
+	  {
+	    if (iterator != NULL)
+	      *iterator = i;
+
+	    true();
+	  }
+
+	false();
       }
 
 //
@@ -78,12 +177,6 @@ namespace hole
 	  elle::Callback<
 	    elle::Status,
 	    elle::Parameters<
-	      >
-	    >				authenticated(&Server::Authenticated,
-						      this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
 	      const nucleus::Address,
 	      const nucleus::Derivable<nucleus::Block>
 	      >
@@ -92,8 +185,7 @@ namespace hole
 	    elle::Status,
 	    elle::Parameters<
 	      const nucleus::Address,
-	      const nucleus::Version,
-	      nucleus::Derivable<nucleus::Block>
+	      const nucleus::Version
 	      >
 	    >				pull(&Server::Pull, this);
 	  elle::Callback<
@@ -105,32 +197,22 @@ namespace hole
 
 	  // register the response message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagResponse>(response)) ==
-	      elle::StatusError)
+	        elle::Procedure<TagResponse>(response)) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the push message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagPush,
-				elle::TagOk>(push,
-					     &authenticated,
-					     NULL)) == elle::StatusError)
+	        elle::Procedure<TagPush>(push)) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the pull message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagPull,
-				TagBlock>(pull,
-					  &authenticated,
-					  NULL)) == elle::StatusError)
+	        elle::Procedure<TagPull>(pull)) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the wipe message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagWipe,
-				elle::TagOk>(wipe,
-					     &authenticated,
-					     NULL)) == elle::StatusError)
+	        elle::Procedure<TagWipe>(wipe)) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -159,25 +241,9 @@ namespace hole
       ///
       elle::Status	Server::Clean()
       {
-	elle::Point	point;
-
 	enter();
 
-	// retrieve the address.
-	if (this->gate->Target(point) == elle::StatusError)
-	  escape("unable to retrieve the target");
-
-	// close the client connection, if necessary.
-	if (this->gate != NULL)
-	  {
-	    // disconnect.
-	    if (this->gate->Disconnect() == elle::StatusError)
-	      escape("unable to disconnect the client gate");
-	  }
-
-	// block the incoming connections.
-	if (elle::Bridge::Block(point) == elle::StatusError)
-	  escape("unable to block bridge connections");
+	// nothing to do.
 
 	leave();
       }
@@ -369,35 +435,35 @@ namespace hole
       ///
       elle::Status	Server::Connection(elle::Gate*&		gate)
       {
-	elle::Callback<
-	  elle::Status,
-	  elle::Parameters<>
-	>				monitor(&Server::Monitor, this);
+	Customer*	customer;
 
-	enter();
+	enter(instance(customer));
 
 	if (Infinit::Configuration.debug.hole == true)
 	  std::cout << "[hole] Server::Connection()"
 		    << std::endl;
 
-	// check if there already is a client.
-	if (this->gate != NULL)
-	  escape("a client seems to already be connected");
+	// allocate a customer.
+	customer = new Customer;
 
-	// register the client.
-	this->gate = gate;
-
-	// register the error callback.
-	if (this->gate->Monitor(monitor) == elle::StatusError)
-	  escape("unable to monitor the connection");
+	// create the customer.
+	if (customer->Create(gate) == elle::StatusError)
+	  escape("unable to create the customer");
 
 	// set the state.
-	this->state = Server::StateConnected;
+	customer->state = Customer::StateConnected;
+
+	// add the customer.
+	if (this->Add(customer->gate, customer) == elle::StatusError)
+	  escape("unable to add the customer");
 
 	// send a message to the client in order to challenge it.
-	if (this->gate->Send(
+	if (customer->gate->Send(
 	      elle::Inputs<TagChallenge>()) == elle::StatusError)
 	  escape("unable to send a message to the client");
+
+	// waive.
+	waive(customer);
 
 	leave();
       }
@@ -408,6 +474,8 @@ namespace hole
       ///
       elle::Status	Server::Response(const elle::Cipher&	cipher)
       {
+	Customer*	customer;
+	elle::Session*	session;
 	elle::SecretKey	key;
 	elle::String	string;
 	elle::String	name;
@@ -417,6 +485,15 @@ namespace hole
 	if (Infinit::Configuration.debug.hole == true)
 	  std::cout << "[hole] Server::Response()"
 		    << std::endl;
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the customer.
+	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+			   customer) == elle::StatusError)
+	  escape("unable to retrieve the customer");
 
 	// retrieve the key.
 	if (Hole::Descriptor.Get("remote", "key",
@@ -436,35 +513,21 @@ namespace hole
 	if (Hole::Descriptor.name != name)
 	  {
 	    // disconnect.
-	    if (this->gate->Disconnect() == elle::StatusError)
+	    if (customer->gate->Disconnect() == elle::StatusError)
 	      escape("unable to disconnect the client gate");
 
-	    // delete the gate.
-	    delete this->gate;
+	    // remove the customer.
+	    if (this->Remove(customer->gate) == elle::StatusError)
+	      escape("unable to remove the customer");
 
-	    // reset the pointer.
-	    this->gate = NULL;
+	    // delete the customer.
+	    delete customer;
 	  }
 	else
 	  {
 	    // set the state as authenticated.
-	    this->state = Server::StateAuthenticated;
+	    customer->state = Customer::StateAuthenticated;
 	  }
-
-	leave();
-      }
-
-      ///
-      /// this method returns an error if the client has not completed
-      /// the authentication process.
-      ///
-      elle::Status	Server::Authenticated()
-      {
-	enter();
-
-	// check that the client has been authenticated.
-	if (this->state != Server::StateAuthenticated)
-	  escape("the client has not been authenticated");
 
 	leave();
       }
@@ -477,6 +540,8 @@ namespace hole
 				       nucleus::Derivable
 				         <nucleus::Block>&	derivable)
       {
+	Customer*	customer;
+	elle::Session*	session;
 	nucleus::Block*	object;
 
 	enter();
@@ -484,6 +549,19 @@ namespace hole
 	if (Infinit::Configuration.debug.hole == true)
 	  std::cout << "[hole] Server::Push()"
 		    << std::endl;
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the customer.
+	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+			   customer) == elle::StatusError)
+	  escape("unable to retrieve the customer");
+
+	// check that the client has been authenticated.
+	if (customer->state != Customer::StateAuthenticated)
+	  escape("the customer has not been authenticated");
 
 	// infer the block from the derivable.
 	if (derivable.Infer(object) == elle::StatusError)
@@ -527,6 +605,11 @@ namespace hole
 	    }
 	  }
 
+	// acknowledge.
+	if (customer->gate->Reply(
+	      elle::Inputs<elle::TagOk>()) == elle::StatusError)
+	  escape("unable to acknowledge");
+
 	leave();
       }
 
@@ -534,10 +617,10 @@ namespace hole
       /// this method returns the block associated with the given address.
       ///
       elle::Status	Server::Pull(const nucleus::Address&	address,
-				     const nucleus::Version&	version,
-				     nucleus::Derivable<
-				       nucleus::Block>&		derivable)
+				     const nucleus::Version&	version)
       {
+	Customer*	customer;
+	elle::Session*	session;
 	nucleus::Block*	block;
 
 	enter(instance(block));
@@ -545,6 +628,19 @@ namespace hole
 	if (Infinit::Configuration.debug.hole == true)
 	  std::cout << "[hole] Server::Pull()"
 		    << std::endl;
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the customer.
+	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+			   customer) == elle::StatusError)
+	  escape("unable to retrieve the customer");
+
+	// check that the client has been authenticated.
+	if (customer->state != Customer::StateAuthenticated)
+	  escape("the customer has not been authenticated");
 
 	// build the block according to the component.
 	if (nucleus::Nucleus::Factory.Build(address.component,
@@ -590,13 +686,18 @@ namespace hole
 	    }
 	  }
 
-	// set the derivable and make the policy dynamic so that
-	// the block gets deleted along with the derivable.
-	derivable.product = address.component;
-	derivable.object = block;
-	derivable.policy = nucleus::Derivable<nucleus::Block>::PolicyDynamic;
+	nucleus::Derivable<nucleus::Block>	derivable(address.component,
+							  *block);
 
-	// waive the block.
+	// return the block.
+	if (customer->gate->Reply(
+	      elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
+	  escape("unable to return the block");
+
+	// delete the block.
+	delete block;
+
+	// waive.
 	waive(block);
 
 	leave();
@@ -607,38 +708,36 @@ namespace hole
       ///
       elle::Status	Server::Wipe(const nucleus::Address&	address)
       {
+	Customer*	customer;
+	elle::Session*	session;
+
 	enter();
 
 	if (Infinit::Configuration.debug.hole == true)
 	  std::cout << "[hole] Server::Wipe()"
 		    << std::endl;
 
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the customer.
+	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+			   customer) == elle::StatusError)
+	  escape("unable to retrieve the customer");
+
+	// check that the client has been authenticated.
+	if (customer->state != Customer::StateAuthenticated)
+	  escape("the customer has not been authenticated");
+
 	// forward the kill request to the implementation.
 	if (this->Kill(address) == elle::StatusError)
 	  escape("unable to erase the block");
 
-	leave();
-      }
-
-      ///
-      /// this callback is triggered whenever something unexpected occurs
-      /// on the connection.
-      ///
-      elle::Status	Server::Monitor()
-      {
-	enter();
-
-	if (this->gate->state == elle::Channel::StateDisconnected)
-	  {
-	    // delete the gate.
-	    delete this->gate;
-
-	    // set the gate to null.
-	    this->gate = NULL;
-
-	    // reset the state.
-	    this->state = Server::StateUnknown;
-	  }
+	// acknowledge.
+	if (customer->gate->Reply(
+	      elle::Inputs<elle::TagOk>()) == elle::StatusError)
+	  escape("unable to acknowledge");
 
 	leave();
       }
@@ -653,6 +752,7 @@ namespace hole
       elle::Status	Server::Dump(const elle::Natural32	margin) const
       {
 	elle::String	alignment(margin, ' ');
+	Server::Scoutor	scoutor;
 
 	enter();
 
@@ -662,19 +762,20 @@ namespace hole
 	if (Peer::Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the peer");
 
-	// dump the gate.
-	if (this->gate != NULL)
-	  {
-	    if (this->gate->Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the gate");
-	  }
-	else
-	  {
-	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Gate] " << elle::none
-		      << std::endl;
-	  }
+	std::cout << alignment << elle::Dumpable::Shift
+		  << "[Customers]" << std::endl;
 
+	// go though the customer.
+	for (scoutor = this->container.begin();
+	     scoutor != this->container.end();
+	     scoutor++)
+	  {
+	    Customer*	customer = scoutor->second;
+
+	    // dump the customer.
+	    if (customer->Dump(margin + 4) == elle::StatusError)
+	      escape("unable to dump the customer");
+	  }
 
 	leave();
       }

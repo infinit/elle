@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.hh
 //
 // created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [thu aug 25 17:01:57 2011]
+// updated       julien quintard   [sun aug 28 18:19:56 2011]
 //
  
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
@@ -69,7 +69,7 @@ namespace hole
 	//
 	// callbacks
 	//
-	elle::Status		Challenge(elle::Cipher&);
+	elle::Status		Challenge();
 
 	elle::Status		Monitor();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [thu aug 25 22:10:59 2011]
+// updated       julien quintard   [sun aug 28 21:32:45 2011]
 //
 
 //
@@ -70,15 +70,12 @@ namespace hole
 	{
 	  elle::Callback<
 	    elle::Status,
-	    elle::Parameters<
-	      elle::Cipher
-	      >
+	    elle::Parameters<>
 	    >				challenge(&Client::Challenge, this);
 
 	  // register the challenge message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagChallenge,
-				TagResponse>(challenge)) == elle::StatusError)
+	        elle::Procedure<TagChallenge>(challenge)) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -103,7 +100,9 @@ namespace hole
 	    escape("unable to create the gate");
 
 	  // connect the gate.
-	  if (this->gate->Connect(point) == elle::StatusError)
+	  if (this->gate->Connect(point,
+				  elle::Channel::ModeSynchronous) ==
+	      elle::StatusError)
 	    escape("unable to connect to the bridge");
 	}
 
@@ -278,10 +277,11 @@ namespace hole
       /// network's name it is supposed to support, this being encrypted
       /// with the remote key provided in the network descriptor.
       ///
-      elle::Status	Client::Challenge(elle::Cipher&		cipher)
+      elle::Status	Client::Challenge()
       {
 	elle::SecretKey	key;
 	elle::String	string;
+	elle::Cipher	cipher;
 
 	enter();
 
@@ -298,6 +298,11 @@ namespace hole
 	// encrypt the network's name with the key.
 	if (key.Encrypt(Hole::Descriptor.name, cipher) == elle::StatusError)
 	  escape("unable to encrypt the network's name");
+
+	// return the cipher.
+	if (this->gate->Reply(
+	      elle::Inputs<TagResponse>(cipher)) == elle::StatusError)
+	  escape("unable to return the challenge response");
 
 	leave();
       }
