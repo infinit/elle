@@ -1,12 +1,17 @@
-protocole:
-  - A se connecte a B
-  - B envoie son passport (sa partie publique)
-  - A verifie le passport/node
-  - A ajoute une entree a sa routing table
-
 #
 # ---------- XXX --------------------------------------------------------------
 #
+
+- cluster: virer label: sert a rien
+- ajouter timeout pour rester dans neighbour sans etre authenticated?
+- neighbour -> vestibule -> authenticated -> routing table
+
+XXX Plug/Spot/Site/Place/Station
+
+- il semble que lorsqu'on copie des fichiers dans Infinit, ils
+  choppent le bit x
+- implementer Channel::Mode pour Door egalement.
+- ajouter timeout a Remote::Customer
 
 - systeme de signal
   [QT] connect(this->gate, _connected, this, _connected)
