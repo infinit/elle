@@ -12,6 +12,8 @@ XXX Plug/Spot/Site/Place/Station
   choppent le bit x
 - implementer Channel::Mode pour Door egalement.
 - ajouter timeout a Remote::Customer
+- ajouter un message Error a recevoir dans Client -> quitte programme
+- timeout sur Cirkle::Neighbour?
 
 - systeme de signal
   [QT] connect(this->gate, _connected, this, _connected)
