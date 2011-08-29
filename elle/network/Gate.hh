@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [sun aug 28 17:22:33 2011]
+// updated       julien quintard   [mon aug 29 08:43:50 2011]
 //
 
 ///
@@ -72,7 +72,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Duration;
+      static const Natural32		Timeout;
 
       //
       // constructors & destructors
@@ -115,7 +115,7 @@ namespace elle
       // callbacks
       //
       Status		Dispatch();
-      Status		Timeout();
+      Status		Abort();
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun aug 28 23:15:53 2011]
+// updated       julien quintard   [mon aug 29 09:42:18 2011]
 //
 
 //
@@ -37,7 +37,7 @@ namespace elle
     ///
     /// this value is set by default to 1 second.
     ///
-    const Natural32		Door::Duration = 1000;
+    const Natural32		Door::Timeout = 1000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -143,10 +143,11 @@ namespace elle
     /// this method connects the door i.e attaches the socket to a specific
     /// lane.
     ///
-    Status		Door::Connect(const String&		name)
+    Status		Door::Connect(const String&		name,
+				      Channel::Mode		mode)
     {
       Callback< Status,
-		Parameters<> >	callback(&Door::Timeout, this);
+		Parameters<> >	callback(&Door::Abort, this);
 
       enter();
 
@@ -160,11 +161,30 @@ namespace elle
 	escape("unable to create the callback");
 
       // start the timer.
-      if (this->timer->Start(Door::Duration) == StatusError)
+      if (this->timer->Start(Door::Timeout) == StatusError)
 	escape("unable to start the timer");
 
       // connect the socket to the server.
       this->socket->connectToServer(name.c_str());
+
+      // depending on the mode.
+      switch (mode)
+	{
+	case Channel::ModeAsynchronous:
+	  {
+	    // do nothing and wait for the 'connected' signal.
+
+	    break;
+	  }
+	case Channel::ModeSynchronous:
+	  {
+	    // deliberately wait for the connection to terminate.
+	    if (this->socket->waitForConnected(Door::Timeout) == false)
+	      escape(this->socket->errorString().toStdString().c_str());
+
+	    break;
+	  }
+	}
 
       leave();
     }
@@ -192,7 +212,7 @@ namespace elle
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large: %u bytes",
+	escape("the packet seems to be too large: %qu bytes",
 	       packet.size);
 
       // push the packet to the socket.
@@ -510,7 +530,7 @@ namespace elle
     ///
     /// XXX
     ///
-    Status		Door::Timeout()
+    Status		Door::Abort()
     {
       enter();
 
