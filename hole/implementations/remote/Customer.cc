@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Customer.cc
 //
 // created       julien quintard   [sun aug 28 17:53:05 2011]
-// updated       julien quintard   [sun aug 28 21:40:32 2011]
+// updated       julien quintard   [mon aug 29 09:48:11 2011]
 //
 
 //
@@ -26,6 +26,15 @@ namespace hole
     {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+      ///
+      /// XXX
+      ///
+      const elle::Natural32		Customer::Timeout = 180000;
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 
@@ -34,7 +43,8 @@ namespace hole
       ///
       Customer::Customer():
 	state(Customer::StateUnknown),
-	gate(NULL)
+	gate(NULL),
+	timer(NULL)
       {
       }
 
@@ -43,9 +53,13 @@ namespace hole
       ///
       Customer::~Customer()
       {
-	// disconnect and delete the gate.
+	// delete the gate.
 	if (this->gate != NULL)
 	  delete this->gate;
+
+	// delete the timer.
+	if (this->timer != NULL)
+	  delete this->timer;
       }
 
 //
@@ -61,6 +75,10 @@ namespace hole
 	  elle::Status,
 	  elle::Parameters<>
 	>				monitor(&Customer::Monitor, this);
+	elle::Callback<
+	  elle::Status,
+	  elle::Parameters<>
+	>				abort(&Customer::Abort, this);
 
 	enter();
 
@@ -71,7 +89,17 @@ namespace hole
 	if (this->gate->Monitor(monitor) == elle::StatusError)
 	  escape("unable to monitor the connection");
 
-	// XXX set up a timer after which the customer is discarded.
+	// allocate a new timer.
+	this->timer = new elle::Timer;
+
+	// create the timer.
+	if (this->timer->Create(elle::Timer::ModeSingle,
+				abort) == elle::StatusError)
+	  escape("unable to create the timer");
+
+	// start the timer.
+	if (this->timer->Start(Customer::Timeout) == elle::StatusError)
+	  escape("unable to start the timer");
 
 	leave();
       }
@@ -79,6 +107,26 @@ namespace hole
 //
 // ---------- callbacks -------------------------------------------------------
 //
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Customer::Abort()
+      {
+	enter();
+
+	// reset the state.
+	this->state = Customer::StateUnknown;
+
+	// remove the customer from the server.
+	if (Remote::Machine->server->Remove(this->gate) == elle::StatusError)
+	  escape("unable to remove the customer");
+
+	// bury the customer.
+	bury(this);
+
+	leave();
+      }
 
       ///
       /// this callback is triggered whenever something unexpected occurs
@@ -135,6 +183,18 @@ namespace hole
 	  {
 	    std::cout << alignment << elle::Dumpable::Shift
 		      << "[Gate] " << elle::none << std::endl;
+	  }
+
+	// dump the timer.
+	if (this->timer != NULL)
+	  {
+	    if (this->timer->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the timer");
+	  }
+	else
+	  {
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << "[Timer] " << elle::none << std::endl;
 	  }
 
 	leave();
