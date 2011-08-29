@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [sun aug 28 23:15:40 2011]
+// updated       julien quintard   [mon aug 29 09:41:35 2011]
 //
 
 //
@@ -35,7 +35,7 @@ namespace elle
     ///
     /// this value is set by default to 5 seconds.
     ///
-    const Natural32		Gate::Duration = 5000;
+    const Natural32		Gate::Timeout = 5000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -144,7 +144,7 @@ namespace elle
 				      const Channel::Mode	mode)
     {
       Callback< Status,
-		Parameters<> >	callback(&Gate::Timeout, this);
+		Parameters<> >	callback(&Gate::Abort, this);
 
       enter();
 
@@ -156,7 +156,7 @@ namespace elle
 	escape("unable to create the callback");
 
       // start the timer.
-      if (this->timer->Start(Gate::Duration) == StatusError)
+      if (this->timer->Start(Gate::Timeout) == StatusError)
 	escape("unable to start the timer");
 
       // update the state.
@@ -177,7 +177,7 @@ namespace elle
 	case Channel::ModeSynchronous:
 	  {
 	    // deliberately wait for the connection to terminate.
-	    if (this->socket->waitForConnected(Gate::Duration) == false)
+	    if (this->socket->waitForConnected(Gate::Timeout) == false)
 	      escape(this->socket->errorString().toStdString().c_str());
 
 	    break;
@@ -210,7 +210,7 @@ namespace elle
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large: %u bytes",
+	escape("the packet seems to be too large: %qu bytes",
 	       packet.size);
 
       // push the packet to the socket.
@@ -541,7 +541,7 @@ namespace elle
     ///
     /// XXX
     ///
-    Status		Gate::Timeout()
+    Status		Gate::Abort()
     {
       enter();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [thu aug 25 16:47:48 2011]
+// updated       julien quintard   [mon aug 29 09:42:06 2011]
 //
 
 ///
@@ -80,7 +80,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural32		Duration;
+      static const Natural32		Timeout;
 
       //
       // constructors & destructors
@@ -94,7 +94,8 @@ namespace elle
       Status		Create();
       Status		Create(::QLocalSocket*);
 
-      Status		Connect(const String&);
+      Status		Connect(const String&,
+				Channel::Mode = Channel::ModeAsynchronous);
       Status		Disconnect();
 
       Status		Write(const Packet&);
@@ -122,7 +123,7 @@ namespace elle
       // callbacks
       //
       Status		Dispatch();
-      Status		Timeout();
+      Status		Abort();
 
       //
       // interfaces
