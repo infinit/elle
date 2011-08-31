@@ -183,10 +183,11 @@ class GccToolkit(Toolkit):
     arch = arch.x86
     os = os.linux
 
-    def __init__(self, compiler = 'g++'):
+    def __init__(self, compiler = 'g++', compiler_c = 'gcc'):
 
         Toolkit.__init__(self)
         self.cxx = compiler
+        self.c = compiler_c
 
     def preprocess(self, code, config = Config()):
 
@@ -218,9 +219,8 @@ class GccToolkit(Toolkit):
         local_includes  = ' '.join(map(lambda i: '-I %s -I %s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
         return ' '.join([system_includes, local_includes, defines])
 
-    def compile(self, cfg, src, obj):
-
-        return ' '.join([self.cxx] + cfg.flags + [self.cppflags(cfg), '-c', str(src), '-o', str(obj)])
+    def compile(self, cfg, src, obj, c = False):
+        return ' '.join([c and self.c or self.cxx] + cfg.flags + [self.cppflags(cfg), '-c', str(src), '-o', str(obj)])
 
 
     def archive(self, cfg, objs, lib):
@@ -331,7 +331,7 @@ class VisualToolkit(Toolkit):
         local_includes  = ' '.join(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
         return ' '.join([system_includes, local_includes, defines])
 
-    def compile(self, cfg, src, obj):
+    def compile(self, cfg, src, obj, c = False):
         cppflags = self.cppflags(cfg)
         return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc %s /Fo%s /c %s' % (' '.join(self.flags), concatenate(cfg.flags), cppflags, obj, src)
 
@@ -432,12 +432,13 @@ class Compiler(Builder):
 
     Builder.register_deps_handler(deps, deps_handler)
 
-    def __init__(self, src, obj, tk, cfg):
+    def __init__(self, src, obj, tk, cfg, c = False):
 
         self.src = src
         self.obj = obj
         self.config = cfg
         self.toolkit = tk
+        self.__c = c
         Builder.__init__(self, [src], [obj])
 
 
@@ -461,7 +462,8 @@ class Compiler(Builder):
         return self.cmd('Compile %s' % self.obj,
                         self.toolkit.compile(self.config,
                                              self.src.path(),
-                                             self.obj.path()))
+                                             self.obj.path(),
+                                             c = self.__c))
 
     def hash(self):
         flags = self.config.flags
@@ -643,6 +645,7 @@ class Object(Node):
         self.toolkit = tk
         self.cfg = cfg
         path = Path(source.name())
+        c = path.extension == 'c'
         path.extension_strip_last_component()
         if len(path.extension):
             path.extension += '.%s' % tk.object_extension()
@@ -650,7 +653,7 @@ class Object(Node):
             path.extension = tk.object_extension()
         Node.__init__(self, path)
 
-        Compiler(source, self, tk, cfg)
+        Compiler(source, self, tk, cfg, c = c)
 
     def mkdeps(self):
 
