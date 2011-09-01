@@ -124,7 +124,7 @@ class ApplicationBuilder(drake.Builder):
     self.__libraries = list(filter(lambda s: isinstance(s, Library), sources))
     self.__target = target
     self.__sdk = flex_sdk
-    drake.Builder.__init__(self, sources, [target])
+    drake.Builder.__init__(self, sources + [config, source], [target])
 
   def execute(self):
     # Options
