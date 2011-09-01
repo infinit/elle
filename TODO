@@ -1,18 +1,21 @@
-#
-# ---------- XXX --------------------------------------------------------------
-#
+	// dans Meta, on a un Domain: ensemble de signaux, donc lie a un objet
+	// lorsque l'on veut emit le signal, on fait this->Emit(SignalXXX, ..);
+	// chaque signal est identifie par un Natural32
+	// pour register un signal on fait this->Schedule< Param<> >
+	// enfin pour subscribe a un signal: object.Subscribe(SignalXXX, cb);
+	// lorsqu'Emit() est appelle, tous les callbacks sont triggered.
+	// Unsubscribe egalement
+	// faire fonctionner avec Closure egalement
+
+- pour eviter les bury ou delete this dans Neighbour.cc
+  il faut utiliser un system de signals
 
 - cluster: virer label: sert a rien
 - ajouter timeout pour rester dans neighbour sans etre authenticated?
 - neighbour -> vestibule -> authenticated -> routing table
 
-XXX Plug/Spot/Site/Place/Station
-
 - il semble que lorsqu'on copie des fichiers dans Infinit, ils
   choppent le bit x
-- implementer Channel::Mode pour Door egalement.
-- ajouter timeout a Remote::Customer
-- ajouter un message Error a recevoir dans Client -> quitte programme
 - timeout sur Cirkle::Neighbour?
 
 - systeme de signal
@@ -21,17 +24,18 @@ XXX Plug/Spot/Site/Place/Station
   [Elle] this->gate.Attach("suce", Callback(...));
   [Elle] this->gate.Signal("suce", parameters);
 
-- dump Channel (call by Gate/Door)
-- meme chose avec Socket.
-
-- trouver un terme pour remplacer Address dans elle
-
-- changer le protocole pour que les passports soient echanges car pour
-  l'instant label = h(IP)
-
-- passer alpha en prototype: rajouter un tag (cote serveur)
+- trouver un terme pour remplacer Address dans elle:
+  Plug/Spot/Site/Place/Station
 
 - renommer Node en Host dans remote.
+- mettre RoutingTable en fonctionnalite generale
+
+- routingtable en global template par T (type d'entree): contient une map
+  indexee par label. class Mass cree a partir de la RTable?
+
+#
+# ---------- XXX --------------------------------------------------------------
+#
 
 - shrub: faire des listes pour les meme timestamps dans queue
 - make: Warning: File `Makefile' has modification time 3557 s in the future
