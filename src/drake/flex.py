@@ -53,7 +53,7 @@ class SDK(drake.Configuration):
         return self.__prefix / 'bin/mxmlc'
 
     def __repr__(self):
-        return 'SofiaSIP(prefix = %s)' % repr(self.__prefix)
+        return 'Flex(prefix = %s)' % repr(self.__prefix)
 
 
 class Source(drake.Node):
