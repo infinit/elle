@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [mon aug 29 09:41:35 2011]
+// updated       julien quintard   [wed aug 31 18:05:37 2011]
 //
 
 //

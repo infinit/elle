@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hxx
 //
 // created       julien quintard   [mon jul 18 17:40:44 2011]
-// updated       julien quintard   [tue jul 19 18:30:17 2011]
+// updated       julien quintard   [wed aug 31 17:14:16 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
@@ -43,13 +43,14 @@ namespace elle
     /// XXX
     ///
     template <const Tag I,
-	      const Tag O>
-    Procedure<I, O>::Procedure(const Callback< Status,
-					       R >&		routine,
-			       const Callback< Status,
-					       Parameters<> >*	prolog,
-			       const Callback< Status,
-					       Parameters<> >*	epilog):
+	      const Tag O,
+	      const Tag E>
+    Procedure<I, O, E>::Procedure(const Callback< Status,
+				                  R >&		routine,
+				  const Callback< Status,
+				                  Parameters<> >* prolog,
+				  const Callback< Status,
+					          Parameters<> >* epilog):
       routine(routine),
       prolog(NULL),
       epilog(NULL)
@@ -69,8 +70,9 @@ namespace elle
     /// XXX
     ///
     template <const Tag I,
-	      const Tag O>
-    Procedure<I, O>::Procedure(const Procedure<I, O>&		procedure):
+	      const Tag O,
+	      const Tag E>
+    Procedure<I, O, E>::Procedure(const Procedure<I, O, E>&	procedure):
       Object(procedure),
 
       routine(procedure.routine),
@@ -96,8 +98,9 @@ namespace elle
     /// XXX
     ///
     template <const Tag I,
-	      const Tag O>
-    Status		Procedure<I, O>::Skeleton(Archive&	archive) const
+	      const Tag O,
+	      const Tag E>
+    Status		Procedure<I, O, E>::Skeleton(Archive&	archive) const
     {
       Callback<
 	Status,
@@ -178,25 +181,47 @@ namespace elle
       //
       if (status == StatusError)
 	{
-	  Report*	report;
+	  // depending on the error tag.
+	  switch (E)
+	    {
+	    case TagError:
+	      {
+		//
+		// nothing to do in this case i.e just ignore the error
+		// though log it.
+		//
 
-	  // check the socket.
-	  if (session->socket == NULL)
-	    escape("unable to reply with a null socket");
+		log("an error occured in this procedure");
 
-	  // retrieve the report.
-	  if (Report::Instance(report) == StatusFalse)
-	    escape("unable to retrieve the report");
+		break;
+	      }
+	    default:
+	      {
+		//
+		// in the other cases, serialize the report and send it
+		// to the caller.
+		//
+		Report*		report;
 
-	  // reply with the report.
-	  if (session->socket->Reply(
-	        Inputs<TagError>(*report),
-		session) == StatusError)
-	    escape("unable to reply with the status");
+		// check the socket.
+		if (session->socket == NULL)
+		  escape("unable to reply with a null socket");
 
-	  // flush the report since it has been sent
-	  // to the sender.
-	  report->Flush();
+		// retrieve the report.
+		if (Report::Instance(report) == StatusFalse)
+		  escape("unable to retrieve the report");
+
+		// reply with the report.
+		if (session->socket->Reply(
+		      Inputs<E>(*report),
+		      session) == StatusError)
+		  escape("unable to reply with the status");
+
+		// flush the report since it has been sent
+		// to the sender.
+		report->Flush();
+	      }
+	    }
 
 	  leave();
 	}
@@ -264,9 +289,10 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(_(Procedure<I, O>),
+    embed(_(Procedure<I, O, E>),
 	  _(template <const Tag I,
-		      const Tag O>));
+		      const Tag O,
+		      const Tag E>));
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -276,8 +302,9 @@ namespace elle
     /// this method dumps the procedure.
     ///
     template <const Tag I,
-	      const Tag O>
-    Status		Procedure<I, O>::Dump(const Natural32	margin) const
+	      const Tag O,
+	      const Tag E>
+    Status		Procedure<I, O, E>::Dump(const Natural32 margin) const
     {
       String		alignment(margin, ' ');
 

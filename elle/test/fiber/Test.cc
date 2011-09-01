@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon jul 18 09:37:45 2011]
+// updated       julien quintard   [thu sep  1 14:32:33 2011]
 //
 
 //

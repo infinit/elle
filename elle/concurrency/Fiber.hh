@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [mon jul 18 09:25:57 2011]
+// updated       julien quintard   [thu sep  1 14:38:40 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH

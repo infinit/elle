@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hh
 //
 // created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [mon jul 18 20:40:37 2011]
+// updated       julien quintard   [thu sep  1 14:19:39 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HH
@@ -154,6 +154,23 @@ namespace elle
       // attributes
       //
       Shell*		shell;
+    };
+
+    ///
+    /// a specific class for method inference.
+    ///
+    template <>
+    class Method<>
+    {
+    public:
+      //
+      // static methods
+      //
+      template <typename R,
+		typename C,
+		typename... T>
+      static Method< R, Parameters<T...> >	Infer(R (C::*)(T...),
+						      C*);
     };
 
   }

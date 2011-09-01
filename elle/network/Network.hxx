@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [sun aug 28 13:46:07 2011]
+// updated       julien quintard   [wed aug 31 17:20:00 2011]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -36,10 +36,11 @@ namespace elle
     /// callback is triggered.
     ///
     template <const Tag I,
-	      const Tag O>
-    Status		Network::Register(const Procedure<I, O>& procedure)
+	      const Tag O,
+	      const Tag E>
+    Status		Network::Register(const Procedure<I, O, E>& procedure)
     {
-      Selectionoid< Procedure<I, O> >*		selectionoid;
+      Selectionoid< Procedure<I, O, E> >*	selectionoid;
       std::pair<Network::Iterator, Boolean>	result;
 
       enter(instance(selectionoid));
@@ -49,7 +50,7 @@ namespace elle
 	escape("this tag seems to have already been recorded");
 
       // create a new selectionoid.
-      selectionoid = new Selectionoid< Procedure<I, O> >(procedure);
+      selectionoid = new Selectionoid< Procedure<I, O, E> >(procedure);
 
       // insert the selectionoid in the container.
       result = Network::Procedures.insert(
