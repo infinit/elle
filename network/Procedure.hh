@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hh
 //
 // created       julien quintard   [fri jul 15 11:55:49 2011]
-// updated       julien quintard   [mon jul 18 23:23:05 2011]
+// updated       julien quintard   [wed aug 31 17:14:18 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HH
@@ -49,7 +49,8 @@ namespace elle
     /// XXX
     ///
     template <const Tag I,
-	      const Tag O = TagNone>
+	      const Tag O = TagNone,
+	      const Tag E = TagError>
     class Procedure:
       public Object
     {
@@ -79,7 +80,7 @@ namespace elle
 				Parameters<> >* = NULL,
 		const Callback< Status,
 				Parameters<> >* = NULL);
-      Procedure(const Procedure<I, O>&);
+      Procedure(const Procedure<I, O, E>&);
 
       //
       // methods
@@ -91,7 +92,7 @@ namespace elle
       //
 
       // object
-      declare(_(Procedure<I, O>));
+      declare(_(Procedure<I, O, E>));
 
       // dumpable
       Status		Dump(const Natural32 = 0) const;
@@ -102,16 +103,16 @@ namespace elle
       Callback<
 	Status,
 	R
-	>			routine;
+	>		routine;
 
       Callback<
 	Status,
 	Parameters<>
-	>*			prolog;
+	>*		prolog;
       Callback<
 	Status,
 	Parameters<>
-	>*			epilog;
+	>*		epilog;
     };
 
   }

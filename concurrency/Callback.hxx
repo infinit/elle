@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [thu jul 28 15:29:52 2011]
+// updated       julien quintard   [thu sep  1 14:21:44 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -167,67 +167,6 @@ namespace elle
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(_(Callback< R, Parameters<T...> >),
-	  _(template <typename R,
-		      typename... T>));
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    ///
-    /// this method dumps the callback.
-    ///
-    template <typename R,
-	      typename... T>
-    Status
-    Callback< R, Parameters<T...> >::Dump(const Natural32	margin) const
-    {
-      String		alignment(margin, ' ');
-
-      enter();
-
-      std::cout << alignment << "[Callback]" << std::endl;
-
-      // dump the scheme.
-      std::cout << alignment << Dumpable::Shift << "[Scheme] "
-		<< this->scheme << std::endl;
-
-      // dump the content.
-      switch (this->scheme)
-	{
-	case Routine::SchemeFunction:
-	  {
-	    // dump the function.
-	    if (this->function->Dump(margin + 2) == StatusError)
-	      escape("unable to dump the function");
-
-	    break;
-	  }
-	case Routine::SchemeMethod:
-	  {
-	    // dump the method.
-	    if (this->method->Dump(margin + 2) == StatusError)
-	      escape("unable to dump the method");
-
-	    break;
-	  }
-	case Routine::SchemeUnknown:
-	  {
-	    escape("unknown scheme");
-	  }
-	}
-
-      leave();
-    }
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 
@@ -308,6 +247,95 @@ namespace elle
 	}
 
       release();
+    }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(_(Callback< R, Parameters<T...> >),
+	  _(template <typename R,
+		      typename... T>));
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the callback.
+    ///
+    template <typename R,
+	      typename... T>
+    Status
+    Callback< R, Parameters<T...> >::Dump(const Natural32	margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Callback]" << std::endl;
+
+      // dump the scheme.
+      std::cout << alignment << Dumpable::Shift << "[Scheme] "
+		<< this->scheme << std::endl;
+
+      // dump the content.
+      switch (this->scheme)
+	{
+	case Routine::SchemeFunction:
+	  {
+	    // dump the function.
+	    if (this->function->Dump(margin + 2) == StatusError)
+	      escape("unable to dump the function");
+
+	    break;
+	  }
+	case Routine::SchemeMethod:
+	  {
+	    // dump the method.
+	    if (this->method->Dump(margin + 2) == StatusError)
+	      escape("unable to dump the method");
+
+	    break;
+	  }
+	case Routine::SchemeUnknown:
+	  {
+	    escape("unknown scheme");
+	  }
+	}
+
+      leave();
+    }
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename R,
+	      typename... T>
+    Callback< R, Parameters<T...> >
+    Callback<>::Infer(R					(*handler)(T...))
+    {
+      return (Callback< R, Parameters<T...> >(handler));
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename R,
+	      typename C,
+	      typename... T>
+    Callback< R, Parameters<T...> >
+    Callback<>::Infer(R					(C::*handler)(T...),
+		      C*				object)
+    {
+      return (Callback< R, Parameters<T...> >(handler, object));
     }
 
   }

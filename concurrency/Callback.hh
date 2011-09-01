@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [mon jul 18 21:38:24 2011]
+// updated       julien quintard   [thu sep  1 14:20:30 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -101,6 +101,26 @@ namespace elle
 	Method< R,
 		Parameters<T&...> >*	method;
       };
+    };
+
+    ///
+    /// a specific class for callback inference.
+    ///
+    template <>
+    class Callback<>
+    {
+    public:
+      //
+      // static methods
+      //
+      template <typename R,
+		typename... T>
+      static Callback< R, Parameters<T...> >	Infer(R (*)(T...));
+      template <typename R,
+		typename C,
+		typename... T>
+      static Callback< R, Parameters<T...> >	Infer(R (C::*)(T...),
+						      C*);
     };
 
   }

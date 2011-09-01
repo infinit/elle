@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hh
 //
 // created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [mon jul 18 11:45:00 2011]
+// updated       julien quintard   [thu sep  1 14:20:15 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HH
@@ -91,6 +91,21 @@ namespace elle
       // attributes
       //
       Handler		handler;
+    };
+
+    ///
+    /// a specific class for function inference.
+    ///
+    template <>
+    class Function<>
+    {
+    public:
+      //
+      // static methods
+      //
+      template <typename R,
+		typename... T>
+      static Function< R, Parameters<T...> >	Infer(R (*)(T...));
     };
 
   }

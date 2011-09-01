@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [mon jul 18 11:45:55 2011]
+// updated       julien quintard   [thu sep  1 14:20:36 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HXX
@@ -177,6 +177,21 @@ namespace elle
       this->shell->Trigger(arguments...);
     }
 
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// these are generated automatically.
+    ///
+    embed(_(Method< R, Parameters<T...> >),
+	  _(template <typename R,
+		      typename... T>));
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
     ///
     /// this method dumps the method state.
     ///
@@ -199,15 +214,21 @@ namespace elle
     }
 
 //
-// ---------- object ----------------------------------------------------------
+// ---------- static methods --------------------------------------------------
 //
 
     ///
-    /// these are generated automatically.
+    /// XXX
     ///
-    embed(_(Method< R, Parameters<T...> >),
-	  _(template <typename R,
-		      typename... T>));
+    template <typename R,
+	      typename C,
+	      typename... T>
+    Method< R, Parameters<T...> >
+    Method<>::Infer(R					(C::*handler)(T...),
+		    C*					object)
+    {
+      return (Method< R, Parameters<T...> >(handler, object));
+    }
 
   }
 }

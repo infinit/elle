@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Function.hxx
 //
 // created       julien quintard   [thu feb  4 22:18:05 2010]
-// updated       julien quintard   [mon jul 18 11:45:09 2011]
+// updated       julien quintard   [thu sep  1 14:21:28 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HXX
@@ -124,6 +124,21 @@ namespace elle
 		<< std::hex << this->handler << std::endl;
 
       leave();
+    }
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename R,
+	      typename... T>
+    Function< R, Parameters<T...> >
+    Function<>::Infer(R					(*handler)(T...))
+    {
+      return (Function< R, Parameters<T...> >(handler));
     }
 
   }

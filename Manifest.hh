@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sun aug 28 20:52:45 2011]
+// updated       julien quintard   [wed aug 31 17:15:15 2011]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -87,6 +87,11 @@ namespace elle
 ///
 /// below are the definitions of the messages common to every component
 /// relying on the Elle library.
+///
+/// note that the Error message should never be expected to be received
+/// as the tag is reserved for Procedure-specific purposes. the Ok tag
+/// is however valid and can be sent and received. The None tag is also
+/// reserved for internal us.
 ///
 
 // None

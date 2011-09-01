@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [tue aug  2 19:18:15 2011]
+// updated       julien quintard   [wed aug 31 00:38:36 2011]
 //
 
 //
@@ -150,6 +150,17 @@ namespace elle
 	}
 
       leave();
+    }
+
+//
+// ---------- constructors & destructors --------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    Meta::~Meta()
+    {
     }
 
 //
