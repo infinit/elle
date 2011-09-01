@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.hh
 //
 // created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [sun aug 28 20:23:11 2011]
+// updated       julien quintard   [wed aug 31 14:32:45 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH
@@ -19,13 +19,10 @@
 //
 
 #include <elle/Elle.hh>
-#include <nucleus/Nucleus.hh>
 
-#include <hole/Holeable.hh>
-
-#include <hole/implementations/remote/Peer.hh>
 #include <hole/implementations/remote/Client.hh>
 #include <hole/implementations/remote/Server.hh>
+#include <hole/implementations/remote/Machine.hh>
 
 namespace hole
 {
@@ -54,69 +51,13 @@ namespace hole
       /// the remote hole implementation stores data on a remote host's
       /// storage.
       ///
-      class Remote:
-	public Holeable
+      class Remote
       {
       public:
 	//
-	// enumerations
-	//
-	enum Role
-	  {
-	    RoleUnknown,
-	    RoleServer,
-	    RoleClient
-	  };
-
-	//
 	// static attributes
 	//
-	static Remote*		Machine;
-
-	//
-	// constructors & destructors
-	//
-	Remote(const nucleus::Network&);
-	~Remote();
-
-	//
-	// interfaces
-	//
-
-	// holeable
-	elle::Status		Join();
-	elle::Status		Leave();
-
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::ImmutableBlock&);
-	elle::Status		Put(const nucleus::Address&,
-				    const nucleus::MutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    nucleus::ImmutableBlock&);
-	elle::Status		Get(const nucleus::Address&,
-				    const nucleus::Version&,
-				    nucleus::MutableBlock&);
-	elle::Status		Kill(const nucleus::Address&);
-
-	//
-	// interfaces
-	//
-
-	// dumpable
-	elle::Status		Dump(const elle::Natural32 = 0) const;
-
-	//
-	// attributes
-	//
-	Role			role;
-
-	union
-	{
-	  Server*		server;
-	  Client*		client;
-
-	  Peer*			peer;
-	};
+	static Machine*		Computer;
       };
 
     }
@@ -127,7 +68,8 @@ namespace hole
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/implementations/remote/Manifest.hh>
 #include <hole/implementations/remote/Customer.hh>
+#include <hole/implementations/remote/Implementation.hh>
+#include <hole/implementations/remote/Manifest.hh>
 
 #endif

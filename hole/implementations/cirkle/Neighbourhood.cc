@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi.../implementations/cirkle/Neighbourhood.cc
+// file          /home/mycure/infi...hole/implementations/cirkle/Vestibule.cc
 //
 // created       julien quintard   [thu aug 25 12:19:28 2011]
-// updated       julien quintard   [sun aug 28 13:48:02 2011]
+// updated       julien quintard   [wed aug 31 21:57:38 2011]
 //
 
 //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [sun aug 28 20:53:00 2011]
+// updated       julien quintard   [wed aug 31 21:58:57 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
@@ -19,6 +19,8 @@
 //
 
 #include <elle/Elle.hh>
+#include <nucleus/Nucleus.hh>
+#include <lune/Lune.hh>
 
 #include <elle/Manifest.hh>
 
@@ -76,11 +78,14 @@ namespace hole
 	{
 	  TagChallenge = elle::Range<Component>::First + 1,
 	  TagResponse,
+	  TagAuthenticated,
 
 	  TagPush,
 	  TagPull,
 	  TagBlock,
-	  TagWipe
+	  TagWipe,
+
+	  TagError
 	};
 
     }
@@ -95,20 +100,25 @@ namespace hole
 /// below are the definitions of the inward and outward messages.
 ///
 
-outward(hole::implementations::remote::TagChallenge,
+message(hole::implementations::remote::TagChallenge,
 	parameters())
-inward(hole::implementations::remote::TagResponse,
-       parameters(elle::Cipher));
+message(hole::implementations::remote::TagResponse,
+	parameters(lune::Passport));
+message(hole::implementations::remote::TagAuthenticated,
+	parameters());
 
-inward(hole::implementations::remote::TagPush,
-       parameters(nucleus::Address,
-		  nucleus::Derivable<nucleus::Block>));
-inward(hole::implementations::remote::TagPull,
-       parameters(nucleus::Address,
-		  nucleus::Version));
-outward(hole::implementations::remote::TagBlock,
+message(hole::implementations::remote::TagPush,
+	parameters(nucleus::Address,
+		   nucleus::Derivable<nucleus::Block>));
+message(hole::implementations::remote::TagPull,
+	parameters(nucleus::Address,
+		   nucleus::Version));
+message(hole::implementations::remote::TagBlock,
 	parameters(nucleus::Derivable<nucleus::Block>));
-inward(hole::implementations::remote::TagWipe,
-       parameters(nucleus::Address));
+message(hole::implementations::remote::TagWipe,
+	parameters(nucleus::Address));
+
+message(hole::implementations::remote::TagError,
+	parameters(elle::Report));
 
 #endif

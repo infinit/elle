@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/local/Local.hh
 //
 // created       julien quintard   [tue apr 13 16:05:04 2010]
-// updated       julien quintard   [mon jul 11 16:34:54 2011]
+// updated       julien quintard   [wed aug 31 14:37:59 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_LOCAL_HH
@@ -18,7 +18,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/Holeable.hh>
+#include <hole/implementations/local/Machine.hh>
 
 namespace hole
 {
@@ -38,44 +38,23 @@ namespace hole
       /// the local hole implementation stores data on the local node's
       /// operating system storage.
       ///
-      class Local:
-	public Holeable
+      class Local
       {
       public:
 	//
-	// constructors & destructors
+	// static attributes
 	//
-	Local(const nucleus::Network&);
-
-	//
-	// interfaces
-	//
-
-	// holeable
-	elle::Status	Join();
-	elle::Status	Leave();
-
-	elle::Status	Put(const nucleus::Address&,
-			    const nucleus::ImmutableBlock&);
-	elle::Status	Put(const nucleus::Address&,
-			    const nucleus::MutableBlock&);
-	elle::Status	Get(const nucleus::Address&,
-			    nucleus::ImmutableBlock&);
-	elle::Status	Get(const nucleus::Address&,
-			    const nucleus::Version&,
-			    nucleus::MutableBlock&);
-	elle::Status	Kill(const nucleus::Address&);
-
-	//
-	// interfaces
-	//
-
-	// dumpable
-	elle::Status	Dump(const elle::Natural32 = 0) const;
+	static Machine*		Computer;
       };
 
     }
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <hole/implementations/local/Implementation.hh>
 
 #endif

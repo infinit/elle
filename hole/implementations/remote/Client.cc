@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [sun aug 28 22:40:50 2011]
+// updated       julien quintard   [wed aug 31 22:08:43 2011]
 //
 
 //
@@ -36,9 +36,9 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Client::Client(const nucleus::Network&			network):
-	Peer(network),
-
+      Client::Client(const elle::Point&				point):
+	state(Client::StateUnknown),
+	point(point),
 	gate(NULL)
       {
       }
@@ -58,9 +58,9 @@ namespace hole
 //
 
       ///
-      /// this method initializes the client.
+      /// this method launches the client.
       ///
-      elle::Status	Client::Initialize(const elle::Point&	point)
+      elle::Status	Client::Launch()
       {
 	enter();
 
@@ -72,10 +72,32 @@ namespace hole
 	    elle::Status,
 	    elle::Parameters<>
 	    >				challenge(&Client::Challenge, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<>
+	    >				authenticated(&Client::Authenticated,
+						      this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const elle::Report
+	      >
+	    >				error(&Client::Error, this);
 
 	  // register the challenge message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagChallenge>(challenge)) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the challenge message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagAuthenticated>(authenticated)) ==
+	      elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the challenge message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagError>(error)) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -100,28 +122,11 @@ namespace hole
 	    escape("unable to create the gate");
 
 	  // connect the gate.
-	  if (this->gate->Connect(point,
+	  if (this->gate->Connect(this->point,
 				  elle::Channel::ModeSynchronous) ==
 	      elle::StatusError)
 	    escape("unable to connect to the bridge");
 	}
-
-	leave();
-      }
-
-      ///
-      /// this method cleans the client.
-      ///
-      elle::Status	Client::Clean()
-      {
-	enter();
-
-	// disconnect.
-	if (this->gate != NULL)
-	  {
-	    if (this->gate->Disconnect() == elle::StatusError)
-	      escape("unable to transfer the request");
-	  }
 
 	leave();
       }
@@ -273,36 +278,66 @@ namespace hole
       /// this callback is triggered whenever the client is challenged
       /// by the server.
       ///
-      /// the challenge consists in responding to the server with the
-      /// network's name it is supposed to support, this being encrypted
-      /// with the remote key provided in the network descriptor.
-      ///
       elle::Status	Client::Challenge()
       {
-	elle::SecretKey	key;
-	elle::String	string;
-	elle::Cipher	cipher;
-
 	enter();
 
-	// retrieve the key.
-	if (Hole::Descriptor.Get("remote", "key",
-				 string) == elle::StatusError)
-	  escape("unable to retrieve the remote key from the "
-		 "network descriptor");
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Challenge()"
+		    << std::endl;
 
-	// create a key with the given string.
-	if (key.Create(string) == elle::StatusError)
-	  escape("unable to create the secret key");
-
-	// encrypt the network's name with the key.
-	if (key.Encrypt(Hole::Descriptor.name, cipher) == elle::StatusError)
-	  escape("unable to encrypt the network's name");
-
-	// return the cipher.
+	// return the passport.
 	if (this->gate->Reply(
-	      elle::Inputs<TagResponse>(cipher)) == elle::StatusError)
+	      elle::Inputs<TagResponse>(Hole::Passport)) == elle::StatusError)
 	  escape("unable to return the challenge response");
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Client::Authenticated()
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Authenticated()"
+		    << std::endl;
+
+	// this client has succesfully been authenticated, set its state
+	// accordingly.
+	this->state = Client::StateAuthenticated;
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Client::Error(const elle::Report&	report)
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Error()"
+		    << std::endl;
+
+	// transpose the given report.
+	transpose(report);
+
+	// report the error.
+	report("an error occured on the server side");
+
+	// display the errors before exiting.
+	show();
+
+	// exit the program.
+	if (elle::Program::Exit() == elle::StatusError)
+	  escape("unable to exit the program");
 
 	leave();
       }
@@ -315,13 +350,55 @@ namespace hole
       {
 	enter();
 
-	if (this->gate->state == elle::Channel::StateDisconnected)
-	  {
-	    // delete the gate.
-	    delete this->gate;
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Monitor()"
+		    << std::endl;
 
-	    // reset the gate.
-	    this->gate = NULL;
+	// operate depending on the socket state.
+	switch (this->gate->state)
+	  {
+	  case elle::Channel::StateDisconnected:
+	    {
+	      // delete the gate.
+	      delete this->gate;
+
+	      // reset the gate.
+	      this->gate = NULL;
+
+	      // exit if the connection was shut down.
+	      if ((this->state == Client::StateConnected) ||
+		  (this->state == Client::StateAuthenticated))
+		{
+		  // exit the program.
+		  if (elle::Program::Exit() == elle::StatusError)
+		    escape("unable to exit the program");
+
+		  // report the cause.
+		  report("the connection with the server has been shut down");
+
+		  // show the report.
+		  show();
+		}
+
+	      // set the client as unknown.
+	      this->state = Client::StateUnknown;
+
+	      break;
+	    }
+	  case elle::Channel::StateConnected:
+	    {
+	      // set the client as connected.
+	      this->state = Client::StateConnected;
+
+	      break;
+	    }
+	  default:
+	    {
+	      // nothing to do.
+
+	      break;
+	    }
 	  }
 
 	leave();
@@ -342,9 +419,9 @@ namespace hole
 
 	std::cout << alignment << "[Client]" << std::endl;
 
-	// dump the parent.
-	if (Peer::Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the peer");
+	// dump the point.
+	if (this->point.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the point");
 
 	// dump the gate.
 	if (this->gate != NULL)

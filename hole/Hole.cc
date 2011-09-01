@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.cc
 //
 // created       julien quintard   [tue apr 13 15:27:20 2010]
-// updated       julien quintard   [sun aug 28 21:38:10 2011]
+// updated       julien quintard   [wed aug 31 15:56:53 2011]
 //
 
 //
@@ -125,21 +125,26 @@ namespace hole
       case Model::TypeLocal:
 	{
 	  // allocate the instance.
-	  Hole::Implementation = new implementations::local::Local(network);
+	  Hole::Implementation =
+	    new implementations::local::Implementation(network);
 
 	  break;
 	}
       case Model::TypeRemote:
 	{
 	  // allocate the instance.
-	  Hole::Implementation = new implementations::remote::Remote(network);
+	  Hole::Implementation =
+	    new implementations::remote::Implementation(network);
 
 	  break;
 	}
       case Model::TypeCirkle:
 	{
+	  /* XXX
 	  // allocate the instance.
-	  Hole::Implementation = new implementations::cirkle::Cirkle(network);
+	  Hole::Implementation =
+	    new implementations::cirkle::Implementation(network);
+	  */
 
 	  break;
 	}

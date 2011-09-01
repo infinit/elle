@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...hole/implementations/cirkle/Neighbour.cc
 //
 // created       julien quintard   [wed aug 24 13:12:46 2011]
-// updated       julien quintard   [sun aug 28 13:02:17 2011]
+// updated       julien quintard   [thu sep  1 11:26:01 2011]
 //
 
 //
@@ -27,6 +27,15 @@ namespace hole
     {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+      ///
+      /// XXX 30 sec
+      ///
+      const elle::Natural32		Neighbour::Timeout = 30000;
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 
@@ -35,7 +44,9 @@ namespace hole
       ///
       Neighbour::Neighbour():
 	state(StateUnauthenticated),
-	gate(NULL)
+	port(0),
+	gate(NULL),
+	timer(NULL)
       {
       }
 
@@ -47,6 +58,10 @@ namespace hole
 	// delete the gate, if present.
 	if (this->gate != NULL)
 	  delete this->gate;
+
+	// delete the timer, if present.
+	if (this->timer != NULL)
+	  delete this->timer;
       }
 
 //
@@ -58,10 +73,27 @@ namespace hole
       ///
       elle::Status	Neighbour::Create(const elle::Point&	point)
       {
+	elle::Callback<
+	  elle::Status,
+	  elle::Parameters<>
+	  >		callback(&Neighbour::Discard, this);
+
 	enter();
 
 	// set the point.
 	this->point = point;
+
+	// allocate the timer.
+	this->timer = new elle::Timer;
+
+	// create the timer.
+	if (this->timer->Create(elle::Timer::ModeSingle,
+				callback) == elle::StatusError)
+	  escape("unable to create the timer");
+
+	// start the timer.
+	if (this->timer->Start(Neighbour::Timeout) == elle::StatusError)
+	  escape("unable to start the timer");
 
 	leave();
       }
@@ -74,7 +106,7 @@ namespace hole
 	elle::Callback<
 	  elle::Status,
 	  elle::Parameters<>
-	  >				monitor(&Neighbour::Monitor, this);
+	  >		monitor(&Neighbour::Monitor, this);
 
 	enter();
 
@@ -85,17 +117,7 @@ namespace hole
 	if (this->gate->Monitor(monitor) == elle::StatusError)
 	  escape("unable to monitor the connection");
 
-	//
-	// in this case, we do not know the point the neiighbour is listening
-	// on for incoming connections.
-	//
-	// therefore, this information must be requested.
-	//
-
-	// request the listening point.
-	if (this->gate->Send(
-	      elle::Inputs<TagListen>()) == elle::StatusError)
-	  escape("unable to request the listening point");
+	// XXX add timer for timeout
 
 	leave();
       }
@@ -135,6 +157,37 @@ namespace hole
 //
 
       ///
+      /// XXX
+      ///
+      elle::Status	Neighbour::Discard()
+      {
+	enter();
+
+	// if the neighbour has been authenticated...
+	if (this->state == Neighbour::StateAuthenticated)
+	  {
+	    // delete the timer.
+	    delete this->timer;
+
+	    // reset the point.
+	    this->timer = NULL;
+	  }
+	else
+	  {
+	    // remove the neighbour from the neighbourhood.
+	    if (Cirkle::Computer->neighbourhood.Remove(
+		  this->point) == elle::StatusError)
+	      escape("unable to remove the neighbour from the "
+		     "neighbourhood");
+
+	    // delete the neighbour.
+	    delete this; // XXX rely on signals instead
+	  }
+
+	leave();
+      }
+
+      ///
       /// this callback is triggered whenever the socket state changes.
       ///
       elle::Status	Neighbour::Monitor()
@@ -156,23 +209,24 @@ namespace hole
 	  case elle::Channel::StateDisconnected:
 	    {
 	      // if the neighbour has been registered in the routing table...
-	      if (Cirkle::Machine.table.Exist(this->label) == elle::StatusTrue)
+	      if (Cirkle::Computer->routingtable.Exist(
+		    this->label) == elle::StatusTrue)
 		{
 		  // remove it.
-		  if (Cirkle::Machine.table.Remove(this->label) ==
-		      elle::StatusTrue)
+		  if (Cirkle::Computer->routingtable.Remove(
+		        this->label) == elle::StatusError)
 		    escape("unable to remove the neighbour from the "
 			   "routing table");
 		}
 
 	      // remove the neighbour from the neighbourhood.
-	      if (Cirkle::Machine.neighbourhood.Remove(
+	      if (Cirkle::Computer->neighbourhood.Remove(
 		    this->point) == elle::StatusError)
 		escape("unable to remove the neighbour from the "
 		       "neighbourhood");
 
-	      // bury the instance.
-	      bury(this);
+	      // delete the neighbour.
+	      delete this; // XXX rely on signals instead
 
 	      break;
 	    }
@@ -185,15 +239,6 @@ namespace hole
 
 	leave();
       }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-      ///
-      /// this macro-function call generates the object.
-      ///
-      embed(Neighbour, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -224,6 +269,10 @@ namespace hole
 	if (this->label.Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the label");
 
+	// dump the port.
+	std::cout << alignment << elle::Dumpable::Shift
+		  << "[Port] " << std::dec << this->port << std::endl;
+
 	// dump the gate, if present.
 	if (this->gate != NULL)
 	  {
@@ -235,45 +284,6 @@ namespace hole
 	    std::cout << alignment << elle::Dumpable::Shift
 		      << "[Gate] " << elle::none << std::endl;
 	  }
-
-	leave();
-      }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-      ///
-      /// this method serializes the neighbour object.
-      ///
-      elle::Status	Neighbour::Serialize(elle::Archive&	archive) const
-      {
-	enter();
-
-	// serialize the neighbour's attributes.
-	//
-	// note that the live attributes such as the label and the
-	// socket are not included.
-	if (archive.Serialize(this->point) == elle::StatusError)
-	  escape("unable to serialize the attributes");
-
-	// XXX serialize the other stuff? label at least
-
-	leave();
-      }
-
-      ///
-      /// this method extracts the neighbour object.
-      ///
-      elle::Status	Neighbour::Extract(elle::Archive&	archive)
-      {
-	enter();
-
-	// extract the attributes.
-	if (archive.Extract(this->point) == elle::StatusError)
-	  escape("unable to extract the attributes");
-
-	// XXX extract the other stuff? label at least
 
 	leave();
       }

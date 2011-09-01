@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Client.hh
+// file          /home/mycure/infi.../implementations/local/Implementation.hh
 //
-// created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [wed aug 31 16:45:48 2011]
+// created       julien quintard   [wed aug 31 13:52:16 2011]
+// updated       julien quintard   [wed aug 31 13:55:05 2011]
 //
- 
-#ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
-#define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
+
+#ifndef HOLE_IMPLEMENTATIONS_LOCAL_IMPLEMENTATION_HH
+#define HOLE_IMPLEMENTATIONS_LOCAL_IMPLEMENTATION_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,11 +21,13 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
+#include <hole/Holeable.hh>
+
 namespace hole
 {
   namespace implementations
   {
-    namespace remote
+    namespace local
     {
 
 //
@@ -33,32 +35,24 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// the local hole implementation.
       ///
-      class Client:
-	public elle::Entity
+      class Implementation:
+	public Holeable
       {
       public:
 	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateUnknown,
-	    StateConnected,
-	    StateAuthenticated
-	  };
-
-	//
 	// constructors & destructors
 	//
-	Client(const elle::Point&);
-	~Client();
+	Implementation(const nucleus::Network&);
 
 	//
-	// methods
+	// interfaces
 	//
-	elle::Status		Launch();
+
+	// holeable
+	elle::Status		Join();
+	elle::Status		Leave();
 
 	elle::Status		Put(const nucleus::Address&,
 				    const nucleus::ImmutableBlock&);
@@ -71,29 +65,8 @@ namespace hole
 				    nucleus::MutableBlock&);
 	elle::Status		Kill(const nucleus::Address&);
 
-	//
-	// callbacks
-	//
-	elle::Status		Challenge();
-	elle::Status		Authenticated();
-	elle::Status		Error(const elle::Report&);
-
-	elle::Status		Monitor();
-
-	//
-	// interfaces
-	//
-
 	// dumpable
 	elle::Status		Dump(const elle::Natural32 = 0) const;
-
-	//
-	// attributes
-	//
-	State			state;
-
-	elle::Point		point;
-	elle::Gate*		gate;
       };
 
     }

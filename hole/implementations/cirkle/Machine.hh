@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/cirkle/Peer.hh
+// file          /home/mycure/infinit/hole/implementations/cirkle/Machine.hh
 //
-// created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [sun aug 28 14:04:47 2011]
+// created       julien quintard   [wed aug 31 15:05:39 2011]
+// updated       julien quintard   [thu sep  1 10:31:55 2011]
 //
- 
-#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_PEER_HH
-#define HOLE_IMPLEMENTATIONS_CIRKLE_PEER_HH
+
+#ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MACHINE_HH
+#define HOLE_IMPLEMENTATIONS_CIRKLE_MACHINE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -25,7 +25,6 @@
 #include <hole/implementations/cirkle/Neighbourhood.hh>
 #include <hole/implementations/cirkle/RoutingTable.hh>
 #include <hole/implementations/cirkle/Cluster.hh>
-#include <hole/implementations/cirkle/Neighbour.hh>
 
 namespace hole
 {
@@ -39,12 +38,22 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// XXX represents the current host
       ///
-      class Peer:
+      class Machine:
 	public elle::Entity
       {
       public:
+	//
+	// constants
+	//
+	struct					Default
+	{
+	  static const elle::Natural16		Port;
+	};
+
+	static const elle::Natural32		Frequency;
+
 	//
 	// enumerations
 	//
@@ -57,14 +66,12 @@ namespace hole
 	//
 	// constructors & destructors
 	//
-	Peer();
+	Machine();
 
 	//
 	// methods
 	//
-	elle::Status		Initialize(const elle::Natural16,
-					   const elle::Point&);
-	elle::Status		Clean();
+	elle::Status		Launch();
 
 	elle::Status		Put(const nucleus::Address&,
 				    const nucleus::ImmutableBlock&);
@@ -78,20 +85,24 @@ namespace hole
 	elle::Status		Kill(const nucleus::Address&);
 
 	//
-	// interfaces
-	//
-
-	//
 	// callbacks
 	//
 	elle::Status		Connection(elle::Gate*&);
+
 	elle::Status		Challenge();
-	elle::Status		Authenticate(const lune::Passport&);
-	elle::Status		Authenticated();
-	elle::Status		Listen();
+	elle::Status		Passport(const lune::Passport&);
 	elle::Status		Port(const elle::Port&);
-	elle::Status		Request();
-	elle::Status		Gossip(const Cluster&);
+	elle::Status		Authenticated();
+	elle::Status		Update(const Cluster&);
+
+	elle::Status		Gossip();
+
+	elle::Status		Push(const nucleus::Address&,
+				     const
+				       nucleus::Derivable<nucleus::Block>&);
+	elle::Status		Pull(const nucleus::Address&,
+				     const nucleus::Version&);
+	elle::Status		Wipe(const nucleus::Address&);
 
 	//
 	// interfaces
@@ -106,7 +117,11 @@ namespace hole
 	State			state;
 
 	Neighbourhood		neighbourhood;
-	RoutingTable		table;
+	RoutingTable		routingtable;
+
+	elle::Timer		timer;
+
+	elle::Port		port;
       };
 
     }

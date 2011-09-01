@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.hh
 //
 // created       julien quintard   [wed may 11 14:55:32 2011]
-// updated       julien quintard   [mon jul 11 16:34:32 2011]
+// updated       julien quintard   [wed aug 31 01:46:39 2011]
 //
 
 #ifndef HOLE_HOLEABLE_HH
@@ -64,7 +64,7 @@ namespace hole
     //
     // attributes
     //
-    nucleus::Network	network;
+    nucleus::Network		network;
   };
 
 }

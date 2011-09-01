@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Cluster.hh
 //
 // created       julien quintard   [fri aug 26 13:05:26 2011]
-// updated       julien quintard   [sat aug 27 21:04:09 2011]
+// updated       julien quintard   [wed aug 31 23:54:41 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_CLUSTER_HH
@@ -20,7 +20,7 @@
 
 #include <elle/Elle.hh>
 
-#include <hole/implementations/cirkle/Neighbourhood.hh>
+#include <hole/implementations/cirkle/RoutingTable.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -45,18 +45,9 @@ namespace hole
       {
       public:
 	//
-	// structure
-	//
-	struct Atom
-	{
-	  Label		label;
-	  elle::Point	point;
-	};
-
-	//
 	// types
 	//
-	typedef std::list<Atom>				Container;
+	typedef std::list<elle::Point>			Container;
 	typedef typename Container::iterator		Iterator;
 	typedef typename Container::const_iterator	Scoutor;
 
@@ -68,7 +59,7 @@ namespace hole
 	//
 	// methods
 	//
-	elle::Status		Create(const Neighbourhood&);
+	elle::Status		Create(const RoutingTable&);
 
 	//
 	// interfaces

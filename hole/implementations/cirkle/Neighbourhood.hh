@@ -5,10 +5,10 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi.../implementations/cirkle/Neighbourhood.hh
+// file          /home/mycure/infi...hole/implementations/cirkle/Vestibule.hh
 //
 // created       julien quintard   [thu aug 25 10:56:32 2011]
-// updated       julien quintard   [sun aug 28 17:50:40 2011]
+// updated       julien quintard   [wed aug 31 21:57:35 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_NEIGHBOURHOOD_HH

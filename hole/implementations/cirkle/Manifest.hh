@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Manifest.hh
 //
 // created       julien quintard   [fri aug 12 15:18:12 2011]
-// updated       julien quintard   [sun aug 28 20:53:06 2011]
+// updated       julien quintard   [thu sep  1 10:35:09 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MANIFEST_HH
@@ -79,14 +79,11 @@ namespace hole
       enum Tag
 	{
 	  TagChallenge = elle::Range<Component>::First + 1,
-	  TagAuthenticate,
+	  TagPassport,
+	  TagPort,
 	  TagAuthenticated,
 
-	  TagListen,
-	  TagPort,
-
-	  TagRequest,
-	  TagGossip,
+	  TagUpdate,
 
 	  TagPush,
 	  TagPull,
@@ -108,19 +105,14 @@ namespace hole
 
 message(hole::implementations::cirkle::TagChallenge,
 	parameters())
-message(hole::implementations::cirkle::TagAuthenticate,
+message(hole::implementations::cirkle::TagPassport,
 	parameters(lune::Passport))
+message(hole::implementations::cirkle::TagPort,
+	parameters(elle::Port))
 message(hole::implementations::cirkle::TagAuthenticated,
 	parameters())
 
-message(hole::implementations::cirkle::TagListen,
-	parameters())
-message(hole::implementations::cirkle::TagPort,
-	parameters(elle::Port))
-
-message(hole::implementations::cirkle::TagRequest,
-	parameters())
-message(hole::implementations::cirkle::TagGossip,
+message(hole::implementations::cirkle::TagUpdate,
 	parameters(hole::implementations::cirkle::Cluster))
 
 message(hole::implementations::cirkle::TagPush,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [sun aug 28 21:39:57 2011]
+// updated       julien quintard   [wed aug 31 22:12:11 2011]
 //
 
 //
@@ -19,6 +19,8 @@
 #include <hole/implementations/remote/Manifest.hh>
 
 #include <hole/Hole.hh>
+
+#include <lune/Lune.hh>
 
 #include <Infinit.hh>
 
@@ -36,8 +38,8 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Server::Server(const nucleus::Network&			network):
-	Peer(network)
+      Server::Server(const elle::Point&				point):
+	point(point)
       {
       }
 
@@ -66,6 +68,93 @@ namespace hole
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+      ///
+      /// launch the server by waiting for incoming connections.
+      ///
+      elle::Status	Server::Launch()
+      {
+	enter();
+
+	//
+	// register the messages.
+	//
+	{
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const lune::Passport
+	      >
+	    >				response(&Server::Response, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const nucleus::Address,
+	      const nucleus::Derivable<nucleus::Block>
+	      >
+	    >				push(&Server::Push, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const nucleus::Address,
+	      const nucleus::Version
+	      >
+	    >				pull(&Server::Pull, this);
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      const nucleus::Address
+	      >
+	    >				wipe(&Server::Wipe, this);
+
+	  // register the response message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagResponse,
+				elle::TagNone,
+				TagError>(response)) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the push message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagPush,
+				elle::TagNone,
+				TagError>(push)) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the pull message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagPull,
+				elle::TagNone,
+				TagError>(pull)) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the wipe message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagWipe,
+				elle::TagNone,
+				TagError>(wipe)) == elle::StatusError)
+	    escape("unable to register the callback");
+	}
+
+	//
+	// create the connection.
+	//
+	{
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      elle::Gate*
+	    >
+	  >				connection(&Server::Connection, this);
+
+	  // listen for incoming connections.
+	  if (elle::Bridge::Listen(this->point,
+				   connection) == elle::StatusError)
+	    escape("unable to listen for bridge connections");
+	}
+
+	leave();
+      }
 
       ///
       /// XXX
@@ -153,101 +242,6 @@ namespace hole
 	false();
       }
 
-//
-// ---------- peer ------------------------------------------------------------
-//
-
-      ///
-      /// initialize the server by waiting for incoming connections.
-      ///
-      elle::Status	Server::Initialize(const elle::Point&	point)
-      {
-	enter();
-
-	//
-	// register the messages.
-	//
-	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const elle::Cipher
-	      >
-	    >				response(&Server::Response, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const nucleus::Address,
-	      const nucleus::Derivable<nucleus::Block>
-	      >
-	    >				push(&Server::Push, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const nucleus::Address,
-	      const nucleus::Version
-	      >
-	    >				pull(&Server::Pull, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const nucleus::Address
-	      >
-	    >				wipe(&Server::Wipe, this);
-
-	  // register the response message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagResponse>(response)) == elle::StatusError)
-	    escape("unable to register the callback");
-
-	  // register the push message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagPush>(push)) == elle::StatusError)
-	    escape("unable to register the callback");
-
-	  // register the pull message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagPull>(pull)) == elle::StatusError)
-	    escape("unable to register the callback");
-
-	  // register the wipe message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagWipe>(wipe)) == elle::StatusError)
-	    escape("unable to register the callback");
-	}
-
-	//
-	// create the connection.
-	//
-	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      elle::Gate*
-	    >
-	  >				connection(&Server::Connection, this);
-
-	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(point,
-				   connection) == elle::StatusError)
-	    escape("unable to listen for bridge connections");
-	}
-
-	leave();
-      }
-
-      ///
-      /// clean the server.
-      ///
-      elle::Status	Server::Clean()
-      {
-	enter();
-
-	// nothing to do.
-
-	leave();
-      }
-
       ///
       /// this method stores an immutable block.
       ///
@@ -261,11 +255,13 @@ namespace hole
 		    << std::endl;
 
 	// does the block already exist.
-	if (block.Exist(this->network, address) == elle::StatusTrue)
+	if (block.Exist(Hole::Implementation->network,
+			address) == elle::StatusTrue)
 	  escape("this immutable block seems to already exist");
 
 	// store the block.
-	if (block.Store(this->network, address) == elle::StatusError)
+	if (block.Store(Hole::Implementation->network,
+			address) == elle::StatusError)
 	  escape("unable to store the block");
 
 	leave();
@@ -284,7 +280,7 @@ namespace hole
 		    << std::endl;
 
 	// does the block already exist.
-	if (block.Exist(this->network,
+	if (block.Exist(Hole::Implementation->network,
 			address,
 			nucleus::Version::Last) == elle::StatusTrue)
 	  {
@@ -296,7 +292,7 @@ namespace hole
 	      escape("unable to build the block");
 
 	    // load the latest version.
-	    if (current->Load(this->network,
+	    if (current->Load(Hole::Implementation->network,
 			      address,
 			      nucleus::Version::Last) == elle::StatusError)
 	      escape("unable to load the current version");
@@ -317,7 +313,8 @@ namespace hole
 	  }
 
 	// store the block.
-	if (block.Store(this->network, address) == elle::StatusError)
+	if (block.Store(Hole::Implementation->network,
+			address) == elle::StatusError)
 	  escape("unable to store the block");
 
 	leave();
@@ -336,11 +333,13 @@ namespace hole
 		    << std::endl;
 
 	// does the block exist.
-	if (block.Exist(this->network, address) == elle::StatusFalse)
+	if (block.Exist(Hole::Implementation->network,
+			address) == elle::StatusFalse)
 	  escape("the block does not seem to exist");
 
 	// load the block.
-	if (block.Load(this->network, address) == elle::StatusError)
+	if (block.Load(Hole::Implementation->network,
+		       address) == elle::StatusError)
 	  escape("unable to load the block");
 
 	// validate the block.
@@ -364,11 +363,13 @@ namespace hole
 		    << std::endl;
 
 	// does the block exist.
-	if (block.Exist(this->network, address, version) == elle::StatusFalse)
+	if (block.Exist(Hole::Implementation->network,
+			address, version) == elle::StatusFalse)
 	  escape("the block does not seem to exist");
 
 	// load the block.
-	if (block.Load(this->network, address, version) == elle::StatusError)
+	if (block.Load(Hole::Implementation->network,
+		       address, version) == elle::StatusError)
 	  escape("unable to load the block");
 
 	// validate the block.
@@ -400,7 +401,8 @@ namespace hole
 	      nucleus::ImmutableBlock	ib;
 
 	      // erase the immutable block.
-	      if (ib.Erase(this->network, address) == elle::StatusError)
+	      if (ib.Erase(Hole::Implementation->network,
+			   address) == elle::StatusError)
 		escape("unable to erase the block");
 
 	      break;
@@ -412,7 +414,8 @@ namespace hole
 	      nucleus::MutableBlock	mb;
 
 	      // retrieve the mutable block.
-	      if (mb.Erase(this->network, address) == elle::StatusError)
+	      if (mb.Erase(Hole::Implementation->network,
+			   address) == elle::StatusError)
 		escape("unable to erase the block");
 
 	      break;
@@ -472,13 +475,10 @@ namespace hole
       /// this callback is triggered whenever the client responds to
       /// the initial challenge.
       ///
-      elle::Status	Server::Response(const elle::Cipher&	cipher)
+      elle::Status	Server::Response(const lune::Passport&	passport)
       {
 	Customer*	customer;
 	elle::Session*	session;
-	elle::SecretKey	key;
-	elle::String	string;
-	elle::String	name;
 
 	enter();
 
@@ -495,27 +495,9 @@ namespace hole
 			   customer) == elle::StatusError)
 	  escape("unable to retrieve the customer");
 
-	// retrieve the key.
-	if (Hole::Descriptor.Get("remote", "key",
-				 string) == elle::StatusError)
-	  escape("unable to retrieve the remote key from the "
-		 "network descriptor");
-
-	// create a key with the given string.
-	if (key.Create(string) == elle::StatusError)
-	  escape("unable to create the secret key");
-
-	// decrypt the cipher.
-	if (key.Decrypt(cipher, name) == elle::StatusError)
-	  escape("unable to decrypt the cipher");
-
-	// compare the network with the network being handled.
-	if (Hole::Descriptor.name != name)
+	// validate the passport.
+	if (passport.Validate(Infinit::Authority) == elle::StatusError)
 	  {
-	    // disconnect.
-	    if (customer->gate->Disconnect() == elle::StatusError)
-	      escape("unable to disconnect the client gate");
-
 	    // remove the customer.
 	    if (this->Remove(customer->gate) == elle::StatusError)
 	      escape("unable to remove the customer");
@@ -527,6 +509,11 @@ namespace hole
 	  {
 	    // set the state as authenticated.
 	    customer->state = Customer::StateAuthenticated;
+
+	    // reply with the authenticated message.
+	    if (customer->gate->Reply(
+	          elle::Inputs<TagAuthenticated>()) == elle::StatusError)
+	      escape("unable to reply to the client");
 	  }
 
 	leave();
@@ -758,9 +745,9 @@ namespace hole
 
 	std::cout << alignment << "[Server]" << std::endl;
 
-	// dump the parent.
-	if (Peer::Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the peer");
+	// dump the point.
+	if (this->point.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the point");
 
 	std::cout << alignment << elle::Dumpable::Shift
 		  << "[Customers]" << std::endl;
