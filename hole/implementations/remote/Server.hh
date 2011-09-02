@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.hh
 //
 // created       julien quintard   [wed may 25 19:20:52 2011]
-// updated       julien quintard   [wed aug 31 22:03:55 2011]
+// updated       julien quintard   [fri sep  2 13:07:05 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
@@ -82,7 +82,7 @@ namespace hole
 	//
 	// callbacks
 	//
-	elle::Status		Connection(elle::Gate*&);
+	elle::Status		Connection(elle::Gate*);
 	elle::Status		Response(const lune::Passport&);
 
 	elle::Status		Push(const nucleus::Address&,

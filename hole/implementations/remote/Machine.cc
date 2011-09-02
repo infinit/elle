@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Machine.cc
 //
 // created       julien quintard   [wed aug 31 01:02:08 2011]
-// updated       julien quintard   [wed aug 31 16:09:43 2011]
+// updated       julien quintard   [fri sep  2 13:04:06 2011]
 //
 
 //

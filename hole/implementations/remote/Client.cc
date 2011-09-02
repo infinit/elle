@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [wed aug 31 22:08:43 2011]
+// updated       julien quintard   [thu sep  1 16:29:18 2011]
 //
 
 //
@@ -80,7 +80,7 @@ namespace hole
 	  elle::Callback<
 	    elle::Status,
 	    elle::Parameters<
-	      const elle::Report
+	      const elle::Report&
 	      >
 	    >				error(&Client::Error, this);
 

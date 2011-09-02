@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [wed aug 31 22:12:11 2011]
+// updated       julien quintard   [fri sep  2 13:07:15 2011]
 //
 
 //
@@ -83,27 +83,27 @@ namespace hole
 	  elle::Callback<
 	    elle::Status,
 	    elle::Parameters<
-	      const lune::Passport
+	      const lune::Passport&
 	      >
 	    >				response(&Server::Response, this);
 	  elle::Callback<
 	    elle::Status,
 	    elle::Parameters<
-	      const nucleus::Address,
-	      const nucleus::Derivable<nucleus::Block>
+	      const nucleus::Address&,
+	      const nucleus::Derivable<nucleus::Block>&
 	      >
 	    >				push(&Server::Push, this);
 	  elle::Callback<
 	    elle::Status,
 	    elle::Parameters<
-	      const nucleus::Address,
-	      const nucleus::Version
+	      const nucleus::Address&,
+	      const nucleus::Version&
 	      >
 	    >				pull(&Server::Pull, this);
 	  elle::Callback<
 	    elle::Status,
 	    elle::Parameters<
-	      const nucleus::Address
+	      const nucleus::Address&
 	      >
 	    >				wipe(&Server::Wipe, this);
 
@@ -436,7 +436,7 @@ namespace hole
       ///
       /// this callback handles new connections.
       ///
-      elle::Status	Server::Connection(elle::Gate*&		gate)
+      elle::Status	Server::Connection(elle::Gate*		gate)
       {
 	Customer*	customer;
 

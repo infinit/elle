@@ -12,13 +12,13 @@ ADD_LIBRARY(hole
   implementations/remote/Remote.cc
   implementations/remote/Server.cc
 
-  implementations/cirkle/Cirkle.cc
-  implementations/cirkle/Cluster.cc
-  implementations/cirkle/Implementation.cc
-  implementations/cirkle/Machine.cc
-  implementations/cirkle/Neighbour.cc
-  implementations/cirkle/Neighbourhood.cc
-  implementations/cirkle/RoutingTable.cc
+#  implementations/cirkle/Cirkle.cc
+#  implementations/cirkle/Cluster.cc
+#  implementations/cirkle/Implementation.cc
+#  implementations/cirkle/Machine.cc
+#  implementations/cirkle/Neighbour.cc
+#  implementations/cirkle/Neighbourhood.cc
+#  implementations/cirkle/RoutingTable.cc
 
   Hole.cc
   Holeable.cc

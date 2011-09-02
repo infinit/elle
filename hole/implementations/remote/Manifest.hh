@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [wed aug 31 21:58:57 2011]
+// updated       julien quintard   [fri sep  2 13:04:39 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
@@ -103,22 +103,22 @@ namespace hole
 message(hole::implementations::remote::TagChallenge,
 	parameters())
 message(hole::implementations::remote::TagResponse,
-	parameters(lune::Passport));
+	parameters(lune::Passport&));
 message(hole::implementations::remote::TagAuthenticated,
 	parameters());
 
 message(hole::implementations::remote::TagPush,
-	parameters(nucleus::Address,
-		   nucleus::Derivable<nucleus::Block>));
+	parameters(nucleus::Address&,
+		   nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::remote::TagPull,
-	parameters(nucleus::Address,
-		   nucleus::Version));
+	parameters(nucleus::Address&,
+		   nucleus::Version&));
 message(hole::implementations::remote::TagBlock,
-	parameters(nucleus::Derivable<nucleus::Block>));
+	parameters(nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::remote::TagWipe,
-	parameters(nucleus::Address));
+	parameters(nucleus::Address&));
 
 message(hole::implementations::remote::TagError,
-	parameters(elle::Report));
+	parameters(elle::Report&));
 
 #endif
