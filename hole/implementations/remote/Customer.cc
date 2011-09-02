@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Customer.cc
 //
 // created       julien quintard   [sun aug 28 17:53:05 2011]
-// updated       julien quintard   [wed aug 31 13:11:30 2011]
+// updated       julien quintard   [fri sep  2 13:57:09 2011]
 //
 
 //
@@ -115,15 +115,28 @@ namespace hole
       {
 	enter();
 
-	// reset the state.
-	this->state = Customer::StateUnknown;
+	// check if the customer has been authenticated.
+	if (this->state == Customer::StateAuthenticated)
+	  {
+	    // delete the timer.
+	    delete this->timer;
 
-	// remove the customer from the server.
-	if (Remote::Computer->server->Remove(this->gate) == elle::StatusError)
-	  escape("unable to remove the customer");
+	    // reset the pointer.
+	    this->timer = NULL;
+	  }
+	else
+	  {
+	    // reset the state.
+	    this->state = Customer::StateUnknown;
 
-	// bury the customer.
-	bury(this);
+	    // remove the customer from the server.
+	    if (Remote::Computer->server->Remove(this->gate) ==
+		elle::StatusError)
+	      escape("unable to remove the customer");
+
+	    // bury the customer.
+	    bury(this);
+	  }
 
 	leave();
       }
