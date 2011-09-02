@@ -134,7 +134,7 @@ class ApplicationBuilder(drake.Builder):
     # Libraries
     libraries = ''
     if self.__libraries:
-      libraries = ' -external-library-path+=%s' % ':'.join(map(lambda n: str(n.path().dirname()), self.__libraries))
+      libraries = ' -library-path+=%s' % ':'.join(map(lambda n: str(n.path().dirname()), self.__libraries))
     # Output
     output = str(self.__target.path())
     # Command
