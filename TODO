@@ -1,3 +1,5 @@
+- chercher tous les callbacks: remplacer par des signaux: timer etc.
+
 	// dans Meta, on a un Domain: ensemble de signaux, donc lie a un objet
 	// lorsque l'on veut emit le signal, on fait this->Emit(SignalXXX, ..);
 	// chaque signal est identifie par un Natural32
