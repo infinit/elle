@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hxx
 //
 // created       julien quintard   [fri jun  3 22:22:21 2011]
-// updated       julien quintard   [tue jul 19 12:40:28 2011]
+// updated       julien quintard   [fri sep  2 12:25:30 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HXX
@@ -42,7 +42,7 @@ namespace elle
     template <const Tag G,
 	      typename... T>
     Bundle::Inputs< G,
-		    Parameters<const T...> >::Inputs(const T&... objects):
+		    Parameters<T...> >::Inputs(const T&...	objects):
       tag(G),
       arguments(objects...)
     {
@@ -56,12 +56,12 @@ namespace elle
     template <template <typename...> class E,
 	      typename... U>
     Bundle::Inputs< G,
-		    Parameters<const T...> >::Inputs(
-					        E<
-						  Parameters<
-						    U...
-						    >
-						  >&		ensemble):
+		    Parameters<T...> >::Inputs(
+					       E<
+						 Parameters<
+						   U...
+						   >
+						 >&		ensemble):
       tag(G),
       arguments(ensemble)
     {
@@ -74,7 +74,7 @@ namespace elle
 	      typename... T>
     Status
     Bundle::Inputs< G,
-		    Parameters<const T...> >::Serialize(Archive& archive) const
+		    Parameters<T...> >::Serialize(Archive&	archive) const
     {
       Callback<
 	Status,
@@ -101,7 +101,7 @@ namespace elle
 	      typename... T>
     Status
     Bundle::Inputs< G,
-		    Parameters<const T...> >::Extract(Archive&)
+		    Parameters<T...> >::Extract(Archive&)
     {
       enter();
 
@@ -115,7 +115,7 @@ namespace elle
 	      typename... T>
     Status
     Bundle::Inputs< G,
-		    Parameters<const T...> >::Dump(const Natural32 margin)
+		    Parameters<T...> >::Dump(const Natural32	margin)
       const
     {
       String	alignment(margin, ' ');

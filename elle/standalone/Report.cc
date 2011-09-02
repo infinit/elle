@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [thu sep  1 14:38:50 2011]
+// updated       julien quintard   [thu sep  1 16:39:36 2011]
 //
 
 //
@@ -52,17 +52,13 @@ namespace elle
     ///
     Status		Report::Initialize()
     {
-      Callback<
-	Status,
-	Parameters<const Phase, Fiber*> >	govern(&Report::Govern);
-
       enter();
 
       // allocate the report for the initial thread/fiber.
       Report::Current = new Report;
 
       // register the govern callback to the fiber system.
-      if (Fiber::Register(govern) == StatusError)
+      if (Fiber::Register(Callback<>::Infer(&Report::Govern)) == StatusError)
 	escape("unable to register the govern callback");
 
       leave();
@@ -106,8 +102,8 @@ namespace elle
     /// this method initializes, saves, restores and cleans the report for
     /// the given fiber, in other words govern the fiber's environment.
     ///
-    Status		Report::Govern(const Phase&		phase,
-				       Fiber*&			fiber)
+    Status		Report::Govern(const Phase		phase,
+				       Fiber*			fiber)
     {
       enter();
 

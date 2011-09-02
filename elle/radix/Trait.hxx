@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trait.hxx
 //
 // created       julien quintard   [fri jul 15 10:45:39 2011]
-// updated       julien quintard   [fri jul 15 14:49:22 2011]
+// updated       julien quintard   [thu sep  1 17:30:33 2011]
 //
 
 #ifndef ELLE_RADIX_TRAIT_HXX
@@ -22,6 +22,18 @@ namespace elle
 //
 // ---------- bare ------------------------------------------------------------
 //
+
+    template <typename T>
+    struct Trait::Bare<T&>
+    {
+      typedef T					Type;
+    };
+
+    template <typename T>
+    struct Trait::Bare<T*>
+    {
+      typedef T					Type;
+    };
 
     template <typename T>
     struct Trait::Bare<const T>
@@ -48,12 +60,6 @@ namespace elle
     };
 
     template <typename... T>
-    struct Trait::Bare< Parameters<const T...> >
-    {
-      typedef Parameters<T...>			Type;
-    };
-
-    template <typename... T>
     struct Trait::Bare< Parameters<T&...> >
     {
       typedef Parameters<T...>			Type;
@@ -61,6 +67,24 @@ namespace elle
 
     template <typename... T>
     struct Trait::Bare< Parameters<T*...> >
+    {
+      typedef Parameters<T...>			Type;
+    };
+
+    template <typename... T>
+    struct Trait::Bare< Parameters<const T...> >
+    {
+      typedef Parameters<T...>			Type;
+    };
+
+    template <typename... T>
+    struct Trait::Bare< Parameters<const T&...> >
+    {
+      typedef Parameters<T...>			Type;
+    };
+
+    template <typename... T>
+    struct Trait::Bare< Parameters<const T*...> >
     {
       typedef Parameters<T...>			Type;
     };
@@ -81,10 +105,34 @@ namespace elle
       typedef const T				Type;
     };
 
+    template <typename T>
+    struct Trait::Constant<T&>
+    {
+      typedef const T&				Type;
+    };
+
+    template <typename T>
+    struct Trait::Constant<T*>
+    {
+      typedef const T*				Type;
+    };
+
     template <typename... T>
     struct Trait::Constant< Parameters<T...> >
     {
       typedef Parameters<const T...>		Type;
+    };
+
+    template <typename... T>
+    struct Trait::Constant< Parameters<T&...> >
+    {
+      typedef Parameters<const T&...>		Type;
+    };
+
+    template <typename... T>
+    struct Trait::Constant< Parameters<T*...> >
+    {
+      typedef Parameters<const T*...>		Type;
     };
 
     template <typename... T>

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [thu sep  1 14:21:44 2011]
+// updated       julien quintard   [thu sep  1 15:49:48 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -54,13 +54,13 @@ namespace elle
 				         Function<
 					   R,
 					   Parameters<
-					     T&...
+					     T...
 					     >
 					   >::Handler		handler):
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeFunction),
-      function(new Function< R, Parameters<T&...> >(handler))
+      function(new Function< R, Parameters<T...> >(handler))
     {
     }
 
@@ -75,7 +75,7 @@ namespace elle
 				         Method<
 					   R,
 					   Parameters<
-					     T&...
+					     T...
 					     >
 					   >::
 				           template
@@ -84,7 +84,7 @@ namespace elle
       Routine::Routine(Routine::TypeCallback),
 
       scheme(Routine::SchemeMethod),
-      method(new Method< R, Parameters<T&...> >(handler, object))
+      method(new Method< R, Parameters<T...> >(handler, object))
     {
     }
 
@@ -114,7 +114,7 @@ namespace elle
 	  {
 	    // clone the function.
 	    this->function =
-	      new Function< R, Parameters<T&...> >(*callback.function);
+	      new Function< R, Parameters<T...> >(*callback.function);
 
 	    break;
 	  }
@@ -122,7 +122,7 @@ namespace elle
 	  {
 	    // clone the method.
 	    this->method =
-	      new Method< R, Parameters<T&...> >(*callback.method);
+	      new Method< R, Parameters<T...> >(*callback.method);
 
 	    break;
 	  }
@@ -176,7 +176,7 @@ namespace elle
     template <typename R,
 	      typename... T>
     R
-    Callback< R, Parameters<T...> >::Call(T&...			arguments)
+    Callback< R, Parameters<T...> >::Call(T...			arguments)
       const
     {
       enter();
@@ -216,7 +216,7 @@ namespace elle
     template <typename R,
 	      typename... T>
     Void
-    Callback< R, Parameters<T...> >::Trigger(T&...		arguments)
+    Callback< R, Parameters<T...> >::Trigger(T...		arguments)
       const
     {
       enter();

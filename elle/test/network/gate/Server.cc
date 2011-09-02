@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [fri aug 26 00:18:15 2011]
+// updated       julien quintard   [fri sep  2 12:40:39 2011]
 //
 
 //
@@ -89,7 +89,7 @@ namespace elle
     ///
     /// this method handles new connections.
     ///
-    Status		Server::Connection(Gate*&		gate)
+    Status		Server::Connection(Gate*		gate)
     {
       String		challenge("CHALLENGE");
       String		response;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [thu aug 25 11:34:52 2011]
+// updated       julien quintard   [thu sep  1 16:04:04 2011]
 //
 
 //
@@ -45,14 +45,10 @@ namespace elle
     ///
     Status		Session::Initialize()
     {
-      Callback<
-	Status,
-	Parameters<const Phase, Fiber*> >	govern(&Session::Govern);
-
       enter();
 
       // register the govern callback to the fiber system.
-      if (Fiber::Register(govern) == StatusError)
+      if (Fiber::Register(Callback<>::Infer(&Session::Govern)) == StatusError)
 	escape("unable to register the govern callback");
 
       leave();
@@ -114,8 +110,8 @@ namespace elle
     /// this method initializes, saves, restores and cleans the session
     /// for the given fiber.
     ///
-    Status		Session::Govern(const Phase&		phase,
-					Fiber*&			fiber)
+    Status		Session::Govern(Phase			phase,
+					Fiber*			fiber)
     {
       enter();
 

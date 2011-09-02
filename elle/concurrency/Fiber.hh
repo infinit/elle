@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [thu sep  1 14:38:40 2011]
+// updated       julien quintard   [thu sep  1 16:36:49 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -142,7 +142,7 @@ namespace elle
 	typedef std::vector<
 	  Callback<
 	    Status,
-	    Parameters<const Phase, Fiber*> >* >	Container;
+	    Parameters<Phase, Fiber*> >* >	Container;
 	typedef Container::iterator			Iterator;
 	typedef Container::const_iterator		Scoutor;
       };
@@ -191,8 +191,8 @@ namespace elle
       static Status	Register(const
 				 Callback<
 				   Status,
-				   Parameters<const Phase, Fiber*> >&);
-      static Status	Trigger(const Phase&);
+				   Parameters<Phase, Fiber*> >);
+      static Status	Trigger(Phase);
 
       static Status	Schedule();
 
