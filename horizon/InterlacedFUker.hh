@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/InterlacedFUker.hh
 //
 // created       julien quintard   [tue jul 26 15:33:15 2011]
-// updated       julien quintard   [wed jul 27 08:19:36 2011]
+// updated       julien quintard   [thu sep  1 16:15:11 2011]
 //
 
 #ifndef PIG_INTERLACEDFUKER_HH
@@ -66,7 +66,7 @@ namespace pig
     //
     // callbacks
     //
-    elle::Status	Event(const elle::Natural16&);
+    elle::Status	Event(elle::Natural16);
 
     //
     // attributes

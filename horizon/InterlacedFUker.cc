@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/InterlacedFUker.cc
 //
 // created       julien quintard   [tue jul 26 15:33:54 2011]
-// updated       julien quintard   [thu jul 28 14:35:44 2011]
+// updated       julien quintard   [thu sep  1 16:15:16 2011]
 //
 
 //
@@ -129,7 +129,7 @@ namespace pig
     // \todo XXX make it multi-thredable.
     //
     {
-      int			multithreaded;
+      int		multithreaded;
 
       // setup fuse.
       if ((this->fuse = ::fuse_setup(
@@ -162,9 +162,11 @@ namespace pig
       elle::Callback<
 	elle::Status,
 	elle::Parameters<
-	  const elle::Natural16> >	callback(&InterlacedFUker::Event,
-						 this);
-      int				fd;
+	  elle::Natural16
+	  >
+	>		callback(&InterlacedFUker::Event,
+				 this);
+      int		fd;
 
       // retrieve the file descriptor.
       fd = ::fuse_chan_fd(this->channel);
@@ -193,7 +195,7 @@ namespace pig
   /// this callback is triggered whenever data is available on the
   /// FUSE socket.
   ///
-  elle::Status		InterlacedFUker::Event(const elle::Natural16&)
+  elle::Status		InterlacedFUker::Event(elle::Natural16)
   {
     struct ::fuse_chan*	channel = this->channel;
     char*		buffer;
