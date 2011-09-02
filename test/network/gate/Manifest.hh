@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/gate/Manifest.hh
 //
 // created       julien quintard   [tue feb 23 21:40:13 2010]
-// updated       julien quintard   [tue jun  7 08:12:14 2011]
+// updated       julien quintard   [fri sep  2 10:45:11 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_GATE_MANIFEST_HH
@@ -47,8 +47,8 @@ namespace elle
 //
 
 outward(elle::test::TagChallenge,
-	parameters(elle::core::String));
+	parameters(elle::core::String&));
 inward(elle::test::TagResponse,
-       parameters(elle::core::String));
+       parameters(elle::core::String&));
 
 #endif

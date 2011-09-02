@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.cc
 //
 // created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [tue jul 26 20:38:04 2011]
+// updated       julien quintard   [thu sep  1 16:12:10 2011]
 //
 
 //
@@ -36,7 +36,7 @@ namespace elle
     Broker::Broker(const Natural16				descriptor,
 		   const Callback<
 		     Status,
-		     Parameters<const Natural16> >&		callback):
+		     Parameters<Natural16> >&			callback):
       descriptor(descriptor),
       callback(callback),
       notifier(descriptor, ::QSocketNotifier::Read)

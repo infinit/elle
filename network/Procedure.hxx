@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hxx
 //
 // created       julien quintard   [mon jul 18 17:40:44 2011]
-// updated       julien quintard   [wed aug 31 17:14:16 2011]
+// updated       julien quintard   [fri sep  2 11:29:14 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
@@ -104,7 +104,7 @@ namespace elle
     {
       Callback<
 	Status,
-	typename Trait::Bare<
+	typename Trait::Reference<
 	  typename Message<I>::P
 	  >::Type
 	>		extract(&Archive::Extract, &archive);

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.cc
 //
 // created       julien quintard   [wed mar 17 13:23:40 2010]
-// updated       julien quintard   [thu aug 25 11:41:22 2011]
+// updated       julien quintard   [fri sep  2 12:40:55 2011]
 //
 
 //
@@ -300,7 +300,7 @@ namespace elle
 				    Inputs<TagProbe>(this->node->name,
 						     this->node->table)) ==
 	      StatusError)
-	    escape("unable to send a probe");
+	      escape("unable to send a probe");
 	}
 
       leave();

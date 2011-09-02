@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Client.cc
 //
 // created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [tue jul 19 16:51:19 2011]
+// updated       julien quintard   [fri sep  2 12:31:50 2011]
 //
 
 //
@@ -45,8 +45,7 @@ namespace elle
     Status		Client::Run()
     {
       Callback< Status,
-		Parameters<const String,
-			   String> >		challenge(&Client::Challenge,
+		Parameters<const String&> >	challenge(&Client::Challenge,
 							  this);
 
       enter();
@@ -55,8 +54,7 @@ namespace elle
 
       // register the message.
       if (Network::Register(
-	    Procedure<TagChallenge,
-		      TagResponse>(challenge)) == StatusError)
+	    Procedure<TagChallenge>(challenge)) == StatusError)
 	escape("unable to register the challenge message");
 
       // create the door.
@@ -77,16 +75,19 @@ namespace elle
     ///
     /// this method handles messages.
     ///
-    Status		Client::Challenge(const String&		text,
-					  String&		response)
+    Status		Client::Challenge(const String&		text)
     {
+      String		response("RESPONSE");
+
       enter();
 
       // simply display the text.
       std::cout << "[Challenge] " << text << std::endl;
 
-      // assign the response.
-      response.assign("RESPONSE");
+      // reply.
+      if (this->door.Reply(
+	    Inputs<TagResponse>(response)) == StatusError)
+	escape("unable to return the response");
 
       leave();
     }

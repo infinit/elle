@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.hh
 //
 // created       julien quintard   [sun oct 28 19:12:38 2007]
-// updated       julien quintard   [wed jul 27 09:25:25 2011]
+// updated       julien quintard   [thu sep  1 16:33:58 2011]
 //
 
 #ifndef ELLE_STANDALONE_REPORT_HH
@@ -152,8 +152,8 @@ namespace elle
 
       static Status	Instance(Report*&);
 
-      static Status	Govern(const Phase&,
-			       Fiber*&);
+      static Status	Govern(const Phase,
+			       Fiber*);
 
       //
       // static attributes

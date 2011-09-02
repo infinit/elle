@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [thu aug 25 11:35:02 2011]
+// updated       julien quintard   [thu sep  1 16:03:50 2011]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH
@@ -70,8 +70,8 @@ namespace elle
       static Status	Assign(Session*);
       static Status	Clear();
 
-      static Status	Govern(const Phase&,
-			       Fiber*&);
+      static Status	Govern(Phase,
+			       Fiber*);
 
       //
       // static attributes

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hh
 //
 // created       julien quintard   [fri jun  3 22:23:13 2011]
-// updated       julien quintard   [tue jul 19 13:42:15 2011]
+// updated       julien quintard   [fri sep  2 12:23:52 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HH
@@ -22,6 +22,7 @@
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Arguments.hh>
 #include <elle/radix/Variables.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/network/Tag.hh>
 #include <elle/network/Message.hh>
@@ -58,7 +59,7 @@ namespace elle
       ///
       template <const Tag G,
 		typename... T>
-      class Inputs< G, Parameters<const T...> >:
+      class Inputs< G, Parameters<T...> >:
 	public Entity,
 	public virtual Archivable
       {

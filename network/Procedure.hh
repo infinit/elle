@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hh
 //
 // created       julien quintard   [fri jul 15 11:55:49 2011]
-// updated       julien quintard   [wed aug 31 17:14:18 2011]
+// updated       julien quintard   [thu sep  1 17:03:30 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HH

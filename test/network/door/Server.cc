@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [mon jul 18 09:37:57 2011]
+// updated       julien quintard   [fri sep  2 12:37:17 2011]
 //
 
 //
@@ -65,7 +65,7 @@ namespace elle
     ///
     /// this method handles new connections.
     ///
-    Status		Server::Connection(Door*&		door)
+    Status		Server::Connection(Door*		door)
     {
       String		challenge("CHALLENGE");
       String		response;
