@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [fri sep  2 13:04:39 2011]
+// updated       julien quintard   [sat sep  3 09:02:27 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
@@ -85,7 +85,7 @@ namespace hole
 	  TagBlock,
 	  TagWipe,
 
-	  TagError
+	  TagException
 	};
 
     }
@@ -118,7 +118,7 @@ message(hole::implementations::remote::TagBlock,
 message(hole::implementations::remote::TagWipe,
 	parameters(nucleus::Address&));
 
-message(hole::implementations::remote::TagError,
+message(hole::implementations::remote::TagException,
 	parameters(elle::Report&));
 
 #endif

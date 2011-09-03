@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [thu sep  1 16:29:18 2011]
+// updated       julien quintard   [sat sep  3 09:56:42 2011]
 //
 
 //
@@ -68,36 +68,25 @@ namespace hole
 	// register the messages.
 	//
 	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<>
-	    >				challenge(&Client::Challenge, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<>
-	    >				authenticated(&Client::Authenticated,
-						      this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const elle::Report&
-	      >
-	    >				error(&Client::Error, this);
-
 	  // register the challenge message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagChallenge>(challenge)) == elle::StatusError)
+	        elle::Procedure<TagChallenge>(
+		  elle::Callback<>::Infer(
+		    &Client::Challenge, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the challenge message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagAuthenticated>(authenticated)) ==
-	      elle::StatusError)
+	        elle::Procedure<TagAuthenticated>(
+		  elle::Callback<>::Infer(
+		    &Client::Authenticated, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the challenge message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagError>(error)) == elle::StatusError)
+	        elle::Procedure<TagException>(
+		  elle::Callback<>::Infer(
+		    &Client::Exception, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -105,21 +94,30 @@ namespace hole
 	// connect to the server.
 	//
 	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<>
-	    >				monitor(&Client::Monitor, this);
-
 	  // allocate the gate.
 	  this->gate = new elle::Gate;
-
-	  // register the error callback.
-	  if (this->gate->Monitor(monitor) == elle::StatusError)
-	    escape("unable to monitor the connection");
 
 	  // create the gate.
 	  if (this->gate->Create() == elle::StatusError)
 	    escape("unable to create the gate");
+
+	  // subscribe to the signal.
+	  if (this->gate->signal.connected.Subscribe(
+	        elle::Callback<>::Infer(&Client::Connected,
+					this)) == elle::StatusError)
+	    escape("unable to subscribe to the signal");
+
+	  // subscribe to the signal.
+	  if (this->gate->signal.disconnected.Subscribe(
+	        elle::Callback<>::Infer(&Client::Disconnected,
+					this)) == elle::StatusError)
+	    escape("unable to subscribe to the signal");
+
+	  // subscribe to the signal.
+	  if (this->gate->signal.error.Subscribe(
+	        elle::Callback<>::Infer(&Client::Error,
+					this)) == elle::StatusError)
+	    escape("unable to subscribe to the signal");
 
 	  // connect the gate.
 	  if (this->gate->Connect(this->point,
@@ -275,6 +273,105 @@ namespace hole
 //
 
       ///
+      /// XXX
+      ///
+      elle::Status	Client::Connected()
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Connected()"
+		    << std::endl;
+
+	// set the client as connected.
+	this->state = Client::StateConnected;
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Client::Disconnected()
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Disconnected()"
+		    << std::endl;
+
+	// delete the gate.
+	delete this->gate;
+
+	// reset the gate.
+	this->gate = NULL;
+
+	// exit if the connection was shut down.
+	if ((this->state == Client::StateConnected) ||
+	    (this->state == Client::StateAuthenticated))
+	  {
+	    // exit the program.
+	    if (elle::Program::Exit() == elle::StatusError)
+	      escape("unable to exit the program");
+
+	    // report the cause.
+	    report("the connection with the server has been shut down");
+
+	    // show the report.
+	    show();
+	  }
+
+	// set the client as unknown.
+	this->state = Client::StateUnknown;
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Client::Error(const elle::String&	cause)
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Client::Error()"
+		    << std::endl;
+
+	// log the cause.
+	log(cause.c_str());
+
+	// delete the gate.
+	delete this->gate;
+
+	// reset the gate.
+	this->gate = NULL;
+
+	// exit if the connection was shut down.
+	if ((this->state == Client::StateConnected) ||
+	    (this->state == Client::StateAuthenticated))
+	  {
+	    // exit the program.
+	    if (elle::Program::Exit() == elle::StatusError)
+	      escape("unable to exit the program");
+
+	    // report the cause.
+	    report("the connection with the server has been shut down");
+
+	    // show the report.
+	    show();
+	  }
+
+	// set the client as unknown.
+	this->state = Client::StateUnknown;
+
+	leave();
+      }
+
+      ///
       /// this callback is triggered whenever the client is challenged
       /// by the server.
       ///
@@ -317,13 +414,13 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Client::Error(const elle::Report&	report)
+      elle::Status	Client::Exception(const elle::Report&	report)
       {
 	enter();
 
 	// debug.
 	if (Infinit::Configuration.debug.hole == true)
-	  std::cout << "[hole] Client::Error()"
+	  std::cout << "[hole] Client::Exception()"
 		    << std::endl;
 
 	// transpose the given report.
@@ -338,68 +435,6 @@ namespace hole
 	// exit the program.
 	if (elle::Program::Exit() == elle::StatusError)
 	  escape("unable to exit the program");
-
-	leave();
-      }
-
-      ///
-      /// this callback is triggered whenever something unexpected
-      /// occurs on the connection.
-      ///
-      elle::Status	Client::Monitor()
-      {
-	enter();
-
-	// debug.
-	if (Infinit::Configuration.debug.hole == true)
-	  std::cout << "[hole] Client::Monitor()"
-		    << std::endl;
-
-	// operate depending on the socket state.
-	switch (this->gate->state)
-	  {
-	  case elle::Channel::StateDisconnected:
-	    {
-	      // delete the gate.
-	      delete this->gate;
-
-	      // reset the gate.
-	      this->gate = NULL;
-
-	      // exit if the connection was shut down.
-	      if ((this->state == Client::StateConnected) ||
-		  (this->state == Client::StateAuthenticated))
-		{
-		  // exit the program.
-		  if (elle::Program::Exit() == elle::StatusError)
-		    escape("unable to exit the program");
-
-		  // report the cause.
-		  report("the connection with the server has been shut down");
-
-		  // show the report.
-		  show();
-		}
-
-	      // set the client as unknown.
-	      this->state = Client::StateUnknown;
-
-	      break;
-	    }
-	  case elle::Channel::StateConnected:
-	    {
-	      // set the client as connected.
-	      this->state = Client::StateConnected;
-
-	      break;
-	    }
-	  default:
-	    {
-	      // nothing to do.
-
-	      break;
-	    }
-	  }
 
 	leave();
       }

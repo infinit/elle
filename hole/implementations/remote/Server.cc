@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [fri sep  2 13:07:15 2011]
+// updated       julien quintard   [sat sep  3 09:49:14 2011]
 //
 
 //
@@ -80,59 +80,40 @@ namespace hole
 	// register the messages.
 	//
 	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const lune::Passport&
-	      >
-	    >				response(&Server::Response, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const nucleus::Address&,
-	      const nucleus::Derivable<nucleus::Block>&
-	      >
-	    >				push(&Server::Push, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const nucleus::Address&,
-	      const nucleus::Version&
-	      >
-	    >				pull(&Server::Pull, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const nucleus::Address&
-	      >
-	    >				wipe(&Server::Wipe, this);
-
 	  // register the response message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagResponse,
 				elle::TagNone,
-				TagError>(response)) == elle::StatusError)
+				TagException>(
+		  elle::Callback<>::Infer(
+		    &Server::Response, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the push message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagPush,
 				elle::TagNone,
-				TagError>(push)) == elle::StatusError)
+				TagException>(
+		  elle::Callback<>::Infer(
+		    &Server::Push, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the pull message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagPull,
 				elle::TagNone,
-				TagError>(pull)) == elle::StatusError)
+				TagException>(
+		  elle::Callback<>::Infer(
+		    &Server::Pull, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the wipe message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagWipe,
 				elle::TagNone,
-				TagError>(wipe)) == elle::StatusError)
+				TagException>(
+		  elle::Callback<>::Infer(
+		    &Server::Wipe, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -140,16 +121,11 @@ namespace hole
 	// create the connection.
 	//
 	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      elle::Gate*
-	    >
-	  >				connection(&Server::Connection, this);
-
 	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(this->point,
-				   connection) == elle::StatusError)
+	  if (elle::Bridge::Listen(
+		this->point,
+	        elle::Callback<>::Infer(
+		  &Server::Connection, this)) == elle::StatusError)
 	    escape("unable to listen for bridge connections");
 	}
 

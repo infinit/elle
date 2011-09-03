@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...hole/implementations/cirkle/Neighbour.cc
 //
 // created       julien quintard   [wed aug 24 13:12:46 2011]
-// updated       julien quintard   [thu sep  1 11:26:01 2011]
+// updated       julien quintard   [fri sep  2 23:40:24 2011]
 //
 
 //
@@ -73,11 +73,6 @@ namespace hole
       ///
       elle::Status	Neighbour::Create(const elle::Point&	point)
       {
-	elle::Callback<
-	  elle::Status,
-	  elle::Parameters<>
-	  >		callback(&Neighbour::Discard, this);
-
 	enter();
 
 	// set the point.
@@ -87,9 +82,14 @@ namespace hole
 	this->timer = new elle::Timer;
 
 	// create the timer.
-	if (this->timer->Create(elle::Timer::ModeSingle,
-				callback) == elle::StatusError)
+	if (this->timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
 	  escape("unable to create the timer");
+
+	// subscribe to the timer's signal.
+	if (this->timer->signal.timeout.Subscribe(
+	      elle::Callback<>::Infer(&Neighbour::Discard,
+				      this)) == elle::StatusError)
+	  escape("unable to subscribe to the signal");
 
 	// start the timer.
 	if (this->timer->Start(Neighbour::Timeout) == elle::StatusError)

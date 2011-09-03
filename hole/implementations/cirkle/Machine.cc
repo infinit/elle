@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Machine.cc
 //
 // created       julien quintard   [wed aug 31 15:04:40 2011]
-// updated       julien quintard   [thu sep  1 11:03:24 2011]
+// updated       julien quintard   [fri sep  2 23:43:28 2011]
 //
 
 //
@@ -74,58 +74,39 @@ namespace hole
 	// register the messages.
 	//
 	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<>
-	    >				challenge(&Machine::Challenge, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const lune::Passport
-	      >
-	    >				passport(&Machine::Passport, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const elle::Port
-	      >
-	    >				port(&Machine::Port, this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<>
-	    >				authenticated(&Machine::Authenticated,
-						      this);
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      const Cluster
-	      >
-	    >				update(&Machine::Update, this);
-
 	  // register the message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagChallenge>(challenge)) == elle::StatusError)
+	        elle::Procedure<TagChallenge>(
+		  elle::Callback<>::Infer(
+		    &Machine::Challenge, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagPassport>(passport)) == elle::StatusError)
+	        elle::Procedure<TagPassport>(
+		  elle::Callback<>::Infer(
+		    &Machine::Passport, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagPort>(port)) == elle::StatusError)
+	        elle::Procedure<TagPort>(
+		  elle::Callback<>::Infer(
+		    &Machine::Port, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagAuthenticated>(authenticated)) ==
-	      elle::StatusError)
+	        elle::Procedure<TagAuthenticated>(
+		  elle::Callback<>::Infer(
+		    &Machine::Authenticated, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagUpdate>(update)) == elle::StatusError)
+	        elle::Procedure<TagUpdate>(
+		  elle::Callback<>::Infer(
+		    &Machine::Update, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -196,12 +177,6 @@ namespace hole
 	// listen for incoming connections
 	//
 	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      elle::Gate*
-	      >
-	    >				connection(&Machine::Connection, this);
 	  elle::Point			point;
 	  elle::Host			host;
 
@@ -214,7 +189,10 @@ namespace hole
 	    escape("unable to create the point");
 
 	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(point, connection) == elle::StatusError)
+	  if (elle::Bridge::Listen(point,
+				   elle::Callback<>::Infer(
+				     &Machine::Connection, this)) ==
+	      elle::StatusError)
 	    escape("unable to listen for bridge connections");
 	}
 
@@ -222,15 +200,16 @@ namespace hole
 	// set up the gossip timer.
 	//
 	{
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<>
-	    >				gossip(&Machine::Gossip, this);
-
 	  // create the timer.
-	  if (this->timer.Create(elle::Timer::ModeRepetition,
-				 gossip) == elle::StatusError)
+	  if (this->timer.Create(elle::Timer::ModeRepetition) ==
+	      elle::StatusError)
 	    escape("unable to create the timer");
+
+	  // subscribe to the timer's signal.
+	  if (this->timer->signal.timeout.Subscribe(
+	        elle::Callback<>::Infer(&Machine::Gossip,
+					this)) == elle::StatusError)
+	    escape("unable to subscribe to the signal");
 
 	  // start the timer.
 	  if (this->timer.Start(Machine::Frequency) == elle::StatusError)
@@ -396,7 +375,7 @@ namespace hole
       ///
       /// this method handles new connections.
       ///
-      elle::Status	Machine::Connection(elle::Gate*&		gate)
+      elle::Status	Machine::Connection(elle::Gate*			gate)
       {
 	Neighbour*	neighbour;
 

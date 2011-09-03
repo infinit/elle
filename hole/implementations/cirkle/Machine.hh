@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/cirkle/Machine.hh
 //
 // created       julien quintard   [wed aug 31 15:05:39 2011]
-// updated       julien quintard   [thu sep  1 10:31:55 2011]
+// updated       julien quintard   [fri sep  2 23:43:17 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MACHINE_HH
@@ -87,7 +87,7 @@ namespace hole
 	//
 	// callbacks
 	//
-	elle::Status		Connection(elle::Gate*&);
+	elle::Status		Connection(elle::Gate*);
 
 	elle::Status		Challenge();
 	elle::Status		Passport(const lune::Passport&);

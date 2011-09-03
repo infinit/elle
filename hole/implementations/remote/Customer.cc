@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Customer.cc
 //
 // created       julien quintard   [sun aug 28 17:53:05 2011]
-// updated       julien quintard   [fri sep  2 13:57:09 2011]
+// updated       julien quintard   [sat sep  3 09:57:56 2011]
 //
 
 //
@@ -17,6 +17,8 @@
 
 #include <hole/implementations/remote/Customer.hh>
 #include <hole/implementations/remote/Remote.hh>
+
+#include <Infinit.hh>
 
 namespace hole
 {
@@ -71,31 +73,35 @@ namespace hole
       ///
       elle::Status	Customer::Create(elle::Gate*		gate)
       {
-	elle::Callback<
-	  elle::Status,
-	  elle::Parameters<>
-	>				monitor(&Customer::Monitor, this);
-	elle::Callback<
-	  elle::Status,
-	  elle::Parameters<>
-	>				abort(&Customer::Abort, this);
-
 	enter();
 
 	// register the client.
 	this->gate = gate;
 
-	// register the error callback.
-	if (this->gate->Monitor(monitor) == elle::StatusError)
-	  escape("unable to monitor the connection");
+	// subscribe to the signal.
+	if (this->gate->signal.disconnected.Subscribe(
+	      elle::Callback<>::Infer(&Customer::Disconnected,
+				      this)) == elle::StatusError)
+	  escape("unable to subscribe to the signal");
+
+	// subscribe to the signal.
+	if (this->gate->signal.error.Subscribe(
+	      elle::Callback<>::Infer(&Customer::Error,
+				      this)) == elle::StatusError)
+	  escape("unable to subscribe to the signal");
 
 	// allocate a new timer.
 	this->timer = new elle::Timer;
 
 	// create the timer.
-	if (this->timer->Create(elle::Timer::ModeSingle,
-				abort) == elle::StatusError)
+	if (this->timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
 	  escape("unable to create the timer");
+
+	// subscribe to the timer's signal.
+	if (this->timer->signal.timeout.Subscribe(
+	      elle::Callback<>::Infer(&Customer::Abort,
+				      this)) == elle::StatusError)
+	  escape("unable to subscribe to the signal");
 
 	// start the timer.
 	if (this->timer->Start(Customer::Timeout) == elle::StatusError)
@@ -111,57 +117,78 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Customer::Abort()
+      elle::Status	Customer::Disconnected()
       {
 	enter();
 
-	// check if the customer has been authenticated.
-	if (this->state == Customer::StateAuthenticated)
-	  {
-	    // delete the timer.
-	    delete this->timer;
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Customer::Disconnected()"
+		    << std::endl;
 
-	    // reset the pointer.
-	    this->timer = NULL;
-	  }
-	else
-	  {
-	    // reset the state.
-	    this->state = Customer::StateUnknown;
+	// emit the signal.
+	if (this->signal.dead.Emit(this) == elle::StatusError)
+	  escape("unable to emit the signal");
 
-	    // remove the customer from the server.
+	    /* XXX upon reception
+	// remove the customer from the server.
 	    if (Remote::Computer->server->Remove(this->gate) ==
 		elle::StatusError)
 	      escape("unable to remove the customer");
 
 	    // bury the customer.
 	    bury(this);
-	  }
+	    */
 
 	leave();
       }
 
       ///
-      /// this callback is triggered whenever something unexpected occurs
-      /// on the connection.
+      /// XXX
       ///
-      elle::Status	Customer::Monitor()
+      elle::Status	Customer::Error(const elle::String&	cause)
       {
 	enter();
 
-	// if the customer's connection has been shut down...
-	if (this->gate->state == elle::Channel::StateDisconnected)
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Customer::Error()"
+		    << std::endl;
+
+	// log the cause.
+	log(cause.c_str());
+
+	// emit the signal.
+	if (this->signal.dead.Emit(this) == elle::StatusError)
+	  escape("unable to emit the signal");
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Customer::Abort()
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.debug.hole == true)
+	  std::cout << "[hole] Customer::Abort()"
+		    << std::endl;
+
+	// delete the timer.
+	delete this->timer;
+
+	// reset the pointer.
+	this->timer = NULL;
+
+	// check if the customer has been authenticated.
+	if (this->state != Customer::StateAuthenticated)
 	  {
-	    // reset the state.
-	    this->state = Customer::StateUnknown;
-
-	    // remove the customer from the server.
-	    if (Remote::Computer->server->Remove(this->gate) ==
-		elle::StatusError)
-	      escape("unable to remove the customer");
-
-	    // bury the customer.
-	    bury(this);
+	    // emit the signal.
+	    if (this->signal.dead.Emit(this) == elle::StatusError)
+	      escape("unable to emit the signal");
 	  }
 
 	leave();
