@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Shrub.cc
 //
 // created       julien quintard   [sat aug  6 17:48:20 2011]
-// updated       julien quintard   [thu aug 11 12:44:58 2011]
+// updated       julien quintard   [fri sep  2 20:29:04 2011]
 //
 
 //
@@ -57,15 +57,17 @@ namespace etoile
     ///
     elle::Status	Shrub::Initialize()
     {
-      elle::Callback< elle::Status,
-		      elle::Parameters<> >	callback(&Shrub::Sweeper);
-
       enter();
 
       // create the sweeper timer.
-      if (Shrub::Timer.Create(elle::Timer::ModeRepetition,
-			      callback) == elle::StatusError)
+      if (Shrub::Timer.Create(elle::Timer::ModeRepetition) ==
+	  elle::StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (Shrub::Timer.signal.timeout.Subscribe(
+	    elle::Callback<>::Infer(&Shrub::Sweeper)) == elle::StatusError)
+	escape("unable to subscribe to the signal");
 
       // start the timer.
       if (Shrub::Timer.Start(Infinit::Configuration.shrub.frequence) ==
