@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Closure.hxx
 //
 // created       julien quintard   [thu mar 25 11:55:10 2010]
-// updated       julien quintard   [fri sep  2 19:31:25 2011]
+// updated       julien quintard   [sat sep  3 14:34:57 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HXX

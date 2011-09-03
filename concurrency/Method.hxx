@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [thu sep  1 14:20:36 2011]
+// updated       julien quintard   [sat sep  3 14:52:27 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HXX

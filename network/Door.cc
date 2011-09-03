@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sat sep  3 08:41:52 2011]
+// updated       julien quintard   [sat sep  3 11:16:04 2011]
 //
 
 //
@@ -175,6 +175,9 @@ namespace elle
       // start the timer.
       if (this->timer->Start(Door::Timeout) == StatusError)
 	escape("unable to start the timer");
+
+      // set the state.
+      this->state = Channel::StateConnecting;
 
       // connect the socket to the server.
       this->socket->connectToServer(name.c_str());
@@ -581,6 +584,9 @@ namespace elle
 
       enter();
 
+      // set the state.
+      this->state = Channel::StateConnected;
+
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
 	alert(_(), "unable to spawn a fiber");
@@ -601,6 +607,9 @@ namespace elle
 						  &this->signal.disconnected));
 
       enter();
+
+      // set the state.
+      this->state = Channel::StateDisconnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
