@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [sat sep  3 09:56:42 2011]
+// updated       julien quintard   [sat sep  3 15:12:37 2011]
 //
 
 //
@@ -302,29 +302,20 @@ namespace hole
 	  std::cout << "[hole] Client::Disconnected()"
 		    << std::endl;
 
-	// delete the gate.
-	delete this->gate;
-
-	// reset the gate.
-	this->gate = NULL;
-
 	// exit if the connection was shut down.
 	if ((this->state == Client::StateConnected) ||
 	    (this->state == Client::StateAuthenticated))
 	  {
-	    // exit the program.
-	    if (elle::Program::Exit() == elle::StatusError)
-	      escape("unable to exit the program");
-
 	    // report the cause.
 	    report("the connection with the server has been shut down");
 
 	    // show the report.
 	    show();
-	  }
 
-	// set the client as unknown.
-	this->state = Client::StateUnknown;
+	    // exit the program.
+	    if (elle::Program::Exit() == elle::StatusError)
+	      escape("unable to exit the program");
+	  }
 
 	leave();
       }
@@ -332,7 +323,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Client::Error(const elle::String&	cause)
+      elle::Status	Client::Error(const elle::String&)
       {
 	enter();
 
@@ -341,32 +332,8 @@ namespace hole
 	  std::cout << "[hole] Client::Error()"
 		    << std::endl;
 
-	// log the cause.
-	log(cause.c_str());
-
-	// delete the gate.
-	delete this->gate;
-
-	// reset the gate.
-	this->gate = NULL;
-
-	// exit if the connection was shut down.
-	if ((this->state == Client::StateConnected) ||
-	    (this->state == Client::StateAuthenticated))
-	  {
-	    // exit the program.
-	    if (elle::Program::Exit() == elle::StatusError)
-	      escape("unable to exit the program");
-
-	    // report the cause.
-	    report("the connection with the server has been shut down");
-
-	    // show the report.
-	    show();
-	  }
-
-	// set the client as unknown.
-	this->state = Client::StateUnknown;
+	// disconnect the gate, though that may be unecessary.
+	this->gate->Disconnect();
 
 	leave();
       }
