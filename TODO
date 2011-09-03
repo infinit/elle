@@ -1,3 +1,8 @@
+- ajouter un truc adns le constr Signal: Post ou Send
+ -> pour ca il faut pouvoir delay les events: avec SendEvents/PostEvents
+  => simplement via un Timer(0) que l'on cree si signal Send et qu'on
+     start quand on emit: Call()
+
 - utiliser infer a la place des callbacks.
 - mettre des signaux sur les sockets
 
