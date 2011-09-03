@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/InterlacedFUker.cc
 //
 // created       julien quintard   [tue jul 26 15:33:54 2011]
-// updated       julien quintard   [thu sep  1 16:15:16 2011]
+// updated       julien quintard   [fri sep  2 21:14:45 2011]
 //
 
 //
@@ -159,13 +159,6 @@ namespace pig
     // create the FUSE event broker.
     //
     {
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  elle::Natural16
-	  >
-	>		callback(&InterlacedFUker::Event,
-				 this);
       int		fd;
 
       // retrieve the file descriptor.
@@ -173,7 +166,13 @@ namespace pig
 
       // allocate the FUSE event broker.
       this->broker =
-	new elle::Broker((elle::Natural16)fd, callback);
+	new elle::Broker((elle::Natural16)fd);
+
+      // subscribe to the timer's signal.
+      if (this->broker->signal.ready.Subscribe(
+	    elle::Callback<>::Infer(&InterlacedFUker::Event,
+				    this)) == elle::StatusError)
+	escape("unable to subscribe to the signal");
 
       // activate the broker.
       if (this->broker->Activate() == elle::StatusError)

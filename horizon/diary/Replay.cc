@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Replay.cc
 //
 // created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [wed aug  3 20:36:30 2011]
+// updated       julien quintard   [fri sep  2 23:46:02 2011]
 //
 
 //
@@ -1233,11 +1233,6 @@ namespace pig
     elle::Status	Replay::Launch(const elle::Natural32	from,
 				       const elle::Natural32	to)
     {
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<>
-	>		callback(&Replay::Process);
-
       enter();
 
       // set the boundaries.
@@ -1248,9 +1243,13 @@ namespace pig
       Replay::Timer = new elle::Timer;
 
       // create the timer which will start the replaying process.
-      if (Replay::Timer->Create(elle::Timer::ModeSingle,
-				callback) == elle::StatusError)
+      if (Replay::Timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (Replay::Timer->signal.timeout.Subscribe(
+	    elle::Callback<>::Infer(&Replay::Process)) == elle::StatusError)
+	escape("unable to subscribe to the signal");
 
       // start the timer.
       //
