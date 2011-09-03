@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [thu sep  1 16:36:49 2011]
+// updated       julien quintard   [fri sep  2 18:08:46 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -189,9 +189,10 @@ namespace elle
       static Status	Sleep(const Natural32);
 
       static Status	Register(const
-				 Callback<
-				   Status,
-				   Parameters<Phase, Fiber*> >);
+				   Callback<
+				     Status,
+				     Parameters<Phase, Fiber*>
+				     >);
       static Status	Trigger(Phase);
 
       static Status	Schedule();

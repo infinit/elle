@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [thu sep  1 16:04:04 2011]
+// updated       julien quintard   [sat sep  3 08:03:59 2011]
 //
 
 //
@@ -110,7 +110,7 @@ namespace elle
     /// this method initializes, saves, restores and cleans the session
     /// for the given fiber.
     ///
-    Status		Session::Govern(Phase			phase,
+    Status		Session::Govern(const Phase		phase,
 					Fiber*			fiber)
     {
       enter();

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/door/Server.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [fri sep  2 12:37:17 2011]
+// updated       julien quintard   [fri sep  2 20:41:24 2011]
 //
 
 //
@@ -44,15 +44,14 @@ namespace elle
     ///
     Status		Server::Run()
     {
-      Callback< Status,
-		Parameters<Door*> >	connection(&Server::Connection, this);
-
       enter();
 
       std::cout << "[lane] " << line << std::endl;
 
       // listen for incoming connections.
-      if (Lane::Listen(this->line, connection) == StatusError)
+      if (Lane::Listen(this->line,
+		       Callback<>::Infer(&Server::Connection,
+					 this)) == StatusError)
 	escape("unable to listen for lane connections");
 
       leave();

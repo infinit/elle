@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [thu sep  1 14:32:33 2011]
+// updated       julien quintard   [fri sep  2 19:55:34 2011]
 //
 
 //
@@ -76,10 +76,8 @@ namespace elle
     ///
     Status		Fiber3()
     {
-      Callback< Status,
-		Parameters<> >	fiber4(&Fiber4);
       Closure< Status,
-	       Parameters<> >	closure(fiber4);
+	       Parameters<> >	closure(Callback<>::Infer(&Fiber4));
 
       enter();
 
@@ -180,13 +178,6 @@ namespace elle
     Status		Main(const Natural32,
 			     const Character*[])
     {
-      Callback< Status,
-		Parameters<> >	fiber1(&Fiber1);
-      Callback< Status,
-		Parameters<> >	fiber2(&Fiber2);
-      Callback< Status,
-		Parameters<> >	fiber3(&Fiber3);
-
       enter();
 
       // initialize the library.
@@ -198,24 +189,39 @@ namespace elle
 	escape("unable to set up the program");
 
       // create the timer1.
-      if (Test::Timer1.Create(Timer::ModeSingle, fiber1) == StatusError)
+      if (Test::Timer1.Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (Test::Timer1.signal.timeout.Subscribe(
+	    Callback<>::Infer(&Fiber1)) == StatusError)
+	escape("unable to subscribe to the signal");
 
       // start the timer1, launching the fiber1.
       if (Test::Timer1.Start(100) == StatusError)
 	escape("unable to start the timer");
 
       // create the timer2.
-      if (Test::Timer2.Create(Timer::ModeSingle, fiber2) == StatusError)
+      if (Test::Timer2.Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (Test::Timer2.signal.timeout.Subscribe(
+	    Callback<>::Infer(&Fiber2)) == StatusError)
+	escape("unable to subscribe to the signal");
 
       // start the timer2, launching the fiber2.
       if (Test::Timer2.Start(1000) == StatusError)
 	escape("unable to start the timer");
 
       // create the timer3.
-      if (Test::Timer3.Create(Timer::ModeSingle, fiber3) == StatusError)
+      if (Test::Timer3.Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (Test::Timer3.signal.timeout.Subscribe(
+	    Callback<>::Infer(&Fiber3)) == StatusError)
+	escape("unable to subscribe to the signal");
 
       // start the timer3, launching the fiber3.
       if (Test::Timer3.Start(10000) == StatusError)

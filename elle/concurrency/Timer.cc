@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [mon jul 18 11:28:38 2011]
+// updated       julien quintard   [fri sep  2 22:11:34 2011]
 //
 
 //
@@ -43,9 +43,12 @@ namespace elle
     ///
     Timer::~Timer()
     {
-      // delete the timer, if present.
+      // stop and delete the timer, if present.
       if (this->timer != NULL)
-	this->timer->deleteLater();
+	{
+	  this->timer->stop();
+	  this->timer->deleteLater();
+	}
     }
 
 //
@@ -55,11 +58,7 @@ namespace elle
     ///
     /// this method sets up the timer by recording the callback.
     ///
-    Status		Timer::Create(const Mode		mode,
-				      const
-				        Callback<
-					  Status,
-					  Parameters<> >&	callback)
+    Status		Timer::Create(const Mode		mode)
     {
       enter();
 
@@ -72,9 +71,6 @@ namespace elle
       // set the timer mode.
       if (this->mode == Timer::ModeSingle)
 	this->timer->setSingleShot(true);
-
-      // set the callback.
-      this->callback = callback;
 
       // connect the signal.
       if (this->connect(this->timer, SIGNAL(timeout()),
@@ -135,9 +131,9 @@ namespace elle
     {
       enter();
 
-      // trigger the callback.
-      if (this->callback.Call() == StatusError)
-	escape("an error occured while spawning the fiber");
+      // emit the signal.
+      if (this->signal.timeout.Emit() == StatusError)
+	escape("unable to emit the signal");
 
       leave();
     }
@@ -161,13 +157,13 @@ namespace elle
       std::cout << alignment << Dumpable::Shift << "[Mode] "
 		<< (const Natural8)this->mode << std::endl;
 
-      // dump the callback.
-      if (this->callback.Dump(margin + 2) == StatusError)
-	escape("unable to dump the callback");
-
       // dump the interval.
       std::cout << alignment << Dumpable::Shift << "[Interval] "
 		<< (const Natural32)this->timer->interval() << std::endl;
+
+      // dump the signal.
+      if (this->signal.timeout.Dump(margin + 2) == StatusError)
+	escape("unable to dump the signal");
 
       leave();
     }
@@ -181,10 +177,9 @@ namespace elle
     ///
     void		Timer::_timeout()
     {
-      Callback< Status,
-		Parameters<> >	callback(&Timer::Timeout, this);
       Closure< Status,
-	       Parameters<> >	closure(callback);
+	       Parameters<> >	closure(Callback<>::Infer(&Timer::Timeout,
+							  this));
 
       enter();
 

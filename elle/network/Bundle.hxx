@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hxx
 //
 // created       julien quintard   [fri jun  3 22:22:21 2011]
-// updated       julien quintard   [fri sep  2 12:25:30 2011]
+// updated       julien quintard   [fri sep  2 22:12:55 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HXX
@@ -83,7 +83,7 @@ namespace elle
 	    typename Message<G>::P
 	    >::Type
 	  >::Type
-	>	callback(&Archive::Serialize, &archive);
+	>		callback(&Archive::Serialize, &archive);
 
       enter();
 
@@ -198,7 +198,7 @@ namespace elle
 	typename Trait::Reference<
 	  typename Message<G>::P
 	  >::Type
-	>	callback(&Archive::Extract, &archive);
+	>		callback(&Archive::Extract, &archive);
 
       enter();
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [thu sep  1 15:49:48 2011]
+// updated       julien quintard   [sat sep  3 00:15:40 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -29,6 +29,19 @@ namespace elle
   {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename R,
+	      typename... T>
+    const Callback< R,
+		    Parameters<T...> >	Callback< R,
+						  Parameters<T...> >::Null;
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 
@@ -38,9 +51,7 @@ namespace elle
     template <typename R,
 	      typename... T>
     Callback< R, Parameters<T...> >::Callback():
-      Routine::Routine(Routine::TypeCallback),
-
-      scheme(Routine::SchemeUnknown)
+      Routine::Routine(Routine::SchemeUnknown)
     {
     }
 
@@ -57,9 +68,8 @@ namespace elle
 					     T...
 					     >
 					   >::Handler		handler):
-      Routine::Routine(Routine::TypeCallback),
+      Routine::Routine(Routine::SchemeFunction),
 
-      scheme(Routine::SchemeFunction),
       function(new Function< R, Parameters<T...> >(handler))
     {
     }
@@ -81,9 +91,8 @@ namespace elle
 				           template
 				             Wrap<C>::Handler	handler,
 				       C*			object):
-      Routine::Routine(Routine::TypeCallback),
+      Routine::Routine(Routine::SchemeMethod),
 
-      scheme(Routine::SchemeMethod),
       method(new Method< R, Parameters<T...> >(handler, object))
     {
     }
@@ -101,9 +110,7 @@ namespace elle
 					     T...
 					     >
 					   >&			callback):
-      Routine(callback),
-
-      scheme(callback.scheme)
+      Routine(callback)
     {
       enter();
 
@@ -202,7 +209,7 @@ namespace elle
 	  }
 	case Routine::SchemeUnknown:
 	  {
-	    escape("unknown scheme");
+	    break;
 	  }
 	}
 
@@ -240,9 +247,7 @@ namespace elle
 	  }
 	case Routine::SchemeUnknown:
 	  {
-	    alert(_(),
-		  "unknown scheme '%u'",
-		  this->scheme);
+	    break;
 	  }
 	}
 
@@ -278,9 +283,9 @@ namespace elle
 
       std::cout << alignment << "[Callback]" << std::endl;
 
-      // dump the scheme.
-      std::cout << alignment << Dumpable::Shift << "[Scheme] "
-		<< this->scheme << std::endl;
+      // dump the routine.
+      if (Routine::Dump(margin + 2) == StatusError)
+	escape("unable to dump the routine");
 
       // dump the content.
       switch (this->scheme)
@@ -303,7 +308,7 @@ namespace elle
 	  }
 	case Routine::SchemeUnknown:
 	  {
-	    escape("unknown scheme");
+	    break;
 	  }
 	}
 

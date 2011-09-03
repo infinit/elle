@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hh
 //
 // created       julien quintard   [fri jul 15 11:55:49 2011]
-// updated       julien quintard   [thu sep  1 17:03:30 2011]
+// updated       julien quintard   [fri sep  2 23:52:52 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HH
@@ -75,11 +75,15 @@ namespace elle
       // constructors & destructors
       //
       Procedure(const Callback< Status,
-				R >&,
+				R >,
 		const Callback< Status,
-				Parameters<> >* = NULL,
+		                Parameters<> > =
+		  Callback< Status,
+			    Parameters<> >::Null,
 		const Callback< Status,
-				Parameters<> >* = NULL);
+				Parameters<> > =
+		  Callback< Status,
+			    Parameters<> >::Null);
       Procedure(const Procedure<I, O, E>&);
 
       //
@@ -108,11 +112,11 @@ namespace elle
       Callback<
 	Status,
 	Parameters<>
-	>*		prolog;
+	>		prolog;
       Callback<
 	Status,
 	Parameters<>
-	>*		epilog;
+	>		epilog;
     };
 
   }

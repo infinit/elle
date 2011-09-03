@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.cc
 //
 // created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [thu sep  1 16:12:10 2011]
+// updated       julien quintard   [fri sep  2 21:11:13 2011]
 //
 
 //
@@ -33,12 +33,8 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Broker::Broker(const Natural16				descriptor,
-		   const Callback<
-		     Status,
-		     Parameters<Natural16> >&			callback):
+    Broker::Broker(const Natural16				descriptor):
       descriptor(descriptor),
-      callback(callback),
       notifier(descriptor, ::QSocketNotifier::Read)
     {
     }
@@ -87,9 +83,9 @@ namespace elle
     {
       enter();
 
-      // trigger the callback.
-      if (this->callback.Call(this->descriptor) == StatusError)
-	escape("an error occured while spawning the fiber");
+      // emit the signal.
+      if (this->signal.ready.Emit(this->descriptor) == StatusError)
+	escape("unable to emit the signal");
 
       leave();
     }
@@ -105,10 +101,9 @@ namespace elle
     ///
     void		Broker::_trigger()
     {
-      Callback< Status,
-		Parameters<> >	callback(&Broker::Trigger, this);
       Closure< Status,
-	       Parameters<> >	closure(callback);
+	       Parameters<> >	closure(Callback<>::Infer(&Broker::Trigger,
+							  this));
 
       enter();
 

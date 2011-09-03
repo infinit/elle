@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [sun aug 28 18:57:48 2011]
+// updated       julien quintard   [fri sep  2 21:29:43 2011]
 //
 
 //
@@ -360,10 +360,9 @@ namespace elle
 
     void		BridgePorter::_accept()
     {
-      Callback< Status,
-		Parameters<> >	callback(&BridgePorter::Accept, this);
       Closure< Status,
-	       Parameters<> >	closure(callback);
+	       Parameters<> >	closure(Callback<>::Infer(
+					  &BridgePorter::Accept, this));
 
       enter();
 

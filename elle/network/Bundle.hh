@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hh
 //
 // created       julien quintard   [fri jun  3 22:23:13 2011]
-// updated       julien quintard   [fri sep  2 12:23:52 2011]
+// updated       julien quintard   [fri sep  2 14:04:10 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HH

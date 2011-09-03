@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Routine.hh
 //
 // created       julien quintard   [wed mar 24 19:50:08 2010]
-// updated       julien quintard   [mon may 30 20:33:06 2011]
+// updated       julien quintard   [fri sep  2 23:53:34 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_ROUTINE_HH
@@ -46,14 +46,6 @@ namespace elle
       //
       // enumerations
       //
-      enum Type
-	{
-	  TypeUnknown,
-
-	  TypeCallback,
-	  TypeEntrance
-	};
-
       enum Scheme
 	{
 	  SchemeUnknown,
@@ -66,7 +58,7 @@ namespace elle
       // constructors & destructors
       //
       Routine();
-      Routine(const Type);
+      Routine(const Scheme);
 
       //
       // interfaces
@@ -81,7 +73,7 @@ namespace elle
       //
       // attributes
       //
-      Type		type;
+      Scheme		scheme;
     };
 
   }

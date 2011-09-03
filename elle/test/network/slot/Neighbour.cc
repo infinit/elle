@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Neighbour.cc
 //
 // created       julien quintard   [wed mar 17 11:23:38 2010]
-// updated       julien quintard   [thu aug 25 11:41:41 2011]
+// updated       julien quintard   [fri sep  2 20:30:56 2011]
 //
 
 //
@@ -33,9 +33,6 @@ namespace elle
 					  const Point&		point,
 					  const String&		name)
     {
-      Callback< Status,
-		Parameters<> >	discard(&Neighbour::Discard, this);
-
       enter();
 
       // assign the attributes.
@@ -45,8 +42,13 @@ namespace elle
       this->name = name;
 
       // create the timer.
-      if (this->timer.Create(Timer::ModeSingle, discard) == StatusError)
+      if (this->timer.Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (this->timer.signal.timeout.Subscribe(
+	    Callback<>::Infer(&Neighbour::Discard, this)) == StatusError)
+	escape("unable to subscribe to the signal");
 
       // start the timer.
       if (this->timer.Start(Neighbour::Timeout) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [sun aug 28 14:02:05 2011]
+// updated       julien quintard   [fri sep  2 21:23:53 2011]
 //
 
 ///
@@ -109,10 +109,12 @@ namespace elle
       //
       // attributes
       //
-      String				name;
-      ::QLocalServer*			server;
-      Callback< Status,
-		Parameters<Door*> >	callback;
+      String			name;
+      ::QLocalServer*		server;
+      Callback<
+	Status,
+	Parameters<Door*>
+	>			callback;
 
       //
       // slots

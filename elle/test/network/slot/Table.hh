@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.hh
 //
 // created       julien quintard   [wed mar 17 13:07:53 2010]
-// updated       julien quintard   [thu aug 25 11:41:11 2011]
+// updated       julien quintard   [fri sep  2 20:37:46 2011]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_TABLE_HH
@@ -88,7 +88,7 @@ namespace elle
       //
       // callbacks
       //
-      Status		Refresh();
+      Status		Renew();
     };
 
   }

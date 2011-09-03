@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [sat aug 27 00:42:01 2011]
+// updated       julien quintard   [sat sep  3 00:30:48 2011]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -80,7 +80,6 @@ namespace elle
       //
       Socket();
       Socket(const Type);
-      ~Socket();
 
       //
       // methods
@@ -101,15 +100,6 @@ namespace elle
       Status		Reply(const I,
 			      Session* = NULL);
 
-      Status		Monitor(const Callback< Status,
-						Parameters<> >&);
-      Status		Withdraw();
-
-      //
-      // callbacks
-      //
-      Status		Signal();
-
       //
       // interfaces
       //
@@ -121,11 +111,6 @@ namespace elle
       // attributes
       //
       Type		type;
-
-      Callback<
-	Status,
-	Parameters<>
-	>*		callback;
     };
 
   }
