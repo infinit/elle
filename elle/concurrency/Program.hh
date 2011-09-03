@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [fri sep  2 20:55:54 2011]
+// updated       julien quintard   [sat sep  3 13:17:02 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -52,11 +52,6 @@ namespace elle
     {
     public:
       //
-      // constants
-      //
-      static const Natural32	Quantum;
-
-      //
       // enumerations
       //
       enum State
@@ -92,19 +87,6 @@ namespace elle
       ::QCoreApplication*	core;
 
       State			state;
-
-      //
-      // signals
-      //
-      struct
-      {
-	Signal<
-	  Parameters<>
-	  >			prolog;
-	Signal<
-	  Parameters<>
-	  >			epilog;
-      }				signal;
     };
 
 //

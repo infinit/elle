@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [sat sep  3 08:42:12 2011]
+// updated       julien quintard   [sat sep  3 14:05:57 2011]
 //
 
 //
@@ -592,6 +592,9 @@ namespace elle
 
       enter();
 
+      // set the state.
+      this->state = Channel::StateConnected;
+
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
 	alert(_(), "unable to spawn a fiber");
@@ -612,6 +615,9 @@ namespace elle
 						  &this->signal.disconnected));
 
       enter();
+
+      // set the state.
+      this->state = Channel::StateDisconnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [fri sep  2 20:56:06 2011]
+// updated       julien quintard   [sat sep  3 13:16:56 2011]
 //
 
 //
@@ -100,8 +100,8 @@ namespace elle
     {
       enter();
 
-      // set the exit state.
-      program->state = Program::StateStopped;
+      // exit the core application.
+      program->core->exit();
 
       leave();
     }
@@ -119,33 +119,7 @@ namespace elle
 	       "been set up");
 
       // process the events.
-      while (true)
-	{
-	  // check if the program must be stopped.
-	  if (program->state == Program::StateStopped)
-	    break;
-
-	  // emit the prolog signal.
-	  if (program->signal.prolog.Emit() == StatusError)
-	    escape("unable to emit the signal");
-
-	  // process the QT events.
-	  program->core->processEvents();
-
-	  // emit the epilog signal.
-	  if (program->signal.epilog.Emit() == StatusError)
-	    escape("unable to emit the signal");
-
-	  // if there are no events left to process, sleep a bit in order
-	  // to prevent using 100% of the CPU.
-	  if (program->core->hasPendingEvents() == false)
-	    {
-	      // sleep.
-	      /// XXX \todo peut-on eviter de dormir? normalement c'est
-	      /// a ca que sert un select() justement.
-	      ::usleep(10000);
-	    }
-	}
+      program->core->exec();
 
       leave();
     }
@@ -228,8 +202,7 @@ namespace elle
     /// default constructor.
     ///
     Program::Program():
-      core(NULL),
-      state(Program::StateUnknown)
+      core(NULL)
     {
     }
 

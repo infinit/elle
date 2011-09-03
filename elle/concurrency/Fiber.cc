@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [fri sep  2 20:06:57 2011]
+// updated       julien quintard   [sat sep  3 13:58:01 2011]
 //
 
 //
@@ -32,7 +32,7 @@ namespace elle
     ///
     /// this value defines fibers' stack size, in bytes: 1MB
     ///
-    const Natural32		Fiber::Size = 1048576;
+    const Natural32		Fiber::Size = 2048576;
 
     ///
     /// this value defines the fibers cache capacity.

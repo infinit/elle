@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.cc
 //
 // created       julien quintard   [thu mar 18 21:20:27 2010]
-// updated       julien quintard   [sat sep  3 00:31:30 2011]
+// updated       julien quintard   [sat sep  3 11:07:22 2011]
 //
 
 //
@@ -89,6 +89,7 @@ namespace elle
     Status		Channel::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
+      Channel::Scoutor	scoutor;
 
       enter();
 
@@ -98,10 +99,43 @@ namespace elle
       if (Socket::Dump(margin + 2) == StatusError)
 	escape("unable to dump the socket");
 
+      // dump the state.
       std::cout << alignment << Dumpable::Shift
 		<< "[State] " << std::dec << this->state << std::endl;
 
-      // XXX others?
+      // dump the buffer.
+      if (this->buffer != NULL)
+	{
+	  if (this->buffer->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the buffer");
+	}
+
+      // dump the offset.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Offset] " << std::dec << this->offset << std::endl;
+
+      // dump the queue.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Queue]" << std::endl;
+
+      // go through the queue.
+      for (scoutor = this->queue.begin();
+	   scoutor != this->queue.end();
+	   scoutor++)
+	{
+	  Parcel*	parcel = *scoutor;
+
+	  // dump the parcel.
+	  if (parcel->Dump(margin + 4) == StatusError)
+	    escape("unable to dump the parcel");
+	}
+
+      // dump the timer, if present.
+      if (this->timer != NULL)
+	{
+	  if (this->timer->Dump(margin + 2) == StatusError)
+	    escape("unable to dump the timer");
+	}
 
       leave();
     }
