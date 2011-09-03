@@ -1,13 +1,7 @@
-- chercher tous les callbacks: remplacer par des signaux: timer etc.
+- utiliser infer a la place des callbacks.
+- mettre des signaux sur les sockets
 
-	// dans Meta, on a un Domain: ensemble de signaux, donc lie a un objet
-	// lorsque l'on veut emit le signal, on fait this->Emit(SignalXXX, ..);
-	// chaque signal est identifie par un Natural32
-	// pour register un signal on fait this->Schedule< Param<> >
-	// enfin pour subscribe a un signal: object.Subscribe(SignalXXX, cb);
-	// lorsqu'Emit() est appelle, tous les callbacks sont triggered.
-	// Unsubscribe egalement
-	// faire fonctionner avec Closure egalement
+- bouger Morgue dans standalone.
 
 - pour eviter les bury ou delete this dans Neighbour.cc
   il faut utiliser un system de signals
@@ -19,12 +13,6 @@
 - il semble que lorsqu'on copie des fichiers dans Infinit, ils
   choppent le bit x
 - timeout sur Cirkle::Neighbour?
-
-- systeme de signal
-  [QT] connect(this->gate, _connected, this, _connected)
-  [Elle] dans gate, Register("suce", Parameters<...>);
-  [Elle] this->gate.Attach("suce", Callback(...));
-  [Elle] this->gate.Signal("suce", parameters);
 
 - trouver un terme pour remplacer Address dans elle:
   Plug/Spot/Site/Place/Station
