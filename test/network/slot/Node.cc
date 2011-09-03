@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Node.cc
 //
 // created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [fri sep  2 12:40:51 2011]
+// updated       julien quintard   [fri sep  2 20:42:33 2011]
 //
 
 //
@@ -48,10 +48,6 @@ namespace elle
     ///
     Status		Node::Run()
     {
-      Callback<
-	Status,
-	Parameters<const String&,
-		   const Table&> >	handle(&Node::Handle, this);
       Host				local;
       Point				remote;
 
@@ -69,7 +65,8 @@ namespace elle
 
       // register the probe message.
       if (Network::Register(
-	    Procedure<TagProbe>(handle)) == StatusError)
+	    Procedure<TagProbe>(
+	      Callback<>::Infer(&Node::Handle, this))) == StatusError)
 	escape("unable to register the probe message");
 
       // create the table.

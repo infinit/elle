@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [mon aug 29 08:43:50 2011]
+// updated       julien quintard   [sat sep  3 00:44:05 2011]
 //
 
 ///
@@ -37,6 +37,7 @@
 #include <elle/radix/Status.hh>
 
 #include <elle/concurrency/Event.hh>
+#include <elle/concurrency/Signal.hh>
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Parcel.hh>
@@ -128,6 +129,27 @@ namespace elle
       // attributes
       //
       ::QTcpSocket*	socket;
+
+      //
+      // signals
+      //
+      struct
+      {
+	Signal<
+	  Parameters<>
+	  >		connected;
+	Signal<
+	  Parameters<>
+	  >		disconnected;
+	Signal<
+	  Parameters<>
+	  >		ready;
+	Signal<
+	  Parameters<
+	    const String&
+	    >
+	  >		error;
+      }			signal;
 
     private slots:
       //

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [sun aug 28 14:02:34 2011]
+// updated       julien quintard   [fri sep  2 21:30:13 2011]
 //
 
 //
@@ -351,10 +351,9 @@ namespace elle
 
     void		LanePorter::_accept()
     {
-      Callback< Status,
-		Parameters<> >	callback(&LanePorter::Accept, this);
       Closure< Status,
-	       Parameters<> >	closure(callback);
+	       Parameters<> >	closure(Callback<>::Infer(
+					  &LanePorter::Accept, this));
 
       enter();
 

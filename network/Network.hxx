@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hxx
 //
 // created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [wed aug 31 17:20:00 2011]
+// updated       julien quintard   [fri sep  2 15:12:06 2011]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX
@@ -88,13 +88,7 @@ namespace elle
     template <typename P>
     Status	Network::Selectionoid<P>::Call(Archive&		archive) const
     {
-      enter();
-
-      // call the procedure's skeleton.
-      if (this->procedure.Skeleton(archive) == StatusError)
-	escape("an error occured in the procedure's skeleton");
-
-      leave();
+      return (this->procedure.Skeleton(archive));
     }
 
     ///

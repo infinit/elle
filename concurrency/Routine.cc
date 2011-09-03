@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Routine.cc
 //
 // created       julien quintard   [wed mar 24 21:12:54 2010]
-// updated       julien quintard   [fri may 28 12:16:11 2010]
+// updated       julien quintard   [fri sep  2 23:53:55 2011]
 //
 
 //
@@ -35,15 +35,15 @@ namespace elle
     /// default constructor.
     ///
     Routine::Routine():
-      type(Routine::TypeUnknown)
+      scheme(Routine::SchemeUnknown)
     {
     }
 
     ///
     /// specific constructor.
     ///
-    Routine::Routine(const Type					type):
-      type(type)
+    Routine::Routine(const Scheme				scheme):
+      scheme(scheme)
     {
     }
 
@@ -71,9 +71,9 @@ namespace elle
 
       std::cout << alignment << "[Routine]" << std::endl;
 
-      // dump the type
+      // dump the scheme.
       std::cout << alignment << Dumpable::Shift
-		<< "[Type] " << this->type << std::endl;
+		<< "[Scheme] " << this->scheme << std::endl;
 
       leave();
     }

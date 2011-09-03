@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [mon aug 29 09:42:06 2011]
+// updated       julien quintard   [sat sep  3 00:44:10 2011]
 //
 
 ///
@@ -37,6 +37,7 @@
 #include <elle/radix/Status.hh>
 
 #include <elle/concurrency/Event.hh>
+#include <elle/concurrency/Signal.hh>
 
 #include <elle/network/Channel.hh>
 #include <elle/network/Packet.hh>
@@ -137,6 +138,27 @@ namespace elle
       //
       String		name;
       ::QLocalSocket*	socket;
+
+      //
+      // signals
+      //
+      struct
+      {
+	Signal<
+	  Parameters<>
+	  >		connected;
+	Signal<
+	  Parameters<>
+	  >		disconnected;
+	Signal<
+	  Parameters<>
+	  >		ready;
+	Signal<
+	  Parameters<
+	    const String&
+	    >
+	  >		error;
+      }			signal;
 
       //
       // slots

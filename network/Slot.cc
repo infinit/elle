@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [mon aug 29 09:41:26 2011]
+// updated       julien quintard   [sat sep  3 08:42:00 2011]
 //
 
 //
@@ -71,7 +71,12 @@ namespace elle
       // retrieve the port.
       this->port = this->socket->localPort();
 
-      // connect the signals, depending on the mode.
+      // subscribe to the signal.
+      if (this->signal.ready.Subscribe(
+	    Callback<>::Infer(&Slot::Dispatch, this)) == StatusError)
+	escape("unable to subscribe to the signal");
+
+      // connect the QT signals, depending on the mode.
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(_ready())) == false)
 	escape("unable to connect the signal");
@@ -103,10 +108,22 @@ namespace elle
       if (this->socket->bind(this->port) == false)
 	escape(this->socket->errorString().toStdString().c_str());
 
-      // connect the signals.
+      // subscribe to the signal.
+      if (this->signal.ready.Subscribe(
+	    Callback<>::Infer(&Slot::Dispatch, this)) == StatusError)
+	escape("unable to subscribe to the signal");
+
+      // connect the QT signals.
       if (this->connect(this->socket, SIGNAL(readyRead()),
 			this, SLOT(Fetch())) == false)
 	escape("unable to connect the signal");
+
+      if (this->connect(
+	    this->socket,
+	    SIGNAL(error(const QAbstractSocket::SocketError)),
+	    this,
+	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
+	escape("unable to connect to signal");
 
       leave();
     }
@@ -325,10 +342,12 @@ namespace elle
     ///
     void		Slot::_ready()
     {
-      Callback< Status,
-		Parameters<> >	callback(&Slot::Dispatch, this);
       Closure< Status,
-	       Parameters<> >	closure(callback);
+	       Parameters<>
+	       >	closure(Callback<>::Infer(&Signal<
+						    Parameters<>
+						    >::Emit,
+						  &this->signal.ready));
 
       enter();
 
@@ -348,10 +367,18 @@ namespace elle
     ///
     void		Slot::_error(const QAbstractSocket::SocketError)
     {
-      Callback< Status,
-		Parameters<> >	callback(&Socket::Signal, this);
+      String		cause(this->socket->errorString().toStdString());
       Closure< Status,
-	       Parameters<> >	closure(callback);
+	       Parameters<
+		 const String&
+		 >
+	       >	closure(Callback<>::Infer(&Signal<
+						    Parameters<
+						      const String&
+						      >
+						    >::Emit,
+						  &this->signal.error),
+				cause);
 
       enter();
 

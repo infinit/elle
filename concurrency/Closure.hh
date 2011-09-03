@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Closure.hh
 //
 // created       julien quintard   [thu mar 25 03:25:25 2010]
-// updated       julien quintard   [mon jul 18 11:43:22 2011]
+// updated       julien quintard   [fri sep  2 19:34:35 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HH
@@ -67,7 +67,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback< R, Parameters<U...> >&,
+      Closure(Callback< R, Parameters<U...> >,
 	      U&...);
 
       //
@@ -122,7 +122,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Closure(Callback< R, Parameters<U..., V...> >&,
+      Closure(Callback< R, Parameters<U..., V...> >,
 	      U&...);
 
       //

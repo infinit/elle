@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [thu sep  1 15:49:09 2011]
+// updated       julien quintard   [fri sep  2 22:27:14 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -57,6 +57,12 @@ namespace elle
     {
     public:
       //
+      // constants
+      //
+      static const Callback< R,
+			     Parameters<T...> >		Null;
+
+      //
       // types
       //
       typedef Parameters<T...>		P;
@@ -91,8 +97,6 @@ namespace elle
       //
       // attributes
       //
-      typename Routine::Scheme	scheme;
-
       union
       {
 	Function<R, P>*		function;

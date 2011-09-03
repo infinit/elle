@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hh
 //
 // created       julien quintard   [wed feb  3 21:04:37 2010]
-// updated       julien quintard   [thu aug 25 16:43:50 2011]
+// updated       julien quintard   [sat sep  3 00:44:16 2011]
 //
 
 ///
@@ -37,6 +37,7 @@
 #include <elle/radix/Status.hh>
 
 #include <elle/concurrency/Event.hh>
+#include <elle/concurrency/Signal.hh>
 
 #include <elle/network/Socket.hh>
 #include <elle/network/Packet.hh>
@@ -125,6 +126,21 @@ namespace elle
       //
       ::QUdpSocket*	socket;
       Port		port;
+
+      //
+      // signals
+      //
+      struct
+      {
+	Signal<
+	  Parameters<>
+	  >		ready;
+	Signal<
+	  Parameters<
+	    const String&
+	    >
+	  >		error;
+      }			signal;
 
     private slots:
       //

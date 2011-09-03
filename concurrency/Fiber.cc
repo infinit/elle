@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [thu sep  1 16:36:57 2011]
+// updated       julien quintard   [fri sep  2 20:06:57 2011]
 //
 
 //
@@ -200,10 +200,6 @@ namespace elle
     ///
     Status		Fiber::Sleep(const Natural32		duration)
     {
-      Callback< Status,
-		Parameters<> >	callback(&Fiber::Timeout,
-					 Fiber::Current);
-
       enter();
 
       //printf("[XXX 0x%x] Fiber::Sleep()\n",
@@ -213,9 +209,13 @@ namespace elle
       Fiber::Current->timer = new Timer;
 
       // create the timer.
-      if (Fiber::Current->timer->Create(Timer::ModeSingle,
-					callback) == StatusError)
+      if (Fiber::Current->timer->Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (Fiber::Current->timer->signal.timeout.Subscribe(
+	    Callback<>::Infer(&Fiber::Timeout, Fiber::Current)) == StatusError)
+	escape("unable to subscribe to the signal");
 
       // set up the timer.
       if (Fiber::Current->timer->Start(duration) == StatusError)
@@ -235,8 +235,8 @@ namespace elle
     Status		Fiber::Register(const
 					  Callback<
 					    Status,
-					    Parameters<Phase,
-						       Fiber*> >	c)
+					    Parameters<Phase, Fiber*>
+					    >			c)
     {
       Callback< Status,
 		Parameters<Phase, Fiber*> >*	callback;
@@ -652,10 +652,6 @@ namespace elle
     Status		Fiber::Timeout()
     {
       enter();
-
-      // stop the timer.
-      if (this->timer->Stop() == StatusError)
-	escape("unable to stop the timer");
 
       // awaken the fiber.
       if (Fiber::Awaken(this->timer) != StatusTrue)

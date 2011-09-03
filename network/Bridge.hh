@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [wed may 25 15:53:18 2011]
-// updated       julien quintard   [sun aug 28 14:01:53 2011]
+// updated       julien quintard   [fri sep  2 21:24:06 2011]
 //
 
 ///
@@ -110,10 +110,12 @@ namespace elle
       //
       // attributes
       //
-      Point				point;
-      ::QTcpServer*			server;
-      Callback< Status,
-		Parameters<Gate*> >	callback;
+      Point			point;
+      ::QTcpServer*		server;
+      Callback<
+	Status,
+	Parameters<Gate*>
+	>			callback;
 
       //
       // slots

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [sun aug 28 21:20:13 2011]
+// updated       julien quintard   [sat sep  3 08:03:53 2011]
 //
 
 //
@@ -167,7 +167,7 @@ namespace elle
 
 	// clear the session.
 	if (Session::Clear() == StatusError)
-	  escape("unable to clear the session");
+	  escape("unable to flush the session");
 
 	// delete the parcel.
 	delete parcel;

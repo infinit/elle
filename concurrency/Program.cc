@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.cc
 //
 // created       julien quintard   [mon mar 15 20:40:02 2010]
-// updated       julien quintard   [wed aug 31 18:04:59 2011]
+// updated       julien quintard   [fri sep  2 20:56:06 2011]
 //
 
 //
@@ -69,10 +69,7 @@ namespace elle
     ///
     /// this method sets up the program for startup.
     ///
-    Status		Program::Setup(Callback< Status,
-						 Parameters<> >* prolog,
-				       Callback< Status,
-						 Parameters<> >* epilog)
+    Status		Program::Setup()
     {
       int		n;
 
@@ -85,17 +82,13 @@ namespace elle
       // allocate the QT program.
       program->core = new ::QCoreApplication(n, NULL);
 
-      // set the prolog/epilog callbacks.
-      program->prolog = prolog;
-      program->epilog = epilog;
-
       // set the signal handlers.
-      ::signal(SIGINT, &Program::Signal);
-      ::signal(SIGQUIT, &Program::Signal);
-      ::signal(SIGABRT, &Program::Signal);
-      ::signal(SIGTERM, &Program::Signal);
+      ::signal(SIGINT, &Program::Exception);
+      ::signal(SIGQUIT, &Program::Exception);
+      ::signal(SIGABRT, &Program::Exception);
+      ::signal(SIGTERM, &Program::Exception);
 
-      ::signal(SIGKILL, &Program::Signal);
+      ::signal(SIGKILL, &Program::Exception);
 
       leave();
     }
@@ -132,22 +125,16 @@ namespace elle
 	  if (program->state == Program::StateStopped)
 	    break;
 
-	  // call the prolog, if provided.
-	  if (program->prolog != NULL)
-	    {
-	      if (program->prolog->Call() == StatusError)
-		escape("an error occured in the prolog");
-	    }
+	  // emit the prolog signal.
+	  if (program->signal.prolog.Emit() == StatusError)
+	    escape("unable to emit the signal");
 
 	  // process the QT events.
 	  program->core->processEvents();
 
-	  // call the epilog, if provided.
-	  if (program->epilog != NULL)
-	    {
-	      if (program->epilog->Call() == StatusError)
-		escape("an error occured in the epilog");
-	    }
+	  // emit the epilog signal.
+	  if (program->signal.epilog.Emit() == StatusError)
+	    escape("unable to emit the signal");
 
 	  // if there are no events left to process, sleep a bit in order
 	  // to prevent using 100% of the CPU.
@@ -166,7 +153,7 @@ namespace elle
     ///
     /// this method is triggered whenever a POSIX signal is received.
     ///
-    Void		Program::Signal(int			signal)
+    Void		Program::Exception(int			signal)
     {
       // stop the program depending on the signal.
       switch (signal)
@@ -242,9 +229,7 @@ namespace elle
     ///
     Program::Program():
       core(NULL),
-      state(Program::StateUnknown),
-      prolog(NULL),
-      epilog(NULL)
+      state(Program::StateUnknown)
     {
     }
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [sun aug 28 17:25:51 2011]
+// updated       julien quintard   [fri sep  2 19:44:43 2011]
 //
 
 ///

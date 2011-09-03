@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Closure.hxx
 //
 // created       julien quintard   [thu mar 25 11:55:10 2010]
-// updated       julien quintard   [mon jul 18 11:43:36 2011]
+// updated       julien quintard   [fri sep  2 19:31:25 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HXX
@@ -29,7 +29,7 @@ namespace elle
     template <typename R,
 	      typename... U>
     Closure< R, Parameters<U...> >::Closure(
-        Callback< R, Parameters<U...> >&			callback,
+        Callback< R, Parameters<U...> >				callback,
 	U&...							objects):
       callback(callback),
       arguments(objects...)
@@ -70,7 +70,7 @@ namespace elle
     Closure< R,
 	     Parameters<U...>,
 	     Parameters<V...> >::Closure(
-	Callback< R, Parameters<U..., V...> >&			callback,
+	Callback< R, Parameters<U..., V...> >			callback,
 	U&...							objects):
       callback(callback),
       arguments(objects...)

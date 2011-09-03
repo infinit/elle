@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Table.cc
 //
 // created       julien quintard   [wed mar 17 13:23:40 2010]
-// updated       julien quintard   [fri sep  2 12:40:55 2011]
+// updated       julien quintard   [fri sep  2 20:37:53 2011]
 //
 
 //
@@ -31,17 +31,19 @@ namespace elle
     ///
     Status		Table::Create(Node*			node)
     {
-      Callback< Status,
-		Parameters<> >	refresh(&Table::Refresh, this);
-
       enter();
 
       // set the node.
       this->node = node;
 
       // create a timer.
-      if (this->timer.Create(Timer::ModeRepetition, refresh) == StatusError)
+      if (this->timer.Create(Timer::ModeRepetition) == StatusError)
 	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (this->timer.signal.timeout.Subscribe(
+	    Callback<>::Infer(&Table::Renew, this)) == StatusError)
+	escape("unable to subscribe to the signal");
 
       // start the timer.
       if (this->timer.Start(Node::Rate) == StatusError)
@@ -276,7 +278,7 @@ namespace elle
     ///
     /// this callback is called whenever the state needs refreshing.
     ///
-    Status		Table::Refresh()
+    Status		Table::Renew()
     {
       Table::Scoutor	scoutor;
 

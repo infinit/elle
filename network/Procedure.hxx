@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hxx
 //
 // created       julien quintard   [mon jul 18 17:40:44 2011]
-// updated       julien quintard   [fri sep  2 11:29:14 2011]
+// updated       julien quintard   [sat sep  3 00:05:03 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
@@ -45,25 +45,22 @@ namespace elle
     template <const Tag I,
 	      const Tag O,
 	      const Tag E>
-    Procedure<I, O, E>::Procedure(const Callback< Status,
-				                  R >&		routine,
-				  const Callback< Status,
-				                  Parameters<> >* prolog,
-				  const Callback< Status,
-					          Parameters<> >* epilog):
+    Procedure<I, O, E>::Procedure(const Callback<
+				    Status,
+				    R
+				    >				routine,
+				  const Callback<
+				    Status,
+				    Parameters<>
+				    >				prolog,
+				  const Callback<
+				    Status,
+				    Parameters<>
+				    >				epilog):
       routine(routine),
-      prolog(NULL),
-      epilog(NULL)
+      prolog(prolog),
+      epilog(epilog)
     {
-      // clone the prolog, if necessary.
-      if (prolog != NULL)
-	this->prolog = new Callback< Status,
-				     Parameters<> >(*prolog);
-
-      // clone the epilog, if necessary.
-      if (epilog != NULL)
-	this->epilog = new Callback< Status,
-				     Parameters<> >(*epilog);
     }
 
     ///
@@ -76,18 +73,9 @@ namespace elle
       Object(procedure),
 
       routine(procedure.routine),
-      prolog(NULL),
-      epilog(NULL)
+      prolog(procedure.prolog),
+      epilog(procedure.epilog)
     {
-      // clone the prolog, if necessary.
-      if (prolog != NULL)
-	this->prolog = new Callback< Status,
-				     Parameters<> >(*procedure.prolog);
-
-      // clone the epilog, if necessary.
-      if (epilog != NULL)
-	this->epilog = new Callback< Status,
-				     Parameters<> >(*procedure.epilog);
     }
 
 //
@@ -131,12 +119,9 @@ namespace elle
       if (session == NULL)
 	escape("unable to proceed with a null session");
 
-      // call the prolog, if required.
-      if (this->prolog != NULL)
-	{
-	  if (this->prolog->Call() == StatusError)
-	    escape("an error occured in the procedure's prolog");
-	}
+      // call the prolog.
+      if (this->prolog.Call() == StatusError)
+	escape("an error occured in the procedure's prolog");
 
       // extract the values from the archive given the types required
       // for the callback.
@@ -169,12 +154,9 @@ namespace elle
       // call the routine.
       status = arguments.Call(this->routine);
 
-      // call the epilog, if required.
-      if (this->epilog != NULL)
-	{
-	  if (this->epilog->Call() == StatusError)
-	    escape("an error occured in the procedure's epilog");
-	}
+      // call the epilog.
+      if (this->epilog.Call() == StatusError)
+	escape("an error occured in the procedure's epilog");
 
       //
       // send back the report to the client if an error occured.
@@ -312,39 +294,26 @@ namespace elle
 
       std::cout << alignment << "[Procedure]" << std::endl;
 
-      // dump the callback.
+      // dump the routine.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Routine]" << std::endl;
+
       if (this->routine.Dump(margin + 2) == StatusError)
 	escape("unable to dump the callback");
 
       // dump the callback.
-      if (this->prolog != NULL)
-	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Prolog]" << std::endl;
+      std::cout << alignment << Dumpable::Shift
+		<< "[Prolog]" << std::endl;
 
-	  if (this->prolog->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the callback");
-	}
-      else
-	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Prolog] " << none << std::endl;
-	}
+      if (this->prolog.Dump(margin + 2) == StatusError)
+	escape("unable to dump the callback");
 
-      // dump the callback.
-      if (this->epilog != NULL)
-	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Epilog]" << std::endl;
+      // dump the epilog.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Epilog]" << std::endl;
 
-	  if (this->epilog->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the callback");
-	}
-      else
-	{
-	  std::cout << alignment << Dumpable::Shift
-		    << "[Epilog] " << none << std::endl;
-	}
+      if (this->epilog.Dump(margin + 2) == StatusError)
+	escape("unable to dump the callback");
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Morgue.hxx
 //
 // created       julien quintard   [fri aug 26 17:08:22 2011]
-// updated       julien quintard   [sat aug 27 11:46:08 2011]
+// updated       julien quintard   [fri sep  2 23:52:08 2011]
 //
 
 #ifndef ELLE_RADIX_MORGUE_HXX
@@ -21,9 +21,12 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/concurrency/Callback.hh>
+
 namespace elle
 {
   using namespace standalone;
+  using namespace concurrency;
 
   namespace radix
   {
@@ -43,16 +46,17 @@ namespace elle
       // if the timer has not been allocated, set it up.
       if (this->timer == NULL)
 	{
-	  Callback< Status,
-		    Parameters<> >	callback(&Morgue::Bury, this);
-
 	  // allocate the timer.
 	  this->timer = new Timer;
 
 	  // create the timer.
-	  if (this->timer->Create(Timer::ModeRepetition,
-				  callback) == StatusError)
+	  if (this->timer->Create(Timer::ModeRepetition) == StatusError)
 	    escape("unable to create the timer");
+
+	  // subscribe to the timer's signal.
+	  if (this->timer->signal.timeout.Subscribe(
+	        Callback<>::Infer(&Morgue::Bury, this)) == StatusError)
+	    escape("unable to subscribe to the signal");
 
 	  // start the timer.
 	  if (this->timer->Start(Morgue::Frequency) == StatusError)

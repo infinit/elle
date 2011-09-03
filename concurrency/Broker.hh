@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.hh
 //
 // created       julien quintard   [sun may 29 13:15:23 2011]
-// updated       julien quintard   [thu sep  1 16:11:38 2011]
+// updated       julien quintard   [fri sep  2 21:10:41 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_BROKER_HH
@@ -24,6 +24,7 @@
 #include <elle/radix/Parameters.hh>
 
 #include <elle/concurrency/Callback.hh>
+#include <elle/concurrency/Signal.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
@@ -58,11 +59,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Broker(const Natural16,
-	     const Callback<
-	       Status,
-	       Parameters<Natural16>
-	       >&);
+      Broker(const Natural16);
 
       //
       // methods
@@ -79,12 +76,20 @@ namespace elle
       // attributes
       //
       Natural16			descriptor;
-      Callback<
-	Status,
-	Parameters<Natural16>
-	>			callback;
 
       ::QSocketNotifier		notifier;
+
+      //
+      // signals
+      //
+      struct
+      {
+	Signal<
+	  Parameters<
+	    Natural16
+	    >
+	  >			ready;
+      }				signal;
 
     private slots:
       //
