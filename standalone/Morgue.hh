@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Morgue.hh
+// file          /home/mycure/infinit/elle/standalone/Morgue.hh
 //
 // created       julien quintard   [fri aug 26 17:04:49 2011]
-// updated       julien quintard   [fri aug 26 17:56:38 2011]
+// updated       julien quintard   [sat sep  3 20:22:35 2011]
 //
 
-#ifndef ELLE_RADIX_MORGUE_HH
-#define ELLE_RADIX_MORGUE_HH
+#ifndef ELLE_STANDALONE_MORGUE_HH
+#define ELLE_STANDALONE_MORGUE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -35,7 +35,7 @@ namespace elle
   using namespace core;
   using namespace concurrency;
 
-  namespace radix
+  namespace standalone
   {
 
 //
@@ -43,7 +43,15 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// the morgue functionality provides a way for delaying the given
+    /// objects' deletion.
+    ///
+    /// this functionality is especially useful for avoiding statements
+    /// such as:
+    ///
+    ///   delete this;
+    ///
+    /// as such operations may induce side effects.
     ///
     class Morgue:
       public Entity
@@ -112,6 +120,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/radix/Morgue.hxx>
+#include <elle/standalone/Morgue.hxx>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Procedure.hxx
 //
 // created       julien quintard   [mon jul 18 17:40:44 2011]
-// updated       julien quintard   [sat sep  3 00:05:03 2011]
+// updated       julien quintard   [sun sep  4 13:07:22 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HXX
@@ -40,7 +40,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// the constructor takes the routing callback along with optional
+    /// prolog and epilog callbacks.
     ///
     template <const Tag I,
 	      const Tag O,
@@ -63,27 +64,13 @@ namespace elle
     {
     }
 
-    ///
-    /// XXX
-    ///
-    template <const Tag I,
-	      const Tag O,
-	      const Tag E>
-    Procedure<I, O, E>::Procedure(const Procedure<I, O, E>&	procedure):
-      Object(procedure),
-
-      routine(procedure.routine),
-      prolog(procedure.prolog),
-      epilog(procedure.epilog)
-    {
-    }
-
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method is called by the network manager whenever a message
+    /// of tag I is received.
     ///
     template <const Tag I,
 	      const Tag O,

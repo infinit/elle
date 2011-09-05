@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Phase.hh
 //
 // created       julien quintard   [thu apr  8 20:14:01 2010]
-// updated       julien quintard   [thu apr  8 20:15:16 2010]
+// updated       julien quintard   [sat sep  3 23:30:29 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_PHASE_HH
@@ -30,10 +30,10 @@ namespace elle
     ///
     enum Phase
       {
-	PhaseInitialize = 0,
-	PhaseSave = 1,
-	PhaseRestore = 2,
-	PhaseClean = 3
+	PhaseInitialize,
+	PhaseSave,
+	PhaseRestore,
+	PhaseClean
       };
 
   }

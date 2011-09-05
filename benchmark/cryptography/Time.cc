@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/benchmark/cryptography/Time.cc
 //
 // created       julien quintard   [wed aug  5 15:25:54 2009]
-// updated       julien quintard   [thu mar 11 16:17:33 2010]
+// updated       julien quintard   [sat sep  3 20:03:10 2011]
 //
 
 //
@@ -26,6 +26,9 @@ namespace elle
 // ---------- methods ---------------------------------------------------------
 //
 
+    ///
+    /// this method starts the timer.
+    ///
     Status		Time::Start()
     {
       enter();
@@ -35,6 +38,9 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method stops the timer.
+    ///
     Status		Time::Stop()
     {
       enter();
@@ -44,6 +50,9 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method prints the elapsed time.
+    ///
     Status		Time::Print()
     {
       Natural32		useconds;

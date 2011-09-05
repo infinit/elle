@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [fri aug 12 13:18:13 2011]
+// updated       julien quintard   [sat sep  3 20:33:45 2011]
 //
 
 //
@@ -28,6 +28,19 @@ namespace elle
 
   namespace standalone
   {
+
+//
+// ---------- macros ----------------------------------------------------------
+//
+
+///
+/// this macro indicates the allocated memory must be initialized with
+/// zeros.
+///
+/// this is especially useful for the diary application which requires
+/// deterministic values.
+///
+#define REGION_CLEAR
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -238,9 +251,10 @@ namespace elle
 	  if (this->Prepare(size) == StatusError)
 	    escape("unable to prepare the region for the first time");
 
-	  // XXX temporary for diary comparison: maybe create a configuration
-	  // value for activating this.
+#ifdef REGION_CLEAR
+	  // initialize the memory's content.
 	  ::memset(this->contents, 0x0, this->capacity);
+#endif
 	}
       else
 	{
@@ -255,11 +269,12 @@ namespace elle
 						 this->capacity)) == NULL)
 	    escape(::strerror(errno));
 
-	  // XXX temporary for diary comparison: maybe create a configuration
-	  // value for activating this.
+#ifdef REGION_CLEAR
+	  // initialize the memory's content.
 	  ::memset(this->contents + this->size,
 		   0x0,
 		   this->capacity - this->size);
+#endif
 	}
 
       leave();

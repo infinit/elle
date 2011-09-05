@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.cc
 //
 // created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [fri sep  2 21:11:13 2011]
+// updated       julien quintard   [sun sep  4 15:43:03 2011]
 //
 
 //
@@ -112,6 +112,9 @@ namespace elle
       // that QT triggers this event even though there is nothing to
       // be read on the socket.
       //
+      // \todo XXX check in future versions to be sure that this bug
+      //           diseppear: launching Infinit and trying CTRL^C does
+      //           not work without this code.
       {
 	struct timeval	timeout = { 0, 0 };
 	::fd_set	set;
@@ -126,7 +129,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }

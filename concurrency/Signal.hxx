@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Signal.hxx
 //
 // created       julien quintard   [fri sep  2 14:12:04 2011]
-// updated       julien quintard   [sat sep  3 09:41:18 2011]
+// updated       julien quintard   [sat sep  3 23:37:39 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_SIGNAL_HXX
@@ -24,7 +24,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// default constructor.
     ///
     template <typename... T>
     Signal< Parameters<T...> >::Signal():
@@ -33,7 +33,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// destructor.
     ///
     template <typename... T>
     Signal< Parameters<T...> >::~Signal()
@@ -43,7 +43,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method subscribes the given object---callback, closure, etc.---
+    /// without returning the associated stream identifier.
     ///
     template <typename... T>
     template <template <typename...> class C>
@@ -53,13 +54,14 @@ namespace elle
 					    Parameters<T...>
 					    >			object)
     {
-      Stream			useless;
+      Stream		useless;
 
       return (this->Subscribe(object, useless));
     }
 
     ///
-    /// XXX
+    /// this method subscribes the given object along with returning the
+    /// associated stream identifier.
     ///
     template <typename... T>
     template <template <typename...> class C>
@@ -117,12 +119,15 @@ namespace elle
       leave();
     }
 
+    ///
+    /// this method unsubscribes the object associated with the given stream.
+    ///
     template <typename... T>
     Status
     Signal< Parameters<T...> >::Unsubscribe(const Stream	stream)
     {
-      Signal< Parameters<T...> >::Iterator	iterator;
       Signal< Parameters<T...> >::Functionoid*	functionoid;
+      Signal< Parameters<T...> >::Iterator	iterator;
 
       enter();
 
@@ -143,11 +148,11 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method emits the signal by calling all the subscribed objects.
     ///
     template <typename... T>
     Status
-    Signal< Parameters<T...> >::Emit(T&...			arguments)
+    Signal< Parameters<T...> >::Emit(T...			arguments)
     {
       Signal< Parameters<T...> >::Scoutor	scoutor;
 
@@ -173,7 +178,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method flushes the subscribed objects associated with the signal.
     ///
     template <typename... T>
     Status

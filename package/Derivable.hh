@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Derivable.hh
 //
 // created       julien quintard   [fri may 13 12:47:04 2011]
-// updated       julien quintard   [tue jul 12 08:04:08 2011]
+// updated       julien quintard   [sat sep  3 21:37:55 2011]
 //
 
 #ifndef ELLE_PACKAGE_DERIVABLE_HH
@@ -53,6 +53,9 @@ namespace elle
     /// programmer does not have to worry about releasing the object
     /// since this is taken care of by the Derivable class.
     ///
+    /// this functionality is useful for transferring over the network
+    /// an instance of a class deriving another one.
+    ///
     template <typename T>
     class Derivable:
       public Object
@@ -78,7 +81,6 @@ namespace elle
       Derivable(const Factory&,
 		const T&);
       Derivable(const Derivable<T>&);
-
       ~Derivable();
 
       //

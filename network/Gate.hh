@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hh
 //
 // created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [sat sep  3 00:44:05 2011]
+// updated       julien quintard   [sun sep  4 12:12:06 2011]
 //
 
 ///
@@ -60,7 +60,9 @@ namespace elle
   {
 
     ///
-    /// XXX
+    /// this class represents a socket reliably connected through a bridge.
+    ///
+    /// note that gates are often implemented through TCP sockets.
     ///
     class Gate:
       public ::QObject,

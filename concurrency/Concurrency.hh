@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Concurrency.hh
 //
 // created       julien quintard   [sun mar  7 17:14:02 2010]
-// updated       julien quintard   [sat sep  3 10:02:13 2011]
+// updated       julien quintard   [sat sep  3 23:24:29 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CONCURRENCY_HH
@@ -54,7 +54,6 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/concurrency/Accord.hh>
 #include <elle/concurrency/Broker.hh>
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Closure.hh>

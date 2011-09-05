@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.cc
 //
 // created       julien quintard   [wed feb  3 16:49:46 2010]
-// updated       julien quintard   [sat sep  3 11:20:43 2011]
+// updated       julien quintard   [sun sep  4 12:39:46 2011]
 //
 
 //
@@ -180,7 +180,7 @@ namespace elle
     }
 
     ///
-    /// this method dumps the bureau.
+    /// this method dumps the procedures.
     ///
     Status		Network::Show(const Natural32		margin)
     {

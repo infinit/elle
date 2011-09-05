@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [thu aug 11 16:38:11 2011]
+// updated       julien quintard   [sat sep  3 22:01:20 2011]
 //
 
 //
@@ -376,11 +376,12 @@ namespace elle
 	size_t		size;
 
 	// compute the size of the decrypted portion to come.
-	if (::EVP_PKEY_verify_recover(this->contexts.decrypt,
-				      NULL,
-				      &size,
-				      (const unsigned char*)key.region.contents,
-				      key.region.size) <= 0)
+	if (::EVP_PKEY_verify_recover(
+	      this->contexts.decrypt,
+	      NULL,
+	      &size,
+	      (const unsigned char*)key.region.contents,
+	      key.region.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// allocate the required memory for the region object.
@@ -392,11 +393,12 @@ namespace elle
 	// note that since the encryption with the private key relies
 	// upon the sign() EVP functionality, the verify_recover()
 	// function is used here.
-	if (::EVP_PKEY_verify_recover(this->contexts.decrypt,
-				      (unsigned char*)region.contents,
-				      &size,
-				      (const unsigned char*)key.region.contents,
-				      key.region.size) <= 0)
+	if (::EVP_PKEY_verify_recover(
+	      this->contexts.decrypt,
+	      (unsigned char*)region.contents,
+	      &size,
+	      (const unsigned char*)key.region.contents,
+	      key.region.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// set the region size.

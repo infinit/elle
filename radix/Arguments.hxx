@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Arguments.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [tue jul 19 16:38:14 2011]
+// updated       julien quintard   [sat sep  3 20:53:43 2011]
 //
 
 #ifndef ELLE_RADIX_ARGUMENTS_HXX
@@ -48,11 +48,7 @@ namespace elle
     /// of arguments.
     ///
     /// note that the template specializations give meaning to the
-    /// parameters i.e P<T...>.
-    ///
-    /// the Call() method is also provided in constant should the calling
-    /// instance have no choice. note however that this would imply every
-    /// callback/closure/etc. argument to be constant as well.
+    /// parameters i.e Parameters<T...>.
     ///
 
     ///

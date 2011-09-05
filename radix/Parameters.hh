@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Parameters.hh
 //
 // created       julien quintard   [sun feb 21 19:17:29 2010]
-// updated       julien quintard   [tue jul 19 16:06:45 2011]
+// updated       julien quintard   [sat sep  3 20:53:31 2011]
 //
 
 #ifndef ELLE_RADIX_PARAMETERS_HH
@@ -36,7 +36,7 @@ namespace elle
     /// note that many variadic template classes then rely on the
     /// Parameters structure such as Callback, Arguments, Closure etc.
     ///
-    /// this structure is especially useful because a Callback for instance,
+    /// this structure is especially useful because a Callback, for instance,
     /// since parameterized by a Paramters<T...>, can retrieve the consituent
     /// types of the Parameters.
     ///

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Tag.hh
 //
 // created       julien quintard   [sun nov 29 20:23:37 2009]
-// updated       julien quintard   [mon jul 18 23:27:40 2011]
+// updated       julien quintard   [sun sep  4 13:12:40 2011]
 //
 
 #ifndef ELLE_NETWORK_CODE_HH
@@ -33,6 +33,10 @@ namespace elle
 
     ///
     /// a tag is included in packets to distinguish their types.
+    ///
+    /// thus, tags must be used to uniquely identify message types.
+    ///
+    /// note that the Range can be used to allocate such tags in a safe way.
     ///
     typedef Natural32		Tag;
 

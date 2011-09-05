@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.cc
 //
 // created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [sat sep  3 13:58:01 2011]
+// updated       julien quintard   [sat sep  3 23:26:11 2011]
 //
 
 //
@@ -202,9 +202,6 @@ namespace elle
     {
       enter();
 
-      //printf("[XXX 0x%x] Fiber::Sleep()\n",
-      //Fiber::Current);
-
       // allocate the timer.
       Fiber::Current->timer = new Timer;
 
@@ -288,9 +285,6 @@ namespace elle
       if (Fiber::Fibers.empty() == true)
 	leave();
 
-      //printf("[XXX 0x%x] Fiber::Schedule()\n", Fiber::Current);
-      //Fiber::Show();
-
       // iterate over the container.
       for (iterator = Fiber::Fibers.begin();
 	   iterator != Fiber::Fibers.end();
@@ -301,9 +295,6 @@ namespace elle
 	  // if this fiber needs scheduling.
 	  if (fiber->state == Fiber::StateAwaken)
 	    {
-	      //printf("[XXX 0x%x] Fiber::Schedule() :: 0x%x\n",
-	      //Fiber::Current, fiber);
-
 	      // remove the fiber from the container.
 	      if (Fiber::Remove(fiber) == StatusError)
 		escape("unable to remove the fiber");
@@ -348,9 +339,6 @@ namespace elle
     {
       enter();
 
-      //printf("[XXX 0x%x] Fiber::New()\n",
-      //Fiber::Current);
-
       // check the cache.
       if (Fiber::Cache.empty() == false)
 	{
@@ -382,9 +370,6 @@ namespace elle
     Status		Fiber::Delete(Fiber*			fiber)
     {
       enter();
-
-      //printf("[XXX 0x%x] Fiber::Delete(0x%x)\n",
-      //Fiber::Current, fiber);
 
       // delete the environment.
       delete fiber->environment;
@@ -419,9 +404,6 @@ namespace elle
     {
       enter();
 
-      //printf("[XXX 0x%x] Fiber::Add(0x%x)\n",
-      //Fiber::Current, fiber);
-
       // ignore the program fiber which is special as it is
       // used as the root fiber.
       if (fiber == Fiber::Program)
@@ -441,9 +423,6 @@ namespace elle
       Fiber::F::Iterator	iterator;
 
       enter();
-
-      //printf("[XXX 0x%x] Fiber::Remove(0x%x)\n",
-      //Fiber::Current, fiber);
 
       // ignore the program fiber which is special as it is
       // used as the root fiber.

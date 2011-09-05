@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [sat sep  3 14:23:16 2011]
+// updated       julien quintard   [sun sep  4 15:28:45 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -40,12 +40,9 @@ namespace elle
     {
       enter();
 
-      //printf("[XXX 0x%x] Fiber::Launch()\n",
-      //Fiber::Current);
-
       // trigger the closure and, should there are errors, display them.
       if (closure->Call() == StatusError)
-	alert(_(), "an error occured in the fiber");
+	yield(_(), "an error occured in the fiber");
 
       // set the fiber state.
       Fiber::Current->state = Fiber::StateCompleted;
@@ -53,13 +50,10 @@ namespace elle
       // remove the parent fiber from the container since it is going
       // to be scheduled as soon as this function returns.
       if (Fiber::Remove(Fiber::Current->link) == StatusError)
-	alert(_(), "unable to remove the fiber");
+	yield(_(), "unable to remove the fiber");
 
       // set the state of the parent's fiber as awaken.
       Fiber::Current->link->state = Fiber::StateAwaken;
-
-      //printf("[/XXX 0x%x] Fiber::Launch()\n",
-      //Fiber::Current);
 
       // release the resources.
       release();
@@ -73,16 +67,10 @@ namespace elle
     {
       enter();
 
-      //printf("[XXX 0x%x] Fiber::Spawn()\n", Fiber::Current);
-
       // get the current context in order to resume execution for this point
       // in the future.
       if (::getcontext(&Fiber::Current->context) == -1)
 	escape("unable to get the context");
-
-      //printf("[XXX 0x%x] Fiber::Spawn(%u)\n",
-      //Fiber::Current, Fiber::Current->state);
-      //Fiber::Show();
 
       // if we are in the fiber spawning a new fiber...
       if (Fiber::Current->state == Fiber::StateActive)
@@ -91,9 +79,6 @@ namespace elle
 	  // checking system through casts.
 	  Void		(*launch)(Closure<Status, T...>*) = &Fiber::Launch;
 	  Fiber*	fiber;
-
-	  //printf("[XXX 0x%x] Fiber::Spawn() :: Parent\n",
-	  //Fiber::Current);
 
 	  // set the current fiber as suspended.
 	  Fiber::Current->state = Fiber::StateSuspended;
@@ -159,9 +144,6 @@ namespace elle
 	{
 	  Fiber*	fiber;
 
-	  //printf("[XXX 0x%x] Fiber::Spawn() :: Child\n",
-	  //Fiber::Current);
-
 	  //
 	  // at this point, we just came back from a fiber.
 	  //
@@ -224,9 +206,6 @@ namespace elle
 	  if (Fiber::Trigger(PhaseRestore) == StatusError)
 	    escape("unable to restore the environment");
 
-	  //printf("[/XXX] Fiber::Spawn()\n");
-	  //Fiber::Show();
-
 	  leave();
 	}
     }
@@ -244,9 +223,6 @@ namespace elle
       // check if the current fiber is the program.
       if (Fiber::Current == Fiber::Program)
 	escape("unable to wait while in the program fiber");
-
-      //printf("[XXX 0x%x] Fiber::Wait(event[0x%qx])\n",
-      //Fiber::Current, event.identifier);
 
       // set the fiber has been suspended.
       Fiber::Current->state = Fiber::StateSuspended;
@@ -281,9 +257,6 @@ namespace elle
       // reset the data.
       Fiber::Current->data = NULL;
 
-      //printf("[/XXX 0x%x] Fiber::Wait() :: 0x%x\n",
-      //Fiber::Current, data);
-
       leave();
     }
 
@@ -304,9 +277,6 @@ namespace elle
       // check if the current fiber is the program.
       if (Fiber::Current == Fiber::Program)
 	escape("unable to wait while in the program fiber");
-
-      //printf("[XXX 0x%x] Fiber::Wait(resource[0x%x])\n",
-      //Fiber::Current, resource);
 
       // set the fiber has been suspended.
       Fiber::Current->state = Fiber::StateSuspended;
@@ -338,9 +308,6 @@ namespace elle
       // retrieve the data.
       data = static_cast<T*>(Fiber::Current->data);
 
-      //printf("[/XXX 0x%x] Fiber::Wait() :: 0x%x\n",
-      //Fiber::Current, data);
-
       leave();
     }
 
@@ -355,9 +322,6 @@ namespace elle
       Boolean			awaken;
 
       enter();
-
-      //printf("[XXX 0x%x] Fiber::Awaken(event[0x%qx] data[0x%x])\n",
-      //Fiber::Current, event.identifier, data);
 
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)
@@ -406,9 +370,6 @@ namespace elle
       Boolean			awaken;
 
       enter();
-
-      //printf("[XXX 0x%x] Fiber::Awaken(resource[0x%x] data[0x%x])\n",
-      //Fiber::Current, resource, data);
 
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)

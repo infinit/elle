@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sat sep  3 11:16:04 2011]
+// updated       julien quintard   [sun sep  4 15:44:02 2011]
 //
 
 //
@@ -352,9 +352,9 @@ namespace elle
 		  this->buffer = NULL;
 		  this->offset = 0;
 
-		  /// XXX \todo make this one a warning instead of an error.
-		  escape("exceeded the buffer capacity without making sense "
-			 "out of the fetched data");
+		  // log the event.
+		  log("exceeded the buffer capacity without making sense "
+		      "out of the fetched data");
 		}
 
 	      // since the parcel will not be built, delete the instance.
@@ -372,21 +372,15 @@ namespace elle
 	      // otherwise, there is enough data in the buffer to extract
 	      // the parcel.
 	      //
-	      Point		point;
 
 	      // extract the data.
 	      if (packet.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the data");
 
-	      // set the point as being an IP point.
-	      // XXX is it correct? probably not!
-	      if (point.host.Create(Host::TypeIP) == StatusError)
-		escape("unable to create an IP point");
-
 	      // create the session.
 	      if (parcel->session->Create(
 		    this,
-		    point,
+		    Point::Null,
 		    parcel->header->event) == StatusError)
 		escape("unable to create the session");
 
@@ -449,6 +443,11 @@ namespace elle
     Status		Door::Target(String&			name) const
     {
       enter();
+
+      // check the socket state.
+      if (this->state != Channel::StateConnected)
+	escape("unable to retrieve the target address of a non-connected "
+	       "door");
 
       // retrieve the server name.
       name = this->socket->serverName().toStdString();
@@ -543,7 +542,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this callback is triggered when the channel's timer timeouts i.e
+    /// the socket failed to connect within a timeframe.
     ///
     Status		Door::Abort()
     {
@@ -571,7 +571,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this slot is triggered when the socket is considered connected.
     ///
     void		Door::_connected()
     {
@@ -589,13 +589,13 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }
 
     ///
-    /// XXX
+    /// this slot is triggered when the socket is considered disconnected
     ///
     void		Door::_disconnected()
     {
@@ -613,13 +613,13 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }
 
     ///
-    /// this slot fetches and dispatches packets from the socket.
+    /// this slot is triggered when data is ready on the socket.
     ///
     void		Door::_ready()
     {
@@ -634,7 +634,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }
@@ -665,7 +665,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }

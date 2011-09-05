@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.hxx
 //
 // created       julien quintard   [wed may 25 14:20:06 2011]
-// updated       julien quintard   [sun aug 28 21:08:32 2011]
+// updated       julien quintard   [sun sep  4 12:14:01 2011]
 //
 
 #ifndef ELLE_NETWORK_GATE_HXX
@@ -97,12 +97,7 @@ namespace elle
     }
 
     ///
-    /// XXX
-    ///
-    /// note that the session is never assigned when receive is used
-    /// to manually receive messages. it is therefore the caller's
-    /// responsability to keep information regarding who it is communicating
-    /// with and using which socket.
+    /// this method receives a packet by blocking.
     ///
     template <typename O>
     Status		Gate::Receive(const Event&		event,
@@ -151,7 +146,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method sends and waits for an appropriate response.
     ///
     template <typename I,
 	      typename O>
@@ -178,7 +173,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method replies to the message which has just been received i.e
+    /// whose tag is specified in the current session.
     ///
     template <typename I>
     Status		Gate::Reply(const I			inputs,

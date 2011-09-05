@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Data.hh
 //
 // created       julien quintard   [tue feb 23 18:15:07 2010]
-// updated       julien quintard   [sun may  2 19:48:58 2010]
+// updated       julien quintard   [sun sep  4 12:01:47 2011]
 //
 
 #ifndef ELLE_NETWORK_DATA_HH
@@ -32,7 +32,7 @@ namespace elle
 //
 
     ///
-    /// this type represents the message data section which contains the
+    /// this type represents a message's data section which contains the
     /// arguments.
     ///
     typedef Archive		Data;

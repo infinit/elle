@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Entity.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [sat jun 18 20:37:49 2011]
+// updated       julien quintard   [sat sep  3 20:42:26 2011]
 //
 
 #ifndef ELLE_RADIX_ENTITY_HH
@@ -39,14 +39,15 @@ namespace elle
 
     ///
     /// this interface must be implemented by every 'entity' ... in the
-    /// elle library terms.
+    /// Elle library terms.
     ///
     /// an entity is an instance that cannot be assigned, serialized
     /// hence stored on external media.
     ///
     /// however, an entity, like for objects, can be dumped.
     ///
-    /// note that an object implicitly acts as a concurrency control resource.
+    /// note that an entity, as for objects, implicitly acts as a
+    /// concurrency control resource.
     ///
     class Entity:
       public Meta,

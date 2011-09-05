@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/benchmark/cryptography/Time.hh
 //
 // created       julien quintard   [wed aug  5 15:23:38 2009]
-// updated       julien quintard   [wed aug  5 15:26:18 2009]
+// updated       julien quintard   [sat sep  3 19:55:45 2011]
 //
 
 #ifndef ELLE_BENCHMARK_CRYPTOGRAPHY_TIME_HH
@@ -31,6 +31,9 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// the specific class is used for recording the elapsed time.
+    ///
     class Time
     {
     public:

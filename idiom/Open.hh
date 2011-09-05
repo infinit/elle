@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [fri sep  2 12:36:41 2011]
+// updated       julien quintard   [sun sep  4 15:43:47 2011]
 //
 
 //
@@ -35,6 +35,10 @@
 // ---------- meta ------------------------------------------------------------
 //
 
+///
+/// this macro function enables the programmer to define compile-time
+/// assertions.
+///
 #define allege(_condition_)						\
   do									\
     {									\
@@ -166,8 +170,8 @@
 ///
 /// this macro-function registers a report entry.
 ///
-/// note that this macro function should never be called directly. instead
-/// the macro functions below should be used: leave, escape, true, alert
+/// note that this macro function should seldomly be called directly. instead
+/// the macro functions below should be used: leave, escape, true
 /// etc.
 ///
 #define report(_format_, _arguments_...)				\
@@ -283,6 +287,9 @@
 /// note that the return object is specifed, hence this function
 /// perfectly fits when an error occurs in operators for instance.
 ///
+/// note that no parentheses are put around _return_ in case it
+/// would be empty.
+///
 #define yield(_return_, _format_, _arguments_...)			\
   do									\
     {									\
@@ -290,22 +297,6 @@
 									\
       release();							\
       									\
-      return (_return_);						\
-    } while (false)
-
-///
-/// this macro-function reports an error and returns.
-///
-/// XXX \todo this one should directly print on stderr or later
-///     forward the message to a log application.
-///
-#define alert(_return_, _format_, _arguments_...)			\
-  do									\
-    {									\
-      log(_format_, ##_arguments_);					\
-									\
-      release();							\
-									\
       return _return_;							\
     } while (false)
 
@@ -381,14 +372,14 @@
 //
 
 ///
-/// XXX
+/// this macro function can be used to delay the deletion of an instance.
 ///
 #define bury(_instance_)						\
   do									\
     {									\
-      elle::radix::Morgue*	_morgue_;				\
+      elle::standalone::Morgue*	_morgue_;				\
 									\
-      if (elle::radix::Morgue::Instance(_morgue_) ==			\
+      if (elle::standalone::Morgue::Instance(_morgue_) ==		\
 	  elle::radix::StatusTrue)					\
 	{								\
 	  if (_morgue_->Register(_instance_) ==				\

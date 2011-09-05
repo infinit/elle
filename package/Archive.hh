@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [thu aug 11 16:10:16 2011]
+// updated       julien quintard   [sat sep  3 21:34:59 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HH
@@ -76,13 +76,6 @@ namespace elle
     /// the size attribute represents the real size of the archive while the
     /// capacity attribute is the archive's allocated memory size. the offset
     /// attribute is used when extracting information from the archive.
-    ///
-    /// \todo ajouter la transformation big->little ou little->big pour les
-    ///   types qui en ont besoin: integer, natural, bignum principalement.
-    ///     http://sources.redhat.com/cgi-bin/cvsweb.cgi/libc/sunrpc/rpc/xdr.h?rev=1.28.2.1&content-type=text/x-cvsweb-markup&cvsroot=glibc
-    ///     http://sources.redhat.com/cgi-bin/cvsweb.cgi/libc/sunrpc/xdr_intXX_t.c?rev=1.5.4.2&content-type=text/x-cvsweb-markup&cvsroot=glibc
-    ///     http://sources.redhat.com/cgi-bin/cvsweb.cgi/libc/sunrpc/xdr_mem.c?rev=1.15.10.1&content-type=text/x-cvsweb-markup&cvsroot=glibc
-    ///     http://sources.redhat.com/cgi-bin/cvsweb.cgi/libc/sunrpc/xdr_float.c?rev=1.6.2.1&content-type=text/x-cvsweb-markup&cvsroot=glibc
     ///
     class Archive:
       public Region

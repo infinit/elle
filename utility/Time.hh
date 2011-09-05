@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Time.hh
 //
 // created       julien quintard   [fri aug 21 23:56:01 2009]
-// updated       julien quintard   [thu aug 11 10:58:50 2011]
+// updated       julien quintard   [sun sep  4 13:45:18 2011]
 //
 
 #ifndef ELLE_UTILITY_TIME_HH
@@ -47,10 +47,7 @@ namespace elle
 //
 
     ///
-    /// this class represents a time stamp.
-    ///
-    /// XXX \todo use QTime or QDateTime -> precise with ms so no conflict
-    ///  possible + handles all cases + portable
+    /// this class represents a timestamp.
     ///
     class Time:
       public Object

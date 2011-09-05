@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.hxx
 //
 // created       julien quintard   [sun jun 26 21:23:03 2011]
-// updated       julien quintard   [mon jul  4 12:20:26 2011]
+// updated       julien quintard   [sun sep  4 13:44:04 2011]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HXX
@@ -232,7 +232,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method wraps the Value() method by forwarding the call
+    /// according to the given type.
     ///
     template <typename T>
     Status		Parser::Value(const String&		name,
@@ -248,7 +249,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method wraps the default-based Value() method by forwarding
+    /// the call according to the given type.
     ///
     template <typename T>
     Status		Parser::Value(const String&		name,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Network.hh
 //
 // created       julien quintard   [thu oct 15 14:32:58 2009]
-// updated       julien quintard   [fri sep  2 14:06:00 2011]
+// updated       julien quintard   [sun sep  4 13:21:06 2011]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HH
@@ -41,7 +41,12 @@ namespace elle
   using namespace utility;
 
   ///
-  /// XXX
+  /// this namespace contains everything related to network communications.
+  ///
+  /// note that the basic idea behind the Elle library is to define messages
+  /// and to register a callback associated with the message's tag of interest
+  /// so that such a message being received automatically triggers the
+  /// associated callback.
   ///
   namespace network
   {
@@ -51,7 +56,13 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this class enables one to register the procedures associated with
+    /// message tags so that whenever such a message is received, the
+    /// procedure is triggered for handling it.
+    ///
+    /// this way, the programmer only has to implement functions/methods
+    /// for handling messages while the serializing/extracting and calling
+    /// is performed automatically by the network manager.
     ///
     class Network
     {

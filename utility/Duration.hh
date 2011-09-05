@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Duration.hh
 //
 // created       julien quintard   [thu aug 11 10:40:35 2011]
-// updated       julien quintard   [thu aug 11 10:51:14 2011]
+// updated       julien quintard   [sun sep  4 13:36:24 2011]
 //
 
 #ifndef ELLE_UTILITY_DURATION_HH
@@ -38,7 +38,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this class defines durations of time which can then be used
+    /// with the Time class to go forward and backward in time for instance.
     ///
     class Duration:
       public Object

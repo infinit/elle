@@ -5,23 +5,23 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Morgue.cc
+// file          /home/mycure/infinit/elle/standalone/Morgue.cc
 //
 // created       julien quintard   [fri aug 26 17:10:36 2011]
-// updated       julien quintard   [thu sep  1 11:17:40 2011]
+// updated       julien quintard   [sat sep  3 20:26:32 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/radix/Morgue.hh>
+#include <elle/standalone/Morgue.hh>
 
 #include <elle/concurrency/Callback.hh>
 
 namespace elle
 {
-  namespace radix
+  namespace standalone
   {
 
 //
@@ -29,12 +29,13 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this variable contains the address of the current morgue.
     ///
     Morgue*				Morgue::Current = NULL;
 
     ///
-    /// XXX
+    /// this constants defines the morgue's frequency in milliseconds i.e
+    /// the delay between each session of deletions.
     ///
     const Natural32			Morgue::Frequency = 1000;
 
@@ -43,7 +44,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method initializes the morgue system.
     ///
     Status		Morgue::Initialize()
     {
@@ -56,7 +57,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method cleans the morgue.
     ///
     Status		Morgue::Clean()
     {
@@ -70,7 +71,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method returns the current morgue instance.
     ///
     Status		Morgue::Instance(Morgue*&		morgue)
     {
@@ -90,7 +91,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// default constructor.
     ///
     Morgue::Morgue():
       timer(NULL)
@@ -98,16 +99,16 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// destructor.
     ///
     Morgue::~Morgue()
     {
-      // bury the pending instances.
-      this->Bury();
-
       // if present, delete the timer.
       if (this->timer != NULL)
 	delete this->timer;
+
+      // bury the pending instances.
+      this->Bury();
     }
 
 //
@@ -115,7 +116,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this callback is triggered at a certain frequency and is
+    /// responsible for deleting the pending instances.
     ///
     Status		Morgue::Bury()
     {
@@ -144,7 +146,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method dumps the morgue's content.
     ///
     Status		Morgue::Dump(Natural32		margin) const
     {

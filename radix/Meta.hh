@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.hh
 //
 // created       julien quintard   [sun nov 29 19:31:55 2009]
-// updated       julien quintard   [wed aug 31 00:38:14 2011]
+// updated       julien quintard   [sat sep  3 20:43:35 2011]
 //
 
 #ifndef ELLE_RADIX_META_HH
@@ -46,9 +46,8 @@ namespace elle
     /// this class represents the root of the hierarchy. every class
     /// should directly or indirectly derive this class.
     ///
-    /// note that the traces are stored in files in order to avoid
-    /// maintaining a data structure which would require allocating memory
-    ///
+    /// note that the whole allocation process can be traced by
+    /// activating the Debug::Status variable.
     class Meta
     {
     public:

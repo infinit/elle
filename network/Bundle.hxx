@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hxx
 //
 // created       julien quintard   [fri jun  3 22:22:21 2011]
-// updated       julien quintard   [fri sep  2 22:12:55 2011]
+// updated       julien quintard   [sun sep  4 11:59:21 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HXX
@@ -37,7 +37,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// default constructor.
     ///
     template <const Tag G,
 	      typename... T>
@@ -49,7 +49,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// a specific constructor for ensembles i.e Arguments or Variables
+    /// for instance.
     ///
     template <const Tag G,
 	      typename... T>
@@ -68,7 +69,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method serializes the variables referenced through the Arguments
+    /// attribute.
     ///
     template <const Tag G,
 	      typename... T>
@@ -95,7 +97,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method does nothing when it comes to Inputs bundles.
     ///
     template <const Tag G,
 	      typename... T>
@@ -109,7 +111,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method dumps the bundle.
     ///
     template <const Tag G,
 	      typename... T>
@@ -140,7 +142,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// default constructor.
     ///
     template <const Tag G,
 	      typename... T>
@@ -152,7 +154,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// a specific constructor for ensembles i.e Arguments or Variables
+    /// for instance.
     ///
     template <const Tag G,
 	      typename... T>
@@ -171,7 +174,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method does nothing when it comes to Outputs bundles.
     ///
     template <const Tag G,
 	      typename... T>
@@ -185,13 +188,15 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method extract information from the given archive in order
+    /// to set the values of the variables referenced through the Arguments
+    /// attribute.
     ///
     template <const Tag G,
 	      typename... T>
     Status
     Bundle::Outputs< G,
-		     Parameters<T...> >::Extract(Archive& archive)
+		     Parameters<T...> >::Extract(Archive&	archive)
     {
       Callback<
 	Status,
@@ -211,7 +216,7 @@ namespace elle
 
 
     ///
-    /// XXX
+    /// this method dumps the bundle.
     ///
     template <const Tag G,
 	      typename... T>

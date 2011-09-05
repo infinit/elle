@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sat sep  3 08:42:00 2011]
+// updated       julien quintard   [sun sep  4 15:44:13 2011]
 //
 
 //
@@ -222,9 +222,6 @@ namespace elle
       if (Socket::Dump(margin + 2) == StatusError)
 	escape("unable to dump the socket");
 
-      // XXX hasPendingDatagrams, BindMode, SocketState, Valid,
-      // XXX TransportProtocol, ...
-
       leave();
     }
 
@@ -338,7 +335,7 @@ namespace elle
 //
 
     ///
-    /// this slot fetches and dispatches packets from the socket.
+    /// this slot is triggered when data is ready on the socket.
     ///
     void		Slot::_ready()
     {
@@ -353,7 +350,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }
@@ -384,7 +381,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }

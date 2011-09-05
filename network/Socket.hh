@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.hh
 //
 // created       julien quintard   [wed feb  3 12:49:33 2010]
-// updated       julien quintard   [sat sep  3 00:30:48 2011]
+// updated       julien quintard   [sun sep  4 13:11:03 2011]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HH
@@ -53,8 +53,8 @@ namespace elle
 
     ///
     /// this class abstracts the notion of socket. indeed, the socket
-    /// can be non-connected i.e a slot, connected to a channel or connected
-    /// locally to a bridge.
+    /// can be non-connected i.e a slot, connected to a bridge or connected
+    /// locally to a lane.
     ///
     class Socket:
       public Entity

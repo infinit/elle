@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Object.hh
 //
 // created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [mon jul 11 13:40:04 2011]
+// updated       julien quintard   [sat sep  3 20:51:58 2011]
 //
 
 #ifndef ELLE_RADIX_OBJECT_HH
@@ -48,7 +48,7 @@ namespace elle
 
     ///
     /// this interface must be implemented by every 'object' ... in the
-    /// elle library terms.
+    /// Elle library terms.
     ///
     /// an object is an instance of a class which can be copied through
     /// assignment, which can be recycled but also compared. in addition,

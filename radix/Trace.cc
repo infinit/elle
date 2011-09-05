@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.cc
 //
 // created       julien quintard   [mon apr 26 21:25:23 2010]
-// updated       julien quintard   [mon jul 11 23:14:41 2011]
+// updated       julien quintard   [sat sep  3 20:47:02 2011]
 //
 
 //
@@ -215,7 +215,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method initializes the trace system.
     ///
     Status		Trace::Initialize()
     {
@@ -224,7 +224,7 @@ namespace elle
       enter();
 
       // create the location.
-      sprintf(Trace::Location, "/tmp/XXXXXX");
+      ::sprintf(Trace::Location, "/tmp/XXXXXX");
 
       // generate a temporary location.
       ::mkdtemp(Trace::Location);
@@ -254,7 +254,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method cleans the system.
     ///
     Status		Trace::Clean()
     {
@@ -299,9 +299,6 @@ namespace elle
       int		fd;
 
       enter();
-
-      // XXX
-      //printf("Trace::Store(%p)\n", address);
 
       // generate the trace.
       if (trace.Generate() == StatusError)
@@ -360,9 +357,6 @@ namespace elle
 
       enter();
 
-      // XXX
-      //printf("Trace::Erase(%p)\n", address);
-
       // build the path.
       ::sprintf(path,
 		"%s/%p",
@@ -391,7 +385,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method displays the remaining addresses i.e the traces
+    /// of the addresses which have not been released.
     ///
     Status		Trace::Show(const Natural32		margin)
     {

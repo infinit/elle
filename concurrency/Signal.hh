@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Signal.hh
 //
 // created       julien quintard   [thu sep  1 12:58:07 2011]
-// updated       julien quintard   [sat sep  3 09:41:22 2011]
+// updated       julien quintard   [sun sep  4 15:26:11 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_SIGNAL_HH
@@ -39,13 +39,14 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this class represents the generic Signal.
     ///
     template <typename... T>
     class Signal;
 
     ///
-    /// XXX
+    /// a signal represents an event to which one can subscribe so that
+    /// when it is emitted, the subscribed callbacks are called.
     ///
     template <typename... T>
     class Signal< Parameters<T...> >:
@@ -134,7 +135,7 @@ namespace elle
       Status		Subscribe(const C<Status, P>,
 				  Stream&);
       Status		Unsubscribe(const Stream);
-      Status		Emit(T&...);
+      Status		Emit(T...);
 
       Status		Flush();
 
@@ -142,6 +143,7 @@ namespace elle
       // attributes
       //
       Stream		counter;
+
       Container		container;
     };
 

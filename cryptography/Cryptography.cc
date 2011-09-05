@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Cryptography.cc
 //
 // created       julien quintard   [tue oct 30 12:16:42 2007]
-// updated       julien quintard   [thu aug 11 17:38:16 2011]
+// updated       julien quintard   [sat sep  3 21:50:35 2011]
 //
 
 //
@@ -37,10 +37,6 @@ namespace elle
     ///
     /// this method initialises everything related to the cryptographic
     /// classes.
-    ///
-    /// \todo
-    ///   this method relies on open() which is UNIX-specific: make it
-    ///   portable.
     ///
     Status		Cryptography::Initialize()
     {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Close.hh
 //
 // created       julien quintard   [wed mar 10 20:18:19 2010]
-// updated       julien quintard   [fri aug 26 17:43:27 2011]
+// updated       julien quintard   [sun sep  4 15:43:41 2011]
 //
 
 //
@@ -51,7 +51,6 @@
 #undef escape
 #undef flee
 #undef yield
-#undef alert
 #undef fail
 #undef show
 #undef expose

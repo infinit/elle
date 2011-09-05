@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Event.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [thu aug 11 17:38:33 2011]
+// updated       julien quintard   [sat sep  3 23:25:11 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_EVENT_HH
@@ -44,7 +44,7 @@ namespace elle
 //
 
     ///
-    /// events are used to uniquely identify events, network packets and
+    /// this class is used to uniquely identify events, network packets and
     /// so on.
     ///
     class Event:

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Thread.hh
 //
 // created       julien quintard   [tue mar  9 18:42:07 2010]
-// updated       julien quintard   [mon may  3 21:14:21 2010]
+// updated       julien quintard   [sat sep  3 23:38:14 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_THREAD_HH
@@ -37,7 +37,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// XXX \todo to implement
     ///
     class Thread:
       public ::QThread,
@@ -57,8 +57,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      Thread() {}; // XXX
-      ~Thread() {}; // XXX
+      Thread() {};
+      ~Thread() {};
 
       //
       // interface
@@ -67,26 +67,9 @@ namespace elle
 
       // qthread
       void		run();
-
-      //
-      // attributes
-      //
-      // XXX Wallet<T> wallet qui contient session, report etc. + T ou
-      // un Get/Set(String -> Meta)
-
-      // ensuite on fait Thread::Current qui opinte sur la courante.
-      // Threads qui le contient toutes, dans Application
-
-      // de cette maniere la seule globale est Application!
     };
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <elle/concurrency/Thread.hxx>
 
 #endif

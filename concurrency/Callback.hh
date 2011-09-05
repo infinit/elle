@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hh
 //
 // created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [fri sep  2 22:27:14 2011]
+// updated       julien quintard   [sat sep  3 23:21:41 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH
@@ -116,11 +116,13 @@ namespace elle
       //
       template <typename R,
 		typename... T>
-      static Callback< R, Parameters<T...> >	Infer(R (*)(T...));
+      static Callback< R,
+		       Parameters<T...> >	Infer(R (*)(T...));
       template <typename R,
 		typename C,
 		typename... T>
-      static Callback< R, Parameters<T...> >	Infer(R (C::*)(T...),
+      static Callback< R,
+		       Parameters<T...> >	Infer(R (C::*)(T...),
 						      C*);
     };
 

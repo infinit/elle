@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trait.hxx
 //
 // created       julien quintard   [fri jul 15 10:45:39 2011]
-// updated       julien quintard   [thu sep  1 17:30:33 2011]
+// updated       julien quintard   [sat sep  3 20:51:42 2011]
 //
 
 #ifndef ELLE_RADIX_TRAIT_HXX
@@ -22,6 +22,10 @@ namespace elle
 //
 // ---------- bare ------------------------------------------------------------
 //
+
+    ///
+    /// these templates remove traits from the given type.
+    ///
 
     template <typename T>
     struct Trait::Bare<T&>
@@ -99,6 +103,10 @@ namespace elle
 // ---------- constants -------------------------------------------------------
 //
 
+    ///
+    /// these templates make the given type constant.
+    ///
+
     template <typename T>
     struct Trait::Constant<const T>
     {
@@ -151,6 +159,10 @@ namespace elle
 // ---------- pointer ---------------------------------------------------------
 //
 
+    ///
+    /// these templates transform the given type into a pointer.
+    ///
+
     template <typename T>
     struct Trait::Pointer<T*>
     {
@@ -172,6 +184,10 @@ namespace elle
 //
 // ---------- reference -------------------------------------------------------
 //
+
+    ///
+    /// these templates transform the given type into a reference.
+    ///
 
     template <typename T>
     struct Trait::Reference<T&>

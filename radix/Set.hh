@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Set.hh
 //
 // created       julien quintard   [fri jul 15 14:49:26 2011]
-// updated       julien quintard   [tue jul 19 16:06:53 2011]
+// updated       julien quintard   [sat sep  3 20:56:52 2011]
 //
 
 #ifndef ELLE_RADIX_SET_HH
@@ -30,7 +30,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// the set structure provides templates for manipulating Parameters
+    /// types in order to perform set-theory-like operations.
     ///
     struct Set
     {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.hh
 //
 // created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [fri sep  2 21:23:53 2011]
+// updated       julien quintard   [sun sep  4 12:20:59 2011]
 //
 
 ///
@@ -70,9 +70,8 @@ namespace elle
     ///
     /// this class represents a server waiting for connections.
     ///
-    /// \todo XXX
-    ///   note that this class should be put as a nested class of Lane
-    ///   but QT (as of version 4.5) does not support that feature.
+    /// \todo XXX note that this class should be put as a nested class of Lane
+    ///           but QT (as of version 4.5) does not support that feature.
     ///
     class LanePorter:
       ::QObject,
@@ -124,9 +123,7 @@ namespace elle
     };
 
     ///
-    /// XXX
-    ///
-    /// the Initialize() and Clean() are obviously not thread-safe.
+    /// this class enables the caller to listen for incoming Door connections.
     ///
     class Lane
     {

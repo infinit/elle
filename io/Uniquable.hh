@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Uniquable.hh
 //
 // created       julien quintard   [sun may  2 12:01:53 2010]
-// updated       julien quintard   [thu jul 28 16:16:21 2011]
+// updated       julien quintard   [sat sep  3 21:47:30 2011]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HH
@@ -50,7 +50,9 @@ namespace elle
     /// a unique compact string-based form.
     ///
     /// besides, this unique string representation can be used to
-    /// save and restore the original object from/to main memory.
+    /// save and restore the original object from/to main memory. indeed
+    /// a unique instance is nothing more that a base64/hexadecimal/etc.
+    /// representation of its archive.
     ///
     template <const Format F>
     class Uniquable:

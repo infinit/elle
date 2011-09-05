@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/network/slot/Neighbour.cc
 //
 // created       julien quintard   [wed mar 17 11:23:38 2010]
-// updated       julien quintard   [fri sep  2 20:30:56 2011]
+// updated       julien quintard   [sun sep  4 13:47:48 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method creates a neighbour.
     ///
     Status		Neighbour::Create(Node*			node,
 					  const Point&		point,
@@ -58,7 +58,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method updates the neighbour's name.
     ///
     Status		Neighbour::Update(const String&		name)
     {
@@ -71,7 +71,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method refreshes the neighbour.
     ///
     Status		Neighbour::Refresh()
     {
@@ -149,7 +149,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method discards the neighbour.
     ///
     Status		Neighbour::Discard()
     {

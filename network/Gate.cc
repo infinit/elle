@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [sat sep  3 14:05:57 2011]
+// updated       julien quintard   [sun sep  4 15:44:08 2011]
 //
 
 //
@@ -347,9 +347,9 @@ namespace elle
 		  this->buffer = NULL;
 		  this->offset = 0;
 
-		  /// XXX \todo make this one a warning instead of an error.
-		  escape("exceeded the buffer capacity without making sense "
-			 "out of the fetched data");
+		  // log the event.
+		  log("exceeded the buffer capacity without making sense "
+		      "out of the fetched data");
 		}
 
 	      // since the parcel will not be built, delete the instance.
@@ -551,7 +551,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this callback is triggered when the channel's timer timeouts i.e
+    /// the socket failed to connect within a timeframe.
     ///
     Status		Gate::Abort()
     {
@@ -579,7 +580,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this slot is triggered when the socket is considered connected.
     ///
     void		Gate::_connected()
     {
@@ -597,13 +598,13 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }
 
     ///
-    /// XXX
+    /// this slot is triggered when the socket is considered disconnected.
     ///
     void		Gate::_disconnected()
     {
@@ -621,13 +622,13 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }
 
     ///
-    /// this slot fetches and dispatches packets from the socket.
+    /// this slot is triggered when data is ready on the socket.
     ///
     void		Gate::_ready()
     {
@@ -642,7 +643,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }
@@ -673,7 +674,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }

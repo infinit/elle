@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.hh
 //
 // created       julien quintard   [thu feb  4 14:42:14 2010]
-// updated       julien quintard   [sat sep  3 00:44:10 2011]
+// updated       julien quintard   [sun sep  4 13:14:48 2011]
 //
 
 ///
@@ -137,6 +137,7 @@ namespace elle
       // attributes
       //
       String		name;
+
       ::QLocalSocket*	socket;
 
       //

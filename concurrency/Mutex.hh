@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Mutex.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [sat jun 18 20:48:37 2011]
+// updated       julien quintard   [sun sep  4 15:29:56 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_MUTEX_HH
@@ -24,7 +24,7 @@
 #include <elle/radix/Entity.hh>
 
 #include <elle/idiom/Close.hh>
-# include <QMutex>
+# include <QReadWriteLock>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -42,24 +42,12 @@ namespace elle
     ///
     /// this class provides a mutex functionality.
     ///
-    /// note that mutexes provide thread-fiber-safety.
-    ///
-    /// \todo XXX the other concurrency control classes such as condition
-    /// semaphore etc. should inherit from Resource
-    ///
+    /// \todo XXX this should be made fiber-friendly
+    //
     class Mutex:
       public Entity
     {
     public:
-      //
-      // enumerations
-      //
-      enum State
-	{
-	  StateUnlocked,
-	  StateLocked
-	};
-
       //
       // constants
       //
@@ -79,8 +67,7 @@ namespace elle
       //
       // attributes
       //
-      ::QMutex		mutex;
-      State		state;
+      ::QReadWriteLock	variable;
     };
 
   }

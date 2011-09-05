@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [sat sep  3 13:36:40 2011]
+// updated       julien quintard   [sat sep  3 20:29:39 2011]
 //
 
 //
@@ -406,13 +406,7 @@ namespace elle
     {
       enter();
 
-      // check the address as this may actually be the same object.
-      if (this == &element)
-	true();
-
-      // XXX
-
-      true();
+      flee("this method should never have been called");
     }
 
     ///

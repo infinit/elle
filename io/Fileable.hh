@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hh
 //
 // created       julien quintard   [fri apr 30 17:35:00 2010]
-// updated       julien quintard   [tue apr 26 12:51:39 2011]
+// updated       julien quintard   [sat sep  3 21:40:11 2011]
 //
 
 #ifndef ELLE_IO_FILEABLE_HH
@@ -40,7 +40,7 @@ namespace elle
 
     ///
     /// this interface must be inherited by every class which wishes
-    /// to make the objects fileable i.e capable to be stored and loaded
+    /// to make its instances fileable i.e storable and loadable
     /// to/from files.
     ///
     template <const Format F>
