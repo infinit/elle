@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Customer.cc
 //
 // created       julien quintard   [sun aug 28 17:53:05 2011]
-// updated       julien quintard   [sat sep  3 13:12:18 2011]
+// updated       julien quintard   [sat sep  3 17:44:33 2011]
 //
 
 //
@@ -127,18 +127,8 @@ namespace hole
 		    << std::endl;
 
 	// emit the signal.
-	//if (this->signal.dead.Emit(this) == elle::StatusError)
-	//escape("unable to emit the signal");
-
-	    /* XXX upon reception
-	// remove the customer from the server.
-	    if (Remote::Computer->server->Remove(this->gate) ==
-		elle::StatusError)
-	      escape("unable to remove the customer");
-
-	    // bury the customer.
-	    bury(this);
-	    */
+	if (this->signal.dead.Emit(this) == elle::StatusError)
+	  escape("unable to emit the signal");
 
 	leave();
       }
@@ -155,9 +145,8 @@ namespace hole
 	  std::cout << "[hole] Customer::Error()"
 		    << std::endl;
 
-	// emit the signal.
-	//if (this->signal.dead.Emit(this) == elle::StatusError)
-	//escape("unable to emit the signal");
+	// disconnect the gate, though that may be unecessary.
+	this->gate->Disconnect();
 
 	leave();
       }

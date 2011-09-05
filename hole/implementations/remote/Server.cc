@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [sat sep  3 11:21:33 2011]
+// updated       julien quintard   [sat sep  3 17:28:09 2011]
 //
 
 //
@@ -432,6 +432,12 @@ namespace hole
 	// set the state.
 	customer->state = Customer::StateConnected;
 
+	// subscribe to the signal.
+	if (customer->signal.dead.Subscribe(
+	      elle::Callback<>::Infer(&Server::Sweep,
+				      this)) == elle::StatusError)
+	  escape("unable to subscribe to the signal");
+
 	// add the customer.
 	if (this->Add(customer->gate, customer) == elle::StatusError)
 	  escape("unable to add the customer");
@@ -478,8 +484,12 @@ namespace hole
 	    if (this->Remove(customer->gate) == elle::StatusError)
 	      escape("unable to remove the customer");
 
-	    // delete the customer.
-	    delete customer;
+	    // disconnect the customer.
+	    if (customer->gate->Disconnect() == elle::StatusError)
+	      escape("unable to disconnect the customer");
+
+	    // bury the customer: the socket is still in use.
+	    bury(customer);
 	  }
 	else
 	  {
@@ -491,6 +501,26 @@ namespace hole
 	          elle::Inputs<TagAuthenticated>()) == elle::StatusError)
 	      escape("unable to reply to the client");
 	  }
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Server::Sweep(Customer*			customer)
+      {
+	enter();
+
+	// remove the customer.
+	if (this->Remove(customer->gate) == elle::StatusError)
+	  escape("unable to remove the customer");
+
+	// bury it.
+	bury(customer);
+
+	// XXX
+	this->Dump();
 
 	leave();
       }
@@ -726,7 +756,7 @@ namespace hole
 	  escape("unable to dump the point");
 
 	std::cout << alignment << elle::Dumpable::Shift
-		  << "[Customers]" << std::endl;
+		  << "[Customers] " << this->container.size() << std::endl;
 
 	// go though the customer.
 	for (scoutor = this->container.begin();

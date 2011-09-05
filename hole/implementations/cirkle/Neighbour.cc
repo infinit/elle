@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...hole/implementations/cirkle/Neighbour.cc
 //
 // created       julien quintard   [wed aug 24 13:12:46 2011]
-// updated       julien quintard   [fri sep  2 23:40:24 2011]
+// updated       julien quintard   [sat sep  3 15:37:23 2011]
 //
 
 //
@@ -84,6 +84,8 @@ namespace hole
 	// create the timer.
 	if (this->timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
 	  escape("unable to create the timer");
+
+	// XXX -discard +abort
 
 	// subscribe to the timer's signal.
 	if (this->timer->signal.timeout.Subscribe(

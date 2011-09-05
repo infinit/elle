@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Customer.hh
 //
 // created       julien quintard   [sun aug 28 17:49:10 2011]
-// updated       julien quintard   [sat sep  3 09:47:34 2011]
+// updated       julien quintard   [sat sep  3 17:44:36 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
@@ -94,7 +94,7 @@ namespace hole
 	{
 	  elle::Signal<
 	    elle::Parameters<
-  	      Customer* const
+  	      Customer*
 	      >
 	    >			dead;
 	}			signal;

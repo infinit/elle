@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [sat sep  3 15:12:37 2011]
+// updated       julien quintard   [sat sep  3 16:39:15 2011]
 //
 
 //
