@@ -529,7 +529,10 @@ class DepFile:
         res = []
         self.path().touch()
         for line in open(str(self.path()), 'r'):
-            (sha1, name, data) = line[:-1].split(' ') # Chomp the \n
+            chunks = line[:-1].split(' ')
+            sha1 = chunks[0]
+            name = ' '.join(chunks[1:-1])
+            data = chunks[-1]
             src = Path(name)
             self.__sha1[str(src)] = (sha1, data)
 
