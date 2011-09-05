@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.hh
 //
 // created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [thu jul 21 09:16:21 2011]
+// updated       julien quintard   [sat sep  3 19:44:37 2011]
 //
 
 #ifndef AGENT_AGENT_HH
@@ -23,6 +23,11 @@
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
 
+///
+/// the agent namespace contains everything related to the agent
+/// component i.e the entity responsible for performing cryptographic
+/// operations on behalf of the user.
+///
 namespace agent
 {
 
@@ -33,6 +38,9 @@ namespace agent
   ///
   /// this class implements the agent by providing an entry point
   /// to user-specific cryptographic functionalities.
+  ///
+  /// this class comes with some information such as the user identity,
+  /// and a ready-to-use subject.
   ///
   class Agent
   {

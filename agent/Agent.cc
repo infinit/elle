@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/agent/Agent.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu jul 28 15:10:59 2011]
+// updated       julien quintard   [sat sep  3 19:45:57 2011]
 //
 
 //
@@ -32,7 +32,7 @@ namespace agent
   const elle::Character		Component[] = "agent";
 
   ///
-  /// this user's identity.
+  /// the user's identity.
   ///
   lune::Identity		Agent::Identity;
 
