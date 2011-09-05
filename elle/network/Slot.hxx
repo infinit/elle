@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [thu aug 25 11:55:29 2011]
+// updated       julien quintard   [sun sep  4 13:09:50 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -100,10 +100,7 @@ namespace elle
     }
 
     ///
-    /// XXX
-    ///
-    /// note that the session is never assigned when Receive() is used
-    /// to manually receive messages.
+    /// this method receives a packet through blocking.
     ///
     template <typename O>
     Status		Slot::Receive(const Event&		event,
@@ -152,7 +149,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method sends a message and waits for a response.
     ///
     template <typename I,
 	      typename O>
@@ -180,7 +177,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method replies to the message which has just been received i.e
+    /// whose tag is specified in the current session.
     ///
     template <typename I>
     Status		Slot::Reply(const I			inputs,

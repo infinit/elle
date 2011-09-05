@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.cc
 //
 // created       julien quintard   [wed may 25 15:55:16 2011]
-// updated       julien quintard   [fri sep  2 21:29:43 2011]
+// updated       julien quintard   [sun sep  4 15:44:23 2011]
 //
 
 //
@@ -213,7 +213,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method returns the porter associated with the given point.
     ///
     Status		Bridge::Retrieve(const Point&		point,
 					 BridgePorter*&		porter)
@@ -233,7 +233,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method tries to locate the porter associated with the given
+    /// point and returns true if so.
     ///
     Status		Bridge::Locate(const Point&		point,
 				       Iterator*		iterator)
@@ -358,6 +359,10 @@ namespace elle
 // ---------- slots -----------------------------------------------------------
 //
 
+    ///
+    /// this slot is triggered whenever a connection is being made on the
+    /// porter's point.
+    ///
     void		BridgePorter::_accept()
     {
       Closure< Status,
@@ -368,7 +373,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }

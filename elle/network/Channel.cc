@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.cc
 //
 // created       julien quintard   [thu mar 18 21:20:27 2010]
-// updated       julien quintard   [sat sep  3 11:07:22 2011]
+// updated       julien quintard   [sun sep  4 12:00:08 2011]
 //
 
 //
@@ -30,6 +30,7 @@ namespace elle
     /// this value defines the maximum capacity of a buffered packed, in bytes.
     ///
     /// \todo XXX to change to something around 10MB
+    ///
     const Natural64		Channel::Capacity = 52428800;
 
 //
@@ -84,7 +85,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method dumps the channel-related attributes.
     ///
     Status		Channel::Dump(const Natural32		margin) const
     {

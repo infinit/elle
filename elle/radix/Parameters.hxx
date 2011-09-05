@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Parameters.hxx
 //
 // created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [tue jul 19 16:06:50 2011]
+// updated       julien quintard   [sat sep  3 20:53:56 2011]
 //
 
 #ifndef ELLE_RADIX_PARAMETERS_HXX
@@ -39,6 +39,11 @@ namespace elle
 //
 // ---------- structures ------------------------------------------------------
 //
+
+    ///
+    /// these classes specialize the Parameters class depending on the number
+    /// of parameters.
+    ///
 
     ///
     /// zero parameter.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon jun 27 07:15:56 2011]
+// updated       julien quintard   [sat sep  3 19:55:11 2011]
 //
 
 //
@@ -35,6 +35,9 @@ namespace elle
 // ---------- functions -------------------------------------------------------
 //
 
+    ///
+    /// this is the benchmark's entry point.
+    ///
     Status		Main()
     {
       Byte		buffer[Benchmark::BlockSize];

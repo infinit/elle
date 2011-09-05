@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Utility.hh
 //
 // created       julien quintard   [fri apr  2 12:55:50 2010]
-// updated       julien quintard   [thu aug 11 10:47:57 2011]
+// updated       julien quintard   [sun sep  4 13:46:13 2011]
 //
 
 #ifndef ELLE_UTILITY_UTILITY_HH
@@ -17,7 +17,8 @@
 namespace elle
 {
   ///
-  /// this namespace contains additional utilities.
+  /// this namespace contains additional utilities such as format conversions
+  /// to base64, hexadecimal etc.
   ///
   namespace utility
   {

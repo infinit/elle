@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trait.hh
 //
 // created       julien quintard   [tue jun  7 13:43:54 2011]
-// updated       julien quintard   [fri jul 15 14:49:11 2011]
+// updated       julien quintard   [sat sep  3 20:50:34 2011]
 //
 
 #ifndef ELLE_RADIX_TRAIT_HH
@@ -19,6 +19,8 @@
 //
 
 #include <elle/radix/Parameters.hh>
+
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -77,14 +79,14 @@ namespace elle
       template <typename T>
       struct Iterator<const T>
       {
-	// invalid use.
+	// invalid use: no Type defined.
       };
 
       // scoutor
       template <typename T>
       struct Scoutor
       {
-	// invalid use.
+	// invalid use: no Type defined.
       };
 
       template <typename T>

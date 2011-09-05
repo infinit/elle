@@ -19,12 +19,12 @@ ADD_LIBRARY(elle
 
   standalone/Log.cc
   standalone/Maid.cc
+  standalone/Morgue.cc
   standalone/Region.cc
   standalone/Report.cc
   standalone/Standalone.cc
 
   radix/Meta.cc
-  radix/Morgue.cc
   radix/Object.cc
   radix/Radix.cc
   radix/Trace.cc
@@ -44,18 +44,14 @@ ADD_LIBRARY(elle
 
   system/System.cc
 
-  concurrency/Accord.cc
   concurrency/Broker.cc
   concurrency/Concurrency.cc
   concurrency/Environment.cc
   concurrency/Event.cc
   concurrency/Fiber.cc
   concurrency/Frame.cc
-  concurrency/Mutex.cc
   concurrency/Program.cc
   concurrency/Routine.cc
-  concurrency/Semaphore.cc
-  concurrency/Thread.cc
   concurrency/Timer.cc
 
   cryptography/Cipher.cc
@@ -98,7 +94,7 @@ ADD_LIBRARY(elle
   ${elle_MOCS}
 )
 
-TARGET_LINK_LIBRARIES(elle comet crypto ssl dl readline)
+TARGET_LINK_LIBRARIES(elle comet msgpack crypto ssl dl readline)
 
 ADD_SUBDIRECTORY(test)
 ADD_SUBDIRECTORY(benchmark)

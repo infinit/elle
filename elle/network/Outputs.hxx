@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Outputs.hxx
 //
 // created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [fri jul  8 12:15:46 2011]
+// updated       julien quintard   [sun sep  4 12:40:17 2011]
 //
 
 #ifndef ELLE_NETWORK_OUTPUTS_HXX
@@ -30,7 +30,8 @@ namespace elle
 //
 
     ///
-    /// this function generates a Bundle instance.
+    /// this function generates an outputs bundle instance without having
+    /// to specify the parameter types.
     ///
     /// this function is being inlined in order to avoid copying the
     /// Bundle instance for nothing.

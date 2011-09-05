@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bridge.hh
 //
 // created       julien quintard   [wed may 25 15:53:18 2011]
-// updated       julien quintard   [fri sep  2 21:24:06 2011]
+// updated       julien quintard   [sun sep  4 12:20:51 2011]
 //
 
 ///
@@ -71,9 +71,9 @@ namespace elle
     ///
     /// this class represents a server waiting for connections.
     ///
-    /// \todo XXX
-    ///   note that this class should be put as a nested class of Bridge
-    ///   but QT (as of version 4.5) does not support that feature.
+    /// \todo XXX note that this class should be put as a nested class of
+    ///           Bridge but QT (as of version 4.5) does not support that
+    ///           feature.
     ///
     class BridgePorter:
       ::QObject,
@@ -125,9 +125,7 @@ namespace elle
     };
 
     ///
-    /// XXX
-    ///
-    /// the Initialize() and Clean() are obviously not thread-safe.
+    /// this class enables the caller to listen for incoming Gate connections.
     ///
     class Bridge
     {

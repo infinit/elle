@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Message.hh
 //
 // created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [mon jul 18 23:22:49 2011]
+// updated       julien quintard   [sun sep  4 12:23:02 2011]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH
@@ -30,17 +30,17 @@ namespace elle
 //
 
     ///
-    /// this class represents a message.
-    ///
-    /// note that a message is composed of a header and a set of parameters.
+    /// this class represents a message which is composed of a header and
+    /// a set of parameters.
     ///
     /// it is important to notice that the Message class does not implement
     /// the Archivable interface because, whenever a message is received,
     /// the network sub-system first fetches the header in order to verify
-    /// the message validity but also in order to extract the tag. then,
-    /// the parameters can be retrieved properly. indeed, without the tag,
-    /// the system cannot know the number or types of the parameters. that
-    /// is why messages are split into two different logic parts.
+    /// the message validity but also in order to extract the tag.
+    ///
+    /// then, the parameters can be retrieved properly. indeed, without the
+    /// tag, the system cannot know the number or types of the parameters.
+    /// that is why messages are split into two different logical parts.
     ///
     template <const Tag G>
     class Message:

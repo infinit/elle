@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Radix.hh
 //
 // created       julien quintard   [sun may  2 11:55:25 2010]
-// updated       julien quintard   [fri aug 26 17:08:12 2011]
+// updated       julien quintard   [sat sep  3 20:54:49 2011]
 //
 
 #ifndef ELLE_RADIX_RADIX_HH
@@ -22,6 +22,10 @@
 
 namespace elle
 {
+  ///
+  /// the radix namespace contains fundamental classes on which all
+  /// the other classes rely such as Object, Entity, Parameters etc.
+  ///
   namespace radix
   {
 
@@ -53,7 +57,6 @@ namespace elle
 #include <elle/radix/Arguments.hh>
 #include <elle/radix/Entity.hh>
 #include <elle/radix/Meta.hh>
-#include <elle/radix/Morgue.hh>
 #include <elle/radix/Object.hh>
 #include <elle/radix/Parameters.hh>
 #include <elle/radix/Set.hh>

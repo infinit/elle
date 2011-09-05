@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Allege.hh
 //
 // created       julien quintard   [mon jul 18 14:56:45 2011]
-// updated       julien quintard   [mon jul 18 15:02:53 2011]
+// updated       julien quintard   [sat sep  3 20:35:05 2011]
 //
 
 #ifndef ELLE_RADIX_ALLEGE_HH
@@ -40,6 +40,10 @@ namespace elle
     ///
     /// specialized Allege class for 'true' so that the 'false'
     /// specialization remains undefined.
+    ///
+    /// this template structure can be used to generate assertions at
+    /// compile time. thus, Allege<>(_condition_) is very much equivalent
+    /// to assert(_condition_) but at compile time.
     ///
     template<>
     struct Allege<true>

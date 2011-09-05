@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Manipulators.cc
 //
 // created       julien quintard   [mon jul  4 16:45:37 2011]
-// updated       julien quintard   [mon jul  4 19:28:18 2011]
+// updated       julien quintard   [sat sep  3 21:44:02 2011]
 //
 
 //
@@ -28,7 +28,12 @@ namespace std
 //
 
   ///
-  /// XXX
+  /// this method takes a string and a length limit and chop the string
+  /// if necessary.
+  ///
+  /// this method can be used "as a manipulator" like this:
+  ///
+  ///   std::cout << chop("chiche") << std::endl;
   ///
   elle::core::String	chop(const elle::core::String&		string,
 			     const elle::core::Natural32	limit)
@@ -58,7 +63,12 @@ namespace std
   }
 
   ///
-  /// XXX
+  /// this method is equivalent to the previous one but for Uniquable
+  /// instances, making it even easier to display such objects.
+  ///
+  ///   PrivateKey	k;
+  ///
+  ///   std::cout << chop(k) << std::endl;
   ///
   template <const elle::io::Format F>
   elle::core::String	chop(const elle::io::Uniquable<F>&	uniquable,

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Standalone.hh
 //
 // created       julien quintard   [sun may  2 10:57:51 2010]
-// updated       julien quintard   [wed jul 27 09:25:44 2011]
+// updated       julien quintard   [sat sep  3 20:20:19 2011]
 //
 
 #ifndef ELLE_STANDALONE_HH
@@ -25,7 +25,7 @@ namespace elle
   using namespace radix;
 
   ///
-  /// this namespace contains classes that must depend on nothing else
+  /// this namespace contains classes that must depend on _almost_ nothing
   /// as the whole Elle library relies on them.
   ///
   namespace standalone
@@ -57,6 +57,7 @@ namespace elle
 
 #include <elle/standalone/Log.hh>
 #include <elle/standalone/Maid.hh>
+#include <elle/standalone/Morgue.hh>
 #include <elle/standalone/Region.hh>
 #include <elle/standalone/Report.hh>
 

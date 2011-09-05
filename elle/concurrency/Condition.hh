@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Condition.hh
 //
 // created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [mon may  3 21:12:59 2010]
+// updated       julien quintard   [sat sep  3 23:24:00 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CONDITION_HH
@@ -42,7 +42,7 @@ namespace elle
     ///
     /// this class provides a condition functionality.
     ///
-    /// XXX \todo this class has to be written!
+    /// \todo XXX this class has to be written, especially for fibers.
     ///
     class Condition:
       public Entity

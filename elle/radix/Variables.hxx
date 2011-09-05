@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Variables.hxx
 //
 // created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [tue jul 19 16:38:18 2011]
+// updated       julien quintard   [sat sep  3 21:00:00 2011]
 //
 
 #ifndef ELLE_RADIX_VARIABLES_HXX
@@ -41,7 +41,7 @@ namespace elle
     /// of variables.
     ///
     /// note that the template specializations give meaning to the
-    /// parameters i.e P<T...>.
+    /// parameters i.e Parameters<T...>.
     ///
 
     ///

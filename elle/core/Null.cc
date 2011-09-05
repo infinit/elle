@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Null.cc
 //
 // created       julien quintard   [wed feb 18 15:40:40 2009]
-// updated       julien quintard   [thu jun 23 11:49:50 2011]
+// updated       julien quintard   [sat sep  3 20:12:55 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace elle
 //
 
     ///
-    /// this global variable is useful for avoiding caller to declare a
+    /// this global variable is useful for avoiding the caller to declare a
     /// variable of this type.
     ///
     Null			none = Nil;

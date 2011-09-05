@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Morgue.hxx
+// file          /home/mycure/infinit/elle/standalone/Morgue.hxx
 //
 // created       julien quintard   [fri aug 26 17:08:22 2011]
-// updated       julien quintard   [fri sep  2 23:52:08 2011]
+// updated       julien quintard   [sun sep  4 13:26:55 2011]
 //
 
-#ifndef ELLE_RADIX_MORGUE_HXX
-#define ELLE_RADIX_MORGUE_HXX
+#ifndef ELLE_STANDALONE_MORGUE_HXX
+#define ELLE_STANDALONE_MORGUE_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -28,7 +28,7 @@ namespace elle
   using namespace standalone;
   using namespace concurrency;
 
-  namespace radix
+  namespace standalone
   {
 
 //
@@ -36,7 +36,10 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method registers an address to delete.
+    ///
+    /// note that should have the timer not yet been allocated and set up,
+    /// this is done in this method.
     ///
     template <typename T>
     Status		Morgue::Register(T*			instance)

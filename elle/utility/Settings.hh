@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hh
 //
 // created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [fri jul  8 17:45:06 2011]
+// updated       julien quintard   [sun sep  4 13:43:40 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HH
@@ -49,9 +49,9 @@ namespace elle
 
     ///
     /// this class provides functionalities for human-readable, hence editable,
-    /// configuration files.
+    /// settings files.
     ///
-    /// note that the class supports both basic types and compount i.e
+    /// note that the class supports both basic types and compound i.e
     /// Uniquable classes through the Behaviour structure dispatcher.
     ///
     class Settings:

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Program.hh
 //
 // created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [sat sep  3 13:17:02 2011]
+// updated       julien quintard   [sat sep  3 17:38:19 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH
@@ -24,7 +24,6 @@
 
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Broker.hh>
-#include <elle/concurrency/Signal.hh>
 
 #include <elle/idiom/Close.hh>
 # include <QCoreApplication>

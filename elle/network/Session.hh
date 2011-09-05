@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.hh
 //
 // created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [sat sep  3 08:03:56 2011]
+// updated       julien quintard   [sun sep  4 13:08:39 2011]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH
@@ -52,7 +52,7 @@ namespace elle
 //
 
     ///
-    /// this class contains metadata related to an event such as the
+    /// this class contains metadata related to a network event such as the
     /// socket and sender's point for instance.
     ///
     class Session:

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.hh
 //
 // created       julien quintard   [mon apr 26 21:04:49 2010]
-// updated       julien quintard   [mon jul 11 16:12:52 2011]
+// updated       julien quintard   [sat sep  3 20:47:50 2011]
 //
 
 #ifndef ELLE_RADIX_TRACE_HH
@@ -47,9 +47,15 @@ namespace elle
     /// this class represents a trace i.e a sequence of function calls
     /// performed within a stack.
     ///
+    /// note that the traces are stored in files in order to avoid
+    /// maintaining a data structure which would require allocating memory.
+    ///
     /// note that this class exports fileable-like method but cannot
     /// implement the interface as this would generate too much
     /// inter-dependencies.
+    ///
+    /// \todo XXX for now the tracing mechanism can only work on Linux
+    ///           because it makes use of /tmp/XXXXXX
     ///
     class Trace:
       public virtual Dumpable

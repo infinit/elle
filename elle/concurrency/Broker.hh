@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Broker.hh
 //
 // created       julien quintard   [sun may 29 13:15:23 2011]
-// updated       julien quintard   [fri sep  2 21:10:41 2011]
+// updated       julien quintard   [sat sep  3 22:18:32 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_BROKER_HH
@@ -48,7 +48,7 @@ namespace elle
     /// an event loop so as to be taken into account.
     ///
     /// the broker is notified whenever data is ready on its file descriptor
-    /// so that it can take action accordingly.
+    /// so that it can take action accordingly i.e emit the ready signal.
     ///
     class Broker:
       public ::QObject
@@ -82,7 +82,7 @@ namespace elle
       //
       // signals
       //
-      struct
+      struct			Signals
       {
 	Signal<
 	  Parameters<

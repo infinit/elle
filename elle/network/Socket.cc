@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Socket.cc
 //
 // created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [sat sep  3 00:45:37 2011]
+// updated       julien quintard   [sun sep  4 13:21:30 2011]
 //
 
 //
@@ -49,7 +49,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method dumps the socket-related information.
     ///
     Status		Socket::Dump(const Natural32		margin) const
     {

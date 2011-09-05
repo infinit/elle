@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Factory.hh
 //
 // created       julien quintard   [thu jan 28 18:47:33 2010]
-// updated       julien quintard   [mon jul 11 15:39:03 2011]
+// updated       julien quintard   [sun sep  4 13:38:18 2011]
 //
 
 #ifndef ELLE_UTILITY_FACTORY_HH
@@ -43,8 +43,14 @@ namespace elle
 //
 
     ///
-    /// this class holds the mappings between identifiers and the functionoids
-    /// capable of generating types.
+    /// a factory provides a way for generating instance of given classes
+    /// depending on a product identifier. for instance the identifier 23
+    /// would be associated with the type PublicKey so that calling the
+    /// factory's Build() method with 23 would return a PublicKey object
+    /// freshly allocated.
+    ///
+    /// this class thus holds the mappings between identifiers and the
+    /// functionoids capable of generating types.
     ///
     class Factory:
       public Object

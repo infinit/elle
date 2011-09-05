@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [thu aug 11 17:35:43 2011]
+// updated       julien quintard   [sun sep  4 15:59:23 2011]
 //
 
 //
@@ -29,9 +29,6 @@ namespace elle
     const Natural32		Test::MinimumTestsNumber = 1;
     const Natural32		Test::MaximumTestsNumber = 3456;
 
-    const Natural32		Test::MinimumRegionSize = 1;
-    const Natural32		Test::MaximumRegionSize = 12345;
-
     const Natural32		Test::MinimumKeyLength = 1024;
     const Natural32		Test::MaximumKeyLength = 2048;
 
@@ -39,41 +36,12 @@ namespace elle
     const Natural32		Test::MaximumKeyRotations = 10;
 
 //
-// ---------- methods ---------------------------------------------------------
-//
-
-    Status		Test::Generate(Region&			region)
-    {
-      Natural32		size = Random::Generate(Test::MinimumRegionSize,
-						Test::MaximumRegionSize);
-      Byte*		buffer;
-      Natural32		i;
-
-      enter(slab(buffer, ::free));
-
-      // allocate a buffer.
-      if ((buffer = (Byte*)::malloc(size)) == NULL)
-	escape("unable to allocate memory");
-
-      // randomize the buffer contents.
-      for (i = 0; i < size; i++)
-	*(buffer + i) = Random::Generate(elle::core::Type<Character>::Minimum,
-					 elle::core::Type<Character>::Maximum);
-
-      // assign the buffer to the region.
-      if (region.Acquire(buffer, size) == StatusError)
-	escape("unable to assign the buffer to the region");
-
-      // since included in the region.
-      waive(buffer);
-
-      leave();
-    }
-
-//
 // ---------- functions -------------------------------------------------------
 //
 
+    ///
+    /// this method represents the test's entry point.
+    ///
     Status		Main()
     {
       Natural32		number;
@@ -157,7 +125,7 @@ namespace elle
 		k = kp->k;
 
 		// generate an input.
-		if (Test::Generate(plain) == StatusError)
+		if (Random::Generate(plain) == StatusError)
 		  escape("unable to generate a plain");
 
 		// encrypt the input.
@@ -187,7 +155,7 @@ namespace elle
 		k = kp->k;
 
 		// generate an input.
-		if (Test::Generate(plain) == StatusError)
+		if (Random::Generate(plain) == StatusError)
 		  escape("unable to generate a plain");
 
 		// encrypt the input with the private key.
@@ -216,7 +184,7 @@ namespace elle
 		k = kp->k;
 
 		// generate an input.
-		if (Test::Generate(plain) == StatusError)
+		if (Random::Generate(plain) == StatusError)
 		  escape("unable to generate a plain");
 
 		// sign the plain.
@@ -241,7 +209,7 @@ namespace elle
 		s = *sk;
 
 		// generate a plain.
-		if (Test::Generate(plain) == StatusError)
+		if (Random::Generate(plain) == StatusError)
 		  escape("unable to generate a plain");
 
 		// cipher the plain.

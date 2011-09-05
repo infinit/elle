@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Set.hxx
 //
 // created       julien quintard   [fri jul 15 14:51:42 2011]
-// updated       julien quintard   [tue jul 19 16:06:56 2011]
+// updated       julien quintard   [sat sep  3 20:57:31 2011]
 //
 
 #ifndef ELLE_RADIX_SET_HXX
@@ -24,7 +24,8 @@ namespace elle
 //
 
     ///
-    /// union
+    /// this template structure returns a Parameters representing the
+    /// union of the inputs Parameters types.
     ///
     template <typename... T1,
 	      typename... T2>

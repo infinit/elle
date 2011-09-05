@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Inputs.hxx
 //
 // created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [fri sep  2 11:42:35 2011]
+// updated       julien quintard   [sun sep  4 12:40:10 2011]
 //
 
 #ifndef ELLE_NETWORK_INPUTS_HXX
@@ -30,7 +30,8 @@ namespace elle
 //
 
     ///
-    /// this function generates a Bundle instance.
+    /// this function generates an inputs bundle instance without having
+    /// to specify the parameter types.
     ///
     /// this function is being inlined in order to avoid copying the
     /// Bundle instance for nothing.

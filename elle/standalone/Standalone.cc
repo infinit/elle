@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Standalone.cc
 //
 // created       julien quintard   [sun may  2 11:00:51 2010]
-// updated       julien quintard   [mon aug  1 10:28:45 2011]
+// updated       julien quintard   [sat sep  3 19:27:36 2011]
 //
 
 //
@@ -41,6 +41,10 @@ namespace elle
       if (Log::Initialize() == StatusError)
 	escape("unable to initialize the log");
 
+      // initialize the morgue.
+      if (Morgue::Initialize() == StatusError)
+	escape("unable to initialize the morgue");
+
       leave();
     }
 
@@ -50,6 +54,10 @@ namespace elle
     Status		Standalone::Clean()
     {
       enter();
+
+      // clean the morgue class.
+      if (Morgue::Clean() == StatusError)
+	escape("unable to clean the morgue");
 
       // clean the log.
       if (Log::Clean() == StatusError)

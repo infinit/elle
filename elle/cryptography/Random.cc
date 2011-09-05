@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Random.cc
 //
 // created       julien quintard   [thu aug 11 16:15:28 2011]
-// updated       julien quintard   [thu aug 11 17:37:57 2011]
+// updated       julien quintard   [sat sep  3 22:09:26 2011]
 //
 
 //
@@ -39,7 +39,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method initializes the random system.
     ///
     Status		Random::Initialize()
     {
@@ -73,7 +73,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method cleans the system.
     ///
     Status		Random::Clean()
     {
@@ -85,7 +85,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a boolean.
     ///
     Status		Random::Generate(Boolean&		value)
     {
@@ -107,7 +107,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a character.
     ///
     Status		Random::Generate(Character&		value)
     {
@@ -122,7 +122,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a real.
     ///
     Status		Random::Generate(Real&			value)
     {
@@ -137,7 +137,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates an integer.
     ///
     Status		Random::Generate(Integer8&		value)
     {
@@ -152,7 +152,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates an integer.
     ///
     Status		Random::Generate(Integer16&		value)
     {
@@ -167,7 +167,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates an integer.
     ///
     Status		Random::Generate(Integer32&		value)
     {
@@ -182,7 +182,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates an integer.
     ///
     Status		Random::Generate(Integer64&		value)
     {
@@ -197,7 +197,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a natural.
     ///
     Status		Random::Generate(Natural8&		value)
     {
@@ -212,7 +212,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a natural.
     ///
     Status		Random::Generate(Natural16&		value)
     {
@@ -227,7 +227,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a natural.
     ///
     Status		Random::Generate(Natural32&		value)
     {
@@ -242,7 +242,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a natural.
     ///
     Status		Random::Generate(Natural64&		value)
     {
@@ -257,7 +257,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a large.
     ///
     Status		Random::Generate(Large&			value,
 					 const Natural32	length)
@@ -272,7 +272,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a string.
     ///
     Status		Random::Generate(String&		value,
 					 const Natural32	length)
@@ -292,7 +292,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method generates a region.
     ///
     Status		Random::Generate(Region&		value,
 					 const Natural32	size)

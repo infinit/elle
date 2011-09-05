@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.hh
 //
 // created       julien quintard   [wed apr 28 11:11:05 2010]
-// updated       julien quintard   [fri jul  1 19:21:01 2011]
+// updated       julien quintard   [sun sep  4 13:40:18 2011]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HH
@@ -49,7 +49,9 @@ namespace elle
 //
 
     ///
-    /// this class wraps the command line parser.
+    /// this class wraps the command line parser by enabling one to define
+    /// options but also to retrieve the passed arguments directly in
+    /// their type by operating an automatic conversion.
     ///
     class Parser:
       public Entity

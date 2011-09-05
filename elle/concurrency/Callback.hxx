@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Callback.hxx
 //
 // created       julien quintard   [wed mar 24 23:43:50 2010]
-// updated       julien quintard   [sat sep  3 14:43:40 2011]
+// updated       julien quintard   [sat sep  3 23:22:49 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HXX
@@ -33,7 +33,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this constant defines a null callback.
     ///
     template <typename R,
 	      typename... T>
@@ -320,7 +320,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method returns a callback of the type of the given function.
     ///
     template <typename R,
 	      typename... T>
@@ -331,7 +331,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method returns a callback of the type of the given method.
     ///
     template <typename R,
 	      typename C,

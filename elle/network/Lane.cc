@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Lane.cc
 //
 // created       julien quintard   [thu feb  4 15:20:31 2010]
-// updated       julien quintard   [fri sep  2 21:30:13 2011]
+// updated       julien quintard   [sun sep  4 15:44:18 2011]
 //
 
 //
@@ -204,7 +204,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method returns the porter associated with the given name.
     ///
     Status		Lane::Retrieve(const String&		name,
 				       LanePorter*&		porter)
@@ -224,7 +224,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method tries to locate the porter associated with the given
+    /// name and returns true if found.
     ///
     Status		Lane::Locate(const String&		name,
 				     Iterator*			iterator)
@@ -349,6 +350,10 @@ namespace elle
 // ---------- slots -----------------------------------------------------------
 //
 
+    ///
+    /// this slot is triggered whenever a connection is being made on the
+    /// porter's point.
+    ///
     void		LanePorter::_accept()
     {
       Closure< Status,
@@ -359,7 +364,7 @@ namespace elle
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
-	alert(_(), "unable to spawn a fiber");
+	yield(_(), "unable to spawn a fiber");
 
       release();
     }

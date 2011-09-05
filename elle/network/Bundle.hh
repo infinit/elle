@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Bundle.hh
 //
 // created       julien quintard   [fri jun  3 22:23:13 2011]
-// updated       julien quintard   [fri sep  2 14:04:10 2011]
+// updated       julien quintard   [sun sep  4 11:56:11 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HH
@@ -39,8 +39,8 @@ namespace elle
 //
 
     ///
-    /// this class represents a set of arguments associated
-    /// with a network tag.
+    /// this class represents a set of arguments associated with a network
+    /// tag.
     ///
     /// note that this class is specialized for inputs (const) and ouptuts
     /// (non-const).
@@ -48,14 +48,16 @@ namespace elle
     struct Bundle
     {
       ///
-      /// XXX
+      /// this generic Inputs class.
       ///
       template <const Tag G,
 		typename... T>
       class Inputs;
 
       ///
-      /// XXX
+      /// this class, specialized with Parameters<T...>, takes a set
+      /// of values to bundle together so as to serialize them in order
+      /// to send them over a network connection.
       ///
       template <const Tag G,
 		typename... T>
@@ -96,14 +98,16 @@ namespace elle
       };
 
       ///
-      /// XXX
+      /// the generic Outputs class.
       ///
       template <const Tag G,
 		typename... T>
       class Outputs;
 
       ///
-      /// XXX
+      /// like the Inputs class, this class is specialized for Parameters<T...>
+      /// and is responsible for extracting values from a network packet so
+      /// as to set the variables provided through the constructor.
       ///
       template <const Tag G,
 		typename... T>

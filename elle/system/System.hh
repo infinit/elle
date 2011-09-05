@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/system/System.hh
 //
 // created       julien quintard   [mon jan 26 20:21:10 2009]
-// updated       julien quintard   [mon may  3 21:07:53 2010]
+// updated       julien quintard   [sat sep  3 20:17:52 2011]
 //
 
 #ifndef ELLE_SYSTEM_SYSTEM_HH
@@ -29,7 +29,8 @@ namespace elle
   using namespace radix;
 
   ///
-  /// this namespace contains system-related stuff.
+  /// this namespace contains system-related stuff especially useful
+  /// when it comes to portability.
   ///
   namespace system
   {

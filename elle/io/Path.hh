@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Path.hh
 //
 // created       julien quintard   [mon apr 25 10:59:05 2011]
-// updated       julien quintard   [tue apr 26 15:34:36 2011]
+// updated       julien quintard   [sat sep  3 21:45:08 2011]
 //
 
 #ifndef ELLE_IO_PATH_HH
@@ -38,11 +38,10 @@ namespace elle
 //
 
     ///
-    /// this class abstracts a path representation which will be
-    /// completed later.
+    /// this class abstracts a path representation.
     ///
-    /// the syntax considers the pattern %name% as representing a
-    /// component to be provided later.
+    /// note that a path may be completed since its syntax considers
+    /// the pattern %name% as representing a component to be provided later.
     ///
     class Path:
       public Object

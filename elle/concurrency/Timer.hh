@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.hh
 //
 // created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [fri sep  2 22:11:12 2011]
+// updated       julien quintard   [sat sep  3 17:45:43 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH

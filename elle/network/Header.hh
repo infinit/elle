@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Header.hh
 //
 // created       julien quintard   [mon feb 22 23:48:40 2010]
-// updated       julien quintard   [fri may 28 12:18:00 2010]
+// updated       julien quintard   [sun sep  4 12:17:52 2011]
 //
 
 #ifndef ELLE_NETWORK_HEADER_HH
@@ -47,7 +47,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this class represents the header which is attached to every
+    /// network message.
     ///
     class Header:
       public Object

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/fiber/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [fri sep  2 19:55:34 2011]
+// updated       julien quintard   [sat sep  3 20:07:30 2011]
 //
 
 //
@@ -173,7 +173,7 @@ namespace elle
     }
 
     ///
-    /// the main function.
+    /// the test's entry point.
     ///
     Status		Main(const Natural32,
 			     const Character*[])

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.hxx
 //
 // created       julien quintard   [sun jun 26 20:57:08 2011]
-// updated       julien quintard   [mon jul  4 12:24:59 2011]
+// updated       julien quintard   [sun sep  4 13:44:44 2011]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HXX
@@ -276,7 +276,8 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method wraps the Set() method by forwarding the call
+    /// according to the given type.
     ///
     template <typename T>
     Status		Settings::Set(const String&		identifier,
@@ -294,7 +295,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method wraps the Get() method by forwarding the call
+    /// according to the given type.
     ///
     template <typename T>
     Status		Settings::Get(const String&		identifier,
@@ -312,7 +314,8 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method wraps the default-based Get() method by forwarding the call
+    /// according to the given type.
     ///
     template <typename T>
     Status		Settings::Get(const String&		identifier,

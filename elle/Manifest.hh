@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/Manifest.hh
 //
 // created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [wed aug 31 17:15:15 2011]
+// updated       julien quintard   [sat sep  3 20:10:23 2011]
 //
 
 #ifndef ELLE_MANIFEST_HH
@@ -31,20 +31,21 @@
 #include <elle/network/Message.hh>
 #include <elle/network/Bundle.hh>
 
+namespace elle
+{
+
+//
+// ---------- externs ---------------------------------------------------------
+//
+
+  extern const Character	Component[];
+
 //
 // ---------- constants -------------------------------------------------------
 //
 
-namespace elle
-{
-
   ///
-  /// XXX
-  ///
-  extern const Character	Component[];
-
-  ///
-  /// XXX
+  /// this constant defines the number of tags reserved by Elle.
   ///
   const Natural32		Tags = 10;
 
@@ -55,7 +56,7 @@ namespace elle
 //
 
 ///
-/// XXX
+/// allocate a range of tags for the Elle-specific messages.
 ///
 range(elle::Component, elle::Tags);
 
@@ -89,9 +90,11 @@ namespace elle
 /// relying on the Elle library.
 ///
 /// note that the Error message should never be expected to be received
-/// as the tag is reserved for Procedure-specific purposes. the Ok tag
-/// is however valid and can be sent and received. The None tag is also
-/// reserved for internal us.
+/// as the tag is reserved for Procedure-specific purposes.
+///
+/// the Ok tag is however valid and can be sent and received.
+///
+/// Finally, the None tag is also reserved for internal use.
 ///
 
 // None

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Type.cc
 //
 // created       julien quintard   [sun jun 26 19:36:23 2011]
-// updated       julien quintard   [mon jul  4 16:03:58 2011]
+// updated       julien quintard   [sat sep  3 20:17:11 2011]
 //
 
 //
@@ -61,7 +61,7 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this method converts a boolean into a string.
     ///
     Status		Variable::Convert(const Boolean&	input,
 					  String&		output)
@@ -78,7 +78,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a character into a string.
     ///
     Status		Variable::Convert(const Character&	input,
 					  String&		output)
@@ -97,7 +97,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts an integer into a string.
     ///
     Status		Variable::Convert(const Integer8&	input,
 					  String&		output)
@@ -116,7 +116,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts an integer into a string.
     ///
     Status		Variable::Convert(const Integer16&	input,
 					  String&		output)
@@ -135,7 +135,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts an integer into a string.
     ///
     Status		Variable::Convert(const Integer32&	input,
 					  String&		output)
@@ -154,7 +154,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts an integer into a string.
     ///
     Status		Variable::Convert(const Integer64&	input,
 					  String&		output)
@@ -173,7 +173,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a natural into a string.
     ///
     Status		Variable::Convert(const Natural8&	input,
 					  String&		output)
@@ -192,7 +192,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a natural into a string.
     ///
     Status		Variable::Convert(const Natural16&	input,
 					  String&		output)
@@ -211,7 +211,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a natural into a string.
     ///
     Status		Variable::Convert(const Natural32&	input,
 					  String&		output)
@@ -230,7 +230,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a natural into a string.
     ///
     Status		Variable::Convert(const Natural64&	input,
 					  String&		output)
@@ -249,7 +249,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a real into a string.
     ///
     Status		Variable::Convert(const Real&		input,
 					  String&		output)
@@ -268,7 +268,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into a boolean.
     ///
     Status		Variable::Convert(const String&		input,
 					  Boolean&		output)
@@ -293,7 +293,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into a character.
     ///
     Status		Variable::Convert(const String&		input,
 					  Character&		output)
@@ -316,7 +316,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into an integer.
     ///
     Status		Variable::Convert(const String&		input,
 					  Integer8&		output)
@@ -336,7 +336,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into an integer.
     ///
     Status		Variable::Convert(const String&		input,
 					  Integer16&		output)
@@ -356,7 +356,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into an integer.
     ///
     Status		Variable::Convert(const String&		input,
 					  Integer32&		output)
@@ -376,7 +376,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into an integer.
     ///
     Status		Variable::Convert(const String&		input,
 					  Integer64&		output)
@@ -396,7 +396,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into a natural.
     ///
     Status		Variable::Convert(const String&		input,
 					  Natural8&		output)
@@ -416,7 +416,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into a natural.
     ///
     Status		Variable::Convert(const String&		input,
 					  Natural16&		output)
@@ -436,7 +436,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into a natural.
     ///
     Status		Variable::Convert(const String&		input,
 					  Natural32&		output)
@@ -456,7 +456,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into a natural.
     ///
     Status		Variable::Convert(const String&		input,
 					  Natural64&		output)
@@ -476,7 +476,7 @@ namespace elle
     }
 
     ///
-    /// XXX
+    /// this method converts a string into a real.
     ///
     Status		Variable::Convert(const String&		input,
 					  Real&			output)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.hh
 //
 // created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [mon mar 29 10:42:50 2010]
+// updated       julien quintard   [sat sep  3 19:55:25 2011]
 //
 
 #ifndef ELLE_BENCHMARK_ARCHIVE_TEST_HH
@@ -33,6 +33,9 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
+    ///
+    /// this class contains the benchmark metadata.
+    ///
     class Benchmark
     {
     public:

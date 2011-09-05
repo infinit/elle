@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Arguments.hh
 //
 // created       julien quintard   [wed feb 24 08:03:32 2010]
-// updated       julien quintard   [tue jul 19 16:08:36 2011]
+// updated       julien quintard   [sat sep  3 20:37:03 2011]
 //
 
 #ifndef ELLE_RADIX_ARGUMENTS_HH
@@ -30,16 +30,18 @@ namespace elle
 //
 
     ///
-    /// this class wraps a set of arguments and provides a method, i.e
-    /// Trigger(), for triggering a callback/closure/etc. with the recorded
-    /// set of arguments.
+    /// this class wraps a set of arguments and provides methods, i.e
+    /// Call() and Trigger(), for triggering a callback/closure/etc. with
+    /// the recorded set of arguments.
     ///
-    /// note that the Trigger() method is provided both for non-const
-    /// and const environments.
+    /// note that the methods are provided both for non-const and const
+    /// environments.
     ///
     /// this construct turns out to be extremely useful in a large number
     /// of situations involving an undefined number of parameters.
     ///
+    /// note that constructors are also provided for constructing an
+    /// Arguments instances based on a Variables or else.
     template <typename... T>
     class Arguments
     {
