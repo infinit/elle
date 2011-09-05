@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [mon aug  8 14:45:43 2011]
+// updated       julien quintard   [sun sep  4 18:14:32 2011]
 //
 
 #ifndef ETOILE_PATH_ROUTE_HH
@@ -35,12 +35,13 @@ namespace etoile
 //
 
     ///
-    /// a route is a sequence of sections forming a path each section
-    /// representing the name of subdirectory down to the target object along
-    /// with their version numbers.
+    /// a route is a sequence of slabs forming a path, each slab representing
+    /// the name of subdirectory down to the target object along with their
+    /// version numbers.
     ///
     /// note that this class also contains the version number of the root
-    /// directory.
+    /// directory. indeed, the first slab is always used for representing
+    /// the root directory even though its slab is empty.
     ///
     class Route:
       public elle::Object
@@ -73,10 +74,11 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create(const Way&);
-      elle::Status	Create(const Route&,
-			       const Slab&);
-      elle::Status	Clear();
+      elle::Status		Create(const Way&);
+      elle::Status		Create(const Route&,
+				       const Slab&);
+
+      elle::Status		Clear();
 
       //
       // interfaces
@@ -84,16 +86,16 @@ namespace etoile
 
       // object
       declare(Route);
-      elle::Boolean	operator==(const Route&) const;
-      elle::Boolean	operator<(const Route&) const;
+      elle::Boolean		operator==(const Route&) const;
+      elle::Boolean		operator<(const Route&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Container		elements;
+      Container			elements;
     };
 
   }

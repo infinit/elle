@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.cc
 //
 // created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [mon aug  8 14:28:17 2011]
+// updated       julien quintard   [sun sep  4 15:50:56 2011]
 //
 
 //
@@ -16,6 +16,8 @@
 //
 
 #include <etoile/depot/Depot.hh>
+
+#include <hole/Hole.hh>
 
 namespace etoile
 {
@@ -51,38 +53,36 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method returns the address of the network's root block.
     ///
     elle::Status	Depot::Origin(nucleus::Address&		address)
     {
       enter();
 
-      // XXX
-
-      // request the hole.
-      if (Hole::Origin(address) == elle::StatusError)
+      // call the Hole.
+      if (hole::Hole::Origin(address) == elle::StatusError)
 	escape("unable to retrieve the origin");
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method stores the given block in the underlying storage layer.
     ///
     elle::Status	Depot::Push(const nucleus::Address&	address,
 				    const nucleus::Block&	block)
     {
       enter();
 
-      // store in the hole.
-      if (Hole::Push(address, block) == elle::StatusError)
-	escape("unable to put the block in the hole");
+      // call the Hole.
+      if (hole::Hole::Push(address, block) == elle::StatusError)
+	escape("unable to store the block");
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method retrives a block from the underlying storage layer.
     ///
     elle::Status	Depot::Pull(const nucleus::Address&	address,
 				    const nucleus::Version&	version,
@@ -90,28 +90,23 @@ namespace etoile
     {
       enter();
 
-      // XXX look in the cache etc.
-
-      // finally, look in the hole.
-      if (Hole::Pull(address, version,
-		     block) == elle::StatusError)
-	escape("unable to retrieve the block from the hole");
+      // call the Hole.
+      if (hole::Hole::Pull(address, version, block) == elle::StatusError)
+	escape("unable to retrieve the block");
 
       leave();
     }
 
     ///
-    /// XXX
+    /// this method permanently removes a block from the storage layer.
     ///
     elle::Status	Depot::Wipe(const nucleus::Address&	address)
     {
       enter();
 
-      // XXX remove from the cache as well.
-
-      // finally, erase the block from the hole.
-      if (Hole::Wipe(address) == elle::StatusError)
-	escape("unable to erase the block from the hole");
+      // call the Hole.
+      if (hole::Hole::Wipe(address) == elle::StatusError)
+	escape("unable to remove the block");
 
       leave();
     }

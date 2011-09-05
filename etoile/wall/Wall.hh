@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Wall.hh
 //
 // created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [sat aug  6 17:28:50 2011]
+// updated       julien quintard   [sun sep  4 20:53:04 2011]
 //
 
 #ifndef ETOILE_WALL_WALL_HH
@@ -23,6 +23,10 @@
 
 namespace etoile
 {
+  ///
+  /// this namespace exports an interfaces enabling one to manipulate
+  /// objects, files, directories, accesses, attributes and so on.
+  ///
   namespace wall
   {
 

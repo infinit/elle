@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Actor.cc
 //
 // created       julien quintard   [thu jul 28 13:05:00 2011]
-// updated       julien quintard   [fri aug  5 12:42:40 2011]
+// updated       julien quintard   [sun sep  4 16:19:10 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this data structure holds all the living actors.
     ///
     Actor::Container		Actor::Actors;
 
@@ -99,7 +99,35 @@ namespace etoile
       leave();
     }
 
-    // XXX show static method
+    ///
+    /// this method displays the actors data structure.
+    ///
+    elle::Status	Actor::Show(const elle::Natural32	margin)
+    {
+      elle::String	alignment(margin, ' ');
+      Actor::Scoutor	scoutor;
+
+      enter();
+
+      std::cout << alignment << "[Actor]" << std::endl;
+
+      // go through the container.
+      for (scoutor = Actor::Actors.begin();
+	   scoutor != Actor::Actors.end();
+	   scoutor++)
+	{
+	  // dump the identifier.
+	  if (scoutor->first.Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the identifier");
+
+	  // dump the actor.
+	  if (scoutor->second->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the actor");
+
+	}
+
+      leave();
+    }
 
 //
 // ---------- constructors & destructors --------------------------------------

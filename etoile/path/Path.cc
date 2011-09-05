@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [tue aug  9 10:17:34 2011]
+// updated       julien quintard   [sun sep  4 18:07:53 2011]
 //
 
 //
@@ -164,13 +164,8 @@ namespace etoile
 	  if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
 	    escape("unable to acquire the scope");
 
-	  // XXX it could be a Link rather than a Directory!
-	  // XXX it therefore appears that PIG always provides absolute
-	  // paths!
-	  // XXX handle links or state that it cannot accept non-absolute paths
-
 	  // retrieve the context.
-	  if (scope->Use<gear::NatureDirectory>(context) == elle::StatusError)
+	  if (scope->Use(context) == elle::StatusError)
 	    escape("unable to retrieve the context");
 
 	  // allocate an actor.
@@ -183,7 +178,6 @@ namespace etoile
 	  // create the location.
 	  if (location.Create(address, version) == elle::StatusError)
 	    escape("unable to create the location");
-	  // XXX alternative with chemin.Locate(location) as in wall::
 
 	  // fetch the directory.
 	  if (automaton::Directory::Load(*context,

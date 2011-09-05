@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/depot/Depot.hh
 //
 // created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [tue jun 14 22:26:36 2011]
+// updated       julien quintard   [sun sep  4 14:01:24 2011]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH
@@ -23,6 +23,11 @@
 
 namespace etoile
 {
+  ///
+  /// this namespace contains everything related to the storage layer
+  /// abstraction especially through the communication with the Hole
+  /// component.
+  ///
   namespace depot
   {
 
@@ -31,18 +36,7 @@ namespace etoile
 //
 
     ///
-    /// this class abstracts the storage layer into three units: the cache
-    /// which keeps blocks in main memory, the reserve which keeps block
-    /// on a stable but slower storage device such as on a hard disk and
-    /// the hole which represents the online storage space.
-    ///
-    /// note that blocks are passed as pointers so that no allocation nor
-    /// copies are required, leading to better performance.
-    ///
-    /// furthermore, the depot---hence the underlying cache, reserve and
-    /// hole---are expecting to take blocks allocated through the new
-    /// operator. likewise, the Get() method returns an already
-    /// new-operator-allocated block.
+    /// this class abstracts the storage layer.
     ///
     class Depot
     {
@@ -68,16 +62,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-//#include <etoile/depot/Cell.hh>
-//#include <etoile/depot/Location.hh> // XXX changer nom vs path::Location
-#include <etoile/depot/Hole.hh>
-//#include <etoile/depot/Record.hh>
-//#include <etoile/depot/Repository.hh>
-//#include <etoile/depot/Unit.hh>
 
 #endif

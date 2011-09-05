@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Slab.hh
 //
 // created       julien quintard   [thu jun 16 10:25:17 2011]
-// updated       julien quintard   [mon jul  4 08:05:10 2011]
+// updated       julien quintard   [sun sep  4 18:10:59 2011]
 //
 
 #ifndef ETOILE_PATH_SLAB_HH
@@ -30,11 +30,12 @@ namespace etoile
 //
 
     ///
-    /// this type represents the component of a file system path.
+    /// this type represents the component of a file system path, represented
+    /// by a Route in Etoile.
     ///
     /// note that such a component may contain a version number indicator
     /// such as '%23' should '%[0-9]+' be the associated version number
-    /// regexp.
+    /// regular expression.
     ///
     typedef elle::String	Slab;
 

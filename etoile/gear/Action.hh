@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Action.hh
 //
 // created       julien quintard   [fri jun 24 14:45:52 2011]
-// updated       julien quintard   [sat jun 25 13:39:48 2011]
+// updated       julien quintard   [sun sep  4 14:38:36 2011]
 //
 
 #ifndef ETOILE_GEAR_ACTION_HH
@@ -31,7 +31,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class defines an action to be performed by the journal.
     ///
     class Action:
       public elle::Object

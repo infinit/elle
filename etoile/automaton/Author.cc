@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Author.cc
 //
 // created       julien quintard   [mon jun 20 14:13:45 2011]
-// updated       julien quintard   [tue jun 21 14:12:53 2011]
+// updated       julien quintard   [sun sep  4 13:49:51 2011]
 //
 
 //
@@ -56,23 +56,13 @@ namespace etoile
 	  }
 	case nucleus::RoleLord:
 	  {
-	    /* XXX
-	    nucleus::Index	index;
+	    // XXX to implement.
 
-	    // retrieve the record index.
-	    if (context->access->Locate(user->client->subject,
-					index) == elle::StatusError)
-	      escape("unable to locate the record");
-
-	    // create the delegate-specific author.
-	    if (context->author->Create(index) == elle::StatusError)
-	      escape("unable to create the author");
-	    */
 	    break;
 	  }
 	default:
 	  {
-	    // XXX
+	    // XXX to implement.
 
 	    break;
 	  }

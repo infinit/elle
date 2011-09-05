@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Object.cc
 //
 // created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [fri aug  5 12:15:59 2011]
+// updated       julien quintard   [sun sep  4 21:37:29 2011]
 //
 
 //
@@ -65,7 +65,7 @@ namespace etoile
 	escape("unable to acquire the scope");
 
       // retrieve the context.
-      if (scope->Use<gear::NatureObject>(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // allocate an actor.
@@ -108,7 +108,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::Object::Lock()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }
@@ -125,7 +125,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::Object::Release()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }
@@ -152,7 +152,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the information automaton on the context.
@@ -236,7 +236,7 @@ namespace etoile
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the store automaton on the context.
@@ -268,15 +268,50 @@ namespace etoile
     /// the genre-specific Destroy() method should always be preferred.
     ///
     elle::Status	Object::Destroy(
-			  const gear::Identifier&)
+			  const gear::Identifier&		identifier)
     {
-      enter();
+      gear::Actor*	actor;
+      gear::Object*	context;
+
+      enter(instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::Object::Destroy()\n");
 
-      // XXX
+      // select the actor.
+      if (gear::Actor::Select(identifier, actor) == elle::StatusError)
+	escape("unable to select the actor");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
+
+      // specify the closing operation performed on the scope.
+      if (actor->scope->Operate(gear::OperationDestroy) == elle::StatusError)
+	escape("unable to specify the operation being performed on the scope");
+
+      // retrieve the context.
+      if (actor->scope->Use(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // apply the destroy automaton on the context.
+      if (automaton::Object::Destroy(*context) == elle::StatusError)
+	escape("unable to destroy the object");
+
+      // detach the actor.
+      if (actor->Detach() == elle::StatusError)
+	escape("unable to detach the actor from the scope");
+
+      // record the scope in the journal.
+      if (journal::Journal::Record(actor->scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
+
+      // delete the actor.
+      delete actor;
+
+      // waive actor.
+      waive(actor);
 
       leave();
     }
@@ -298,7 +333,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::Object::Purge()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }

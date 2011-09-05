@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Queue.cc
 //
 // created       julien quintard   [wed aug 10 03:31:14 2011]
-// updated       julien quintard   [thu aug 11 08:28:02 2011]
+// updated       julien quintard   [sun sep  4 19:40:11 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method adds a riffle to the queue.
     ///
     elle::Status	Queue::Add(Riffle*			riffle)
     {
@@ -35,19 +35,9 @@ namespace etoile
 
       enter();
 
-      ///
-      /// \todo XXX improve this: quite ugly!
-      ///   indeed, for every Add(), the loop can go for 50 iterations
-      ///   in order to get unique. lists of timestamps should be used.
-      ///
-      ///   the following printf() can be uncomment to verify this statement.
-      ///
-
       // try to look up the element in the current riffle.
       while (this->container.find(riffle->timestamp) != this->container.end())
 	{
-	  // XXX printf("Loop\n");
-
 	  // refresh the timestamp.
 	  if (riffle->timestamp.Current() == elle::StatusError)
 	    escape("unable to retrieve the current time");
@@ -65,7 +55,7 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method removes a riffle from the queue.
     ///
     elle::Status	Queue::Remove(Riffle*			riffle)
     {
@@ -89,7 +79,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method dumps the queue.
     ///
     elle::Status	Queue::Dump(const elle::Natural32	margin) const
     {

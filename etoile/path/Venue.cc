@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.cc
 //
 // created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [mon aug  8 14:17:32 2011]
+// updated       julien quintard   [sun sep  4 18:12:47 2011]
 //
 
 //
@@ -151,8 +151,11 @@ namespace etoile
       for (scoutor = this->elements.begin();
 	   scoutor != this->elements.end();
 	   scoutor++)
-	if (scoutor->Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the address");
+	{
+	  // dump the location.
+	  if (scoutor->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the address");
+	}
 
       leave();
     }

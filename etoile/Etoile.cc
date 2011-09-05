@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.cc
 //
 // created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [mon aug  8 14:35:30 2011]
+// updated       julien quintard   [sun sep  4 13:48:18 2011]
 //
 
 //
@@ -56,12 +56,6 @@ namespace etoile
     if (shrub::Shrub::Initialize() == elle::StatusError)
       escape("unable to initialize the shrub");
 
-    /* XXX
-    // initialize the journal.
-    if (journal::Journal::Initialize() == elle::StatusError)
-      escape("unable to initialize the journal");
-    */
-
     leave();
   }
 
@@ -87,12 +81,6 @@ namespace etoile
     // clean the path.
     if (path::Path::Clean() == elle::StatusError)
       escape("unable to clean the path");
-
-    /* XXX
-    // clean the journal.
-    if (journal::Journal::Clean() == elle::StatusError)
-      escape("unable to clean the journal");
-    */
 
     leave();
   }

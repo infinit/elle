@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.hh
 //
 // created       julien quintard   [fri aug  7 22:37:18 2009]
-// updated       julien quintard   [mon aug  8 14:39:14 2011]
+// updated       julien quintard   [sun sep  4 18:06:25 2011]
 //
 
 #ifndef ETOILE_PATH_PATH_HH
@@ -27,8 +27,7 @@
 namespace etoile
 {
   ///
-  /// this namespace contains everything used for resolving paths into
-  /// block addresses.
+  /// this namespace contains everything necessary for resolving paths.
   ///
   namespace path
   {

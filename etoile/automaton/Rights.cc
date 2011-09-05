@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Rights.cc
 //
 // created       julien quintard   [mon jun 20 14:04:21 2011]
-// updated       julien quintard   [wed jun 22 16:25:08 2011]
+// updated       julien quintard   [sun sep  4 13:52:53 2011]
 //
 
 //
@@ -79,65 +79,7 @@ namespace etoile
 	  // associated with the subject.
 	  //
 
-	  /* XXX
-	  // open the access.
-	  if (Access::Open(gear) == elle::StatusError)
-	    escape("unable to open the access");
-
-	  // test if the user is present in the access block.
-	  if (gear->access->Exist(user->client->subject) ==
-	      elle::StatusTrue)
-	    {
-	      nucleus::Record*	record;
-
-	      // retrieve the complete access record.
-	      if (gear->access->Lookup(user->client->subject,
-					  record) == elle::StatusError)
-		escape("unable to retrieve the access record");
-
-	      // set the role.
-	      gear->rights->role = nucleus::RoleDelegate;
-
-	      // set the record.
-	      gear->rights->record = *record;
-
-	      // decrypt the token and verify the key, if present.
-	      if (gear->rights->record.token != nucleus::Token::Null)
-		{
-		  elle::Digest	fingerprint;
-
-		  // extract the secret key from the token.
-		  if (gear->rights->record.token.Extract(
-                        *user->client->agent,
-		        gear->rights->key) == elle::StatusError)
-		    escape("unable to extract the secret key from the token");
-
-		  // compute a fingerprint of the key.
-		  if (elle::OneWay::Hash(gear->rights->key,
-					 fingerprint) == elle::StatusError)
-		    escape("unable to compute a fingerprint of the key");
-
-		  // verify the key's validity according to the
-		  // public fingerprint.
-		  if (gear->object->data.fingerprint != fingerprint)
-		    escape("the key granted to the user differs from "
-			   "the fingerprint");
-		}
-	    }
-	  else
-	    {
-	      //
-	      // if the user is not present in the access block, she is
-	      // at best, a vassal but it is her job to prove it by providing
-	      // a voucher.
-	      //
-
-	      // therefore, at this point, the user is considered as having no
-	      // right over the object.
-	      gear->rights->role = nucleus::RoleUnknown;
-	      gear->rights->record.permissions = nucleus::PermissionNone;
-	    }
-	  */
+	  // XXX to implement.
 	}
 
       leave();

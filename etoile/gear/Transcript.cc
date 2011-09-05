@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transcript.cc
 //
 // created       julien quintard   [wed jun 22 13:49:40 2011]
-// updated       julien quintard   [mon aug  1 10:53:37 2011]
+// updated       julien quintard   [sun sep  4 16:23:48 2011]
 //
 
 //
@@ -31,18 +31,8 @@ namespace etoile
     ///
     Transcript::~Transcript()
     {
-      Transcript::Iterator	iterator;
-
-      // for every action.
-      for (iterator = this->container.begin();
-	   iterator != this->container.end();
-	   iterator++)
-	{
-	  Action*	action = *iterator;
-
-	  // delete the action.
-	  delete action;
-	}
+      // flush the container.
+      this->Flush();
     }
 
 //
@@ -50,7 +40,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method records the given address/block as needed to be
+    /// pushed onto the storage layer.
     ///
     elle::Status	Transcript::Push(const nucleus::Address& address,
 					 const nucleus::Block*	block)
@@ -72,7 +63,8 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method records the given address as needed to be removed
+    /// from the storage layer.
     ///
     elle::Status	Transcript::Wipe(const nucleus::Address& address)
     {
@@ -93,10 +85,10 @@ namespace etoile
     }
 
     ///
-    /// this method clears the transcript from the previously registered
+    /// this method flushes the transcript from the previously registered
     /// actions.
     ///
-    elle::Status	Transcript::Clear()
+    elle::Status	Transcript::Flush()
     {
       Transcript::Iterator	iterator;
 

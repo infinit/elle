@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.cc
 //
 // created       julien quintard   [wed jun 15 13:09:29 2011]
-// updated       julien quintard   [fri aug  5 12:48:14 2011]
+// updated       julien quintard   [sun sep  4 16:27:02 2011]
 //
 
 //
@@ -32,12 +32,12 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this container holds the scopes accessible through a chemin.
     ///
     Scope::S::O::Container		Scope::Scopes::Onymous;
 
     ///
-    /// XXX
+    /// this container holds the anonymous---i.e freshly created---scopes.
     ///
     Scope::S::A::Container		Scope::Scopes::Anonymous;
 
@@ -164,7 +164,7 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method displays the containers.
     ///
     elle::Status	Scope::Show(const elle::Natural32	margin)
     {
@@ -360,8 +360,8 @@ namespace etoile
 	    if (this->context->state == Context::StateDestroyed)
 	      leave();
 
-	    // clear the transcript.
-	    this->context->transcript.Clear();
+	    // flush the transcript.
+	    this->context->transcript.Flush();
 
 	    break;
 	  }
@@ -369,10 +369,10 @@ namespace etoile
 	  {
 	    //
 	    // the target is to be destroyed; therefore, the previously
-	    // transcripted actions must be cleared since no longer relevant.
+	    // transcripted actions must be flushed since no longer relevant.
 	    //
 	    // note that should have a previous Destroy operation been invoked,
-	    // clearing the transcript would be needless; thus the clearing
+	    // flushing the transcript would be needless; thus the flushing
 	    // is triggered only if necessary.
 	    //
 
@@ -380,8 +380,8 @@ namespace etoile
 	    if (this->context->state == Context::StateDestroyed)
 	      leave();
 
-	    // clear the transcript.
-	    this->context->transcript.Clear();
+	    // flush the transcript.
+	    this->context->transcript.Flush();
 
 	    break;
 	  }

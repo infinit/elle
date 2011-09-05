@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Venue.hh
 //
 // created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [mon aug  8 14:17:36 2011]
+// updated       julien quintard   [sun sep  4 18:14:37 2011]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH
@@ -35,7 +35,10 @@ namespace etoile
 //
 
     ///
-    /// a venue contains the addresses/versions corresponding to a route.
+    /// this class contains the addresses/versions corresponding to a route.
+    ///
+    /// a venue is therefore composed of a sequence of Location, each
+    /// of which indicates the address and version number of the component.
     ///
     class Venue:
       public elle::Object
@@ -61,11 +64,11 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Record(const nucleus::Location&);
-      elle::Status	Record(const nucleus::Address&,
-			       const nucleus::Version&);
+      elle::Status		Record(const nucleus::Location&);
+      elle::Status		Record(const nucleus::Address&,
+				       const nucleus::Version&);
 
-      elle::Status	Clear();
+      elle::Status		Clear();
 
       //
       // interfaces
@@ -73,15 +76,15 @@ namespace etoile
 
       // object
       declare(Venue);
-      elle::Boolean	operator==(const Venue&) const;
+      elle::Boolean		operator==(const Venue&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Container		elements;
+      Container			elements;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Directory.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [fri jul 29 14:33:01 2011]
+// updated       julien quintard   [sun sep  4 16:12:20 2011]
 //
 
 #ifndef ETOILE_GEAR_DIRECTORY_HH
@@ -76,11 +76,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <etoile/gear/Directory.hxx>
 
 #endif

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Directory.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [mon aug  8 16:26:28 2011]
+// updated       julien quintard   [sun sep  4 20:47:04 2011]
 //
 
 //
@@ -65,7 +65,7 @@ namespace etoile
 	escape("unable to supply the scope");
 
       // retrieve the context.
-      if (scope->Use<gear::NatureDirectory>(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // allocate an actor.
@@ -112,7 +112,7 @@ namespace etoile
 	escape("unable to acquire the scope");
 
       // retrieve the context.
-      if (scope->Use<gear::NatureDirectory>(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // allocate an actor.
@@ -155,7 +155,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::Directory::Lock()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }
@@ -172,7 +172,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::Directory::Release()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }
@@ -201,8 +201,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureObject>(object) ==
-	  elle::StatusError)
+      if (actor->scope->Use(object) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // keep the address.
@@ -213,8 +212,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureDirectory>(directory) ==
-	  elle::StatusError)
+      if (actor->scope->Use(directory) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the add automaton on the context.
@@ -252,8 +250,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureDirectory>(context) ==
-	  elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the lookup automaton on the context.
@@ -289,8 +286,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureDirectory>(context) ==
-	  elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the consult automaton on the context.
@@ -326,8 +322,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureDirectory>(context) ==
-	  elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the rename automaton on the context.
@@ -373,8 +368,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureDirectory>(context) ==
-	  elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the remove automaton on the context.
@@ -469,8 +463,7 @@ namespace etoile
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureDirectory>(context) ==
-	  elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the store automaton on the context.
@@ -522,8 +515,7 @@ namespace etoile
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureDirectory>(context) ==
-	  elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the destroy automaton on the context.
@@ -560,7 +552,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::Directory::Purge()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Automaton.hh
 //
 // created       julien quintard   [mon jun 20 12:56:15 2011]
-// updated       julien quintard   [sat jun 25 15:41:22 2011]
+// updated       julien quintard   [sun sep  4 13:50:19 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_AUTOMATON_HH
@@ -17,8 +17,8 @@
 namespace etoile
 {
   ///
-  /// this namespace contains all the automata which operate upon a
-  /// context.
+  /// this namespace contains all the automata enabling one to perform
+  /// operations on contexts.
   ///
   namespace automaton
   {

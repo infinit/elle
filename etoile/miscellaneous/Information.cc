@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/miscellaneous/Information.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [sat jul  2 11:26:53 2011]
+// updated       julien quintard   [sun sep  4 18:05:03 2011]
 //
 
 //
@@ -77,8 +77,7 @@ namespace etoile
 	  }
 	default:
 	  {
-	    // XXX
-	    printf("UNIMPLEMENTED\n");	
+	    // XXX to implement.
 	  }
 	}
 

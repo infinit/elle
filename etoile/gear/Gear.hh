@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.hh
 //
 // created       julien quintard   [fri jun  3 10:58:40 2011]
-// updated       julien quintard   [fri aug  5 12:18:05 2011]
+// updated       julien quintard   [sun sep  4 16:20:04 2011]
 //
 
 #ifndef ETOILE_GEAR_GEAR_HH
@@ -28,8 +28,8 @@
 namespace etoile
 {
   ///
-  /// this namespace contains everything for recording operations on
-  /// the file system so that such operations could be replayed for instance.
+  /// this namespace provides contexts for operating on the file system
+  /// by applying automata in order to maintain consistency.
   ///
   namespace gear
   {
@@ -39,7 +39,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class represents the gear module.
     ///
     class Gear
     {
@@ -60,7 +60,6 @@ namespace etoile
 #include <etoile/gear/Chronicle.hh>
 #include <etoile/gear/Context.hh>
 #include <etoile/gear/Directory.hh>
-#include <etoile/gear/Event.hh>
 #include <etoile/gear/File.hh>
 #include <etoile/gear/Identifier.hh>
 #include <etoile/gear/Link.hh>

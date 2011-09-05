@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Actor.hh
 //
 // created       julien quintard   [thu jul 28 12:45:43 2011]
-// updated       julien quintard   [fri aug  5 12:43:04 2011]
+// updated       julien quintard   [sun sep  4 15:19:16 2011]
 //
 
 #ifndef ETOILE_GEAR_ACTOR_HH
@@ -33,7 +33,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// the Scope class must be forward declared to prevent conflicts.
     ///
     class Scope;
 
@@ -42,7 +42,23 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// an actor represents an application operating on an object for
+    /// instance.
+    ///
+    /// actors have been introduced in order to allow multiple of them
+    /// to operate on the same scope i.e a directory, a file etc.
+    ///
+    /// every actor has a state which indicates whether the actor has
+    /// updated or not the scope. by maintaining such a state, the system
+    /// is able to reject some operations such as modifying an object before
+    /// discarding these updates. indeed, since every modification is
+    /// automatically applied on the object, the system cannot come back
+    /// by undo-ing them. therefore, the Operate() method is called before
+    /// performing any action so that the actor's state can be checked.
+    ///
+    /// note that this class also maintains a static data structure holding
+    /// all the actors, indexed by a unique identifier which is returned
+    /// and used by the application for referencing the actor.
     ///
     class Actor:
       public elle::Object
@@ -73,6 +89,8 @@ namespace etoile
       static elle::Status	Select(const Identifier&,
 				       Actor*&);
       static elle::Status	Remove(const Identifier&);
+
+      static elle::Status	Show(const elle::Natural32 = 0);
 
       //
       // static attributes

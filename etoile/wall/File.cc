@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/File.cc
 //
 // created       julien quintard   [fri aug 14 16:34:43 2009]
-// updated       julien quintard   [fri aug  5 12:50:42 2011]
+// updated       julien quintard   [sun sep  4 20:49:32 2011]
 //
 
 //
@@ -62,7 +62,7 @@ namespace etoile
 	escape("unable to supply the scope");
 
       // retrieve the context.
-      if (scope->Use<gear::NatureFile>(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // allocate an actor.
@@ -109,7 +109,7 @@ namespace etoile
 	escape("unable to acquire the scope");
 
       // retrieve the context.
-      if (scope->Use<gear::NatureFile>(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // allocate an actor.
@@ -152,7 +152,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::File::Lock()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }
@@ -169,7 +169,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::File::Release()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }
@@ -196,7 +196,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the write automaton on the context.
@@ -234,7 +234,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the read automaton on the context.
@@ -268,7 +268,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the adjust automaton on the context.
@@ -355,7 +355,7 @@ namespace etoile
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the store automaton on the context.
@@ -407,7 +407,7 @@ namespace etoile
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureFile>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the destroy automaton on the context.
@@ -444,7 +444,7 @@ namespace etoile
       if (Infinit::Configuration.debug.etoile == true)
 	printf("[etoile] wall::File::Purge()\n");
 
-      // XXX
+      // XXX to implement.
 
       leave();
     }

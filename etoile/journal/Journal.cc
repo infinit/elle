@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.cc
 //
 // created       julien quintard   [fri jun 24 14:23:50 2011]
-// updated       julien quintard   [fri aug  5 12:51:57 2011]
+// updated       julien quintard   [sun sep  4 17:55:54 2011]
 //
 
 //
@@ -32,7 +32,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method records a given scope so as to trigger the action
+    /// later on.
     ///
     elle::Status	Journal::Record(gear::Scope*		scope)
     {
@@ -79,8 +80,8 @@ namespace etoile
 	    }
 	}
 
-      // clear the transcript since the actions have been performed.
-      if (scope->context->transcript.Clear() == elle::StatusError)
+      // flush the transcript since the actions have been performed.
+      if (scope->context->transcript.Flush() == elle::StatusError)
 	escape("unable to clear the transcript");
 
       // set the context's state.

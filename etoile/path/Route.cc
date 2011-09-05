@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Route.cc
 //
 // created       julien quintard   [sat aug  8 16:26:41 2009]
-// updated       julien quintard   [mon aug  8 15:03:08 2011]
+// updated       julien quintard   [sun sep  4 18:12:53 2011]
 //
 
 //
@@ -305,8 +305,11 @@ namespace etoile
       for (scoutor = this->elements.begin();
 	   scoutor != this->elements.end();
 	   scoutor++)
-	std::cout << alignment << elle::Dumpable::Shift
-		  << *scoutor << std::endl;
+	{
+	  // dump the slab.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << *scoutor << std::endl;
+	}
 
       leave();
     }

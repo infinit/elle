@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/Etoile.hh
 //
 // created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [mon aug  8 14:26:56 2011]
+// updated       julien quintard   [sun sep  4 20:54:15 2011]
 //
 
 #ifndef ETOILE_ETOILE_HH
@@ -22,7 +22,8 @@
 #include <lune/Lune.hh>
 
 ///
-/// the principal namespace
+/// the principal Etoile namespace which provides functionalities for
+/// manipulating the file system objects.
 ///
 namespace etoile
 {

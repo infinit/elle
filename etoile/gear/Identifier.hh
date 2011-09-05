@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Identifier.hh
 //
 // created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [tue jun 21 12:53:53 2011]
+// updated       julien quintard   [sun sep  4 15:06:34 2011]
 //
 
 #ifndef ETOILE_GEAR_IDENTIFIER_HH
@@ -30,7 +30,8 @@ namespace etoile
 //
 
     ///
-    /// identifiers are used to uniquely identify scopes.
+    /// this class can be used to uniquely identify actors whose role is
+    /// to act on scopes.
     ///
     class Identifier:
       public elle::Object
@@ -56,7 +57,7 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Generate();
+      elle::Status		Generate();
 
       //
       // interfaces
@@ -64,20 +65,20 @@ namespace etoile
 
       // object
       declare(Identifier);
-      elle::Boolean	operator==(const Identifier&) const;
-      elle::Boolean	operator<(const Identifier&) const;
+      elle::Boolean		operator==(const Identifier&) const;
+      elle::Boolean		operator<(const Identifier&) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status		Serialize(elle::Archive&) const;
+      elle::Status		Extract(elle::Archive&);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      elle::Natural64	value;
+      elle::Natural64		value;
     };
 
   }

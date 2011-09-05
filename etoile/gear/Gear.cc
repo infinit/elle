@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Gear.cc
 //
 // created       julien quintard   [tue jun 14 16:41:06 2011]
-// updated       julien quintard   [fri jul 29 14:28:23 2011]
+// updated       julien quintard   [sun sep  4 16:21:29 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method initializes the gear system.
     ///
     elle::Status	Gear::Initialize()
     {
@@ -39,7 +39,7 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method cleans the gear system.
     ///
     elle::Status	Gear::Clean()
     {

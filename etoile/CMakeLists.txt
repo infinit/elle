@@ -7,16 +7,10 @@ ADD_LIBRARY(etoile
   path/Venue.cc
   path/Way.cc
 
-#  depot/Cell.cc
   depot/Depot.cc
-  depot/Hole.cc
-#  depot/Record.cc
-#  depot/Repository.cc
-#  depot/Unit.cc
 
   gear/Action.cc
   gear/Actor.cc
-  gear/Chronicle.cc
   gear/Context.cc
   gear/Directory.cc
   gear/File.cc

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.hxx
 //
 // created       julien quintard   [fri jul 29 12:54:19 2011]
-// updated       julien quintard   [sat jul 30 16:22:53 2011]
+// updated       julien quintard   [sun sep  4 16:05:23 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HXX
@@ -24,9 +24,10 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method returns the context associated with the scope
+    /// by casting it with the given type.
     ///
-    template <const Nature N, typename T>
+    template <typename T>
     elle::Status	Scope::Use(T*&				context)
     {
       enter();
@@ -35,10 +36,10 @@ namespace etoile
       if (this->context == NULL)
 	{
 	  // allocate a context according to the nature.
-	  this->context = new typename ContextType<N>::T;
+	  this->context = new T;
 	}
 
-      // return the context by statically casting it.
+      // return the context by dynamically casting it.
       if ((context = dynamic_cast<T*>(this->context)) == NULL)
 	escape("invalid context nature");
 

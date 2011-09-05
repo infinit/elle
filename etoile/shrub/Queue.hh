@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Queue.hh
 //
 // created       julien quintard   [tue aug  9 18:17:59 2011]
-// updated       julien quintard   [wed aug 10 23:28:57 2011]
+// updated       julien quintard   [sun sep  4 20:03:08 2011]
 //
 
 #ifndef ETOILE_SHRUB_QUEUE_HH
@@ -36,7 +36,12 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class provides a data structures fo holding timestamps
+    /// and references to their associated riffles.
+    ///
+    /// the queue is used for keeping the riffle depending on the
+    /// refreshing timestamps so that, given a lifespan, the expired
+    /// ones may get evicted.
     ///
     class Queue:
       public elle::Entity
@@ -53,20 +58,20 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Add(Riffle*);
-      elle::Status	Remove(Riffle*);
+      elle::Status		Add(Riffle*);
+      elle::Status		Remove(Riffle*);
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      Container		container;
+      Container			container;
     };
 
   }

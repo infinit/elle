@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Shrub.cc
 //
 // created       julien quintard   [sat aug  6 17:48:20 2011]
-// updated       julien quintard   [fri sep  2 20:29:04 2011]
+// updated       julien quintard   [sun sep  4 20:34:10 2011]
 //
 
 //
@@ -60,8 +60,8 @@ namespace etoile
       enter();
 
       // create the sweeper timer.
-      if (Shrub::Timer.Create(elle::Timer::ModeRepetition) ==
-	  elle::StatusError)
+      if (Shrub::Timer.Create(
+	    elle::Timer::ModeRepetition) == elle::StatusError)
 	escape("unable to create the timer");
 
       // subscribe to the timer's signal.
@@ -70,8 +70,8 @@ namespace etoile
 	escape("unable to subscribe to the signal");
 
       // start the timer.
-      if (Shrub::Timer.Start(Infinit::Configuration.shrub.frequence) ==
-	  elle::StatusError)
+      if (Shrub::Timer.Start(
+	    Infinit::Configuration.shrub.frequency) == elle::StatusError)
 	escape("unable to start the timer");
 
       leave();
@@ -87,9 +87,9 @@ namespace etoile
       // delete the shrub content, if present.
       if (Shrub::Riffles != NULL)
 	{
-	  // clear the riffle.
-	  if (Shrub::Riffles->Clear() == elle::StatusError)
-	    escape("unable to clear the riffles");
+	  // flush the riffle.
+	  if (Shrub::Riffles->Flush() == elle::StatusError)
+	    escape("unable to flush the riffles");
 
 	  // release the shrub slot.
 	  if (Shrub::Timestamps.Remove(Shrub::Riffles) == elle::StatusError)
@@ -103,7 +103,8 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method allocates _size_ slots for the introduction of
+    /// new riffles.
     ///
     elle::Status	Shrub::Allocate(const elle::Natural32	size)
     {
@@ -112,11 +113,25 @@ namespace etoile
       enter();
 
       // release as many riffle as requested and possible.
-      for (i = 0;
-	   (i < size) && (Shrub::Timestamps.container.size() != 0);
-	   i++)
+      //
+      // note that the _size_ may be larger than the shrub's actual
+      // capacity. indeed, a path composed of thousands of components
+      // would not fit in a shrub with a capacity of a hundred entries.
+      //
+      // therefore, the loop is run a limited number of time but stopped
+      // as soon as the number of available slots is reached.
+      for (i = 0; i < size; i++)
 	{
 	  Riffle*		riffle;
+
+	  // stop if there are enough available slots to proceed.
+	  if ((Infinit::Configuration.shrub.capacity -
+	       Shrub::Timestamps.container.size()) >= size)
+	    break;
+
+	  // stop if the shrub is empty.
+	  if (Shrub::Timestamps.container.empty() == true)
+	    break;
 
 	  // retrieve the least-recently-used riffle.
 	  riffle = Shrub::Timestamps.container.begin()->second;
@@ -133,14 +148,17 @@ namespace etoile
 	      //
 	      // otherwise, the root riffle needs to be released.
 	      //
+	      // note that the loop will be exited right after that
+	      // since the shrub will be empty.
+	      //
 
-	      // clear the riffle.
-	      if (Shrub::Riffles->Clear() == elle::StatusError)
-		escape("unable to clear the riffles");
+	      // flush the riffle.
+	      if (Shrub::Riffles->Flush() == elle::StatusError)
+		escape("unable to flush the riffles");
 
 	      // release the shrub slot.
-	      if (Shrub::Timestamps.Remove(Shrub::Riffles) ==
-		  elle::StatusError)
+	      if (Shrub::Timestamps.Remove(
+		    Shrub::Riffles) == elle::StatusError)
 		escape("unable to remove the riffle");
 
 	      // delete the root riffle.
@@ -227,16 +245,9 @@ namespace etoile
 	if (Shrub::Resolve(route, _venue) == elle::StatusError)
 	  escape("unable to resolve the route");
 
-	// if there is not enough slots to inject the unresolved
-	// slabs...
-	if (_venue.elements.size() >
-	    (Infinit::Configuration.shrub.capacity -
-	     Shrub::Timestamps.container.size()))
-	  {
-	    // allocate slots for those elements.
-	    if (Shrub::Allocate(_venue.elements.size()) == elle::StatusError)
-	      escape("unable to allocate the required slots");
-	  }
+	// requests the allocation of enough slots for those elements.
+	if (Shrub::Allocate(_venue.elements.size()) == elle::StatusError)
+	  escape("unable to allocate the required slots");
       }
 
       // make sure the root riffle is present, if not create it.
@@ -351,9 +362,9 @@ namespace etoile
 	  // otherwise, the route references the root riffle.
 	  //
 
-	  // clear the riffle.
-	  if (Shrub::Riffles->Clear() == elle::StatusError)
-	    escape("unable to clear the riffles");
+	  // flush the riffle.
+	  if (Shrub::Riffles->Flush() == elle::StatusError)
+	    escape("unable to flush the riffles");
 
 	  // release the shrub slot.
 	  if (Shrub::Timestamps.Remove(Shrub::Riffles) == elle::StatusError)
@@ -403,7 +414,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this callback is triggered on a periodic basis in order to evict
+    /// the expired riffle.
     ///
     elle::Status	Shrub::Sweeper()
     {
@@ -449,9 +461,9 @@ namespace etoile
 	      // otherwise, the root riffle needs to be released.
 	      //
 
-	      // clear the riffle.
-	      if (Shrub::Riffles->Clear() == elle::StatusError)
-		escape("unable to clear the riffles");
+	      // flush the riffle.
+	      if (Shrub::Riffles->Flush() == elle::StatusError)
+		escape("unable to flush the riffles");
 
 	      // release the shrub slot.
 	      if (Shrub::Timestamps.Remove(Shrub::Riffles) ==

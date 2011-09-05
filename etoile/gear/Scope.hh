@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.hh
 //
 // created       julien quintard   [fri jun  3 11:01:57 2011]
-// updated       julien quintard   [sun jul 31 11:14:47 2011]
+// updated       julien quintard   [sun sep  4 16:05:36 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HH
@@ -38,12 +38,19 @@ namespace etoile
 //
 
     ///
-    /// a scope represents a set of operations represented by a chronicle
-    /// applied onto a context, leading to a living state.
+    /// this class represents a scope on which to operate in order to
+    /// manipulate a file system object such as a file, directory or else.
     ///
-    /// should a conflict be detected upon publishing the state's modified
-    /// constituent blocks, the system would be able to fetch the latest
-    /// version of the context and re-apply the set of operations.
+    /// note that this class also maintains a static data structure holding
+    /// the living scope according to their chemin so that whenever an
+    /// actor tries to load a already loaded scope, the actor is simply
+    /// attached to the scope.
+    ///
+    /// finally, note that anonymous scope are also kept. indeed, a file
+    /// created by an application for instance does not have a chemin
+    /// since the file has not be attached to the file system hierarchy
+    /// yet. therefore, such scope are maintained in an anonymous data
+    /// structure for as long as necessary.
     ///
     class Scope:
       public elle::Object
@@ -112,7 +119,7 @@ namespace etoile
       elle::Status	Attach(Actor*);
       elle::Status	Detach(Actor*);
 
-      template <const Nature, typename T>
+      template <typename T>
       elle::Status	Use(T*&);
 
       elle::Status	Operate(const Operation);

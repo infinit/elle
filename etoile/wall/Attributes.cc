@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/wall/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 19:26:06 2010]
-// updated       julien quintard   [fri aug  5 12:11:12 2011]
+// updated       julien quintard   [sun sep  4 16:07:50 2011]
 //
 
 //
@@ -57,7 +57,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the set automaton on the context.
@@ -95,7 +95,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the get automaton on the context.
@@ -128,7 +128,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the fetch automaton on the context.
@@ -160,7 +160,7 @@ namespace etoile
 	escape("unable to select the actor");
 
       // retrieve the context.
-      if (actor->scope->Use<gear::NatureObject>(context) == elle::StatusError)
+      if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the omit automaton on the context.

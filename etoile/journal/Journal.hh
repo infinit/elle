@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/journal/Journal.hh
 //
 // created       julien quintard   [fri jun 17 13:04:03 2011]
-// updated       julien quintard   [fri jun 24 14:37:05 2011]
+// updated       julien quintard   [sun sep  4 17:54:52 2011]
 //
 
 #ifndef ETOILE_JOURNAL_JOURNAL_HH
@@ -24,6 +24,10 @@
 
 namespace etoile
 {
+  ///
+  /// this namespace contains everything related to the journal which
+  /// is responsible for recording and triggering the storage layer operations.
+  ///
   namespace journal
   {
 
@@ -32,7 +36,7 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class represents the journal manager.
     ///
     class Journal
     {

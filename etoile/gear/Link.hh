@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Link.hh
 //
 // created       julien quintard   [fri aug 14 23:13:51 2009]
-// updated       julien quintard   [fri jul 29 14:33:32 2011]
+// updated       julien quintard   [sun sep  4 16:12:24 2011]
 //
 
 #ifndef ETOILE_GEAR_LINK_HH
@@ -74,11 +74,5 @@ namespace etoile
 
   }
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <etoile/gear/Link.hxx>
 
 #endif

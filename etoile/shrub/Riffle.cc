@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Riffle.cc
 //
 // created       julien quintard   [mon aug  8 13:03:14 2011]
-// updated       julien quintard   [thu aug 11 10:30:14 2011]
+// updated       julien quintard   [sun sep  4 20:06:21 2011]
 //
 
 //
@@ -42,7 +42,8 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this method creates a riffle given the slab, its location and
+    /// the parent riffle.
     ///
     elle::Status	Riffle::Create(const path::Slab&	slab,
 				       const nucleus::Location&	location,
@@ -178,9 +179,9 @@ namespace etoile
       // retrieve the riffle pointer.
       riffle = iterator->second;
 
-      // clear the riffle.
-      if (riffle->Clear() == elle::StatusError)
-	escape("unable to clear the riffle");
+      // flush the riffle.
+      if (riffle->Flush() == elle::StatusError)
+	escape("unable to flush the riffle");
 
       // release the shrub slot.
       if (Shrub::Timestamps.Remove(riffle) == elle::StatusError)
@@ -196,9 +197,9 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method flushes the riffle's content.
     ///
-    elle::Status	Riffle::Clear()
+    elle::Status	Riffle::Flush()
     {
       Riffle::Scoutor	scoutor;
 
@@ -211,9 +212,9 @@ namespace etoile
 	{
 	  Riffle*	riffle = scoutor->second;
 
-	  // clear the riffle recursively.
-	  if (riffle->Clear() == elle::StatusError)
-	    escape("unable to clear the riffle");
+	  // flush the riffle recursively.
+	  if (riffle->Flush() == elle::StatusError)
+	    escape("unable to flush the riffle");
 
 	  // release the shrub slot.
 	  if (Shrub::Timestamps.Remove(riffle) == elle::StatusError)

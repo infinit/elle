@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Transcript.hh
 //
 // created       julien quintard   [fri jun 17 13:10:45 2011]
-// updated       julien quintard   [sun jul 31 11:20:20 2011]
+// updated       julien quintard   [sun sep  4 16:26:30 2011]
 //
 
 #ifndef ETOILE_GEAR_TRANSCRIPT_HH
@@ -33,7 +33,9 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class represents a set of actions to be performed on the
+    /// storage layer such as pushing this block, removing this one and so
+    /// on.
     ///
     class Transcript:
       public elle::Object
@@ -58,7 +60,7 @@ namespace etoile
 			     const nucleus::Block*);
       elle::Status	Wipe(const nucleus::Address&);
 
-      elle::Status	Clear();
+      elle::Status	Flush();
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Shrub.hh
 //
 // created       julien quintard   [sat aug  6 17:31:57 2011]
-// updated       julien quintard   [thu aug 11 10:55:45 2011]
+// updated       julien quintard   [sun sep  4 20:33:55 2011]
 //
 
 #ifndef ETOILE_SHRUB_SHRUB_HH
@@ -30,7 +30,8 @@
 namespace etoile
 {
   ///
-  /// XXX
+  /// this namespace contains everything related to the shrub i.e the
+  /// path-specific cache.
   ///
   namespace shrub
   {
@@ -66,8 +67,21 @@ namespace etoile
     /// match within a single pass because riffles are hierarchically
     /// organised.
     ///
-    /// XXX explain configuration variables: delay, bulk, capacity etc.
-    /// XXX lifespan in ms and frequence in sec
+    /// note that several parameters can be configured through the
+    /// configuration file:
+    ///
+    ///   o status: indicates whether the shrub should be used for
+    ///             caching paths.
+    ///   o capacity: indicates the number of riffles the shrub can
+    ///               maintain before rejecting additional entries.
+    ///   o frequency: indicates, in milliseconds, how often the sweeper
+    ///                should be triggered in order to evict expired riffles.
+    ///                note that the frequency is expressed in milliseconds.
+    ///   o lifespan: indicates the riffles' lifespan before being considered
+    ///               as having expired. note that every update on a riffle
+    ///               resets the "expiration timeout", so to speak. note
+    ///               that the lifespan is expressed in seconds, not
+    ///               milliseconds.
     ///
     class Shrub
     {
