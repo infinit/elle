@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Descriptor.hh
 //
 // created       julien quintard   [sat may  1 21:16:41 2010]
-// updated       julien quintard   [mon jun 27 20:16:22 2011]
+// updated       julien quintard   [sun sep  4 21:00:31 2011]
 //
 
 #ifndef LUNE_DESCRIPTOR_HH

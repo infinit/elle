@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [thu aug 11 11:53:11 2011]
+// updated       julien quintard   [sun sep  4 20:35:05 2011]
 //
 
 //
@@ -42,7 +42,7 @@ namespace lune
     1024;
   const elle::Natural32	Configuration::Default::Shrub::Lifespan =
     300;
-  const elle::Natural32	Configuration::Default::Shrub::Frequence =
+  const elle::Natural32	Configuration::Default::Shrub::Frequency =
     120000;
 
   const elle::Natural32	Configuration::Default::Cache::Capacity =
@@ -102,8 +102,8 @@ namespace lune
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "shrub", "frequence",
-	  this->shrub.frequence) == elle::StatusError)
+	  "shrub", "frequency",
+	  this->shrub.frequency) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -190,9 +190,9 @@ namespace lune
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "shrub", "frequence",
-	  this->shrub.frequence,
-	  Configuration::Default::Shrub::Frequence) == elle::StatusError)
+	  "shrub", "frequency",
+	  this->shrub.frequency,
+	  Configuration::Default::Shrub::Frequency) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(

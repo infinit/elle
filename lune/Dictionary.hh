@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Dictionary.hh
 //
 // created       julien quintard   [mon may 10 15:52:06 2010]
-// updated       julien quintard   [tue jun 28 14:55:00 2011]
+// updated       julien quintard   [sun sep  4 21:01:26 2011]
 //
 
 #ifndef LUNE_DICTIONARY_HH
@@ -31,7 +31,7 @@ namespace lune
 //
 
   ///
-  /// this class contains the links between local users and groups and
+  /// this class maintains a mapping between local users/groups and
   /// Infinit identifiers so that Infinit can be used with local file
   /// system entities such as UNIX's UIDs/GIDs for instance.
   ///

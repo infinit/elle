@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [thu aug 11 10:36:50 2011]
+// updated       julien quintard   [sun sep  4 20:58:19 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
@@ -28,7 +28,8 @@ namespace lune
 //
 
   ///
-  /// this class represents a configuration file.
+  /// this class represents a configuration file which can be used to
+  /// alterate the Infinit behaviour dynamically.
   ///
   class Configuration:
     public elle::Settings
@@ -46,7 +47,7 @@ namespace lune
 	static const elle::Boolean	Status;
 	static const elle::Natural32	Capacity;
 	static const elle::Natural32	Lifespan;
-	static const elle::Natural32	Frequence;
+	static const elle::Natural32	Frequency;
       };
 
       struct				Cache
@@ -87,8 +88,8 @@ namespace lune
     //
     // methods
     //
-    elle::Status	Push();
-    elle::Status	Pull();
+    elle::Status		Push();
+    elle::Status		Pull();
 
     //
     // interfaces
@@ -98,13 +99,13 @@ namespace lune
     declare(Configuration);
 
     // dumpable
-    elle::Status	Dump(const elle::Natural32 = 0) const;
+    elle::Status		Dump(const elle::Natural32 = 0) const;
 
     // fileable
-    elle::Status	Load();
-    elle::Status	Store() const;
-    elle::Status	Erase() const;
-    elle::Status	Exist() const;
+    elle::Status		Load();
+    elle::Status		Store() const;
+    elle::Status		Erase() const;
+    elle::Status		Exist() const;
 
     //
     // attributes
@@ -114,7 +115,7 @@ namespace lune
       elle::Boolean		status;
       elle::Natural32		capacity;
       elle::Natural32		lifespan;
-      elle::Natural32		frequence;
+      elle::Natural32		frequency;
     }				shrub;
 
     struct
