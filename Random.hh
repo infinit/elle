@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Random.hh
 //
 // created       julien quintard   [thu aug 11 16:08:47 2011]
-// updated       julien quintard   [thu aug 11 17:04:08 2011]
+// updated       julien quintard   [sat sep  3 22:14:01 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_RANDOM_HH
@@ -44,8 +44,10 @@ namespace elle
 //
 
     ///
-    /// XXX
+    /// this class provides functionalities for generating random values.
     ///
+    /// \todo XXX note that the current implementation is Linux-specific
+    ///           since it reads directly from '/dev/random'.
     class Random
     {
     public:
