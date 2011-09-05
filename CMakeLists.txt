@@ -24,7 +24,7 @@ ADD_SUBDIRECTORY(etoile)
 ADD_SUBDIRECTORY(agent)
 ADD_SUBDIRECTORY(pig)
 ADD_SUBDIRECTORY(hole)
-#ADD_SUBDIRECTORY(applications)
+ADD_SUBDIRECTORY(applications)
 
 ADD_LIBRARY(infinit
   Infinit.cc

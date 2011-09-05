@@ -1,29 +1,7 @@
-- ajouter un truc adns le constr Signal: Post ou Send
- -> pour ca il faut pouvoir delay les events: avec SendEvents/PostEvents
-  => simplement via un Timer(0) que l'on cree si signal Send et qu'on
-     start quand on emit: Call()
-
-- utiliser infer a la place des callbacks.
-- mettre des signaux sur les sockets
-
 - bouger Morgue dans standalone.
-
-- pour eviter les bury ou delete this dans Neighbour.cc
-  il faut utiliser un system de signals
-
-- cluster: virer label: sert a rien
-- ajouter timeout pour rester dans neighbour sans etre authenticated?
-- neighbour -> vestibule -> authenticated -> routing table
-
-- il semble que lorsqu'on copie des fichiers dans Infinit, ils
-  choppent le bit x
-- timeout sur Cirkle::Neighbour?
 
 - trouver un terme pour remplacer Address dans elle:
   Plug/Spot/Site/Place/Station
-
-- renommer Node en Host dans remote.
-- mettre RoutingTable en fonctionnalite generale
 
 - routingtable en global template par T (type d'entree): contient une map
   indexee par label. class Mass cree a partir de la RTable?
@@ -31,6 +9,23 @@
 #
 # ---------- XXX --------------------------------------------------------------
 #
+
+- path: it could be a Link rather than a Directory!
+        it therefore appears that PIG always provides absolute paths.
+        -> handle links or state that it cannot accept non-absolute paths
+
+- shrub::queue:
+      ///
+      /// \todo XXX improve this: quite ugly!
+      ///   indeed, for every Add(), the loop can go for 50 iterations
+      ///   in order to get unique. lists of timestamps should be used.
+      ///
+      ///   the following printf() can be uncomment to verify this statement.
+      ///
+
+- implement purge? or not?
+- ajouter type Float (partout: archive, conversion, parser, settings etc.)
+- implementer chmod(avec user/groups) + chown(pas encore clair)
 
 - shrub: faire des listes pour les meme timestamps dans queue
 - make: Warning: File `Makefile' has modification time 3557 s in the future
@@ -41,6 +36,9 @@
 
 - note that the data modifications should probably update the object's data as well such as the size, timestamps etc. so that, say, a file being opened, modified and reopened in order to get the current size returns the new size instead of the "current" one. => quand on fait un Information, si data have been modified, make it consistent
 - passer les versions en 64-bit car un script qui update un fichier toutes les secondes -> vite fait le tour!
+
+- il semble que lorsqu'on copie des fichiers dans Infinit, ils
+  choppent le bit x
 
 #
 # ---------- long-term --------------------------------------------------------
