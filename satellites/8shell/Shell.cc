@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8shell/Shell.cc
 //
 // created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu aug 11 11:15:20 2011]
+// updated       julien quintard   [sat sep  3 19:53:02 2011]
 //
 
 //
@@ -45,13 +45,6 @@ namespace application
   ///
   Shell::Command		Commands[] =
     {
-      /*
-      { "enter", Shell::Enter },
-      { "list", Shell::List },
-      { "select", Shell::Select },
-      { "location", Shell::Location },
-      */
-      { "dump", Shell::Dump },
       { "help", Shell::Help },
       { "quit", Shell::Quit },
       { NULL, NULL }
@@ -62,19 +55,7 @@ namespace application
 //
 
   ///
-  /// XXX
-  ///
-  elle::Status		Shell::Dump(const elle::String&		command)
-  {
-    enter();
-
-    std::cout << command << std::endl;
-
-    leave();
-  }
-
-  ///
-  /// XXX
+  /// this command displays the help.
   ///
   elle::Status		Shell::Help(const elle::String&)
   {
@@ -91,7 +72,7 @@ namespace application
   }
 
   ///
-  /// XXX
+  /// this command quits the shell.
   ///
   elle::Status		Shell::Quit(const elle::String&)
   {

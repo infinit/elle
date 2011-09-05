@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Crux.hh
 //
 // created       julien quintard   [tue jun 28 12:47:04 2011]
-// updated       julien quintard   [fri jul  1 10:38:44 2011]
+// updated       julien quintard   [sat sep  3 19:47:34 2011]
 //
 
 #ifndef DIARY_CRUX_HH
@@ -147,14 +147,6 @@ namespace application
 				  struct ::fuse_file_info*);
     static int		Release(const char*,
 				struct ::fuse_file_info*);
-
-    /* XXX
-    // lock
-    static int		Lock(const char*,
-			     struct ::fuse_file_info*,
-			     int,
-			     struct ::flock*);
-    */
 
     // objects
     static int		Rename(const char*,

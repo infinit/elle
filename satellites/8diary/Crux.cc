@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Crux.cc
 //
 // created       julien quintard   [tue jun 28 12:46:13 2011]
-// updated       julien quintard   [sun jul 31 13:32:47 2011]
+// updated       julien quintard   [sat sep  3 19:49:48 2011]
 //
 
 //
@@ -41,8 +41,9 @@ namespace application
 //
 
   ///
-  /// XXX
+  /// the methods below represents the FUSE upcalls.
   ///
+
   int			Crux::Getattr(const char*		path,
 				      struct ::stat*		stbuf)
   {
@@ -54,9 +55,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Fgetattr(const char*		path,
 				       struct ::stat*		stbuf,
 				       struct ::fuse_file_info*	fi)
@@ -69,9 +67,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Utimens(const char*		path,
 				      const struct ::timespec	ts[2])
   {
@@ -89,9 +84,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Opendir(const char*		path,
 				      struct ::fuse_file_info*	fi)
   {
@@ -118,9 +110,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Readdir(const char*		path,
 				      void*			buf,
 				      ::fuse_fill_dir_t		filler,
@@ -167,9 +156,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Releasedir(const char*		path,
 					 struct ::fuse_file_info* fi)
   {
@@ -184,9 +170,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Mkdir(const char*			path,
 				    mode_t			mode)
   {
@@ -198,9 +181,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Rmdir(const char*			path)
   {
     elle::String	way(Crux::Mirror + path);
@@ -211,9 +191,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Access(const char*		path,
 				     int			mask)
   {
@@ -225,9 +202,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Chmod(const char*			path,
 				    mode_t			mode)
   {
@@ -239,9 +213,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Chown(const char*			path,
 				    uid_t			uid,
 				    gid_t			gid)
@@ -256,9 +227,6 @@ namespace application
 
 #ifdef HAVE_SETXATTR
 
-  ///
-  /// XXX
-  ///
   int			Crux::Setxattr(const char*		path,
 				       const char*		name,
 				       const char*		value,
@@ -273,9 +241,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Getxattr(const char*		path,
 				       const char*		name,
 				       char*			value,
@@ -290,9 +255,6 @@ namespace application
     return res;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Listxattr(const char*		path,
 					char*			list,
 					size_t			size)
@@ -306,9 +268,6 @@ namespace application
     return res;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Removexattr(const char*		path,
 					  const char*		name)
   {
@@ -323,9 +282,6 @@ namespace application
 
 #endif
 
-  ///
-  /// XXX
-  ///
   int			Crux::Symlink(const char*		to,
 				      const char*		from)
   {
@@ -337,9 +293,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Readlink(const char*		path,
 				       char*			buf,
 				       size_t			size)
@@ -355,9 +308,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Create(const char*		path,
 				     mode_t			mode,
 				     struct ::fuse_file_info*	fi)
@@ -373,9 +323,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Open(const char*			path,
 				   struct ::fuse_file_info*	fi)
   {
@@ -390,9 +337,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Write(const char*			path,
 				    const char*			buf,
 				    size_t			size,
@@ -409,9 +353,6 @@ namespace application
     return res;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Read(const char*			path,
 				   char*			buf,
 				   size_t			size,
@@ -428,9 +369,6 @@ namespace application
     return res;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Truncate(const char*		path,
 				       off_t			size)
   {
@@ -442,9 +380,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Ftruncate(const char*		path,
 					off_t			size,
 					struct ::fuse_file_info* fi)
@@ -457,9 +392,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Release(const char*		path,
 				      struct ::fuse_file_info*	fi)
   {
@@ -470,9 +402,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Rename(const char*		from,
 				     const char*		to)
   {
@@ -485,9 +414,6 @@ namespace application
     return 0;
   }
 
-  ///
-  /// XXX
-  ///
   int			Crux::Unlink(const char*		path)
   {
     elle::String	way(Crux::Mirror + path);
@@ -563,39 +489,6 @@ namespace application
 }
 
   /* XXX[are these necessary? we will find out]
-  ///
-  /// XXX
-  ///
-  int			Crux::Lock(const char*			path,
-				   struct ::fuse_file_info*	fi,
-				   int				cmd,
-				   struct ::flock*		lock)
-  {
-    (void)path;
-
-    return ::ulockmgr_op(fi->fh,
-			 cmd,
-			 lock,
-			 &fi->lock_owner,
-			 sizeof(fi->lock_owner));
-  }
-
-static int xmp_mknod(const char *path, mode_t mode, dev_t rdev)
-{
-	int res;
-
-	if (S_ISFIFO(mode))
-		res = mkfifo(path, mode);
-	else
-		res = mknod(path, mode, rdev);
-	if (res == -1)
-		return -errno;
-
-	return 0;
-}
-
-
-
 
 static int xmp_link(const char *from, const char *to)
 {
