@@ -1,4 +1,13 @@
-- bouger Morgue dans standalone.
+- dans shrub on pourrait ajouter dans la boucle de resole: si le riffle a
+  expire, le supprime et arreter la resolution.
+
+- archive ne derive plus region
+- suppression block: challenge donc on doit connaitre ID proprio
+
+- genererer une phrase lors du lancement d'Infinit pour que les applis
+  puissent s'en servir.
+
+- pour le stockage des blocsk: passer un pattern -> reserve/shelter/autre
 
 - trouver un terme pour remplacer Address dans elle:
   Plug/Spot/Site/Place/Station

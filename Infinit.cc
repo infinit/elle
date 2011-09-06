@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/Infinit.cc
 //
 // created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [fri aug 26 00:42:34 2011]
+// updated       julien quintard   [tue sep  6 17:40:47 2011]
 //
 
 //
@@ -26,7 +26,7 @@
 /// can be used to verify the authenticity of the various certificates
 /// populating the Infinit system.
 ///
-const elle::String		Infinit::Key("RUxMAQ0AAAAAAgAAxcbd+krWt+U+s5Uu9pTcJqH7y4aEPyOfneFTPUhmp7Ogf1eOzZqHj5Qmdyt3NsYuNYslpzD32zv-xbvFyTm9dOmqkzdsZ8LuxTSVVTRsu+3xS21Fl56KV0J3p7WymvP6VtbHguF-u72+Q3MppN-HtJ0tz+nL8v0nU1pCdFPLjBRL5LKEEc5uyhVKKgz12qfu83IteTPz-qAVt71gDPdxHxNqFtGs04LjZDvB7hhhratakmOTeOPTz+E7Fo-2qTZ5No-cVe7Du94sJahjBbhjRIKvE72fzWVHmUS8+jVS3BPF4QOc5j8eQIlbOV-pUuzqPfIY51LpZesiR6dPg36NXK2RMGWEUiwDAGC6j3kwlXKXByLRnE8WpiaCZxQQOM1ai7lT0KIpfluD4njDU1MdaV6oxlrF8A-Mv8EQLsUzL+AA41rvP0NW8xB7vcKqUMg3wGn6J-GZBTT56SuGkC6oDyVO0s5NScOgfYlF5ehH9KqQQHYyh6RfsgQOTeWD2+fvUU8KJz8x3dGXs9O+0y+3E14SoFmJYEuTjM2fdmmxSmkQMl51tiCvmwVr5vHR7MLvT7HC4pV5MzV+QGoCakR+6CfM596FOmXh7XHiIFjshogGrjPA07MtAggvlDZ3bt-Z6zta5vaYHtFvDZads18B77BgPCNAaluBgiiJRWZ-IoMNAAAAAwAAAAEAAQ==");
+const elle::String		Infinit::Key("DdoCAPLNAdjAlqMY2pBzKjg06nZrsC9Xc35eJPqfbz+p5EI4FX0IBNwG4De-yN1tis5JL5dTDsANCMwA+hYTUb1WmY1Dqka5OMZp6vsFXAcQxjL3h+JbZ+wwiJnzmDJM3oBhZfHzWaQcVHAH2-vDFcOVlv3yGMYntHim-d8VVyAqzMkn0Wndm9eWJJTzL9rtf-kk9p5nhk0P9rvggDhiVlPmfB6TTz76JgazsVI8wKcex5WmsUVDy26qqo0ETFDYzw5Z5W5JqYlOtxUXo6ChyHT6XE1K49-JnWdCLKFMwFw8reiuIMsC7TxJ41JiK+2KXWZ-kPKRJF5nZ+vc6oaf5aKr1aOXT01a+ArvnRB31MXMxzooxS416BLPH9-TN86Y3uWPWtKC7jEi+9yamHaTDy8j-0eAndSfXfwqW3-eosgnK1oVVZqVNi1W2yqcj3p2Nvs9XtYcJ4O0yand+Xc8miqFfe64FsyOehzzLRxwOxKCLI0rz7jqfiYfOL0+4ebTksL0DIqcyUhaeEoKXjhTVEe+5OiUvyMQiNWQpFlAtH8WRQZvAy9zZKN1bGdxSRt7F1Ld5JZiWfRwXxZpvFs31ePisGSSWBMWuI3Sd46NGlFYyGfHL91LQc259tcRp26kqPTCHsifuCZnhzoWLQflWAmlksSyFcktmbP6bRhQp93hvz+hDaMBAAE=");
 
 ///
 /// this constant contains the version string.
@@ -38,8 +38,8 @@ const elle::String		Infinit::Version("Infinit[alpha]");
 ///
 const elle::String		Infinit::Copyright(
 				  Infinit::Version +
-				  " "+
-				  "Copyright (c) 2008, 2009, 2010, 2011, "
+				  " " +
+				  "Copyright (c) 2007, ..., 2012 "
 				  "Julien Quintard, All rights reserved.\n");
 
 ///
@@ -78,13 +78,20 @@ elle::Status		Infinit::Initialize()
   {
     elle::PublicKey	K;
 
-    // restore the authority's public key.
-    if (K.Restore(Infinit::Key) == elle::StatusError)
-      escape("unable to restore the authority's public key");
+    // ignore this step if the key is empty.
+    //
+    // this is especially useful whenever the authority must be created
+    // the very first time.
+    if (Infinit::Key.empty() == false)
+      {
+	// restore the authority's public key.
+	if (K.Restore(Infinit::Key) == elle::StatusError)
+	  escape("unable to restore the authority's public key");
 
-    // create the authority based on the hard-coded public key.
-    if (Infinit::Authority.Create(K) == elle::StatusError)
-      escape("unable to create the authority");
+	// create the authority based on the hard-coded public key.
+	if (Infinit::Authority.Create(K) == elle::StatusError)
+	  escape("unable to create the authority");
+      }
   }
 
   //
@@ -97,11 +104,11 @@ elle::Status		Infinit::Initialize()
 	// load the configuration file.
 	if (Infinit::Configuration.Load() == elle::StatusError)
 	  escape("unable to load the configuration");
-
-	// pull the parameters.
-	if (Infinit::Configuration.Pull() == elle::StatusError)
-	  escape("unable to pull the configuration parameters");
       }
+
+    // pull the parameters.
+    if (Infinit::Configuration.Pull() == elle::StatusError)
+      escape("unable to pull the configuration parameters");
   }
 
   // enable the meta logging.
