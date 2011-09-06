@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Identity.hh
 //
 // created       julien quintard   [wed may  5 20:55:12 2010]
-// updated       julien quintard   [thu aug 11 14:23:26 2011]
+// updated       julien quintard   [tue sep  6 22:23:05 2011]
 //
 
 #ifndef LUNE_IDENTITY_HH
@@ -30,7 +30,7 @@ namespace lune
 //
 
   ///
-  /// this class represents a identity, issued by the Infinit authority,
+  /// this class represents an identity issued by the Infinit authority
   /// which represents a user.
   ///
   /// note that the name attribute is supposed to be unique as it plays the

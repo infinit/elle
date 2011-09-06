@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Map.hxx
 //
 // created       julien quintard   [sun apr 18 11:02:43 2010]
-// updated       julien quintard   [sun jun 19 18:01:08 2011]
+// updated       julien quintard   [tue sep  6 22:27:33 2011]
 //
 
 #ifndef LUNE_MAP_HXX
@@ -26,10 +26,10 @@ namespace lune
   /// default argument.
   ///
   template <typename T>
-  elle::String*			Map<T>::Trash::Name;
+  elle::String*			Map<T>::Trash::Name = NULL;
 
   template <typename T>
-  T*				Map<T>::Trash::Value;
+  T*				Map<T>::Trash::Value = NULL;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -53,6 +53,9 @@ namespace lune
 	// delete the entry.
 	delete entry;
       }
+
+    // clear the container.
+    this->container.clear();
   }
 
 //
@@ -119,7 +122,7 @@ namespace lune
   }
 
   ///
-  /// this method returns the maped name.
+  /// this method returns the mapped name.
   ///
   template <typename T>
   elle::Status		Map<T>::Lookup(const T&			value,

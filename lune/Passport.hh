@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Passport.hh
 //
 // created       julien quintard   [thu aug 11 13:13:51 2011]
-// updated       julien quintard   [thu aug 11 16:05:22 2011]
+// updated       julien quintard   [tue sep  6 22:28:42 2011]
 //
 
 #ifndef LUNE_PASSPORT_HH
@@ -32,7 +32,9 @@ namespace lune
 //
 
   ///
-  /// this class uniquely identify a device.
+  /// this class uniquely identify a device through a label which is
+  /// used by the storage layer to locate the nodes responsible for a
+  /// block's replica for instance.
   ///
   class Passport:
     public elle::Object,

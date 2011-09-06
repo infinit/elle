@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Lune.hh
 //
 // created       julien quintard   [fri apr 30 12:55:13 2010]
-// updated       julien quintard   [thu aug 11 15:06:57 2011]
+// updated       julien quintard   [tue sep  6 22:25:41 2011]
 //
 
 //
@@ -21,9 +21,8 @@
 #define LUNE_LUNE_HH
 
 ///
-/// this namespace contains everything necessary to manipulate satellite
-/// nodes, especially their local information such as local keys,
-/// locally stored data and so on.
+/// this namespace contains everything necessary to manipulate information on
+/// satellite nodes such as local keys, locally stored data and so on.
 ///
 namespace lune
 {
@@ -35,6 +34,9 @@ namespace lune
   ///
   /// this class provides functionalities for manipulating the lune
   /// library.
+  ///
+  /// more specifically, this class contains all the path patterns
+  /// related to the lune files.
   ///
   class Lune
   {

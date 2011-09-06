@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Phrase.hh
 //
 // created       julien quintard   [sat may  1 12:52:01 2010]
-// updated       julien quintard   [tue apr 26 13:36:22 2011]
+// updated       julien quintard   [tue sep  6 22:30:29 2011]
 //
 
 #ifndef LUNE_PHRASE_HH
@@ -28,8 +28,9 @@ namespace lune
 //
 
   ///
-  /// this class represents a phrase i.e a string linking applications
-  /// with the user's agent.
+  /// this class represents a phrase i.e a string enabling applications
+  /// run by the user having launched the software to communicate with
+  /// Infinit and thus trigger additional functionalities.
   ///
   class Phrase:
     public elle::Object,
