@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [fri jul 29 12:58:26 2011]
+// updated       julien quintard   [tue sep  6 12:45:48 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX
@@ -53,7 +53,8 @@ namespace elle
   template <>								\
   struct ArchiveType<_type_>						\
   {									\
-    static const Natural8	Value = Archive::Type ## _type_;	\
+    static const Natural8			Value =			\
+      Archive::Type ## _type_;						\
   };
 
     ///
@@ -72,8 +73,8 @@ namespace elle
     ArchiveDeclare(Natural16);
     ArchiveDeclare(Natural32);
     ArchiveDeclare(Natural64);
-    ArchiveDeclare(String);
     ArchiveDeclare(Large);
+    ArchiveDeclare(String);
     ArchiveDeclare(Region);
     ArchiveDeclare(Archive);
 
@@ -83,6 +84,8 @@ namespace elle
 
     ///
     /// this method serialize a basic type.
+    ///
+    /// note that the Elle type is also serialized to make things easier.
     ///
     template <typename T, Boolean C>
     Status	Archive::Behaviour<T, C>::Serialize(Archive&	archive,
@@ -114,7 +117,7 @@ namespace elle
     Status	Archive::Behaviour<T, C>::Extract(Archive&	archive,
 						  T&		element)
     {
-      Natural8		type;
+      Natural8	type;
 
       enter();
 
@@ -128,7 +131,8 @@ namespace elle
 
       // check the type.
       if (type != ArchiveType<T>::Value)
-	escape("wrong type");
+	escape("invalid type: next element of type '%u'",
+	       type);
 
       // load the element.
       if (archive.Load(element) == StatusError)
@@ -311,116 +315,23 @@ namespace elle
     }
 
 //
-// ---------- update ----------------------------------------------------------
-//
-
-    ///
-    /// this method updates a single of item.
-    ///
-    template <typename T>
-    Status		Archive::Update(const Natural64&	offset,
-					const T&		parameter)
-    {
-      Natural64		size;
-
-      enter();
-
-      // serialization mode only.
-      if (this->mode != Archive::ModeSerialization)
-	escape("unable to update while not in serialization mode");
-
-      // first save the size in order to restore the archive properly later.
-      size = this->size;
-
-      // set the size at provided so that serializing can start again
-      // from there.
-      this->size = offset;
-
-      // update the item.
-      if (this->Serialize(parameter) == StatusError)
-	escape("unable to update the item");
-
-      // return an error of the new size exceeded the old one.
-      if (this->size > size)
-	escape("the new size exceeded the previous one");
-
-      // restore the size.
-      this->size = size;
-
-      leave();
-    }
-
-    ///
-    /// this method updates a set of items.
-    ///
-    template <typename T,
-	      typename... TT>
-    Status		Archive::Update(const Natural64&	offset,
-					const T&		parameter,
-					const TT&...		parameters)
-    {
-      Natural64		size;
-
-      enter();
-
-      // serialization mode only.
-      if (this->mode != Archive::ModeSerialization)
-	escape("unable to update while not in serialization mode");
-
-      // first save the size in order to restore the archive properly later.
-      size = this->size;
-
-      // set the size at provided so that serializing can start again
-      // from there.
-      this->size = offset;
-
-      // update the first item.
-      if (this->Serialize(parameter, parameters...) == StatusError)
-	escape("unable to update the items");
-
-      // return an error of the new size exceeded the old one.
-      if (this->size > size)
-	escape("the new size exceeded the previous one");
-
-      // restore the size.
-      this->size = size;
-
-      leave();
-    }
-
-//
 // ---------- store -----------------------------------------------------------
 //
 
     ///
     /// this method records an element of the given type in the archive.
     ///
+    /// note that this method is used whenever a type-specific one has
+    /// not been written. the actual purpose of this method is therefore
+    /// to handle all the numeric types: integers and naturals.
+    ///
     template <typename T>
     Status		Archive::Store(const T&			element)
     {
       enter();
 
-      // serialization mode only.
-      if (this->mode != Archive::ModeSerialization)
-	escape("unable to extract while not in extraction mode");
-
-      // check if this type is a basic type.
-      if (ArchiveType<T>::Value == Archive::TypeUnknown)
-	escape("unable to extract value of unknown type");
-
-      // align the size if it is necessary.
-      if (this->Align(sizeof (T)) == StatusError)
-	escape("unable to align the size");
-
-      // possibly enlarge the archive.
-      if (this->Reserve(sizeof (T)) == StatusError)
-	escape("unable to reserve space for an upcoming serialization");
-
-      // store the element.
-      *((T*)(this->contents + this->size)) = element;
-
-      // update the size.
-      this->size += sizeof (T);
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
 
       leave();
     }
@@ -432,28 +343,33 @@ namespace elle
     ///
     /// this method loads an element of the given type from the archive.
     ///
+    /// note that this method is used whenever a type-specific one has
+    /// not been written. the actual purpose of this method is therefore
+    /// to handle all the numeric types: integers and naturals.
+    ///
     template <typename T>
     Status		Archive::Load(T&			element)
     {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
       enter();
 
-      // extraction mode only.
-      if (this->mode != Archive::ModeExtraction)
-	escape("unable to extract while not in extraction mode");
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			(const char*)this->contents, this->size,
+			&this->offset);
 
-      // check if this type is a basic type.
-      if (ArchiveType<T>::Value == Archive::TypeUnknown)
-	escape("unable to extract value of unknown type");
+      // retrieve the object.
+      object = message.get();
 
-      // align the offset if it is necessary.
-      if (this->Align(sizeof (T)) == StatusError)
-	escape("unable to align the offset");
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
 
-      // load the element.
-      element = *((T*)(this->contents + this->offset));
-
-      // update the offset.
-      this->offset += sizeof (T);
+      // extract the element.
+      object >> element;
 
       leave();
     }
@@ -497,6 +413,34 @@ namespace elle
 		<< element.size << "/" << element.capacity << std::endl;
 
       leave();
+    }
+
+//
+// ---------- object-like -----------------------------------------------------
+//
+
+    ///
+    /// this method recycles an archive.
+    ///
+    template <typename T>
+    Status		Archive::Recycle(const T*		object)
+    {
+      // release the resources.
+      this->~Archive();
+
+      if (object == NULL)
+	{
+	  // initialize the object with default values.
+	  new (this) T;
+	}
+      else
+	{
+	  // initialize the object with defined values.
+	  new (this) T(*object);
+	}
+
+      // return StatusOk in order to avoid including Report, Status and Maid.
+      return (StatusOk);
     }
 
   }

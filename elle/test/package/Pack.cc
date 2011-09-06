@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/package/Pack.cc
 //
 // created       julien quintard   [wed jan 28 12:08:47 2009]
-// updated       julien quintard   [mon jun 27 07:16:14 2011]
+// updated       julien quintard   [tue sep  6 20:47:03 2011]
 //
 
 //
@@ -39,7 +39,10 @@ namespace elle
 
       for (i = 0; i < n; i++)
 	{
-	  Byte		random = Random::Generate(Archive::TypeBoolean, Archive::TypeArchive);
+	  Byte		random = Random::Generate(Archive::TypeBoolean,
+						  Archive::TypeArchive);
+
+	  printf("%u/%u\n", i, n);
 
 	  switch ((enum Archive::Type)random)
 	    {
@@ -379,7 +382,8 @@ namespace elle
 	    escape("unable to pop the element from the referee");
 
 	  if (fetch != type)
-	    escape("the next type is different from the one recorded by the referee");
+	    escape("the next type is different from the one recorded "
+		   "by the referee");
 
 	  switch (fetch)
 	    {
@@ -403,7 +407,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -415,7 +420,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -427,7 +433,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -439,7 +446,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -451,7 +459,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -463,7 +472,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -475,7 +485,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -487,7 +498,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -499,7 +511,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -511,7 +524,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -523,7 +537,8 @@ namespace elle
 		  escape("unable to extract the element");
 
 		if (::memcmp(&value, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -551,7 +566,8 @@ namespace elle
 		  escape("different size between the archive and the referee");
 
 		if (::memcmp(buffer, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		::free(buffer);
 
@@ -572,7 +588,8 @@ namespace elle
 		  escape("different size between the archive and the referee");
 
 		if (::memcmp(value.data(), data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -587,7 +604,8 @@ namespace elle
 		  escape("different size between the archive and the referee");
 
 		if (::memcmp(value.contents, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and the "
+			 "referee");
 
 		break;
 	      }
@@ -602,7 +620,8 @@ namespace elle
 		  escape("different size between the archive and the referee");
 
 		if (::memcmp(value.contents, data, size) != 0)
-		  escape("different values between the archive and the referee");
+		  escape("different values between the archive and "
+			 "the referee");
 
 		break;
 	      }
@@ -610,6 +629,10 @@ namespace elle
 
 	  free(data);
 	}
+
+      // check that all the referee's value have been checked.
+      if (Referee::List.empty() == false)
+	escape("some elements remain in the referee's list");
 
       leave();
     }

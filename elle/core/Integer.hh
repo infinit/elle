@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/core/Integer.hh
 //
 // created       julien quintard   [thu nov 29 20:13:16 2007]
-// updated       julien quintard   [fri jul  8 16:33:23 2011]
+// updated       julien quintard   [mon sep  5 15:41:23 2011]
 //
 
 #ifndef ELLE_CORE_INTEGER_HH
@@ -19,6 +19,7 @@
 //
 
 #include <elle/idiom/Close.hh>
+# include <ostream>
 # include <inttypes.h>
 #include <elle/idiom/Open.hh>
 
@@ -40,6 +41,18 @@ namespace elle
     typedef int64_t		Integer64;
 
   }
+}
+
+//
+// ---------- operators -------------------------------------------------------
+//
+
+namespace std
+{
+
+  ostream&		operator<<(ostream&,
+				   const elle::core::Integer8&);
+
 }
 
 #endif

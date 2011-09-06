@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.cc
 //
 // created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [sat sep  3 20:44:28 2011]
+// updated       julien quintard   [tue sep  6 18:34:42 2011]
 //
 
 //
@@ -45,7 +45,7 @@ namespace elle
     ///
     /// this value can obviously be changed to true to activate debugging.
     ///
-    Boolean			Meta::Debug::Status = false;
+    const Boolean		Meta::Debug::Status = false;
 
     ///
     /// this value states if the debugging has been started or not.

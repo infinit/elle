@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [mon jul  4 11:53:22 2011]
+// updated       julien quintard   [tue sep  6 20:43:12 2011]
 //
 
 //
@@ -27,29 +27,17 @@ namespace elle
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this magic number is inserted at the head of each archive.
-    ///
-    const Character		Archive::Magic[3] = { 'E', 'L', 'L' };
-
-    ///
-    /// archives are initialised with this default capacity.
-    ///
-    const Natural64		Archive::Default::Capacity = 64;
-
-//
 // ---------- constructors & destructors --------------------------------------
 //
 
     ///
-    /// this method initialises the attributes.
+    /// default constructor.
     ///
     Archive::Archive():
-      mode(Archive::ModeUnknown),
-      endianness(System::Endianness),
+      mode(ModeUnknown),
+      control(ControlUnknown),
+      contents((Byte*&)static_cast<msgpack_sbuffer*>(&buffer)->data),
+      size(static_cast<msgpack_sbuffer*>(&buffer)->size),
       offset(0)
     {
     }
@@ -58,12 +46,14 @@ namespace elle
     /// this is the copy constructor.
     ///
     Archive::Archive(const Archive&				archive):
-      Region::Region(archive),
-
       mode(archive.mode),
-      endianness(archive.endianness),
+      control(archive.control),
+      contents((Byte*&)static_cast<msgpack_sbuffer*>(&buffer)->data),
+      size(static_cast<msgpack_sbuffer*>(&buffer)->size),
       offset(archive.offset)
     {
+      // duplicate the buffer.
+      this->buffer.write((const char*)archive.contents, archive.size);
     }
 
     ///
@@ -71,6 +61,58 @@ namespace elle
     ///
     Archive::~Archive()
     {
+      Region	region;
+
+      enter();
+
+      // depending on the control policy.
+      switch (this->control)
+	{
+	case Archive::ControlAcquired:
+	  {
+	    //
+	    // if the control has been acquired, release the memory.
+	    //
+
+	    // create a region from the acquired buffer so that the region gets
+	    // deleted at the end of this scope.
+	    if (region.Acquire(
+		  (Byte*)static_cast<msgpack_sbuffer*>(&this->buffer)->data,
+		  static_cast<msgpack_sbuffer*>(&this->buffer)->size) ==
+		StatusError)
+	      yield(_(), "unable to acquire the buffer");
+
+	    // reset the buffer's attributes in order to prevent double frees.
+	    static_cast<msgpack_sbuffer*>(&buffer)->data = NULL;
+	    static_cast<msgpack_sbuffer*>(&buffer)->size = 0;
+
+	    break;
+	  }
+	case Archive::ControlWrapped:
+	  {
+	    //
+	    // if the region to extract has been wrapped, reset the
+	    // buffer's attributes as the memory region should not be
+	    // released.
+	    //
+
+	    // reset the buffer's attributes in order to prevent double frees.
+	    static_cast<msgpack_sbuffer*>(&buffer)->data = NULL;
+	    static_cast<msgpack_sbuffer*>(&buffer)->size = 0;
+
+	    break;
+	  }
+	default:
+	  {
+	    //
+	    // nothing to do: the buffer will get deleted normally.
+	    //
+
+	    break;
+	  }
+	}
+
+      release();
     }
 
 //
@@ -78,35 +120,14 @@ namespace elle
 //
 
     ///
-    /// this method prepares an archive for serializing.
+    /// this method prepares the archive for serialization.
     ///
     Status		Archive::Create()
     {
-      Natural64		i;
-
       enter();
 
-      // initialise the attributes.
-      this->mode = ModeSerialization;
-      this->endianness = System::Endianness;
-      this->offset = 0;
-      this->size = 0;
-      this->capacity = 0;
-
-      // initialise the default capacity.
-      if (this->Reserve(Archive::Default::Capacity) == StatusError)
-	escape("cannot allocate the default archive capacity");
-
-      // pack the magic.
-      for (i = 0; i < (sizeof (Archive::Magic) / sizeof (Character)); i++)
-	{
-	  if (this->Store(Archive::Magic[i]) == StatusError)
-	    escape("unable to store the archive magic number");
-	}
-
-      // pack the endianness of the archive.
-      if (this->Store((Natural8&)System::Endianness) == StatusError)
-	escape("unable to store the archive endianness");
+      // set the mode.
+      this->mode = Archive::ModeSerialization;
 
       leave();
     }
@@ -121,40 +142,51 @@ namespace elle
     /// as such the given region contents should have been detached
     /// before calling this method.
     ///
-    Status		Archive::Prepare(const Region&		region)
+    Status		Archive::Acquire(const Region&		region)
     {
-      Byte		endianness;
-      Natural64		i;
-
       enter();
 
-      // initialise the attributes.
+      // set the mode.
       this->mode = Archive::ModeExtraction;
-      this->offset = 0;
-      this->capacity = region.size;
 
-      // take over the region's ownership.
-      if (this->Acquire(region.contents, region.size) == StatusError)
-	escape("unable to take over the given region");
+      // release the existing buffer.
+      if (static_cast<msgpack_sbuffer*>(&buffer)->data != NULL)
+	::free(static_cast<msgpack_sbuffer*>(&buffer)->data);
 
-      // extract and verify the magic number.
-      for (i = 0; i < (sizeof (Archive::Magic) / sizeof (Character)); i++)
-	{
-	  Character	magic;
+      // set the buffer's attributes.
+      static_cast<msgpack_sbuffer*>(&buffer)->data = (char*)region.contents;
+      static_cast<msgpack_sbuffer*>(&buffer)->size = (size_t)region.size;
 
-	  if (this->Load(magic) == StatusError)
-	    escape("unable to load the magic number from the archive");
+      // set the control: in this case, the ownership is acquired.
+      this->control = Archive::ControlAcquired;
 
-	  if (Archive::Magic[i] != magic)
-	    escape("this archive has a wrong magic number");
-	}
+      leave();
+    }
 
-      // extract the endianness.
-      if (this->Load(endianness) == StatusError)
-	escape("unable to load the archive endianness");
+    ///
+    /// this method prepares the archive by wrapping the given region.
+    ///
+    /// note that should the given region be deleted, the archive would
+    /// be automatically rendered invalid.
+    ///
+    Status		Archive::Wrap(const Region&		region)
+    {
+      enter();
 
-      // set the endianness.
-      this->endianness = (System::Order)endianness;
+      // set the mode.
+      this->mode = Archive::ModeExtraction;
+
+      // release the existing buffer.
+      if (static_cast<msgpack_sbuffer*>(&buffer)->data != NULL)
+	::free(static_cast<msgpack_sbuffer*>(&buffer)->data);
+
+      // set the buffer's attributes.
+      static_cast<msgpack_sbuffer*>(&buffer)->data = (char*)region.contents;
+      static_cast<msgpack_sbuffer*>(&buffer)->size = (size_t)region.size;
+
+      // set the control: in this case, the archive simply wraps the given
+      // region.
+      this->control = Archive::ControlWrapped;
 
       leave();
     }
@@ -170,6 +202,8 @@ namespace elle
     {
       enter();
 
+      // nothing to do.
+
       leave();
     }
 
@@ -179,6 +213,8 @@ namespace elle
     Status		Archive::Extract()
     {
       enter();
+
+      // nothing to do.
 
       leave();
     }
@@ -197,7 +233,44 @@ namespace elle
     {
       enter();
 
-      // nothing to do.
+      // store the nil type.
+      ::msgpack::pack(this->buffer, ::msgpack::type::nil());
+
+      leave();
+    }
+
+    ///
+    /// this method stores a boolean.
+    ///
+    Status		Archive::Store(const Boolean&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores a character.
+    ///
+    Status		Archive::Store(const Character&		element)
+    {
+      String		string(1, element);
+
+      return (this->Store(string));
+    }
+
+    ///
+    /// this method stores a real.
+    ///
+    Status		Archive::Store(const Real&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
 
       leave();
     }
@@ -208,57 +281,36 @@ namespace elle
     Status		Archive::Store(const Large&		element)
     {
       Natural32		size = BN_num_bytes(&element);
+      Region		region;
 
       enter();
 
-      // store the length.
-      if (this->Store(size) == StatusError)
-	escape("unable to store the size");
+      // prepare the region.
+      if (region.Prepare(size) == StatusError)
+	escape("unable to prepare the region");
 
-      // prepare the buffer so that it can receive size of data.
-      // that means enlarging the buffer and aligning the offset.
-      if (this->Align(sizeof (Byte)) == StatusError)
-	escape("unable to align the size");
+      // finally, directory copy the data into the region.
+      ::BN_bn2bin(&element, region.contents);
 
-      if (this->Reserve(size) == StatusError)
-	escape("unable to enlarge the archive");
+      // set the size.
+      region.size = size;
 
-      // finally, directory copy the data into the archive.
-      ::BN_bn2bin(&element, this->contents + this->size);
-
-      // update the buffer size since we wrote in the
-      // buffer directly without using the Store() method.
-      this->size += size;
+      // store the region.
+      if (this->Store(region) == StatusError)
+	escape("unable to store the region");
 
       leave();
     }
 
     ///
-    /// this normal method does the same but for strings.
+    /// this method stores a string.
     ///
     Status		Archive::Store(const String&		element)
     {
-      Natural32		length = element.length();
-
       enter();
 
-      // start by storing the string length.
-      if (this->Store(length) == StatusError)
-	escape("unable to store the length");
-
-      // align the size if it is necessary.
-      if (this->Align(sizeof (char)) == StatusError)
-	escape("unable to align the size");
-
-      // possibly enlarge the archive and align the size.
-      if (this->Reserve(length) == StatusError)
-	escape("unable to reserve space for an upcoming serialization");
-
-      // store the string contents.
-      element.copy((char*)(this->contents + this->size), length);
-
-      // update the size.
-      this->size += length;
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
 
       leave();
     }
@@ -270,24 +322,10 @@ namespace elle
     {
       enter();
 
-      // store the size.
-      if (this->Store(element.size) == StatusError)
-	escape("unable to store the size");
-
-      // align the archive though, aligning on a Byte should
-      // not be a problem...
-      if (this->Align(sizeof (Byte)) == StatusError)
-	escape("unable to align the size");
-
-      // enlarge the buffer.
-      if (this->Reserve(element.size) == StatusError)
-	escape("unable to enlarge the archive");
-
-      // copy the data into the archive.
-      ::memcpy(this->contents + this->size, element.contents, element.size);
-
-      // update the buffer size.
-      this->size += element.size;
+      // store the region as a raw.
+      msgpack::pack(this->buffer,
+		    msgpack::type::raw_ref((const char*)element.contents,
+					   element.size));
 
       leave();
     }
@@ -299,23 +337,14 @@ namespace elle
     {
       enter();
 
-      // start by storing the string length.
-      if (this->Store(element.size) == StatusError)
-	escape("unable to store the size");
+      // make sure the given archive is in serialization mode.
+      if (element.mode != Archive::ModeSerialization)
+	escape("unable to store a non-serializing archive");
 
-      // align the size if it is necessary.
-      if (this->Align(sizeof (Byte)) == StatusError)
-	escape("unable to align the size");
-
-      // possibly enlarge the archive and align the size.
-      if (this->Reserve(element.size) == StatusError)
-	escape("unable to reserve space for an upcoming serialization");
-
-      // store the string contents.
-      ::memcpy(this->contents + this->size, element.contents, element.size);
-
-      // update the size.
-      this->size += element.size;
+      // store the archive's buffer as a region.
+      if (this->Store(Region((Byte*)element.contents,
+			     element.size)) == StatusError)
+	escape("unable to store the region");
 
       leave();
     }
@@ -331,7 +360,101 @@ namespace elle
     ///
     Status		Archive::Load(Null&)
     {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
       enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+                        (const char*)this->contents, this->size,
+                        &this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if (object.type != ::msgpack::type::NIL)
+	escape("the next element does not seem to be a nil type");
+
+      leave();
+    }
+
+    ///
+    /// this method loads a boolean.
+    ///
+    Status		Archive::Load(Boolean&			element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+                        (const char*)this->contents, this->size,
+                        &this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if (object.type != ::msgpack::type::BOOLEAN)
+	escape("the next element does not seem to be a boolean type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads a character.
+    ///
+    Status		Archive::Load(Character&		element)
+    {
+      String		string;
+
+      enter();
+
+      // load the string.
+      if (this->Load(string) == StatusError)
+	escape("unable to load the string");
+
+      // test the string length.
+      if (string.length() != 1)
+	escape("the string should have contained a single character");
+
+      // return the character.
+      element = string[0];
+
+      leave();
+    }
+
+    ///
+    /// this method loads a real.
+    ///
+    Status		Archive::Load(Real&			element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+                        (const char*)this->contents, this->size,
+                        &this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if (object.type != ::msgpack::type::DOUBLE)
+	escape("the next element does not seem to be a double type");
+
+      // extract the element.
+      object >> element;
 
       leave();
     }
@@ -341,30 +464,19 @@ namespace elle
     ///
     Status		Archive::Load(Large&			element)
     {
-      Natural32		size;
+      Region		region;
 
       enter();
-
-      // load the data size.
-      if (this->Load(size) == StatusError)
-	escape("unable to load the data size");
 
       // initialize the big number.
       ::BN_init(&element);
 
-      // if there is data.
-      if (size > 0)
-	{
-	  // align the offset if it is necessary.
-	  if (this->Align(sizeof (Byte)) == StatusError)
-	    escape("unable to align the offset");
+      // load a region.
+      if (this->Load(region) == StatusError)
+	escape("unable to load the region");
 
-	  // load directly the bignum from the buffer.
-	  ::BN_bin2bn(this->contents + this->offset, size, &element);
-	}
-
-      // update the offset.
-      this->offset += size;
+      // load directly the bignum from the buffer.
+      ::BN_bin2bn(region.contents, region.size, &element);
 
       leave();
     }
@@ -374,27 +486,25 @@ namespace elle
     ///
     Status		Archive::Load(String&			element)
     {
-      Natural32		length;
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
 
       enter();
 
-      // load the string length.
-      if (this->Load(length) == StatusError)
-	escape("unable to load the string length");
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+                        (const char*)this->contents, this->size,
+                        &this->offset);
 
-      // if there is data.
-      if (length > 0)
-	{
-	  // align the offset if it is necessary.
-	  if (this->Align(sizeof (char)) == StatusError)
-	    escape("unable to align the offset");
+      // retrieve the object.
+      object = message.get();
 
-	  // assign the content to the string.
-	  element.assign((char*)(this->contents + this->offset), length);
-	}
+      // check the object's type.
+      if (object.type != ::msgpack::type::RAW)
+	escape("the next element does not seem to be a raw type");
 
-      // update the offset.
-      this->offset += length;
+      // extract the element.
+      object >> element;
 
       leave();
     }
@@ -404,29 +514,30 @@ namespace elle
     ///
     Status		Archive::Load(Region&			element)
     {
-      Natural64		size;
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+      ::msgpack::type::raw_ref	ref;
 
       enter();
 
-      // load the size.
-      if (this->Load(size) == StatusError)
-	escape("unable to load the size");
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+                        (const char*)this->contents, this->size,
+                        &this->offset);
 
-      // if there is data.
-      if (size > 0)
-	{
-	  // align the offset if it is necessary.
-	  if (this->Align(sizeof (Byte)) == StatusError)
-	    escape("unable to align the offset");
+      // retrieve the object.
+      object = message.get();
 
-	  // assign the data.
-	  if (element.Duplicate(this->contents + this->offset,
-				size) == StatusError)
-	    escape("unable to prepare the buffer");
-	}
+      // check the object's type.
+      if (object.type != ::msgpack::type::RAW)
+	escape("the next element does not seem to be a raw type");
 
-      // update the offset.
-      this->offset += size;
+      // extract the element.
+      object >> ref;
+
+      // assign the data.
+      if (element.Duplicate((Byte*)ref.ptr, ref.size) == StatusError)
+	escape("unable to prepare the buffer");
 
       leave();
     }
@@ -436,128 +547,25 @@ namespace elle
     ///
     Status		Archive::Load(Archive&			element)
     {
-      Region		buffer;
-      Natural64		size;
+      Region		region;
 
       enter();
 
-      // load the string length.
-      if (this->Load(size) == StatusError)
-	escape("unable to load the archive size");
+      // make sure the given archive is not in serialization mode.
+      if (element.mode == Archive::ModeSerialization)
+	escape("unable to load to a serializing archive");
 
-      // if there is data.
-      if (size > 0)
-	{
-	  // align the offset if it is necessary.
-	  if (this->Align(sizeof (Byte)) == StatusError)
-	    escape("unable to align the offset");
+      // store the archive's buffer as a region.
+      if (this->Load(region) == StatusError)
+	escape("unable to load the region");
 
-	  // assign the content to the buffer.
-	  if (buffer.Duplicate(this->contents + this->offset,
-			       size) == StatusError)
-	    escape("unable to assign the data to the buffer");
+      // prepare the given archive.
+      if (element.Acquire(region) == StatusError)
+	escape("unable to prepare the archive");
 
-	  // detach the data from the buffer.
-	  if (buffer.Detach() == StatusError)
-	    escape("unable to detach the data from the buffer");
-
-	  // build the given archive.
-	  if (element.Prepare(buffer) == StatusError)
-	    escape("unable to prepare the given archive");
-	}
-
-      // update the offset.
-      this->offset += size;
-
-      leave();
-    }
-
-//
-// ---------- util ------------------------------------------------------------
-//
-
-    ///
-    /// this method makes sure that there is enough space for storing
-    /// an element of the given type.
-    ///
-    Status		Archive::Reserve(const Natural64	size)
-    {
-      Natural64		capacity;
-
-      enter();
-
-      // check the mode as this method makes sense only in the
-      // serialization process.
-      if (this->mode != Archive::ModeSerialization)
-	leave();
-
-      // save the capacity.
-      capacity = this->capacity;
-
-      // expand the internal buffer.
-      if (this->Adjust(this->size + size) == StatusError)
-	escape("unable to expand the archive");
-
-      // set the new memory to zero, only if the capacity has changed.
-      if (this->capacity != capacity)
-	::memset(this->contents + this->size,
-		 0x0,
-		 this->capacity - this->size);
-
-      leave();
-    }
-
-    ///
-    /// this method aligns the offset so that archiving or extracting
-    /// an element of the given type does not cause any trouble.
-    ///
-    /// note that this method should be called before Reserve().
-    /// indeed, otherwise, reserving and aligning could result
-    /// with a remaining space smaller that the one required
-    /// through the Reserve() call.
-    ///
-    /// as such, the Align() method could need to reserve space.
-    /// so that the archive is aligned.
-    ///
-    Status		Archive::Align(const Natural64		size)
-    {
-      enter();
-
-      // align depending on the mode.
-      switch (this->mode)
-	{
-	case Archive::ModeSerialization:
-	  {
-	    // reserve more memory if necessary.
-	    if (this->Reserve(size) == StatusError)
-	      escape("unable to reserve memory for alignment");
-
-	    // align the size in order to serialize the next element
-	    // of _size_ bytes.
-	    this->size = (this->size + (size - 1)) & ~(size - 1);
-
-	    break;
-	  }
-	case Archive::ModeExtraction:
-	  {
-	    // align the offset so that the next element of _size_ bytes
-	    // can be extract.
-	    this->offset = (this->offset + (size - 1)) & ~(size - 1);
-
-	    // verify that the offset plus the about-to-be-extracted
-	    // element is not going to exceed the size.
-	    if ((this->offset + size) > this->size)
-	      escape("the offset has reached or exceeded the archive size");
-
-	    break;
-	  }
-	case Archive::ModeUnknown:
-	  {
-	    escape("this code should not have been reached");
-
-	    break;
-	  }
-	}
+      // detach the region.
+      if (region.Detach() == StatusError)
+	escape("unable to detach the region");
 
       leave();
     }
@@ -573,7 +581,7 @@ namespace elle
     ///
     Status		Archive::Fetch(Archive::Type&		type)
     {
-      Natural64		offset = this->offset;
+      Natural32		offset = this->offset;
       Byte		byte;
 
       enter();
@@ -587,73 +595,6 @@ namespace elle
 
       // setting back the original offset.
       this->offset = offset;
-
-      leave();
-    }
-
-//
-// ---------- rewind ----------------------------------------------------------
-//
-
-    ///
-    /// this method rewinds the offset to the beginning of the archive.
-    ///
-    Status		Archive::Rewind()
-    {
-      Region		chunk;
-
-      enter();
-
-      // detach the data from the archive so that nothing is freed.
-      if (this->Detach() == StatusError)
-	escape("unable to detach the archive's data");
-
-      // wrap the archive's content so that the data is not lost.
-      if (chunk.Wrap(this->contents, this->size) == StatusError)
-	escape("unable to wrap the archive's content");
-
-      // recycle the archive.
-      if (this->Recycle<Archive>() == StatusError)
-	escape("unable to recycle the archive");
-
-      // prepare the archive for extraction.
-      if (this->Prepare(chunk) == StatusError)
-	escape("unable to prepare the archive for extraction");
-
-      leave();
-    }
-
-//
-// ---------- seal ------------------------------------------------------------
-//
-
-    ///
-    /// this method seals the serialization archive and transforms it into
-    /// into an extraction archive.
-    ///
-    /// this method should not be used but for debugging purposes.
-    ///
-    Status		Archive::Seal()
-    {
-      Region		chunk;
-
-      enter();
-
-      // detach the data from the archive so that nothing is freed.
-      if (this->Detach() == StatusError)
-	escape("unable to detach the archive's data");
-
-      // wrap the archive's content so that the data is not lost.
-      if (chunk.Wrap(this->contents, this->size) == StatusError)
-	escape("unable to wrap the archive's content");
-
-      // recycle the archive.
-      if (this->Recycle<Archive>() == StatusError)
-	escape("unable to recycle the archive");
-
-      // prepare the archive for extraction.
-      if (this->Prepare(chunk) == StatusError)
-	escape("unable to prepare the archive for extraction");
 
       leave();
     }
@@ -673,21 +614,19 @@ namespace elle
 
       enter();
 
-      // first copy the archive because we cannot modify it.
-      archive = *this;
+      // prepare the archive depending on the current mode.
+      if (archive.Wrap(Region(this->contents, this->size)) == StatusError)
+	escape("unable to prepare the archive");
 
       std::cout << alignment
 		<< "[Archive] "
 		<< "mode(" << std::dec << (Natural8)archive.mode << ") "
-		<< "offset(" << std::dec << archive.offset << ") "
+		<< "contents(" << (Void*)archive.contents << ") "
 		<< "size(" << std::dec << archive.size << ") "
-		<< "capacity(" << std::dec << archive.capacity << ")"
+		<< "offset(" << std::dec << archive.offset << ")"
 		<< std::endl;
 
-      // rewind the archive.
-      if (archive.Rewind() == StatusError)
-	escape("unable to rewind the archive");
-
+      // go through the archive elements.
       while (archive.offset != archive.size)
 	{
 	  Archive::Type		type;
@@ -695,7 +634,7 @@ namespace elle
 	  if (archive.Fetch(type) == StatusError)
 	    escape("unable to fetch the next element's type");
 
-	  if (this->offset == archive.offset)
+	  if (archive.offset == this->offset)
 	    std::cout << alignment << "> " << std::endl;
 
 	  switch (type)
@@ -895,7 +834,8 @@ namespace elle
 	    case Archive::TypeUnknown:
 	    default:
 	      {
-		escape("unknown element type");
+		escape("unknown element type '%u'",
+		       type);
 
 		break;
 	      }
@@ -960,8 +900,18 @@ namespace elle
     {
       enter();
 
-      // call the super-method.
-      if (Region::operator==(element) == false)
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // check the attributes.
+      if ((this->mode != element.mode) ||
+	  (this->offset != element.offset))
+	false();
+
+      // finally, compare the buffers.
+      if ((this->size != element.size) ||
+	  (::memcmp(this->contents, element.contents, this->size) != 0))
 	false();
 
       true();

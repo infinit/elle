@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [sun sep  4 15:44:13 2011]
+// updated       julien quintard   [tue sep  6 12:09:57 2011]
 //
 
 //
@@ -35,8 +35,8 @@ namespace elle
     Slot::Slot():
       Socket::Socket(Socket::TypeSlot),
 
-      socket(NULL),
-      port(0)
+      port(0),
+      socket(NULL)
     {
     }
 
@@ -98,11 +98,11 @@ namespace elle
     {
       enter();
 
-      // allocate a new UDP socket.
-      this->socket = new ::QUdpSocket;
-
       // set the port.
       this->port = port;
+
+      // allocate a new UDP socket.
+      this->socket = new ::QUdpSocket;
 
       // bind the socket to the port.
       if (this->socket->bind(this->port) == false)
@@ -140,7 +140,7 @@ namespace elle
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large: %qu bytes",
+	escape("the packet seems to be too large: %u bytes",
 	       packet.size);
 
       // push the datagram into the socket.
@@ -249,8 +249,8 @@ namespace elle
 
       while (true)
 	{
-	  Region	frame;
 	  Packet	packet;
+	  Region	frame;
 	  Parcel*	parcel;
 
 	  enter(instance(parcel));
@@ -261,14 +261,8 @@ namespace elle
 	    escape("unable to wrap a frame in the raw");
 
 	  // prepare the packet based on the frame.
-	  if (packet.Prepare(frame) == StatusError)
+	  if (packet.Wrap(frame) == StatusError)
 	    escape("unable to prepare the packet");
-
-	  // detach the frame from the packet so that the region is
-	  // not released once the packet is destroyed. indeed, since the frame
-	  // is a chunk, it must not be freed.
-	  if (packet.Detach() == StatusError)
-	    escape("unable to detach the data from the packet");
 
 	  // allocate the parcel.
 	  parcel = new Parcel;

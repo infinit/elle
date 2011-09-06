@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Base64.hxx
 //
 // created       julien quintard   [sun apr 18 15:34:47 2010]
-// updated       julien quintard   [fri mar 18 16:12:04 2011]
+// updated       julien quintard   [tue sep  6 12:13:50 2011]
 //
 
 #ifndef ELLE_UTILITY_BASE64_HXX
@@ -328,13 +328,13 @@ namespace elle
       if (Base64::Decode(string, region) == StatusError)
 	escape("unable to decode the string");
 
+      // prepare the archive.
+      if (archive.Acquire(region) == StatusError)
+	escape("unable to prepare the archive");
+
       // detach the region.
       if (region.Detach() == StatusError)
 	escape("unable to detach the region's data");
-
-      // wrap the region into an archive.
-      if (archive.Prepare(region) == StatusError)
-	escape("unable to prepare the archive");
 
       // extract the object.
       if (archive.Extract(parameter, parameters...) == StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Hexadecimal.hxx
 //
 // created       julien quintard   [sun apr 18 15:34:47 2010]
-// updated       julien quintard   [thu apr 28 13:46:50 2011]
+// updated       julien quintard   [tue sep  6 12:13:55 2011]
 //
 
 #ifndef ELLE_UTILITY_HEXADECIMAL_HXX
@@ -328,13 +328,13 @@ namespace elle
       if (Hexadecimal::Decode(string, region) == StatusError)
 	escape("unable to decode the string");
 
+      // prepare the archive.
+      if (archive.Acquire(region) == StatusError)
+	escape("unable to prepare the archive");
+
       // detach the region.
       if (region.Detach() == StatusError)
 	escape("unable to detach the region's data");
-
-      // wrap the region into an archive.
-      if (archive.Prepare(region) == StatusError)
-	escape("unable to prepare the archive");
 
       // extract the object.
       if (archive.Extract(parameter, parameters...) == StatusError)

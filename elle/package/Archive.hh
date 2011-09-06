@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [sat sep  3 21:34:59 2011]
+// updated       julien quintard   [tue sep  6 12:42:07 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HH
@@ -35,6 +35,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <stdlib.h>
+# include <msgpack.hpp>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -63,22 +64,30 @@ namespace elle
 
     ///
     /// this class provides methods for serializing basic data types. each
-    /// given data is appended to the archive in its original format. the
-    /// endianness format is recorded at the head of the archive so that a
-    /// machine willing to extract the information knows whether it has to
-    /// convert it or not.
+    /// given data is appended to the archive in its original format.
     ///
-    /// the endianness attribute represents the endianness of the archive,
-    /// meaning either the endianness of the current machine if the archive
-    /// is being built or the endianness of the machine which built this
-    /// archive if information is being extracted.
+    /// note that the archive type are recorded prior to the data although
+    /// the underlying serialization format also records the type of the
+    /// data being serialized. this choice has been made to distinguish
+    /// a character from a string, a region or even an archive as they
+    /// all end up being serialized as raw data.
     ///
-    /// the size attribute represents the real size of the archive while the
-    /// capacity attribute is the archive's allocated memory size. the offset
-    /// attribute is used when extracting information from the archive.
+    /// the Archive class does not derive anything, such as the Object
+    /// class. instead, the class implements an object-like interface
+    /// in order to prevent conflicts.
     ///
-    class Archive:
-      public Region
+    /// finally, note that in order to provide a coherent interface to
+    /// the user, a _contents_ and _size_ attribute are provided, both
+    /// referencing the buffer's attributes. besides, whenever the archive
+    /// is set up for extraction, the region's content is recorded in
+    /// the buffer so that both serialization and extraction buffers lay
+    /// at the same place.
+    ///
+    /// in addition, the _control_ attribute indicates whether the content
+    /// set up in the buffer comes from an acquired region and therefore
+    /// must be deleted.
+    ///
+    class Archive
     {
     public:
       //
@@ -94,6 +103,17 @@ namespace elle
 	  ModeUnknown,
 	  ModeSerialization,
 	  ModeExtraction
+	};
+
+      ///
+      /// this enumeration indicates whether the archive has taken control
+      /// over the region used for extraction.
+      ///
+      enum Control
+	{
+	  ControlUnknown,
+	  ControlAcquired,
+	  ControlWrapped
 	};
 
       ///
@@ -121,16 +141,6 @@ namespace elle
 	};
 
       //
-      // constants
-      //
-      static const Character		Magic[3];
-
-      struct Default
-      {
-	static const Natural64		Capacity;
-      };
-
-      //
       // constructors & destructors
       //
       Archive();
@@ -141,7 +151,9 @@ namespace elle
       // methods
       //
       Status		Create();
-      Status		Prepare(const Region&);
+
+      Status		Acquire(const Region&);
+      Status		Wrap(const Region&);
 
       Status		Serialize();
       template <typename T>
@@ -172,17 +184,11 @@ namespace elle
 				TT*...);
 
       template <typename T>
-      Status		Update(const Natural64&,
-			       const T&);
-      template <typename T,
-		typename... TT>
-      Status		Update(const Natural64&,
-			       const T&,
-			       const TT&...);
-
-      template <typename T>
       Status		Store(const T&);
       Status		Store(const Null&);
+      Status		Store(const Boolean&);
+      Status		Store(const Character&);
+      Status		Store(const Real&);
       Status		Store(const Large&);
       Status		Store(const String&);
       Status		Store(const Region&);
@@ -191,17 +197,15 @@ namespace elle
       template <typename T>
       Status		Load(T&);
       Status		Load(Null&);
+      Status		Load(Boolean&);
+      Status		Load(Character&);
+      Status		Load(Real&);
       Status		Load(Large&);
       Status		Load(String&);
       Status		Load(Region&);
       Status		Load(Archive&);
 
       Status		Fetch(enum Type&);
-      Status		Rewind();
-
-      Status		Size(Natural32&);
-
-      Status		Seal();
 
       //
       // behaviours
@@ -232,8 +236,11 @@ namespace elle
       Status		Dump(const Natural32 = 0) const;
 
       // object-like
-      Status		Imprint(Natural32&) const;
-      Status		Clone(Archive*&) const;
+      template <typename T>
+      Status		Recycle(const T* = NULL);
+
+      virtual Status	Imprint(Natural32&) const;
+      virtual Status	Clone(Archive*&) const;
 
       Archive&		operator=(const Archive&);
       Boolean		operator==(const Archive&) const;
@@ -242,18 +249,14 @@ namespace elle
       //
       // attributes
       //
-      Mode		mode;
+      Mode			mode;
+      Control			control;
 
-      System::Order	endianness;
+      Byte*&			contents;
+      Natural32&		size;
+      size_t			offset;
 
-      Natural64		offset;
-
-    private:
-      //
-      // methods
-      //
-      Status		Reserve(const Natural64);
-      Status		Align(const Natural64);
+      ::msgpack::sbuffer	buffer;
     };
 
   }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/OneWay.hxx
 //
 // created       julien quintard   [sun aug 23 17:11:22 2009]
-// updated       julien quintard   [thu aug 11 16:16:29 2011]
+// updated       julien quintard   [tue sep  6 12:11:38 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HXX
