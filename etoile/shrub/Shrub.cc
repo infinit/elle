@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Shrub.cc
 //
 // created       julien quintard   [sat aug  6 17:48:20 2011]
-// updated       julien quintard   [sun sep  4 20:34:10 2011]
+// updated       julien quintard   [tue sep  6 18:29:23 2011]
 //
 
 //
@@ -46,7 +46,7 @@ namespace etoile
     ///
     /// this timer triggers the sweeper on a regular basis.
     ///
-    elle::Timer			Shrub::Timer;
+    elle::Timer*		Shrub::Timer;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -59,18 +59,21 @@ namespace etoile
     {
       enter();
 
+      // allocate the sweeper timer.
+      Shrub::Timer = new elle::Timer;
+
       // create the sweeper timer.
-      if (Shrub::Timer.Create(
+      if (Shrub::Timer->Create(
 	    elle::Timer::ModeRepetition) == elle::StatusError)
 	escape("unable to create the timer");
 
       // subscribe to the timer's signal.
-      if (Shrub::Timer.signal.timeout.Subscribe(
+      if (Shrub::Timer->signal.timeout.Subscribe(
 	    elle::Callback<>::Infer(&Shrub::Sweeper)) == elle::StatusError)
 	escape("unable to subscribe to the signal");
 
       // start the timer.
-      if (Shrub::Timer.Start(
+      if (Shrub::Timer->Start(
 	    Infinit::Configuration.shrub.frequency) == elle::StatusError)
 	escape("unable to start the timer");
 
@@ -83,6 +86,10 @@ namespace etoile
     elle::Status	Shrub::Clean()
     {
       enter();
+
+      // delete the timer, if present.
+      if (Shrub::Timer != NULL)
+	delete Shrub::Timer;
 
       // delete the shrub content, if present.
       if (Shrub::Riffles != NULL)

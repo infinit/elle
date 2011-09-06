@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [sun sep  4 18:07:53 2011]
+// updated       julien quintard   [tue sep  6 13:23:09 2011]
 //
 
 //
@@ -252,9 +252,9 @@ namespace etoile
 				    Slice&			slice,
 				    nucleus::Version&		version)
     {
-      Length		length;
-      Length		start;
-      elle::Natural64	n;
+      Length			length;
+      Length			start;
+      nucleus::Version::Type	n;
 
       enter();
 

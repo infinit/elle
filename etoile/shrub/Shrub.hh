@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Shrub.hh
 //
 // created       julien quintard   [sat aug  6 17:31:57 2011]
-// updated       julien quintard   [sun sep  4 20:33:55 2011]
+// updated       julien quintard   [tue sep  6 18:03:42 2011]
 //
 
 #ifndef ETOILE_SHRUB_SHRUB_HH
@@ -113,7 +113,7 @@ namespace etoile
       static Riffle*		Riffles;
       static Queue		Timestamps;
 
-      static elle::Timer	Timer;
+      static elle::Timer*	Timer;
     };
 
   }
