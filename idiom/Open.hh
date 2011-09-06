@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [sun sep  4 15:43:47 2011]
+// updated       julien quintard   [tue sep  6 01:18:41 2011]
 //
 
 //
@@ -19,6 +19,14 @@
 /// these macro functions are used to make using the Elle library
 /// functionalities easier.
 ///
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+///
+/// first includes Close.hh in order to undeclare everything.
+#include <elle/idiom/Close.hh>
 
 //
 // ---------- elle ------------------------------------------------------------
@@ -161,6 +169,12 @@
         _log_->Record(_location_,					\
 		      _time_,						\
 		      elle::String(_message_));				\
+      else								\
+	{								\
+	  std::cerr << _message_ << std::endl;				\
+									\
+	  show();							\
+	}								\
     } while (false)
 
 //
@@ -193,6 +207,12 @@
         _report_->Record(_location_,					\
 			 _time_,					\
 			 elle::String(_message_));			\
+      else								\
+	{								\
+	  std::cerr << _message_ << std::endl;				\
+									\
+	  show();							\
+	}								\
     } while (false)
 
 ///

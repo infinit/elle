@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sat may  7 22:31:38 2011]
+// updated       julien quintard   [tue sep  6 15:41:07 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
@@ -47,8 +47,8 @@ namespace elle
     //
 
     ///
-    /// this method decrypts a code and returns a pretty newly created
-    /// object.
+    /// this method decrypts a code and returns pretty newly created
+    /// objects.
     ///
     template <typename T,
 	      typename... TT>
@@ -58,22 +58,12 @@ namespace elle
       const
     {
       Archive		archive;
-      Clear		clear;
 
       enter();
 
-      // decrypt the code.
-      if (this->Decrypt(code, clear) == StatusError)
-	escape("unable to decrypt the code");
-
-      // wrap the clear into an archive.
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
-      // detach the data so that not both the clear and archive
-      // release the data.
-      if (clear.Detach() == StatusError)
-	escape("unable to detach the clear's data");
+      // extract an archive.
+      if (this->Decrypt(code, archive) == StatusError)
+	escape("unable to decrypt into an archive");
 
       // extract the item.
       if (archive.Extract(parameter, parameters...) == StatusError)

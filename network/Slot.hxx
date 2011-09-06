@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.hxx
 //
 // created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [sun sep  4 13:09:50 2011]
+// updated       julien quintard   [tue sep  6 12:09:35 2011]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX
@@ -48,10 +48,8 @@ namespace elle
 				   const Event&			event)
     {
       Packet		packet;
-      Header		header;
       Data		data;
-      Natural64		offset;
-      Natural64		size;
+      Header		header;
 
       enter();
 
@@ -63,34 +61,19 @@ namespace elle
       if (inputs.Serialize(data) == StatusError)
 	escape("unable to serialize the inputs");
 
+      // create the header now that we know that final archive's size.
+      if (header.Create(event,
+			inputs.tag,
+			data.size) == StatusError)
+	escape("unable to create the header");
+
       // prepare the packet.
       if (packet.Create() == StatusError)
 	escape("unable to create the packet");
 
-      // retrieve the offset---i.e size attribute---of the packet at this
-      // time so that it can be used later to update parts of the archive,
-      // especially the header.
-      offset = packet.size;
-
-      // serialize the the header though, at this point, it has not
-      // been created.
-      if (packet.Serialize(header) == StatusError)
-	escape("unable to serialize the header");
-
-      // save the offset just following the header's serialization.
-      size = packet.size;
-
-      // serialize the the data.
-      if (packet.Serialize(data) == StatusError)
-	escape("unable to serialize the data");
-
-      // create the header now that we know that final archive's size.
-      if (header.Create(event, inputs.tag, packet.size - size) == StatusError)
-	escape("unable to create the header");
-
-      // update the header.
-      if (packet.Update(offset, header) == StatusError)
-	escape("unable to update the header");
+      // serialize the the header and data.
+      if (packet.Serialize(header, data) == StatusError)
+	escape("unable to serialize the header and data");
 
       // write the datagram to the socket.
       if (this->Write(point, packet) == StatusError)

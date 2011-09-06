@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hxx
 //
 // created       julien quintard   [fri apr 30 17:43:29 2010]
-// updated       julien quintard   [sun jul  3 13:13:47 2011]
+// updated       julien quintard   [tue sep  6 12:13:36 2011]
 //
 
 #ifndef ELLE_IO_FILEABLE_HXX
@@ -71,7 +71,7 @@ namespace elle
 	  escape("unable to detach the data");
 
 	// prepare the archive.
-	if (archive.Prepare(region) == StatusError)
+	if (archive.Acquire(region) == StatusError)
 	  escape("unable to prepare the archive");
 
 	// extract the object.
@@ -96,7 +96,8 @@ namespace elle
 	  escape("unable to serialize the object");
 
 	// write the file's content.
-	if (File::Write(path, archive) == StatusError)
+	if (File::Write(path, Region((Byte*)archive.contents,
+				     archive.size)) == StatusError)
 	  escape("unable to write the file's content");
 
 	leave();

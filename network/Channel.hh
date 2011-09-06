@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.hh
 //
 // created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [fri sep  2 19:44:43 2011]
+// updated       julien quintard   [tue sep  6 13:21:15 2011]
 //
 
 ///
@@ -86,7 +86,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural64			Capacity;
+      static const Natural32			Capacity;
 
       //
       // types
@@ -131,7 +131,7 @@ namespace elle
       State		state;
 
       Region*		buffer;
-      Natural64		offset;
+      Natural32		offset;
 
       Container		queue;
 

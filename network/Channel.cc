@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Channel.cc
 //
 // created       julien quintard   [thu mar 18 21:20:27 2010]
-// updated       julien quintard   [sun sep  4 12:00:08 2011]
+// updated       julien quintard   [tue sep  6 13:21:20 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace elle
     ///
     /// \todo XXX to change to something around 10MB
     ///
-    const Natural64		Channel::Capacity = 52428800;
+    const Natural32		Channel::Capacity = 52428800;
 
 //
 // ---------- constructors & destructors --------------------------------------

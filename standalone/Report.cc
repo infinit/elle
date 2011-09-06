@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [sat sep  3 20:29:39 2011]
+// updated       julien quintard   [mon sep  5 11:45:41 2011]
 //
 
 //
@@ -402,7 +402,7 @@ namespace elle
     ///
     /// this method check if two reports match.
     ///
-    Boolean		Report::operator==(const Report&	element) const
+    Boolean		Report::operator==(const Report&) const
     {
       enter();
 

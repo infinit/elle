@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.hh
 //
 // created       julien quintard   [thu nov  1 11:38:37 2007]
-// updated       julien quintard   [thu aug 11 17:54:37 2011]
+// updated       julien quintard   [tue sep  6 16:26:26 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
@@ -94,12 +94,6 @@ namespace elle
       Status		Decrypt(const Cipher&,
 				Clear&) const;
 
-      template <typename T,
-		typename... TT>
-      Status		Decrypt(const Cipher&,
-				T&,
-				TT&...) const;
-
       //
       // interfaces
       //
@@ -125,23 +119,37 @@ namespace elle
       //
 
       ///
-      /// this methods are required because the compiler, given an Archive
-      /// object will call a template-based method instead of the Plain one.
-      ///
-      /// we do not want this especially because the template-based methods
-      /// build archives and we are already receiving an archive.
+      /// these methods basically convert archive-based into region-based
+      /// calls.
       ///
 
       Status		Encrypt(const Archive&		archive,
 				Cipher&			cipher) const
       {
-	return (this->Encrypt((Plain&)archive, cipher));
+	return (this->Encrypt(Plain(archive.contents, archive.size),
+			      cipher));
       }
 
       Status		Decrypt(const Cipher&		cipher,
 				Archive&		archive) const
       {
-	return (this->Decrypt(cipher, (Plain&)archive));
+	Clear		clear;
+
+	enter();
+
+	// decrypt the cipher into the clear.
+	if (this->Decrypt(cipher, clear) == StatusError)
+	  escape("unable to decrypt the cipher");
+
+	// give the clear to the archive.
+	if (archive.Acquire(clear) == StatusError)
+	  escape("unable to acquire the region");
+
+	// detach the region so that it does not get released twice.
+	if (clear.Detach() == StatusError)
+	  escape("unable to detach the region");
+
+	leave();
       }
 
       //
@@ -248,6 +256,13 @@ namespace elle
 				const T8&,
 				const T9&,
 				Cipher&) const;
+
+      // decrypt
+      template <typename T,
+		typename... TT>
+      Status		Decrypt(const Cipher&,
+				T&,
+				TT&...) const;
     };
 
   }

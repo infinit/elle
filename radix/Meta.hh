@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Meta.hh
 //
 // created       julien quintard   [sun nov 29 19:31:55 2009]
-// updated       julien quintard   [sat sep  3 20:43:35 2011]
+// updated       julien quintard   [tue sep  6 17:47:31 2011]
 //
 
 #ifndef ELLE_RADIX_META_HH
@@ -56,7 +56,7 @@ namespace elle
       //
       struct				Debug
       {
-	static Boolean			Status;
+	static const Boolean		Status;
 	static Boolean			State;
       };
 

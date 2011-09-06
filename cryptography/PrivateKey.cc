@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [sun jun 19 22:57:55 2011]
+// updated       julien quintard   [tue sep  6 14:39:19 2011]
 //
 
 //
@@ -228,14 +228,9 @@ namespace elle
 
       // (i)
       {
-	// wrap the code into an archive.
-	if (archive.Prepare(code.region) == StatusError)
+	// prepare the archive.
+	if (archive.Wrap(code.region) == StatusError)
 	  escape("unable to prepare the archive");
-
-	// detach the data from the archive so that the archive
-	// does not release the memory belonging to the code.
-	if (archive.Detach() == StatusError)
-	  escape("unable to detach the ownership from the archive");
 
 	// extract the secret key and data, in their encrypted form.
 	if (archive.Extract(key, data) == StatusError)
@@ -272,14 +267,14 @@ namespace elle
 	// set the region size.
 	region.size = size;
 
+	// prepare the archive.
+	if (archive.Acquire(region) == StatusError)
+	  escape("unable to prepare the archive");
+
 	// detach the data from the region so that the data
 	// is not release twice by both 'region' and 'archive'.
 	if (region.Detach() == StatusError)
 	  escape("unable to detach the data from the region");
-
-	// prepare the archive.
-	if (archive.Prepare(region) == StatusError)
-	  escape("unable to prepare the archive");
 
 	// extract the secret key.
 	if (archive.Extract(secret) == StatusError)
@@ -432,14 +427,10 @@ namespace elle
 	  escape("unable to serialize the asymetrically-encrypted secret key "
 		 "and the symetrically-encrypted data");
 
-	// wrap and return into the code.
-	if (code.region.Acquire(archive.contents, archive.size) == StatusError)
-	  escape("unable to wrap and return the archive's contents");
-
-	// detach the data from the archive so that the data does not get
-	// released.
-	if (archive.Detach() == StatusError)
-	  escape("unable to detach the data from the archive");
+	// duplicate the archive's content.
+	if (code.region.Duplicate((Byte*)archive.contents,
+				  archive.size) == StatusError)
+	  escape("unable to duplicate the archive's content");
       }
 
       leave();

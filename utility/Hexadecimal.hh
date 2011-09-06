@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Hexadecimal.hh
 //
 // created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [fri mar 18 16:12:13 2011]
+// updated       julien quintard   [tue sep  6 16:27:54 2011]
 //
 
 #ifndef ELLE_UTILITY_HEXADECIMAL_HH
@@ -66,12 +66,6 @@ namespace elle
       static Status	Decode(const String&,
 			       Region&);
 
-      template <typename T,
-		typename... TT>
-      static Status	Decode(const String&,
-			       T&,
-			       TT&...);
-
       //
       // forward methods
       //
@@ -87,13 +81,31 @@ namespace elle
       static Status	Encode(const Archive&		archive,
 			       String&			string)
       {
-	return (Hexadecimal::Encode((Region&)archive, string));
+	return (Hexadecimal::Encode(Region(archive.contents, archive.size),
+				    string));
       }
 
-      Status		Decrypt(const String&		string,
-				Archive&		archive)
+      static Status	Decode(const String&		string,
+			       Archive&			archive)
       {
-	return (Hexadecimal::Decode(string, (Region&)archive));
+	Region		region;
+
+	enter();
+
+	// decode the string.
+	if (Hexadecimal::Decode(string, region) == StatusError)
+	  escape("unable to decode the string");
+
+	// prepare the archive.
+	if (archive.Acquire(region) == StatusError)
+	  escape("unable to prepare the archive");
+
+	// detach the data so that not both the region and archive
+	// release the data.
+	if (region.Detach() == StatusError)
+	  escape("unable to detach the region's data");
+
+	leave();
       }
 
       //
@@ -200,6 +212,13 @@ namespace elle
 			       const T8&,
 			       const T9&,
 			       String&);
+
+      // decode
+      template <typename T,
+		typename... TT>
+      static Status	Decode(const String&,
+			       T&,
+			       TT&...);
     };
 
   }

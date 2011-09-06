@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/package/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [fri jun  3 15:08:45 2011]
+// updated       julien quintard   [tue sep  6 20:47:52 2011]
 //
 
 //
@@ -26,7 +26,7 @@ namespace elle
 // ---------- definitions -----------------------------------------------------
 //
 
-    const Natural32		Test::MinimumPackSize = 1;
+    const Natural32		Test::MinimumPackSize = 1234;
     const Natural32		Test::MaximumPackSize = 98765;
 
 //
@@ -67,11 +67,8 @@ namespace elle
       if (archive != ar)
 	escape("the two archives should be detected as identical");
 
-      // detach the memory.
-      ar.Detach();
-
       // prepare the archive to be extracted.
-      if (a.Prepare(ar) == StatusError)
+      if (a.Wrap(Region(ar.contents, ar.size)) == StatusError)
 	escape("unable to prepare the extraction archive");
 
       // verify the archive.

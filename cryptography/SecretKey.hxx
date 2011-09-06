@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [sun may  2 18:47:01 2010]
+// updated       julien quintard   [tue sep  6 15:44:47 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HXX
@@ -73,7 +73,7 @@ namespace elle
 
     template <typename T1,
 	      typename T2> 
-   Status		SecretKey::Encrypt(const T1&		o1,
+    Status		SecretKey::Encrypt(const T1&		o1,
 					   const T2&		o2,
 					   Cipher&		cipher) const
     {
@@ -319,22 +319,12 @@ namespace elle
       const
     {
       Archive		archive;
-      Clear		clear;
 
       enter();
 
       // decrypt the cipher.
-      if (this->Decrypt(cipher, clear) == StatusError)
+      if (this->Decrypt(cipher, archive) == StatusError)
 	escape("unable to decrypt the cipher");
-
-      // wrap the clear into an archive.
-      if (archive.Prepare(clear) == StatusError)
-	escape("unable to prepare the archive");
-
-      // detach the data so that not both the clear and archive
-      // release the data.
-      if (clear.Detach() == StatusError)
-	escape("unable to detach the clear's data");
 
       // extract the object.
       if (archive.Extract(parameter, parameters...) == StatusError)

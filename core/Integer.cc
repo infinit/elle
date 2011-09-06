@@ -5,17 +5,17 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Natural.cc
+// file          /home/mycure/infinit/elle/core/Integer.cc
 //
-// created       julien quintard   [wed feb 18 15:40:40 2009]
-// updated       julien quintard   [mon sep  5 15:40:36 2011]
+// created       julien quintard   [mon sep  5 15:40:43 2011]
+// updated       julien quintard   [mon sep  5 15:40:50 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/core/Natural.hh>
+#include <elle/core/Integer.hh>
 
 //
 // ---------- operators -------------------------------------------------------
@@ -25,13 +25,13 @@ namespace std
 {
 
   ///
-  /// this method displays a Natural8 type.
+  /// this method displays a Integer8 type.
   ///
   ostream&		operator<<(ostream&			stream,
-				   const elle::core::Natural8&	element)
+				   const elle::core::Integer8&	element)
   {
     // cast it into a number.
-    stream << (elle::core::Natural32)element;
+    stream << (elle::core::Integer32)element;
 
     return (stream);
   }

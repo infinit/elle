@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [thu aug 11 17:54:04 2011]
+// updated       julien quintard   [tue sep  6 14:46:56 2011]
 //
 
 //

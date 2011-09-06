@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [sun sep  4 15:44:02 2011]
+// updated       julien quintard   [tue sep  6 12:09:51 2011]
 //
 
 //
@@ -227,7 +227,7 @@ namespace elle
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large: %qu bytes",
+	escape("the packet seems to be too large: %u bytes",
 	       packet.size);
 
       // push the packet to the socket.
@@ -303,8 +303,8 @@ namespace elle
       //
       while ((this->buffer->size - this->offset) > 0)
 	{
-	  Region	frame;
 	  Packet	packet;
+	  Region	frame;
 	  Parcel*	parcel;
 
 	  enter(instance(parcel));
@@ -315,14 +315,8 @@ namespace elle
 	    escape("unable to wrap a frame in the raw");
 
 	  // prepare the packet based on the frame.
-	  if (packet.Prepare(frame) == StatusError)
+	  if (packet.Wrap(frame) == StatusError)
 	    escape("unable to prepare the packet");
-
-	  // detach the frame from the packet so that the region is
-	  // not released once the packet is destroyed. indeed, since the
-	  // frame is a chunk, it must not be freed.
-	  if (packet.Detach() == StatusError)
-	    escape("unable to detach the data from the packet");
 
 	  // allocate the parcel.
 	  parcel = new Parcel;

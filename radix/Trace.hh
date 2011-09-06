@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.hh
 //
 // created       julien quintard   [mon apr 26 21:04:49 2010]
-// updated       julien quintard   [sat sep  3 20:47:50 2011]
+// updated       julien quintard   [tue sep  6 20:57:20 2011]
 //
 
 #ifndef ELLE_RADIX_TRACE_HH

@@ -12,6 +12,7 @@ QT4_WRAP_CPP(elle_MOCS
 )
 
 ADD_LIBRARY(elle
+  core/Integer.cc
   core/Large.cc
   core/Null.cc
   core/Natural.cc

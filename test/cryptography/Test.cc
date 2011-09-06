@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/cryptography/Test.cc
 //
 // created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sun sep  4 15:59:23 2011]
+// updated       julien quintard   [tue sep  6 20:46:46 2011]
 //
 
 //
@@ -83,6 +83,8 @@ namespace elle
 	{
 	  Byte		type = Random::Generate(Test::TypeKeys,
 						Test::TypeCipher);
+
+	  printf("%u/%u\n", i, number);
 
 	  // according to the type of test: generating new keys,
 	  // encrypting/decrypting, signing/verifying or

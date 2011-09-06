@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Session.cc
 //
 // created       julien quintard   [fri mar  5 10:52:02 2010]
-// updated       julien quintard   [sat sep  3 08:03:59 2011]
+// updated       julien quintard   [tue sep  6 01:02:18 2011]
 //
 
 //
@@ -214,8 +214,8 @@ namespace elle
       // dump the socket.
       if (this->socket != NULL)
 	{
-	  if (this->socket->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the socket");
+	  std::cout << alignment << Dumpable::Shift
+		    << "[Socket] " << std::hex << this->socket << std::endl;
 	}
 
       // dump the point.

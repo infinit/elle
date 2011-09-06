@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.hh
 //
 // created       julien quintard   [tue oct 30 01:08:16 2007]
-// updated       julien quintard   [mon jul 11 16:31:51 2011]
+// updated       julien quintard   [tue sep  6 16:26:14 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HH
@@ -85,17 +85,6 @@ namespace elle
       Status		Decrypt(const Code&,
 				Clear&) const;
 
-      template <typename T,
-		typename... TT>
-      Status		Verify(const Signature&,
-			       const T&,
-			       const TT&...) const;
-      template <typename T,
-		typename... TT>
-      Status		Decrypt(const Code&,
-				T&,
-				TT&...) const;
-
       //
       // interfaces
       //
@@ -134,13 +123,38 @@ namespace elle
       Status		Encrypt(const Archive&		archive,
 				Code&			code) const
       {
-	return (this->Encrypt((Plain&)archive, code));
+	return (this->Encrypt(Plain(archive.contents, archive.size),
+			      code));
       }
 
       Status		Verify(const Signature&		signature,
 			       const Archive&		archive) const
       {
-	return (this->Verify(signature, (Plain&)archive));
+	return (this->Verify(signature,
+			     Plain(archive.contents, archive.size)));
+      }
+
+      Status		Decrypt(const Code&		code,
+				Archive&		archive) const
+      {
+	Clear		clear;
+
+	enter();
+
+	// decrypt the code.
+	if (this->Decrypt(code, clear) == StatusError)
+	  escape("unable to decrypt the code");
+
+	// prepare the archive.
+	if (archive.Acquire(clear) == StatusError)
+	  escape("unable to prepare the archive");
+
+	// detach the data so that not both the clear and archive
+	// release the data.
+	if (clear.Detach() == StatusError)
+	  escape("unable to detach the clear's data");
+
+	leave();
       }
 
       //
@@ -247,6 +261,20 @@ namespace elle
 				const T8&,
 				const T9&,
 				Code&) const;
+
+      // verify
+      template <typename T,
+		typename... TT>
+      Status		Verify(const Signature&,
+			       const T&,
+			       const TT&...) const;
+
+      // decrypt
+      template <typename T,
+		typename... TT>
+      Status		Decrypt(const Code&,
+				T&,
+				TT&...) const;
     };
 
   }
