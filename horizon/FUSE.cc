@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [wed jul 27 10:44:31 2011]
+// updated       julien quintard   [tue sep  6 17:33:18 2011]
 //
 
 //
@@ -137,7 +137,7 @@ namespace pig
 	}
       else
 	{
-	  escape("unknown fuker '%s'\n",
+	  escape("unknown fuker '%s'",
 		 Infinit::Configuration.fuse.fuker.c_str());
 	}
     }

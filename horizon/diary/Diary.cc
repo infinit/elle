@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/diary/Diary.cc
 //
 // created       julien quintard   [sun jun 26 22:48:13 2011]
-// updated       julien quintard   [tue aug  2 11:53:17 2011]
+// updated       julien quintard   [tue sep  6 12:09:15 2011]
 //
 
 //
@@ -289,13 +289,13 @@ namespace pig
       if (elle::File::Read(path, region) == elle::StatusError)
 	escape("unable to read the file's content");
 
+      // prepare the archive.
+      if (this->archive.Acquire(region) == elle::StatusError)
+	escape("unable to prepare the archive");
+
       // detach the data from the region.
       if (region.Detach() == elle::StatusError)
 	escape("unable to detach the data");
-
-      // prepare the archive.
-      if (this->archive.Prepare(region) == elle::StatusError)
-	escape("unable to prepare the archive");
 
       leave();
     }
@@ -313,7 +313,11 @@ namespace pig
       enter();
 
       // write the file's content.
-      if (elle::File::Write(path, this->archive) == elle::StatusError)
+      if (elle::File::Write(
+	    path,
+	    elle::Region(
+	      this->archive.contents,
+	      this->archive.size)) == elle::StatusError)
 	escape("unable to write the file's content");
 
       leave();
