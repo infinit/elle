@@ -6,6 +6,7 @@
 #
 # See the LICENSE file for more information.
 
+import drake
 import re
 import shutil
 import subprocess
@@ -816,3 +817,34 @@ def dot_spread(nodes):
 
 command_add('cxx-deps-dot-merge', dot_merge)
 command_add('cxx-deps-dot', dot_spread)
+
+
+class LibraryConfiguration(drake.Configuration):
+
+    """Configuration for a classical C/C++ library."""
+
+    def __init__(self, prefix, token):
+        """Find and create a configuration for the library.
+
+        prefix -- Where to find the library.
+        token --  Which file to look for (typically, the main header).
+        """
+        # Compute the search path.
+        if prefix is None:
+            test = [Path('/usr'), Path('/usr/local')]
+        else:
+            test = [Path(prefix)]
+        # for i in range(len(test)):
+        #     if not test[i].absolute:
+        #         test[i] = srctree() / test[i]
+        self.__prefix = self._search_all(token, test)[0]
+        self.__config = drake.cxx.Config()
+        self.__config.add_system_include_path(self.__prefix / 'include')
+        self.__config.lib_path(self.__prefix / 'lib')
+
+    def config(self):
+
+        return self.__config
+
+    def __repr__(self):
+        return '%s(prefix = %s)' % (self.__class__, repr(self.__prefix))
