@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/OneWay.hh
 //
 // created       julien quintard   [mon oct 29 13:19:49 2007]
-// updated       julien quintard   [mon may  3 21:18:34 2010]
+// updated       julien quintard   [tue sep  6 16:26:38 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HH
@@ -72,7 +72,8 @@ namespace elle
       static Status	Hash(const Archive&		archive,
 			     Digest&			digest)
       {
-	return (OneWay::Hash((Plain&)archive, digest));
+	return (OneWay::Hash(Plain(archive.contents, archive.size),
+			     digest));
       }
 
       //

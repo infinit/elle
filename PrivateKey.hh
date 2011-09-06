@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
 //
 // created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [sat may  7 22:26:02 2011]
+// updated       julien quintard   [tue sep  6 16:26:05 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH
@@ -109,12 +109,6 @@ namespace elle
       virtual Status	Derive(const Seed&,
 			       PublicKey&) const;
 
-      template <typename T,
-		typename... TT>
-      Status		Decrypt(const Code&,
-				T&,
-				TT&...) const;
-
       //
       // interfaces
       //
@@ -147,34 +141,56 @@ namespace elle
       //
 
       ///
-      /// this methods are required because the compiler, given an Archive
-      /// object will call a template-based method instead of the Plain one.
-      ///
-      /// we do not want this especially because the template-based methods
-      /// build archives and we are already receiving an archive.
+      /// these methods basically handle the archive-specific cases.
       ///
 
-      Status		Decrypt(const Code&		code,
-				Archive&		archive) const
+      Status		Decrypt(const Code&			code,
+				Archive&			archive) const
       {
-	return (this->Decrypt(code, (Plain&)archive));
+	Clear		clear;
+
+	enter();
+
+	// decrypt the code.
+	if (this->Decrypt(code, clear) == StatusError)
+	  escape("unable to decrypt the code");
+
+	// prepare the archive.
+	if (archive.Acquire(clear) == StatusError)
+	  escape("unable to prepare the archive");
+
+	// detach the data so that not both the clear and archive
+	// release the data.
+	if (clear.Detach() == StatusError)
+	  escape("unable to detach the clear's data");
+
+	leave();
       }
 
       Status		Sign(const Archive&		archive,
 			     Signature&			signature) const
       {
-	return (this->Sign((Plain&)archive, signature));
+	return (this->Sign(Plain(archive.contents, archive.size),
+			   signature));
       }
 
       Status		Encrypt(const Archive&		archive,
 				Code&			code) const
       {
-	return (this->Encrypt((Plain&)archive, code));
+	return (this->Encrypt(Plain(archive.contents, archive.size),
+			      code));
       }
 
       //
       // variadic templates
       //
+
+      // decrypt
+      template <typename T,
+		typename... TT>
+      Status		Decrypt(const Code&,
+				T&,
+				TT&...) const;
 
       // sign
       template <typename T1>
