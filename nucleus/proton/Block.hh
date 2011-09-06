@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.hh
 //
 // created       julien quintard   [mon feb 16 18:47:31 2009]
-// updated       julien quintard   [wed jul  6 10:10:12 2011]
+// updated       julien quintard   [tue sep  6 23:13:20 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BLOCK_HH
@@ -44,6 +44,11 @@ namespace nucleus
     /// the _state attribute indicates whether the block has
     /// been modified. therefore, this indicator is never serialized.
     ///
+    /// the reader will notice that only the Erase() method is provided
+    /// from the Fileable interface. this comes from the fact that the
+    /// other methods depend on the nature of the block: mutable or
+    /// immutable.
+    ///
     class Block:
       public elle::Object,
       public virtual elle::Fileable<elle::FormatCustom>
@@ -66,11 +71,6 @@ namespace nucleus
       //
       virtual elle::Status	Bind(Address&) const;
       virtual elle::Status	Validate(const Address&) const;
-
-      //
-      // operators
-      //
-      virtual elle::Boolean	operator<(const Block&) const;
 
       //
       // interfaces

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.hh
 //
 // created       julien quintard   [sat may 21 12:11:53 2011]
-// updated       julien quintard   [sat may 21 13:04:46 2011]
+// updated       julien quintard   [tue sep  6 23:01:38 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMMUTABLEBLOCK_HH
@@ -37,7 +37,8 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class derives the Block and abstracts the notion of
+    /// immutable block.
     ///
     class ImmutableBlock:
       public Block
@@ -53,6 +54,9 @@ namespace nucleus
       //
       // interfaces
       //
+
+      // object
+      declare(ImmutableBlock);
 
       // fileable
       elle::Status	Load(const Network&,

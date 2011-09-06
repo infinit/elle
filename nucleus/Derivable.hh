@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Derivable.hh
 //
 // created       julien quintard   [fri jul  8 10:42:21 2011]
-// updated       julien quintard   [fri jul  8 10:58:11 2011]
+// updated       julien quintard   [tue sep  6 22:40:45 2011]
 //
 
 #ifndef NUCLEUS_DERIVABLE_HH

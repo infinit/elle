@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [thu aug 11 17:40:14 2011]
+// updated       julien quintard   [tue sep  6 23:13:40 2011]
 //
 
 //
@@ -42,6 +42,15 @@ namespace nucleus
       MutableBlock(FamilyImprintBlock, component)
     {
     }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(ImprintBlock, _());
 
 //
 // ---------- methods ---------------------------------------------------------

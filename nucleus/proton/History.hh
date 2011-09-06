@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/History.hh
 //
 // created       julien quintard   [wed jul  6 09:12:10 2011]
-// updated       julien quintard   [wed jul  6 10:30:38 2011]
+// updated       julien quintard   [tue sep  6 23:00:03 2011]
 //
 
 #ifndef NUCLEUS_PROTON_HISTORY_HH
@@ -33,7 +33,8 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class contains all the version numbers associated with
+    /// a given mutable block.
     ///
     class History:
       public elle::Object,

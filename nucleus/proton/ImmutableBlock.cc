@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:22:14 2011]
-// updated       julien quintard   [sun aug 28 22:52:55 2011]
+// updated       julien quintard   [tue sep  6 23:01:56 2011]
 //
 
 //
@@ -29,16 +29,31 @@ namespace nucleus
 // ---------- constructs & destructors ----------------------------------------
 //
 
+    ///
+    /// default constructor.
+    ///
     ImmutableBlock::ImmutableBlock():
       Block(FamilyUnknown, neutron::ComponentUnknown)
     {
     }
 
+    ///
+    /// specific constructor.
+    ///
     ImmutableBlock::ImmutableBlock(const Family			family,
 				   const neutron::Component	component):
       Block(family, component)
     {
     }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(ImmutableBlock, _());
 
 //
 // ---------- fileable --------------------------------------------------------

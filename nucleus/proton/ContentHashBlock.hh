@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.hh
 //
 // created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [sat may 21 21:54:06 2011]
+// updated       julien quintard   [tue sep  6 22:58:43 2011]
 //
 
 #ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HH
@@ -40,8 +40,8 @@ namespace nucleus
     ///
     /// this way, such blocks are said to be immutable since modifying
     /// such a block implies creating a new block. indeed, since the data
-    /// change, the hash of those data as well, so does the address, hence
-    /// creating a new block.
+    /// changes, the hash of those data as well, so does the address, hence
+    /// the creation of a new block.
     ///
     class ContentHashBlock:
       public ImmutableBlock
@@ -60,13 +60,11 @@ namespace nucleus
       elle::Status	Validate(const Address&) const;
 
       //
-      // operators
-      //
-      elle::Boolean	operator<(const Block&) const;
-
-      //
       // interfaces
       //
+
+      // object
+      declare(ContentHashBlock);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.hh
 //
 // created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [sat may 21 15:27:30 2011]
+// updated       julien quintard   [tue sep  6 22:57:30 2011]
 //
 
 #ifndef NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
@@ -71,7 +71,7 @@ namespace nucleus
       //
 
       // object
-      declare(Block);
+      declare(PublicKeyBlock);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

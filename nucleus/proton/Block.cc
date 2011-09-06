@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [wed jul  6 10:10:23 2011]
+// updated       julien quintard   [tue sep  6 23:13:30 2011]
 //
 
 //
@@ -35,6 +35,9 @@ namespace nucleus
 // ---------- constructs & destructors ----------------------------------------
 //
 
+    ///
+    /// default constructor.
+    ///
     Block::Block():
       family(FamilyUnknown),
       component(neutron::ComponentUnknown),
@@ -42,6 +45,9 @@ namespace nucleus
     {
     }
 
+    ///
+    /// specific constructor.
+    ///
     Block::Block(const Family					family,
 		 const neutron::Component			component):
       family(family),
@@ -69,21 +75,6 @@ namespace nucleus
     /// otherwise.
     ///
     elle::Status	Block::Validate(const Address&) const
-    {
-      enter();
-
-      escape("this method should never have been called");
-    }
-
-//
-// ---------- operators -------------------------------------------------------
-//
-
-    ///
-    /// this operator returns StatusTrue if the given block represents
-    /// a valid update of the current block.
-    ///
-    elle::Boolean	Block::operator<(const Block&) const
     {
       enter();
 

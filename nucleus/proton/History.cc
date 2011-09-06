@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/History.cc
 //
 // created       julien quintard   [wed jul  6 09:21:17 2011]
-// updated       julien quintard   [thu jul 28 17:39:33 2011]
+// updated       julien quintard   [tue sep  6 23:00:13 2011]
 //
 
 //
@@ -28,10 +28,10 @@ namespace nucleus
 // ---------- definitions -----------------------------------------------------
 //
 
-  ///
-  /// this string defines the history files extension.
-  ///
-  const elle::String		History::Extension = ".hty";
+    ///
+    /// this string defines the history files extension.
+    ///
+    const elle::String		History::Extension = ".hty";
 
 //
 // ---------- methods ---------------------------------------------------------

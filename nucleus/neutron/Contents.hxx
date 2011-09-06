@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [wed aug  3 16:16:21 2011]
+// updated       julien quintard   [tue sep  6 01:31:45 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
@@ -159,7 +159,7 @@ namespace nucleus
 	escape("unable to decrypt the cipher");
 
       // prepare the archive with the clear, which is basically a region.
-      if (archive.Prepare(clear) == elle::StatusError)
+      if (archive.Acquire(clear) == elle::StatusError)
 	escape("unable to prepare the archive");
 
       // detach the 'clear' region as it will be taken over by the archive.

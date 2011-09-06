@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Base.hh
 //
 // created       julien quintard   [sat may 21 13:21:51 2011]
-// updated       julien quintard   [thu jun 23 08:50:55 2011]
+// updated       julien quintard   [tue sep  6 22:49:13 2011]
 //
 
 #ifndef NUCLEUS_PROTON_BASE_HH
@@ -48,7 +48,8 @@ namespace nucleus
     /// block whose ownership can usually be statically verified.
     ///
     /// by following this chain, one can make sure a mutable block lies
-    /// in the legitimate block's history.
+    /// in the legitimate block's history, in other words, branches have
+    /// not been created.
     ///
     class Base:
       public elle::Object

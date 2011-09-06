@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.hh
 //
 // created       julien quintard   [sat may  7 23:26:59 2011]
-// updated       julien quintard   [mon aug  1 13:29:15 2011]
+// updated       julien quintard   [tue sep  6 23:13:27 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
@@ -36,7 +36,23 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class associates an owner to the mutable block.
+    ///
+    /// the functionalities offered by this construct are equivalent to
+    /// the ones of OwnerKeyBlock except that it does not require the
+    /// generation of a keypair which may be time consuming though experiments
+    /// show it was negligible.
+    ///
+    /// the idea behind this construct is very similar to PublicKeyBlocks
+    /// with the address being computed by applying a one-way function on
+    /// the public key except that in this case, as for OwnerKeyBlocks, the
+    /// owner's public key is used. thus the signature can be generated
+    /// with the owner's private key i.e no additional keys need to be
+    /// kept by the user.
+    ///
+    /// note that in addition, a stamp and salt are also included in
+    /// hash in order to prevent conflicts i.e several ImprintBlocks
+    /// being created by the same user at the same time.
     ///
     class ImprintBlock:
       public MutableBlock
@@ -59,6 +75,9 @@ namespace nucleus
       //
       // interfaces
       //
+
+      // object
+      declare(ImprintBlock);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

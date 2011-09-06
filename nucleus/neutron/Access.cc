@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [fri jun 24 14:12:57 2011]
+// updated       julien quintard   [tue sep  6 12:11:31 2011]
 //
 
 //
@@ -309,8 +309,8 @@ namespace nucleus
     ///
     elle::Status	Access::Fingerprint(elle::Digest&	digest) const
     {
-      Range<Record>::Scoutor	scoutor;
       elle::Archive		archive;
+      Range<Record>::Scoutor	scoutor;
 
       enter();
 

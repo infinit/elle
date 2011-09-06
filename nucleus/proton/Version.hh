@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [wed jul  6 09:40:15 2011]
+// updated       julien quintard   [tue sep  6 13:22:56 2011]
 //
 
 #ifndef NUCLEUS_PROTON_VERSION_HH
@@ -39,7 +39,7 @@ namespace nucleus
       //
       // types
       //
-      typedef elle::Natural32		Type;
+      typedef elle::Natural64		Type;
 
       //
       // constants
@@ -58,7 +58,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const Type);
+      elle::Status		Create(const Type);
 
       //
       // interfaces
@@ -66,23 +66,23 @@ namespace nucleus
 
       // object
       declare(Version);
-      elle::Boolean	operator==(const Version&) const;
-      elle::Boolean	operator<(const Version&) const;
-      elle::Boolean	operator>(const Version&) const;
-      Version&		operator+=(const elle::Natural32);
-      Version		operator+(const Version&) const;
+      elle::Boolean		operator==(const Version&) const;
+      elle::Boolean		operator<(const Version&) const;
+      elle::Boolean		operator>(const Version&) const;
+      Version&			operator+=(const elle::Natural32);
+      Version			operator+(const Version&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status		Serialize(elle::Archive&) const;
+      elle::Status		Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Type		number;
+      Type			number;
     };
 
   }

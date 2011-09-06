@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.hh
 //
 // created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [thu aug 25 10:44:19 2011]
+// updated       julien quintard   [tue sep  6 22:47:32 2011]
 //
 
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
@@ -34,7 +34,19 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class is one of the most fundamental of the nucleus library
+    /// as it is used to identify a block in the storage layer.
+    ///
+    /// note that this class includes a digest which is used so as to
+    /// map an address onto a network's node. indeed, every node is identified
+    /// by a label which happen to be a digest as well.
+    ///
+    /// however the address class includes additional information such
+    /// as the family---i.e the type of physical block---and the
+    /// component---i.e the type of logical block.
+    ///
+    /// noteworthy is that the family and component are also included in
+    /// the generation of the address' digest.
     ///
     class Address:
       public elle::Object,

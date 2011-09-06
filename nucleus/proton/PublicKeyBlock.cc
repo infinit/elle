@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [sat may 21 15:33:12 2011]
+// updated       julien quintard   [tue sep  6 22:58:00 2011]
 //
 
 //
@@ -113,6 +113,15 @@ namespace nucleus
 
       true();
     }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(PublicKeyBlock, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

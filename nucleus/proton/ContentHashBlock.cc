@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.cc
 //
 // created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [thu jul 28 15:18:34 2011]
+// updated       julien quintard   [tue sep  6 22:58:24 2011]
 //
 
 //
@@ -102,19 +102,13 @@ namespace nucleus
     }
 
 //
-// ---------- operators -------------------------------------------------------
+// ---------- object ----------------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this macro-function call generates the object.
     ///
-    elle::Boolean	ContentHashBlock::operator<(const Block&)
-      const
-    {
-      enter();
-
-      flee("CHBs cannot be updated since they are immutable");
-    }
+    embed(ContentHashBlock, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
