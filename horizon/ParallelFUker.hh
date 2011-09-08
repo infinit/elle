@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/ParallelFUker.hh
 //
 // created       julien quintard   [tue jul 26 15:33:15 2011]
-// updated       julien quintard   [tue jul 26 20:53:05 2011]
+// updated       julien quintard   [thu sep  8 07:49:50 2011]
 //
 
 #ifndef PIG_PARALLELFUKER_HH
@@ -38,7 +38,7 @@ namespace pig
 //
 
   ///
-  /// XXX
+  /// XXX to implement.
   ///
   class ParallelFUker:
     public FUker

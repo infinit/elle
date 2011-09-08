@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/SequentialFUker.hh
 //
 // created       julien quintard   [tue jul 26 15:33:15 2011]
-// updated       julien quintard   [thu sep  1 16:15:50 2011]
+// updated       julien quintard   [thu sep  8 07:52:50 2011]
 //
 
 #ifndef PIG_SEQUENTIALFUKER_HH
@@ -44,7 +44,17 @@ namespace pig
 //
 
   ///
-  /// XXX
+  /// this fuker is an improvement of the interlaced fuker in terms of
+  /// safety.
+  ///
+  /// in order to prevent multiple events to be triggered in parallel,
+  /// potentially leading FUSE to believe the first event returned though
+  /// it is the second, this fuker orders the events as they come but
+  /// triggers them sequentially.
+  ///
+  /// note that although this technique ensures safety, it impacts the
+  /// performance, especially since Infinit is capable of handling concurrent
+  /// requests.
   ///
   class SequentialFUker:
     public FUker

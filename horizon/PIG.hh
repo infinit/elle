@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.hh
 //
 // created       julien quintard   [tue may 31 10:32:37 2011]
-// updated       julien quintard   [sat aug  6 17:19:12 2011]
+// updated       julien quintard   [thu sep  8 07:48:41 2011]
 //
 
 #ifndef PIG_PIG_HH
@@ -23,8 +23,6 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
-#include <pig/diary/Diary.hh>
-
 #include <elle/idiom/Close.hh>
 # include <sys/types.h>
 # include <pwd.h>
@@ -32,7 +30,7 @@
 
 ///
 /// this namespace contains all the elements related to the PIG - POSIX/Infinit
-/// gateway.
+/// Gateway.
 ///
 namespace pig
 {
@@ -61,8 +59,6 @@ namespace pig
     };
 
     static lune::Dictionary	Dictionary;
-
-    static pig::diary::Diary	Diary;
   };
 
 }
@@ -77,16 +73,5 @@ namespace pig
 #include <pig/InterlacedFUker.hh>
 #include <pig/ParallelFUker.hh>
 #include <pig/SequentialFUker.hh>
-
-#include <pig/diary/Diary.hh>
-
-//
-// ---------- namespaces ------------------------------------------------------
-//
-
-namespace pig
-{
-  using namespace diary;
-}
 
 #endif

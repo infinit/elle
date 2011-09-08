@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.hh
 //
 // created       julien quintard   [wed jun  1 09:19:13 2011]
-// updated       julien quintard   [wed aug  3 20:27:44 2011]
+// updated       julien quintard   [wed sep  7 12:41:26 2011]
 //
 
 #ifndef PIG_CRUX_HH
@@ -144,29 +144,8 @@ namespace pig
     static int		Rename(const char*,
 			       const char*);
     static int		Unlink(const char*);
-
-    //
-    // static methods
-    //
-    static elle::Void	Release();
-
-    //
-    // static template methods
-    //
-    template <typename T>
-    static elle::Void	Release(T&);
-    template <typename T,
-	      typename... TT>
-    static elle::Void	Release(T&,
-				TT&...);
   };
 
 }
-
-//
-// ---------- templates -------------------------------------------------------
-//
-
-#include <pig/Crux.hxx>
 
 #endif

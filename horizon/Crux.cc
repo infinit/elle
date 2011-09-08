@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [wed aug 10 23:17:26 2011]
+// updated       julien quintard   [thu sep  8 07:06:20 2011]
 //
 
 //
@@ -17,6 +17,7 @@
 
 #include <pig/Crux.hh>
 #include <pig/PIG.hh>
+#include <pig/Janitor.hh>
 
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
@@ -24,29 +25,17 @@
 namespace pig
 {
 
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
+  ///
+  /// this macro-function makes it easier to return an error from an
+  /// upcall, taking care to log the error but also to release the
+  /// remaining identifiers.
+  ///
 #define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      report(_text_);							\
-      show();								\
+      log(_text_);							\
 									\
-      Crux::Release(_identifiers_);					\
-									\
-      purge();								\
-									\
-      return (-(_errno_));						\
-    } while (false)
-
-#define skip(_errno_, _identifiers_...)					\
-  do									\
-    {									\
-      Crux::Release(_identifiers_);					\
-									\
-      purge();								\
+      Janitor::Clear(_identifiers_);					\
 									\
       return (-(_errno_));						\
     } while (false)
@@ -56,7 +45,8 @@ namespace pig
 //
 
   ///
-  /// this constant holds the number of directory entries to retrieve at once.
+  /// this constant defines the number of directory entries to fetch from
+  /// etoile when performing a Readdir().
   ///
   const nucleus::Size			Crux::Range = 128;
 
@@ -77,6 +67,7 @@ namespace pig
     struct ::fuse_file_info	info;
     int				result;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
@@ -84,7 +75,7 @@ namespace pig
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
-      skip(ENOENT);
+      return (-ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
@@ -95,7 +86,7 @@ namespace pig
     //
     // be careful, the address is local but it is alright since it is
     // used in Fgetattr() only.
-    info.fh = (uint64_t)&identifier;
+    info.fh = reinterpret_cast<uint64_t>(&identifier);
 
     // call the Fgetattr() method.
     result = Crux::Fgetattr(path, stat, &info);
@@ -105,6 +96,7 @@ namespace pig
       error("unable to discard the object",
 	    EINTR);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
@@ -126,6 +118,7 @@ namespace pig
     etoile::path::Way			way(path);
     elle::String*			name;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
@@ -135,7 +128,7 @@ namespace pig
     ::memset(stat, 0x0, sizeof (struct stat));
 
     // retrieve the identifier.
-    identifier = (etoile::gear::Identifier*)info->fh;
+    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(*identifier,
@@ -182,7 +175,7 @@ namespace pig
     stat->st_gid = PIG::Somebody::GID;
 
     // set the size.
-    stat->st_size = (off_t)information.size;
+    stat->st_size = static_cast<off_t>(information.size);
 
     // convert the times into time_t structures.
     stat->st_atime = time(NULL);
@@ -272,6 +265,7 @@ namespace pig
 	}
       }
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
@@ -286,15 +280,17 @@ namespace pig
   int			Crux::Utimens(const char*		path,
 				      const struct timespec[2])
   {
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, ...)\n",
 	     __FUNCTION__,
 	     path);
 
     //
-    // not supported
+    // XXX not supported: do something about it
     //
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, ...)\n",
 	     __FUNCTION__,
@@ -312,8 +308,8 @@ namespace pig
     etoile::gear::Identifier	identifier;
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
-    nucleus::Record*		record;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
@@ -329,34 +325,12 @@ namespace pig
       error("unable to load the directory",
 	    ENOENT);
 
-    // XXX est-ce necessaire de checker, si ca se trouve c'est deja fait
-    // par FUSE
-
-    // retrieve the user's permissions on the object.
-    if (etoile::wall::Access::Lookup(identifier,
-				     agent::Agent::Subject,
-				     record) == elle::StatusError)
-      error("unable to retrieve the access record",
-	    EINTR,
-	    identifier);
-
-    // check the record.
-    if (record == NULL)
-      error("the subject does not seem to have been granted an access",
-	    EACCES,
-	    identifier);
-
-    // check if the user has the right to read the directory.
-    if (!(record->permissions & nucleus::PermissionRead))
-      error("the subject does not have the right permission",
-	    EACCES,
-	    identifier);
-
     // duplicate the identifier and save it in the info structure's file
     // handle.
     info->fh =
-      (uint64_t)new etoile::gear::Identifier(identifier);
+      reinterpret_cast<uint64_t>(new etoile::gear::Identifier(identifier));
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
@@ -378,6 +352,7 @@ namespace pig
     etoile::gear::Identifier*		identifier;
     off_t				next;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
@@ -385,7 +360,7 @@ namespace pig
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
-    identifier = (etoile::gear::Identifier*)info->fh;
+    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
 
     // fill the . and .. entries.
     if (offset == 0)
@@ -410,10 +385,11 @@ namespace pig
 	nucleus::Range<nucleus::Entry>::Scoutor	scoutor;
 
 	// read the directory entries.
-	if (etoile::wall::Directory::Consult(*identifier,
-					     (nucleus::Offset)offset,
-					     Crux::Range,
-					     range) == elle::StatusError)
+	if (etoile::wall::Directory::Consult(
+	      *identifier,
+	      static_cast<nucleus::Offset>(offset),
+	      Crux::Range,
+	      range) == elle::StatusError)
 	  error("unable to retrieve some directory entries",
 		EINTR);
 
@@ -427,6 +403,7 @@ namespace pig
 	    // fill the buffer with filler().
 	    if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
 	      {
+		// debug.
 		if (Infinit::Configuration.debug.pig == true)
 		  printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 			 __FUNCTION__,
@@ -446,6 +423,7 @@ namespace pig
 	  break;
       }
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
@@ -462,6 +440,7 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
@@ -469,7 +448,7 @@ namespace pig
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
-    identifier = (etoile::gear::Identifier*)info->fh;
+    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
 
     // discard the object.
     if (etoile::wall::Directory::Discard(*identifier) == elle::StatusError)
@@ -482,6 +461,7 @@ namespace pig
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
@@ -503,6 +483,7 @@ namespace pig
     etoile::gear::Identifier	subdirectory;
     nucleus::Permissions	permissions;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
@@ -558,6 +539,7 @@ namespace pig
       error("unable to store the directory",
 	    EINTR);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
@@ -578,6 +560,7 @@ namespace pig
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	subdirectory;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s)\n",
 	     __FUNCTION__,
@@ -623,6 +606,7 @@ namespace pig
       error("unable to destroy the directory",
 	    EINTR);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s)\n",
 	     __FUNCTION__,
@@ -644,6 +628,7 @@ namespace pig
     etoile::path::Chemin		chemin;
     nucleus::Record*			record;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
@@ -764,6 +749,7 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
@@ -784,6 +770,7 @@ namespace pig
     nucleus::Permissions		permissions;
     etoile::miscellaneous::Information	information;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
@@ -807,7 +794,7 @@ namespace pig
     // accessed by their sole owners.
     //
 
-    // XXX sticky-bit etc. in attributes!
+    // XXX handle sticky-bit etc. in attributes!
 
     // compute the permissions.
     if (mode & S_IRUSR)
@@ -873,6 +860,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
@@ -888,32 +876,15 @@ namespace pig
 				    uid_t			uid,
 				    gid_t			gid)
   {
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %u, %u)\n",
 	     __FUNCTION__,
 	     path, uid, gid);
 
-    //
-    // this functionality is not implemented because, in Infinit, changing
-    // the ownership is made impossible through the design.
-    //
-    // indeed, since every object is bound to its owner through the use
-    // of asymmetric cryptosystems, a current owner changing to ownership
-    // to another would still be able, in the future, to re-change the
-    // ownership, since still owning the original private key.
-    //
-    // therefore, changing ownership would imply copying the object.
-    //
-    // XXX \todo c'est carrement possible cela dit puisque seul la coquille
-    // ie l'objet devra etre duplique. access et contents ne changent pas
-    // et on prend juste leur adresse donc ca se resume en new object, copy
-    // object, delete old object et voila. seul probleme, le owner precedent
-    // aura la clef des donnees et pourra donc toujours y acceder: faux
-    // probleme! donc niquel.
-    //
+    // XXX to implement.
 
-    // XXX todo
-
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %u, %u)\n",
 	     __FUNCTION__,
@@ -938,6 +909,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s, %p, %u, 0x%x)\n",
 	     __FUNCTION__,
@@ -967,6 +939,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %s, %p, %u, 0x%x)\n",
 	     __FUNCTION__,
@@ -988,6 +961,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     nucleus::Trait*		trait;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s, %p, %u)\n",
 	     __FUNCTION__,
@@ -1021,6 +995,7 @@ namespace pig
       error("unable to locate this attribute",
 	    ENOATTR);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %s, %p, %u)\n",
 	     __FUNCTION__,
@@ -1056,6 +1031,7 @@ namespace pig
     nucleus::Range<nucleus::Trait>::Scoutor	scoutor;
     size_t					offset;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u)\n",
 	     __FUNCTION__,
@@ -1083,6 +1059,7 @@ namespace pig
       error("unable to discard the object",
 	    ENOENT);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p, %u)\n",
 	     __FUNCTION__,
@@ -1135,6 +1112,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
@@ -1163,6 +1141,7 @@ namespace pig
       error("unable to store the object",
 	    ENOENT);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
@@ -1185,6 +1164,7 @@ namespace pig
     etoile::path::Way		to(target);
     etoile::path::Chemin	chemin;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
@@ -1231,6 +1211,7 @@ namespace pig
       error("unable to store the directory",
 	    ENOENT);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
@@ -1251,6 +1232,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::path::Way		target;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u)\n",
 	     __FUNCTION__,
@@ -1284,6 +1266,7 @@ namespace pig
 	        target.path.length() + 1 :
 	        size);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p, %u)\n",
 	     __FUNCTION__,
@@ -1306,6 +1289,7 @@ namespace pig
     etoile::gear::Identifier	file;
     nucleus::Permissions	permissions = nucleus::PermissionNone;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, 0%o, %p)\n",
 	     __FUNCTION__,
@@ -1391,8 +1375,9 @@ namespace pig
 
     // store the identifier in the file handle.
     info->fh =
-      (uint64_t)new etoile::gear::Identifier(file);
+      reinterpret_cast<uint64_t>(new etoile::gear::Identifier(file));
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, 0%o, %p)\n",
 	     __FUNCTION__,
@@ -1411,6 +1396,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	identifier;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
@@ -1428,8 +1414,9 @@ namespace pig
 
     // store the identifier in the file handle.
     info->fh =
-      (uint64_t)new etoile::gear::Identifier(identifier);
+      reinterpret_cast<uint64_t>(new etoile::gear::Identifier(identifier));
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
@@ -1450,26 +1437,29 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
 
     // retrieve the identifier.
-    identifier = (etoile::gear::Identifier*)info->fh;
+    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
 
     // wrap the buffer.
-    if (region.Wrap((elle::Byte*)buffer, size) == elle::StatusError)
+    if (region.Wrap(reinterpret_cast<const elle::Byte*>(buffer),
+		    size) == elle::StatusError)
       error("unable to wrap the buffer",
 	    EINTR);
 
     // write the file.
     if (etoile::wall::File::Write(*identifier,
-				  (nucleus::Offset)offset,
+				  static_cast<nucleus::Offset>(offset),
 				  region) == elle::StatusError)
       error("unable to write the file",
 	    EACCES);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
@@ -1490,18 +1480,19 @@ namespace pig
     etoile::gear::Identifier*	identifier;
     elle::Region		region;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
 
     // retrieve the identifier.
-    identifier = (etoile::gear::Identifier*)info->fh;
+    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
 
     // read the file.
     if (etoile::wall::File::Read(*identifier,
-				 (nucleus::Offset)offset,
-				 (nucleus::Size)size,
+				 static_cast<nucleus::Offset>(offset),
+				 static_cast<nucleus::Size>(size),
 				 region) == elle::StatusError)
       error("unable to read the file",
 	    EACCES);
@@ -1509,12 +1500,13 @@ namespace pig
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p, %u, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, size, offset, info);
 
-    return ((int)region.size);
+    return (region.size);
   }
 
   ///
@@ -1529,6 +1521,7 @@ namespace pig
     struct ::fuse_file_info	info;
     int				result;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %qu)\n",
 	     __FUNCTION__,
@@ -1545,7 +1538,7 @@ namespace pig
 	    ENOENT);
 
     // set the identifier in the fuse_file_info structure.
-    info.fh = (uint64_t)&identifier;
+    info.fh = reinterpret_cast<uint64_t>(&identifier);
 
     // call the Ftruncate() method.
     result = Crux::Ftruncate(path, size, &info);
@@ -1555,6 +1548,7 @@ namespace pig
       error("unable to store the file",
 	    EINTR);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %qu)\n",
 	     __FUNCTION__,
@@ -1572,13 +1566,14 @@ namespace pig
   {
     etoile::gear::Identifier*	identifier;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, size, info);
 
     // retrieve the identifier.
-    identifier = (etoile::gear::Identifier*)info->fh;
+    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
 
     // adjust the file's size.
     if (etoile::wall::File::Adjust(*identifier,
@@ -1586,6 +1581,7 @@ namespace pig
       error("unable to adjust the size of the file",
 	    ENOENT);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %qu, %p)\n",
 	     __FUNCTION__,
@@ -1603,13 +1599,14 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::gear::Identifier*	identifier;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
 
     // retrieve the identifier.
-    identifier = (etoile::gear::Identifier*)info->fh;
+    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
 
     // store the file.
     if (etoile::wall::File::Store(*identifier) == elle::StatusError)
@@ -1622,6 +1619,7 @@ namespace pig
     // reset the file handle.
     info->fh = 0;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
@@ -1642,6 +1640,7 @@ namespace pig
     etoile::path::Way		to(etoile::path::Way(target), t);
     etoile::gear::Identifier	object;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
@@ -1764,6 +1763,7 @@ namespace pig
 		ENOENT);
       }
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
@@ -1785,6 +1785,7 @@ namespace pig
     etoile::gear::Identifier		identifier;
     etoile::miscellaneous::Information	information;
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s)\n",
 	     __FUNCTION__,
@@ -1889,24 +1890,13 @@ namespace pig
       error("unable to store the directory",
 	    EINTR);
 
+    // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s)\n",
 	     __FUNCTION__,
 	     path);
 
     return (0);
-  }
-
-//
-// ---------- static methods --------------------------------------------------
-//
-
-  ///
-  /// this method releases no identifier.
-  ///
-  elle::Void		Crux::Release()
-  {
-    // nothing to do
   }
 
 }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/InterlacedFUker.hh
 //
 // created       julien quintard   [tue jul 26 15:33:15 2011]
-// updated       julien quintard   [thu sep  1 16:15:11 2011]
+// updated       julien quintard   [thu sep  8 07:44:12 2011]
 //
 
 #ifndef PIG_INTERLACEDFUKER_HH
@@ -44,7 +44,18 @@ namespace pig
 //
 
   ///
-  /// XXX
+  /// this FUker is said to handle events in an interlaced manner because
+  /// every time a FUSE upcall is triggered, the FUker reads it and triggers
+  /// it right away.
+  ///
+  /// assuming the previous event has not returned yet, for instance because
+  /// a network communication is in process, two events could be being
+  /// processed at the same time, leading to potential conflicts when
+  /// returning i.e FUSE expects the return value of the first upcall but
+  /// the second one terminates first.
+  ///
+  /// this FUker should therefore never be used unless the user knows
+  /// exactly what he is doing.
   ///
   class InterlacedFUker:
     public FUker

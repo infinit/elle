@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/FUSE.cc
 //
 // created       julien quintard   [fri jul 31 22:10:21 2009]
-// updated       julien quintard   [tue sep  6 17:33:18 2011]
+// updated       julien quintard   [thu sep  8 08:16:55 2011]
 //
 
 //
@@ -101,15 +101,6 @@ namespace pig
       FUSE::Operations.rename = Crux::Rename;
       FUSE::Operations.unlink = Crux::Unlink;
 
-      /* XXX
-      // FUSE::Operations.flush: not supported
-      FUSE::Operations.fsync = Crux::Fsync;
-      FUSE::Operations.fsyncdir = Crux::Fsyncdir;
-
-      // XXX pour trouver le bug de compile du kernel linux
-      FUSE::Operations.flush = Crux::Flush;
-      */
-
       // the following flag being activated prevents the path argument
       // to be passed for functions which take a file descriptor.
       FUSE::Operations.flag_nullpath_ok = 1;
@@ -120,25 +111,34 @@ namespace pig
     //
     {
       // according to the configuration...
-      if (Infinit::Configuration.fuse.fuker == FUker::TypeSequential)
+      switch (Infinit::Configuration.fuse.fuker)
 	{
-	  // allocate the sequential FUker.
-	  FUSE::Fuker = new SequentialFUker;
-	}
-      else if (Infinit::Configuration.fuse.fuker == FUker::TypeInterlaced)
-	{
-	  // allocate the interlaced FUker.
-	  FUSE::Fuker = new InterlacedFUker;
-	}
-      else if (Infinit::Configuration.fuse.fuker == FUker::TypeParallel)
-	{
-	  // allocate the parallel FUker.
-	  FUSE::Fuker = new ParallelFUker;
-	}
-      else
-	{
-	  escape("unknown fuker '%s'",
-		 Infinit::Configuration.fuse.fuker.c_str());
+	case FUker::TypeSequential:
+	  {
+	    // allocate the sequential FUker.
+	    FUSE::Fuker = new SequentialFUker;
+
+	    break;
+	  }
+	case FUker::TypeInterlaced:
+	  {
+	    // allocate the interlaced FUker.
+	    FUSE::Fuker = new InterlacedFUker;
+
+	    break;
+	  }
+	case FUker::TypeParallel:
+	  {
+	    // allocate the parallel FUker.
+	    FUSE::Fuker = new ParallelFUker;
+
+	    break;
+	  }
+	default:
+	  {
+	    escape("unknown fuker '%u'",
+		   Infinit::Configuration.fuse.fuker);
+	  }
 	}
     }
 

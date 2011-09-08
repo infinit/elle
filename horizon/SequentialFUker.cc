@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/SequentialFUker.cc
 //
 // created       julien quintard   [tue jul 26 15:33:54 2011]
-// updated       julien quintard   [fri sep  2 21:14:57 2011]
+// updated       julien quintard   [thu sep  8 07:53:23 2011]
 //
 
 //
@@ -102,7 +102,7 @@ namespace pig
 //
 
   ///
-  /// XXX
+  /// this method sets up the fuker.
   ///
   elle::Status		SequentialFUker::Setup()
   {
@@ -142,16 +142,13 @@ namespace pig
     // uses FUSE low-level functions in order to integrate it into the elle
     // event loop.
     //
-    // \todo XXX make it multi-thredable.
-    //
     {
       int		multithreaded;
 
       // setup fuse.
       if ((this->fuse = ::fuse_setup(
-			  (int)(sizeof (arguments) /
-				sizeof (elle::Character*)),
-			  (char**)arguments,
+			  sizeof (arguments) / sizeof (elle::Character*),
+			  const_cast<char**>(arguments),
 			  &FUSE::Operations,
 			  sizeof (FUSE::Operations),
 			  &this->mountpoint,
@@ -182,7 +179,7 @@ namespace pig
 
       // allocate the FUSE event broker.
       this->broker =
-	new elle::Broker((elle::Natural16)fd);
+	new elle::Broker(fd);
 
       // subscribe to the timer's signal.
       if (this->broker->signal.ready.Subscribe(
@@ -218,9 +215,7 @@ namespace pig
     enter(slab(item.buffer, ::free));
 
     // allocate a buffer.
-    /// \todo XXX this could probably be optimised in order to allocate
-    /// a buffer only if an event is already being processed!
-    if ((item.buffer = (char*)::malloc(this->size)) == NULL)
+    if ((item.buffer = static_cast<char*>(::malloc(this->size))) == NULL)
       escape("unable to allocate a FUSE buffer");
 
     // retrieve the upcall from the kernel through the FUSE channel.

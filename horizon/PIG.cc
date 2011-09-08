@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/PIG.cc
 //
 // created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [thu aug 11 11:11:03 2011]
+// updated       julien quintard   [thu sep  8 07:49:10 2011]
 //
 
 //
@@ -44,12 +44,6 @@ namespace pig
   /// identities and Infinit identities.
   ///
   lune::Dictionary			PIG::Dictionary;
-
-  ///
-
-  /// this variable contains the diary which replays the PIG events.
-  ///
-  pig::diary::Diary			PIG::Diary;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -99,86 +93,22 @@ namespace pig
     }
 
     //
-    // initialize the diary replaying process, if necessary.
+    // set up FUSE.
     //
-    if (Infinit::Parser->Test("Replay") == elle::StatusTrue)
-      {
-	elle::String		string;
-	elle::Path		path;
-	elle::Natural32		from;
-	elle::Natural32		to;
+    {
+      // retrieve the mount point.
+      if (Infinit::Parser->Value("Mountpoint",
+				 mountpoint) == elle::StatusError)
+	{
+	  // display the usage.
+	  Infinit::Parser->Usage();
 
-	// retrieve the path.
-	if (Infinit::Parser->Value("Replay", string) == elle::StatusError)
-	  {
-	    // display the usage.
-	    Infinit::Parser->Usage();
+	  escape("unable to retrieve the mount point");
+	}
 
-	    escape("unable to retrieve the diary path");
-	  }
-
-	// create the path.
-	if (path.Create(string) == elle::StatusError)
-	  escape("unable to create the path");
-
-	// load the diary.
-	if (PIG::Diary.Load(path) == elle::StatusError)
-	  escape("unable to load the diary");
-
-	// set up the diary.
-	if (PIG::Diary.Setup(FUSE::Operations) == elle::StatusError)
-	  escape("unable to set up the diary");
-
-	// initialize the indexes.
-	from = 0;
-	to = elle::Variable::Maximum(to);
-
-	// retrieve the from.
-	if ((Infinit::Parser->Test("From") == elle::StatusTrue) &&
-	    (Infinit::Parser->Value(
-				    "From",
-				    from) == elle::StatusError))
-	  {
-	    // display the usage.
-	    Infinit::Parser->Usage();
-
-	    escape("unable to retrieve the from value");
-	  }
-
-	// retrieve the to.
-	if ((Infinit::Parser->Test("To") == elle::StatusTrue) &&
-	    (Infinit::Parser->Value(
-				    "To",
-				    to) == elle::StatusError))
-	  {
-	    // display the usage.
-	    Infinit::Parser->Usage();
-
-	    escape("unable to retrieve the to value");
-	  }
-
-	// replay the diary.
-	if (PIG::Diary.Replay(from, to) == elle::StatusError)
-	  escape("unable to replay the diary");
-      }
-    else
-      {
-	//
-	// otherwise, the replaying has not been activated, hence set up FUSE.
-	//
-	// retrieve the mount point.
-	if (Infinit::Parser->Value("Mountpoint",
-				   mountpoint) == elle::StatusError)
-	  {
-	    // display the usage.
-	    Infinit::Parser->Usage();
-
-	    escape("unable to retrieve the mount point");
-	  }
-
-	if (FUSE::Setup(mountpoint) == elle::StatusError)
-	  escape("unable to set up FUSE");
-      }
+      if (FUSE::Setup(mountpoint) == elle::StatusError)
+	escape("unable to set up FUSE");
+    }
 
     leave();
   }
@@ -210,35 +140,6 @@ namespace pig
 	  'm',
 	  "mountpoint",
 	  "specifies the mount point",
-	  elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // register the option.
-    if (Infinit::Parser->Register(
-	  "Replay",
-	  'y',
-	  "replay",
-	  "activates the replay of the recorded events",
-	  elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // register the options.
-    if (Infinit::Parser->Register(
-          "From",
-	  'f',
-	  "from",
-	  "specify the number of the first operation to be triggered from "
-	  "the diary",
-	  elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
-
-    // register the options.
-    if (Infinit::Parser->Register(
-          "To",
-	  't',
-	  "to",
-	  "specify the number of the last operation to be triggered from "
-	  "the diary",
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 

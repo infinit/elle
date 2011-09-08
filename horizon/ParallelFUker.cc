@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/ParallelFUker.cc
 //
 // created       julien quintard   [tue jul 26 15:33:54 2011]
-// updated       julien quintard   [tue jul 26 20:52:22 2011]
+// updated       julien quintard   [thu sep  8 07:50:17 2011]
 //
 
 //
@@ -30,7 +30,6 @@ namespace pig
   ///
   ParallelFUker::ParallelFUker()
   {
-    // XXX
   }
 
   ///
@@ -38,7 +37,6 @@ namespace pig
   ///
   ParallelFUker::~ParallelFUker()
   {
-    // XXX
   }
 
 //
@@ -46,13 +44,13 @@ namespace pig
 //
 
   ///
-  /// XXX
+  /// this method sets up the fuker.
   ///
   elle::Status		ParallelFUker::Setup()
   {
     enter();
 
-    // XXX
+    // XXX to implement.
 
     leave();
   }
@@ -69,7 +67,7 @@ namespace pig
   {
     enter();
 
-    // XXX
+    // XXX to implement.
 
     leave();
   }
