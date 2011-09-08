@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Model.cc
 //
 // created       julien quintard   [mon jun 27 09:15:33 2011]
-// updated       julien quintard   [tue jul  5 17:18:58 2011]
+// updated       julien quintard   [wed sep  7 18:55:06 2011]
 //
 
 //
@@ -215,7 +215,8 @@ namespace hole
       enter();
 
       // serialize the internal digest.
-      if (archive.Serialize((elle::Natural8&)this->type) == elle::StatusError)
+      if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
+	  elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -229,7 +230,8 @@ namespace hole
       enter();
 
       // extract the internal digest.
-      if (archive.Extract((elle::Natural8&)this->type) == elle::StatusError)
+      if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
+	  elle::StatusError)
 	escape("unable to extract the attributes");
 
       leave();
