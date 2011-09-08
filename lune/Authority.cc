@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Authority.cc
 //
 // created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [fri aug 26 00:48:06 2011]
+// updated       julien quintard   [wed sep  7 21:33:26 2011]
 //
 
 //
@@ -221,7 +221,7 @@ namespace lune
 
     // dump the type.
     std::cout << alignment << elle::Dumpable::Shift
-	      << "[Type] " << (elle::Natural32)this->type << std::endl;
+	      << "[Type] " << this->type << std::endl;
 
     // dump the public key.
     if (this->K.Dump(margin + 2) == elle::StatusError)
@@ -261,7 +261,7 @@ namespace lune
       escape("unable to serialize an unencrypted authority");
 
     // serialize the type and cipher.
-    if (archive.Serialize((elle::Byte&)this->type,
+    if (archive.Serialize(static_cast<elle::Natural8>(this->type),
 			  *this->cipher) == elle::StatusError)
       escape("unable to serialize the attributes");
 
@@ -273,7 +273,7 @@ namespace lune
   ///
   elle::Status		Authority::Extract(elle::Archive&	archive)
   {
-    elle::Byte		type;
+    elle::Natural8	type;
 
     enter();
 
@@ -285,7 +285,7 @@ namespace lune
       escape("unable to extract the attributes");
 
     // set the type.
-    this->type = (Authority::Type)type;
+    this->type = static_cast<Authority::Type>(type);
 
     leave();
   }
@@ -313,9 +313,10 @@ namespace lune
       escape("unable to read the file's content");
 
     // decode and extract the object.
-    if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
-					       region.size),
-				  *this) == elle::StatusError)
+    if (elle::Hexadecimal::Decode(
+	  elle::String(reinterpret_cast<char*>(region.contents),
+		       region.size),
+	  *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -341,7 +342,7 @@ namespace lune
       escape("unable to encode the object in hexadecimal");
 
     // wrap the string.
-    if (region.Wrap((elle::Byte*)string.c_str(),
+    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
 		    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 

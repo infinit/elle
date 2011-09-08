@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Dictionary.cc
 //
 // created       julien quintard   [mon may 10 16:14:02 2010]
-// updated       julien quintard   [mon jun 20 01:36:46 2011]
+// updated       julien quintard   [wed sep  7 21:34:15 2011]
 //
 
 //
@@ -124,9 +124,10 @@ namespace lune
       escape("unable to read the file's content");
 
     // decode and extract the object.
-    if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
-					       region.size),
-				  *this) == elle::StatusError)
+    if (elle::Hexadecimal::Decode(
+	  elle::String(reinterpret_cast<char*>(region.contents),
+		       region.size),
+	  *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -156,7 +157,7 @@ namespace lune
       escape("unable to encode the object in hexadecimal");
 
     // wrap the string.
-    if (region.Wrap((elle::Byte*)string.c_str(),
+    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
 		    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Map.hxx
 //
 // created       julien quintard   [sun apr 18 11:02:43 2010]
-// updated       julien quintard   [tue sep  6 22:27:33 2011]
+// updated       julien quintard   [wed sep  7 10:19:58 2011]
 //
 
 #ifndef LUNE_MAP_HXX
@@ -245,8 +245,9 @@ namespace lune
     enter();
 
     // serialize the number of entries.
-    if (archive.Serialize((elle::Natural32)this->container.size()) ==
-	elle::StatusError)
+    if (archive.Serialize(
+	  static_cast<elle::Natural32>(
+	    this->container.size())) == elle::StatusError)
       escape("unable to serialize the number of entries");
 
     // go through the entries.

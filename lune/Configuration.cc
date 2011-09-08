@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.cc
 //
 // created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [sun sep  4 20:35:05 2011]
+// updated       julien quintard   [thu sep  8 09:00:35 2011]
 //
 
 //
@@ -67,8 +67,8 @@ namespace lune
   const elle::Character	Configuration::Default::History::Indicator::Slab =
     '%';
 
-  const elle::String	Configuration::Default::FUSE::FUker =
-    pig::FUker::TypeSequential;
+  const elle::Natural32	Configuration::Default::FUSE::FUker =
+    static_cast<elle::Natural32>(pig::FUker::TypeSequential);
 
 //
 // ---------- methods ---------------------------------------------------------

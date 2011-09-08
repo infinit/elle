@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Phrase.cc
 //
 // created       julien quintard   [tue may  4 20:49:38 2010]
-// updated       julien quintard   [sun may  8 10:38:30 2011]
+// updated       julien quintard   [wed sep  7 21:36:00 2011]
 //
 
 //
@@ -133,9 +133,10 @@ namespace lune
       escape("unable to read the file's content");
 
     // decode and extract the object.
-    if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
-					       region.size),
-				  *this) == elle::StatusError)
+    if (elle::Hexadecimal::Decode(
+	  elle::String(reinterpret_cast<char*>(region.contents),
+		       region.size),
+	  *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -165,7 +166,7 @@ namespace lune
       escape("unable to encode the object in hexadecimal");
 
     // wrap the string.
-    if (region.Wrap((elle::Byte*)string.c_str(),
+    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
 		    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Configuration.hh
 //
 // created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [sun sep  4 20:58:19 2011]
+// updated       julien quintard   [thu sep  8 08:13:58 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
@@ -81,7 +81,7 @@ namespace lune
 
       struct				FUSE
       {
-	static const elle::String	FUker;
+	static const elle::Natural32	FUker;
       };
     };
 
@@ -151,7 +151,7 @@ namespace lune
 
     struct
     {
-      elle::String		fuker;
+      elle::Natural32		fuker;
     }				fuse;
 
   };

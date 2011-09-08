@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/lune/Identity.cc
 //
 // created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [thu aug 11 13:31:20 2011]
+// updated       julien quintard   [wed sep  7 21:35:03 2011]
 //
 
 //
@@ -277,9 +277,10 @@ namespace lune
       escape("unable to read the file's content");
 
     // decode and extract the object.
-    if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
-					       region.size),
-				  *this) == elle::StatusError)
+    if (elle::Hexadecimal::Decode(
+	  elle::String(reinterpret_cast<char*>(region.contents),
+		       region.size),
+	  *this) == elle::StatusError)
       escape("unable to decode the object");
 
     leave();
@@ -309,7 +310,7 @@ namespace lune
       escape("unable to encode the object in hexadecimal");
 
     // wrap the string.
-    if (region.Wrap((elle::Byte*)string.c_str(),
+    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
 		    string.length()) == elle::StatusError)
       escape("unable to wrap the string in a region");
 
