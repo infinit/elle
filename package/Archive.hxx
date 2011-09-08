@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hxx
 //
 // created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [tue sep  6 12:45:48 2011]
+// updated       julien quintard   [wed sep  7 11:21:26 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX
@@ -357,7 +357,8 @@ namespace elle
 
       // extract the unpacked message.
       ::msgpack::unpack(&message,
-			(const char*)this->contents, this->size,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
 			&this->offset);
 
       // retrieve the object.
@@ -409,7 +410,7 @@ namespace elle
       enter();
 
       std::cout << alignment << "[Region] "
-		<< (Void*)element.contents << " :: "
+		<< static_cast<Void*>(element.contents) << " :: "
 		<< element.size << "/" << element.capacity << std::endl;
 
       leave();

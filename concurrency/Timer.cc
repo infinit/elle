@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Timer.cc
 //
 // created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [sun sep  4 15:43:32 2011]
+// updated       julien quintard   [wed sep  7 17:43:30 2011]
 //
 
 //
@@ -155,11 +155,11 @@ namespace elle
 
       // dump the mode.
       std::cout << alignment << Dumpable::Shift << "[Mode] "
-		<< (const Natural8)this->mode << std::endl;
+		<< this->mode << std::endl;
 
       // dump the interval.
       std::cout << alignment << Dumpable::Shift << "[Interval] "
-		<< (const Natural32)this->timer->interval() << std::endl;
+		<< this->timer->interval() << std::endl;
 
       // dump the signal.
       if (this->signal.timeout.Dump(margin + 2) == StatusError)

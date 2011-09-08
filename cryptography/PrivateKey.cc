@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
 //
 // created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [tue sep  6 14:39:19 2011]
+// updated       julien quintard   [wed sep  7 17:58:31 2011]
 //
 
 //
@@ -245,11 +245,12 @@ namespace elle
 	size_t		size;
 
 	// compute the size of the decrypted portion to come.
-	if (::EVP_PKEY_decrypt(this->contexts.decrypt,
-			       NULL,
-			       &size,
-			       (const unsigned char*)key.region.contents,
-			       key.region.size) <= 0)
+	if (::EVP_PKEY_decrypt(
+	      this->contexts.decrypt,
+	      NULL,
+	      &size,
+	      reinterpret_cast<const unsigned char*>(key.region.contents),
+	      key.region.size) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// allocate the required memory for the region object.
@@ -257,11 +258,12 @@ namespace elle
 	  escape("unable to allocate the required memory");
 
 	// perform the decrypt operation.
-	if (::EVP_PKEY_decrypt(this->contexts.decrypt,
-			       (unsigned char*)region.contents,
-			       &size,
-			       (const unsigned char*)key.region.contents,
-			       key.region.size) <= 0)
+	if (::EVP_PKEY_decrypt(
+	      this->contexts.decrypt,
+	      reinterpret_cast<unsigned char*>(region.contents),
+	      &size,
+	      reinterpret_cast<const unsigned char*>(key.region.contents),
+	      key.region.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// set the region size.
@@ -308,11 +310,12 @@ namespace elle
 	escape("unable to hash the plain");
 
       // sign the portion.
-      if (::EVP_PKEY_sign(this->contexts.sign,
-			  NULL,
-			  &size,
-			  (const unsigned char*)digest.region.contents,
-			  digest.region.size) <= 0)
+      if (::EVP_PKEY_sign(
+	    this->contexts.sign,
+	    NULL,
+	    &size,
+	    reinterpret_cast<const unsigned char*>(digest.region.contents),
+	    digest.region.size) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // prepare the signature so it can receive the upcoming portion.
@@ -320,11 +323,12 @@ namespace elle
 	escape("unable to prepare the signature");
 
       // actually sign the portion.
-      if (::EVP_PKEY_sign(this->contexts.sign,
-			  (unsigned char*)signature.region.contents,
-			  &size,
-			  (const unsigned char*)digest.region.contents,
-			  digest.region.size) <= 0)
+      if (::EVP_PKEY_sign(
+	    this->contexts.sign,
+	    reinterpret_cast<unsigned char*>(signature.region.contents),
+	    &size,
+	    reinterpret_cast<const unsigned char*>(digest.region.contents),
+	    digest.region.size) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // set the code size.
@@ -386,11 +390,12 @@ namespace elle
 	  escape("unable to serialize the secret key");
 
 	// compute the size of the archived symmetric key.
-	if (::EVP_PKEY_sign(this->contexts.encrypt,
-			    NULL,
-			    &size,
-			    (const unsigned char*)archive.contents,
-			    archive.size) <= 0)
+	if (::EVP_PKEY_sign(
+	      this->contexts.encrypt,
+	      NULL,
+	      &size,
+	      reinterpret_cast<const unsigned char*>(archive.contents),
+	      archive.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// allocate memory so the key can receive the upcoming
@@ -403,11 +408,12 @@ namespace elle
 	//
 	// note that since the encryption is performed with the private key,
 	// the operation is equivalent to a signature.
-	if (::EVP_PKEY_sign(this->contexts.encrypt,
-			    (unsigned char*)key.region.contents,
-			    &size,
-			    (const unsigned char*)archive.contents,
-			    archive.size) <= 0)
+	if (::EVP_PKEY_sign(
+	      this->contexts.encrypt,
+	      reinterpret_cast<unsigned char*>(key.region.contents),
+	      &size,
+	      reinterpret_cast<const unsigned char*>(archive.contents),
+	      archive.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// set the key size.
@@ -428,7 +434,7 @@ namespace elle
 		 "and the symetrically-encrypted data");
 
 	// duplicate the archive's content.
-	if (code.region.Duplicate((Byte*)archive.contents,
+	if (code.region.Duplicate(archive.contents,
 				  archive.size) == StatusError)
 	  escape("unable to duplicate the archive's content");
       }

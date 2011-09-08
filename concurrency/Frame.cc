@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Frame.cc
 //
 // created       julien quintard   [tue mar 23 14:22:43 2010]
-// updated       julien quintard   [mon may  3 00:18:20 2010]
+// updated       julien quintard   [wed sep  7 17:43:19 2011]
 //
 
 //
@@ -62,7 +62,8 @@ namespace elle
       this->size = size;
 
       // allocate the new stack.
-      if ((this->stack = (Byte*)::malloc(this->size)) == NULL)
+      if ((this->stack =
+	   static_cast<Byte*>(::malloc(this->size))) == NULL)
 	escape("unable to allocate the stack");
 
       leave();

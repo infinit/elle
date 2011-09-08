@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Link.cc
 //
 // created       julien quintard   [sun may 22 13:08:22 2011]
-// updated       julien quintard   [sun jun 19 22:16:00 2011]
+// updated       julien quintard   [wed sep  7 17:37:43 2011]
 //
 
 //
@@ -112,7 +112,8 @@ namespace elle
     Status		Link::Dig(const Path&			path)
     {
       String		target(::strdup(path.string.c_str()));
-      String		directory(::dirname((char*)target.c_str()));
+      String		directory(::dirname(
+				    const_cast<char*>(target.c_str())));
       std::stringstream	stream(directory);
       String		item;
       Path		chemin;

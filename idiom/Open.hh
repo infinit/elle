@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/idiom/Open.hh
 //
 // created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [tue sep  6 01:18:41 2011]
+// updated       julien quintard   [wed sep  7 09:50:31 2011]
 //
 
 //
@@ -419,8 +419,8 @@
 #define enter(_guards_...)						\
   elle::standalone::Maid::Garrison* _maid_ =				\
     elle::standalone::Maid::Install(					\
-      (elle::core::Void*)						\
-        alloca(sizeof (elle::standalone::Maid::Garrison)),		\
+      static_cast<elle::core::Void*>(					\
+        alloca(sizeof (elle::standalone::Maid::Garrison))),		\
       ##_guards_)
 
 ///
@@ -467,9 +467,9 @@
 ///
 #define instance(_pointer_)						\
   elle::standalone::Maid::Monitor(					\
-    (elle::core::Void*)							\
+    static_cast<elle::core::Void*>(					\
       alloca(								\
-        sizeof (elle::standalone::Maid::Instance<elle::core::Void*>)),	\
+        sizeof (elle::standalone::Maid::Instance<elle::core::Void*>))),	\
     _pointer_)
 
 ///
@@ -478,11 +478,11 @@
 ///
 #define slab(_pointer_, _function_)					\
   elle::standalone::Maid::Monitor(					\
-    (elle::core::Void*)							\
+    static_cast<elle::core::Void*>(					\
       alloca(								\
-        sizeof (elle::standalone::Maid::Slab<elle::core::Void*,		\
-					     elle::core::Void		\
-					      (*)(elle::core::Void*)>)),\
+        sizeof (elle::standalone::Maid::Slab<				\
+                  elle::core::Void*,					\
+		  elle::core::Void (*)(elle::core::Void*)>))),		\
     _pointer_, _function_)
 
 ///

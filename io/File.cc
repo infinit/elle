@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/File.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [sat jul  9 16:45:28 2011]
+// updated       julien quintard   [wed sep  7 17:37:36 2011]
 //
 
 //
@@ -64,11 +64,11 @@ namespace elle
 	escape(::strerror(errno));
 
       // prepare the data.
-      if (data.Prepare(status.st_size) == StatusError)
+      if (data.Prepare(static_cast<Natural32>(status.st_size)) == StatusError)
 	escape("unable to prepare the region");
 
       // set the correct size.
-      data.size = status.st_size;
+      data.size = static_cast<Natural32>(status.st_size);
 
       // open the file.
       if ((fd = ::open(path.string.c_str(), O_RDONLY)) == -1)
@@ -111,7 +111,7 @@ namespace elle
       // write the text to the file.
       if (::write(fd,
 		  data.contents,
-		  data.size) != (ssize_t)data.size)
+		  data.size) != static_cast<ssize_t>(data.size))
 	{
 	  ::close(fd);
 
@@ -168,7 +168,8 @@ namespace elle
     Status		File::Dig(const Path&			path)
     {
       String		target(::strdup(path.string.c_str()));
-      String		directory(::dirname((char*)target.c_str()));
+      String		directory(::dirname(
+				    const_cast<char*>(target.c_str())));
       std::stringstream	stream(directory);
       String		item;
       Path		chemin;

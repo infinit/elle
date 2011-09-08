@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
 //
 // created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [tue sep  6 14:46:56 2011]
+// updated       julien quintard   [wed sep  7 18:07:00 2011]
 //
 
 //
@@ -80,8 +80,9 @@ namespace elle
       enter();
 
       // assign the password to the internal key object.
-      if (this->region.Duplicate((Byte*)password.c_str(),
-				 password.length()) == StatusError)
+      if (this->region.Duplicate(
+	    reinterpret_cast<const Byte*>(password.c_str()),
+	    password.length()) == StatusError)
 	escape("unable to assign the given password to the key");
 
       leave();
@@ -126,9 +127,9 @@ namespace elle
     Status		SecretKey::Encrypt(const Plain&		plain,
 					   Cipher&		cipher) const
     {
-      Byte		key[EVP_MAX_KEY_LENGTH];
-      Byte		iv[EVP_MAX_IV_LENGTH];
-      Byte		salt[PKCS5_SALT_LEN];
+      unsigned char	key[EVP_MAX_KEY_LENGTH];
+      unsigned char	iv[EVP_MAX_IV_LENGTH];
+      unsigned char	salt[PKCS5_SALT_LEN];
       Natural32		capacity;
       int		size;
       ::EVP_CIPHER_CTX	context;
@@ -137,17 +138,17 @@ namespace elle
       enter(local(context, ::EVP_CIPHER_CTX_cleanup));
 
       // generate a salt.
-      ::RAND_pseudo_bytes((unsigned char*)salt, sizeof (salt));
+      ::RAND_pseudo_bytes(salt, sizeof (salt));
 
       // generate the key and IV based on the salt and password.
       if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
 			   SecretKey::Algorithms::Digest,
-			   (unsigned char*)salt,
-			   (unsigned char*)this->region.contents,
+			   salt,
+			   this->region.contents,
 			   this->region.size,
 			   1,
-			   (unsigned char*)key,
-			   (unsigned char*)iv) != sizeof (key))
+			   key,
+			   iv) != sizeof (key))
 	escape("the generated key's size does not match the one expected");
 
       // initialise the context.
@@ -168,8 +169,11 @@ namespace elle
       capacity = ::EVP_CIPHER_CTX_block_size(&context);
 
       // allocate the cipher.
-      if (cipher.region.Prepare(sizeof (SecretKey::Magic) - 1 + sizeof (salt) +
-				plain.size + capacity) == StatusError)
+      if (cipher.region.Prepare(sizeof (SecretKey::Magic) -
+				1 +
+				sizeof (salt) +
+				plain.size +
+				capacity) == StatusError)
 	escape("unable to reserve memory for the cipher");
 
       // push the magic string directly into the cipher.
@@ -220,9 +224,9 @@ namespace elle
     Status		SecretKey::Decrypt(const Cipher&	cipher,
 					   Clear&		clear) const
     {
-      Byte		key[EVP_MAX_KEY_LENGTH];
-      Byte		iv[EVP_MAX_IV_LENGTH];
-      Byte		salt[PKCS5_SALT_LEN];
+      unsigned char	key[EVP_MAX_KEY_LENGTH];
+      unsigned char	iv[EVP_MAX_IV_LENGTH];
+      unsigned char	salt[PKCS5_SALT_LEN];
       Natural32		capacity;
       int		size;
       ::EVP_CIPHER_CTX	context;

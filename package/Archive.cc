@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.cc
 //
 // created       julien quintard   [fri nov  2 10:03:53 2007]
-// updated       julien quintard   [tue sep  6 20:43:12 2011]
+// updated       julien quintard   [wed sep  7 18:16:55 2011]
 //
 
 //
@@ -36,7 +36,9 @@ namespace elle
     Archive::Archive():
       mode(ModeUnknown),
       control(ControlUnknown),
-      contents((Byte*&)static_cast<msgpack_sbuffer*>(&buffer)->data),
+      contents(reinterpret_cast<Byte*&>(
+	         static_cast<msgpack_sbuffer*>(
+		   &buffer)->data)),
       size(static_cast<msgpack_sbuffer*>(&buffer)->size),
       offset(0)
     {
@@ -48,12 +50,15 @@ namespace elle
     Archive::Archive(const Archive&				archive):
       mode(archive.mode),
       control(archive.control),
-      contents((Byte*&)static_cast<msgpack_sbuffer*>(&buffer)->data),
+      contents(reinterpret_cast<Byte*&>(
+	         static_cast<msgpack_sbuffer*>(
+		   &buffer)->data)),
       size(static_cast<msgpack_sbuffer*>(&buffer)->size),
       offset(archive.offset)
     {
       // duplicate the buffer.
-      this->buffer.write((const char*)archive.contents, archive.size);
+      this->buffer.write(reinterpret_cast<const char*>(archive.contents),
+			 archive.size);
     }
 
     ///
@@ -77,9 +82,11 @@ namespace elle
 	    // create a region from the acquired buffer so that the region gets
 	    // deleted at the end of this scope.
 	    if (region.Acquire(
-		  (Byte*)static_cast<msgpack_sbuffer*>(&this->buffer)->data,
-		  static_cast<msgpack_sbuffer*>(&this->buffer)->size) ==
-		StatusError)
+		  reinterpret_cast<Byte*&>(
+		    static_cast<msgpack_sbuffer*>(
+		      &this->buffer)->data),
+		  static_cast<msgpack_sbuffer*>(
+		    &this->buffer)->size) == StatusError)
 	      yield(_(), "unable to acquire the buffer");
 
 	    // reset the buffer's attributes in order to prevent double frees.
@@ -154,8 +161,9 @@ namespace elle
 	::free(static_cast<msgpack_sbuffer*>(&buffer)->data);
 
       // set the buffer's attributes.
-      static_cast<msgpack_sbuffer*>(&buffer)->data = (char*)region.contents;
-      static_cast<msgpack_sbuffer*>(&buffer)->size = (size_t)region.size;
+      static_cast<msgpack_sbuffer*>(&buffer)->data =
+	reinterpret_cast<char*>(region.contents);
+      static_cast<msgpack_sbuffer*>(&buffer)->size = region.size;
 
       // set the control: in this case, the ownership is acquired.
       this->control = Archive::ControlAcquired;
@@ -181,8 +189,9 @@ namespace elle
 	::free(static_cast<msgpack_sbuffer*>(&buffer)->data);
 
       // set the buffer's attributes.
-      static_cast<msgpack_sbuffer*>(&buffer)->data = (char*)region.contents;
-      static_cast<msgpack_sbuffer*>(&buffer)->size = (size_t)region.size;
+      static_cast<msgpack_sbuffer*>(&buffer)->data =
+	reinterpret_cast<char*>(region.contents);
+      static_cast<msgpack_sbuffer*>(&buffer)->size = region.size;
 
       // set the control: in this case, the archive simply wraps the given
       // region.
@@ -324,8 +333,9 @@ namespace elle
 
       // store the region as a raw.
       msgpack::pack(this->buffer,
-		    msgpack::type::raw_ref((const char*)element.contents,
-					   element.size));
+		    msgpack::type::raw_ref(
+		      reinterpret_cast<const char*>(element.contents),
+		      element.size));
 
       leave();
     }
@@ -342,7 +352,7 @@ namespace elle
 	escape("unable to store a non-serializing archive");
 
       // store the archive's buffer as a region.
-      if (this->Store(Region((Byte*)element.contents,
+      if (this->Store(Region(element.contents,
 			     element.size)) == StatusError)
 	escape("unable to store the region");
 
@@ -367,7 +377,8 @@ namespace elle
 
       // extract the unpacked message.
       ::msgpack::unpack(&message,
-                        (const char*)this->contents, this->size,
+                        reinterpret_cast<const char*>(this->contents),
+			this->size,
                         &this->offset);
 
       // retrieve the object.
@@ -392,7 +403,8 @@ namespace elle
 
       // extract the unpacked message.
       ::msgpack::unpack(&message,
-                        (const char*)this->contents, this->size,
+                        reinterpret_cast<const char*>(this->contents),
+			this->size,
                         &this->offset);
 
       // retrieve the object.
@@ -443,7 +455,8 @@ namespace elle
 
       // extract the unpacked message.
       ::msgpack::unpack(&message,
-                        (const char*)this->contents, this->size,
+                        reinterpret_cast<const char*>(this->contents),
+			this->size,
                         &this->offset);
 
       // retrieve the object.
@@ -493,7 +506,8 @@ namespace elle
 
       // extract the unpacked message.
       ::msgpack::unpack(&message,
-                        (const char*)this->contents, this->size,
+                        reinterpret_cast<const char*>(this->contents),
+			this->size,
                         &this->offset);
 
       // retrieve the object.
@@ -522,7 +536,8 @@ namespace elle
 
       // extract the unpacked message.
       ::msgpack::unpack(&message,
-                        (const char*)this->contents, this->size,
+                        reinterpret_cast<const char*>(this->contents),
+			this->size,
                         &this->offset);
 
       // retrieve the object.
@@ -536,7 +551,8 @@ namespace elle
       object >> ref;
 
       // assign the data.
-      if (element.Duplicate((Byte*)ref.ptr, ref.size) == StatusError)
+      if (element.Duplicate(reinterpret_cast<const Byte*>(ref.ptr),
+			    ref.size) == StatusError)
 	escape("unable to prepare the buffer");
 
       leave();
@@ -591,7 +607,7 @@ namespace elle
 	escape("unable to load the next type");
 
       // set the type.
-      type = (Archive::Type)byte;
+      type = static_cast<Archive::Type>(byte);
 
       // setting back the original offset.
       this->offset = offset;
@@ -620,10 +636,10 @@ namespace elle
 
       std::cout << alignment
 		<< "[Archive] "
-		<< "mode(" << std::dec << (Natural8)archive.mode << ") "
-		<< "contents(" << (Void*)archive.contents << ") "
-		<< "size(" << std::dec << archive.size << ") "
-		<< "offset(" << std::dec << archive.offset << ")"
+		<< "mode(" << archive.mode << ") "
+		<< "contents(" << static_cast<Void*>(archive.contents) << ") "
+		<< "size(" << archive.size << ") "
+		<< "offset(" << archive.offset << ")"
 		<< std::endl;
 
       // go through the archive elements.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hh
 //
 // created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [fri sep  2 18:08:46 2011]
+// updated       julien quintard   [wed sep  7 11:36:17 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH
@@ -174,17 +174,17 @@ namespace elle
 
       template <typename T = Meta>
       static Status	Wait(const Event&,
-			     T*& = (T*&)Trash);
+			     T*& = reinterpret_cast<T*&>(Trash));
       template <typename T = Meta>
       static Status	Awaken(const Event&,
-			       T* = (T*)NULL);
+			       T* = static_cast<T*>(NULL));
 
       template <typename T = Meta>
       static Status	Wait(const Resource*,
-			     T*& = (T*&)Trash);
+			     T*& = reinterpret_cast<T*&>(Trash));
       template <typename T = Meta>
       static Status	Awaken(const Resource*,
-			       T* = (T*)NULL);
+			       T* = static_cast<T*>(NULL));
 
       static Status	Sleep(const Natural32);
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Duration.cc
 //
 // created       julien quintard   [thu aug 11 10:44:19 2011]
-// updated       julien quintard   [thu aug 11 10:50:55 2011]
+// updated       julien quintard   [wed sep  7 22:12:39 2011]
 //
 
 //
@@ -86,7 +86,7 @@ namespace elle
 
       std::cout << alignment << Dumpable::Shift << "[Unit] "
 		<< std::nouppercase << std::dec	
-		<< (Natural32)this->unit << std::endl;
+		<< this->unit << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Value] "
 		<< std::nouppercase << std::dec	
 		<< this->value << std::endl;
@@ -106,7 +106,7 @@ namespace elle
       enter();
 
       // serialize the internal attributes.
-      if (archive.Serialize((const Natural8&)this->unit,
+      if (archive.Serialize(static_cast<Natural8>(this->unit),
 			    this->value) == StatusError)
 	escape("unable to serialize the attributes");
 
@@ -121,7 +121,7 @@ namespace elle
       enter();
 
       // extract the internal attributes.
-      if (archive.Extract((Natural8&)this->unit,
+      if (archive.Extract(reinterpret_cast<Natural8&>(this->unit),
 			  this->value) == StatusError)
 	escape("unable to extract the attributes");
 

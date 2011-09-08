@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/radix/Trace.cc
 //
 // created       julien quintard   [mon apr 26 21:25:23 2010]
-// updated       julien quintard   [tue sep  6 20:57:26 2011]
+// updated       julien quintard   [wed sep  7 17:26:44 2011]
 //
 
 //
@@ -331,7 +331,7 @@ namespace elle
       // write the text to the file.
       if (::write(fd,
 		  buffer,
-		  size) != (ssize_t)size)
+		  size) != static_cast<ssize_t>(size))
 	{
 	  ::close(fd);
 
@@ -433,7 +433,7 @@ namespace elle
 	    escape(::strerror(errno));
 
 	  // read the file's content.
-	  if (::read(fd, buffer, stat.st_size) == -1)
+	  if (::read(fd, buffer, static_cast<size_t>(stat.st_size)) == -1)
 	    {
 	      ::close(fd);
 

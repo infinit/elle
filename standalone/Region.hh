@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.hh
 //
 // created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [tue sep  6 14:23:44 2011]
+// updated       julien quintard   [wed sep  7 19:07:19 2011]
 //
 
 #ifndef ELLE_STANDALONE_REGION_HH
@@ -88,33 +88,33 @@ namespace elle
       // constructors & destructors
       //
       Region();
-      Region(Byte*,
-	     Natural64);
+      Region(const Byte*,
+	     Natural32);
       Region(const Region&);
       ~Region();
 
       //
       // methods
       //
-      Status		Wrap(Byte*,
-			     Natural64);
+      Status		Wrap(const Byte*,
+			     Natural32);
       Status		Acquire(Byte*,
-				Natural64);
+				Natural32);
 
-      Status		Prepare(const Natural64);
-      Status		Duplicate(Byte*,
-				  Natural64);
+      Status		Prepare(const Natural32);
+      Status		Duplicate(const Byte*,
+				  Natural32);
 
-      Status		Adjust(const Natural64);
+      Status		Adjust(const Natural32);
       Status		Append(const Byte*,
-			       const Natural64);
+			       const Natural32);
 
-      Status		Read(const Natural64,
+      Status		Read(const Natural32,
 			     Byte*,
-			     const Natural64) const;
-      Status		Write(const Natural64,
+			     const Natural32) const;
+      Status		Write(const Natural32,
 			      const Byte*,
-			      const Natural64);
+			      const Natural32);
 
       Status		Detach();
 
@@ -148,8 +148,8 @@ namespace elle
       Options		options;
 
       Byte*		contents;
-      Natural64		size;
-      Natural64		capacity;
+      Natural32		size;
+      Natural32		capacity;
     };
 
   }
