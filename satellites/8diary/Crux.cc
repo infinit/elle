@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/applications/8diary/Crux.cc
 //
 // created       julien quintard   [tue jun 28 12:46:13 2011]
-// updated       julien quintard   [sat sep  3 19:49:48 2011]
+// updated       julien quintard   [wed sep  7 22:09:11 2011]
 //
 
 //
@@ -92,7 +92,7 @@ namespace application
     Crux::Handle*	d;
 
     if ((d =
-	 (Crux::Handle*)::malloc(sizeof(Crux::Handle))) == NULL)
+	 static_cast<Crux::Handle*>(::malloc(sizeof(Crux::Handle)))) == NULL)
       return -ENOMEM;
 
     if ((d->dp = ::opendir(way.c_str())) == NULL)
@@ -105,7 +105,7 @@ namespace application
     d->offset = 0;
     d->entry = NULL;
 
-    fi->fh = (unsigned long)d;
+    fi->fh = reinterpret_cast<unsigned long>(d);
 
     return 0;
   }
@@ -116,7 +116,7 @@ namespace application
 				      off_t			offset,
 				      struct ::fuse_file_info*	fi)
   {
-    Crux::Handle*	d = (Crux::Handle*)fi->fh;
+    Crux::Handle*	d = reinterpret_cast<Crux::Handle*>(fi->fh);
 
     (void)path;
 
@@ -159,7 +159,7 @@ namespace application
   int			Crux::Releasedir(const char*		path,
 					 struct ::fuse_file_info* fi)
   {
-    Crux::Handle*	d = (Crux::Handle*)fi->fh;
+    Crux::Handle*	d = reinterpret_cast<Crux::Handle*>(fi->fh);
 
     (void)path;
 
