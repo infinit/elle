@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/User.hh
 //
 // created       julien quintard   [thu apr 29 19:34:10 2010]
-// updated       julien quintard   [fri may  6 15:58:16 2011]
+// updated       julien quintard   [wed sep  7 12:31:52 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_USER_HH
@@ -31,7 +31,8 @@ namespace nucleus
 //
 
     ///
-    /// this class represents a user block.
+    /// this class represents a user block which is supposed to
+    /// contain information on the associated user.
     ///
     class User:
       public proton::PublicKeyBlock

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.hh
 //
 // created       julien quintard   [thu mar  5 16:04:08 2009]
-// updated       julien quintard   [fri jun 24 19:06:04 2011]
+// updated       julien quintard   [wed sep  7 12:08:43 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_OBJECT_HH
@@ -43,10 +43,29 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class is the most important of the whole Infinit project
+    /// as it describes file system objects being files, directories and
+    /// references.
     ///
-    /// XXX meta.owner._record ne sont pas serializes mais
-    /// sont ici juste pour simplifier le processus de gestion des access
+    /// an object can rely on several physical constructors such as an
+    /// ImprintBlock, an OwnerKeyBlock or else.
+    ///
+    /// basically, an object contains the author i.e the user having performed
+    /// the latest modification along with the address of the Access block
+    /// which contains the set of authorised users and groups. note however
+    /// than most objects do not reference an access block in which cases
+    /// the object is considered private i.e only its owner has access.
+    ///
+    /// in addition, several meta information are contained such as the
+    /// owner permissions, some stamps, the attributes etc.
+    ///
+    /// finally, the data section contains the address of the object's
+    /// contents though the nature of the contents depends upon the
+    /// object's nature: file, directory or reference.
+    ///
+    /// noteworthy is tha meta.owner._record is generated in order to
+    /// make it as easy to manipulate the owner entry as for other access
+    /// records. thus, this attribute is never serialized.
     ///
     class Object:
       public proton::ImprintBlock
@@ -98,7 +117,7 @@ namespace nucleus
 
       struct
       {
-	// XXX proton::Base		base;
+	// XXX to implement: proton::Base		base;
 
 	struct
 	{
@@ -123,7 +142,7 @@ namespace nucleus
 
       struct
       {
-	// XXX proton::Base		base;
+	// XXX to implement: proton::Base		base;
 
 	proton::Address		contents;
 

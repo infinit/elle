@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Subject.cc
 //
 // created       julien quintard   [mon aug 17 02:05:03 2009]
-// updated       julien quintard   [mon aug  1 12:11:24 2011]
+// updated       julien quintard   [wed sep  7 18:53:28 2011]
 //
 
 //
@@ -161,12 +161,11 @@ namespace nucleus
 	  }
 	case Subject::TypeUnknown:
 	  {
-	    true();
+	    break;
 	  }
 	}
 
-      // unreachable.
-      flee("unable to compare these objects");
+      true();
     }
 
     ///
@@ -239,7 +238,8 @@ namespace nucleus
       enter();
 
       // serialize the type.
-      if (archive.Serialize((elle::Natural8&)this->type) == elle::StatusError)
+      if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
+	  elle::StatusError)
 	escape("unable to serialize the type");
 
       // serialize the identifier.
@@ -278,7 +278,8 @@ namespace nucleus
       enter();
 
       // extract the type.
-      if (archive.Extract((elle::Natural8&)this->type) == elle::StatusError)
+      if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
+	  elle::StatusError)
 	escape("unable to extract the type");
 
       // extract the identifier.

@@ -25,13 +25,11 @@ ADD_LIBRARY(nucleus
   neutron/Data.cc
   neutron/Entry.cc
   neutron/Object.cc
-  neutron/Proof.cc
   neutron/Record.cc
   neutron/Reference.cc
   neutron/Subject.cc
   neutron/Token.cc
   neutron/Trait.cc
-  neutron/Voucher.cc
 )
 
 TARGET_LINK_LIBRARIES(nucleus elle)

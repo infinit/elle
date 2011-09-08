@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Object.cc
 //
 // created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [mon aug  1 10:16:01 2011]
+// updated       julien quintard   [wed sep  7 18:52:11 2011]
 //
 
 //
@@ -57,7 +57,7 @@ namespace nucleus
     /// genre of the object to create.
     ///
     /// the method (i) starts by initializing the underlying public key block
-    /// (ii) sets the meta data, and finally (iv) /// initializes the data
+    /// (ii) sets the meta data, and finally (iv) initializes the data
     /// part by setting the owner as the author.
     ///
     elle::Status	Object::Create(const Genre		genre,
@@ -387,8 +387,7 @@ namespace nucleus
 	    }
 	  default:
 	    {
-	      // XXX
-	      printf("UNIMPLEMENTED\n");	
+	      // XXX to implement.
 	    }
 	  }
       }
@@ -458,14 +457,13 @@ namespace nucleus
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< elle::Dumpable::Shift << "[Permissions] " << std::dec
-		<< (elle::Natural32)this->meta.owner.permissions << std::endl;
+		<< this->meta.owner.permissions << std::endl;
 
       if (this->meta.owner.token.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the meta owner's token");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Genre] " << (elle::Natural32)this->meta.genre
-		<< std::endl;
+		<< "[Genre] " << this->meta.genre << std::endl;
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Stamp] " << std::endl;

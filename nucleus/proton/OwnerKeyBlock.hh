@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.hh
 //
 // created       julien quintard   [fri may  6 14:45:42 2011]
-// updated       julien quintard   [wed jun 22 12:40:06 2011]
+// updated       julien quintard   [wed sep  7 09:07:03 2011]
 //
 
 #ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
@@ -65,6 +65,9 @@ namespace nucleus
       //
       // interfaces
       //
+
+      // object
+      declare(OwnerKeyBlock);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

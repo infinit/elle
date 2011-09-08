@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hh
 //
 // created       julien quintard   [mon aug 10 12:07:15 2009]
-// updated       julien quintard   [sat may 14 12:09:08 2011]
+// updated       julien quintard   [wed sep  7 11:10:11 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HH
@@ -38,7 +38,7 @@ namespace nucleus
     /// therefore, once a contents is retrieved from the storage, the Extract()
     /// method is called which basically extracts an archive i.e the encrypted
     /// version of the embedded block. Then the Decrypt() method can be called
-    /// in order to  (i) decrypt the embedded archive (ii) extract it (iii)
+    /// in order to (i) decrypt the embedded archive (ii) extract it (iii)
     /// build the embedded unencrypted object.
     ///
     /// the _cipher_ attribute contains the data once encrypted, often

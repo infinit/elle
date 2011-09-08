@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.hh
 //
 // created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [tue sep  6 13:22:56 2011]
+// updated       julien quintard   [wed sep  7 09:32:41 2011]
 //
 
 #ifndef NUCLEUS_PROTON_VERSION_HH
@@ -30,7 +30,8 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class represents a version number which are used to distinguish
+    /// the versions related to a mutable block.
     ///
     class Version:
       public elle::Object

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
 //
 // created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [sun aug 28 22:53:00 2011]
+// updated       julien quintard   [wed sep  7 18:47:38 2011]
 //
 
 //
@@ -30,6 +30,9 @@ namespace nucleus
 // ---------- constructs & destructors ----------------------------------------
 //
 
+    ///
+    /// default constructor.
+    ///
     MutableBlock::MutableBlock():
       Block(FamilyUnknown, neutron::ComponentUnknown),
 
@@ -37,6 +40,9 @@ namespace nucleus
     {
     }
 
+    ///
+    /// specific constructor.
+    ///
     MutableBlock::MutableBlock(const Family			family,
 			       const neutron::Component		component):
       Block(family, component),
@@ -44,6 +50,15 @@ namespace nucleus
       version(Version::First)
     {
     }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(MutableBlock, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -169,9 +184,10 @@ namespace nucleus
 	escape("unable to read the file's content");
 
       // decode and extract the object.
-      if (elle::Hexadecimal::Decode(elle::String((char*)region.contents,
-						 region.size),
-				    *this) == elle::StatusError)
+      if (elle::Hexadecimal::Decode(
+	    elle::String(reinterpret_cast<char*>(region.contents),
+			 region.size),
+	    *this) == elle::StatusError)
 	escape("unable to decode the object");
 
       leave();
@@ -231,7 +247,7 @@ namespace nucleus
 	escape("unable to encode the object in hexadecimal");
 
       // wrap the string.
-      if (region.Wrap((elle::Byte*)string.c_str(),
+      if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
 		      string.length()) == elle::StatusError)
 	escape("unable to wrap the string in a region");
 

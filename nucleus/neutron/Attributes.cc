@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Attributes.cc
 //
 // created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [thu may  5 15:38:41 2011]
+// updated       julien quintard   [wed sep  7 11:42:37 2011]
 //
 
 //
@@ -157,6 +157,24 @@ namespace nucleus
 //
 // ---------- object ----------------------------------------------------------
 //
+
+    ///
+    /// this operator compares two objects.
+    ///
+    elle::Boolean	Attributes::operator==(const Attributes& element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	true();
+
+      // compare the ranges.
+      if (this->range != element.range)
+	false();
+
+      true();
+    }
 
     ///
     /// this macro-function call generates the object.

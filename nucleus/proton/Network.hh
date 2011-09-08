@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Network.hh
 //
 // created       julien quintard   [sun may  8 01:21:07 2011]
-// updated       julien quintard   [sun may  8 02:07:41 2011]
+// updated       julien quintard   [wed sep  7 09:05:56 2011]
 //
 
 #ifndef NUCLEUS_PROTON_NETWORK_HH
@@ -26,7 +26,7 @@ namespace nucleus
   {
 
     ///
-    /// XXX
+    /// this class identifies a network through a unique name.
     ///
     class Network:
       public elle::Object

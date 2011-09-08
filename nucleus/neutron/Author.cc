@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Author.cc
 //
 // created       julien quintard   [fri aug 21 22:10:42 2009]
-// updated       julien quintard   [mon jun 20 14:09:19 2011]
+// updated       julien quintard   [wed sep  7 18:50:25 2011]
 //
 
 //
@@ -27,7 +27,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this constants defines a null author.
     ///
     const Author			Author::Null;
 
@@ -39,8 +39,7 @@ namespace nucleus
     /// the constructor.
     ///
     Author::Author():
-      role(RoleUnknown),
-      proof(NULL)
+      role(RoleUnknown)
     {
     }
 
@@ -49,9 +48,6 @@ namespace nucleus
     ///
     Author::~Author()
     {
-      // release the proof if present.
-      if (this->proof != NULL)
-	delete this->proof;
     }
 
 //
@@ -67,7 +63,6 @@ namespace nucleus
 
       // set the role.
       this->role = RoleOwner;
-      this->proof = NULL;
 
       leave();
     }
@@ -77,42 +72,14 @@ namespace nucleus
     /// a user has been directly granted access to an object i.e is
     /// explicitely listed in the Access block.
     ///
-    elle::Status	Author::Create(const Index&		index)
+    elle::Status	Author::Create(const Index&)
     {
       enter();
 
       // set the role.
       this->role = RoleLord;
 
-      // allocate a new proof.
-      this->proof = new Proof;
-
-      // set the proof.
-      if (this->proof->Specify(index) == elle::StatusError)
-	escape("unable to specify the proof");
-
-      leave();
-    }
-
-    ///
-    /// this method creates a vassal-specific author object which is
-    /// used whenever a user is granted access indirectly through
-    /// one or more group memberships.
-    ///
-    elle::Status	Author::Create(const Index&		index,
-				       const Voucher&		voucher)
-    {
-      enter();
-
-      // set the role.
-      this->role = RoleVassal;
-
-      // allocate a new proof.
-      this->proof = new Proof;
-
-      // set the proof.
-      if (this->proof->Specify(index, voucher) == elle::StatusError)
-	escape("unable to specify the proof");
+      // XXX to complete.
 
       leave();
     }
@@ -132,19 +99,7 @@ namespace nucleus
       if (this == &element)
 	true();
 
-      // compare the addresses since one of them is null.
-      if ((this->proof == NULL) || (element.proof == NULL))
-	{
-	  if ((this->role != element.role) ||
-	      (this->proof != element.proof))
-	    false();
-	}
-      else
-	{
-	  if ((this->role != element.role) ||
-	      (*this->proof != *element.proof))
-	    false();
-	}
+      // XXX to complete.
 
       true();
     }
@@ -169,19 +124,11 @@ namespace nucleus
 
       std::cout << alignment << "[Author]" << std::endl;
 
+      // dump the role.
       std::cout << alignment << elle::Dumpable::Shift << "[Role] "
-		<< (elle::Natural32)this->role << std::endl;
+		<< this->role << std::endl;
 
-      if (this->proof != NULL)
-	{
-	  if (this->proof->Dump(margin + 2) == elle::StatusError)
-	    escape("unable to dump the proof");
-	}
-      else
-	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Proof] " << elle::none << std::endl;
-	}
+      // XXX to complete.
 
       leave();
     }
@@ -201,18 +148,7 @@ namespace nucleus
       if (archive.Serialize(this->role) == elle::StatusError)
 	escape("unable to serialize the role");
 
-      if (this->proof != NULL)
-	{
-	  // serialize the internal proof.
-	  if (archive.Serialize(*this->proof) == elle::StatusError)
-	    escape("unable to serialize the proof");
-	}
-      else
-	{
-	  // serialize 'none'.
-	  if (archive.Serialize(elle::none) == elle::StatusError)
-	    escape("unable to serialize 'none'");
-	}
+      // XXX to complete.
 
       leave();
     }
@@ -222,33 +158,13 @@ namespace nucleus
     ///
     elle::Status	Author::Extract(elle::Archive&		archive)
     {
-      elle::Archive::Type	type;
-
       enter();
 
       // extract the role.
       if (archive.Extract(this->role) == elle::StatusError)
 	escape("unable to extract the role");
 
-      // fetch the next element's type.
-      if (archive.Fetch(type) == elle::StatusError)
-	escape("unable to fetch the next element's type");
-
-      if (type == elle::Archive::TypeNull)
-	{
-	  // nothing to do, keep the proof to NULL.
-	  if (archive.Extract(elle::none) == elle::StatusError)
-	    escape("unable to extract null");
-	}
-      else
-	{
-	  // allocate a proof.
-	  this->proof = new Proof;
-
-	  // extract the internal proof.
-	  if (archive.Extract(*this->proof) == elle::StatusError)
-	    escape("unable to extract the proof");
-	}
+      // XXX to complete.
 
       leave();
     }

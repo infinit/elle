@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Address.cc
 //
 // created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [mon sep  5 11:17:41 2011]
+// updated       julien quintard   [wed sep  7 18:29:54 2011]
 //
 
 //
@@ -155,11 +155,11 @@ namespace nucleus
 
       // display the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
-		<< (elle::Natural32)this->family << std::endl;
+		<< this->family << std::endl;
 
       // display the component.
       std::cout << alignment << elle::Dumpable::Shift << "[Component] "
-		<< (elle::Natural32)this->component << std::endl;
+		<< this->component << std::endl;
 
       // display the address depending on its value.
       if (*this == Address::Null)
@@ -191,8 +191,8 @@ namespace nucleus
       if (this->digest != NULL)
 	{
 	  // serialize the internal digest.
-	  if (archive.Serialize((elle::Natural8&)this->family,
-				(elle::Natural8&)this->component,
+	  if (archive.Serialize(static_cast<elle::Natural8>(this->family),
+				static_cast<elle::Natural8>(this->component),
 				*this->digest) == elle::StatusError)
 	    escape("unable to serialize the digest");
 	}
@@ -231,9 +231,10 @@ namespace nucleus
 	  this->digest = new elle::Digest;
 
 	  // extract the internal digest.
-	  if (archive.Extract((elle::Natural8&)this->family,
-			      (elle::Natural8&)this->component,
-			      *this->digest) == elle::StatusError)
+	  if (archive.Extract(
+	        reinterpret_cast<elle::Natural8&>(this->family),
+		reinterpret_cast<elle::Natural8&>(this->component),
+		*this->digest) == elle::StatusError)
 	    escape("unable to extract the digest");
 	}
 

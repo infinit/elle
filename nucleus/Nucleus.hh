@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Nucleus.hh
 //
 // created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [fri jul  8 10:46:51 2011]
+// updated       julien quintard   [wed sep  7 09:08:05 2011]
 //
 
 #ifndef NUCLEUS_NUCLEUS_HH
@@ -35,7 +35,7 @@ namespace nucleus
 //
 
   ///
-  /// XXX
+  /// this class controls the nucleus library.
   ///
   class Nucleus
   {

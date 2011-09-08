@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Data.cc
 //
 // created       julien quintard   [tue aug  4 13:28:39 2009]
-// updated       julien quintard   [wed aug  3 20:28:43 2011]
+// updated       julien quintard   [wed sep  7 11:20:33 2011]
 //
 
 //
@@ -77,15 +77,10 @@ namespace nucleus
 
       enter();
 
-      // check the operation's validity.
-      /// XXX \todo this check is unecessary for POSIX systems i.e
-      ///   condering a pread(fd, buf, size, offset) with offset != 0 though
-      ///   the file does not have any data, the call returns 0.
-      ///   with this check, an error would be returned.
-      ///   perhaps change with a logged warning or treat the case in PIG.
-      ///   for now the call returns: the region contains no data i.e size = 0
+      // check the operation's validity: note that since such out-of-bound
+      // calls are frequent, no warning or error is raised. instead, no data
+      // is simply returned.
       if (offset > this->region.size)
-	/// XXX escape("the offset is out of bound");
 	leave();
 
       // set size to the maximum between the request size and the available

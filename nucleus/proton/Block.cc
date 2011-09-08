@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Block.cc
 //
 // created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [tue sep  6 23:13:30 2011]
+// updated       julien quintard   [wed sep  7 18:32:22 2011]
 //
 
 //
@@ -111,15 +111,15 @@ namespace nucleus
 
       // dump the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
-		<< (elle::Natural32)this->family << std::endl;
+		<< this->family << std::endl;
 
       // dump the component.
       std::cout << alignment << elle::Dumpable::Shift << "[Component] "
-		<< (elle::Natural32)this->component << std::endl;
+		<< this->component << std::endl;
 
       // dump the state.
       std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-		<< (elle::Natural32)this->_state << std::endl;
+		<< this->_state << std::endl;
 
       leave();
     }
@@ -136,10 +136,10 @@ namespace nucleus
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize(this->network,
-			    (elle::Natural8&)this->family,
-			    (elle::Natural8&)this->component) ==
-	  elle::StatusError)
+      if (archive.Serialize(
+	    this->network,
+	    static_cast<elle::Natural8>(this->family),
+	    static_cast<elle::Natural8>(this->component)) == elle::StatusError)
 	escape("unable to serialize the block's attributes");
 
       leave();
@@ -153,9 +153,10 @@ namespace nucleus
       enter();
 
       // extracts the attributes.
-      if (archive.Extract(this->network,
-			  (elle::Natural8&)this->family,
-			  (elle::Natural8&)this->component) ==
+      if (archive.Extract(
+	    this->network,
+	    reinterpret_cast<elle::Natural8&>(this->family),
+	    reinterpret_cast<elle::Natural8&>(this->component)) ==
 	  elle::StatusError)
 	escape("unable to extract the block's attributes");
 

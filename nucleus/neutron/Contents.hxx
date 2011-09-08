@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Contents.hxx
 //
 // created       julien quintard   [sun jan 31 21:15:18 2010]
-// updated       julien quintard   [tue sep  6 01:31:45 2011]
+// updated       julien quintard   [wed sep  7 11:10:56 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_CONTENTS_HXX
@@ -41,7 +41,8 @@ namespace nucleus
     };
 
     ///
-    /// XXX
+    /// this macro-function associates a component to a content type
+    /// such as ComponentData with the Data class.
     ///
 #define ContentsDeclare(_type_)						\
   template <>								\

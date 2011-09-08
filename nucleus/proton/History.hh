@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/History.hh
 //
 // created       julien quintard   [wed jul  6 09:12:10 2011]
-// updated       julien quintard   [tue sep  6 23:00:03 2011]
+// updated       julien quintard   [wed sep  7 18:44:10 2011]
 //
 
 #ifndef NUCLEUS_PROTON_HISTORY_HH
@@ -22,6 +22,10 @@
 #include <nucleus/Nucleus.hh>
 
 #include <nucleus/proton/Version.hh>
+
+#include <elle/idiom/Close.hh>
+# include <vector>
+#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {

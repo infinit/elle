@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.hh
 //
 // created       julien quintard   [thu mar  5 20:17:45 2009]
-// updated       julien quintard   [wed jun 22 20:10:13 2011]
+// updated       julien quintard   [wed sep  7 11:03:33 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_ACCESS_HH
@@ -40,10 +40,6 @@ namespace nucleus
     ///
     /// this class represents an access control list.
     ///
-    /// XXX \todo note that, for now, such a list is implemented through a
-    /// single range. however the structure will be extended to an optimised
-    /// general tree structure in a near future.
-    ///
     class Access:
       public proton::ContentHashBlock
     {
@@ -65,6 +61,8 @@ namespace nucleus
       elle::Status	Exist(const Subject&);
       elle::Status	Lookup(const Subject&,
 			       Record*&);
+      elle::Status	Lookup(const Subject&,
+			       Index&);
       elle::Status	Consult(const Index&,
 				const Size&,
 				Range<Record>&) const;
@@ -72,8 +70,6 @@ namespace nucleus
       elle::Status	Downgrade();
       elle::Status	Remove(const Subject&);
       elle::Status	Capacity(Size&) const;
-      elle::Status	Locate(const Subject&,
-			       Index&);
       elle::Status	Fingerprint(elle::Digest&) const;
 
       //

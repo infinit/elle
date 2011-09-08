@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Genre.hh
 //
 // created       julien quintard   [mon aug 10 14:14:40 2009]
-// updated       julien quintard   [wed may  4 23:20:42 2011]
+// updated       julien quintard   [wed sep  7 12:11:06 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_GENRE_HH

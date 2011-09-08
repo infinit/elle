@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Range.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [wed jun 22 20:10:23 2011]
+// updated       julien quintard   [wed sep  7 12:21:56 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_RANGE_HH
@@ -38,8 +38,7 @@ namespace nucleus
 //
 
     ///
-    /// this class represents a subset of something: more precisely a
-    /// collection of things belonging to something else.
+    /// this class represents a set of something.
     ///
     /// a range must be parameterised with a type providing two things:
     ///  1) a type T::S which defines the key type used to differenciate

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Reference.hh
 //
 // created       julien quintard   [mon jul 27 10:19:21 2009]
-// updated       julien quintard   [wed jun 22 12:42:45 2011]
+// updated       julien quintard   [wed sep  7 12:25:46 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_REFERENCE_HH
@@ -37,7 +37,7 @@ namespace nucleus
     ///
     /// this class represents a link-specific content.
     ///
-    /// note that the Catalog does not derive the Block class. indeed, the
+    /// note that the Reference does not derive the Block class. indeed, the
     /// Contents class represents the container for genre-specific content:
     /// Catalog for directories, Data for files etc.
     ///

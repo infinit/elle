@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Permissions.hh
 //
 // created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [thu may  5 09:11:49 2011]
+// updated       julien quintard   [wed sep  7 12:12:15 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_RIGHTS_HH
@@ -30,7 +30,7 @@ namespace nucleus
 //
 
     ///
-    /// this enumeration represents the different rights a subject can
+    /// this enumeration represents the different permissions a subject can
     /// be granted.
     ///
     typedef elle::Natural8	Permissions;

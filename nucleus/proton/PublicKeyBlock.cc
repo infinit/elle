@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.cc
 //
 // created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [tue sep  6 22:58:00 2011]
+// updated       julien quintard   [wed sep  7 18:49:34 2011]
 //
 
 //
@@ -71,8 +71,8 @@ namespace nucleus
       // compute the address.
       if (address.Create(this->family, this->component,
 			 this->network,
-			 (elle::Natural8&)this->family,
-			 (elle::Natural8&)this->component,
+			 static_cast<elle::Natural8>(this->family),
+			 static_cast<elle::Natural8>(this->component),
 			 this->K) == elle::StatusError)
 	escape("unable to compute the PKB's address");
 
@@ -97,8 +97,8 @@ namespace nucleus
       // compute the address.
       if (self.Create(this->family, this->component,
 		      this->network,
-		      (elle::Natural8&)this->family,
-		      (elle::Natural8&)this->component,
+		      static_cast<elle::Natural8>(this->family),
+		      static_cast<elle::Natural8>(this->component),
 		      this->K) == elle::StatusError)
 	escape("unable to compute the PKB's address");
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.cc
 //
 // created       julien quintard   [fri may  6 15:34:18 2011]
-// updated       julien quintard   [thu jul 28 15:12:27 2011]
+// updated       julien quintard   [wed sep  7 18:48:54 2011]
 //
 
 //
@@ -91,8 +91,8 @@ namespace nucleus
       // compute the address.
       if (address.Create(this->family, this->component,
 			 this->network,
-			 (elle::Natural8&)this->family,
-			 (elle::Natural8&)this->component,
+			 static_cast<elle::Natural8>(this->family),
+			 static_cast<elle::Natural8>(this->component),
 			 this->K) == elle::StatusError)
 	escape("unable to compute the OKB's address");
 
@@ -117,8 +117,8 @@ namespace nucleus
       // compute the address.
       if (self.Create(this->family, this->component,
 		      this->network,
-		      (elle::Natural8&)this->family,
-		      (elle::Natural8&)this->component,
+		      static_cast<elle::Natural8>(this->family),
+		      static_cast<elle::Natural8>(this->component),
 		      this->K) == elle::StatusError)
 	escape("unable to compute the OKB's address");
 
@@ -133,6 +133,15 @@ namespace nucleus
 
       leave();
     }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(OwnerKeyBlock, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

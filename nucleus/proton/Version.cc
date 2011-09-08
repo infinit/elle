@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/Version.cc
 //
 // created       julien quintard   [sat may 21 13:41:42 2011]
-// updated       julien quintard   [wed jul  6 09:26:16 2011]
+// updated       julien quintard   [wed sep  7 09:33:50 2011]
 //
 
 //
@@ -104,7 +104,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method compares the objects.
     ///
     elle::Boolean	Version::operator<(const Version&	element) const
     {
@@ -122,7 +122,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method compares the objects.
     ///
     elle::Boolean	Version::operator>(const Version&	element) const
     {

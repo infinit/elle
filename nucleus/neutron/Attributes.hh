@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Attributes.hh
 //
 // created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [wed may  4 23:07:03 2011]
+// updated       julien quintard   [wed sep  7 11:03:40 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_ATTRIBUTES_HH
@@ -63,6 +63,7 @@ namespace nucleus
 
       // object
       declare(Attributes);
+      elle::Boolean	operator==(const Attributes&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

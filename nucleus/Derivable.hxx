@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/Derivable.hxx
 //
 // created       julien quintard   [fri jul  8 10:44:04 2011]
-// updated       julien quintard   [fri jul  8 10:49:57 2011]
+// updated       julien quintard   [wed sep  7 14:55:13 2011]
 //
 
 #ifndef NUCLEUS_DERIVABLE_HXX
@@ -48,12 +48,12 @@ namespace nucleus
   }
 
   ///
-  /// specific constructor specifying the object. this constructu is
+  /// specific constructor specifying the object. this construct is
   /// useful in order to extract the data directly into the given object
   /// without allocating a new object.
   ///
   template <typename T>
-  Derivable<T>::Derivable(const T&				object):
+  Derivable<T>::Derivable(T&					object):
     elle::Derivable<T>(Nucleus::Factory, object)
   {
   }

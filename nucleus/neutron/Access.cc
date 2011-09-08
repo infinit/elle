@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Access.cc
 //
 // created       julien quintard   [wed mar 11 16:55:36 2009]
-// updated       julien quintard   [tue sep  6 12:11:31 2011]
+// updated       julien quintard   [wed sep  7 11:03:13 2011]
 //
 
 //
@@ -91,6 +91,31 @@ namespace nucleus
       // look in the range.
       if (this->range.Lookup(subject, record) == elle::StatusError)
 	escape("unable to retrieve the record");
+
+      leave();
+    }
+
+    ///
+    /// this method returns the index location of the given subject.
+    ///
+    elle::Status	Access::Lookup(const Subject&		subject,
+				       Index&			index)
+    {
+      Range<Record>::Scoutor	scoutor;
+
+      enter();
+
+      // go through the range and serialize every tuple (subject, permissions).
+      for (scoutor = this->range.container.begin(), index = 0;
+	   scoutor != this->range.container.end();
+	   scoutor++, index++)
+	{
+	  Record*	record = *scoutor;
+
+	  // if found, stop.
+	  if (record->subject == subject)
+	    break;
+	}
 
       leave();
     }
@@ -180,25 +205,7 @@ namespace nucleus
 		// respond to vassal's requests.
 		//
 
-		/* XXX
-		elle::PublicKey*	K;
-		proton::Address*	address;
-		Token			token;
-		*/
-
-		// retrieve the group's block address.
-		// XXX
-
-		// retrieve the owner's public key.
-		// XXX
-
-		// encrypt the secret key.
-		// XXX
-
-		// assign the token to the entry.
-		// XXX
-
-		printf("[XXX] NIY\n");
+		// XXX to implement.
 
 		break;
 	      }
@@ -272,31 +279,6 @@ namespace nucleus
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::StatusError)
 	escape("unable to retrieve the range size");
-
-      leave();
-    }
-
-    ///
-    /// this method returns the index location of the given subject.
-    ///
-    elle::Status	Access::Locate(const Subject&		subject,
-				       Index&			index)
-    {
-      Range<Record>::Scoutor	scoutor;
-
-      enter();
-
-      // go through the range and serialize every tuple (subject, permissions).
-      for (scoutor = this->range.container.begin(), index = 0;
-	   scoutor != this->range.container.end();
-	   scoutor++, index++)
-	{
-	  Record*	record = *scoutor;
-
-	  // if found, stop.
-	  if (record->subject == subject)
-	    break;
-	}
 
       leave();
     }

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Author.hh
 //
 // created       julien quintard   [fri aug 21 22:04:45 2009]
-// updated       julien quintard   [mon jun 20 14:01:30 2011]
+// updated       julien quintard   [wed sep  7 12:55:34 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_AUTHOR_HH
@@ -20,9 +20,8 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/neutron/Proof.hh>
-#include <nucleus/neutron/Voucher.hh>
 #include <nucleus/neutron/Role.hh>
+#include <nucleus/neutron/Index.hh>
 
 namespace nucleus
 {
@@ -34,7 +33,8 @@ namespace nucleus
 //
 
     ///
-    /// this class represents the last user to have modified an object.
+    /// this class represents the last user to have modified an object i.e
+    /// the author.
     ///
     class Author:
       public elle::Object
@@ -56,8 +56,6 @@ namespace nucleus
       //
       elle::Status	Create();
       elle::Status	Create(const Index&);
-      elle::Status	Create(const Index&,
-			       const Voucher&);
 
       //
       // interfaces
@@ -78,7 +76,8 @@ namespace nucleus
       // attributes
       //
       Role		role;
-      Proof*		proof;
+
+      // XXX to complete.
     };
 
   }

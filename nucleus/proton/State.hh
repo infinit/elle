@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/State.hh
 //
 // created       julien quintard   [fri aug 21 22:37:24 2009]
-// updated       julien quintard   [wed jun 22 13:51:53 2011]
+// updated       julien quintard   [wed sep  7 11:46:00 2011]
 //
 
 #ifndef NUCLEUS_PROTON_STATE_HH

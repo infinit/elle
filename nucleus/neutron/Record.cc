@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Record.cc
 //
 // created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [mon aug  1 12:33:46 2011]
+// updated       julien quintard   [wed sep  7 12:25:13 2011]
 //
 
 //
@@ -91,10 +91,7 @@ namespace nucleus
 	      }
 	    case Subject::TypeGroup:
 	      {
-		printf("[XXX] Record::Create() NYI\n");
-
-		// XXX retrieve group block, pick owner public key, and
-		// update token
+		// XXX to implement.
 
 		break;
 	      }
@@ -185,7 +182,7 @@ namespace nucleus
       // dump the permissions.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Permissions] " << std::dec
-		<< (elle::Natural32)this->permissions << std::endl;
+		<< this->permissions << std::endl;
 
       // dump the token.
       if (this->token.Dump(margin + 2) == elle::StatusError)

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/neutron/Data.hh
 //
 // created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [wed jun 22 12:39:08 2011]
+// updated       julien quintard   [wed sep  7 11:12:32 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_DATA_HH
@@ -36,7 +36,7 @@ namespace nucleus
     ///
     /// this class represents a file's content.
     ///
-    /// note that the Catalog does not derive the Block class. indeed, the
+    /// note that the Data does not derive the Block class. indeed, the
     /// Contents class represents the container for genre-specific content:
     /// Catalog for directories, Data for files etc.
     ///

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [tue sep  6 23:13:40 2011]
+// updated       julien quintard   [wed sep  7 18:47:00 2011]
 //
 
 //
@@ -94,8 +94,8 @@ namespace nucleus
       // compute the address.
       if (address.Create(this->family, this->component,
 			 this->network,
-			 (elle::Natural8&)this->family,
-			 (elle::Natural8&)this->component,
+			 static_cast<elle::Natural8>(this->family),
+			 static_cast<elle::Natural8>(this->component),
 			 this->seed.stamp, this->seed.salt, this->owner.K) ==
 	  elle::StatusError)
 	escape("unable to compute the imprint address");
@@ -121,8 +121,8 @@ namespace nucleus
       // compute the address.
       if (self.Create(this->family, this->component,
 		      this->network,
-		      (elle::Natural8&)this->family,
-		      (elle::Natural8&)this->component,
+		      static_cast<elle::Natural8>(this->family),
+		      static_cast<elle::Natural8>(this->component),
 		      this->seed.stamp, this->seed.salt, this->owner.K) ==
 	  elle::StatusError)
 	escape("unable to compute the imprint address");
