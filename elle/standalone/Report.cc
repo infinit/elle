@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Report.cc
 //
 // created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [mon sep  5 11:45:41 2011]
+// updated       julien quintard   [wed sep  7 10:13:30 2011]
 //
 
 //
@@ -314,7 +314,8 @@ namespace elle
       enter();
 
       // serialize the number of messages.
-      if (archive.Serialize((Natural32)this->container.size()) == StatusError)
+      if (archive.Serialize(
+	    static_cast<Natural32>(this->container.size())) == StatusError)
 	escape("unable to serialize the number of messages");
 
       // go through the container.

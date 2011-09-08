@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Door.cc
 //
 // created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [tue sep  6 12:09:51 2011]
+// updated       julien quintard   [wed sep  7 18:14:54 2011]
 //
 
 //
@@ -231,8 +231,9 @@ namespace elle
 	       packet.size);
 
       // push the packet to the socket.
-      if (this->socket->write((const char*)packet.contents,
-			      packet.size) != (::qint64)packet.size)
+      if (this->socket->write(
+	    reinterpret_cast<const char*>(packet.contents),
+	    packet.size) != packet.size)
 	escape("unable to write the packet");
 
       // flush to start sending data immediately.
@@ -279,8 +280,10 @@ namespace elle
 	  }
 
 	// read the packet from the socket.
-	if (this->socket->read((char*)this->buffer->contents +
-			       this->buffer->size, size) != size)
+	if (this->socket->read(
+	      reinterpret_cast<char*>(this->buffer->contents +
+				      this->buffer->size),
+	      size) != size)
 	  escape(this->socket->errorString().toStdString().c_str());
 
 	// set the new size.

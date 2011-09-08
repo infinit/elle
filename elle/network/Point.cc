@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Point.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [fri aug 26 15:08:24 2011]
+// updated       julien quintard   [wed sep  7 18:11:49 2011]
 //
 
 //
@@ -70,7 +70,9 @@ namespace elle
 	escape("unable to create the host");
 
       // create the port.
-      this->port = ::strtoul(string.substr(separator + 1).c_str(), NULL, 0);
+      this->port =
+	static_cast<Port>(::strtoul(string.substr(separator + 1).c_str(),
+				    NULL, 0));
 
       leave();
     }

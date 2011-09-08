@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/test/package/Random.hh
 //
 // created       julien quintard   [thu jan 29 11:52:52 2009]
-// updated       julien quintard   [fri jun  3 15:08:10 2011]
+// updated       julien quintard   [wed sep  7 21:38:31 2011]
 //
 
 #ifndef ELLE_TEST_PACKAGE_RANDOM_HH
@@ -38,7 +38,7 @@ namespace elle
       static Integer64	Generate(Integer64		minimum,
 				 Integer64		maximum)
       {
-	Integer64	base = (Integer64)rand();
+	Integer64	base = static_cast<Integer64>(rand());
 
 	if ((base >= minimum) && (base <= maximum))
 	  return (base);

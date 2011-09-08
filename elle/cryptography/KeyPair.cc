@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
 //
 // created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [mon jun 27 21:22:39 2011]
+// updated       julien quintard   [wed sep  7 17:50:20 2011]
 //
 
 //
@@ -343,8 +343,9 @@ namespace elle
 	escape("unable to read the file");
 
       // decode and extract the cipher.
-      if (Base64::Decode(String((char*)region.contents, region.size),
-			 cipher) == StatusError)
+      if (Base64::Decode(
+	    String(reinterpret_cast<char*>(region.contents), region.size),
+	    cipher) == StatusError)
 	escape("unable to decode the cipher");
 
       // create the key based on the given pass.
@@ -385,7 +386,8 @@ namespace elle
 	escape("unable to encode in base64");
 
       // wrap the string.
-      if (region.Wrap((Byte*)string.c_str(), string.length()) == StatusError)
+      if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
+		      string.length()) == StatusError)
 	escape("unable to wrap the string");
 
       // write the file.

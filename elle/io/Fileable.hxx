@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Fileable.hxx
 //
 // created       julien quintard   [fri apr 30 17:43:29 2010]
-// updated       julien quintard   [tue sep  6 12:13:36 2011]
+// updated       julien quintard   [wed sep  7 17:52:40 2011]
 //
 
 #ifndef ELLE_IO_FILEABLE_HXX
@@ -96,7 +96,7 @@ namespace elle
 	  escape("unable to serialize the object");
 
 	// write the file's content.
-	if (File::Write(path, Region((Byte*)archive.contents,
+	if (File::Write(path, Region(archive.contents,
 				     archive.size)) == StatusError)
 	  escape("unable to write the file's content");
 
@@ -147,8 +147,10 @@ namespace elle
 	  escape("unable to read the file's content");
 
 	// decode and extract the object.
-	if (Hexadecimal::Decode(String((char*)region.contents, region.size),
-				*this) == StatusError)
+	if (Hexadecimal::Decode(
+	      String(reinterpret_cast<const char*>(region.contents),
+		     region.size),
+	      *this) == StatusError)
 	  escape("unable to decode the object");
 
 	leave();
@@ -166,7 +168,7 @@ namespace elle
 	  escape("unable to encode the object in hexadecimal");
 
 	// wrap the string.
-	if (region.Wrap((Byte*)string.c_str(),
+	if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
 			string.length()) == StatusError)
 	  escape("unable to wrap the string in a region");
 
@@ -221,7 +223,8 @@ namespace elle
 	  escape("unable to read the file's content");
 
 	// decode and extract the object.
-	if (Base64::Decode(String((char*)region.contents, region.size),
+	if (Base64::Decode(String(reinterpret_cast<char*>(region.contents),
+				  region.size),
 			   *this) == StatusError)
 	  escape("unable to decode the object");
 
@@ -240,7 +243,7 @@ namespace elle
 	  escape("unable to encode the object in base64");
 
 	// wrap the string.
-	if (region.Wrap((Byte*)string.c_str(),
+	if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
 			string.length()) == StatusError)
 	  escape("unable to wrap the string in a region");
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Base64.cc
 //
 // created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [fri mar 18 16:12:47 2011]
+// updated       julien quintard   [wed sep  7 18:13:53 2011]
 //
 
 //
@@ -84,7 +84,7 @@ namespace elle
 
       for (i = 0, j = 0; i < region.size; i++)
 	{
-	  in[j++] = (Character)region.contents[i];
+	  in[j++] = static_cast<Character>(region.contents[i]);
 
 	  if (j == 3)
 	    {
@@ -162,7 +162,7 @@ namespace elle
 		in[3];
 
 	      for (j = 0; j < 3; j++)
-		region.contents[region.size++] = (Byte)out[j];
+		region.contents[region.size++] = static_cast<Byte>(out[j]);
 
 	      j = 0;
 	    }
@@ -184,7 +184,7 @@ namespace elle
 	    in[3];
 
 	  for (k = 0; k < (j - 1); k++)
-	    region.contents[region.size++] = (Byte)out[k];
+	    region.contents[region.size++] = static_cast<Byte>(out[k]);
 	}
 
       leave();

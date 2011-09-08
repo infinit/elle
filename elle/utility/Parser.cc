@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Parser.cc
 //
 // created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [mon jul 11 22:14:55 2011]
+// updated       julien quintard   [wed sep  7 18:20:55 2011]
 //
 
 //
@@ -83,11 +83,11 @@ namespace elle
 
       // dump the kind.
       std::cout << alignment << Dumpable::Shift
-		<< "[Kind] " << (const Natural32)this->kind << std::endl;
+		<< "[Kind] " << this->kind << std::endl;
 
       // dump the state.
       std::cout << alignment << Dumpable::Shift
-		<< "[State] " << (const Natural32)this->state << std::endl;
+		<< "[State] " << this->state << std::endl;
 
       // dump the value, if present.
       if (this->value != NULL)
@@ -301,8 +301,9 @@ namespace elle
 
 	  // allocate the structure.
 	  if ((this->longs =
-	       (struct ::option*)::malloc((this->options.size() + 1) *
-					  sizeof (struct ::option))) == NULL)
+	         static_cast<struct ::option*>(
+	           ::malloc((this->options.size() + 1) *
+			    sizeof (struct ::option)))) == NULL)
 	    escape("unable to allocate memory");
 
 	  // initialize the structure with zeros, especially since the
@@ -351,10 +352,12 @@ namespace elle
 	}
 
       // now process the argument.
-      while ((character = getopt_long(this->argc, this->argv,
-				      this->shorts.c_str(),
-				      this->longs,
-				      NULL)) != -1)
+      while ((character =
+	      static_cast<Character>(getopt_long(this->argc,
+						 this->argv,
+						 this->shorts.c_str(),
+						 this->longs,
+						 NULL))) != -1)
 	{
 	  Parser::Option*	option;
 

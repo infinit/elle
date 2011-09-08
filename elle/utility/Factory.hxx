@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Factory.hxx
 //
 // created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [mon jul 11 21:49:53 2011]
+// updated       julien quintard   [wed sep  7 14:41:56 2011]
 //
 
 #ifndef ELLE_UTILITY_FACTORY_HXX
@@ -109,7 +109,8 @@ namespace elle
 	escape("unable to locate the generatoid for the given identifier");
 
       // allocate an object of the type handled by the generatoid.
-      if (scoutor->second->Allocate((Meta*&)object) == StatusError)
+      if (scoutor->second->Allocate(
+	    reinterpret_cast<Meta*&>(object)) == StatusError)
 	escape("unable to allocate the object");
 
       leave();

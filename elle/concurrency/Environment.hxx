@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Environment.hxx
 //
 // created       julien quintard   [thu apr  8 14:18:10 2010]
-// updated       julien quintard   [mon may  3 00:15:11 2010]
+// updated       julien quintard   [wed sep  7 14:44:47 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_ENVIRONMENT_HXX
@@ -40,8 +40,8 @@ namespace elle
       enter();
 
       // push the (name, value) tuple.
-      this->container.push_back(Environment::Value(name,
-						   static_cast<Meta*>(value)));
+      this->container.push_back(
+        Environment::Value(name, static_cast<Meta*>(value)));
 
       leave();
     }

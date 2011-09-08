@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
 //
 // created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [sun sep  4 15:28:45 2011]
+// updated       julien quintard   [wed sep  7 10:10:59 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX
@@ -115,7 +115,7 @@ namespace elle
 	  // create a context for the new fiber, with the Fiber::Launch
 	  // as entry point.
 	  ::makecontext(&fiber->context,
-			(void (*)())launch,
+			reinterpret_cast<void (*)()>(launch),
 			1,
 			&closure);
 

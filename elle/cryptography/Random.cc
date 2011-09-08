@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/Random.cc
 //
 // created       julien quintard   [thu aug 11 16:15:28 2011]
-// updated       julien quintard   [sat sep  3 22:09:26 2011]
+// updated       julien quintard   [wed sep  7 18:03:00 2011]
 //
 
 //
@@ -114,7 +114,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -129,7 +129,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -144,7 +144,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -159,7 +159,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -174,7 +174,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -189,7 +189,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -204,7 +204,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -219,7 +219,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -234,7 +234,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -249,7 +249,7 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&value,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
 		       sizeof (value)) == 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -282,7 +282,8 @@ namespace elle
       enter();
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)&buffer, sizeof (buffer)) == 0)
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(&buffer),
+		       sizeof (buffer)) == 0)
 	escape(::strerror(errno));
 
       // assign the characters.
@@ -304,7 +305,7 @@ namespace elle
 	escape("unable to prepare the region");
 
       // generate a random integer.
-      if (::RAND_bytes((unsigned char*)value.contents,
+      if (::RAND_bytes(reinterpret_cast<unsigned char*>(value.contents),
 		       size) == 0)
 	escape(::strerror(errno));
 

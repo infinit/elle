@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/concurrency/Method.hxx
 //
 // created       julien quintard   [thu feb  4 23:08:34 2010]
-// updated       julien quintard   [sat sep  3 23:29:08 2011]
+// updated       julien quintard   [wed sep  7 17:22:40 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HXX
@@ -140,7 +140,7 @@ namespace elle
       // note that the Clone method must be called because at this point,
       // this constructor does not know the type of the _method_'s wrap.
       if (method.shell != NULL)
-	method.shell->Clone((Object*&)this->shell);
+	method.shell->Clone(reinterpret_cast<Object*&>(this->shell));
     }
 
     ///

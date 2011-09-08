@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/standalone/Region.cc
 //
 // created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [tue sep  6 14:23:51 2011]
+// updated       julien quintard   [wed sep  7 19:07:56 2011]
 //
 
 //
@@ -59,13 +59,13 @@ namespace elle
     }
 
     ///
-    /// wrap constructor.
+    /// wrap constructor: identical behaviour to Wrap().
     ///
-    Region::Region(Byte*					contents,
-		   Natural64					size):
+    Region::Region(const Byte*					contents,
+		   Natural32					size):
       type(Region::TypeChunk),
       options(Region::OptionNone),
-      contents(contents),
+      contents(const_cast<Byte*>(contents)),
       size(size),
       capacity(0)
     {
@@ -126,8 +126,13 @@ namespace elle
     /// this method wraps an already existing memory area without
     /// allocating any memory, hence creating a so-called chunk.
     ///
-    Status		Region::Wrap(Byte*			contents,
-				     Natural64			size)
+    /// note that this method takes a const Byte because, most of the
+    /// time, a buffer is wrapped in order to be read, not written. however,
+    /// since this could happen, the constness is removed, hence leaving
+    /// the choice to the region's user.
+    ///
+    Status		Region::Wrap(const Byte*		contents,
+				     Natural32			size)
     {
       enter();
 
@@ -139,7 +144,7 @@ namespace elle
       this->type = Region::TypeChunk;
 
       // set the attributes.
-      this->contents = contents;
+      this->contents = const_cast<Byte*>(contents);
       this->size = size;
 
       leave();
@@ -149,7 +154,7 @@ namespace elle
     /// this method takes over the ownership of the given memory area.
     ///
     Status		Region::Acquire(Byte*			contents,
-					Natural64		size)
+					Natural32		size)
     {
       enter();
 
@@ -172,7 +177,7 @@ namespace elle
     /// this method can be used for pre-allocating the memory for
     /// an upcoming direct-copy assignment.
     ///
-    Status		Region::Prepare(const Natural64		capacity)
+    Status		Region::Prepare(const Natural32		capacity)
     {
       enter();
 
@@ -184,8 +189,8 @@ namespace elle
       this->type = Region::TypeBuffer;
 
       // allocate memory.
-      if ((this->contents = (Byte*)::realloc(this->contents,
-					     capacity)) == NULL)
+      if ((this->contents =
+	   static_cast<Byte*>(::realloc(this->contents, capacity))) == NULL)
 	escape(::strerror(errno));
 
       // update the capacity. note that the size should be updated
@@ -199,8 +204,8 @@ namespace elle
     ///
     /// this method assigns a data region, building a so-called buffer.
     ///
-    Status		Region::Duplicate(Byte*			contents,
-					  Natural64		size)
+    Status		Region::Duplicate(const Byte*		contents,
+					  Natural32		size)
     {
       enter();
 
@@ -212,8 +217,8 @@ namespace elle
       this->type = Region::TypeBuffer;
 
       // allocate the required memory.
-      if ((this->contents = (Byte*)::realloc(this->contents,
-					     size)) == NULL)
+      if ((this->contents =
+	   static_cast<Byte*>(::realloc(this->contents, size))) == NULL)
 	escape(::strerror(errno));
 
       // copy the data.
@@ -237,7 +242,7 @@ namespace elle
     /// region. besides, note that this method does not set the size but
     /// only deals with making sure the capacity is sufficient.
     ///
-    Status		Region::Adjust(const Natural64		size)
+    Status		Region::Adjust(const Natural32		size)
     {
       enter();
 
@@ -265,8 +270,9 @@ namespace elle
 	  // otherwise, enlarge the buffer's capacity.
 	  this->capacity = size;
 
-	  if ((this->contents = (Byte*)::realloc(this->contents,
-						 this->capacity)) == NULL)
+	  if ((this->contents =
+	       static_cast<Byte*>(::realloc(this->contents,
+					    this->capacity))) == NULL)
 	    escape(::strerror(errno));
 
 #ifdef REGION_CLEAR
@@ -284,7 +290,7 @@ namespace elle
     /// this method adds data to the buffer region.
     ///
     Status		Region::Append(const Byte*		contents,
-				       const Natural64		size)
+				       const Natural32		size)
     {
       enter();
 
@@ -307,9 +313,9 @@ namespace elle
     /// this method allows the caller to read data anywhere in the
     /// region.
     ///
-    Status		Region::Read(const Natural64		offset,
+    Status		Region::Read(const Natural32		offset,
 				     Byte*			contents,
-				     const Natural64		size) const
+				     const Natural32		size) const
     {
       enter();
 
@@ -327,9 +333,9 @@ namespace elle
     /// this method allows the caller to write data anywhere in the
     /// region.
     ///
-    Status		Region::Write(const Natural64		offset,
+    Status		Region::Write(const Natural32		offset,
 				      const Byte*		contents,
-				      const Natural64		size)
+				      const Natural32		size)
     {
       enter();
 
@@ -408,7 +414,7 @@ namespace elle
 	    std::cout << std::nouppercase
 		      << std::hex
 		      << std::setw(2)
-		      << (Natural32)this->contents[i * space + j];
+		      << this->contents[i * space + j];
 
 	  std::cout << std::endl;
 	}
@@ -421,7 +427,7 @@ namespace elle
 	    std::cout << std::nouppercase
 		      << std::hex
 		      << std::setw(2)
-		      << (Natural32)this->contents[i * space + j];
+		      << this->contents[i * space + j];
 
 	  std::cout << std::endl;
 	}

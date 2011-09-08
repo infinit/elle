@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [tue sep  6 12:09:57 2011]
+// updated       julien quintard   [wed sep  7 18:15:19 2011]
 //
 
 //
@@ -144,10 +144,11 @@ namespace elle
 	       packet.size);
 
       // push the datagram into the socket.
-      if (this->socket->writeDatagram((char*)packet.contents,
-				      packet.size,
-				      point.host.location,
-				      point.port) != (::qint64)packet.size)
+      if (this->socket->writeDatagram(
+	    reinterpret_cast<const char*>(packet.contents),
+	    packet.size,
+	    point.host.location,
+	    point.port) != packet.size)
 	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
@@ -191,10 +192,11 @@ namespace elle
 	escape("unable to prepare the raw");
 
       // read the datagram from the socket.
-      if (this->socket->readDatagram((char*)raw.contents,
-				     size,
-				     &point.host.location,
-				     &point.port) != size)
+      if (this->socket->readDatagram(
+	    reinterpret_cast<char*>(raw.contents),
+	    size,
+	    &point.host.location,
+	    &point.port) != size)
 	escape(this->socket->errorString().toStdString().c_str());
 
       // set the raw's size.

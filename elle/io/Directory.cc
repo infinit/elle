@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/io/Directory.cc
 //
 // created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [sat jul  9 16:17:44 2011]
+// updated       julien quintard   [wed sep  7 17:37:24 2011]
 //
 
 //
@@ -113,7 +113,8 @@ namespace elle
     Status		Directory::Dig(const Path&			path)
     {
       String		target(::strdup(path.string.c_str()));
-      String		directory(::dirname((char*)target.c_str()));
+      String		directory(::dirname(
+				    const_cast<char*>(target.c_str())));
       std::stringstream	stream(directory);
       String		item;
       Path		chemin;

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Settings.cc
 //
 // created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [fri jul  8 14:49:45 2011]
+// updated       julien quintard   [wed sep  7 18:22:08 2011]
 //
 
 //
@@ -490,7 +490,8 @@ namespace elle
 	escape("unable to read the file");
 
       // set up the stream.
-      stream.str(String((const char*)region.contents, (::size_t)region.size));
+      stream.str(String(reinterpret_cast<const char*>(region.contents),
+			region.size));
 
       // initialize the section pointer.
       section = NULL;
@@ -599,8 +600,8 @@ namespace elle
       string = stream.str();
 
       // wrap the stream in a region.
-      if (region.Wrap((Byte*)string.c_str(),
-		      (Natural64)string.length()) == StatusError)
+      if (region.Wrap(reinterpret_cast<const Byte*>(string.c_str()),
+		      string.length()) == StatusError)
 	escape("unable to wrap the stream");
 
       // write the content.

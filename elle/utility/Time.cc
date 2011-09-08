@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [thu aug 11 11:40:50 2011]
+// updated       julien quintard   [wed sep  7 18:23:43 2011]
 //
 
 //
@@ -501,26 +501,26 @@ namespace elle
 
       std::cout << alignment << Dumpable::Shift << "[Millisecond] "
 		<< std::nouppercase << std::dec	
-		<< (Natural32)this->millisecond << std::endl;
+		<< this->millisecond << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Second] "
 		<< std::nouppercase << std::dec	
-		<< (Natural32)this->second << std::endl;
+		<< this->second << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Minute] "
 		<< std::nouppercase << std::dec
-		<< (Natural32)this->minute << std::endl;
+		<< this->minute << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Hour] "
 		<< std::nouppercase << std::dec
-		<< (Natural32)this->hour << std::endl;
+		<< this->hour << std::endl;
 
       std::cout << alignment << Dumpable::Shift << "[Day] "
 		<< std::nouppercase << std::dec
-		<< (Natural32)this->day << std::endl;
+		<< this->day << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Month] "
 		<< std::nouppercase << std::dec
-		<< (Natural32)this->month << std::endl;
+		<< this->month << std::endl;
       std::cout << alignment << Dumpable::Shift << "[Year] "
 		<< std::nouppercase << std::dec
-		<< (Natural32)this->year << std::endl;
+		<< this->year << std::endl;
 
       leave();
     }

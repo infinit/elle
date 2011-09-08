@@ -97,5 +97,5 @@ ADD_LIBRARY(elle
 
 TARGET_LINK_LIBRARIES(elle comet msgpack crypto ssl dl readline)
 
-ADD_SUBDIRECTORY(test)
-ADD_SUBDIRECTORY(benchmark)
+#ADD_SUBDIRECTORY(test)
+#ADD_SUBDIRECTORY(benchmark)

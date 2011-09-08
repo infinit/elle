@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
 //
 // created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [tue sep  6 17:26:18 2011]
+// updated       julien quintard   [wed sep  7 18:00:23 2011]
 //
 
 //
@@ -243,11 +243,12 @@ namespace elle
 	  escape("unable to serialize the secret key");
 
 	// compute the size of the archived symmetric key.
-	if (::EVP_PKEY_encrypt(this->contexts.encrypt,
-			       NULL,
-			       &size,
-			       (const unsigned char*)archive.contents,
-			       archive.size) <= 0)
+	if (::EVP_PKEY_encrypt(
+	      this->contexts.encrypt,
+	      NULL,
+	      &size,
+	      reinterpret_cast<const unsigned char*>(archive.contents),
+	      archive.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// allocate memory so the key can receive the upcoming
@@ -257,11 +258,12 @@ namespace elle
 
 	// actually encrypt the secret key's archive, storing the encrypted
 	// portion directly into the key object, without any re-copy.
-	if (::EVP_PKEY_encrypt(this->contexts.encrypt,
-			       (unsigned char*)key.region.contents,
-			       &size,
-			       (const unsigned char*)archive.contents,
-			       archive.size) <= 0)
+	if (::EVP_PKEY_encrypt(
+	      this->contexts.encrypt,
+	      reinterpret_cast<unsigned char*>(key.region.contents),
+	      &size,
+	      reinterpret_cast<const unsigned char*>(archive.contents),
+	      archive.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
 	// set the key size.
@@ -282,7 +284,7 @@ namespace elle
 		 "and the symetrically-encrypted data");
 
 	// duplicate the archive's content.
-	if (code.region.Duplicate((Byte*)archive.contents,
+	if (code.region.Duplicate(archive.contents,
 				  archive.size) == StatusError)
 	  escape("unable to duplicate the archive's content");
       }
@@ -310,11 +312,12 @@ namespace elle
 	escape("unable to hash the plain");
 
       // verify.
-      if (::EVP_PKEY_verify(this->contexts.verify,
-			    (const unsigned char*)signature.region.contents,
-			    signature.region.size,
-			    (const unsigned char*)digest.region.contents,
-			    digest.region.size) <= 0)
+      if (::EVP_PKEY_verify(
+	    this->contexts.verify,
+	    reinterpret_cast<const unsigned char*>(signature.region.contents),
+	    signature.region.size,
+	    reinterpret_cast<const unsigned char*>(digest.region.contents),
+	    digest.region.size) <= 0)
         escape(::ERR_error_string(ERR_get_error(), NULL));
 
       leave();
@@ -371,7 +374,7 @@ namespace elle
 	      this->contexts.decrypt,
 	      NULL,
 	      &size,
-	      (const unsigned char*)key.region.contents,
+	      reinterpret_cast<const unsigned char*>(key.region.contents),
 	      key.region.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 
@@ -386,9 +389,9 @@ namespace elle
 	// function is used here.
 	if (::EVP_PKEY_verify_recover(
 	      this->contexts.decrypt,
-	      (unsigned char*)region.contents,
+	      reinterpret_cast<unsigned char*>(region.contents),
 	      &size,
-	      (const unsigned char*)key.region.contents,
+	      reinterpret_cast<const unsigned char*>(key.region.contents),
 	      key.region.size) <= 0)
 	  escape(::ERR_error_string(ERR_get_error(), NULL));
 

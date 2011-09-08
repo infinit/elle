@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Derivable.hxx
 //
 // created       julien quintard   [fri may 13 13:12:01 2011]
-// updated       julien quintard   [tue jul 12 08:10:29 2011]
+// updated       julien quintard   [wed sep  7 14:57:47 2011]
 //
 
 #ifndef ELLE_PACKAGE_DERIVABLE_HXX
@@ -68,17 +68,17 @@ namespace elle
     }
 
     ///
-    /// specific constructor specifying the object. this constructu is
+    /// specific constructor specifying the object. this construct is
     /// useful in order to extract the data directly into the given object
     /// without allocating a new object.
     ///
     template <typename T>
     Derivable<T>::Derivable(const Factory&			factory,
-			    const T&				object):
+			    T&					object):
       policy(Derivable::PolicyStatic),
       factory(&factory),
       product(0),
-      object(const_cast<T*>(&object))
+      object(&object)
     {
     }
 
