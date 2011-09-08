@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Context.cc
 //
 // created       julien quintard   [thu jun 16 10:37:02 2011]
-// updated       julien quintard   [fri aug  5 12:05:15 2011]
+// updated       julien quintard   [wed sep  7 21:24:55 2011]
 //
 
 //
@@ -53,11 +53,11 @@ namespace etoile
 
       // display the nature.
       std::cout << alignment << elle::Dumpable::Shift << "[Nature] "
-		<< (elle::Natural32)this->nature << std::endl;
+		<< this->nature << std::endl;
 
       // display the state.
       std::cout << alignment << elle::Dumpable::Shift << "[State] "
-		<< (elle::Natural32)this->state << std::endl;
+		<< this->state << std::endl;
 
       // dump the transcript.
       if (this->transcript.Dump(margin + 2) == elle::StatusError)
@@ -78,8 +78,9 @@ namespace etoile
       enter();
 
       // serialize the attributes.
-      if (archive.Serialize((elle::Natural8&)this->nature,
-			    (elle::Natural8&)this->state) == elle::StatusError)
+      if (archive.Serialize(
+	    static_cast<elle::Natural8>(this->nature),
+	    static_cast<elle::Natural8>(this->state)) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -93,8 +94,10 @@ namespace etoile
       enter();
 
       // extract the attributes.
-      if (archive.Extract((elle::Natural8&)this->nature,
-			  (elle::Natural8&)this->state) == elle::StatusError)
+      if (archive.Extract(
+	    reinterpret_cast<elle::Natural8&>(this->nature),
+	    reinterpret_cast<elle::Natural8&>(this->state)) ==
+	  elle::StatusError)
 	escape("unable to extract the attributes");
 
       leave();

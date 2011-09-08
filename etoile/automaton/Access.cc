@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Access.cc
 //
 // created       julien quintard   [mon jun 20 14:59:09 2011]
-// updated       julien quintard   [fri aug  5 12:09:18 2011]
+// updated       julien quintard   [wed sep  7 11:45:46 2011]
 //
  
 //

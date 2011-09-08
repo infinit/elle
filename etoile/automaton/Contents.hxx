@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/automaton/Contents.hxx
 //
 // created       julien quintard   [mon apr  5 15:13:38 2010]
-// updated       julien quintard   [wed aug  3 17:51:30 2011]
+// updated       julien quintard   [wed sep  7 11:45:54 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_CONTENTS_HXX

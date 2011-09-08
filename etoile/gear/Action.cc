@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Action.cc
 //
 // created       julien quintard   [fri jun 24 14:52:08 2011]
-// updated       julien quintard   [sat jun 25 13:39:58 2011]
+// updated       julien quintard   [wed sep  7 21:23:46 2011]
 //
 
 //
@@ -63,7 +63,7 @@ namespace etoile
 
       // display the type.
       std::cout << alignment << elle::Dumpable::Shift << "[Type] "
-		<< (elle::Natural32)this->type << std::endl;
+		<< this->type << std::endl;
 
       // dump according to the type.
       switch (this->type)

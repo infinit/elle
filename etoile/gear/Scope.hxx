@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Scope.hxx
 //
 // created       julien quintard   [fri jul 29 12:54:19 2011]
-// updated       julien quintard   [sun sep  4 16:05:23 2011]
+// updated       julien quintard   [wed sep  7 15:14:49 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HXX

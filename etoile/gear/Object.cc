@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/gear/Object.cc
 //
 // created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [thu jun 23 16:20:02 2011]
+// updated       julien quintard   [wed sep  7 21:27:10 2011]
 //
 
 //
@@ -113,12 +113,12 @@ namespace etoile
       // dump the role.
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Role] "
-		<< (const elle::Natural32)this->rights.role << std::endl;
+		<< this->rights.role << std::endl;
 
       // dump the permissions.
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Permissions] "
-		<< (const elle::Natural32)this->rights.permissions
+		<< this->rights.permissions
 		<< std::endl;
 
       // dump the key.
@@ -167,11 +167,12 @@ namespace etoile
 	}
 
       // serialize the attributes.
-      if (archive.Serialize((const elle::Natural8&)this->rights.role,
-			    (const elle::Natural8&)this->rights.permissions,
-			    this->rights.key,
-			    this->rights.record,
-			    this->author) == elle::StatusError)
+      if (archive.Serialize(
+	    static_cast<elle::Natural8>(this->rights.role),
+	    static_cast<elle::Natural8>(this->rights.permissions),
+	    this->rights.key,
+	    this->rights.record,
+	    this->author) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -213,11 +214,12 @@ namespace etoile
 	}
 
       // extract the attributes.
-      if (archive.Extract((elle::Natural8&)this->rights.role,
-			  (elle::Natural8&)this->rights.permissions,
-			  this->rights.key,
-			  this->rights.record,
-			  this->author) == elle::StatusError)
+      if (archive.Extract(
+	    reinterpret_cast<elle::Natural8&>(this->rights.role),
+	    reinterpret_cast<elle::Natural8&>(this->rights.permissions),
+	    this->rights.key,
+	    this->rights.record,
+	    this->author) == elle::StatusError)
 	escape("unable to extract the attributes");
 
       leave();
