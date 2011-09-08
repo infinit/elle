@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/cryptography/OneWay.cc
 //
 // created       julien quintard   [mon oct 29 13:26:52 2007]
-// updated       julien quintard   [sun may  2 18:52:17 2010]
+// updated       julien quintard   [wed sep  7 17:55:20 2011]
 //
 
 //
@@ -68,9 +68,10 @@ namespace elle
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // finalise the digest.
-      if (::EVP_DigestFinal_ex(&context,
-			       (unsigned char*)digest.region.contents,
-			       (unsigned int*)&digest.region.size) <= 0)
+      if (::EVP_DigestFinal_ex(
+	    &context,
+	    reinterpret_cast<unsigned char*>(digest.region.contents),
+	    static_cast<unsigned int*>(&digest.region.size)) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
 
       // clean the context.
