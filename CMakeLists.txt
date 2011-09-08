@@ -9,8 +9,7 @@ INCLUDE_DIRECTORIES(. ${QT_INCLUDES})
 #
 # for C++0x
 #
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=gnu++0x -g")
-SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --wrap=malloc")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=gnu++0x -g -Wcast-align -Wold-style-cast")
 
 #
 # for FUSE

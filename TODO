@@ -9,6 +9,31 @@
 
 - pour le stockage des blocsk: passer un pattern -> reserve/shelter/autre
 
+- chercher les cast et les remplacer par un C++-cast
+
+- ACL:
+    /// XXX \todo note that, for now, such a list is implemented through a
+    /// single range. however the structure will be extended to an optimised
+    /// general tree structure in a near future.
+    ///
+
+- history: pour l'instant on a un vecteur (index 32-bit) alors qu'une version
+  fait 64-bit. utiliser une autre structure de donnee plus extensible.
+
+- catalog:
+    /// \todo XXX note that, for now, all the entries are stored in a single
+    /// block until an advanced, multi-block-based, data structure is
+    /// developed.
+    ///
+
+- deplacer design Infinit dans projet redmine IntellectualProperty
+
+- fuker: event() for interlaced and sequential (potential parallel)
+    /// \todo XXX this could probably be optimised in order to allocate
+    /// a buffer only if an event is already being processed!
+
+- crux: utimens, chmod, chown to implement and test
+
 - trouver un terme pour remplacer Address dans elle:
   Plug/Spot/Site/Place/Station
 
