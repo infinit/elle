@@ -84,7 +84,7 @@ class Qt:
     def hook_bin_deps(self, linker, current = None):
 
         def find_moc_sources(builder, take, reject, where = True):
-            for source in builder.sources().values() + builder.sources_dynamic():
+            for source in list(builder.sources().values()) + list(builder.sources_dynamic()):
                 with debug.indentation():
                     if isinstance(source, StaticLib):
                         find_moc_sources(source.builder, take, reject, False)
