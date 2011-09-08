@@ -826,7 +826,7 @@ class LibraryConfiguration(drake.Configuration):
 
     """Configuration for a classical C/C++ library."""
 
-    def __init__(self, prefix, token):
+    def __init__(self, token, prefix = None):
         """Find and create a configuration for the library.
 
         prefix -- Where to find the library.

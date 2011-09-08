@@ -23,4 +23,4 @@ class IPP(drake.cxx.LibraryConfiguration):
         prefix -- Where to find curl, should contain
                   include/ipp.h.
         """
-        drake.cxx.LibraryConfiguration.__init__(self, prefix, 'include/ipp.h')
+        drake.cxx.LibraryConfiguration.__init__(self, 'include/ipp.h', prefix)
