@@ -283,7 +283,7 @@ class VisualToolkit(Toolkit):
 
         def output(cmd):
 
-            return subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE).stdout.read().strip()
+            return subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE).stdout.read().strip().decode('utf-8')
 
         # Des barres de rire cet OS j'vous dit.
         cfg = output("echo %VS90COMNTOOLS%")
@@ -297,9 +297,9 @@ class VisualToolkit(Toolkit):
         cp = tmp / 'fuck.bat'
         shutil.copy(str(cfg), str(cp))
         f = open(str(cp), 'a')
-        print >> f, '@echo %PATH%' # Des putain de barres.
-        print >> f, '@echo %LIB%'
-        print >> f, '@echo %INCLUDE%'
+        print('@echo %PATH%', file = f) # Des putain de barres.
+        print('@echo %LIB%', file = f)
+        print('@echo %INCLUDE%', file = f)
         f.close()
         res = output('"%s"' % cp).split('\r\n')
         path = res[-3]
