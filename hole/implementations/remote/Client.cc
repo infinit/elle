@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.cc
 //
 // created       julien quintard   [thu may 26 10:22:03 2011]
-// updated       julien quintard   [sat sep  3 16:39:15 2011]
+// updated       julien quintard   [thu sep  8 17:30:05 2011]
 //
 
 //
@@ -273,7 +273,8 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this callback is triggered whenever the socket is considered
+      /// connected.
       ///
       elle::Status	Client::Connected()
       {
@@ -291,7 +292,8 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this callback is triggered whenever the socket is considered
+      /// disconnected.
       ///
       elle::Status	Client::Disconnected()
       {
@@ -321,7 +323,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this callback is triggered whenever an error occurs on the socket.
       ///
       elle::Status	Client::Error(const elle::String&)
       {
@@ -360,7 +362,8 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this callback is triggered when the Authenticated message is
+      /// received from the server meaning that the challenge has been passed.
       ///
       elle::Status	Client::Authenticated()
       {
@@ -379,7 +382,9 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this callback is triggered whenever the Exception message is
+      /// received which indicates the client that an error occured while
+      /// processing one of its requests.
       ///
       elle::Status	Client::Exception(const elle::Report&	report)
       {

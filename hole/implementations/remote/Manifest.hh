@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
 //
 // created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [sat sep  3 09:02:27 2011]
+// updated       julien quintard   [fri sep  9 14:37:05 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH
@@ -36,12 +36,13 @@ namespace hole
     {
 
       ///
-      /// XXX
+      /// the component name.
       ///
       extern const elle::Character	Component[];
 
       ///
-      /// XXX
+      /// this constants defines the number of tags to reserve for
+      /// this implementation.
       ///
       const elle::Natural32		Tags = 20;
 
@@ -54,7 +55,7 @@ namespace hole
 //
 
 ///
-/// XXX
+/// this macro-function calls reserves a range of tags.
 ///
 range(hole::implementations::remote::Component,
       hole::implementations::remote::Tags,

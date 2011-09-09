@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/local/Local.cc
 //
 // created       julien quintard   [thu may 12 10:27:04 2011]
-// updated       julien quintard   [wed aug 31 13:43:34 2011]
+// updated       julien quintard   [thu sep  8 17:22:16 2011]
 //
 
 //
@@ -36,7 +36,9 @@ namespace hole
       const elle::Character		Component[] = "local";
 
       ///
-      /// XXX
+      /// this variable is set global in order for any instance of the
+      /// local implementation to retrieve the machine i.e the current
+      /// host.
       ///
       Machine*				Local::Computer = NULL;
 

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.hh
 //
 // created       julien quintard   [fri may 20 19:31:08 2011]
-// updated       julien quintard   [wed aug 31 14:32:45 2011]
+// updated       julien quintard   [fri sep  9 14:38:27 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_REMOTE_HH
@@ -40,6 +40,9 @@ namespace hole
     ///
     /// this way a single implementation emulates both the client and server.
     ///
+    /// the remote hole implementation stores data on a remote host's
+    /// storage.
+    ///
     namespace remote
     {
 
@@ -48,8 +51,7 @@ namespace hole
 //
 
       ///
-      /// the remote hole implementation stores data on a remote host's
-      /// storage.
+      /// this class controls the remote implementation.
       ///
       class Remote
       {

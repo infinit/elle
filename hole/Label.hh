@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Label.hh
 //
 // created       julien quintard   [thu aug 11 14:01:43 2011]
-// updated       julien quintard   [thu aug 11 15:02:53 2011]
+// updated       julien quintard   [thu sep  8 15:07:51 2011]
 //
 
 #ifndef HOLE_LABEL_HH
@@ -28,7 +28,16 @@ namespace hole
 //
 
   ///
-  /// XXX
+  /// this class represents the identifier of a node.
+  ///
+  /// note that blocks are identified by an Address. in order to locate
+  /// the node responsible for storing a block replicas, an algorithm is
+  /// run, picking some of the network nodes for that purpose. this
+  /// algorithm needs to compare the address with the node identifiers.
+  ///
+  /// in order to make things easier, both addresses and node identifiers i.e
+  /// labels lie in the same namespace. indeed, both are digests which
+  /// can be easily turned into hexadecimal strings for instance.
   ///
   class Label:
     public elle::Object

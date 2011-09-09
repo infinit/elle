@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Model.cc
 //
 // created       julien quintard   [mon jun 27 09:15:33 2011]
-// updated       julien quintard   [wed sep  7 18:55:06 2011]
+// updated       julien quintard   [thu sep  8 17:16:31 2011]
 //
 
 //
@@ -30,12 +30,13 @@ namespace hole
 //
 
   ///
-  /// XXX
+  /// this constants defines a null model.
   ///
   const Model				Model::Null;
 
   ///
-  /// XXX
+  /// this table maintains a mapping between model identifiers and
+  /// human-readable representations.
   ///
   const Model::Descriptor		Model::Descriptors[Model::Types] =
     {
@@ -50,7 +51,7 @@ namespace hole
 //
 
   ///
-  /// XXX
+  /// this method returns the model type associated with the given string.
   ///
   elle::Status		Model::Convert(const elle::String&	name,
 				       Type&			type)
@@ -81,7 +82,7 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this method converts a type into its human-readable representation.
   ///
   elle::Status		Model::Convert(const Type		type,
 				       elle::String&		name)
@@ -131,7 +132,7 @@ namespace hole
 //
 
   ///
-  /// XXX
+  /// this method creates a model of the given type.
   ///
   elle::Status		Model::Create(const Type		type)
   {
@@ -144,7 +145,7 @@ namespace hole
   }
 
   ///
-  /// XXX
+  /// this method creates a model given its human-readable representation.
   ///
   elle::Status		Model::Create(const elle::String&	name)
   {

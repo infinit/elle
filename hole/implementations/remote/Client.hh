@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Client.hh
 //
 // created       julien quintard   [thu may 26 10:21:46 2011]
-// updated       julien quintard   [sat sep  3 09:03:37 2011]
+// updated       julien quintard   [thu sep  8 17:24:03 2011]
 //
  
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
@@ -33,7 +33,9 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this class represents a client machine and is therefore used
+      /// whenever the current host is acting as a client of another host
+      /// i.e the server.
       ///
       class Client:
 	public elle::Entity

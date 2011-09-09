@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/Implementations.hh
 //
 // created       julien quintard   [tue jul  5 17:08:34 2011]
-// updated       julien quintard   [fri aug 12 15:26:14 2011]
+// updated       julien quintard   [thu sep  8 17:17:07 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_IMPLEMENTATIONS_HH
@@ -17,7 +17,7 @@
 namespace hole
 {
   ///
-  /// XXX
+  /// this namespace contains the hole implementations.
   ///
   namespace implementations
   {

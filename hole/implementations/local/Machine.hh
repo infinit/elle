@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/local/Machine.hh
 //
 // created       julien quintard   [wed aug 31 13:52:28 2011]
-// updated       julien quintard   [wed aug 31 14:32:21 2011]
+// updated       julien quintard   [fri sep  9 14:35:15 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_MACHINE_HH
@@ -33,7 +33,11 @@ namespace hole
 //
 
       ///
-      /// XXX represents the current host
+      /// this class represents the current host.
+      ///
+      /// note that every host can emulate multiple nodes though in the
+      /// case of the local implementation, a single host is present i.e
+      /// the machine.
       ///
       class Machine:
 	public elle::Entity

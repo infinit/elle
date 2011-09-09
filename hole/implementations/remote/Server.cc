@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.cc
 //
 // created       julien quintard   [thu may 26 09:58:52 2011]
-// updated       julien quintard   [sat sep  3 17:28:09 2011]
+// updated       julien quintard   [fri sep  9 14:42:50 2011]
 //
 
 //
@@ -56,6 +56,10 @@ namespace hole
 	     scoutor++)
 	  {
 	    Customer*	customer = scoutor->second;
+
+	    // ignore dead customers.
+	    if (customer->state == Customer::StateDead)
+	      continue;
 
 	    // delete the customer.
 	    delete customer;
@@ -133,7 +137,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this method adds the given customer to the set of customers.
       ///
       elle::Status	Server::Add(elle::Gate*			gate,
 				    Customer*			customer)
@@ -158,7 +162,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this method removes a customer from the set.
       ///
       elle::Status	Server::Remove(elle::Gate*		gate)
       {
@@ -177,7 +181,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this method returns the customer associated with the given socket.
       ///
       elle::Status	Server::Retrieve(elle::Gate*		gate,
 					 Customer*&		customer)
@@ -197,7 +201,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this method locates the customer associated with the given socket.
       ///
       elle::Status	Server::Locate(elle::Gate*		gate,
 				       Iterator*		iterator)
@@ -506,7 +510,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this callback is triggered whenever a customer dies.
       ///
       elle::Status	Server::Sweep(Customer*			customer)
       {
@@ -518,9 +522,6 @@ namespace hole
 
 	// bury it.
 	bury(customer);
-
-	// XXX
-	this->Dump();
 
 	leave();
       }

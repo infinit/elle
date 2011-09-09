@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Holeable.hh
 //
 // created       julien quintard   [wed may 11 14:55:32 2011]
-// updated       julien quintard   [wed aug 31 01:46:39 2011]
+// updated       julien quintard   [thu sep  8 14:55:19 2011]
 //
 
 #ifndef HOLE_HOLEABLE_HH
@@ -25,7 +25,7 @@ namespace hole
 {
 
   ///
-  /// XXX
+  /// this class defines the interface hole implementation should implement.
   ///
   class Holeable:
     public elle::Entity

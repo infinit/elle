@@ -12,6 +12,7 @@ ADD_LIBRARY(hole
   implementations/remote/Remote.cc
   implementations/remote/Server.cc
 
+# XXX
 #  implementations/cirkle/Cirkle.cc
 #  implementations/cirkle/Cluster.cc
 #  implementations/cirkle/Implementation.cc

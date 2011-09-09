@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Customer.hh
 //
 // created       julien quintard   [sun aug 28 17:49:10 2011]
-// updated       julien quintard   [sat sep  3 17:44:36 2011]
+// updated       julien quintard   [thu sep  8 17:35:08 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_CUSTOMER_HH
@@ -32,7 +32,8 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this class represents a client being connected to the server
+      /// i.e the machine.
       ///
       class Customer:
 	public elle::Entity
@@ -50,7 +51,8 @@ namespace hole
 	  {
 	    StateUnknown,
 	    StateConnected,
-	    StateAuthenticated
+	    StateAuthenticated,
+	    StateDead
 	  };
 
 	//

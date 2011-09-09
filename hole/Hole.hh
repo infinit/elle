@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Hole.hh
 //
 // created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [fri aug 12 14:53:37 2011]
+// updated       julien quintard   [thu sep  8 14:55:47 2011]
 //
 
 #ifndef HOLE_HOLE_HH
@@ -36,9 +36,6 @@ namespace hole
 
   ///
   /// this class represents the abstract Hole component.
-  ///
-  /// XXX protect communication between hole and etoile! use a phrase-like
-  /// controller.
   ///
   class Hole
   {

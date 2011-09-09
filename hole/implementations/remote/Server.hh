@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Server.hh
 //
 // created       julien quintard   [wed may 25 19:20:52 2011]
-// updated       julien quintard   [sat sep  3 16:32:57 2011]
+// updated       julien quintard   [fri sep  9 14:40:24 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH
@@ -36,7 +36,11 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this class represents the server which waits for clients to
+      /// connect which are then authenticated.
+      ///
+      /// note that multiple clients can connect to the server in
+      /// parallel.
       ///
       class Server:
 	public elle::Entity

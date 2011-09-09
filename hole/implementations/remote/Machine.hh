@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Machine.hh
 //
 // created       julien quintard   [wed aug 31 00:52:52 2011]
-// updated       julien quintard   [wed aug 31 15:05:31 2011]
+// updated       julien quintard   [fri sep  9 14:35:25 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MACHINE_HH
@@ -35,7 +35,7 @@ namespace hole
 //
 
       ///
-      /// XXX represents the current host
+      /// this class represents the current host.
       ///
       class Machine:
 	public elle::Entity

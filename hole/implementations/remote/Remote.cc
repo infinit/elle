@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Remote.cc
 //
 // created       julien quintard   [fri may 20 19:32:16 2011]
-// updated       julien quintard   [wed aug 31 13:43:22 2011]
+// updated       julien quintard   [fri sep  9 14:38:56 2011]
 //
 
 //
@@ -36,7 +36,8 @@ namespace hole
       const elle::Character		Component[] = "remote";
 
       ///
-      /// XXX
+      /// this global variable makes the machine i.e the current host
+      /// accessible from every instance of the implementation.
       ///
       Machine*				Remote::Computer = NULL;
 

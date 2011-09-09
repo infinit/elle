@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/Model.hh
 //
 // created       julien quintard   [fri may 20 17:46:53 2011]
-// updated       julien quintard   [tue jul  5 17:18:43 2011]
+// updated       julien quintard   [thu sep  8 17:13:54 2011]
 //
 
 #ifndef HOLE_MODEL_HH
@@ -28,7 +28,7 @@ namespace hole
 //
 
   ///
-  /// XXX
+  /// this class defines the model of a network i.e its implementation.
   ///
   class Model:
     public elle::Object

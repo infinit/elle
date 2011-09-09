@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Customer.cc
 //
 // created       julien quintard   [sun aug 28 17:53:05 2011]
-// updated       julien quintard   [sat sep  3 17:44:33 2011]
+// updated       julien quintard   [fri sep  9 14:34:36 2011]
 //
 
 //
@@ -32,7 +32,8 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this constant defines the time after which a customer should
+      /// have authenticated.
       ///
       const elle::Natural32		Customer::Timeout = 180000;
 
@@ -41,7 +42,7 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// default constructor.
       ///
       Customer::Customer():
 	state(Customer::StateUnknown),
@@ -51,7 +52,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// destructor.
       ///
       Customer::~Customer()
       {
@@ -69,7 +70,7 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this method creates a customer from the given socket.
       ///
       elle::Status	Customer::Create(elle::Gate*		gate)
       {
@@ -115,7 +116,8 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this callback is triggered whenever the customer is considered
+      /// disconnected.
       ///
       elle::Status	Customer::Disconnected()
       {
@@ -126,6 +128,9 @@ namespace hole
 	  std::cout << "[hole] Customer::Disconnected()"
 		    << std::endl;
 
+	// set the customer's state as dead.
+	this->state = Customer::StateDead;
+
 	// emit the signal.
 	if (this->signal.dead.Emit(this) == elle::StatusError)
 	  escape("unable to emit the signal");
@@ -134,7 +139,8 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this callback is triggered whenever an error occurs on the
+      /// customer's socket.
       ///
       elle::Status	Customer::Error(const elle::String&)
       {
@@ -152,7 +158,9 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// this callback is triggered once the authentication timer times out.
+      ///
+      /// if the customer has not been authenticated, it is destroyed.
       ///
       elle::Status	Customer::Abort()
       {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/hole/implementations/remote/Machine.cc
 //
 // created       julien quintard   [wed aug 31 01:02:08 2011]
-// updated       julien quintard   [fri sep  2 13:04:06 2011]
+// updated       julien quintard   [fri sep  9 14:36:12 2011]
 //
 
 //
@@ -31,7 +31,7 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// default constructor.
       ///
       Machine::Machine():
 	role(Machine::RoleUnknown)
@@ -39,7 +39,7 @@ namespace hole
       }
 
       ///
-      /// XXX
+      /// destructor.
       ///
       Machine::~Machine()
       {
@@ -72,7 +72,8 @@ namespace hole
 //
 
       ///
-      /// XXX
+      /// this method launches the machine which tries to act first as a
+      /// client and then as a server if no server seems to exist.
       ///
       elle::Status	Machine::Launch()
       {
