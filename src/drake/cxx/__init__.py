@@ -311,6 +311,26 @@ class VisualToolkit(Toolkit):
         shutil.rmtree(str(tmp))
         self.flags = []
 
+    def preprocess(self, code, config = Config()):
+
+        fd, path = tempfile.mkstemp()
+        try:
+            with _OS.fdopen(fd, 'w') as f:
+                print(code, file = f)
+            cmd = ['cl.exe', '/E', path] + self.cppflags(config)
+            p = subprocess.Popen(cmd,
+                                 stdin = subprocess.PIPE,
+                                 stdout = subprocess.PIPE,
+                                 stderr = subprocess.PIPE)
+            stdout, stderr = p.communicate()
+            if p.returncode != 0:
+                raise Exception(
+                    'Preprocessing failed with return code %s.\nInput:\n%s\nStderr:\n%s\n' \
+                        % (p.returncode, code, stderr))
+            return stdout.decode("utf-8")
+        finally:
+            _OS.remove(path)
+
     def warning_disable(self, n):
         self.flags.append('/wd%s' % n)
 
@@ -326,13 +346,13 @@ class VisualToolkit(Toolkit):
             else:
                 return '/D%s=%s' % (name, utils.shell_escape(v))
 
-        defines = ' '.join(map(print_define, cfg.defines().items()))
-        system_includes = ' '.join(map(lambda i: '/I%s' % utils.shell_escape(i), cfg.system_include_path()))
-        local_includes  = ' '.join(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
-        return ' '.join([system_includes, local_includes, defines])
+        defines = list(map(print_define, cfg.defines().items()))
+        system_includes = list(map(lambda i: '/I%s' % utils.shell_escape(i), cfg.system_include_path()))
+        local_includes  = list(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
+        return system_includes + local_includes + defines
 
     def compile(self, cfg, src, obj, c = False):
-        cppflags = self.cppflags(cfg)
+        cppflags = ' '.join(self.cppflags(cfg))
         return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc %s /Fo%s /c %s' % (' '.join(self.flags), concatenate(cfg.flags), cppflags, obj, src)
 
     def archive(self, cfg, objs, lib):
@@ -349,12 +369,25 @@ class VisualToolkit(Toolkit):
                 ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.lib_paths)),
                 ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
 
+    def dynlink(self, cfg, objs, exe):
+
+        return 'link.exe /nologo %s /OUT:%s /dll %s %s' % \
+               (' '.join(map(str, objs)),
+                exe,
+                ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.lib_paths)),
+                ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
+
     def libname_static(self, cfg, path):
 
         path = Path(path)
         return path.dirname() / ('%s.lib' % str(path.basename()))
 
     def libname_dyn(self, cfg, path):
+
+        path = Path(path)
+        return path.dirname() / ('%s.dll' % str(path.basename()))
+
+    def libname_module(self, cfg, path):
 
         path = Path(path)
         return path.dirname() / ('%s.dll' % str(path.basename()))
