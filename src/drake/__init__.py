@@ -794,7 +794,14 @@ class Node(BaseNode):
     def hash(self):
         """Digest of the file as a string."""
         if self.__hash is None:
-            self.__hash = hashlib.sha1(open(str(self.path()), 'rb').read()).hexdigest()
+            with open(str(self.path()), 'rb') as f:
+                hasher = hashlib.sha1()
+                while True:
+                    chunk = f.read(8192)
+                    if not chunk:
+                        break
+                    hasher.update(chunk)
+            self.__hash = hasher.hexdigest()
         return self.__hash
 
     def clean(self):
