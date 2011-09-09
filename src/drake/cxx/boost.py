@@ -43,8 +43,8 @@ class Boost(drake.Configuration):
             cfg.add_system_include_path('%s/include' % path)
             cfg.lib_path('%s/lib' % path)
             # Check the version.
-            version_eff = cxx_toolkit.preprocess(b'#include <boost/version.hpp>\nBOOST_VERSION',
-                                             config = cfg)
+            version_eff = cxx_toolkit.preprocess('#include <boost/version.hpp>\nBOOST_VERSION',
+                                                 config = cfg)
             version_eff = int(version_eff.split('\n')[-2].strip())
             version_eff = Version(version_eff // 100000, version_eff // 100 % 1000, version_eff % 100)
             if version_eff not in version:

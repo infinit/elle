@@ -195,7 +195,7 @@ class GccToolkit(Toolkit):
                              stdin = subprocess.PIPE,
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE)
-        stdout, stderr = p.communicate(code)
+        stdout, stderr = p.communicate(code.encode('utf-8'))
         if p.returncode != 0:
             raise Exception(
                 'Preprocessing failed with return code %s.\nInput:\n%s\nStderr:\n%s\n' \
