@@ -1,3 +1,11 @@
+- faire des confs: blackhat, CCC, laboratories
+
+- commenter l'implem Cirkle
+- revoir implem remote: probleme du customer + server::sweep (attention un
+  customer dead ne doit pas etre utilise)
+
+- uduwudu: possibilite d'uploader sa clef SSH
+
 - dans shrub on pourrait ajouter dans la boucle de resole: si le riffle a
   expire, le supprime et arreter la resolution.
 
