@@ -32,7 +32,7 @@ class Boost(drake.Configuration):
         else:
             test = [Path(prefix)]
         for i in range(len(test)):
-            if not test[i].absolute:
+            if not test[i].absolute():
                 test[i] = srctree() / test[i]
         test = self._search_all('include/boost/version.hpp', test)
         miss = []
