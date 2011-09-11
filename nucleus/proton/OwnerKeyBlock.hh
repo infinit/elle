@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.hh
 //
 // created       julien quintard   [fri may  6 14:45:42 2011]
-// updated       julien quintard   [wed sep  7 09:07:03 2011]
+// updated       julien quintard   [sun sep 11 20:45:40 2011]
 //
 
 #ifndef NUCLEUS_PROTON_OWNERKEYBLOCK_HH
@@ -79,7 +79,9 @@ namespace nucleus
       //
       // attributes
       //
-      elle::PublicKey	K;
+      elle::PublicKey		K;
+
+      elle::Time		stamp;
 
       struct
       {

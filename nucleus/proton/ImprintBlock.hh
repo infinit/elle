@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.hh
 //
 // created       julien quintard   [sat may  7 23:26:59 2011]
-// updated       julien quintard   [tue sep  6 23:13:27 2011]
+// updated       julien quintard   [sun sep 11 20:43:05 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
@@ -89,11 +89,8 @@ namespace nucleus
       //
       // attributes
       //
-      struct
-      {
-	elle::Time		stamp;
-	elle::Natural64		salt;
-      }				seed;
+      elle::Time		stamp;
+      elle::Natural64		salt;
 
       struct
       {

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.cc
 //
 // created       julien quintard   [fri may  6 15:34:18 2011]
-// updated       julien quintard   [wed sep  7 18:48:54 2011]
+// updated       julien quintard   [sun sep 11 20:46:20 2011]
 //
 
 //
@@ -55,6 +55,10 @@ namespace nucleus
       elle::KeyPair	pair;
 
       enter();
+
+      // retrieve the current time.
+      if (this->stamp.Current() == elle::StatusError)
+	escape("unable to retrieve the current time");
 
       // generate a key pair for the OKB.
       if (pair.Generate() == elle::StatusError)
@@ -169,6 +173,13 @@ namespace nucleus
       if (this->K.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the public key");
 
+      // dump the stamp.
+      std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
+		<< "[Stamp]" << std::endl;
+
+      if (this->stamp.Dump(margin + 6) == elle::StatusError)
+	escape("unable to dump the stamp");
+
       // dump the owner part.
       std::cout << alignment << elle::Dumpable::Shift << "[Owner]"
 		<< std::endl;
@@ -208,6 +219,7 @@ namespace nucleus
 
       // serialize the owner part.
       if (archive.Serialize(this->K,
+			    this->stamp,
 			    this->owner.K,
 			    this->owner.signature) == elle::StatusError)
 	escape("unable to serialize the owner part");
@@ -232,6 +244,7 @@ namespace nucleus
 
       // extract the owner part.
       if (archive.Extract(this->K,
+			  this->stamp,
 			  this->owner.K,
 			  this->owner.signature) == elle::StatusError)
 	escape("unable to extract the owner part");

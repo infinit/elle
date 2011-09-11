@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
 //
 // created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [wed sep  7 18:47:00 2011]
+// updated       julien quintard   [sun sep 11 20:46:02 2011]
 //
 
 //
@@ -64,11 +64,11 @@ namespace nucleus
       enter();
 
       // retrieve the current time.
-      if (this->seed.stamp.Current() == elle::StatusError)
+      if (this->stamp.Current() == elle::StatusError)
 	escape("unable to retrieve the current time");
 
       // generate a random number.
-      if (elle::Random::Generate(this->seed.salt) == elle::StatusError)
+      if (elle::Random::Generate(this->salt) == elle::StatusError)
 	escape("unable to generate the seed");
 
       // set the owner public key.
@@ -96,7 +96,7 @@ namespace nucleus
 			 this->network,
 			 static_cast<elle::Natural8>(this->family),
 			 static_cast<elle::Natural8>(this->component),
-			 this->seed.stamp, this->seed.salt, this->owner.K) ==
+			 this->stamp, this->salt, this->owner.K) ==
 	  elle::StatusError)
 	escape("unable to compute the imprint address");
 
@@ -123,7 +123,7 @@ namespace nucleus
 		      this->network,
 		      static_cast<elle::Natural8>(this->family),
 		      static_cast<elle::Natural8>(this->component),
-		      this->seed.stamp, this->seed.salt, this->owner.K) ==
+		      this->stamp, this->salt, this->owner.K) ==
 	  elle::StatusError)
 	escape("unable to compute the imprint address");
 
@@ -154,20 +154,16 @@ namespace nucleus
       if (MutableBlock::Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the underlying block");
 
-      // dump the seed.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Seed]" << std::endl;
-
       // dump the stamp.
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Stamp]" << std::endl;
 
-      if (this->seed.stamp.Dump(margin + 6) == elle::StatusError)
+      if (this->stamp.Dump(margin + 6) == elle::StatusError)
 	escape("unable to dump the stamp");
 
       // dump the salt.
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Salt] " << this->seed.salt << std::endl;
+		<< "[Salt] " << this->salt << std::endl;
 
       // dump the owner.
       std::cout << alignment << elle::Dumpable::Shift
@@ -200,8 +196,8 @@ namespace nucleus
 	escape("unable to serialize the underlying block");
 
       // serialize the owner part.
-      if (archive.Serialize(this->seed.stamp,
-			    this->seed.salt,
+      if (archive.Serialize(this->stamp,
+			    this->salt,
 			    this->owner.K) == elle::StatusError)
 	escape("unable to serialize the block's content");
 
@@ -224,8 +220,8 @@ namespace nucleus
 	escape("invalid family");
 
       // extract the owner part.
-      if (archive.Extract(this->seed.stamp,
-			  this->seed.salt,
+      if (archive.Extract(this->stamp,
+			  this->salt,
 			  this->owner.K) == elle::StatusError)
 	escape("unable to extract the block's content");
 
