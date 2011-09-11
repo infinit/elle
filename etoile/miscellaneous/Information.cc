@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/miscellaneous/Information.cc
 //
 // created       julien quintard   [wed mar 31 16:21:17 2010]
-// updated       julien quintard   [wed sep  7 12:12:01 2011]
+// updated       julien quintard   [sun sep 11 20:47:13 2011]
 //
 
 //
@@ -57,8 +57,11 @@ namespace etoile
       this->genre = object.meta.genre;
 
       // set the stamps.
-      this->stamps.creation = object.meta.stamp;
-      this->stamps.modification = object.data.stamp;
+      this->stamps.creation = object.stamp;
+      this->stamps.modification =
+	object.data.stamp < object.meta.stamp ?
+	object.meta.stamp :
+	object.data.stamp;
 
       // set the size
       this->size = object.data.size;
