@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [thu sep  8 07:06:20 2011]
+// updated       julien quintard   [sun sep 11 21:12:27 2011]
 //
 
 //
@@ -476,12 +476,12 @@ namespace pig
   int			Crux::Mkdir(const char*			path,
 				    mode_t			mode)
   {
+    nucleus::Permissions	permissions = nucleus::PermissionNone;
     etoile::path::Slab		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	subdirectory;
-    nucleus::Permissions	permissions;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -764,10 +764,10 @@ namespace pig
   int			Crux::Chmod(const char*			path,
 				    mode_t			mode)
   {
+    nucleus::Permissions		permissions = nucleus::PermissionNone;
     etoile::gear::Identifier		identifier;
     etoile::path::Way			way(path);
     etoile::path::Chemin		chemin;
-    nucleus::Permissions		permissions;
     etoile::miscellaneous::Information	information;
 
     // debug.
@@ -793,8 +793,6 @@ namespace pig
     // because Infinit has been designed and optimised for objects
     // accessed by their sole owners.
     //
-
-    // XXX handle sticky-bit etc. in attributes!
 
     // compute the permissions.
     if (mode & S_IRUSR)
@@ -831,28 +829,32 @@ namespace pig
 	    EINTR,
 	    identifier);
 
-    // set the posix::exec attribute if necessary i.e depending on the
-    // file genre.
-    switch (information.genre)
+    // if the execution bit is to be set...
+    if (mode & S_IXUSR)
       {
-      case nucleus::GenreFile:
-	{
-	  // set the posix::exec attribute
-	  if (etoile::wall::Attributes::Set(identifier,
-					    "posix::exec",
-					    "true") == elle::StatusError)
-	    error("unable to set the attribute",
-		  EACCES,
-		  identifier);
+	// set the posix::exec attribute if necessary i.e depending on the
+	// file genre.
+	switch (information.genre)
+	  {
+	  case nucleus::GenreFile:
+	    {
+	      // set the posix::exec attribute
+	      if (etoile::wall::Attributes::Set(identifier,
+						"posix::exec",
+						"true") == elle::StatusError)
+		error("unable to set the attribute",
+		      EACCES,
+		      identifier);
 
-	  break;
-	}
-      case nucleus::GenreDirectory:
-      case nucleus::GenreLink:
-	{
-	  // nothing to do for the other genres.
-	  break;
-	}
+	      break;
+	    }
+	  case nucleus::GenreDirectory:
+	  case nucleus::GenreLink:
+	    {
+	      // nothing to do for the other genres.
+	      break;
+	    }
+	  }
       }
 
     // store the object.
@@ -1282,12 +1284,12 @@ namespace pig
 				     mode_t			mode,
 				     struct ::fuse_file_info*	info)
   {
+    nucleus::Permissions	permissions = nucleus::PermissionNone;
     etoile::path::Slab		name;
     etoile::path::Way		way(etoile::path::Way(path), name);
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	file;
-    nucleus::Permissions	permissions = nucleus::PermissionNone;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
