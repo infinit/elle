@@ -77,7 +77,7 @@ ADD_LIBRARY(elle
   network/Lane.cc
   network/Network.cc
   network/Parcel.cc
-  network/Point.cc
+  network/Locus.cc
   network/Session.cc
   network/Slot.cc
   network/Socket.cc

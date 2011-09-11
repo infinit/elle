@@ -55,25 +55,25 @@ namespace elle
     {
       enter();
 
-      // set the point.
-      if (this->point.Create(line) == StatusError)
-	escape("unable to create the point");
+      // set the locus.
+      if (this->locus.Create(line) == StatusError)
+	escape("unable to create the locus");
 
       leave();
     }
 
     ///
-    /// this method is the thread entry point.
+    /// this method is the thread entry locus.
     ///
     Status		Server::Run()
     {
       enter();
 
       std::cout << "[bridge]" << std::endl;
-      point.Dump();
+      locus.Dump();
 
       // listen for incoming connections.
-      if (Bridge::Listen(point,
+      if (Bridge::Listen(locus,
 			 Callback<>::Infer(&Server::Connection,
 					   this)) == StatusError)
 	escape("unable to listen for bridge connections");

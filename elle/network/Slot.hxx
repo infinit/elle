@@ -39,11 +39,11 @@ namespace elle
 
     ///
     /// this method converts a set of values into a UDP packet and sends it
-    /// to the given point in an asynchronous way meaning that the sender
+    /// to the given locus in an asynchronous way meaning that the sender
     /// does not wait for an acknowledgment for continuing.
     ///
     template <typename I>
-    Status		Slot::Send(const Point&			point,
+    Status		Slot::Send(const Locus&			locus,
 				   const I			inputs,
 				   const Event&			event)
     {
@@ -76,7 +76,7 @@ namespace elle
 	escape("unable to serialize the header and data");
 
       // write the datagram to the socket.
-      if (this->Write(point, packet) == StatusError)
+      if (this->Write(locus, packet) == StatusError)
 	escape("unable to write the packet");
 
       leave();
@@ -136,7 +136,7 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		Slot::Call(const Point&			point,
+    Status		Slot::Call(const Locus&			locus,
 				   const I			inputs,
 				   O				outputs)
     {
@@ -149,7 +149,7 @@ namespace elle
 	escape("unable to generate the event");
 
       // send the inputs.
-      if (this->Send(point, inputs, event) == StatusError)
+      if (this->Send(locus, inputs, event) == StatusError)
 	escape("unable to send the inputs");
 
       // wait for the reply.
@@ -178,7 +178,7 @@ namespace elle
 
       // send a message as a response by using the event of
       // the received message i.e the current session.
-      if (this->Send(session->point, inputs, session->event) == StatusError)
+      if (this->Send(session->locus, inputs, session->event) == StatusError)
 	escape("unable to send the reply");
 
       leave();

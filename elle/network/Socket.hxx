@@ -39,7 +39,7 @@ namespace elle
     template <typename I>
     Status		Socket::Send(const I			inputs,
 				     const Event&		event,
-				     const Point&		point)
+				     const Locus&		locus)
     {
       enter();
 
@@ -56,7 +56,7 @@ namespace elle
 	  {
 	    Slot*	socket = static_cast<Slot*>(this);
 
-	    return (socket->Send(point, inputs, event));
+	    return (socket->Send(locus, inputs, event));
 	  }
 	default:
 	  {
@@ -110,7 +110,7 @@ namespace elle
 	      typename O>
     Status		Socket::Call(const I			inputs,
 				     O				outputs,
-				     const Point&		point)
+				     const Locus&		locus)
     {
       enter();
 
@@ -127,7 +127,7 @@ namespace elle
 	  {
 	    Slot*	socket = static_cast<Slot*>(this);
 
-	    return (socket->Call(point, inputs, outputs));
+	    return (socket->Call(locus, inputs, outputs));
 	  }
 	default:
 	  {

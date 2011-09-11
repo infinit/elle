@@ -130,9 +130,9 @@ namespace elle
 
     ///
     /// this method writes a packet on the socket so that it gets sent
-    /// to the given point.
+    /// to the given locus.
     ///
-    Status		Slot::Write(const Point&		point,
+    Status		Slot::Write(const Locus&		locus,
 				    const Packet&		packet)
     {
       enter();
@@ -147,8 +147,8 @@ namespace elle
       if (this->socket->writeDatagram(
 	    reinterpret_cast<const char*>(packet.contents),
 	    packet.size,
-	    point.host.location,
-	    point.port) != packet.size)
+	    locus.host.location,
+	    locus.port) != packet.size)
 	escape(this->socket->errorString().toStdString().c_str());
 
       leave();
@@ -169,7 +169,7 @@ namespace elle
     ///
     /// the method returns a raw with the read data.
     ///
-    Status		Slot::Read(Point&			point,
+    Status		Slot::Read(Locus&			locus,
 				   Raw&				raw)
     {
       Natural32		size;
@@ -183,9 +183,9 @@ namespace elle
       if (size == 0)
 	leave();
 
-      // set the point as being an IP point.
-      if (point.host.Create(Host::TypeIP) == StatusError)
-	escape("unable to create an IP point");
+      // set the locus as being an IP locus.
+      if (locus.host.Create(Host::TypeIP) == StatusError)
+	escape("unable to create an IP locus");
 
       // prepare the raw
       if (raw.Prepare(size) == StatusError)
@@ -195,8 +195,8 @@ namespace elle
       if (this->socket->readDatagram(
 	    reinterpret_cast<char*>(raw.contents),
 	    size,
-	    &point.host.location,
-	    &point.port) != size)
+	    &locus.host.location,
+	    &locus.port) != size)
 	escape(this->socket->errorString().toStdString().c_str());
 
       // set the raw's size.
@@ -236,14 +236,14 @@ namespace elle
     ///
     Status		Slot::Dispatch()
     {
-      Point		point;
+      Locus		locus;
       Natural32		offset;
       Raw		raw;
 
       enter();
 
       // read from the socket.
-      if (this->Read(point, raw) == StatusError)
+      if (this->Read(locus, raw) == StatusError)
 	escape("unable to read from the socket");
 
       // initialize the offset.
@@ -296,13 +296,13 @@ namespace elle
 
 	  // create the session.
 	  if (parcel->session->Create(this,
-				      point,
+				      locus,
 				      parcel->header->event) == StatusError)
 	    escape("unable to create the session");
 
 	  // dispatch this parcel to the network manager.
 	  //
-	  // note that a this point, the network is longer responsible
+	  // note that a this locus, the network is longer responsible
 	  // for the parcel and its memory.
 	  if (Network::Dispatch(parcel) == StatusError)
 	    {

@@ -54,7 +54,7 @@ namespace elle
       //
       // attributes
       //
-      Point		point;
+      Locus		locus;
       Gate*		gate;
     };
 

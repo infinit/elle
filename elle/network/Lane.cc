@@ -352,7 +352,7 @@ namespace elle
 
     ///
     /// this slot is triggered whenever a connection is being made on the
-    /// porter's point.
+    /// porter's locus.
     ///
     void		LanePorter::_accept()
     {

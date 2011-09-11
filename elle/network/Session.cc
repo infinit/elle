@@ -100,7 +100,7 @@ namespace elle
     {
       enter();
 
-      // clear the pointer.
+      // clear the locuser.
       Session::Current = NULL;
 
       leave();
@@ -131,7 +131,7 @@ namespace elle
 					  Session::Current) == StatusError)
 	      escape("unable to store the session in the environment");
 
-	    // set the pointer to NULL, for safety purposes.
+	    // set the locuser to NULL, for safety purposes.
 	    Session::Current = NULL;
 
 	    break;
@@ -149,10 +149,10 @@ namespace elle
 	  {
 	    // nothing to do.
 	    //
-	    // actually, at this point, the session must have been deleted
+	    // actually, at this locus, the session must have been deleted
 	    // by the network manager.
 
-	    // ... but reinitializes the session pointer to make sure
+	    // ... but reinitializes the session locuser to make sure
 	    // everything is clean!
 	    Session::Current = NULL;
 
@@ -183,14 +183,14 @@ namespace elle
     /// this method sets the arguments.
     ///
     Status		Session::Create(Socket*			socket,
-					const Point&		point,
+					const Locus&		locus,
 					const Event&		event)
     {
       enter();
 
       // set the attributes.
       this->socket = socket;
-      this->point = point;
+      this->locus = locus;
       this->event = event;
 
       leave();
@@ -218,9 +218,9 @@ namespace elle
 		    << "[Socket] " << std::hex << this->socket << std::endl;
 	}
 
-      // dump the point.
-      if (this->point.Dump(margin + 2) == StatusError)
-	escape("unable to dump the point");
+      // dump the locus.
+      if (this->locus.Dump(margin + 2) == StatusError)
+	escape("unable to dump the locus");
 
       // dump the event.
       if (this->event.Dump(margin + 2) == StatusError)

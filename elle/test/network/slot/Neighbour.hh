@@ -51,14 +51,14 @@ namespace elle
 
       Timer		timer;
 
-      Point		point;
+      Locus		locus;
       String		name;
 
       //
       // methods
       //
       Status		Create(Node*,
-			       const Point&,
+			       const Locus&,
 			       const String&);
       Status		Update(const String&);
       Status		Refresh();

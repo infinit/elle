@@ -89,7 +89,7 @@ namespace elle
       Status		Create();
       Status		Create(::QTcpSocket*);
 
-      Status		Connect(const Point&,
+      Status		Connect(const Locus&,
 				Channel::Mode = Channel::ModeAsynchronous);
       Status		Disconnect();
 
@@ -98,7 +98,7 @@ namespace elle
       Status		Read();
       Status		Fetch();
 
-      Status		Target(Point&) const;
+      Status		Target(Locus&) const;
 
       template <typename I>
       Status		Send(const I,

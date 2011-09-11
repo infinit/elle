@@ -33,22 +33,22 @@ namespace elle
     {
       enter();
 
-      // create the point.
-      if (this->point.Create(line) == StatusError)
-	escape("unable to create the point");
+      // create the locus.
+      if (this->locus.Create(line) == StatusError)
+	escape("unable to create the locus");
 
       leave();
     }
 
     ///
-    /// this method is the thread entry point.
+    /// this method is the thread entry locus.
     ///
     Status		Client::Run()
     {
       enter();
 
-      std::cout << "[point]" << std::endl;
-      this->point.Dump();
+      std::cout << "[locus]" << std::endl;
+      this->locus.Dump();
 
       // register the message.
       if (Network::Register(
@@ -61,7 +61,7 @@ namespace elle
 	escape("unable to create the gate");
 
       // connect the gate.
-      if (this->gate.Connect(this->point) == StatusError)
+      if (this->gate.Connect(this->locus) == StatusError)
 	escape("unable to connect to the bridge");
 
       leave();
