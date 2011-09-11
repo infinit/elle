@@ -44,12 +44,12 @@ namespace elle
     }
 
     ///
-    /// this is the thread entry point.
+    /// this is the thread entry locus.
     ///
     Status		Node::Run()
     {
       Host				local;
-      Point				remote;
+      Locus				remote;
 
       enter();
 
@@ -73,7 +73,7 @@ namespace elle
       if (this->table.Create(this) == StatusError)
 	escape("unable to create the table");
 
-      // create an point.
+      // create an locus.
       if (remote.Create(local, this->port) == StatusError)
 	escape("unable to create a location");
 
@@ -105,11 +105,11 @@ namespace elle
 	escape("unable to retrieve the instance of the current session");
 
       // simply add the sender to the table.
-      if (this->table.Update(session->point, name) == StatusError)
+      if (this->table.Update(session->locus, name) == StatusError)
 	escape("unable to add the new neighbour");
 
       // refresh the sender.
-      if (this->table.Refresh(session->point) == StatusError)
+      if (this->table.Refresh(session->locus) == StatusError)
 	escape("unable to refresh the sender's entry");
 
       // merge the table with the received one.

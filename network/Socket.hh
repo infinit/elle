@@ -23,7 +23,7 @@
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
 
-#include <elle/network/Point.hh>
+#include <elle/network/Locus.hh>
 #include <elle/network/Session.hh>
 
 #include <elle/concurrency/Event.hh>
@@ -87,7 +87,7 @@ namespace elle
       template <typename I>
       Status		Send(const I,
 			     const Event& = Event::Null,
-			     const Point& = Point::Null);
+			     const Locus& = Locus::Null);
       template <typename O>
       Status		Receive(const Event&,
 				O);
@@ -95,7 +95,7 @@ namespace elle
 		typename O>
       Status		Call(const I,
 			     O,
-			     const Point& = Point::Null);
+			     const Locus& = Locus::Null);
       template <typename I>
       Status		Reply(const I,
 			      Session* = NULL);

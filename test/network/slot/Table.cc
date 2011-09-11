@@ -55,7 +55,7 @@ namespace elle
     ///
     /// this method adds/updates a neighbour.
     ///
-    Status		Table::Update(const Point&		point,
+    Status		Table::Update(const Locus&		locus,
 				      const String&		name)
     {
       Table::Iterator	iterator;
@@ -63,7 +63,7 @@ namespace elle
       enter();
 
       // try to locate a previous entry.
-      if (this->Locate(point, iterator) == StatusOk)
+      if (this->Locate(locus, iterator) == StatusOk)
 	{
 	  // update the neighbour.
 	  if ((*iterator)->Update(name) == StatusError)
@@ -79,7 +79,7 @@ namespace elle
 	  neighbour = new Neighbour;
 
 	  // create a new neighbour.
-	  if (neighbour->Create(this->node, point, name) == StatusError)
+	  if (neighbour->Create(this->node, locus, name) == StatusError)
 	    escape("unable to create the neighbour");
 
 	  // add the neighbour to the list.
@@ -97,15 +97,15 @@ namespace elle
     ///
     /// this method refreshes an entry.
     ///
-    Status		Table::Refresh(const Point&		point)
+    Status		Table::Refresh(const Locus&		locus)
     {
       Table::Iterator	iterator;
 
       enter();
 
       // locate the neighbour.
-      if (this->Locate(point, iterator) != StatusOk)
-	escape("unable to locate the given point");
+      if (this->Locate(locus, iterator) != StatusOk)
+	escape("unable to locate the given locus");
 
       // refresh the neighbour.
       if ((*iterator)->Refresh() == StatusError)
@@ -117,14 +117,14 @@ namespace elle
     ///
     /// this method removes a neighbour.
     ///
-    Status		Table::Remove(const Point&		point)
+    Status		Table::Remove(const Locus&		locus)
     {
       Table::Iterator	iterator;
 
       enter();
 
       // try to locate a previous entry.
-      if (this->Locate(point, iterator) == StatusError)
+      if (this->Locate(locus, iterator) == StatusError)
 	escape("unable to locate this neighbour");
 
       // delete the neighbour.
@@ -139,7 +139,7 @@ namespace elle
     ///
     /// this method locates a neighbour in the list.
     ///
-    Status		Table::Locate(const Point&		point,
+    Status		Table::Locate(const Locus&		locus,
 				      Table::Iterator&		iterator)
     {
       enter();
@@ -149,8 +149,8 @@ namespace elle
 	   iterator != this->container.end();
 	   iterator++)
 	{
-	  // if the point is found, return.
-	  if ((*iterator)->point == point)
+	  // if the locus is found, return.
+	  if ((*iterator)->locus == locus)
 	    leave();
 	}
 
@@ -172,7 +172,7 @@ namespace elle
 	   scoutor++)
 	{
 	  // add/update the table.
-	  if (this->Update((*scoutor)->point,
+	  if (this->Update((*scoutor)->locus,
 			   (*scoutor)->name) == StatusError)
 	    escape("unable to update the table");
 	}
@@ -298,7 +298,7 @@ namespace elle
 	   scoutor++)
 	{
 	  // send a probe message.
-	  if (this->node->slot.Send((*scoutor)->point,
+	  if (this->node->slot.Send((*scoutor)->locus,
 				    Inputs<TagProbe>(this->node->name,
 						     this->node->table)) ==
 	      StatusError)

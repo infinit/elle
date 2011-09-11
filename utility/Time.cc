@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/utility/Time.cc
 //
 // created       julien quintard   [sat aug 22 00:03:52 2009]
-// updated       julien quintard   [wed sep  7 18:23:43 2011]
+// updated       julien quintard   [sun sep 11 21:12:17 2011]
 //
 
 //
@@ -82,7 +82,7 @@ namespace elle
       tm.tm_mday = this->day;
       tm.tm_mon = this->month - 1;
       tm.tm_year = this->year - 1900;
-      tm.tm_isdst = 0;
+      tm.tm_isdst = 1;
 
       // create a time.
       if ((time = ::mktime(&tm)) == -1)

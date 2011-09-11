@@ -27,7 +27,7 @@
 #include <elle/concurrency/Phase.hh>
 #include <elle/concurrency/Event.hh>
 
-#include <elle/network/Point.hh>
+#include <elle/network/Locus.hh>
 
 namespace elle
 {
@@ -53,7 +53,7 @@ namespace elle
 
     ///
     /// this class contains metadata related to a network event such as the
-    /// socket and sender's point for instance.
+    /// socket and sender's locus for instance.
     ///
     class Session:
       public Entity
@@ -87,7 +87,7 @@ namespace elle
       // methods
       //
       Status		Create(Socket*,
-			       const Point&,
+			       const Locus&,
 			       const Event&);
 
       //
@@ -101,7 +101,7 @@ namespace elle
       // attributes
       //
       Socket*		socket;
-      Point		point;
+      Locus		locus;
       Event		event;
     };
 

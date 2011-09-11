@@ -377,7 +377,7 @@ namespace elle
 	      // create the session.
 	      if (parcel->session->Create(
 		    this,
-		    Point::Null,
+		    Locus::Null,
 		    parcel->header->event) == StatusError)
 		escape("unable to create the session");
 
@@ -409,7 +409,7 @@ namespace elle
 	    // delete the buffer.
 	    delete this->buffer;
 
-	    // reinitialize the pointer to NULL.
+	    // reinitialize the locuser to NULL.
 	    this->buffer = NULL;
 	    this->offset = 0;
 	  }
@@ -549,7 +549,7 @@ namespace elle
       // delete the timer.
       delete this->timer;
 
-      // reset the pointer.
+      // reset the locuser.
       this->timer = NULL;
 
       // if the socket has not been connected yet, abort the process.

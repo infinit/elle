@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Point.cc
+// file          /home/mycure/infinit/elle/network/Locus.cc
 //
 // created       julien quintard   [sat nov 28 13:01:48 2009]
 // updated       julien quintard   [wed sep  7 18:11:49 2011]
@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Point.hh>
+#include <elle/network/Locus.hh>
 
 #include <elle/core/String.hh>
 
@@ -32,9 +32,9 @@ namespace elle
 //
 
     ///
-    /// the definition of a Null point.
+    /// the definition of a Null locus.
     ///
-    const Point			Point::Null;
+    const Locus			Locus::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -43,7 +43,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Point::Point():
+    Locus::Locus():
       port(0)
     {
     }
@@ -53,10 +53,10 @@ namespace elle
 //
 
     ///
-    /// this method creates an point from a string of the form
+    /// this method creates an locus from a string of the form
     /// 'host:port'.
     ///
-    Status		Point::Create(const String&		string)
+    Status		Locus::Create(const String&		string)
     {
       Natural32		separator;
 
@@ -78,9 +78,9 @@ namespace elle
     }
 
     ///
-    /// this method creates an point.
+    /// this method creates an locus.
     ///
-    Status		Point::Create(const Host&		host,
+    Status		Locus::Create(const Host&		host,
 				      const Port		port)
     {
       enter();
@@ -98,11 +98,11 @@ namespace elle
     ///
     /// checks if two objects match.
     ///
-    Boolean		Point::operator==(const Point&		element) const
+    Boolean		Locus::operator==(const Locus&		element) const
     {
       enter();
 
-      // check the point as this may actually be the same object.
+      // check the locus as this may actually be the same object.
       if (this == &element)
 	true();
 
@@ -117,11 +117,11 @@ namespace elle
     ///
     /// compare two objects.
     ///
-    Boolean		Point::operator<(const Point&		element) const
+    Boolean		Locus::operator<(const Locus&		element) const
     {
       enter();
 
-      // check the point as this may actually be the same object.
+      // check the locus as this may actually be the same object.
       if (this == &element)
 	false();
 
@@ -143,7 +143,7 @@ namespace elle
     ///
     /// compare two objects.
     ///
-    Boolean		Point::operator>(const Point&		element) const
+    Boolean		Locus::operator>(const Locus&		element) const
     {
       return (!(this->operator<=(element)));
     }
@@ -151,38 +151,38 @@ namespace elle
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Point, _());
+    embed(Locus, _());
 
 //
 // ---------- archivable ------------------------------------------------------
 //
 
     ///
-    /// this method serializes the point.
+    /// this method serializes the locus.
     ///
-    Status		Point::Serialize(Archive&		archive) const
+    Status		Locus::Serialize(Archive&		archive) const
     {
       enter();
 
       // serialize the host and port.
       if (archive.Serialize(this->host,
 			    this->port) == StatusError)
-	escape("unable to serialize the point attributes");
+	escape("unable to serialize the locus attributes");
 
       leave();
     }
 
     ///
-    /// this method extracts an point.
+    /// this method extracts an locus.
     ///
-    Status		Point::Extract(Archive&			archive)
+    Status		Locus::Extract(Archive&			archive)
     {
       enter();
 
-      // extract the point.
+      // extract the locus.
       if (archive.Extract(this->host,
 			  this->port) == StatusError)
-	escape("unable to extract the point attributes");
+	escape("unable to extract the locus attributes");
 
       leave();
     }
@@ -192,15 +192,15 @@ namespace elle
 //
 
     ///
-    /// this method dumps an point.
+    /// this method dumps an locus.
     ///
-    Status		Point::Dump(const Natural32		margin) const
+    Status		Locus::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Point]" << std::endl;
+      std::cout << alignment << "[Locus]" << std::endl;
 
       if (this->host.Dump(margin + 2) == StatusError)
 	escape("unable to dump the host");

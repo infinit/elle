@@ -56,11 +56,11 @@ namespace elle
       //
       Status		Create(Node*);
 
-      Status		Update(const Point&,
+      Status		Update(const Locus&,
 			       const String&);
-      Status		Refresh(const Point&);
-      Status		Remove(const Point&);
-      Status		Locate(const Point&,
+      Status		Refresh(const Locus&);
+      Status		Remove(const Locus&);
+      Status		Locate(const Locus&,
 			       Iterator&);
 
       Status		Merge(const Table&);

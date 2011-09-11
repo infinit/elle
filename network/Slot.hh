@@ -88,13 +88,13 @@ namespace elle
       Status		Create();
       Status		Create(const Port);
 
-      Status		Write(const Point&,
+      Status		Write(const Locus&,
 			      const Packet&);
-      Status		Read(Point&,
+      Status		Read(Locus&,
 			     Raw&);
 
       template <typename I>
-      Status		Send(const Point&,
+      Status		Send(const Locus&,
 			     const I,
 			     const Event& = Event::Null);
       template <typename O>
@@ -102,7 +102,7 @@ namespace elle
 				O);
       template <typename I,
 		typename O>
-      Status		Call(const Point&,
+      Status		Call(const Locus&,
 			     const I,
 			     O);
       template <typename I>

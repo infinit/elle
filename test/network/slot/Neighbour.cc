@@ -30,7 +30,7 @@ namespace elle
     /// this method creates a neighbour.
     ///
     Status		Neighbour::Create(Node*			node,
-					  const Point&		point,
+					  const Locus&		locus,
 					  const String&		name)
     {
       enter();
@@ -38,7 +38,7 @@ namespace elle
       // assign the attributes.
       this->node = node;
 
-      this->point = point;
+      this->locus = locus;
       this->name = name;
 
       // create the timer.
@@ -95,8 +95,8 @@ namespace elle
     {
       enter();
 
-      // serialize the point and name.
-      if (archive.Serialize(this->point,
+      // serialize the locus and name.
+      if (archive.Serialize(this->locus,
 			    this->name) == StatusError)
 	escape("unable to serialize the neighbour attributes");
 
@@ -110,8 +110,8 @@ namespace elle
     {
       enter();
 
-      // extract the point and name.
-      if (archive.Extract(this->point,
+      // extract the locus and name.
+      if (archive.Extract(this->locus,
 			  this->name) == StatusError)
 	escape("unable to extract the neighbour attributes");
 
@@ -133,9 +133,9 @@ namespace elle
 
       std::cout << alignment << "[Neighbour]" << std::endl;
 
-      // dump the point.
-      if (this->point.Dump(margin + 2) == StatusError)
-	escape("unable to dump the point");
+      // dump the locus.
+      if (this->locus.Dump(margin + 2) == StatusError)
+	escape("unable to dump the locus");
 
       // dump the name.
       std::cout << alignment << Dumpable::Shift
@@ -156,7 +156,7 @@ namespace elle
       enter();
 
       // discard the current neighbour as it has not been refreshed in time.
-      if (this->node->table.Remove(this->point) == StatusError)
+      if (this->node->table.Remove(this->locus) == StatusError)
 	escape("unable to remove the current neighbour");
 
       leave();

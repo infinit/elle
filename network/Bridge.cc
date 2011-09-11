@@ -74,19 +74,19 @@ namespace elle
     ///
     /// this method creates and starts the porter.
     ///
-    Status		BridgePorter::Create(const Point&	point)
+    Status		BridgePorter::Create(const Locus&	locus)
     {
       enter();
 
-      // set the point.
-      this->point = point;
+      // set the locus.
+      this->locus = locus;
 
       // allocate a new server.
       this->server = new ::QTcpServer;
 
       // start listening.
-      if (this->server->listen(this->point.host.location,
-			       this->point.port) == false)
+      if (this->server->listen(this->locus.host.location,
+			       this->locus.port) == false)
 	escape(this->server->errorString().toStdString().c_str());
 
       // connect the signals.
@@ -149,7 +149,7 @@ namespace elle
     /// since the Bridge class is static), all the slots registered on the
     /// signal would be triggered which is not want we want.
     ///
-    Status		Bridge::Listen(const Point&		point,
+    Status		Bridge::Listen(const Locus&		locus,
 				       const
 				         Callback<
 					   Status,
@@ -160,20 +160,20 @@ namespace elle
 
       enter(instance(porter));
 
-      // check if this point is not already listened on.
-      if (Bridge::Locate(point) == StatusTrue)
-	escape("this point seems to have already been registered");
+      // check if this locus is not already listened on.
+      if (Bridge::Locate(locus) == StatusTrue)
+	escape("this locus seems to have already been registered");
 
       // allocate a new porter.
       porter = new BridgePorter(callback);
 
       // create the porter.
-      if (porter->Create(point) == StatusError)
+      if (porter->Create(locus) == StatusError)
 	escape("unable to create the porter");
 
       // insert the porter in the container.
       result = Bridge::Porters.insert(
-	         std::pair<const Point, BridgePorter*>(point, porter));
+	         std::pair<const Locus, BridgePorter*>(locus, porter));
 
       // check if the insertion was successful.
       if (result.second == false)
@@ -186,10 +186,10 @@ namespace elle
     }
 
     ///
-    /// this method blocks the given point by deleting the associated
+    /// this method blocks the given locus by deleting the associated
     /// porter.
     ///
-    Status		Bridge::Block(const Point&		point)
+    Status		Bridge::Block(const Locus&		locus)
     {
       Bridge::Iterator	iterator;
       BridgePorter*	porter;
@@ -197,7 +197,7 @@ namespace elle
       enter();
 
       // locate the porter.
-      if (Bridge::Locate(point, &iterator) == StatusFalse)
+      if (Bridge::Locate(locus, &iterator) == StatusFalse)
 	escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -213,9 +213,9 @@ namespace elle
     }
 
     ///
-    /// this method returns the porter associated with the given point.
+    /// this method returns the porter associated with the given locus.
     ///
-    Status		Bridge::Retrieve(const Point&		point,
+    Status		Bridge::Retrieve(const Locus&		locus,
 					 BridgePorter*&		porter)
     {
       Bridge::Iterator	iterator;
@@ -223,7 +223,7 @@ namespace elle
       enter();
 
       // locate the porter.
-      if (Bridge::Locate(point, &iterator) == StatusFalse)
+      if (Bridge::Locate(locus, &iterator) == StatusFalse)
 	escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -234,9 +234,9 @@ namespace elle
 
     ///
     /// this method tries to locate the porter associated with the given
-    /// point and returns true if so.
+    /// locus and returns true if so.
     ///
-    Status		Bridge::Locate(const Point&		point,
+    Status		Bridge::Locate(const Locus&		locus,
 				       Iterator*		iterator)
     {
       Bridge::Iterator	i;
@@ -244,7 +244,7 @@ namespace elle
       enter();
 
       // try to locate the porter.
-      if ((i = Bridge::Porters.find(point)) != Bridge::Porters.end())
+      if ((i = Bridge::Porters.find(locus)) != Bridge::Porters.end())
 	{
 	  if (iterator != NULL)
 	    *iterator = i;
@@ -274,11 +274,11 @@ namespace elle
 
       std::cout << alignment << "[Porter]" << std::endl;
 
-      // dump the point.
-      if (this->point.Dump(margin + 2) == StatusError)
-	escape("unable to dump the point");
+      // dump the locus.
+      if (this->locus.Dump(margin + 2) == StatusError)
+	escape("unable to dump the locus");
 
-      // dump the server point.
+      // dump the server locus.
       std::cout << alignment << Dumpable::Shift << "[Server] "
 		<< std::hex << this->server << std::endl;
 
@@ -361,7 +361,7 @@ namespace elle
 
     ///
     /// this slot is triggered whenever a connection is being made on the
-    /// porter's point.
+    /// porter's locus.
     ///
     void		BridgePorter::_accept()
     {

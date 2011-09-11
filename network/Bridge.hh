@@ -93,7 +93,7 @@ namespace elle
       //
       // methods
       //
-      Status		Create(const Point&);
+      Status		Create(const Locus&);
 
       //
       // callbacks
@@ -110,7 +110,7 @@ namespace elle
       //
       // attributes
       //
-      Point			point;
+      Locus			locus;
       ::QTcpServer*		server;
       Callback<
 	Status,
@@ -133,7 +133,7 @@ namespace elle
       //
       // types
       //
-      typedef std::map<const Point, BridgePorter*>	Container;
+      typedef std::map<const Locus, BridgePorter*>	Container;
       typedef Container::iterator			Iterator;
       typedef Container::const_iterator			Scoutor;
 
@@ -143,13 +143,13 @@ namespace elle
       static Status	Initialize();
       static Status	Clean();
 
-      static Status	Listen(const Point&,
+      static Status	Listen(const Locus&,
 			       const Callback< Status,
 					       Parameters<Gate*> >&);
-      static Status	Block(const Point&);
-      static Status	Retrieve(const Point&,
+      static Status	Block(const Locus&);
+      static Status	Retrieve(const Locus&,
 				 BridgePorter*&);
-      static Status	Locate(const Point&,
+      static Status	Locate(const Locus&,
 			       Iterator* = NULL);
 
       static Status	Show(const Natural32 = 0);

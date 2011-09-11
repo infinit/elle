@@ -150,7 +150,7 @@ namespace elle
     ///
     /// this method connects the gate.
     ///
-    Status		Gate::Connect(const Point&		point,
+    Status		Gate::Connect(const Locus&		locus,
 				      const Channel::Mode	mode)
     {
       enter();
@@ -175,7 +175,7 @@ namespace elle
       this->state = Channel::StateConnecting;
 
       // connect the socket to the server.
-      this->socket->connectToHost(point.host.location, point.port);
+      this->socket->connectToHost(locus.host.location, locus.port);
 
       // depending on the mode.
       switch (mode)
@@ -364,20 +364,20 @@ namespace elle
 	      // otherwise, there is enough data in the buffer to extract
 	      // the parcel.
 	      //
-	      Point		point;
+	      Locus		locus;
 
 	      // extract the data.
 	      if (packet.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the data");
 
 	      // retrieve the gate's target.
-	      if (this->Target(point) == StatusError)
-		escape("unable to retrieve the source point");
+	      if (this->Target(locus) == StatusError)
+		escape("unable to retrieve the source locus");
 
 	      // create the session.
 	      if (parcel->session->Create(
 		    this,
-		    point,
+		    locus,
 		    parcel->header->event) == StatusError)
 		escape("unable to create the session");
 
@@ -409,7 +409,7 @@ namespace elle
 	    // delete the buffer.
 	    delete this->buffer;
 
-	    // reinitialize the pointer to NULL.
+	    // reinitialize the locuser to NULL.
 	    this->buffer = NULL;
 	    this->offset = 0;
 	  }
@@ -435,9 +435,9 @@ namespace elle
     }
 
     ///
-    /// this method returns the point the gate is connected to.
+    /// this method returns the locus the gate is connected to.
     ///
-    Status		Gate::Target(Point&			point) const
+    Status		Gate::Target(Locus&			locus) const
     {
       Host		host;
       Port		port;
@@ -457,9 +457,9 @@ namespace elle
       // create the port.
       port = this->socket->peerPort();
 
-      // create the point.
-      if (point.Create(host, port) == StatusError)
-	escape("unable to create the point");
+      // create the locus.
+      if (locus.Create(host, port) == StatusError)
+	escape("unable to create the locus");
 
       leave();
     }
@@ -474,7 +474,7 @@ namespace elle
     Status		Gate::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      Point		point;
+      Locus		locus;
 
       enter();
 
@@ -485,12 +485,12 @@ namespace elle
 	escape("unable to dump the channel");
 
       // retrieve the target.
-      if (this->Target(point) == StatusError)
+      if (this->Target(locus) == StatusError)
 	escape("unable to retrieve the target");
 
-      // dump the point.
-      if (point.Dump(margin + 2) == StatusError)
-	escape("unable to dump the point");
+      // dump the locus.
+      if (locus.Dump(margin + 2) == StatusError)
+	escape("unable to dump the locus");
 
       leave();
     }
@@ -558,7 +558,7 @@ namespace elle
       // delete the timer.
       delete this->timer;
 
-      // reset the pointer.
+      // reset the locuser.
       this->timer = NULL;
 
       // if the socket has not been connected yet, abort the process.
