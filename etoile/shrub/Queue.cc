@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Queue.cc
 //
 // created       julien quintard   [wed aug 10 03:31:14 2011]
-// updated       julien quintard   [sun sep  4 19:40:11 2011]
+// updated       julien quintard   [sat sep 10 17:00:01 2011]
 //
 
 //
@@ -31,25 +31,48 @@ namespace etoile
     ///
     elle::Status	Queue::Add(Riffle*			riffle)
     {
-      std::pair<Queue::Iterator, elle::Boolean>	result;
+      Queue::Iterator	iterator;
+      Group*		group;
 
       enter();
 
-      // try to look up the element in the current riffle.
-      while (this->container.find(riffle->timestamp) != this->container.end())
+      // try to look up a group for the given timestamp.
+      if ((iterator = this->container.find(riffle->timestamp)) ==
+	  this->container.end())
 	{
-	  // refresh the timestamp.
-	  if (riffle->timestamp.Current() == elle::StatusError)
-	    escape("unable to retrieve the current time");
+	  std::pair<Queue::Iterator, elle::Boolean>	result;
+	  Group*					g;
+
+	  enter(instance(g));
+
+	  // allocate a group.
+	  g = new Group;
+
+	  // record the group with its timestamp.
+	  result =
+	    this->container.insert(Queue::Value(riffle->timestamp, g));
+
+	  // check the result.
+	  if (result.second == false)
+	    escape("unable to insert the new riffle");
+
+	  // set the group since _g_ is going to be reset to NULL.
+	  group = g;
+
+	  // waive.
+	  waive(g);
+
+	  release();
+	}
+      else
+	{
+	  // retrieve the group.
+	  group = iterator->second;
 	}
 
-      // record the given riffle with its timestamp.
-      result =
-	this->container.insert(Queue::Value(riffle->timestamp, riffle));
-
-      // check the result.
-      if (result.second == false)
-	escape("unable to insert the new riffle");
+      // add the riffle to the group.
+      if (group->Add(riffle) == elle::StatusError)
+	escape("unable to add the riffle to the group");
 
       leave();
     }
@@ -60,6 +83,7 @@ namespace etoile
     elle::Status	Queue::Remove(Riffle*			riffle)
     {
       Queue::Iterator	iterator;
+      Group*		group;
 
       enter();
 
@@ -68,8 +92,22 @@ namespace etoile
 	  this->container.end())
 	escape("unable to locate the given timestamp");
 
-      // remove the entry from the container.
-      this->container.erase(iterator);
+      // retrieve the group.
+      group = iterator->second;
+
+      // remove the riffle from the group.
+      if (group->Remove(riffle) == elle::StatusError)
+	escape("unable to remove the riffle");
+
+      // check if the group is empty.
+      if (group->container.empty() == true)
+	{
+	  // delete the group.
+	  delete group;
+
+	  // remove the group from the container.
+	  this->container.erase(iterator);
+	}
 
       leave();
     }
@@ -105,11 +143,9 @@ namespace etoile
 	  if (scoutor->first.Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the timestamp");
 
-	  // display the riffle.
-	  std::cout << alignment
-		    << elle::Dumpable::Shift
-		    << elle::Dumpable::Shift
-		    << "[Riffle] " << std::hex << scoutor->second << std::endl;
+	  // dump the group.
+	  if (scoutor->second->Dump(margin + 4) == elle::StatusError)
+	    escape("unable to dump the group");
 	}
 
       leave();

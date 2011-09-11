@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/shrub/Queue.hh
+// file          /home/mycure/infinit/etoile/shrub/Group.hh
 //
-// created       julien quintard   [tue aug  9 18:17:59 2011]
-// updated       julien quintard   [sun sep 11 11:05:26 2011]
+// created       julien quintard   [sat sep 10 16:03:39 2011]
+// updated       julien quintard   [sun sep 11 11:55:23 2011]
 //
 
-#ifndef ETOILE_SHRUB_QUEUE_HH
-#define ETOILE_SHRUB_QUEUE_HH
+#ifndef ETOILE_SHRUB_GROUP_HH
+#define ETOILE_SHRUB_GROUP_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,10 +21,9 @@
 #include <elle/Elle.hh>
 
 #include <etoile/shrub/Riffle.hh>
-#include <etoile/shrub/Group.hh>
 
 #include <elle/idiom/Close.hh>
-# include <map>
+# include <vector>
 #include <elle/idiom/Open.hh>
 
 namespace etoile
@@ -37,22 +36,21 @@ namespace etoile
 //
 
     ///
-    /// this class provides a data structures fo holding timestamps
-    /// and references to their associated riffles.
+    /// this class represents a set of riffles grouped together because
+    /// they have been created or refreshed at the exact same time.
     ///
-    /// the queue is used for keeping the riffle depending on the
-    /// refreshing timestamps so that, given a lifespan, the expired
-    /// ones may get evicted.
+    /// note that a very simple data structure is being used in this
+    /// class because no more than a dozen riffles are stored in a single
+    /// group.
     ///
-    class Queue:
+    class Group:
       public elle::Entity
     {
     public:
       //
       // types
       //
-      typedef std::pair<elle::Time, Group*>	Value;
-      typedef std::map<elle::Time, Group*>	Container;
+      typedef std::vector<Riffle*>		Container;
       typedef Container::iterator		Iterator;
       typedef Container::const_iterator		Scoutor;
 

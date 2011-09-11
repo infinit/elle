@@ -42,9 +42,10 @@ ADD_LIBRARY(etoile
 
   journal/Journal.cc
 
+  shrub/Group.cc
+  shrub/Queue.cc
   shrub/Shrub.cc
   shrub/Riffle.cc
-  shrub/Queue.cc
 
   Etoile.cc
 )

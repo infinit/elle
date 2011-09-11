@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/shrub/Shrub.cc
 //
 // created       julien quintard   [sat aug  6 17:48:20 2011]
-// updated       julien quintard   [tue sep  6 18:29:23 2011]
+// updated       julien quintard   [sun sep 11 11:14:12 2011]
 //
 
 //
@@ -129,7 +129,8 @@ namespace etoile
       // as soon as the number of available slots is reached.
       for (i = 0; i < size; i++)
 	{
-	  Riffle*		riffle;
+	  Group*	group;
+	  Riffle*	riffle;
 
 	  // stop if there are enough available slots to proceed.
 	  if ((Infinit::Configuration.shrub.capacity -
@@ -140,8 +141,16 @@ namespace etoile
 	  if (Shrub::Timestamps.container.empty() == true)
 	    break;
 
-	  // retrieve the least-recently-used riffle.
-	  riffle = Shrub::Timestamps.container.begin()->second;
+	  // retrieve the least-recently-used group of riffles.
+	  group = Shrub::Timestamps.container.begin()->second;
+
+	  // retrieve the first group's riffle.
+	  //
+	  // note that here we do not go through the group's riffles because
+	  // the destruction of one may actually imply the destruction of
+	  // many others, i.e its children, and therefore perhaps remove
+	  // the group.
+	  riffle = group->container.front();
 
 	  // depending on the riffle's parent.
 	  if (riffle->parent != NULL)
@@ -188,6 +197,10 @@ namespace etoile
     {
       Riffle*			riffle;
       path::Route::Scoutor	scoutor;
+      elle::Duration	lifespan(elle::Duration::UnitSeconds,
+				 Infinit::Configuration.shrub.lifespan);
+      elle::Time	current;
+      elle::Time	threshold;
 
       enter();
 
@@ -203,12 +216,60 @@ namespace etoile
       if (venue.Record(Shrub::Riffles->location) == elle::StatusError)
 	escape("unable to record the location");
 
+      // retrieve the current timestamp.
+      if (current.Current() == elle::StatusError)
+	escape("unable to retrieve the current time");
+
+      // substract the lifespan to the current time rather than adding it
+      // to the timestamp of every riffle.
+      threshold = current - lifespan;
+
       // for every element of the route.
       for (riffle = Shrub::Riffles,
 	     scoutor = route.elements.begin() + 1;
 	   scoutor != route.elements.end();
 	   scoutor++)
 	{
+	  // check whether the riffle has expired.
+	  if (riffle->timestamp < threshold)
+	    {
+	      // depending on the riffle's parent.
+	      if (riffle->parent != NULL)
+		{
+		  // destroy this riffle.
+		  if (riffle->parent->Destroy(riffle->slab) ==
+		      elle::StatusError)
+		    escape("unable to destroy the riffle");
+		}
+	      else
+		{
+		  //
+		  // otherwise, the root riffle needs to be released.
+		  //
+
+		  // flush the riffle.
+		  if (Shrub::Riffles->Flush() == elle::StatusError)
+		    escape("unable to flush the riffles");
+
+		  // release the shrub slot.
+		  if (Shrub::Timestamps.Remove(Shrub::Riffles) ==
+		      elle::StatusError)
+		    escape("unable to remove the riffle");
+
+		  // delete the root riffle.
+		  delete Shrub::Riffles;
+
+		  // reset the pointer.
+		  Shrub::Riffles = NULL;
+		}
+
+	      break;
+	    }
+
+	  //
+	  // the riffle has not expired. thus try to resolve within it.
+	  //
+
 	  // try to resolve within this riffle.
 	  if (riffle->Resolve(*scoutor, riffle) == elle::StatusError)
 	    escape("unable to resolve the route");
@@ -424,6 +485,10 @@ namespace etoile
     /// this callback is triggered on a periodic basis in order to evict
     /// the expired riffle.
     ///
+    /// note that most riffles are removed during the resolving process
+    /// when detecting they have expired. however, riffles being never
+    /// accessed must be removed by using the sweeper.
+    ///
     elle::Status	Shrub::Sweeper()
     {
       elle::Duration	lifespan(elle::Duration::UnitSeconds,
@@ -445,14 +510,23 @@ namespace etoile
       // their update timestamp has reached the threshold.
       while (Shrub::Timestamps.container.empty() == false)
 	{
+	  Group*		group;
 	  Riffle*		riffle;
 
-	  // retrieve the least-recently-used riffle.
-	  riffle = Shrub::Timestamps.container.begin()->second;
+	  // retrieve the least-recently-used group.
+	  group = Shrub::Timestamps.container.begin()->second;
 
-	  // if the riffle has not expire, exit the loop since all the
+	  // retrieve the first group's riffle.
+	  //
+	  // note that here we do not go through the group's riffles because
+	  // the destruction of one may actually imply the destruction of
+	  // many others, i.e its children, and therefore perhaps remove
+	  // the group.
+	  riffle = group->container.front();
+
+	  // if the riffle has not expired, exit the loop since all the
 	  // following riffles are fresher.
-	  if (riffle->timestamp > threshold)
+	  if (riffle->timestamp >= threshold)
 	    break;
 
 	  // depending on the riffle's parent.

@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/etoile/path/Path.cc
 //
 // created       julien quintard   [sat aug  8 16:21:09 2009]
-// updated       julien quintard   [tue sep  6 13:23:09 2011]
+// updated       julien quintard   [sat sep 10 15:41:34 2011]
 //
 
 //
@@ -71,8 +71,11 @@ namespace etoile
     /// referenced object.
     ///
     /// this method starts by resolving the route by looking up in the
-    /// cache. then, the resolving process retrieved the uncached directory
+    /// shrub. then, the resolving process retrieved the uncached directory
     /// objects and explore them.
+    ///
+    /// note that this method only processes absolute paths. paths being
+    /// composed of links will fail to be resolved for instance.
     ///
     elle::Status	Path::Resolve(const Route&		route,
 				      Venue&			venue)
