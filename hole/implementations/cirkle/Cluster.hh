@@ -47,7 +47,7 @@ namespace hole
 	//
 	// types
 	//
-	typedef std::list<elle::Point>			Container;
+	typedef std::list<elle::Locus>			Container;
 	typedef typename Container::iterator		Iterator;
 	typedef typename Container::const_iterator	Scoutor;
 

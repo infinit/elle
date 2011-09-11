@@ -55,7 +55,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Add(const elle::Point&	point,
+      elle::Status	Neighbourhood::Add(const elle::Locus&	locus,
 					   Neighbour*		neighbour)
       {
 	std::pair<Neighbourhood::Iterator, elle::Boolean>	result;
@@ -63,8 +63,8 @@ namespace hole
 	enter();
 
 	// insert the neighbour in the container.
-	result = this->container.insert(std::pair<const elle::Point,
-						  Neighbour*>(point,
+	result = this->container.insert(std::pair<const elle::Locus,
+						  Neighbour*>(locus,
 							      neighbour));
 
 	// check if the insertion was successful.
@@ -77,12 +77,12 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Exist(const elle::Point& point)
+      elle::Status	Neighbourhood::Exist(const elle::Locus& locus)
       {
 	enter();
 
-	// try to locate the point.
-	if (this->Locate(point) == elle::StatusTrue)
+	// try to locate the locus.
+	if (this->Locate(locus) == elle::StatusTrue)
 	  true();
 
 	false();
@@ -91,16 +91,16 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Retrieve(const elle::Point& point,
+      elle::Status	Neighbourhood::Retrieve(const elle::Locus& locus,
 						Neighbour*&	neighbour)
       {
 	Neighbourhood::Iterator	iterator;
 
 	enter();
 
-	// try to locate the point.
-	if (this->Locate(point, &iterator) == elle::StatusFalse)
-	  escape("unable to locate the given point");
+	// try to locate the locus.
+	if (this->Locate(locus, &iterator) == elle::StatusFalse)
+	  escape("unable to locate the given locus");
 
 	// return the associated neighbour.
 	neighbour = iterator->second;
@@ -111,15 +111,15 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Remove(const elle::Point& point)
+      elle::Status	Neighbourhood::Remove(const elle::Locus& locus)
       {
 	Neighbourhood::Iterator	iterator;
 
 	enter();
 
-	// try to locate the point.
-	if (this->Locate(point, &iterator) == elle::StatusFalse)
-	  escape("unable to locate the given point");
+	// try to locate the locus.
+	if (this->Locate(locus, &iterator) == elle::StatusFalse)
+	  escape("unable to locate the given locus");
 
 	// erase the iterator.
 	this->container.erase(iterator);
@@ -130,7 +130,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Locate(const elle::Point& point,
+      elle::Status	Neighbourhood::Locate(const elle::Locus& locus,
 					      Iterator*		iterator)
       {
 	Neighbourhood::Iterator	i;
@@ -138,7 +138,7 @@ namespace hole
 	enter();
 
 	// try to locate the neighbour.
-	if ((i = this->container.find(point)) != this->container.end())
+	if ((i = this->container.find(locus)) != this->container.end())
 	  {
 	    if (iterator != NULL)
 	      *iterator = i;

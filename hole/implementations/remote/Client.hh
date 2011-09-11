@@ -54,7 +54,7 @@ namespace hole
 	//
 	// constructors & destructors
 	//
-	Client(const elle::Point&);
+	Client(const elle::Locus&);
 	~Client();
 
 	//
@@ -96,7 +96,7 @@ namespace hole
 	//
 	State			state;
 
-	elle::Point		point;
+	elle::Locus		locus;
 	elle::Gate*		gate;
       };
 

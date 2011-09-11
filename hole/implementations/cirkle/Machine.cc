@@ -66,7 +66,7 @@ namespace hole
       ///
       elle::Status	Machine::Launch()
       {
-	elle::Point	point;
+	elle::Locus	locus;
 
 	enter();
 
@@ -118,15 +118,15 @@ namespace hole
 
 	  // XXX improve this with getting a list of hosts.
 
-	  // retrieve the neighbours' points.
+	  // retrieve the neighbours' loci.
 	  if (Hole::Descriptor.Get("cirkle", "neighbours",
 				   string) == elle::StatusError)
 	    escape("unable to retrieve the cirkle's host address from the "
 		   "network descriptor");
 
-	  // build the host point.
-	  if (point.Create(string) == elle::StatusError)
-	    escape("unable to create the host point");
+	  // build the host locus.
+	  if (locus.Create(string) == elle::StatusError)
+	    escape("unable to create the host locus");
 
 	  // retrieve the machine's listening port.
 	  if (Hole::Descriptor.Get("cirkle", "port",
@@ -151,11 +151,11 @@ namespace hole
 	  neighbour = new Neighbour;
 
 	  // create the neighbour.
-	  if (neighbour->Create(point) == elle::StatusError)
+	  if (neighbour->Create(locus) == elle::StatusError)
 	    escape("unable to create the neighbour");
 
 	  // add the neighbour to the neighbourhood.
-	  if (this->neighbourhood.Add(neighbour->point,
+	  if (this->neighbourhood.Add(neighbour->locus,
 				      neighbour) == elle::StatusError)
 	    escape("unable to add the neighbour to the neighbourhood");
 
@@ -177,19 +177,19 @@ namespace hole
 	// listen for incoming connections
 	//
 	{
-	  elle::Point			point;
+	  elle::Locus			locus;
 	  elle::Host			host;
 
 	  // create a host.
 	  if (host.Create(elle::Host::TypeAny) == elle::StatusError)
 	    escape("unable to create the host");
 
-	  // create the listening point.
-	  if (point.Create(host, this->port) == elle::StatusError)
-	    escape("unable to create the point");
+	  // create the listening locus.
+	  if (locus.Create(host, this->port) == elle::StatusError)
+	    escape("unable to create the locus");
 
 	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(point,
+	  if (elle::Bridge::Listen(locus,
 				   elle::Callback<>::Infer(
 				     &Machine::Connection, this)) ==
 	      elle::StatusError)
@@ -395,10 +395,10 @@ namespace hole
 
 	// add the neighbour to the neigbourhood until it gets authenticated.
 	//
-	// note that the point here is for sure not the one corresponding
+	// note that the locus here is for sure not the one corresponding
 	// to the listening port. this will do it until the neighbour
 	// provides us the right port to gossip.
-	if (this->neighbourhood.Add(neighbour->point,
+	if (this->neighbourhood.Add(neighbour->locus,
 				    neighbour) == elle::StatusError)
 	  escape("unable to add the neighbour to the neigbourhood");
 
@@ -433,7 +433,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the neighbour from the neigbourhood.
-	if (this->neighbourhood.Retrieve(session->point,
+	if (this->neighbourhood.Retrieve(session->locus,
 					 neighbour) == elle::StatusError)
 	  escape("unable to retrieve the neighbour");
 
@@ -470,7 +470,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->point,
+	if (this->neighbourhood.Retrieve(session->locus,
 					 neighbour) == elle::StatusError)
 	  escape("unable to retrieve the neighbour");
 
@@ -509,7 +509,7 @@ namespace hole
 
 		// remote this neighbour from the neighbourhood.
 		if (this->neighbourhood.Remove(
-		      neighbour->point) == elle::StatusError)
+		      neighbour->locus) == elle::StatusError)
 		  escape("unable to remove the neighbour");
 
 		// delete it.
@@ -555,7 +555,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->point,
+	if (this->neighbourhood.Retrieve(session->locus,
 					 neighbour) == elle::StatusError)
 	  escape("unable to retrieve the neighbour");
 
@@ -611,7 +611,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->point,
+	if (this->neighbourhood.Retrieve(session->locus,
 					 neighbour) == elle::StatusError)
 	  escape("unable to retrieve the neighbour");
 
@@ -642,7 +642,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->point,
+	if (this->neighbourhood.Retrieve(session->locus,
 					 neighbour) == elle::StatusError)
 	  escape("unable to retrieve the neighbour");
 
@@ -659,24 +659,24 @@ namespace hole
 	     scoutor != cluster.container.end();
 	     scoutor++)
 	  {
-	    elle::Point		point = *scoutor;
+	    elle::Locus		locus = *scoutor;
 	    Neighbour*		neighbour;
 
 	    enter(instance(neighbour));
 
-	    // check if this point is already registered.
-	    if (this->neighbourhood.Exist(point) == elle::StatusTrue)
+	    // check if this locus is already registered.
+	    if (this->neighbourhood.Exist(locus) == elle::StatusTrue)
 	      continue;
 
 	    // allocate the neighbour.
 	    neighbour = new Neighbour;
 
 	    // create the neighbour.
-	    if (neighbour->Create(point) == elle::StatusError)
+	    if (neighbour->Create(locus) == elle::StatusError)
 	      escape("unable to create the neighbour");
 
 	    // add the neighbour to the neighbourhood.
-	    if (this->neighbourhood.Add(neighbour->point,
+	    if (this->neighbourhood.Add(neighbour->locus,
 					neighbour) == elle::StatusError)
 	      escape("unable to add the neighbour to the neighbourhood");
 

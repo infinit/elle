@@ -38,8 +38,8 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Server::Server(const elle::Point&				point):
-	point(point)
+      Server::Server(const elle::Locus&				locus):
+	locus(locus)
       {
       }
 
@@ -127,7 +127,7 @@ namespace hole
 	{
 	  // listen for incoming connections.
 	  if (elle::Bridge::Listen(
-		this->point,
+		this->locus,
 	        elle::Callback<>::Infer(
 		  &Server::Connection, this)) == elle::StatusError)
 	    escape("unable to listen for bridge connections");
@@ -752,9 +752,9 @@ namespace hole
 
 	std::cout << alignment << "[Server]" << std::endl;
 
-	// dump the point.
-	if (this->point.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the point");
+	// dump the locus.
+	if (this->locus.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the locus");
 
 	std::cout << alignment << elle::Dumpable::Shift
 		  << "[Customers] " << this->container.size() << std::endl;

@@ -57,16 +57,16 @@ namespace hole
 	     scoutor++)
 	  {
 	    Neighbour*		neighbour = scoutor->second;
-	    elle::Point		point;
+	    elle::Locus		locus;
 
-	    // create a point with the port on which the peer is listening
+	    // create a locus with the port on which the peer is listening
 	    // for incoming connections.
-	    if (point.Create(neighbour->point.host,
+	    if (locus.Create(neighbour->locus.host,
 			     neighbour->port) == elle::StatusError)
-	      escape("unable to create the point");
+	      escape("unable to create the locus");
 
-	    // add the neighbour's point.
-	    this->container.push_back(point);
+	    // add the neighbour's locus.
+	    this->container.push_back(locus);
 	  }
 
 	leave();
@@ -108,11 +108,11 @@ namespace hole
 	     scoutor != this->container.end();
 	     scoutor++)
 	  {
-	    elle::Point		point = *scoutor;
+	    elle::Locus		locus = *scoutor;
 
-	    // serialize the point.
-	    if (archive.Serialize(point) == elle::StatusError)
-	      escape("unable to serialize the point");
+	    // serialize the locus.
+	    if (archive.Serialize(locus) == elle::StatusError)
+	      escape("unable to serialize the locus");
 	  }
 
 	leave();
@@ -135,14 +135,14 @@ namespace hole
 	// go through the entries.
 	for (i = 0; i < size; i++)
 	  {
-	    elle::Point	point;
+	    elle::Locus	locus;
 
-	    // extract the point.
-	    if (archive.Extract(point) == elle::StatusError)
-	      escape("unable to extract the point");
+	    // extract the locus.
+	    if (archive.Extract(locus) == elle::StatusError)
+	      escape("unable to extract the locus");
 
-	    // record the point.
-	    this->container.push_back(point);
+	    // record the locus.
+	    this->container.push_back(locus);
 	  }
 
 	leave();
@@ -170,11 +170,11 @@ namespace hole
 	     scoutor != this->container.end();
 	     scoutor++)
 	  {
-	    elle::Point		point = *scoutor;
+	    elle::Locus		locus = *scoutor;
 
-	    // dump the point.
-	    if (point.Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the point");
+	    // dump the locus.
+	    if (locus.Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the locus");
 	  }
 
 	leave();

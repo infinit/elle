@@ -78,19 +78,19 @@ namespace hole
       elle::Status	Machine::Launch()
       {
 	elle::String	string;
-	elle::Point	point;
+	elle::Locus	locus;
 
 	enter();
 
-	// retrieve the server's point.
+	// retrieve the server's locus.
 	if (Hole::Descriptor.Get("remote", "server",
 				 string) == elle::StatusError)
-	  escape("unable to retrieve the server's point from the "
+	  escape("unable to retrieve the server's locus from the "
 		 "network descriptor");
 
-	// build the host point.
-	if (point.Create(string) == elle::StatusError)
-	  escape("unable to create the host point");
+	// build the host locus.
+	if (locus.Create(string) == elle::StatusError)
+	  escape("unable to create the host locus");
 
 	// try to connect to the server's host.
 	{
@@ -99,7 +99,7 @@ namespace hole
 	  enter(instance(client));
 
 	  // allocate a client.
-	  client = new Client(point);
+	  client = new Client(locus);
 
 	  // launch the client.
 	  if (client->Launch() == elle::StatusOk)
@@ -130,7 +130,7 @@ namespace hole
 	  enter(instance(server));
 
 	  // allocate a server.
-	  server = new Server(point);
+	  server = new Server(locus);
 
 	  // launch the server.
 	  if (server->Launch() == elle::StatusOk)

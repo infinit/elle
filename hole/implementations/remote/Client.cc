@@ -36,9 +36,9 @@ namespace hole
       ///
       /// default constructor.
       ///
-      Client::Client(const elle::Point&				point):
+      Client::Client(const elle::Locus&				locus):
 	state(Client::StateUnknown),
-	point(point),
+	locus(locus),
 	gate(NULL)
       {
       }
@@ -120,7 +120,7 @@ namespace hole
 	    escape("unable to subscribe to the signal");
 
 	  // connect the gate.
-	  if (this->gate->Connect(this->point,
+	  if (this->gate->Connect(this->locus,
 				  elle::Channel::ModeSynchronous) ==
 	      elle::StatusError)
 	    escape("unable to connect to the bridge");
@@ -426,9 +426,9 @@ namespace hole
 
 	std::cout << alignment << "[Client]" << std::endl;
 
-	// dump the point.
-	if (this->point.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the point");
+	// dump the locus.
+	if (this->locus.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the locus");
 
 	// dump the gate.
 	if (this->gate != NULL)

@@ -71,12 +71,12 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbour::Create(const elle::Point&	point)
+      elle::Status	Neighbour::Create(const elle::Locus&	locus)
       {
 	enter();
 
-	// set the point.
-	this->point = point;
+	// set the locus.
+	this->locus = locus;
 
 	// allocate the timer.
 	this->timer = new elle::Timer;
@@ -148,7 +148,7 @@ namespace hole
 	  escape("unable to create the gate");
 
 	// connect the gate.
-	if (this->gate->Connect(this->point) == elle::StatusError)
+	if (this->gate->Connect(this->locus) == elle::StatusError)
 	  escape("unable to connect to the peer");
 
 	leave();
@@ -171,14 +171,14 @@ namespace hole
 	    // delete the timer.
 	    delete this->timer;
 
-	    // reset the point.
+	    // reset the locus.
 	    this->timer = NULL;
 	  }
 	else
 	  {
 	    // remove the neighbour from the neighbourhood.
 	    if (Cirkle::Computer->neighbourhood.Remove(
-		  this->point) == elle::StatusError)
+		  this->locus) == elle::StatusError)
 	      escape("unable to remove the neighbour from the "
 		     "neighbourhood");
 
@@ -223,7 +223,7 @@ namespace hole
 
 	      // remove the neighbour from the neighbourhood.
 	      if (Cirkle::Computer->neighbourhood.Remove(
-		    this->point) == elle::StatusError)
+		    this->locus) == elle::StatusError)
 		escape("unable to remove the neighbour from the "
 		       "neighbourhood");
 
@@ -263,9 +263,9 @@ namespace hole
 	std::cout << alignment << elle::Dumpable::Shift << "[State] "
 		  << this->state << std::endl;
 
-	// dump the point.
-	if (this->point.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the point");
+	// dump the locus.
+	if (this->locus.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the locus");
 
 	// dump the label.
 	if (this->label.Dump(margin + 2) == elle::StatusError)
