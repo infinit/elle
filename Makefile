@@ -54,7 +54,7 @@ COMPONENTS	:=		elle					\
 
 all:			build
 
-build:
+build::
 	$(TEST) -d $(BUILD) || $(CONFIGURE) --build-dir=$(BUILD)
 	$(MAKE) -C $(BUILD)
 
