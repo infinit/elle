@@ -16,6 +16,7 @@ install with AUR:
 mingw32-zlib
 mingw32-openssl
 mingw32-qt
+mingw32-msgpack
 
 mkdir build-win32
 cd build-win32
