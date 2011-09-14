@@ -54,9 +54,9 @@ COMPONENTS	:=		elle					\
 
 all:			build
 
-build:
+build::
 	$(TEST) -d $(BUILD) || $(CONFIGURE) --build-dir=$(BUILD)
-	$(MAKE) -C $(BUILD)
+	$(MAKE) $(MAKEOPT) -C $(BUILD)
 
 install:		build
 	$(MAKE) -C $(BUILD) install
