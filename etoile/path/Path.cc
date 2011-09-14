@@ -256,7 +256,7 @@ namespace etoile
 				    nucleus::Version&		version)
     {
       Length			length;
-      Length			start;
+      size_t			start;
       nucleus::Version::Type	n;
 
       enter();
