@@ -6,15 +6,89 @@
 #
 
 - Contents<T> contient un Porcupine dependant de T
+- chaque Contents<T> a un comportement specifique
 
 [Data]
 
-Contents contient un Porcupine<Offset, Data>
+- operations:
+  - Write
+  - Read
+  - Adjust
+  - Capacity
+- Contents contient un Porcupine<Offset, Data>: indexe par l'offset de la donnee
+- comportement:
+  - Read:
+    1) locate entree qui contient l'offset de depart
+    2) utiliser le lien frere pour passer au suivant jusqu'a ce que toutes les
+       donnees soient lues ou le fin des donnees soient atteintes
+  - Write:
+    1) locate entree qui contient l'offset
+      a) si elle n'existe pas
+        i) si assez de place a gauche, a droite ou sur les deux:
+          -> distribuer les ecritures sur les blocs voisins
+        ii) sinon:
+          -> creer un ou plusieurs nouveaux blocs (GCD sur la taille totale
+             a inserer et la taille nominale d'un block: a faire a la main
+             surement)
+          -> inserer le ou les blocs
+      b) si elle existe
+        - ecraser les donnees existantes en passant aux blocs suivant via
+          le lien frere
+    2) continuer avec la suite des donnees en utilisant soit le cas: le
+       block existe ou pas
 
 [Catalog]
 
-Contents contient un Porcupine<Slice, Catalog>
+- operations:
+  - Add
+  - Exist
+  - Lookup
+  - Consult
+  - Rename
+  - Remove
+  - Capacity
+- Contents contient un Porcupine<Slice, Catalog>: indexe par le nom de l'entree
+- comportement:
+  - Add:
+    1) locate le catalog pour ce slice
+    2) si il reste de la place...
+      i) sur le catalog courant: ajouter
+      ii) sur un voisin: ajouter
+      iii) sinon prendre le plus gros, ajouter et splitter
+  - Exist
+    1) locate entree
+  - Lookup
+    1) locate entree
+  - Consult
+    1) locate node pour l'index de debut: LINEAIRE (au pire faire remonter dans
+       l'arbre le nombre d'entrees par catalogue pour pouvoir facilement retrouver)
+    2) ensuite utiliser le lien frere pour passer les entrees jusqu'a l'index
+       de fin.
+  - Rename
+    1) locate entree
+  - Remove
+    1) locate entree
+    2) la supprimer
+    3) si le catalogue devient trop petit, redistribuer sur les noeuds voisins
+       (si possible)
 
 [Reference]
 
-Contents contient une Reference
+- operations:
+  - Bind
+  - Resolve
+  - Capacity
+- Contents contient une Reference
+
+
+
+!WARNING!: il faut essayer de garantir une taille mini des blocs, sauf dans le
+  cas d'un unique block avec peu de donnees: cela dit ca c'est complique puisque
+  rien que les blocs de noeuds peuvent ne contenir qu'une entree!
+
+=> l'idee en tout cas c'est d'avoir des blocs de taille moyenne
+=> il faut que les limites soient bien choisies pour que le split donne naissance
+   a deux blocs dont la taille est superieure a la limite basse. meme chose
+   quand on remove une entree directory, le bloc devient trop petit, il faut
+   qu'il puisse etre redistribuer sur les voisins sans split (sans si il est
+   le dernier).
