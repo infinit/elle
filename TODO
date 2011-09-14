@@ -1,3 +1,20 @@
 - faire un test avec gros fichiers sans Porcupine -> mettre dans Wiki
  -> coder Porcupine dans elle/
-- +ssh agent
+
+#
+# ---------- porcupine --------------------------------------------------------
+#
+
+- Contents<T> contient un Porcupine dependant de T
+
+[Data]
+
+Contents contient un Porcupine<Offset, Data>
+
+[Catalog]
+
+Contents contient un Porcupine<Slice, Catalog>
+
+[Reference]
+
+Contents contient une Reference
