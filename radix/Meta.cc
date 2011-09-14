@@ -175,9 +175,9 @@ namespace elle
     /// note that since new operators cannot return NULL, all the errors
     /// handling is skipped.
     ///
-    Void*		Meta::operator new(Natural32		size)
+    void*		Meta::operator new(size_t		size)
     {
-      Void*		address;
+      void*		address;
 
       // allocate memory on the heap
       address = ::malloc(size);
@@ -204,8 +204,8 @@ namespace elle
     /// this operator is called whenever an object is allocated in
     /// a given memory area referenced by _address_.
     ///
-    Void*		Meta::operator new(Natural32,
-					   Void*		address)
+    void*		Meta::operator new(size_t,
+					   void*		address)
     {
       // return the address of the already reserved memory area.
       return (address);
@@ -217,9 +217,9 @@ namespace elle
     /// note that since new operators cannot return NULL, all the errors
     /// handling is skipped.
     ///
-    Void*		Meta::operator new[](Natural32		size)
+    void*		Meta::operator new[](size_t		size)
     {
-      Void*		address;
+      void*		address;
 
       // allocate memory on the heap
       address = ::malloc(size);
@@ -246,8 +246,8 @@ namespace elle
     /// this operator is called whenever an object is allocated in
     /// a given memory area referenced by _address_.
     ///
-    Void*		Meta::operator new[](Natural32,
-					     Void*		address)
+    void*		Meta::operator new[](size_t,
+					     void*		address)
     {
       // return the address of the already reserved memory area.
       return (address);
@@ -256,7 +256,7 @@ namespace elle
     ///
     /// this method releases previously-reserved memory.
     ///
-    Void		Meta::operator delete(Void*		address)
+    void		Meta::operator delete(void*		address)
     {
       // only proceed if debugging has been activated.
       if ((Meta::Debug::Status == true) &&

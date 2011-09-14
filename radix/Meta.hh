@@ -79,15 +79,15 @@ namespace elle
       //
       // operators
       //
-      Void*		operator new(Natural32);
-      Void*		operator new(Natural32,
-				     Void*);
+      void*		operator new(size_t);
+      void*		operator new(size_t,
+				     void*);
 
-      Void*		operator new[](Natural32);
-      Void*		operator new[](Natural32,
-				       Void*);
+      void*		operator new[](size_t);
+      void*		operator new[](size_t,
+				       void*);
 
-      Void		operator delete(Void*);
+      void		operator delete(void*);
     };
 
   }

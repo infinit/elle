@@ -597,7 +597,7 @@ namespace elle
     ///
     Status		Archive::Fetch(Archive::Type&		type)
     {
-      Natural32		offset = this->offset;
+      size_t		offset = this->offset;
       Byte		byte;
 
       enter();

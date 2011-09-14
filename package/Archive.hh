@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/package/Archive.hh
 //
 // created       julien quintard   [thu nov  1 21:00:41 2007]
-// updated       julien quintard   [tue sep  6 12:42:07 2011]
+// updated       julien quintard   [wed sep 14 16:55:29 2011]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HH
@@ -253,7 +253,7 @@ namespace elle
       Control			control;
 
       Byte*&			contents;
-      Natural32&		size;
+      size_t&			size;
       size_t			offset;
 
       ::msgpack::sbuffer	buffer;
