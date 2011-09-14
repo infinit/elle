@@ -39,7 +39,7 @@ namespace elle
 				       String&			output,
 				       const String&		delimiters)
     {
-      Natural32		index;
+      size_t		index;
 
       enter();
 
@@ -501,7 +501,7 @@ namespace elle
 	{
 	  String		name;
 	  String		value;
-	  Natural32		position;
+	  size_t		position;
 
 	  // first, trim the line.
 	  if (Settings::Trim(line, line) == StatusError)

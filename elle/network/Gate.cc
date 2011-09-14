@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Gate.cc
 //
 // created       julien quintard   [wed may 25 11:01:56 2011]
-// updated       julien quintard   [wed sep  7 18:15:10 2011]
+// updated       julien quintard   [wed sep 14 17:10:56 2011]
 //
 
 //
@@ -222,13 +222,13 @@ namespace elle
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large: %u bytes",
-	       packet.size);
+	escape("the packet seems to be too large: %qu bytes",
+	       static_cast<Natural64>(packet.size));
 
       // push the packet to the socket.
       if (this->socket->write(
 	    reinterpret_cast<const char*>(packet.contents),
-	    packet.size) != packet.size)
+	    packet.size) != static_cast<qint64>(packet.size))
 	escape("unable to write the packet");
 
       // flush to start sending data immediately.

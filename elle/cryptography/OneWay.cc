@@ -43,6 +43,7 @@ namespace elle
 				     Digest&			digest)
     {
       ::EVP_MD_CTX	context;
+      unsigned int	size;
 
       wrap(context);
       enter(local(context, ::EVP_MD_CTX_cleanup));
@@ -71,8 +72,11 @@ namespace elle
       if (::EVP_DigestFinal_ex(
 	    &context,
 	    reinterpret_cast<unsigned char*>(digest.region.contents),
-	    static_cast<unsigned int*>(&digest.region.size)) <= 0)
+	    static_cast<unsigned int*>(&size)) <= 0)
 	escape(::ERR_error_string(ERR_get_error(), NULL));
+
+      // set the size.
+      digest.region.size = size;
 
       // clean the context.
       if (::EVP_MD_CTX_cleanup(&context) <= 0)

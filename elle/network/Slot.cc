@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/elle/network/Slot.cc
 //
 // created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [wed sep  7 18:15:19 2011]
+// updated       julien quintard   [wed sep 14 17:10:30 2011]
 //
 
 //
@@ -140,15 +140,15 @@ namespace elle
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large: %u bytes",
-	       packet.size);
+	escape("the packet seems to be too large: %qu bytes",
+	       static_cast<Natural64>(packet.size));
 
       // push the datagram into the socket.
       if (this->socket->writeDatagram(
 	    reinterpret_cast<const char*>(packet.contents),
 	    packet.size,
 	    locus.host.location,
-	    locus.port) != packet.size)
+	    locus.port) != static_cast<qint64>(packet.size))
 	escape(this->socket->errorString().toStdString().c_str());
 
       leave();

@@ -89,7 +89,7 @@ namespace elle
       //
       Region();
       Region(const Byte*,
-	     Natural32);
+	     Natural64);
       Region(const Region&);
       ~Region();
 
@@ -97,24 +97,24 @@ namespace elle
       // methods
       //
       Status		Wrap(const Byte*,
-			     Natural32);
+			     Natural64);
       Status		Acquire(Byte*,
-				Natural32);
+				Natural64);
 
-      Status		Prepare(const Natural32);
+      Status		Prepare(const Natural64);
       Status		Duplicate(const Byte*,
-				  Natural32);
+				  Natural64);
 
-      Status		Adjust(const Natural32);
+      Status		Adjust(const Natural64);
       Status		Append(const Byte*,
-			       const Natural32);
+			       const Natural64);
 
-      Status		Read(const Natural32,
+      Status		Read(const Natural64,
 			     Byte*,
-			     const Natural32) const;
-      Status		Write(const Natural32,
+			     const Natural64) const;
+      Status		Write(const Natural64,
 			      const Byte*,
-			      const Natural32);
+			      const Natural64);
 
       Status		Detach();
 
@@ -148,8 +148,8 @@ namespace elle
       Options		options;
 
       Byte*		contents;
-      Natural32		size;
-      Natural32		capacity;
+      Natural64		size;
+      Natural64		capacity;
     };
 
   }

@@ -243,14 +243,14 @@ namespace elle
 	//
 	// operators
 	//
-	Void*			operator new(Natural32,
-					     Void*		memory)
+	void*			operator new(size_t,
+					     void*		memory)
 	{
 	  // return the same pointer.
 	  return (memory);
 	}
 
-	Void			operator delete(Void*)
+	void			operator delete(void*)
 	{
 	  // do not release any memory as this will be done automatically.
 	}
@@ -288,14 +288,14 @@ namespace elle
 	//
 	// operators
 	//
-	Void*			operator new(Natural32,
-					     Void*		memory)
+	void*			operator new(size_t,
+					     void*		memory)
 	{
 	  // return the same pointer.
 	  return (memory);
 	}
 
-	Void			operator delete(Void*)
+	void			operator delete(void*)
 	{
 	  // do not release any memory as this will be done automatically.
 	}

@@ -62,7 +62,7 @@ namespace elle
     /// wrap constructor: identical behaviour to Wrap().
     ///
     Region::Region(const Byte*					contents,
-		   Natural32					size):
+		   Natural64					size):
       type(Region::TypeChunk),
       options(Region::OptionNone),
       contents(const_cast<Byte*>(contents)),
@@ -132,7 +132,7 @@ namespace elle
     /// the choice to the region's user.
     ///
     Status		Region::Wrap(const Byte*		contents,
-				     Natural32			size)
+				     Natural64			size)
     {
       enter();
 
@@ -154,7 +154,7 @@ namespace elle
     /// this method takes over the ownership of the given memory area.
     ///
     Status		Region::Acquire(Byte*			contents,
-					Natural32		size)
+					Natural64		size)
     {
       enter();
 
@@ -177,7 +177,7 @@ namespace elle
     /// this method can be used for pre-allocating the memory for
     /// an upcoming direct-copy assignment.
     ///
-    Status		Region::Prepare(const Natural32		capacity)
+    Status		Region::Prepare(const Natural64		capacity)
     {
       enter();
 
@@ -205,7 +205,7 @@ namespace elle
     /// this method assigns a data region, building a so-called buffer.
     ///
     Status		Region::Duplicate(const Byte*		contents,
-					  Natural32		size)
+					  Natural64		size)
     {
       enter();
 
@@ -242,7 +242,7 @@ namespace elle
     /// region. besides, note that this method does not set the size but
     /// only deals with making sure the capacity is sufficient.
     ///
-    Status		Region::Adjust(const Natural32		size)
+    Status		Region::Adjust(const Natural64		size)
     {
       enter();
 
@@ -290,7 +290,7 @@ namespace elle
     /// this method adds data to the buffer region.
     ///
     Status		Region::Append(const Byte*		contents,
-				       const Natural32		size)
+				       const Natural64		size)
     {
       enter();
 
@@ -313,9 +313,9 @@ namespace elle
     /// this method allows the caller to read data anywhere in the
     /// region.
     ///
-    Status		Region::Read(const Natural32		offset,
+    Status		Region::Read(const Natural64		offset,
 				     Byte*			contents,
-				     const Natural32		size) const
+				     const Natural64		size) const
     {
       enter();
 
@@ -333,9 +333,9 @@ namespace elle
     /// this method allows the caller to write data anywhere in the
     /// region.
     ///
-    Status		Region::Write(const Natural32		offset,
+    Status		Region::Write(const Natural64		offset,
 				      const Byte*		contents,
-				      const Natural32		size)
+				      const Natural64		size)
     {
       enter();
 
