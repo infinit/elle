@@ -8,7 +8,7 @@
 // file          /home/mycure/infinit/pig/Crux.cc
 //
 // created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [sun sep 11 21:12:27 2011]
+// updated       julien quintard   [wed sep 14 17:49:10 2011]
 //
 
 //
@@ -356,7 +356,7 @@ namespace pig
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, buffer, filler, offset, info);
+	     path, buffer, filler, static_cast<elle::Natural64>(offset), info);
 
     // set the identifier pointer to the file handle that has been
     // filled by Opendir().
@@ -407,7 +407,8 @@ namespace pig
 		if (Infinit::Configuration.debug.pig == true)
 		  printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 			 __FUNCTION__,
-			 path, buffer, filler, offset, info);
+			 path, buffer, filler,
+			 static_cast<elle::Natural64>(offset), info);
 
 		return (0);
 	      }
@@ -427,7 +428,7 @@ namespace pig
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, buffer, filler, offset, info);
+	     path, buffer, filler, static_cast<elle::Natural64>(offset), info);
 
     return (0);
   }
@@ -1236,9 +1237,9 @@ namespace pig
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
-      printf("[pig] %s(%s, %p, %u)\n",
+      printf("[pig] %s(%s, %p, %qu)\n",
 	     __FUNCTION__,
-	     path, buffer, size);
+	     path, buffer, static_cast<elle::Natural64>(size));
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1270,9 +1271,9 @@ namespace pig
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
-      printf("[pig] /%s(%s, %p, %u)\n",
+      printf("[pig] /%s(%s, %p, %qu)\n",
 	     __FUNCTION__,
-	     path, buffer, size);
+	     path, buffer, static_cast<elle::Natural64>(size));
 
     return (0);
   }
@@ -1441,9 +1442,10 @@ namespace pig
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
-      printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
+      printf("[pig] %s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, buffer, size, offset, info);
+	     path, buffer, static_cast<elle::Natural64>(size),
+	     static_cast<elle::Natural64>(offset), info);
 
     // retrieve the identifier.
     identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
@@ -1463,9 +1465,10 @@ namespace pig
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
-      printf("[pig] /%s(%s, %p, %u, %qu, %p)\n",
+      printf("[pig] /%s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, buffer, size, offset, info);
+	     path, buffer, static_cast<elle::Natural64>(size),
+	     static_cast<elle::Natural64>(offset), info);
 
     return (size);
   }
@@ -1484,9 +1487,10 @@ namespace pig
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
-      printf("[pig] %s(%s, %p, %u, %qu, %p)\n",
+      printf("[pig] %s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, buffer, size, offset, info);
+	     path, buffer, static_cast<elle::Natural64>(size),
+	     static_cast<elle::Natural64>(offset), info);
 
     // retrieve the identifier.
     identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
@@ -1504,9 +1508,10 @@ namespace pig
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
-      printf("[pig] /%s(%s, %p, %u, %qu, %p)\n",
+      printf("[pig] /%s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, buffer, size, offset, info);
+	     path, buffer, static_cast<elle::Natural64>(size),
+	     static_cast<elle::Natural64>(offset), info);
 
     return (region.size);
   }
@@ -1527,7 +1532,7 @@ namespace pig
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %qu)\n",
 	     __FUNCTION__,
-	     path, size);
+	     path, static_cast<elle::Natural64>(size));
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
@@ -1554,7 +1559,7 @@ namespace pig
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %qu)\n",
 	     __FUNCTION__,
-	     path, size);
+	     path, static_cast<elle::Natural64>(size));
 
     return (result);
   }
@@ -1572,7 +1577,7 @@ namespace pig
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, size, info);
+	     path, static_cast<elle::Natural64>(size), info);
 
     // retrieve the identifier.
     identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
@@ -1587,7 +1592,7 @@ namespace pig
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] /%s(%s, %qu, %p)\n",
 	     __FUNCTION__,
-	     path, size, info);
+	     path, static_cast<elle::Natural64>(size), info);
 
     return (0);
   }
