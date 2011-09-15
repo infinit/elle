@@ -22,8 +22,11 @@
 
 #include <elle/idiom/Close.hh>
 # include <stdio.h>
-# include <readline/readline.h>
-# include <readline/history.h>
+# include <unistd.h>
+//# if INFINIT_UNIX
+#  include <readline/readline.h>
+#  include <readline/history.h>
+//# endif
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -52,7 +55,7 @@ namespace elle
 	case OptionPassword:
 	  {
 	    // retrieve the input and assign it.
-	    text.assign(::getpass(prompt.c_str()));
+	    text.assign(::readline(prompt.c_str()));
 
 	    break;
 	  }

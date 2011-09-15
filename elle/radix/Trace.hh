@@ -11,6 +11,7 @@
 // updated       julien quintard   [tue sep  6 20:57:20 2011]
 //
 
+#if 0
 #ifndef ELLE_RADIX_TRACE_HH
 #define ELLE_RADIX_TRACE_HH
 
@@ -110,4 +111,5 @@ namespace elle
   }
 }
 
+#endif
 #endif
