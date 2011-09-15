@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/SecretKey.hxx
-//
-// created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [tue sep  6 15:44:47 2011]
+// author        julien quintard   [mon jan 26 14:09:50 2009]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HXX

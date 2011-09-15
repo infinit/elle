@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Seed.hh
-//
-// created       julien quintard   [sat mar 19 13:41:49 2011]
-// updated       julien quintard   [wed mar 23 15:23:12 2011]
+// author        julien quintard   [sat mar 19 13:41:49 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SEED_HH

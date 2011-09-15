@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PrivateKey.hxx
-//
-// created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [tue sep  6 15:41:07 2011]
+// author        julien quintard   [mon jan 26 14:09:50 2009]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HXX
@@ -47,7 +44,7 @@ namespace elle
     //
 
     ///
-    /// this method decrypts a code and returns pretty newly created
+    /// this method decrypts a code and returns pretty newly author 
     /// objects.
     ///
     template <typename T,

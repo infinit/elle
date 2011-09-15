@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Random.cc
-//
-// created       julien quintard   [thu aug 11 16:15:28 2011]
-// updated       julien quintard   [wed sep  7 18:03:00 2011]
+// author        julien quintard   [thu aug 11 16:15:28 2011]
 //
 
 //
