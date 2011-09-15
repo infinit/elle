@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/MutableBlock.hh
-//
-// created       julien quintard   [sat may 21 12:27:09 2011]
-// updated       julien quintard   [wed sep  7 09:04:16 2011]
+// author        julien quintard   [sat may 21 12:27:09 2011]
 //
 
 #ifndef NUCLEUS_PROTON_MUTABLEBLOCK_HH

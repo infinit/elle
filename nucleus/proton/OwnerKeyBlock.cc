@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/OwnerKeyBlock.cc
-//
-// created       julien quintard   [fri may  6 15:34:18 2011]
-// updated       julien quintard   [sun sep 11 20:46:20 2011]
+// author        julien quintard   [fri may  6 15:34:18 2011]
 //
 
 //

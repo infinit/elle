@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/ImprintBlock.cc
-//
-// created       julien quintard   [sat may  7 23:41:32 2011]
-// updated       julien quintard   [sun sep 11 20:46:02 2011]
+// author        julien quintard   [sat may  7 23:41:32 2011]
 //
 
 //

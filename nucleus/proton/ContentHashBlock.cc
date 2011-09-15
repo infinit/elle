@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.cc
-//
-// created       julien quintard   [tue feb 17 12:39:45 2009]
-// updated       julien quintard   [tue sep  6 22:58:24 2011]
+// author        julien quintard   [tue feb 17 12:39:45 2009]
 //
 
 //

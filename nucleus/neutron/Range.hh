@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Range.hh
-//
-// created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [wed sep  7 12:21:56 2011]
+// author        julien quintard   [wed mar 31 23:32:06 2010]
 //
 
 #ifndef NUCLEUS_NEUTRON_RANGE_HH

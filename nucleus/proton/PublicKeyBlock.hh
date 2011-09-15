@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.hh
-//
-// created       julien quintard   [tue feb 17 19:45:45 2009]
-// updated       julien quintard   [wed sep  7 09:09:35 2011]
+// author        julien quintard   [tue feb 17 19:45:45 2009]
 //
 
 #ifndef NUCLEUS_PROTON_PUBLICKEYBLOCK_HH
@@ -38,7 +35,7 @@ namespace nucleus
     /// this class represents a public key block i.e a mutable block.
     ///
     /// for this construct, a key pair is generated whenever such a block
-    /// is created. then, since the address of such a block is computed
+    /// is author . then, since the address of such a block is computed
     /// by applying a one-way function on the generated public key, and
     /// since this public key never changes, the block's content can be
     /// modified without implying the creation of a new block as for

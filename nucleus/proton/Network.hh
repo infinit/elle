@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Network.hh
-//
-// created       julien quintard   [sun may  8 01:21:07 2011]
-// updated       julien quintard   [wed sep  7 09:05:56 2011]
+// author        julien quintard   [sun may  8 01:21:07 2011]
 //
 
 #ifndef NUCLEUS_PROTON_NETWORK_HH

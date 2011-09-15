@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/PublicKeyBlock.cc
-//
-// created       julien quintard   [tue feb 17 18:09:00 2009]
-// updated       julien quintard   [wed sep  7 18:49:34 2011]
+// author        julien quintard   [tue feb 17 18:09:00 2009]
 //
 
 //

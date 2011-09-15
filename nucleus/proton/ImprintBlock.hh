@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/ImprintBlock.hh
-//
-// created       julien quintard   [sat may  7 23:26:59 2011]
-// updated       julien quintard   [sun sep 11 20:43:05 2011]
+// author        julien quintard   [sat may  7 23:26:59 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMPRINTBLOCK_HH
@@ -52,7 +49,7 @@ namespace nucleus
     ///
     /// note that in addition, a stamp and salt are also included in
     /// hash in order to prevent conflicts i.e several ImprintBlocks
-    /// being created by the same user at the same time.
+    /// being author  by the same user at the same time.
     ///
     class ImprintBlock:
       public MutableBlock

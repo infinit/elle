@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Base.cc
-//
-// created       julien quintard   [fri jun 17 14:34:48 2011]
-// updated       julien quintard   [thu jun 23 08:44:49 2011]
+// author        julien quintard   [fri jun 17 14:34:48 2011]
 //
 
 //

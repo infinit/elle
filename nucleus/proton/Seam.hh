@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Seam.hh
-//
-// created       julien quintard   [mon sep 12 06:15:32 2011]
-// updated       julien quintard   [mon sep 12 07:34:35 2011]
+// author        julien quintard   [mon sep 12 06:15:32 2011]
 //
 
 #ifndef NUCLEUS_PROTON_SEAM_HH

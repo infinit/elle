@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Block.cc
-//
-// created       julien quintard   [fri sep 11 22:44:58 2009]
-// updated       julien quintard   [wed sep  7 18:32:22 2011]
+// author        julien quintard   [fri sep 11 22:44:58 2009]
 //
 
 //

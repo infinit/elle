@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Address.cc
-//
-// created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [wed sep  7 18:29:54 2011]
+// author        julien quintard   [mon feb 16 21:42:37 2009]
 //
 
 //

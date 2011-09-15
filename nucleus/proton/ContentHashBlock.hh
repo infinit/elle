@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/ContentHashBlock.hh
-//
-// created       julien quintard   [tue feb 17 12:33:12 2009]
-// updated       julien quintard   [tue sep  6 22:58:43 2011]
+// author        julien quintard   [tue feb 17 12:33:12 2009]
 //
 
 #ifndef NUCLEUS_PROTON_CONTENTHASHBLOCK_HH

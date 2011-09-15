@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Offset.hh
-//
-// created       julien quintard   [sun jan 31 22:34:41 2010]
-// updated       julien quintard   [mon jun 27 10:41:21 2011]
+// author        julien quintard   [sun jan 31 22:34:41 2010]
 //
 
 #ifndef NUCLEUS_NEUTRON_OFFSET_HH

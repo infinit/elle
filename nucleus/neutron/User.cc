@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/User.cc
-//
-// created       julien quintard   [thu apr 29 19:56:29 2010]
-// updated       julien quintard   [thu may 12 13:00:35 2011]
+// author        julien quintard   [thu apr 29 19:56:29 2010]
 //
 
 //

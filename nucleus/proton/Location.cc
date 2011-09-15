@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Location.cc
-//
-// created       julien quintard   [wed jun 15 20:17:21 2011]
-// updated       julien quintard   [fri jun 24 17:41:25 2011]
+// author        julien quintard   [wed jun 15 20:17:21 2011]
 //
 
 //

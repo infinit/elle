@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Data.hh
-//
-// created       julien quintard   [tue aug  4 06:54:28 2009]
-// updated       julien quintard   [wed sep  7 11:12:32 2011]
+// author        julien quintard   [tue aug  4 06:54:28 2009]
 //
 
 #ifndef NUCLEUS_NEUTRON_DATA_HH

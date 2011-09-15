@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Version.hh
-//
-// created       julien quintard   [fri aug 14 16:24:48 2009]
-// updated       julien quintard   [wed sep  7 09:32:41 2011]
+// author        julien quintard   [fri aug 14 16:24:48 2009]
 //
 
 #ifndef NUCLEUS_PROTON_VERSION_HH

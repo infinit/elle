@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Stamp.cc
-//
-// created       julien quintard   [fri jun 17 14:01:30 2011]
-// updated       julien quintard   [thu jul 28 15:12:59 2011]
+// author        julien quintard   [fri jun 17 14:01:30 2011]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Size.hh
-//
-// created       julien quintard   [thu apr  1 22:36:01 2010]
-// updated       julien quintard   [wed aug  3 23:48:51 2011]
+// author        julien quintard   [thu apr  1 22:36:01 2010]
 //
 
 #ifndef NUCLEUS_NEUTRON_SIZE_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/ImmutableBlock.hh
-//
-// created       julien quintard   [sat may 21 12:11:53 2011]
-// updated       julien quintard   [tue sep  6 23:01:38 2011]
+// author        julien quintard   [sat may 21 12:11:53 2011]
 //
 
 #ifndef NUCLEUS_PROTON_IMMUTABLEBLOCK_HH

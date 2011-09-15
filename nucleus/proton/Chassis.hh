@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Chassis.hh
-//
-// created       julien quintard   [mon sep 12 06:30:17 2011]
-// updated       julien quintard   [mon sep 12 06:49:46 2011]
+// author        julien quintard   [mon sep 12 06:30:17 2011]
 //
 
 #ifndef NUCLEUS_PROTON_CHASSIS_HH

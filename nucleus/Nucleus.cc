@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/Nucleus.cc
-//
-// created       julien quintard   [thu jan 28 22:01:03 2010]
-// updated       julien quintard   [mon aug  1 10:22:55 2011]
+// author        julien quintard   [thu jan 28 22:01:03 2010]
 //
 
 //

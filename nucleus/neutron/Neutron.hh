@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Neutron.hh
-//
-// created       julien quintard   [wed may  4 15:40:00 2011]
-// updated       julien quintard   [wed sep  7 12:21:04 2011]
+// author        julien quintard   [wed may  4 15:40:00 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_HH

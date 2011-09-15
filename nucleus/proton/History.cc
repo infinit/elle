@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/History.cc
-//
-// created       julien quintard   [wed jul  6 09:21:17 2011]
-// updated       julien quintard   [wed sep  7 18:39:18 2011]
+// author        julien quintard   [wed jul  6 09:21:17 2011]
 //
 
 //

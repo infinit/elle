@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/Derivable.hxx
-//
-// created       julien quintard   [fri jul  8 10:44:04 2011]
-// updated       julien quintard   [wed sep  7 14:55:13 2011]
+// author        julien quintard   [fri jul  8 10:44:04 2011]
 //
 
 #ifndef NUCLEUS_DERIVABLE_HXX

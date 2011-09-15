@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Trait.cc
-//
-// created       julien quintard   [thu apr  1 22:00:03 2010]
-// updated       julien quintard   [thu may  5 13:31:44 2011]
+// author        julien quintard   [thu apr  1 22:00:03 2010]
 //
 
 //

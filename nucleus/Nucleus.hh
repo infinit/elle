@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/Nucleus.hh
-//
-// created       julien quintard   [mon feb 16 16:46:27 2009]
-// updated       julien quintard   [wed sep  7 09:08:05 2011]
+// author        julien quintard   [mon feb 16 16:46:27 2009]
 //
 
 #ifndef NUCLEUS_NUCLEUS_HH

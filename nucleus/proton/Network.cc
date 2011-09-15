@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Network.cc
-//
-// created       julien quintard   [mon feb 16 21:42:37 2009]
-// updated       julien quintard   [sun may  8 02:07:12 2011]
+// author        julien quintard   [mon feb 16 21:42:37 2009]
 //
 
 //

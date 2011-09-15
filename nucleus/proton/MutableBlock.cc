@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/MutableBlock.cc
-//
-// created       julien quintard   [sat may 21 12:27:39 2011]
-// updated       julien quintard   [wed sep  7 18:47:38 2011]
+// author        julien quintard   [sat may 21 12:27:39 2011]
 //
 
 //
@@ -263,7 +260,7 @@ namespace nucleus
       if (elle::Link::Exist(link) == elle::StatusTrue)
 	{
 	  // delete the link which references the latest version since a
-	  // new version has been created.
+	  // new version has been author .
 	  if (elle::Link::Erase(link) == elle::StatusError)
 	    escape("unable to erase the block link");
 	}

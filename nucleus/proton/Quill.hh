@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Quill.hh
-//
-// created       julien quintard   [mon sep 12 05:53:08 2011]
-// updated       julien quintard   [mon sep 12 07:34:32 2011]
+// author        julien quintard   [mon sep 12 05:53:08 2011]
 //
 
 #ifndef NUCLEUS_PROTON_QUILL_HH

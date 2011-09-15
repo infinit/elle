@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Token.hh
-//
-// created       julien quintard   [fri jul 24 16:28:56 2009]
-// updated       julien quintard   [thu jun 16 20:49:11 2011]
+// author        julien quintard   [fri jul 24 16:28:56 2009]
 //
 
 #ifndef NUCLEUS_NEUTRON_TOKEN_HH

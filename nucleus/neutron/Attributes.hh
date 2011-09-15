@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Attributes.hh
-//
-// created       julien quintard   [wed mar 31 23:32:06 2010]
-// updated       julien quintard   [wed sep  7 11:03:40 2011]
+// author        julien quintard   [wed mar 31 23:32:06 2010]
 //
 
 #ifndef NUCLEUS_NEUTRON_ATTRIBUTES_HH

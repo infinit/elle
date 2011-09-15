@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Object.cc
-//
-// created       julien quintard   [fri mar  6 11:37:13 2009]
-// updated       julien quintard   [sun sep 11 20:42:29 2011]
+// author        julien quintard   [fri mar  6 11:37:13 2009]
 //
 
 //
@@ -310,7 +307,7 @@ namespace nucleus
     }
 
     ///
-    /// this method verifies that the object has been properly created
+    /// this method verifies that the object has been properly author 
     /// i.e that every signature has been produced by legitimate users.
     ///
     /// the method (i) calls the parent class for validation (iii) verifies

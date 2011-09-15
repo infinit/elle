@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Role.hh
-//
-// created       julien quintard   [sun apr  4 14:38:46 2010]
-// updated       julien quintard   [mon jun 20 14:02:47 2011]
+// author        julien quintard   [sun apr  4 14:38:46 2010]
 //
 
 #ifndef NUCLEUS_NEUTRON_ROLE_HH

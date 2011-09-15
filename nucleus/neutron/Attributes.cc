@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/neutron/Attributes.cc
-//
-// created       julien quintard   [wed mar 31 23:36:12 2010]
-// updated       julien quintard   [wed sep  7 11:42:37 2011]
+// author        julien quintard   [wed mar 31 23:36:12 2010]
 //
 
 //

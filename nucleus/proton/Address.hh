@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/nucleus/proton/Address.hh
-//
-// created       julien quintard   [mon feb 16 21:13:00 2009]
-// updated       julien quintard   [tue sep  6 22:47:32 2011]
+// author        julien quintard   [mon feb 16 21:13:00 2009]
 //
 
 #ifndef NUCLEUS_PROTON_ADDRESS_HH
