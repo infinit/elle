@@ -1,7 +1,8 @@
+### build for your own machine
+
 cd build/
 cmake ../
 make
-
 
 ### win32 target on archlinux
 
@@ -17,7 +18,47 @@ mingw32-zlib
 mingw32-openssl
 mingw32-qt
 mingw32-msgpack
+mingw32-readline
 
 mkdir build-win32
 cd build-win32
 CC=/usr/bin/i486-mingw32-gcc CXX=/usr/bin/i486-mingw32-g++ cmake ..
+
+
+
+### Writing portable code and getting the list of predefined gcc macro:
+
+echo | x86_64-unknown-linux-gnu-gcc -E -dM -
+  #define __unix__ 1
+  #define __x86_64 1
+  #define __linux 1
+  #define __unix 1
+  #define __linux__ 1
+  #define __gnu_linux__ 1
+  #define unix 1
+  #define __ELF__ 1
+  #define __x86_64__ 1
+  #define linux 1
+  #define __amd64__ 1
+
+echo | i486-mingw32-gcc -E -dM -
+  #define _WIN32 1
+  #define __WIN32 1
+  #define __MINGW32__ 1
+  #define __WINNT 1
+  #define __WINNT__ 1
+  #define __WIN32__ 1
+  #define __i386 1
+  #define _X86_ 1
+  #define __i486__ 1
+  #define __i386__ 1
+  #define __MSVCRT__ 1
+  #define __i486 1
+  #define WIN32 1
+  #define WINNT 1
+  #define i386 1
+
+Then in elle/Platform.hh is defined:
+  #define INFINIT_WIN32 1/0
+  #define INFINIT_UNIX 1/0
+depending on your current build.
