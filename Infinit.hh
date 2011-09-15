@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/Infinit.hh
-//
-// created       julien quintard   [tue may  4 22:00:43 2010]
-// updated       julien quintard   [thu jul 21 09:16:34 2011]
+// author        julien quintard   [tue may  4 22:00:43 2010]
 //
 
 #ifndef INFINIT_HH

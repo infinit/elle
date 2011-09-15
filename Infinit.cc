@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/Infinit.cc
-//
-// created       julien quintard   [tue may  4 22:01:45 2010]
-// updated       julien quintard   [wed sep 14 14:51:10 2011]
+// author        julien quintard   [tue may  4 22:01:45 2010]
 //
 
 //
@@ -80,7 +77,7 @@ elle::Status		Infinit::Initialize()
 
     // ignore this step if the key is empty.
     //
-    // this is especially useful whenever the authority must be created
+    // this is especially useful whenever the authority must be author 
     // the very first time.
     if (Infinit::Key.empty() == false)
       {
