@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/File.cc
-//
-// created       julien quintard   [thu may 27 16:18:11 2010]
-// updated       julien quintard   [wed sep  7 17:37:36 2011]
+// author        julien quintard   [thu may 27 16:18:11 2010]
 //
 
 //

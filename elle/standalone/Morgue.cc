@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Morgue.cc
-//
-// created       julien quintard   [fri aug 26 17:10:36 2011]
-// updated       julien quintard   [sat sep  3 20:26:32 2011]
+// author        julien quintard   [fri aug 26 17:10:36 2011]
 //
 
 //

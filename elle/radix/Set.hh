@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Set.hh
-//
-// created       julien quintard   [fri jul 15 14:49:26 2011]
-// updated       julien quintard   [sat sep  3 20:56:52 2011]
+// author        julien quintard   [fri jul 15 14:49:26 2011]
 //
 
 #ifndef ELLE_RADIX_SET_HH

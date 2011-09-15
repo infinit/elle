@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/slot/Neighbour.cc
-//
-// created       julien quintard   [wed mar 17 11:23:38 2010]
-// updated       julien quintard   [sun sep  4 13:47:48 2011]
+// author        julien quintard   [wed mar 17 11:23:38 2010]
 //
 
 //

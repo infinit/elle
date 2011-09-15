@@ -5,10 +5,7 @@
 //
 // license       network
 //
-// file          /home/mycure/infinit/elle/network/Session.hh
-//
-// created       julien quintard   [fri mar  5 10:43:11 2010]
-// updated       julien quintard   [sun sep  4 13:08:39 2011]
+// author        julien quintard   [fri mar  5 10:43:11 2010]
 //
 
 #ifndef ELLE_NETWORK_SESSION_HH

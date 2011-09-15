@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...ibraries/elle/concurrency/Environment.cc
-//
-// created       julien quintard   [thu apr  8 15:47:45 2010]
-// updated       julien quintard   [thu apr 22 15:36:28 2010]
+// author        julien quintard   [thu apr  8 15:47:45 2010]
 //
 
 //

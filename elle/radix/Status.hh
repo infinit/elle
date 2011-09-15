@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Status.hh
-//
-// created       julien quintard   [sat oct 27 18:10:10 2007]
-// updated       julien quintard   [sat sep  3 20:57:57 2011]
+// author        julien quintard   [sat oct 27 18:10:10 2007]
 //
 
 #ifndef ELLE_RADIX_STATUS_HH

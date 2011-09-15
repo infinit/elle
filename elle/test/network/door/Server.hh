@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/door/Server.hh
-//
-// created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [thu sep  1 16:28:02 2011]
+// author        julien quintard   [fri nov 27 22:03:15 2009]
 //
 
 #ifndef ELLE_TEST_NETWORK_DOOR_SERVER_HH

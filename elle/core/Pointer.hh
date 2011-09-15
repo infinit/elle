@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Pointer.hh
-//
-// created       julien quintard   [fri jul  8 16:32:05 2011]
-// updated       julien quintard   [sun sep  4 15:26:24 2011]
+// author        julien quintard   [fri jul  8 16:32:05 2011]
 //
 
 #ifndef ELLE_CORE_POINTER_HH

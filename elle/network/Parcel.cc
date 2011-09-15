@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Parcel.cc
-//
-// created       julien quintard   [tue mar 16 12:08:40 2010]
-// updated       julien quintard   [tue sep  6 12:10:17 2011]
+// author        julien quintard   [tue mar 16 12:08:40 2010]
 //
 
 //

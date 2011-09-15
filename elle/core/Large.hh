@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Large.hh
-//
-// created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [thu jun 23 11:49:14 2011]
+// author        julien quintard   [thu nov 29 20:38:10 2007]
 //
 
 #ifndef ELLE_CORE_LARGE_HH

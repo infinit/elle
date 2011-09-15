@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Duration.cc
-//
-// created       julien quintard   [thu aug 11 10:44:19 2011]
-// updated       julien quintard   [wed sep  7 22:12:39 2011]
+// author        julien quintard   [thu aug 11 10:44:19 2011]
 //
 
 //

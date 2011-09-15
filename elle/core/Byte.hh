@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Byte.hh
-//
-// created       julien quintard   [fri nov 30 16:44:49 2007]
-// updated       julien quintard   [sun may  2 10:54:07 2010]
+// author        julien quintard   [fri nov 30 16:44:49 2007]
 //
 
 #ifndef ELLE_CORE_BYTE_HH

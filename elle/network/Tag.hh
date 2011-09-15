@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Tag.hh
-//
-// created       julien quintard   [sun nov 29 20:23:37 2009]
-// updated       julien quintard   [sun sep  4 13:12:40 2011]
+// author        julien quintard   [sun nov 29 20:23:37 2009]
 //
 
 #ifndef ELLE_NETWORK_CODE_HH

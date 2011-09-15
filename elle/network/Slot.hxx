@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Slot.hxx
-//
-// created       julien quintard   [sat feb 20 18:28:29 2010]
-// updated       julien quintard   [tue sep  6 12:09:35 2011]
+// author        julien quintard   [sat feb 20 18:28:29 2010]
 //
 
 #ifndef ELLE_NETWORK_SLOT_HXX

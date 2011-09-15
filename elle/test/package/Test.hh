@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/package/Test.hh
-//
-// created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [fri jun  3 15:08:32 2011]
+// author        julien quintard   [wed jan 28 11:28:16 2009]
 //
 
 #ifndef ELLE_TEST_PACKAGE_TEST_HH

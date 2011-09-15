@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Broker.hh
-//
-// created       julien quintard   [sun may 29 13:15:23 2011]
-// updated       julien quintard   [sat sep  3 22:18:32 2011]
+// author        julien quintard   [sun may 29 13:15:23 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_BROKER_HH

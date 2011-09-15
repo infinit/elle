@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/package/Random.hh
-//
-// created       julien quintard   [thu jan 29 11:52:52 2009]
-// updated       julien quintard   [wed sep  7 21:38:31 2011]
+// author        julien quintard   [thu jan 29 11:52:52 2009]
 //
 
 #ifndef ELLE_TEST_PACKAGE_RANDOM_HH

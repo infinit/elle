@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Log.hh
-//
-// created       julien quintard   [wed jul 27 09:24:44 2011]
-// updated       julien quintard   [sat sep  3 20:19:03 2011]
+// author        julien quintard   [wed jul 27 09:24:44 2011]
 //
 
 #ifndef ELLE_STANDALONE_LOG_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Raw.hh
-//
-// created       julien quintard   [mon feb 22 11:21:39 2010]
-// updated       julien quintard   [sun sep  4 13:08:23 2011]
+// author        julien quintard   [mon feb 22 11:21:39 2010]
 //
 
 #ifndef ELLE_NETWORK_RAW_HH

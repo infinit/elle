@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Seed.cc
-//
-// created       julien quintard   [sat mar 19 14:10:58 2011]
-// updated       julien quintard   [tue sep  6 14:47:12 2011]
+// author        julien quintard   [sat mar 19 14:10:58 2011]
 //
 
 //

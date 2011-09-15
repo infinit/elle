@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Thread.hh
-//
-// created       julien quintard   [tue mar  9 18:42:07 2010]
-// updated       julien quintard   [sat sep  3 23:38:14 2011]
+// author        julien quintard   [tue mar  9 18:42:07 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_THREAD_HH

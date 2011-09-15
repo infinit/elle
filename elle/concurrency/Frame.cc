@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Frame.cc
-//
-// created       julien quintard   [tue mar 23 14:22:43 2010]
-// updated       julien quintard   [wed sep  7 17:43:19 2011]
+// author        julien quintard   [tue mar 23 14:22:43 2010]
 //
 
 //

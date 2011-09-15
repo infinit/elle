@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Header.hh
-//
-// created       julien quintard   [mon feb 22 23:48:40 2010]
-// updated       julien quintard   [sun sep  4 12:17:52 2011]
+// author        julien quintard   [mon feb 22 23:48:40 2010]
 //
 
 #ifndef ELLE_NETWORK_HEADER_HH

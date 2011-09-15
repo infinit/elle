@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Uniquable.hxx
-//
-// created       julien quintard   [sun may  2 13:22:46 2010]
-// updated       julien quintard   [mon jul  4 12:04:27 2011]
+// author        julien quintard   [sun may  2 13:22:46 2010]
 //
 
 #ifndef ELLE_IO_UNIQUABLE_HXX

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Dumpable.hh
-//
-// created       julien quintard   [mon feb  9 21:22:34 2009]
-// updated       julien quintard   [thu jun 23 13:02:15 2011]
+// author        julien quintard   [mon feb  9 21:22:34 2009]
 //
 
 #ifndef ELLE_IO_DUMPABLE_HH

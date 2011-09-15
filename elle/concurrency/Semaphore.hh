@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Semaphore.hh
-//
-// created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [sun jun 19 22:30:41 2011]
+// author        julien quintard   [sun mar  7 17:15:14 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_SEMAPHORE_HH

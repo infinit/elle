@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Door.hxx
-//
-// created       julien quintard   [tue feb 23 13:44:55 2010]
-// updated       julien quintard   [tue sep  6 12:09:41 2011]
+// author        julien quintard   [tue feb 23 13:44:55 2010]
 //
 
 #ifndef ELLE_NETWORK_DOOR_HXX

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Header.cc
-//
-// created       julien quintard   [tue feb 23 00:18:03 2010]
-// updated       julien quintard   [mon jul 18 23:27:27 2011]
+// author        julien quintard   [tue feb 23 00:18:03 2010]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Frame.hh
-//
-// created       julien quintard   [tue mar 23 14:19:59 2010]
-// updated       julien quintard   [fri jun  3 15:27:10 2011]
+// author        julien quintard   [tue mar 23 14:19:59 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FRAME_HH

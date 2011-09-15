@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Arguments.hxx
-//
-// created       julien quintard   [wed feb 24 08:36:00 2010]
-// updated       julien quintard   [sat sep  3 20:53:43 2011]
+// author        julien quintard   [wed feb 24 08:36:00 2010]
 //
 
 #ifndef ELLE_RADIX_ARGUMENTS_HXX

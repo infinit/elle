@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Parser.hh
-//
-// created       julien quintard   [wed apr 28 11:11:05 2010]
-// updated       julien quintard   [sun sep  4 13:40:18 2011]
+// author        julien quintard   [wed apr 28 11:11:05 2010]
 //
 
 #ifndef ELLE_UTILITY_PARSER_HH

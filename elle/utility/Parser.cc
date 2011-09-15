@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Parser.cc
-//
-// created       julien quintard   [wed apr 28 11:25:27 2010]
-// updated       julien quintard   [wed sep  7 18:20:55 2011]
+// author        julien quintard   [wed apr 28 11:25:27 2010]
 //
 
 //

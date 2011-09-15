@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Bridge.hh
-//
-// created       julien quintard   [wed may 25 15:53:18 2011]
-// updated       julien quintard   [sun sep  4 12:20:51 2011]
+// author        julien quintard   [wed may 25 15:53:18 2011]
 //
 
 ///

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Gate.hxx
-//
-// created       julien quintard   [wed may 25 14:20:06 2011]
-// updated       julien quintard   [tue sep  6 12:09:27 2011]
+// author        julien quintard   [wed may 25 14:20:06 2011]
 //
 
 #ifndef ELLE_NETWORK_GATE_HXX

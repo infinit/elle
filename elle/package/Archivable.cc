@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/package/Archivable.cc
-//
-// created       julien quintard   [sat mar 20 00:02:21 2010]
-// updated       julien quintard   [fri jun  3 15:11:29 2011]
+// author        julien quintard   [sat mar 20 00:02:21 2010]
 //
 
 //

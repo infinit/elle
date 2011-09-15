@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Routine.cc
-//
-// created       julien quintard   [wed mar 24 21:12:54 2010]
-// updated       julien quintard   [fri sep  2 23:53:55 2011]
+// author        julien quintard   [wed mar 24 21:12:54 2010]
 //
 
 //

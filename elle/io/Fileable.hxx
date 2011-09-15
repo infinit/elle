@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Fileable.hxx
-//
-// created       julien quintard   [fri apr 30 17:43:29 2010]
-// updated       julien quintard   [wed sep  7 17:52:40 2011]
+// author        julien quintard   [fri apr 30 17:43:29 2010]
 //
 
 #ifndef ELLE_IO_FILEABLE_HXX

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Phase.hh
-//
-// created       julien quintard   [thu apr  8 20:14:01 2010]
-// updated       julien quintard   [sat sep  3 23:30:29 2011]
+// author        julien quintard   [thu apr  8 20:14:01 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_PHASE_HH

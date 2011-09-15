@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/package/Generator.cc
-//
-// created       julien quintard   [fri jan 30 03:09:18 2009]
-// updated       julien quintard   [fri jun  3 15:07:44 2011]
+// author        julien quintard   [fri jan 30 03:09:18 2009]
 //
 
 //

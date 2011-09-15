@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/slot/Test.cc
-//
-// created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [mon may  3 21:26:05 2010]
+// author        julien quintard   [wed jan 28 11:22:24 2009]
 //
 
 //

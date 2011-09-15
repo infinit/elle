@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Type.cc
-//
-// created       julien quintard   [sun jun 26 19:36:23 2011]
-// updated       julien quintard   [sat sep  3 20:17:11 2011]
+// author        julien quintard   [sun jun 26 19:36:23 2011]
 //
 
 //

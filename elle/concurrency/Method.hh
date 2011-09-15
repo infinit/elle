@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Method.hh
-//
-// created       julien quintard   [thu feb  4 23:03:30 2010]
-// updated       julien quintard   [thu sep  1 14:19:39 2011]
+// author        julien quintard   [thu feb  4 23:03:30 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_METHOD_HH

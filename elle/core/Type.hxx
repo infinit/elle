@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Type.hxx
-//
-// created       julien quintard   [fri jan 30 16:29:55 2009]
-// updated       julien quintard   [mon jun 27 21:22:06 2011]
+// author        julien quintard   [fri jan 30 16:29:55 2009]
 //
 
 #ifndef ELLE_CORE_TYPE_HXX

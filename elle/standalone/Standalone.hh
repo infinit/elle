@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Standalone.hh
-//
-// created       julien quintard   [sun may  2 10:57:51 2010]
-// updated       julien quintard   [sat sep  3 20:20:19 2011]
+// author        julien quintard   [sun may  2 10:57:51 2010]
 //
 
 #ifndef ELLE_STANDALONE_HH

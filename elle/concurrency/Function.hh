@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Function.hh
-//
-// created       julien quintard   [thu feb  4 22:15:45 2010]
-// updated       julien quintard   [thu sep  1 14:20:15 2011]
+// author        julien quintard   [thu feb  4 22:15:45 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FUNCTION_HH

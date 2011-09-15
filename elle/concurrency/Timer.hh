@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Timer.hh
-//
-// created       julien quintard   [wed mar 17 11:40:38 2010]
-// updated       julien quintard   [sat sep  3 17:45:43 2011]
+// author        julien quintard   [wed mar 17 11:40:38 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_TIMER_HH
