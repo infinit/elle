@@ -5,10 +5,7 @@
 //
 // license       dictionary
 //
-// file          /home/mycure/infinit/lune/Dictionary.cc
-//
-// created       julien quintard   [mon may 10 16:14:02 2010]
-// updated       julien quintard   [wed sep  7 21:34:15 2011]
+// author        julien quintard   [mon may 10 16:14:02 2010]
 //
 
 //

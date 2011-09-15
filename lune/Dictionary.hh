@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Dictionary.hh
-//
-// created       julien quintard   [mon may 10 15:52:06 2010]
-// updated       julien quintard   [sun sep  4 21:01:26 2011]
+// author        julien quintard   [mon may 10 15:52:06 2010]
 //
 
 #ifndef LUNE_DICTIONARY_HH

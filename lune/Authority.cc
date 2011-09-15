@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Authority.cc
-//
-// created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [wed sep  7 21:33:26 2011]
+// author        julien quintard   [tue may  4 23:47:55 2010]
 //
 
 //

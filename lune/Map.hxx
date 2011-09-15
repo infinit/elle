@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Map.hxx
-//
-// created       julien quintard   [sun apr 18 11:02:43 2010]
-// updated       julien quintard   [wed sep  7 10:19:58 2011]
+// author        julien quintard   [sun apr 18 11:02:43 2010]
 //
 
 #ifndef LUNE_MAP_HXX

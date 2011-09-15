@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Identity.hh
-//
-// created       julien quintard   [wed may  5 20:55:12 2010]
-// updated       julien quintard   [tue sep  6 22:23:05 2011]
+// author        julien quintard   [wed may  5 20:55:12 2010]
 //
 
 #ifndef LUNE_IDENTITY_HH

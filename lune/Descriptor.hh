@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Descriptor.hh
-//
-// created       julien quintard   [sat may  1 21:16:41 2010]
-// updated       julien quintard   [sun sep  4 21:00:31 2011]
+// author        julien quintard   [sat may  1 21:16:41 2010]
 //
 
 #ifndef LUNE_DESCRIPTOR_HH

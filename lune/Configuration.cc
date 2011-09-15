@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Configuration.cc
-//
-// created       julien quintard   [sun jun 19 23:19:22 2011]
-// updated       julien quintard   [thu sep  8 09:00:35 2011]
+// author        julien quintard   [sun jun 19 23:19:22 2011]
 //
 
 //

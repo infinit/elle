@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Passport.hh
-//
-// created       julien quintard   [thu aug 11 13:13:51 2011]
-// updated       julien quintard   [tue sep  6 22:28:42 2011]
+// author        julien quintard   [thu aug 11 13:13:51 2011]
 //
 
 #ifndef LUNE_PASSPORT_HH

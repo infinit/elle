@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Phrase.cc
-//
-// created       julien quintard   [tue may  4 20:49:38 2010]
-// updated       julien quintard   [wed sep  7 21:36:00 2011]
+// author        julien quintard   [tue may  4 20:49:38 2010]
 //
 
 //

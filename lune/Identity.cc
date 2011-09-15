@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Identity.cc
-//
-// created       julien quintard   [tue may  4 23:47:55 2010]
-// updated       julien quintard   [wed sep  7 21:35:03 2011]
+// author        julien quintard   [tue may  4 23:47:55 2010]
 //
 
 //

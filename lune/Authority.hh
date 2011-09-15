@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Authority.hh
-//
-// created       julien quintard   [tue may  4 23:35:57 2010]
-// updated       julien quintard   [sun sep  4 20:57:19 2011]
+// author        julien quintard   [tue may  4 23:35:57 2010]
 //
 
 #ifndef LUNE_AUTHORITY_HH

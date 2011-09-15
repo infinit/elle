@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Phrase.hh
-//
-// created       julien quintard   [sat may  1 12:52:01 2010]
-// updated       julien quintard   [tue sep  6 22:30:29 2011]
+// author        julien quintard   [sat may  1 12:52:01 2010]
 //
 
 #ifndef LUNE_PHRASE_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/lune/Configuration.hh
-//
-// created       julien quintard   [sun jun 19 23:13:28 2011]
-// updated       julien quintard   [thu sep  8 08:13:58 2011]
+// author        julien quintard   [sun jun 19 23:13:28 2011]
 //
 
 #ifndef LUNE_CONFIGURATION_HH
