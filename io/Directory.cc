@@ -22,6 +22,7 @@
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
 
+#include <elle/system/Platform.hh>
 #include <elle/system/System.hh>
 
 #include <vector>
@@ -63,8 +64,15 @@ namespace elle
 	escape("unable to dig the chain of directories");
 
       // create the directory.
+#if INFINIT_UNIX
       if (::mkdir(path.string.c_str(), 0700) != 0)
+        escape(::strerror(errno));
+#elif INFINIT_WIN32
+      if (::mkdir(path.string.c_str()) != 0)
 	escape(::strerror(errno));
+#else
+# error "mkdir not supported"
+#endif
 
       leave();
     }
@@ -180,42 +188,41 @@ namespace elle
 			    String(entry->d_name)) == StatusError)
 	    escape("unable to create the target path");
 
+          std::ostringstream os;
+          os << path << "/" << entry->d_name;
+          std::string entry_path(os.str());
+
+          struct ::stat st;
+          if (::stat(entry_path.c_str(), &st))
+            continue;
+
 	  // perform an action depending on the nature of the target.
-	  switch (entry->d_type)
-	    {
-	    case DT_DIR:
-	      {
-		// empty it as well.
-		if (Directory::Clear(target) == StatusError)
-		  escape("unable to empty a subdirectory");
+          if (S_ISDIR(st.st_mode))
+            {
+              // empty it as well.
+              if (Directory::Clear(target) == StatusError)
+                escape("unable to empty a subdirectory");
 
-		// remove the directory.
-		if (Directory::Remove(target) == StatusError)
-		  escape("unable to remove the subdirectory");
-
-		break;
-	      }
-	    case DT_REG:
-	      {
-		// remove the file.
-		if (File::Erase(target) == StatusError)
-		  escape("unable to remove the file");
-
-		break;
-	      }
-	    case DT_LNK:
-	      {
-		// remove the link.
-		if (Link::Erase(target) == StatusError)
-		  escape("unable to remove the link");
-
-		break;
-	      }
-	    default:
-	      {
-		escape("unhandled file system object type");
-	      }
-	    }
+              // remove the directory.
+              if (Directory::Remove(target) == StatusError)
+                escape("unable to remove the subdirectory");
+            }
+          else if (S_ISREG(st.st_mode))
+            {
+              // remove the file.
+              if (File::Erase(target) == StatusError)
+                escape("unable to remove the file");
+            }
+#if INFINIT_UNIX
+          else if (S_ISLNK(st.st_mode))
+            {
+              // remove the link.
+              if (Link::Erase(target) == StatusError)
+                escape("unable to remove the link");
+            }
+#endif
+          else
+            escape("unhandled file system object type");
 	}
 
       // close the directory.

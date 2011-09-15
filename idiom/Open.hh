@@ -28,6 +28,9 @@
 /// first includes Close.hh in order to undeclare everything.
 #include <elle/idiom/Close.hh>
 
+#include <elle/core/Character.hh>
+#include <cstdio> // needed for sprintf
+
 //
 // ---------- elle ------------------------------------------------------------
 //
@@ -420,7 +423,7 @@
   elle::standalone::Maid::Garrison* _maid_ =				\
     elle::standalone::Maid::Install(					\
       static_cast<elle::core::Void*>(					\
-        alloca(sizeof (elle::standalone::Maid::Garrison))),		\
+        alloca(sizeof (elle::standalone::Maid::Garrison))),             \
       ##_guards_)
 
 ///

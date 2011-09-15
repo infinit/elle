@@ -15,6 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/system/Platform.hh>
+
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Callback.hh>
 
@@ -82,13 +84,18 @@ namespace elle
       // allocate the QT program.
       program->core = new ::QCoreApplication(n, NULL);
 
+#if INFINIT_UNIX
       // set the signal handlers.
       ::signal(SIGINT, &Program::Exception);
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
-
       ::signal(SIGKILL, &Program::Exception);
+#elif INFINIT_WIN32
+      // XXX
+#else
+# error "unsupported platform"
+#endif
 
       leave();
     }
@@ -132,8 +139,10 @@ namespace elle
       // stop the program depending on the signal.
       switch (signal)
 	{
-	case SIGINT:
+#if INFINIT_POSIX
 	case SIGQUIT:
+#endif
+	case SIGINT:
 	case SIGABRT:
 	case SIGTERM:
 	  {
@@ -142,11 +151,13 @@ namespace elle
 
 	    break;
 	  }
+#if INFINIT_POSIX
 	case SIGKILL:
 	  {
 	    // exit brutally!!!
 	    ::exit(EXIT_FAILURE);
 	  }
+#endif
 	}
     }
 
