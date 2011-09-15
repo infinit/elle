@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/ParallelFUker.cc
-//
-// created       julien quintard   [tue jul 26 15:33:54 2011]
-// updated       julien quintard   [thu sep  8 07:50:17 2011]
+// author        julien quintard   [tue jul 26 15:33:54 2011]
 //
 
 //

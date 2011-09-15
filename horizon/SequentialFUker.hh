@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/SequentialFUker.hh
-//
-// created       julien quintard   [tue jul 26 15:33:15 2011]
-// updated       julien quintard   [thu sep  8 07:52:50 2011]
+// author        julien quintard   [tue jul 26 15:33:15 2011]
 //
 
 #ifndef PIG_SEQUENTIALFUKER_HH

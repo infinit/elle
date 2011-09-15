@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/PIG.hh
-//
-// created       julien quintard   [tue may 31 10:32:37 2011]
-// updated       julien quintard   [thu sep  8 07:48:41 2011]
+// author        julien quintard   [tue may 31 10:32:37 2011]
 //
 
 #ifndef PIG_PIG_HH

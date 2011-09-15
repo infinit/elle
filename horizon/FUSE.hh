@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/FUSE.hh
-//
-// created       julien quintard   [fri jul 31 22:11:24 2009]
-// updated       julien quintard   [tue jul 26 20:52:55 2011]
+// author        julien quintard   [fri jul 31 22:11:24 2009]
 //
 
 #ifndef PIG_FUSE_HH

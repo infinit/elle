@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/Crux.hh
-//
-// created       julien quintard   [wed jun  1 09:19:13 2011]
-// updated       julien quintard   [wed sep  7 12:41:26 2011]
+// author        julien quintard   [wed jun  1 09:19:13 2011]
 //
 
 #ifndef PIG_CRUX_HH

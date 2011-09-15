@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/Crux.cc
-//
-// created       julien quintard   [wed jun  1 09:30:57 2011]
-// updated       julien quintard   [wed sep 14 17:49:10 2011]
+// author        julien quintard   [wed jun  1 09:30:57 2011]
 //
 
 //

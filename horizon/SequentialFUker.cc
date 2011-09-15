@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/SequentialFUker.cc
-//
-// created       julien quintard   [tue jul 26 15:33:54 2011]
-// updated       julien quintard   [thu sep  8 07:53:23 2011]
+// author        julien quintard   [tue jul 26 15:33:54 2011]
 //
 
 //

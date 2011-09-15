@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/PIG.cc
-//
-// created       julien quintard   [tue may 31 10:31:35 2011]
-// updated       julien quintard   [thu sep  8 07:49:10 2011]
+// author        julien quintard   [tue may 31 10:31:35 2011]
 //
 
 //

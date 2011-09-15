@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/Janitor.hxx
-//
-// created       julien quintard   [wed sep  7 12:43:43 2011]
-// updated       julien quintard   [wed sep  7 12:44:30 2011]
+// author        julien quintard   [wed sep  7 12:43:43 2011]
 //
 
 //

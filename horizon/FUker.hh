@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/FUker.hh
-//
-// created       julien quintard   [tue jul 26 15:28:37 2011]
-// updated       julien quintard   [thu sep  8 07:10:29 2011]
+// author        julien quintard   [tue jul 26 15:28:37 2011]
 //
 
 #ifndef PIG_FUKER_HH

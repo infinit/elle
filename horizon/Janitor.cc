@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/Janitor.cc
-//
-// created       julien quintard   [wed sep  7 12:41:45 2011]
-// updated       julien quintard   [wed sep  7 12:42:41 2011]
+// author        julien quintard   [wed sep  7 12:41:45 2011]
 //
 
 //

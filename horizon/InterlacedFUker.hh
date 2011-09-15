@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/InterlacedFUker.hh
-//
-// created       julien quintard   [tue jul 26 15:33:15 2011]
-// updated       julien quintard   [thu sep  8 07:44:12 2011]
+// author        julien quintard   [tue jul 26 15:33:15 2011]
 //
 
 #ifndef PIG_INTERLACEDFUKER_HH
