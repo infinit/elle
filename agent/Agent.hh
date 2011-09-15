@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/agent/Agent.hh
-//
-// created       julien quintard   [thu mar  4 17:20:28 2010]
-// updated       julien quintard   [sat sep  3 19:44:37 2011]
+// author        julien quintard   [thu mar  4 17:20:28 2010]
 //
 
 #ifndef AGENT_AGENT_HH
