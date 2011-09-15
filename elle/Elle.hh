@@ -63,6 +63,8 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/system/Platform.hh> // first to get defines INFINIT_UNIX,
+                                   // INFINIT_WIN32 asap
 #include <elle/core/Core.hh>
 #include <elle/system/System.hh>
 #include <elle/standalone/Standalone.hh>
@@ -73,7 +75,7 @@ namespace elle
 #include <elle/concurrency/Concurrency.hh>
 #include <elle/network/Network.hh>
 #include <elle/utility/Utility.hh>
-#include <elle/idiom/Idom.hh>
+#include <elle/idiom/Idiom.hh>
 
 #include <elle/Manifest.hh>
 
