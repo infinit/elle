@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Range.hxx
-//
-// created       julien quintard   [fri mar 26 17:18:42 2010]
-// updated       julien quintard   [mon jul 18 23:28:58 2011]
+// author        julien quintard   [fri mar 26 17:18:42 2010]
 //
 
 #ifndef ELLE_NETWORK_RANGE_HXX

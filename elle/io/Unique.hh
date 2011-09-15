@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Unique.hh
-//
-// created       julien quintard   [mon may  3 00:19:35 2010]
-// updated       julien quintard   [mon may  3 00:20:28 2010]
+// author        julien quintard   [mon may  3 00:19:35 2010]
 //
 
 #ifndef ELLE_IO_UNIQUE_HH

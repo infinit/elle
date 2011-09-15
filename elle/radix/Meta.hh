@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Meta.hh
-//
-// created       julien quintard   [sun nov 29 19:31:55 2009]
-// updated       julien quintard   [tue sep  6 17:47:31 2011]
+// author        julien quintard   [sun nov 29 19:31:55 2009]
 //
 
 #ifndef ELLE_RADIX_META_HH

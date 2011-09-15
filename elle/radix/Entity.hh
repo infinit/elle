@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Entity.hh
-//
-// created       julien quintard   [sun feb 22 19:43:33 2009]
-// updated       julien quintard   [sat sep  3 20:42:26 2011]
+// author        julien quintard   [sun feb 22 19:43:33 2009]
 //
 
 #ifndef ELLE_RADIX_ENTITY_HH

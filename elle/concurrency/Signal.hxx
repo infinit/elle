@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Signal.hxx
-//
-// created       julien quintard   [fri sep  2 14:12:04 2011]
-// updated       julien quintard   [sat sep  3 23:37:39 2011]
+// author        julien quintard   [fri sep  2 14:12:04 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_SIGNAL_HXX

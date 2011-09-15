@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Region.cc
-//
-// created       julien quintard   [mon nov 12 23:26:42 2007]
-// updated       julien quintard   [wed sep  7 19:07:56 2011]
+// author        julien quintard   [mon nov 12 23:26:42 2007]
 //
 
 //

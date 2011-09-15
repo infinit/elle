@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.hh
-//
-// created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [sat sep  3 19:55:25 2011]
+// author        julien quintard   [wed jan 28 11:28:16 2009]
 //
 
 #ifndef ELLE_BENCHMARK_ARCHIVE_TEST_HH

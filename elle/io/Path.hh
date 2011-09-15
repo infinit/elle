@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Path.hh
-//
-// created       julien quintard   [mon apr 25 10:59:05 2011]
-// updated       julien quintard   [sat sep  3 21:45:08 2011]
+// author        julien quintard   [mon apr 25 10:59:05 2011]
 //
 
 #ifndef ELLE_IO_PATH_HH

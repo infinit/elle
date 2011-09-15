@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Report.hxx
-//
-// created       julien quintard   [sun may  2 11:15:11 2010]
-// updated       julien quintard   [sun may  2 13:08:00 2010]
+// author        julien quintard   [sun may  2 11:15:11 2010]
 //
 
 #ifndef ELLE_STANDALONE_REPORT_HXX

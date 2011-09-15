@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/fiber/Test.cc
-//
-// created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sat sep  3 20:07:30 2011]
+// author        julien quintard   [wed jan 28 11:22:24 2009]
 //
 
 //

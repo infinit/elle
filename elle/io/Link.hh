@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Link.hh
-//
-// created       julien quintard   [sun may 22 13:07:04 2011]
-// updated       julien quintard   [sun may 22 13:17:41 2011]
+// author        julien quintard   [sun may 22 13:07:04 2011]
 //
 
 #ifndef ELLE_IO_LINK_HH

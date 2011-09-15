@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Meta.cc
-//
-// created       julien quintard   [mon apr 26 20:08:34 2010]
-// updated       julien quintard   [tue sep  6 18:34:42 2011]
+// author        julien quintard   [mon apr 26 20:08:34 2010]
 //
 
 //

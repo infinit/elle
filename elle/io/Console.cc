@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Console.cc
-//
-// created       julien quintard   [sat jun 18 11:11:53 2011]
-// updated       julien quintard   [sat jun 18 11:19:22 2011]
+// author        julien quintard   [sat jun 18 11:11:53 2011]
 //
 
 //

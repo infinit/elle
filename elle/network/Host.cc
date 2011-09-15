@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Host.cc
-//
-// created       julien quintard   [fri oct 16 05:24:44 2009]
-// updated       julien quintard   [wed sep  7 22:10:08 2011]
+// author        julien quintard   [fri oct 16 05:24:44 2009]
 //
 
 //

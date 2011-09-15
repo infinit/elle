@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Maid.cc
-//
-// created       julien quintard   [sat mar 20 00:10:35 2010]
-// updated       julien quintard   [sun may  2 15:21:44 2010]
+// author        julien quintard   [sat mar 20 00:10:35 2010]
 //
 
 //

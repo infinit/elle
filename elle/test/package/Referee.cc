@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/package/Referee.cc
-//
-// created       julien quintard   [wed jan 28 12:32:31 2009]
-// updated       julien quintard   [sun jun 19 17:48:23 2011]
+// author        julien quintard   [wed jan 28 12:32:31 2009]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/door/Manifest.hh
-//
-// created       julien quintard   [tue feb 23 21:40:13 2010]
-// updated       julien quintard   [thu sep  1 17:17:42 2011]
+// author        julien quintard   [tue feb 23 21:40:13 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_DOOR_MANIFEST_HH

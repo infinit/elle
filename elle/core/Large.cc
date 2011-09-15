@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Large.cc
-//
-// created       julien quintard   [thu feb  5 15:37:07 2009]
-// updated       julien quintard   [thu jun 23 11:49:23 2011]
+// author        julien quintard   [thu feb  5 15:37:07 2009]
 //
 
 //

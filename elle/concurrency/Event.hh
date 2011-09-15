@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Event.hh
-//
-// created       julien quintard   [wed mar  3 13:37:54 2010]
-// updated       julien quintard   [sat sep  3 23:25:11 2011]
+// author        julien quintard   [wed mar  3 13:37:54 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_EVENT_HH

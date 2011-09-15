@@ -5,10 +5,7 @@
 //
 // license       elle
 //
-// file          /home/mycure/infinit/elle/io/Piece.hh
-//
-// created       julien quintard   [mon apr 25 11:55:19 2011]
-// updated       julien quintard   [tue apr 26 12:19:32 2011]
+// author        julien quintard   [mon apr 25 11:55:19 2011]
 //
 
 #ifndef ELLE_IO_PIECE_HH

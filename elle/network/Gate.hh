@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Gate.hh
-//
-// created       julien quintard   [wed may 25 10:49:12 2011]
-// updated       julien quintard   [sun sep  4 12:12:06 2011]
+// author        julien quintard   [wed may 25 10:49:12 2011]
 //
 
 ///

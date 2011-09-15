@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Procedure.hh
-//
-// created       julien quintard   [fri jul 15 11:55:49 2011]
-// updated       julien quintard   [wed sep  7 14:25:04 2011]
+// author        julien quintard   [fri jul 15 11:55:49 2011]
 //
 
 #ifndef ELLE_NETWORK_PROCEDURE_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Port.hh
-//
-// created       julien quintard   [wed feb  3 21:49:06 2010]
-// updated       julien quintard   [sun may  2 20:33:12 2010]
+// author        julien quintard   [wed feb  3 21:49:06 2010]
 //
 
 #ifndef ELLE_NETWORK_PORT_HH

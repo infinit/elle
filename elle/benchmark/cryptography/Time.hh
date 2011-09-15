@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/benchmark/cryptography/Time.hh
-//
-// created       julien quintard   [wed aug  5 15:23:38 2009]
-// updated       julien quintard   [sat sep  3 19:55:45 2011]
+// author        julien quintard   [wed aug  5 15:23:38 2009]
 //
 
 #ifndef ELLE_BENCHMARK_CRYPTOGRAPHY_TIME_HH

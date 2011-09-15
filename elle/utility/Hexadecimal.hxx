@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Hexadecimal.hxx
-//
-// created       julien quintard   [sun apr 18 15:34:47 2010]
-// updated       julien quintard   [tue sep  6 12:13:55 2011]
+// author        julien quintard   [sun apr 18 15:34:47 2010]
 //
 
 #ifndef ELLE_UTILITY_HEXADECIMAL_HXX

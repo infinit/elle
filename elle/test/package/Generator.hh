@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/package/Generator.hh
-//
-// created       julien quintard   [wed jan 28 12:57:36 2009]
-// updated       julien quintard   [fri jun  3 15:07:53 2011]
+// author        julien quintard   [wed jan 28 12:57:36 2009]
 //
 
 #ifndef ELLE_TEST_PACKAGE_GENERATOR_HH

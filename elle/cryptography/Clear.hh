@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Clear.hh
-//
-// created       julien quintard   [tue oct 30 10:05:43 2007]
-// updated       julien quintard   [sat mar  7 23:02:16 2009]
+// author        julien quintard   [tue oct 30 10:05:43 2007]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CLEAR_HH

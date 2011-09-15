@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Inputs.hxx
-//
-// created       julien quintard   [wed feb 24 07:44:04 2010]
-// updated       julien quintard   [sun sep  4 12:40:10 2011]
+// author        julien quintard   [wed feb 24 07:44:04 2010]
 //
 
 #ifndef ELLE_NETWORK_INPUTS_HXX

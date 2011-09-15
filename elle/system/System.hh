@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/system/System.hh
-//
-// created       julien quintard   [mon jan 26 20:21:10 2009]
-// updated       julien quintard   [sat sep  3 20:17:52 2011]
+// author        julien quintard   [mon jan 26 20:21:10 2009]
 //
 
 #ifndef ELLE_SYSTEM_SYSTEM_HH

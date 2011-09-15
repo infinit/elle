@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Program.hh
-//
-// created       julien quintard   [mon mar 15 20:37:49 2010]
-// updated       julien quintard   [sat sep  3 17:38:19 2011]
+// author        julien quintard   [mon mar 15 20:37:49 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_PROGRAM_HH

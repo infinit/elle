@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Bundle.hh
-//
-// created       julien quintard   [fri jun  3 22:23:13 2011]
-// updated       julien quintard   [sun sep  4 11:56:11 2011]
+// author        julien quintard   [fri jun  3 22:23:13 2011]
 //
 
 #ifndef ELLE_NETWORK_BUNDLE_HH

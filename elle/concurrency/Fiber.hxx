@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Fiber.hxx
-//
-// created       julien quintard   [tue mar 23 14:55:13 2010]
-// updated       julien quintard   [wed sep  7 10:10:59 2011]
+// author        julien quintard   [tue mar 23 14:55:13 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HXX

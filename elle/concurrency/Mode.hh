@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Mode.hh
-//
-// created       julien quintard   [tue mar  9 11:03:08 2010]
-// updated       julien quintard   [sat sep  3 23:29:46 2011]
+// author        julien quintard   [tue mar  9 11:03:08 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_MODE_HH

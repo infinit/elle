@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Region.hh
-//
-// created       julien quintard   [mon nov 12 23:19:13 2007]
-// updated       julien quintard   [wed sep  7 19:07:19 2011]
+// author        julien quintard   [mon nov 12 23:19:13 2007]
 //
 
 #ifndef ELLE_STANDALONE_REGION_HH
