@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Plain.hh
-//
-// created       julien quintard   [wed feb 11 12:39:47 2009]
-// updated       julien quintard   [sun may  2 18:41:19 2010]
+// author        julien quintard   [wed feb 11 12:39:47 2009]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PLAIN_HH

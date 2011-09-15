@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Cipher.hh
-//
-// created       julien quintard   [sat mar  7 21:34:17 2009]
-// updated       julien quintard   [tue apr 26 11:44:24 2011]
+// author        julien quintard   [sat mar  7 21:34:17 2009]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CIPHER_HH

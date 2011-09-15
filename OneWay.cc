@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/OneWay.cc
-//
-// created       julien quintard   [mon oct 29 13:26:52 2007]
-// updated       julien quintard   [wed sep  7 17:55:20 2011]
+// author        julien quintard   [mon oct 29 13:26:52 2007]
 //
 
 //

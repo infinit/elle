@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PublicKey.hxx
-//
-// created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [tue sep  6 15:41:22 2011]
+// author        julien quintard   [mon jan 26 14:09:50 2009]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PUBLICKEY_HXX
@@ -346,7 +343,7 @@ namespace elle
     //
 
     ///
-    /// this method decrypts a code and returns a pretty newly created
+    /// this method decrypts a code and returns a pretty newly author 
     /// object.
     ///
     template <typename T,

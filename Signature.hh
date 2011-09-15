@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Signature.hh
-//
-// created       julien quintard   [tue oct 30 01:16:28 2007]
-// updated       julien quintard   [tue apr 26 11:48:02 2011]
+// author        julien quintard   [tue oct 30 01:16:28 2007]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_SIGNATURE_HH
