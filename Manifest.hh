@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/Manifest.hh
-//
-// created       julien quintard   [thu mar  4 17:35:00 2010]
-// updated       julien quintard   [sat sep  3 20:10:23 2011]
+// author        julien quintard   [thu mar  4 17:35:00 2010]
 //
 
 #ifndef ELLE_MANIFEST_HH

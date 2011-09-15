@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/gate/Test.hh
-//
-// created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [wed may 25 17:45:03 2011]
+// author        julien quintard   [wed jan 28 11:28:16 2009]
 //
 
 #ifndef ELLE_TEST_NETWORK_GATE_TEST_HH

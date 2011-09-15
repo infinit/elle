@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Message.hh
-//
-// created       julien quintard   [wed feb  3 22:01:47 2010]
-// updated       julien quintard   [sun sep  4 12:23:02 2011]
+// author        julien quintard   [wed feb  3 22:01:47 2010]
 //
 
 #ifndef ELLE_NETWORK_MESSAGE_HH

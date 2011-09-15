@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Socket.hxx
-//
-// created       julien quintard   [sun jul 17 15:39:02 2011]
-// updated       julien quintard   [thu aug 25 11:39:34 2011]
+// author        julien quintard   [sun jul 17 15:39:02 2011]
 //
 
 #ifndef ELLE_NETWORK_SOCKET_HXX

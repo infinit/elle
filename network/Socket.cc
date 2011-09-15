@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Socket.cc
-//
-// created       julien quintard   [wed feb  3 12:55:47 2010]
-// updated       julien quintard   [sun sep  4 13:21:30 2011]
+// author        julien quintard   [wed feb  3 12:55:47 2010]
 //
 
 //

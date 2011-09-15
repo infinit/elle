@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PrivateKey.hh
-//
-// created       julien quintard   [tue oct 30 10:02:18 2007]
-// updated       julien quintard   [tue sep  6 16:26:05 2011]
+// author        julien quintard   [tue oct 30 10:02:18 2007]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_PRIVATEKEY_HH

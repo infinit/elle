@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...elle/benchmark/cryptography/Benchmark.cc
-//
-// created       julien quintard   [wed jan 28 11:22:24 2009]
-// updated       julien quintard   [sat sep  3 19:55:11 2011]
+// author        julien quintard   [wed jan 28 11:22:24 2009]
 //
 
 //

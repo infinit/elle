@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Parameters.hxx
-//
-// created       julien quintard   [sun feb 21 15:29:32 2010]
-// updated       julien quintard   [sat sep  3 20:53:56 2011]
+// author        julien quintard   [sun feb 21 15:29:32 2010]
 //
 
 #ifndef ELLE_RADIX_PARAMETERS_HXX

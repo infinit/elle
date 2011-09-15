@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Boolean.hh
-//
-// created       julien quintard   [thu mar 13 12:20:26 2008]
-// updated       julien quintard   [wed mar 10 20:40:00 2010]
+// author        julien quintard   [thu mar 13 12:20:26 2008]
 //
 
 #ifndef ELLE_CORE_BOOLEAN_HH

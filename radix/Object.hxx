@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Object.hxx
-//
-// created       julien quintard   [fri may 28 12:26:54 2010]
-// updated       julien quintard   [fri may 28 12:27:16 2010]
+// author        julien quintard   [fri may 28 12:26:54 2010]
 //
 
 #ifndef ELLE_RADIX_OBJECT_HXX

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Pattern.hh
-//
-// created       julien quintard   [mon apr 25 10:59:05 2011]
-// updated       julien quintard   [mon jun 27 21:23:23 2011]
+// author        julien quintard   [mon apr 25 10:59:05 2011]
 //
 
 #ifndef ELLE_IO_PATTERN_HH

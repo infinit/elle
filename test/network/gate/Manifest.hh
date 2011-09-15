@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/gate/Manifest.hh
-//
-// created       julien quintard   [tue feb 23 21:40:13 2010]
-// updated       julien quintard   [fri sep  2 10:45:11 2011]
+// author        julien quintard   [tue feb 23 21:40:13 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_GATE_MANIFEST_HH

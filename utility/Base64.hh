@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Base64.hh
-//
-// created       julien quintard   [fri apr 16 19:22:17 2010]
-// updated       julien quintard   [tue sep  6 17:01:45 2011]
+// author        julien quintard   [fri apr 16 19:22:17 2010]
 //
 
 #ifndef ELLE_UTILITY_BASE64_HH

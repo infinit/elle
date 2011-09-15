@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PublicKey.cc
-//
-// created       julien quintard   [tue oct 30 01:23:20 2007]
-// updated       julien quintard   [wed sep  7 18:00:23 2011]
+// author        julien quintard   [tue oct 30 01:23:20 2007]
 //
 
 //

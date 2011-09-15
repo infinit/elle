@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Object.cc
-//
-// created       julien quintard   [sun may  2 12:21:39 2010]
-// updated       julien quintard   [thu aug  4 12:40:01 2011]
+// author        julien quintard   [sun may  2 12:21:39 2010]
 //
 
 //

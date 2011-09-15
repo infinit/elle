@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Settings.cc
-//
-// created       julien quintard   [sun apr 25 19:32:47 2010]
-// updated       julien quintard   [wed sep  7 18:22:08 2011]
+// author        julien quintard   [sun apr 25 19:32:47 2010]
 //
 
 //

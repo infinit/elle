@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Log.cc
-//
-// created       julien quintard   [wed jul 27 09:53:07 2011]
-// updated       julien quintard   [mon aug  1 10:28:16 2011]
+// author        julien quintard   [wed jul 27 09:53:07 2011]
 //
 
 //

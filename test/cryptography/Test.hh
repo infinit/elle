@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/cryptography/Test.hh
-//
-// created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [sun sep  4 15:59:13 2011]
+// author        julien quintard   [wed jan 28 11:28:16 2009]
 //
 
 #ifndef ELLE_TEST_CRYPTOGRAPHY_TEST_HH

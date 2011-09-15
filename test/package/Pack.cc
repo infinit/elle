@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/package/Pack.cc
-//
-// created       julien quintard   [wed jan 28 12:08:47 2009]
-// updated       julien quintard   [tue sep  6 20:47:03 2011]
+// author        julien quintard   [wed jan 28 12:08:47 2009]
 //
 
 //

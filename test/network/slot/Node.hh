@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/slot/Node.hh
-//
-// created       julien quintard   [fri nov 27 22:03:15 2009]
-// updated       julien quintard   [thu jul 14 14:22:23 2011]
+// author        julien quintard   [fri nov 27 22:03:15 2009]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_NODE_HH

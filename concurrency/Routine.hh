@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Routine.hh
-//
-// created       julien quintard   [wed mar 24 19:50:08 2010]
-// updated       julien quintard   [fri sep  2 23:53:34 2011]
+// author        julien quintard   [wed mar 24 19:50:08 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ROUTINE_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/package/Referee.hh
-//
-// created       julien quintard   [tue jan 27 16:56:46 2009]
-// updated       julien quintard   [fri jun  3 15:08:16 2011]
+// author        julien quintard   [tue jan 27 16:56:46 2009]
 //
 
 #ifndef ELLE_TEST_PACKAGE_REFEREE_HH

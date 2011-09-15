@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/idiom/Close.hh
-//
-// created       julien quintard   [wed mar 10 20:18:19 2010]
-// updated       julien quintard   [sun sep  4 15:43:41 2011]
+// author        julien quintard   [wed mar 10 20:18:19 2010]
 //
 
 //

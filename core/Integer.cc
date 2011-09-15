@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Integer.cc
-//
-// created       julien quintard   [mon sep  5 15:40:43 2011]
-// updated       julien quintard   [wed sep  7 10:16:36 2011]
+// author        julien quintard   [mon sep  5 15:40:43 2011]
 //
 
 //

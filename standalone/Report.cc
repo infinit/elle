@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Report.cc
-//
-// created       julien quintard   [sun oct 28 19:11:07 2007]
-// updated       julien quintard   [wed sep  7 10:13:30 2011]
+// author        julien quintard   [sun oct 28 19:11:07 2007]
 //
 
 //

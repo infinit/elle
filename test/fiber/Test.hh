@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/fiber/Test.hh
-//
-// created       julien quintard   [wed jan 28 11:28:16 2009]
-// updated       julien quintard   [sun jun 19 17:35:17 2011]
+// author        julien quintard   [wed jan 28 11:28:16 2009]
 //
 
 #ifndef ELLE_TEST_FIBER_TEST_HH

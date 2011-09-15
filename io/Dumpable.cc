@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Dumpable.cc
-//
-// created       julien quintard   [sat mar 20 00:43:22 2010]
-// updated       julien quintard   [thu jun 23 13:01:37 2011]
+// author        julien quintard   [sat mar 20 00:43:22 2010]
 //
 
 //

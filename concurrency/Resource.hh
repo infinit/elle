@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Resource.hh
-//
-// created       julien quintard   [sun mar 28 00:28:32 2010]
-// updated       julien quintard   [fri sep  2 19:46:32 2011]
+// author        julien quintard   [sun mar 28 00:28:32 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_RESOURCE_HH

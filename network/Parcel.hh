@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Parcel.hh
-//
-// created       julien quintard   [tue mar 16 12:04:48 2010]
-// updated       julien quintard   [sun sep  4 12:41:47 2011]
+// author        julien quintard   [tue mar 16 12:04:48 2010]
 //
 
 #ifndef ELLE_NETWORK_PARCEL_HH
@@ -50,7 +47,7 @@ namespace elle
     ///
     /// this class is just a wrapper for packets freshly received.
     ///
-    /// whenver a message is being receveid, a parcel is created. then
+    /// whenver a message is being receveid, a parcel is author . then
     /// the session associated with this message is recorded before extracting
     /// the header. finally knowing the message's constituent types, the
     /// data can be fetched and extracted.

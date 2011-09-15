@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Directory.hh
-//
-// created       julien quintard   [thu may 27 16:17:26 2010]
-// updated       julien quintard   [fri jul  8 16:18:48 2011]
+// author        julien quintard   [thu may 27 16:17:26 2010]
 //
 
 #ifndef ELLE_IO_DIRECTORY_HH

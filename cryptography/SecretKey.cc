@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/SecretKey.cc
-//
-// created       julien quintard   [thu nov  1 12:24:32 2007]
-// updated       julien quintard   [wed sep  7 18:07:00 2011]
+// author        julien quintard   [thu nov  1 12:24:32 2007]
 //
 
 //

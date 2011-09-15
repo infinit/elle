@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Morgue.hxx
-//
-// created       julien quintard   [fri aug 26 17:08:22 2011]
-// updated       julien quintard   [sun sep  4 13:26:55 2011]
+// author        julien quintard   [fri aug 26 17:08:22 2011]
 //
 
 #ifndef ELLE_STANDALONE_MORGUE_HXX

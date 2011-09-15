@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Manipulators.cc
-//
-// created       julien quintard   [mon jul  4 16:45:37 2011]
-// updated       julien quintard   [sat sep  3 21:44:02 2011]
+// author        julien quintard   [mon jul  4 16:45:37 2011]
 //
 
 //

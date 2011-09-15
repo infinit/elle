@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Cryptography.cc
-//
-// created       julien quintard   [tue oct 30 12:16:42 2007]
-// updated       julien quintard   [sat sep  3 21:50:35 2011]
+// author        julien quintard   [tue oct 30 12:16:42 2007]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Settings.hh
-//
-// created       julien quintard   [sun apr 25 20:56:02 2010]
-// updated       julien quintard   [sun sep  4 13:43:40 2011]
+// author        julien quintard   [sun apr 25 20:56:02 2010]
 //
 
 #ifndef ELLE_UTILITY_SETTINGS_HH

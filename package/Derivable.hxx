@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/package/Derivable.hxx
-//
-// created       julien quintard   [fri may 13 13:12:01 2011]
-// updated       julien quintard   [wed sep  7 14:57:47 2011]
+// author        julien quintard   [fri may 13 13:12:01 2011]
 //
 
 #ifndef ELLE_PACKAGE_DERIVABLE_HXX

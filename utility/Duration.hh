@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Duration.hh
-//
-// created       julien quintard   [thu aug 11 10:40:35 2011]
-// updated       julien quintard   [sun sep  4 13:36:24 2011]
+// author        julien quintard   [thu aug 11 10:40:35 2011]
 //
 
 #ifndef ELLE_UTILITY_DURATION_HH
