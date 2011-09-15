@@ -84,7 +84,7 @@
   (newline)
   (insert (concat
            (infinit-comment 'i) " project       "
-           (replace-regexp-in-string ".*/infinit/\\([^/]\+\\)/.*" "\\1" (buffer-file-name))))
+           (replace-regexp-in-string ".*/infinit/\\([^/]\+\\)/?.*" "\\1" (buffer-file-name))))
   (newline)
   (insert (infinit-comment 'i))
   (newline)
@@ -94,7 +94,7 @@
   (newline)
   (insert (concat
            (infinit-comment 'i)
-           " author     " (getenv "NAME") "   [" (downcase (current-time-string)) "]"))
+           " author        " (getenv "NAME") "   [" (downcase (current-time-string)) "]"))
   (newline)
   (insert (infinit-comment 'c))
   (newline)

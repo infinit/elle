@@ -5,10 +5,7 @@
 #
 # license       infinit
 #
-# file          /home/mycure/infinit/Makefile
-#
-# created       julien quintard   [wed oct  6 12:58:36 2010]
-# updated       julien quintard   [wed sep 14 11:24:56 2011]
+# author        julien quintard   [wed oct  6 12:58:36 2010]
 #
 
 #
