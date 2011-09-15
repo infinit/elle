@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Actor.cc
-//
-// created       julien quintard   [thu jul 28 13:05:00 2011]
-// updated       julien quintard   [sun sep  4 16:19:10 2011]
+// author        julien quintard   [thu jul 28 13:05:00 2011]
 //
 
 //

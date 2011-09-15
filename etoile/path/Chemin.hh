@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/path/Chemin.hh
-//
-// created       julien quintard   [tue jun 14 13:24:13 2011]
-// updated       julien quintard   [sun sep  4 18:14:56 2011]
+// author        julien quintard   [tue jun 14 13:24:13 2011]
 //
 
 #ifndef ETOILE_PATH_CHEMIN_HH

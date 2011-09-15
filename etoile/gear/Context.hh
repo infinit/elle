@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Context.hh
-//
-// created       julien quintard   [thu jun 16 09:55:55 2011]
-// updated       julien quintard   [sun sep  4 16:12:02 2011]
+// author        julien quintard   [thu jun 16 09:55:55 2011]
 //
 
 #ifndef ETOILE_GEAR_CONTEXT_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/automaton/Attributes.hh
-//
-// created       julien quintard   [mon feb  1 19:22:40 2010]
-// updated       julien quintard   [mon jul  4 15:44:13 2011]
+// author        julien quintard   [mon feb  1 19:22:40 2010]
 //
 
 #ifndef ETOILE_AUTOMATON_ATTRIBUTES_HH

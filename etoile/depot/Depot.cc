@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/depot/Depot.cc
-//
-// created       julien quintard   [tue sep  1 01:11:07 2009]
-// updated       julien quintard   [sun sep  4 15:50:56 2011]
+// author        julien quintard   [tue sep  1 01:11:07 2009]
 //
 
 //

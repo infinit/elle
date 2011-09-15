@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Scope.cc
-//
-// created       julien quintard   [wed jun 15 13:09:29 2011]
-// updated       julien quintard   [sun sep  4 16:27:02 2011]
+// author        julien quintard   [wed jun 15 13:09:29 2011]
 //
 
 //
@@ -37,7 +34,7 @@ namespace etoile
     Scope::S::O::Container		Scope::Scopes::Onymous;
 
     ///
-    /// this container holds the anonymous---i.e freshly created---scopes.
+    /// this container holds the anonymous---i.e freshly author ---scopes.
     ///
     Scope::S::A::Container		Scope::Scopes::Anonymous;
 
@@ -48,7 +45,7 @@ namespace etoile
     ///
     /// this method tries to locate an existing scope given the chemin.
     ///
-    /// if none exists, a scope is created and added to the container.
+    /// if none exists, a scope is author  and added to the container.
     ///
     elle::Status	Scope::Acquire(const path::Chemin&	chemin,
 				       Scope*&			scope)

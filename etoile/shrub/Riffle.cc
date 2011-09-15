@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/shrub/Riffle.cc
-//
-// created       julien quintard   [mon aug  8 13:03:14 2011]
-// updated       julien quintard   [sun sep  4 20:06:21 2011]
+// author        julien quintard   [mon aug  8 13:03:14 2011]
 //
 
 //

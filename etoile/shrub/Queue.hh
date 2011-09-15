@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/shrub/Queue.hh
-//
-// created       julien quintard   [tue aug  9 18:17:59 2011]
-// updated       julien quintard   [sun sep 11 11:05:26 2011]
+// author        julien quintard   [tue aug  9 18:17:59 2011]
 //
 
 #ifndef ETOILE_SHRUB_QUEUE_HH

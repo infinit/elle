@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/miscellaneous/Information.hh
-//
-// created       julien quintard   [wed mar 31 16:05:57 2010]
-// updated       julien quintard   [sat jul  2 11:26:59 2011]
+// author        julien quintard   [wed mar 31 16:05:57 2010]
 //
 
 #ifndef ETOILE_MISCELLANEOUS_INFORMATION_HH

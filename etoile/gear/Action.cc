@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Action.cc
-//
-// created       julien quintard   [fri jun 24 14:52:08 2011]
-// updated       julien quintard   [wed sep  7 21:23:46 2011]
+// author        julien quintard   [fri jun 24 14:52:08 2011]
 //
 
 //

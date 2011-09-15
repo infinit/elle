@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/automaton/Attributes.cc
-//
-// created       julien quintard   [mon feb  1 19:24:19 2010]
-// updated       julien quintard   [fri aug  5 12:49:04 2011]
+// author        julien quintard   [mon feb  1 19:24:19 2010]
 //
 
 //

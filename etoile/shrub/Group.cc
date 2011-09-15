@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/shrub/Group.cc
-//
-// created       julien quintard   [sat sep 10 16:55:16 2011]
-// updated       julien quintard   [sun sep 11 11:34:38 2011]
+// author        julien quintard   [sat sep 10 16:55:16 2011]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Scope.hh
-//
-// created       julien quintard   [fri jun  3 11:01:57 2011]
-// updated       julien quintard   [sun sep  4 16:05:36 2011]
+// author        julien quintard   [fri jun  3 11:01:57 2011]
 //
 
 #ifndef ETOILE_GEAR_SCOPE_HH
@@ -47,7 +44,7 @@ namespace etoile
     /// attached to the scope.
     ///
     /// finally, note that anonymous scope are also kept. indeed, a file
-    /// created by an application for instance does not have a chemin
+    /// author  by an application for instance does not have a chemin
     /// since the file has not be attached to the file system hierarchy
     /// yet. therefore, such scope are maintained in an anonymous data
     /// structure for as long as necessary.

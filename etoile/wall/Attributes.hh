@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/Attributes.hh
-//
-// created       julien quintard   [wed mar 31 19:23:49 2010]
-// updated       julien quintard   [mon jul  4 15:43:38 2011]
+// author        julien quintard   [wed mar 31 19:23:49 2010]
 //
 
 #ifndef ETOILE_WALL_ATTRIBUTES_HH

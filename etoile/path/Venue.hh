@@ -5,10 +5,7 @@
 //
 // license       path
 //
-// file          /home/mycure/infinit/etoile/path/Venue.hh
-//
-// created       julien quintard   [sat aug  8 15:56:09 2009]
-// updated       julien quintard   [sun sep  4 18:14:37 2011]
+// author        julien quintard   [sat aug  8 15:56:09 2009]
 //
 
 #ifndef ETOILE_PATH_VENUE_HH

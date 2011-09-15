@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Transcript.cc
-//
-// created       julien quintard   [wed jun 22 13:49:40 2011]
-// updated       julien quintard   [sun sep  4 16:23:48 2011]
+// author        julien quintard   [wed jun 22 13:49:40 2011]
 //
 
 //

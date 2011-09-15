@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/journal/Journal.hh
-//
-// created       julien quintard   [fri jun 17 13:04:03 2011]
-// updated       julien quintard   [sun sep  4 17:54:52 2011]
+// author        julien quintard   [fri jun 17 13:04:03 2011]
 //
 
 #ifndef ETOILE_JOURNAL_JOURNAL_HH

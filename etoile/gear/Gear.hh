@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Gear.hh
-//
-// created       julien quintard   [fri jun  3 10:58:40 2011]
-// updated       julien quintard   [sun sep  4 16:20:04 2011]
+// author        julien quintard   [fri jun  3 10:58:40 2011]
 //
 
 #ifndef ETOILE_GEAR_GEAR_HH

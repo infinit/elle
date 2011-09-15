@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/automaton/Object.cc
-//
-// created       julien quintard   [mon jun 20 12:47:31 2011]
-// updated       julien quintard   [fri aug  5 12:07:45 2011]
+// author        julien quintard   [mon jun 20 12:47:31 2011]
 //
 
 //

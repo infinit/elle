@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Identifier.cc
-//
-// created       julien quintard   [wed mar  3 13:55:58 2010]
-// updated       julien quintard   [mon jul  4 07:28:52 2011]
+// author        julien quintard   [wed mar  3 13:55:58 2010]
 //
 
 //

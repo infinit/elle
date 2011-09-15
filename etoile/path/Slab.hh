@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/path/Slab.hh
-//
-// created       julien quintard   [thu jun 16 10:25:17 2011]
-// updated       julien quintard   [sun sep  4 18:10:59 2011]
+// author        julien quintard   [thu jun 16 10:25:17 2011]
 //
 
 #ifndef ETOILE_PATH_SLAB_HH

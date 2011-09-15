@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/shrub/Group.hh
-//
-// created       julien quintard   [sat sep 10 16:03:39 2011]
-// updated       julien quintard   [sun sep 11 11:55:23 2011]
+// author        julien quintard   [sat sep 10 16:03:39 2011]
 //
 
 #ifndef ETOILE_SHRUB_GROUP_HH
@@ -37,7 +34,7 @@ namespace etoile
 
     ///
     /// this class represents a set of riffles grouped together because
-    /// they have been created or refreshed at the exact same time.
+    /// they have been author  or refreshed at the exact same time.
     ///
     /// note that a very simple data structure is being used in this
     /// class because no more than a dozen riffles are stored in a single

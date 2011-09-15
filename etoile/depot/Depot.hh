@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/depot/Depot.hh
-//
-// created       julien quintard   [tue sep  1 01:08:05 2009]
-// updated       julien quintard   [sun sep  4 14:01:24 2011]
+// author        julien quintard   [tue sep  1 01:08:05 2009]
 //
 
 #ifndef ETOILE_DEPOT_DEPOT_HH

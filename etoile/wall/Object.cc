@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/Object.cc
-//
-// created       julien quintard   [wed mar  3 20:50:57 2010]
-// updated       julien quintard   [sun sep  4 21:37:29 2011]
+// author        julien quintard   [wed mar  3 20:50:57 2010]
 //
 
 //

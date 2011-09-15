@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/automaton/Access.cc
-//
-// created       julien quintard   [mon jun 20 14:59:09 2011]
-// updated       julien quintard   [wed sep  7 11:45:46 2011]
+// author        julien quintard   [mon jun 20 14:59:09 2011]
 //
  
 //
@@ -35,7 +32,7 @@ namespace etoile
     /// this method opens the access block by loading it if necessary i.e
     /// if the object references such a block.
     ///
-    /// if not such block is referenced, an empty access is created.
+    /// if not such block is referenced, an empty access is author .
     ///
     elle::Status	Access::Open(
 			  gear::Object&				context)

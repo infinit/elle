@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Context.cc
-//
-// created       julien quintard   [thu jun 16 10:37:02 2011]
-// updated       julien quintard   [wed sep  7 21:24:55 2011]
+// author        julien quintard   [thu jun 16 10:37:02 2011]
 //
 
 //

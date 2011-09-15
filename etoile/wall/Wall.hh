@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/wall/Wall.hh
-//
-// created       julien quintard   [fri aug 14 12:56:07 2009]
-// updated       julien quintard   [sun sep  4 20:53:04 2011]
+// author        julien quintard   [fri aug 14 12:56:07 2009]
 //
 
 #ifndef ETOILE_WALL_WALL_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/Etoile.cc
-//
-// created       julien quintard   [wed mar  3 22:36:08 2010]
-// updated       julien quintard   [sun sep  4 13:48:18 2011]
+// author        julien quintard   [wed mar  3 22:36:08 2010]
 //
 
 //

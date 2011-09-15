@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/journal/Journal.cc
-//
-// created       julien quintard   [fri jun 24 14:23:50 2011]
-// updated       julien quintard   [sun sep  4 17:55:54 2011]
+// author        julien quintard   [fri jun 24 14:23:50 2011]
 //
 
 //

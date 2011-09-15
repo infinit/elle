@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/gear/Object.cc
-//
-// created       julien quintard   [mon aug 17 12:19:13 2009]
-// updated       julien quintard   [wed sep  7 21:27:10 2011]
+// author        julien quintard   [mon aug 17 12:19:13 2009]
 //
 
 //

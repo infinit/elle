@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/path/Slice.hh
-//
-// created       julien quintard   [fri apr  2 01:29:28 2010]
-// updated       julien quintard   [sun sep  4 18:11:26 2011]
+// author        julien quintard   [fri apr  2 01:29:28 2010]
 //
 
 #ifndef ETOILE_PATH_SLICE_HH

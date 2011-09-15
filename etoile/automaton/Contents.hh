@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/automaton/Contents.hh
-//
-// created       julien quintard   [mon jun 20 16:26:27 2011]
-// updated       julien quintard   [tue jun 21 16:29:06 2011]
+// author        julien quintard   [mon jun 20 16:26:27 2011]
 //
 
 #ifndef ETOILE_AUTOMATON_CONTENTS_HH

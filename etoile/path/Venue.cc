@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/etoile/path/Venue.cc
-//
-// created       julien quintard   [sat aug  8 17:51:22 2009]
-// updated       julien quintard   [sun sep  4 18:12:47 2011]
+// author        julien quintard   [sat aug  8 17:51:22 2009]
 //
 
 //
