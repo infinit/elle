@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...hole/algorithms/assignment/Assignment.hh
-//
-// created       julien quintard   [thu aug 11 15:03:46 2011]
-// updated       julien quintard   [thu aug 11 15:06:22 2011]
+// author        julien quintard   [thu aug 11 15:03:46 2011]
 //
 
 #ifndef HOLE_ALGORITHMS_ASSIGNMENT_ASSIGNMENT_HH

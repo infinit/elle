@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/local/Machine.hh
-//
-// created       julien quintard   [wed aug 31 13:52:28 2011]
-// updated       julien quintard   [fri sep  9 14:35:15 2011]
+// author        julien quintard   [wed aug 31 13:52:28 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_MACHINE_HH

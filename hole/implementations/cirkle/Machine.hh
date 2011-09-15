@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/cirkle/Machine.hh
-//
-// created       julien quintard   [wed aug 31 15:05:39 2011]
-// updated       julien quintard   [fri sep  2 23:43:17 2011]
+// author        julien quintard   [wed aug 31 15:05:39 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MACHINE_HH

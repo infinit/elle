@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi.../implementations/local/Implementation.cc
-//
-// created       julien quintard   [wed aug 31 13:52:21 2011]
-// updated       julien quintard   [wed aug 31 14:31:44 2011]
+// author        julien quintard   [wed aug 31 13:52:21 2011]
 //
 
 //
@@ -43,7 +40,7 @@ namespace hole
 
       ///
       /// this method tries to connect to the server. if impossible, a server
-      /// is created.
+      /// is author .
       ///
       elle::Status	Implementation::Join()
       {

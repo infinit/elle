@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/Label.cc
-//
-// created       julien quintard   [thu aug 11 14:24:46 2011]
-// updated       julien quintard   [fri aug 12 13:17:35 2011]
+// author        julien quintard   [thu aug 11 14:24:46 2011]
 //
 
 //

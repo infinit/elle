@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Server.hh
-//
-// created       julien quintard   [wed may 25 19:20:52 2011]
-// updated       julien quintard   [fri sep  9 14:40:24 2011]
+// author        julien quintard   [wed may 25 19:20:52 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_SERVER_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/Implementations.hh
-//
-// created       julien quintard   [tue jul  5 17:08:34 2011]
-// updated       julien quintard   [thu sep  8 17:17:07 2011]
+// author        julien quintard   [tue jul  5 17:08:34 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_IMPLEMENTATIONS_HH

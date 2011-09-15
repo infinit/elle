@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...implementations/cirkle/Implementation.hh
-//
-// created       julien quintard   [wed aug 31 14:50:02 2011]
-// updated       julien quintard   [wed aug 31 14:50:39 2011]
+// author        julien quintard   [wed aug 31 14:50:02 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_IMPLEMENTATION_HH

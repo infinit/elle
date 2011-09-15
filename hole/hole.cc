@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/hole.cc
-//
-// created       julien quintard   [wed may 11 15:20:51 2011]
-// updated       julien quintard   [wed aug 31 16:10:17 2011]
+// author        julien quintard   [wed may 11 15:20:51 2011]
 //
 
 //

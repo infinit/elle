@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...hole/implementations/cirkle/Neighbour.cc
-//
-// created       julien quintard   [wed aug 24 13:12:46 2011]
-// updated       julien quintard   [sat sep  3 15:37:23 2011]
+// author        julien quintard   [wed aug 24 13:12:46 2011]
 //
 
 //

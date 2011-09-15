@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...hole/implementations/cirkle/Vestibule.cc
-//
-// created       julien quintard   [thu aug 25 12:19:28 2011]
-// updated       julien quintard   [wed aug 31 21:57:38 2011]
+// author        julien quintard   [thu aug 25 12:19:28 2011]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...e/implementations/cirkle/RoutingTable.hh
-//
-// created       julien quintard   [fri aug 12 15:56:25 2011]
-// updated       julien quintard   [fri aug 26 17:07:01 2011]
+// author        julien quintard   [fri aug 12 15:56:25 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_ROUTINGTABLE_HH

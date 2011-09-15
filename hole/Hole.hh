@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/Hole.hh
-//
-// created       julien quintard   [tue apr 13 15:25:04 2010]
-// updated       julien quintard   [thu sep  8 14:55:47 2011]
+// author        julien quintard   [tue apr 13 15:25:04 2010]
 //
 
 #ifndef HOLE_HOLE_HH

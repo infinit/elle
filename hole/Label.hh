@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/Label.hh
-//
-// created       julien quintard   [thu aug 11 14:01:43 2011]
-// updated       julien quintard   [thu sep  8 15:07:51 2011]
+// author        julien quintard   [thu aug 11 14:01:43 2011]
 //
 
 #ifndef HOLE_LABEL_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/Holeable.hh
-//
-// created       julien quintard   [wed may 11 14:55:32 2011]
-// updated       julien quintard   [thu sep  8 14:55:19 2011]
+// author        julien quintard   [wed may 11 14:55:32 2011]
 //
 
 #ifndef HOLE_HOLEABLE_HH

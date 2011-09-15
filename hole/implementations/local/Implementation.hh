@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi.../implementations/local/Implementation.hh
-//
-// created       julien quintard   [wed aug 31 13:52:16 2011]
-// updated       julien quintard   [thu sep  8 17:17:31 2011]
+// author        julien quintard   [wed aug 31 13:52:16 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_LOCAL_IMPLEMENTATION_HH

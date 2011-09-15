@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/cirkle/Manifest.hh
-//
-// created       julien quintard   [fri aug 12 15:18:12 2011]
-// updated       julien quintard   [thu sep  1 10:35:09 2011]
+// author        julien quintard   [fri aug 12 15:18:12 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_MANIFEST_HH

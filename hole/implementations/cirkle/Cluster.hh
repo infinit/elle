@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/cirkle/Cluster.hh
-//
-// created       julien quintard   [fri aug 26 13:05:26 2011]
-// updated       julien quintard   [wed aug 31 23:54:41 2011]
+// author        julien quintard   [fri aug 26 13:05:26 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_CLUSTER_HH

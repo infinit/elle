@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...hole/implementations/cirkle/Neighbour.hh
-//
-// created       julien quintard   [wed aug 24 10:33:01 2011]
-// updated       julien quintard   [thu sep  1 11:19:33 2011]
+// author        julien quintard   [wed aug 24 10:33:01 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_CIRKLE_NEIGHBOUR_HH

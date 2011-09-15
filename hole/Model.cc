@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/Model.cc
-//
-// created       julien quintard   [mon jun 27 09:15:33 2011]
-// updated       julien quintard   [thu sep  8 17:16:31 2011]
+// author        julien quintard   [mon jun 27 09:15:33 2011]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/hole/implementations/remote/Manifest.hh
-//
-// created       julien quintard   [thu may 26 12:59:43 2011]
-// updated       julien quintard   [fri sep  9 14:37:05 2011]
+// author        julien quintard   [thu may 26 12:59:43 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_MANIFEST_HH

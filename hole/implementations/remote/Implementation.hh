@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infi...implementations/remote/Implementation.hh
-//
-// created       julien quintard   [wed aug 31 00:35:38 2011]
-// updated       julien quintard   [wed aug 31 14:49:22 2011]
+// author        julien quintard   [wed aug 31 00:35:38 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_REMOTE_IMPLEMENTATION_HH
