@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8authority/Authority.hh
-//
-// created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon jun 27 07:46:41 2011]
+// author        julien quintard   [sat mar 27 08:37:14 2010]
 //
 
 #ifndef AUTHORITY_AUTHORITY_HH

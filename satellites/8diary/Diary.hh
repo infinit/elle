@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8diary/Diary.hh
-//
-// created       julien quintard   [mon jun 27 22:39:27 2011]
-// updated       julien quintard   [mon jun 27 22:39:40 2011]
+// author        julien quintard   [mon jun 27 22:39:27 2011]
 //
 
 #ifndef DIARY_DIARY_HH

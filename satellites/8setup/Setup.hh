@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8setup/Setup.hh
-//
-// created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon jun 27 10:51:40 2011]
+// author        julien quintard   [sat mar 27 08:37:14 2010]
 //
 
 #ifndef SETUP_SETUP_HH

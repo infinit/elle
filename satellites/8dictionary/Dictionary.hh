@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8dictionary/Dictionary.hh
-//
-// created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon jun 27 08:53:48 2011]
+// author        julien quintard   [sat mar 27 08:37:14 2010]
 //
 
 #ifndef DICTIONARY_DICTIONARY_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8passport/Passport.cc
-//
-// created       julien quintard   [thu aug 11 15:16:04 2011]
-// updated       julien quintard   [thu aug 11 17:29:21 2011]
+// author        julien quintard   [thu aug 11 15:16:04 2011]
 //
 
 //
@@ -303,7 +300,7 @@ namespace application
 	    escape("unable to create the passport");
 
 	  // display a message.
-	  std::cout << "The passport has been created successfully!"
+	  std::cout << "The passport has been author  successfully!"
 		    << std::endl;
 
 	  break;

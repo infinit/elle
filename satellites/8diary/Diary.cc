@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8diary/Diary.cc
-//
-// created       julien quintard   [mon jun 27 22:38:51 2011]
-// updated       julien quintard   [thu aug 11 11:14:23 2011]
+// author        julien quintard   [mon jun 27 22:38:51 2011]
 //
 
 //

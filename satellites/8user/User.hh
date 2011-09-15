@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8user/User.hh
-//
-// created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon jun 27 11:10:49 2011]
+// author        julien quintard   [sat mar 27 08:37:14 2010]
 //
 
 #ifndef USER_USER_HH

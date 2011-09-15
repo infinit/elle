@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/diary/Replay.cc
-//
-// created       julien quintard   [thu jun 30 09:23:09 2011]
-// updated       julien quintard   [wed sep  7 21:19:29 2011]
+// author        julien quintard   [thu jun 30 09:23:09 2011]
 //
 
 //

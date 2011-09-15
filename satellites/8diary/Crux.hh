@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8diary/Crux.hh
-//
-// created       julien quintard   [tue jun 28 12:47:04 2011]
-// updated       julien quintard   [sat sep  3 19:47:34 2011]
+// author        julien quintard   [tue jun 28 12:47:04 2011]
 //
 
 #ifndef DIARY_CRUX_HH

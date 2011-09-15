@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8shell/Shell.hh
-//
-// created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [wed jul  6 14:02:33 2011]
+// author        julien quintard   [sat mar 27 08:37:14 2010]
 //
 
 #ifndef DEBUG_DEBUG_HH

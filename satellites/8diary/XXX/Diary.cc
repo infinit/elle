@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/diary/Diary.cc
-//
-// created       julien quintard   [sun jun 26 22:48:13 2011]
-// updated       julien quintard   [wed sep  7 19:16:39 2011]
+// author        julien quintard   [sun jun 26 22:48:13 2011]
 //
 
 //

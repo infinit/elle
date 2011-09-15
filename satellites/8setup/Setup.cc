@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8setup/Setup.cc
-//
-// created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [thu aug 11 11:15:11 2011]
+// author        julien quintard   [thu mar  4 17:51:46 2010]
 //
 
 //

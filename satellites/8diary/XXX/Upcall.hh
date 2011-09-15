@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/diary/Upcall.hh
-//
-// created       julien quintard   [tue jun 28 14:58:51 2011]
-// updated       julien quintard   [fri jul  1 21:34:21 2011]
+// author        julien quintard   [tue jun 28 14:58:51 2011]
 //
 
 #ifndef PIG_DIARY_UPCALL_HH

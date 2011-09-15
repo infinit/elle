@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8shell/Shell.cc
-//
-// created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat sep  3 19:53:02 2011]
+// author        julien quintard   [thu mar  4 17:51:46 2010]
 //
 
 //

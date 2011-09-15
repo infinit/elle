@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8passport/Passport.hh
-//
-// created       julien quintard   [thu aug 11 15:16:11 2011]
-// updated       julien quintard   [thu aug 11 15:16:13 2011]
+// author        julien quintard   [thu aug 11 15:16:11 2011]
 //
 
 #ifndef PASSPORT_PASSPORT_HH

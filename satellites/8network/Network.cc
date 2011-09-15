@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8network/Network.cc
-//
-// created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [fri aug 12 13:56:59 2011]
+// author        julien quintard   [thu mar  4 17:51:46 2010]
 //
 
 //
@@ -510,7 +507,7 @@ namespace application
 	    escape("unable to create the network");
 
 	  // display a message.
-	  std::cout << "The network has been created successfully!"
+	  std::cout << "The network has been author  successfully!"
 		    << std::endl;
 
 	  break;

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8network/Network.hh
-//
-// created       julien quintard   [sat mar 27 08:37:14 2010]
-// updated       julien quintard   [mon jun 27 10:32:39 2011]
+// author        julien quintard   [sat mar 27 08:37:14 2010]
 //
 
 #ifndef NETWORK_NETWORK_HH

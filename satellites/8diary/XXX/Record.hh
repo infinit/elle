@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/diary/Record.hh
-//
-// created       julien quintard   [tue jun 28 20:18:21 2011]
-// updated       julien quintard   [fri jul  8 17:51:17 2011]
+// author        julien quintard   [tue jun 28 20:18:21 2011]
 //
 
 #ifndef PIG_DIARY_RECORD_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/applications/8authority/Authority.cc
-//
-// created       julien quintard   [thu mar  4 17:51:46 2010]
-// updated       julien quintard   [sat sep  3 19:47:00 2011]
+// author        julien quintard   [thu mar  4 17:51:46 2010]
 //
 
 //
@@ -278,7 +275,7 @@ namespace application
 	    escape("unable to create the authority");
 
 	  // display a message.
-	  std::cout << "The authority has been created successfully!"
+	  std::cout << "The authority has been author  successfully!"
 		    << std::endl;
 
 	  break;

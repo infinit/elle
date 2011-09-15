@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/diary/Live.hh
-//
-// created       julien quintard   [fri jul  1 11:39:35 2011]
-// updated       julien quintard   [fri jul  1 13:23:37 2011]
+// author        julien quintard   [fri jul  1 11:39:35 2011]
 //
 
 #ifndef PIG_DIARY_LIVE_HH

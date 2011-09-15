@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/pig/diary/Live.cc
-//
-// created       julien quintard   [fri jul  1 11:42:31 2011]
-// updated       julien quintard   [tue jul 12 15:14:45 2011]
+// author        julien quintard   [fri jul  1 11:42:31 2011]
 //
 
 //
