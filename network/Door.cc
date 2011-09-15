@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Door.cc
-//
-// created       julien quintard   [sat feb  6 04:30:24 2010]
-// updated       julien quintard   [wed sep 14 17:09:47 2011]
+// author        julien quintard   [sat feb  6 04:30:24 2010]
 //
 
 //

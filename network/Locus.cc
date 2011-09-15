@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Locus.cc
-//
-// created       julien quintard   [sat nov 28 13:01:48 2009]
-// updated       julien quintard   [wed sep  7 18:11:49 2011]
+// author        julien quintard   [sat nov 28 13:01:48 2009]
 //
 
 //

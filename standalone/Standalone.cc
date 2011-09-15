@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/standalone/Standalone.cc
-//
-// created       julien quintard   [sun may  2 11:00:51 2010]
-// updated       julien quintard   [sat sep  3 19:27:36 2011]
+// author        julien quintard   [sun may  2 11:00:51 2010]
 //
 
 //

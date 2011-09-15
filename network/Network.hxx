@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Network.hxx
-//
-// created       julien quintard   [wed feb  3 16:05:34 2010]
-// updated       julien quintard   [fri sep  2 15:12:06 2011]
+// author        julien quintard   [wed feb  3 16:05:34 2010]
 //
 
 #ifndef ELLE_NETWORK_NETWORK_HXX

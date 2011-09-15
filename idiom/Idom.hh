@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/idiom/Idom.hh
-//
-// created       julien quintard   [wed mar 10 20:53:51 2010]
-// updated       julien quintard   [mon apr 26 16:03:53 2010]
+// author        julien quintard   [wed mar 10 20:53:51 2010]
 //
 
 #ifndef ELLE_IDIOM_IDIOM_HH

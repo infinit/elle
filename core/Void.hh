@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Void.hh
-//
-// created       julien quintard   [thu jul 30 13:26:57 2009]
-// updated       julien quintard   [wed mar 10 20:39:57 2010]
+// author        julien quintard   [thu jul 30 13:26:57 2009]
 //
 
 #ifndef ELLE_CORE_VOID_HH

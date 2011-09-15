@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Closure.hh
-//
-// created       julien quintard   [thu mar 25 03:25:25 2010]
-// updated       julien quintard   [fri sep  2 19:34:35 2011]
+// author        julien quintard   [thu mar 25 03:25:25 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CLOSURE_HH

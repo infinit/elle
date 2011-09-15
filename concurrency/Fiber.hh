@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Fiber.hh
-//
-// created       julien quintard   [sun mar 21 23:09:07 2010]
-// updated       julien quintard   [wed sep  7 11:36:17 2011]
+// author        julien quintard   [sun mar 21 23:09:07 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_FIBER_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Broker.cc
-//
-// created       julien quintard   [sun may 29 14:29:01 2011]
-// updated       julien quintard   [sun sep  4 15:43:03 2011]
+// author        julien quintard   [sun may 29 14:29:01 2011]
 //
 
 //

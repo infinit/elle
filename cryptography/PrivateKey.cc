@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/PrivateKey.cc
-//
-// created       julien quintard   [tue oct 30 10:07:31 2007]
-// updated       julien quintard   [wed sep  7 17:58:31 2011]
+// author        julien quintard   [tue oct 30 10:07:31 2007]
 //
 
 //

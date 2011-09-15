@@ -5,10 +5,7 @@
 //
 // license       elle
 //
-// file          /home/mycure/infinit/elle/io/Path.cc
-//
-// created       julien quintard   [mon apr 25 11:12:59 2011]
-// updated       julien quintard   [tue apr 26 12:19:59 2011]
+// author        julien quintard   [mon apr 25 11:12:59 2011]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Hexadecimal.cc
-//
-// created       julien quintard   [fri apr 16 19:25:45 2010]
-// updated       julien quintard   [fri jul  8 17:58:56 2011]
+// author        julien quintard   [fri apr 16 19:25:45 2010]
 //
 
 //

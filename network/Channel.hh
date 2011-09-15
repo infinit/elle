@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Channel.hh
-//
-// created       julien quintard   [thu mar 18 21:05:22 2010]
-// updated       julien quintard   [tue sep  6 13:21:15 2011]
+// author        julien quintard   [thu mar 18 21:05:22 2010]
 //
 
 ///

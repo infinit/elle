@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Cryptography.hh
-//
-// created       julien quintard   [tue oct 30 12:15:12 2007]
-// updated       julien quintard   [thu aug 11 16:15:12 2011]
+// author        julien quintard   [tue oct 30 12:15:12 2007]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_CRYPTOGRAPHYGRAPHY_HH

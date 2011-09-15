@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/package/Archivable.hh
-//
-// created       julien quintard   [tue jan 27 01:08:40 2009]
-// updated       julien quintard   [fri jun  3 15:20:47 2011]
+// author        julien quintard   [tue jan 27 01:08:40 2009]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVABLE_HH

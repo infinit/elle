@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Trace.cc
-//
-// created       julien quintard   [mon apr 26 21:25:23 2010]
-// updated       julien quintard   [wed sep  7 17:26:44 2011]
+// author        julien quintard   [mon apr 26 21:25:23 2010]
 //
 
 //

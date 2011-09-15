@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/Elle.hh
-//
-// created       julien quintard   [mon feb 16 19:12:33 2009]
-// updated       julien quintard   [tue jun 28 23:51:41 2011]
+// author        julien quintard   [mon feb 16 19:12:33 2009]
 //
 
 #ifndef ELLE_ELLE_HH

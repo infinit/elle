@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/gate/Server.cc
-//
-// created       julien quintard   [fri nov 27 22:04:36 2009]
-// updated       julien quintard   [fri sep  2 20:44:52 2011]
+// author        julien quintard   [fri nov 27 22:04:36 2009]
 //
 
 //

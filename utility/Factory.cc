@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Factory.cc
-//
-// created       julien quintard   [thu jan 28 19:19:35 2010]
-// updated       julien quintard   [mon jul 11 15:38:59 2011]
+// author        julien quintard   [thu jan 28 19:19:35 2010]
 //
 
 //

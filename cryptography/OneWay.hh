@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/OneWay.hh
-//
-// created       julien quintard   [mon oct 29 13:19:49 2007]
-// updated       julien quintard   [tue sep  6 16:26:38 2011]
+// author        julien quintard   [mon oct 29 13:19:49 2007]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HH

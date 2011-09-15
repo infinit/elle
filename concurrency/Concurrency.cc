@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Concurrency.cc
-//
-// created       julien quintard   [tue mar 23 15:05:31 2010]
-// updated       julien quintard   [wed mar 31 21:36:10 2010]
+// author        julien quintard   [tue mar 23 15:05:31 2010]
 //
 
 //

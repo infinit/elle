@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/slot/Neighbour.hh
-//
-// created       julien quintard   [wed mar 17 11:22:38 2010]
-// updated       julien quintard   [thu aug 25 11:41:28 2011]
+// author        julien quintard   [wed mar 17 11:22:38 2010]
 //
 
 #ifndef ELLE_TEST_NETWORK_SLOT_NEIGHBOUR_HH

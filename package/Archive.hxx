@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/package/Archive.hxx
-//
-// created       julien quintard   [mon jan 26 14:09:50 2009]
-// updated       julien quintard   [wed sep  7 11:21:26 2011]
+// author        julien quintard   [mon jan 26 14:09:50 2009]
 //
 
 #ifndef ELLE_PACKAGE_ARCHIVE_HXX

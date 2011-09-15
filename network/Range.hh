@@ -5,10 +5,7 @@
 //
 // license       network
 //
-// file          /home/mycure/infinit/elle/network/Range.hh
-//
-// created       julien quintard   [fri mar 26 13:07:25 2010]
-// updated       julien quintard   [wed mar 31 14:54:52 2010]
+// author        julien quintard   [fri mar 26 13:07:25 2010]
 //
 
 #ifndef ELLE_NETWORK_RANGE_HH

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Console.hh
-//
-// created       julien quintard   [sat jun 18 11:09:29 2011]
-// updated       julien quintard   [sat jun 18 11:26:33 2011]
+// author        julien quintard   [sat jun 18 11:09:29 2011]
 //
 
 #ifndef ELLE_IO_CONSOLE_HH

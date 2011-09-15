@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/benchmark/cryptography/Time.cc
-//
-// created       julien quintard   [wed aug  5 15:25:54 2009]
-// updated       julien quintard   [sat sep  3 20:03:10 2011]
+// author        julien quintard   [wed aug  5 15:25:54 2009]
 //
 
 //

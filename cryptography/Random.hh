@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/Random.hh
-//
-// created       julien quintard   [thu aug 11 16:08:47 2011]
-// updated       julien quintard   [sat sep  3 22:14:01 2011]
+// author        julien quintard   [thu aug 11 16:08:47 2011]
 //
 
 #ifndef ELLE_CRYPTOGRAPHY_RANDOM_HH

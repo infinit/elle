@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/libraries/elle/core/String.hh
-//
-// created       julien quintard   [thu nov 29 20:38:10 2007]
-// updated       julien quintard   [mon apr 26 15:56:28 2010]
+// author        julien quintard   [thu nov 29 20:38:10 2007]
 //
 
 #ifndef ELLE_CORE_STRING_HH

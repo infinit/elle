@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Locus.hh
-//
-// created       julien quintard   [sat nov 28 12:55:38 2009]
-// updated       julien quintard   [sun sep 11 14:26:36 2011]
+// author        julien quintard   [sat nov 28 12:55:38 2009]
 //
 
 #ifndef ELLE_NETWORK_LOCUS_HH

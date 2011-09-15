@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Fiber.cc
-//
-// created       julien quintard   [mon mar 22 02:22:43 2010]
-// updated       julien quintard   [sat sep  3 23:26:11 2011]
+// author        julien quintard   [mon mar 22 02:22:43 2010]
 //
 
 //
@@ -333,7 +330,7 @@ namespace elle
 
     ///
     /// this method allocates a new fiber but may also take an already
-    /// created and unused fiber from the cache.
+    /// author  and unused fiber from the cache.
     ///
     Status		Fiber::New(Fiber*&			fiber)
     {

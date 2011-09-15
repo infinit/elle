@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Lane.hh
-//
-// created       julien quintard   [thu feb  4 14:39:34 2010]
-// updated       julien quintard   [sun sep  4 12:20:59 2011]
+// author        julien quintard   [thu feb  4 14:39:34 2010]
 //
 
 ///

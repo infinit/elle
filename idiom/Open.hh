@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/idiom/Open.hh
-//
-// created       julien quintard   [mon mar  8 23:05:41 2010]
-// updated       julien quintard   [wed sep  7 09:50:31 2011]
+// author        julien quintard   [mon mar  8 23:05:41 2010]
 //
 
 //

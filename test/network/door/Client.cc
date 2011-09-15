@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/test/network/door/Client.cc
-//
-// created       julien quintard   [sun feb  7 01:32:45 2010]
-// updated       julien quintard   [fri sep  2 20:40:51 2011]
+// author        julien quintard   [sun feb  7 01:32:45 2010]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/core/Natural.cc
-//
-// created       julien quintard   [wed feb 18 15:40:40 2009]
-// updated       julien quintard   [wed sep  7 10:16:31 2011]
+// author        julien quintard   [wed feb 18 15:40:40 2009]
 //
 
 //

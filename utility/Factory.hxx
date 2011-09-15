@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/utility/Factory.hxx
-//
-// created       julien quintard   [thu jan 28 18:56:42 2010]
-// updated       julien quintard   [wed sep  7 14:41:56 2011]
+// author        julien quintard   [thu jan 28 18:56:42 2010]
 //
 
 #ifndef ELLE_UTILITY_FACTORY_HXX

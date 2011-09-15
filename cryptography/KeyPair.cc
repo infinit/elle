@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/cryptography/KeyPair.cc
-//
-// created       julien quintard   [sat oct 27 18:12:04 2007]
-// updated       julien quintard   [wed sep  7 17:50:20 2011]
+// author        julien quintard   [sat oct 27 18:12:04 2007]
 //
 
 //

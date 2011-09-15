@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Environment.hh
-//
-// created       julien quintard   [thu apr  8 14:13:51 2010]
-// updated       julien quintard   [mon may  3 21:12:28 2010]
+// author        julien quintard   [thu apr  8 14:13:51 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_ENVIRONMENT_HH

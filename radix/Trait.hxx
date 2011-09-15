@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Trait.hxx
-//
-// created       julien quintard   [fri jul 15 10:45:39 2011]
-// updated       julien quintard   [sat sep  3 20:51:42 2011]
+// author        julien quintard   [fri jul 15 10:45:39 2011]
 //
 
 #ifndef ELLE_RADIX_TRAIT_HXX

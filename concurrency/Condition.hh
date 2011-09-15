@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Condition.hh
-//
-// created       julien quintard   [sun mar  7 17:15:14 2010]
-// updated       julien quintard   [sat sep  3 23:24:00 2011]
+// author        julien quintard   [sun mar  7 17:15:14 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CONDITION_HH

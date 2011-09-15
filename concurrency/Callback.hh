@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Callback.hh
-//
-// created       julien quintard   [wed mar 24 15:49:05 2010]
-// updated       julien quintard   [sat sep  3 23:21:41 2011]
+// author        julien quintard   [wed mar 24 15:49:05 2010]
 //
 
 #ifndef ELLE_CONCURRENCY_CALLBACK_HH

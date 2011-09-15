@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/concurrency/Timer.cc
-//
-// created       julien quintard   [wed mar 17 12:11:11 2010]
-// updated       julien quintard   [wed sep  7 17:43:30 2011]
+// author        julien quintard   [wed mar 17 12:11:11 2010]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/radix/Allege.hh
-//
-// created       julien quintard   [mon jul 18 14:56:45 2011]
-// updated       julien quintard   [sat sep  3 20:35:05 2011]
+// author        julien quintard   [mon jul 18 14:56:45 2011]
 //
 
 #ifndef ELLE_RADIX_ALLEGE_HH

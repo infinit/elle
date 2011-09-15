@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Slot.cc
-//
-// created       julien quintard   [wed feb  3 21:52:30 2010]
-// updated       julien quintard   [wed sep 14 17:10:30 2011]
+// author        julien quintard   [wed feb  3 21:52:30 2010]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/io/Link.cc
-//
-// created       julien quintard   [sun may 22 13:08:22 2011]
-// updated       julien quintard   [wed sep  7 17:37:43 2011]
+// author        julien quintard   [sun may 22 13:08:22 2011]
 //
 
 //

@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/elle/network/Channel.cc
-//
-// created       julien quintard   [thu mar 18 21:20:27 2010]
-// updated       julien quintard   [tue sep  6 13:21:20 2011]
+// author        julien quintard   [thu mar 18 21:20:27 2010]
 //
 
 //
