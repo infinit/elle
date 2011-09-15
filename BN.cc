@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/comet/BN.cc
-//
-// created       julien quintard   [fri mar 18 16:38:24 2011]
-// updated       julien quintard   [wed mar 23 14:19:21 2011]
+// author        julien quintard   [fri mar 18 16:38:24 2011]
 //
 
 //

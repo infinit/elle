@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/comet/BN.hh
-//
-// created       julien quintard   [fri mar 18 16:39:24 2011]
-// updated       julien quintard   [tue mar 22 15:09:48 2011]
+// author        julien quintard   [fri mar 18 16:39:24 2011]
 //
 
 #ifndef COMET_BNL_HH

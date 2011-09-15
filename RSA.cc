@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/XX/infinit/comet/RSA.cc
-//
-// created       julien quintard   [fri mar 18 16:20:57 2011]
-// updated       julien quintard   [tue aug 23 13:24:17 2011]
+// author        julien quintard   [fri mar 18 16:20:57 2011]
 //
 
 //

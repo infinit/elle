@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/comet/Comet.hh
-//
-// created       julien quintard   [fri mar 18 16:18:11 2011]
-// updated       julien quintard   [wed mar 23 14:20:45 2011]
+// author        julien quintard   [fri mar 18 16:18:11 2011]
 //
 
 //

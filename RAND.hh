@@ -5,10 +5,7 @@
 //
 // license       infinit
 //
-// file          /home/mycure/infinit/comet/RAND.hh
-//
-// created       julien quintard   [tue mar 22 12:39:46 2011]
-// updated       julien quintard   [wed mar 23 14:19:46 2011]
+// author        julien quintard   [tue mar 22 12:39:46 2011]
 //
 
 #ifndef COMET_RAND_HH
