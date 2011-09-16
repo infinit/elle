@@ -20,6 +20,7 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/system/System.hh>
+#include <elle/system/Platform.hh>
 
 #include <vector>
 #include <sstream>
@@ -30,6 +31,10 @@
 # include <fcntl.h>
 # include <libgen.h>
 #include <elle/idiom/Open.hh>
+
+#if INFINIT_WIN32
+# include <windows.h>
+#endif
 
 namespace elle
 {
@@ -60,7 +65,23 @@ namespace elle
 	escape("the target does not seem to exist");
 
       // create the link.
-      ::symlink(target.string.c_str(), link.string.c_str());
+#if INFINIT_UNIX
+      if (::symlink(target.string.c_str(), link.string.c_str()))
+        escape("symlink failed: %s -> %s: %s", link.string.c_str(),
+               target.string.c_str(), ::strerror(errno));
+#elif INFINIT_WIN32
+      {
+        struct stat st;
+        if (::stat(link.string.c_str(), &st))
+          escape("stat(%s) failed: %s", link.string.c_str(), ::strerror(errno));
+        if (!CreateSymbolicLink(target.string.c_str(), link.string.c_str(),
+                                S_ISDIR(st.st_mode) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0))
+          escape("symlink failed: %s -> %s: (error: %lu)", link.string.c_str(),
+                 target.string.c_str(), ::GetLastError());
+      }
+#else
+# error "symlink not supported on your platform"
+#endif
 
       leave();
     }
@@ -91,6 +112,7 @@ namespace elle
 
       enter();
 
+#if INFINIT_UNIX
       // does the path points to something.
       if (::lstat(path.string.c_str(), &stat) != 0)
 	false();
@@ -98,6 +120,13 @@ namespace elle
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
 	false();
+#elif INFINIT_WIN32
+      // does the path points to something.
+      if (::stat(path.string.c_str(), &stat) != 0)
+	false();
+#else
+# error "unsuported platform."
+#endif
 
       true();
     }

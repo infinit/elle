@@ -11,6 +11,10 @@ QT4_WRAP_CPP(elle_MOCS
   concurrency/Broker.hh
 )
 
+IF(${WIN32})
+  SET(elle_WIN32 concurrency/ucontext-win32.cc)
+ENDIF()
+
 ADD_LIBRARY(elle
   core/Integer.cc
   core/Large.cc
@@ -93,6 +97,7 @@ ADD_LIBRARY(elle
   Elle.cc
 
   ${elle_MOCS}
+  ${elle_WIN32}
 )
 
 TARGET_LINK_LIBRARIES(elle comet msgpack crypto ssl dl readline)

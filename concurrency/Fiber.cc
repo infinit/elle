@@ -727,6 +727,5 @@ namespace elle
 
       leave();
     }
-
   }
 }

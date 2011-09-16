@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <pthread.h>
+
 #include <elle/utility/Time.hh>
 
 #include <elle/standalone/Maid.hh>
@@ -123,7 +125,7 @@ namespace elle
       enter();
 
       // retrieve from the time.
-      if (::localtime_r(&time, &tm) == NULL)
+      if (localtime_r(&time, &tm) == NULL)
 	escape(::strerror(errno));
 
       // set the attributes
