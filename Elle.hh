@@ -70,6 +70,7 @@ namespace elle
 #include <elle/concurrency/Concurrency.hh>
 #include <elle/network/Network.hh>
 #include <elle/utility/Utility.hh>
+#include <elle/miscellaneous/Miscellaneous.hh>
 #include <elle/idiom/Idom.hh>
 
 #include <elle/Manifest.hh>
@@ -90,6 +91,7 @@ namespace elle
   using namespace concurrency;
   using namespace network;
   using namespace utility;
+  using namespace miscellaneous;
 }
 
 #endif

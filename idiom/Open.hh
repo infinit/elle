@@ -23,6 +23,7 @@
 
 ///
 /// first includes Close.hh in order to undeclare everything.
+///
 #include <elle/idiom/Close.hh>
 
 //
