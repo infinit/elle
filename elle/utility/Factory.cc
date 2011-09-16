@@ -28,7 +28,22 @@ namespace elle
     ///
     Factory::~Factory()
     {
+      // clear the factory.
+      this->Clear();
+    }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
+
+    ///
+    /// this method clears the factory registered products..
+    //
+    Status		Factor::Clear()
+    {
       Factory::Scoutor	scoutor;
+
+      enter();
 
       // go through the container.
       for (scoutor = this->container.begin();
@@ -41,6 +56,8 @@ namespace elle
 
       // clear the container.
       this->container.clear();
+
+      leave();
     }
 
 //

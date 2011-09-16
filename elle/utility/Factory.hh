@@ -131,6 +131,8 @@ namespace elle
       Status		Build(const Product&,
 			      U*&) const;
 
+      Status		Clear();
+
       //
       // interfaces
       //

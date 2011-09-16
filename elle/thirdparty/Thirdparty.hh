@@ -8,12 +8,12 @@
 // author        julien quintard   [thu sep 15 15:15:52 2011]
 //
 
-#ifndef ELLE_MISCELLANEOUS_MISCELLANEOUS_HH
-#define ELLE_MISCELLANEOUS_MISCELLANEOUS_HH
+#ifndef ELLE_THIRDPARTY_THIRDPARTY_HH
+#define ELLE_THIRDPARTY_THIRDPARTY_HH
 
 namespace elle
 {
-  namespace miscellaneous
+  namespace thirdparty
   {
 
     // nothing to do
@@ -25,6 +25,6 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/miscellaneous/bpt.h>
+#include <elle/thirdparty/bpt.h>
 
 #endif
