@@ -18,23 +18,22 @@ mingw32-zlib
 mingw32-openssl
 mingw32-qt
 mingw32-msgpack
+mingw32-pdcurses
 mingw32-readline
 
 rm -rf build-win32 &&
 mkdir build-win32 &&
 cd build-win32 &&
-cmake \
+QMAKESPEC=/usr/share/qt/mkspecs/win32-x-g++/ cmake \
 -DCMAKE_SYSTEM_NAME=Windows \
--DCMAKE_C_COMPILER=i486-mingw32-gcc \
--DCMAKE_CXX_COMPILER=i486-mingw32-g++ \
--DCMAKE_RC_COMPILER=i486-mingw32-windres \
+-DCMAKE_C_COMPILER=/usr/bin/i486-mingw32-gcc \
+-DCMAKE_CXX_COMPILER=/usr/bin/i486-mingw32-g++ \
+-DCMAKE_RC_COMPILER=/usr/bin/i486-mingw32-windres \
 -DCMAKE_FIND_ROOT_PATH=/usr/i486-mingw32 \
 -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
 -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
--DQT_QMAKE_EXECUTABLE=i486-mingw32-qmake \
 ..
-
 
 
 ### Writing portable code and getting the list of predefined gcc macro:
