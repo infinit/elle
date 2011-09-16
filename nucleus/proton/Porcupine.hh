@@ -19,8 +19,6 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Chassis.hh>
-#include <nucleus/proton/Nodule.hh>
 
 namespace nucleus
 {
@@ -36,9 +34,6 @@ namespace nucleus
     /// blocks which does not require all the blocks to remain in main
     /// memory.
     ///
-    template <typename A = Address,
-	      typename K = Address,
-	      typename V = Block*>
     class Porcupine:
       public elle::Object
     {
@@ -46,14 +41,18 @@ namespace nucleus
       //
       // types
       //
-      typedef Chassis<A, elle::Void*>	Cell; // XXX
+      struct inentry{};
+      struct lfentry{};
+
+      bpt_make_types(porcupine, BPT_NDI_T, BPT_UNI_T, BPT_NODES_T,
+		     BPT_HEIGHT_T, int, int, int*,
+		     inentry, lfentry);
+      bpt_make_protos(porcupine);
 
       //
       // constructors & destructors
       //
-      Porcupine(const elle::Callback< elle::Parameters<const K&, V&>&,
-		const elle::Callback< elle::Parameters<const K&, const V&>&,
-		const elle::Callback< elle::Parameters<const K&, V&>&);
+      Porcupine();
 
       //
       // methods
@@ -63,9 +62,7 @@ namespace nucleus
       //
       // attributes
       //
-      elle::Natural32		height;
-
-      Nodule*			nodule;
+      t_bpt(porcupine)*		bpt;
     };
 
   }
