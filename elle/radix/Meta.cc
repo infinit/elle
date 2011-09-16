@@ -65,9 +65,11 @@ namespace elle
       // if the debug has been activated.
       if (Meta::Debug::Status == true)
 	{
+#if 0 // XXX TODO
 	  // initialize the traces.
 	  if (Trace::Initialize() == StatusError)
 	    escape("unable to initialize the trace system");
+#endif
 
 	  // enable the logging.
 	  if (Meta::Enable() == StatusError)
@@ -95,9 +97,11 @@ namespace elle
 	  if (Meta::Show() == StatusError)
 	    escape("unable to show the meta");
 
+#if 0 // XXX TODO
 	  // clean the traces.
 	  if (Trace::Clean() == StatusError)
 	    escape("unable to clean the trace system");
+#endif
 	}
 
       leave();
@@ -143,9 +147,11 @@ namespace elle
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
 	{
+#if 0 // XXX TODO
 	  // show the traces.
 	  if (Trace::Show(margin + 2) == elle::StatusError)
 	    escape("unable to show the traces");
+#endif
 	}
 
       leave();
@@ -184,6 +190,7 @@ namespace elle
 	  (Meta::Debug::State == true))
 	{
 	  // store the trace.
+#if 0 // XXX TODO
 	  if (Trace::Store(address) == StatusError)
 	    {
 	      log("unable to store the trace for %p",
@@ -191,6 +198,7 @@ namespace elle
 
 	      goto _corps;
 	    }
+#endif
 	}
 
     _corps:
@@ -225,6 +233,7 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
 	  (Meta::Debug::State == true))
 	{
+#if 0 // XXX TODO
 	  // store the trace.
 	  if (Trace::Store(address) == StatusError)
 	    {
@@ -233,6 +242,7 @@ namespace elle
 
 	      goto _corps;
 	    }
+#endif
 	}
 
     _corps:
@@ -259,6 +269,7 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
 	  (Meta::Debug::State == true))
 	{
+#if 0 // XXX TODO
 	  // erase the trace.
 	  if (Trace::Erase(address) == StatusError)
 	    {
@@ -267,6 +278,7 @@ namespace elle
 
 	      goto _corps;
 	    }
+#endif
 	}
 
     _corps:

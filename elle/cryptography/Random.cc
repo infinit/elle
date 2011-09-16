@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/system/Platform.hh>
+
 #include <elle/cryptography/Random.hh>
 
 #include <elle/standalone/Maid.hh>
@@ -25,6 +27,10 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 #include <elle/idiom/Open.hh>
+
+#if INFINIT_WIN32
+# include <process.h>
+#endif
 
 namespace elle
 {

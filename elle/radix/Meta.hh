@@ -25,7 +25,6 @@
 #include <elle/idiom/Close.hh>
 # include <list>
 # include <stdlib.h>
-# include <execinfo.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle

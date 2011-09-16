@@ -14,6 +14,7 @@
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+#include <elle/core/Character.hh>
 
 #include <elle/core/String.hh>
 

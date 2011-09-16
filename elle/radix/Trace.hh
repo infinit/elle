@@ -8,6 +8,7 @@
 // author        julien quintard   [mon apr 26 21:04:49 2010]
 //
 
+#if 0
 #ifndef ELLE_RADIX_TRACE_HH
 #define ELLE_RADIX_TRACE_HH
 
@@ -107,4 +108,5 @@ namespace elle
   }
 }
 
+#endif
 #endif
