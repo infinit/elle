@@ -37,7 +37,7 @@
 # if INFINIT_UNIX
 #  include <ucontext.h>
 # elif INFINIT_WIN32
-#  include "ucontext-win32.hh"
+#  include <elle/thirdparty/ucontext-win32.hh>
 # else
 #  error "No makecontext support on this plateform."
 # endif
