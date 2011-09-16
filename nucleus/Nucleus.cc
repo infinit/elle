@@ -39,34 +39,35 @@ namespace nucleus
   {
     enter();
 
-    // disable the meta logging.
-    if (elle::Meta::Disable() == elle::StatusError)
-      escape("unable to disable the meta logging");
-
-    // register the component types.
-    if (Nucleus::Factory.Register< neutron::Object >
+    //
+    // register the nucleus products.
+    //
+    {
+      // register the component types.
+      if (Nucleus::Factory.Register< neutron::Object >
 	  (neutron::ComponentObject) == elle::StatusError)
-      escape("unable to register the factory product");
+	escape("unable to register the factory product");
 
-    if (Nucleus::Factory.Register< neutron::Contents<neutron::Data> >
+      if (Nucleus::Factory.Register< neutron::Contents<neutron::Data> >
 	  (neutron::ComponentData) == elle::StatusError)
-      escape("unable to register the factory product");
+	escape("unable to register the factory product");
 
-    if (Nucleus::Factory.Register< neutron::Contents<neutron::Catalog> >
+      if (Nucleus::Factory.Register< neutron::Contents<neutron::Catalog> >
 	  (neutron::ComponentCatalog) == elle::StatusError)
-      escape("unable to register the factory product");
+	escape("unable to register the factory product");
 
-    if (Nucleus::Factory.Register< neutron::Contents<neutron::Reference> >
+      if (Nucleus::Factory.Register< neutron::Contents<neutron::Reference> >
 	  (neutron::ComponentReference) == elle::StatusError)
-      escape("unable to register the factory product");
+	escape("unable to register the factory product");
 
-    if (Nucleus::Factory.Register< neutron::Access >
+      if (Nucleus::Factory.Register< neutron::Access >
 	  (neutron::ComponentAccess) == elle::StatusError)
-      escape("unable to register the factory product");
+	escape("unable to register the factory product");
+    }
 
-    // enable the meta logging.
-    if (elle::Meta::Enable() == elle::StatusError)
-      escape("unable to enable the meta logging");
+    // initialize the proton.
+    if (proton::Proton::Initialize() == elle::StatusError)
+      escape("unable to initialize the proton");
 
     leave();
   }
@@ -78,7 +79,13 @@ namespace nucleus
   {
     enter();
 
-    // nothing to do.
+    // initialize the proton.
+    if (proton::Proton::Initialize() == elle::StatusError)
+      escape("unable to initialize the proton");
+
+    // clear the nucleus factory.
+    if (Nucleus::Factory.Clear() == elle::StatusError)
+      escape("unable to clear the factory");
 
     leave();
   }

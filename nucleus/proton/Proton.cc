@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// author        julien quintard   [thu sep 15 18:33:06 2011]
+// author        julien quintard   [fri sep 16 14:00:34 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <nucleus/proton/Porcupine.hh>
+#include <nucleus/proton/Proton.hh>
 
 namespace nucleus
 {
@@ -24,15 +24,25 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method initializes the proton module.
     ///
-    elle::Status	Porcupine::Create(const elle::Natural32	size)
+    elle::Status	Proton::Initialize()
     {
       enter();
 
       // XXX
-      //this->bpt = new t_bpt(porcupine);
-      struct s_bpt_porcupine x;
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the proton module.
+    ///
+    elle::Status	Proton::Clean()
+    {
+      enter();
+
+      // XXX
 
       leave();
     }

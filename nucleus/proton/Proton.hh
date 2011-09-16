@@ -27,7 +27,34 @@ namespace nucleus
   namespace proton
   {
 
-    // nothing
+    ///
+    /// this class controls the proton classes.
+    ///
+    class Proton
+    {
+    public:
+      //
+      // static attributes
+      //
+      struct			Size
+      {
+	static elle::Natural32	Low;
+	static elle::Natural32	Normal;
+	static elle::Natural32	High;
+      };
+
+      struct			Indexes
+      {
+	static elle::Natural32	Seam;
+	static elle::Natural32	Quill;
+      };
+
+      //
+      // static methods
+      //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
+    };
 
   }
 

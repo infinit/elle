@@ -37,16 +37,22 @@ namespace nucleus
     class Quill:
       public Nodule
     {
-    public:
+      //
+      // types
+      //
+      typedef std::vector< Chassis<K, V> >		Container;
+      typedef typename Container::iterator		Iterator;
+      typedef typename Container::const_iterator	Scoutor;
+
       //
       // methods
       //
-      elle::Status		Create(const elle::Natural32);
+      elle::Status		Create();
 
       //
       // attributes
       //
-      Chassis<K, V>*		content;
+      Container			container;
       elle::Natural32		size;
     };
 

@@ -17,8 +17,7 @@
 
 #include <elle/Elle.hh>
 
-#include <nucleus/proton/Address.hh>
-#include <nucleus/proton/Block.hh>
+#include <nucleus/proton/Nodule.hh>
 
 namespace nucleus
 {
@@ -34,38 +33,70 @@ namespace nucleus
     /// blocks which does not require all the blocks to remain in main
     /// memory.
     ///
+    template <typename K,
+	      typename V>
     class Porcupine:
       public elle::Object
     {
     public:
       //
-      // types
-      //
-      struct inentry{};
-      struct lfentry{};
-
-      bpt_make_types(porcupine, BPT_NDI_T, BPT_UNI_T, BPT_NODES_T,
-		     BPT_HEIGHT_T, int, int, int*,
-		     inentry, lfentry);
-      bpt_make_protos(porcupine);
-
-      //
       // constructors & destructors
       //
-      Porcupine();
+      Porcupine(const elle::Callback<
+		  elle::Parameters<
+		    const Address&,
+		    V&
+		    >
+		  >&,
+		const elle::Callback<
+		  elle::Parameters<
+		    const Address&,
+		    const V&
+		    >
+		  >&);
 
       //
       // methods
       //
-      elle::Status		Create(const elle::Natural32);
+      elle::Status		Create();
+
+      elle::Status		Add(const K&,
+				    const V&);
+      elle::Status		Modify(const K&,
+				       const V&);
+      elle::Status		Remove(const K&);
+
+      // XXX Lookup, Locate
+      // XXX first, last, next, previous and foreach(LEAF OR INTERNAL OR BOTH)
+
+      elle::Status		Grow(); // XXX: new root
 
       //
       // attributes
       //
-      t_bpt(porcupine)*		bpt;
+      elle::Callback<
+	elle::Parameters<
+	  const Address&,
+	  V&
+	  >
+	>			load;
+      elle::Callback<
+	elle::Parameters<
+	  const Address&,
+	  const V&
+	  >
+	>			unload;
+
+      Nodule*			nodule;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <nucleus/proton/Porcupine.hxx>
 
 #endif

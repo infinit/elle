@@ -17,6 +17,7 @@
 
 #include <elle/Elle.hh>
 
+#include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Nodule.hh>
 #include <nucleus/proton/Chassis.hh>
 
@@ -32,21 +33,27 @@ namespace nucleus
     ///
     /// XXX internal nodule
     ///
-    template <typename K,
-	      typename A>
+    template <typename K>
     class Seam:
       public Nodule
     {
     public:
       //
+      // types
+      //
+      typedef std::vector< Chassis<K, Address> >	Container;
+      typedef typename Container::iterator		Iterator;
+      typedef typename Container::const_iterator	Scoutor;
+
+      //
       // methods
       //
-      elle::Status		Create(const elle::Natural32);
+      elle::Status		Create();
 
       //
       // attributes
       //
-      Chassis<K, A>*		content;
+      Container			container;
       elle::Natural32		size;
     };
 
