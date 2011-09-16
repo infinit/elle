@@ -12,7 +12,7 @@ QT4_WRAP_CPP(elle_MOCS
 )
 
 IF(${WIN32})
-  SET(elle_WIN32 concurrency/ucontext-win32.cc)
+  SET(elle_WIN32 thirdparty/ucontext-win32.cc)
 ENDIF()
 
 ADD_LIBRARY(elle

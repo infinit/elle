@@ -39,7 +39,7 @@ namespace elle
     ///
     /// this method clears the factory registered products..
     //
-    Status		Factor::Clear()
+    Status		Factory::Clear()
     {
       Factory::Scoutor	scoutor;
 
