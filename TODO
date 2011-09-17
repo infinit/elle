@@ -1,5 +1,7 @@
 - faire un test avec gros fichiers sans Porcupine -> mettre dans Wiki
- -> coder Porcupine dans elle/
+- coder Porcupine dans elle/
+- resoudre probleme avec les size_t sur 64-bit -> warnings
+- virer bpt.h?
 
 #
 # ---------- porcupine --------------------------------------------------------
