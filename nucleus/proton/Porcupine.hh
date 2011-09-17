@@ -17,7 +17,9 @@
 
 #include <elle/Elle.hh>
 
+#include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Nodule.hh>
+#include <nucleus/proton/Quill.hh>
 
 namespace nucleus
 {
@@ -42,6 +44,7 @@ namespace nucleus
       //
       // constructors & destructors
       //
+      Porcupine() {} // XXX
       Porcupine(const elle::Callback<
 		  elle::Parameters<
 		    const Address&,
@@ -54,6 +57,7 @@ namespace nucleus
 		    const V&
 		    >
 		  >&);
+      ~Porcupine();
 
       //
       // methods
@@ -66,6 +70,9 @@ namespace nucleus
 				       const V&);
       elle::Status		Remove(const K&);
 
+      elle::Status		Lookup(const K&,
+				       Quill<K, V>*&);
+
       // XXX Lookup, Locate
       // XXX first, last, next, previous and foreach(LEAF OR INTERNAL OR BOTH)
 
@@ -74,20 +81,17 @@ namespace nucleus
       //
       // attributes
       //
+      /* XXX
       elle::Callback<
 	elle::Parameters<
-	  const Address&,
-	  V&
 	  >
-	>			load;
+	>			xload;
       elle::Callback<
 	elle::Parameters<
-	  const Address&,
-	  const V&
 	  >
-	>			unload;
-
-      Nodule*			nodule;
+	>			xunload;
+      */
+      Nodule*			root;
     };
 
   }

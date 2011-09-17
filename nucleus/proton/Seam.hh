@@ -48,7 +48,9 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status		Create();
+      template <typename V>
+      elle::Status		Lookup(const K&,
+				       Quill<K, V>*&);
 
       //
       // attributes
@@ -59,5 +61,11 @@ namespace nucleus
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <nucleus/proton/Seam.hxx>
 
 #endif

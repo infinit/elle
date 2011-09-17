@@ -34,9 +34,27 @@ namespace nucleus
     {
     public:
       //
+      // enumerations
+      //
+      enum Type
+	{
+	  TypeSeam,
+	  TypeQuill
+	};
+
+      //
+      // constructors & destructors
+      //
+      Nodule(const Type);
+
+      //
       // attributes
       //
-      // XXX
+      Type		type;
+
+      Nodule*		parent;
+      Nodule*		left;
+      Nodule*		right;
     };
 
   }

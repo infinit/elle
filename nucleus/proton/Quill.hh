@@ -37,6 +37,7 @@ namespace nucleus
     class Quill:
       public Nodule
     {
+    public:
       //
       // types
       //
@@ -45,9 +46,15 @@ namespace nucleus
       typedef typename Container::const_iterator	Scoutor;
 
       //
+      // constructors & destructors
+      //
+      Quill();
+
+      //
       // methods
       //
-      elle::Status		Create();
+      elle::Status		Lookup(const K&,
+				       Quill<K, V>*&);
 
       //
       // attributes
@@ -58,5 +65,11 @@ namespace nucleus
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <nucleus/proton/Quill.hxx>
 
 #endif

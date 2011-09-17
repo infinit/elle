@@ -43,12 +43,6 @@ namespace nucleus
 	static elle::Natural32	High;
       };
 
-      struct			Indexes
-      {
-	static elle::Natural32	Seam;
-	static elle::Natural32	Quill;
-      };
-
       //
       // static methods
       //
@@ -67,7 +61,7 @@ namespace nucleus
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Base.hh>
 #include <nucleus/proton/Block.hh>
-#include <nucleus/proton/Chassis.hh>
+// XXX #include <nucleus/proton/Chassis.hh>
 #include <nucleus/proton/ContentHashBlock.hh>
 #include <nucleus/proton/Family.hh>
 #include <nucleus/proton/History.hh>
@@ -76,12 +70,12 @@ namespace nucleus
 #include <nucleus/proton/Location.hh>
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Nodule.hh>
+// XXX #include <nucleus/proton/Nodule.hh>
 #include <nucleus/proton/OwnerKeyBlock.hh>
-#include <nucleus/proton/Porcupine.hh>
+// XXX #include <nucleus/proton/Porcupine.hh>
 #include <nucleus/proton/PublicKeyBlock.hh>
-#include <nucleus/proton/Quill.hh>
-#include <nucleus/proton/Seam.hh>
+// XXX #include <nucleus/proton/Quill.hh>
+// XXX #include <nucleus/proton/Seam.hh>
 #include <nucleus/proton/Stamp.hh>
 #include <nucleus/proton/State.hh>
 #include <nucleus/proton/Version.hh>

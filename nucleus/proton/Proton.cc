@@ -14,10 +14,31 @@
 
 #include <nucleus/proton/Proton.hh>
 
+#include <hole/Hole.hh>
+
 namespace nucleus
 {
   namespace proton
   {
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    elle::Natural32		Proton::Size::Low;
+
+    ///
+    /// XXX
+    ///
+    elle::Natural32		Proton::Size::Normal;
+
+    ///
+    /// XXX
+    ///
+    elle::Natural32		Proton::Size::High;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -30,7 +51,25 @@ namespace nucleus
     {
       enter();
 
-      // XXX
+      //
+      // retrieve some descriptor specific configuration values.
+      //
+      {
+	if (hole::Hole::Descriptor.Get(
+	      "general", "size.low",
+	      Proton::Size::Low) == elle::StatusError)
+	  escape("unable to retrieve the descriptor's value");
+
+	if (hole::Hole::Descriptor.Get(
+	      "general", "size.normal",
+	      Proton::Size::Normal) == elle::StatusError)
+	  escape("unable to retrieve the descriptor's value");
+
+	if (hole::Hole::Descriptor.Get(
+	      "general", "size.High",
+	      Proton::Size::High) == elle::StatusError)
+	  escape("unable to retrieve the descriptor's value");
+      }
 
       leave();
     }
