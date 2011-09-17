@@ -26,11 +26,10 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
+# if INFINIT_WIN32
+#  include <process.h>
+# endif
 #include <elle/idiom/Open.hh>
-
-#if INFINIT_WIN32
-# include <process.h>
-#endif
 
 namespace elle
 {
