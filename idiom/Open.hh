@@ -26,8 +26,13 @@
 ///
 #include <elle/idiom/Close.hh>
 
+//
+// ---------- dependencies ----------------------------------------------------
+//
+
+#include <cstdio>
+
 #include <elle/core/Character.hh>
-#include <cstdio> // needed for sprintf
 
 //
 // ---------- elle ------------------------------------------------------------

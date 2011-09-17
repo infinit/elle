@@ -16,6 +16,7 @@
 //
 
 #include <elle/system/Platform.hh>
+
 #include <elle/core/Natural.hh>
 #include <elle/core/Void.hh>
 
