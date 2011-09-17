@@ -21,6 +21,9 @@
 #include <hole/Hole.hh>
 #include <pig/PIG.hh>
 
+// XXX
+#include <nucleus/proton/Porcupine.hh>
+
 //
 // ---------- functions -------------------------------------------------------
 //
@@ -32,6 +35,14 @@ elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
 {
   enter(instance(Infinit::Parser));
+
+  // XXX
+  {
+    nucleus::Porcupine<elle::String, nucleus::Block*>	p;
+
+    p.Add("suce", NULL);
+  }
+  // XXX
 
   // initialize the Elle library.
   if (elle::Elle::Initialize() == elle::StatusError)
