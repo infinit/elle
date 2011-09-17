@@ -30,11 +30,10 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <libgen.h>
+# if INFINIT_WIN32
+#  include <windows.h>
+# endif
 #include <elle/idiom/Open.hh>
-
-#if INFINIT_WIN32
-# include <windows.h>
-#endif
 
 namespace elle
 {
@@ -72,12 +71,21 @@ namespace elle
 #elif INFINIT_WIN32
       {
         struct stat st;
+
         if (::stat(link.string.c_str(), &st))
-          escape("stat(%s) failed: %s", link.string.c_str(), ::strerror(errno));
-        if (!CreateSymbolicLink(target.string.c_str(), link.string.c_str(),
-                                S_ISDIR(st.st_mode) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0))
-          escape("symlink failed: %s -> %s: (error: %lu)", link.string.c_str(),
-                 target.string.c_str(), ::GetLastError());
+          escape("stat(%s) failed: %s",
+		 link.string.c_str(),
+		 ::strerror(errno));
+
+        if (!CreateSymbolicLink(target.string.c_str(),
+				link.string.c_str(),
+                                S_ISDIR(st.st_mode) ?
+				SYMBOLIC_LINK_FLAG_DIRECTORY :
+				0))
+          escape("symlink failed: %s -> %s: (error: %lu)",
+		 link.string.c_str(),
+                 target.string.c_str(),
+		 ::GetLastError());
       }
 #else
 # error "symlink not supported on your platform"

@@ -12,12 +12,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pthread.h>
-
 #include <elle/utility/Time.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
+
+#include <elle/idiom/Close.hh>
+# include <pthread.h>
+#include <elle/idiom/Open.hh>
 
 namespace elle
 {
