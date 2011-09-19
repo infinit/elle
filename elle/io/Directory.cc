@@ -159,7 +159,7 @@ namespace elle
       ::DIR*		directory;
       struct ::dirent*	entry;
 
-      enter();
+      enter(slab(directory, ::closedir));
 
       // is the path pointing to a valid directory.
       if (Directory::Exist(path) == StatusFalse)
@@ -185,6 +185,7 @@ namespace elle
 			    String(entry->d_name)) == StatusError)
 	    escape("unable to create the target path");
 
+	  // XXX
           std::ostringstream os;
           os << path << "/" << entry->d_name;
           std::string entry_path(os.str());
@@ -192,6 +193,7 @@ namespace elle
           struct ::stat st;
           if (::stat(entry_path.c_str(), &st))
             continue;
+	  // XXX
 
 	  // perform an action depending on the nature of the target.
           if (S_ISDIR(st.st_mode))
@@ -225,6 +227,9 @@ namespace elle
       // close the directory.
       ::closedir(directory);
 
+      // waive.
+      waive(directory);
+
       leave();
     }
 
@@ -234,17 +239,17 @@ namespace elle
     Status		Directory::List(const Path&		path,
 					Set&			set)
     {
-      ::DIR*		dp;
+      ::DIR*		directory;
       struct ::dirent*	entry;
 
-      enter();
+      enter(slab(directory, ::closedir));
 
       // open the directory.
-      if ((dp = ::opendir(path.string.c_str())) == NULL)
+      if ((directory = ::opendir(path.string.c_str())) == NULL)
 	escape("unable to open the directory");
 
       // go through the entries.
-      while ((entry = ::readdir(dp)) != NULL)
+      while ((entry = ::readdir(directory)) != NULL)
 	{
 	  // ignore the '.' and '..' entries.
 	  if ((String(entry->d_name) == ".") ||
@@ -255,7 +260,11 @@ namespace elle
 	  set.push_back(String(entry->d_name));
 	}
 
-      ::closedir(dp);
+      // close the directory.
+      ::closedir(directory);
+
+      // waive.
+      waive(directory);
 
       leave();
     }
