@@ -14,6 +14,7 @@
 
 #include <Infinit.hh>
 
+#include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 #include <agent/Agent.hh>
@@ -38,9 +39,22 @@ elle::Status		Main(elle::Natural32			argc,
 
   // XXX
   {
-    nucleus::Porcupine<elle::String, nucleus::Block*>	p;
+    nucleus::Porcupine<nucleus::Catalog> p(elle::Callback<
+					    elle::Status,
+					    elle::Parameters<
+					      const nucleus::Address&,
+					      nucleus::Block&
+					      >
+					    >::Null,
+					  elle::Callback<
+					    elle::Status,
+					    elle::Parameters<
+					      const nucleus::Address&,
+					      const nucleus::Block&
+					      >
+					    >::Null);
 
-    p.Add("suce", NULL);
+    exit(1);
   }
   // XXX
 
