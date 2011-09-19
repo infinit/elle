@@ -45,6 +45,11 @@ namespace nucleus
     {
     public:
       //
+      // types
+      //
+      typedef elle::String			K;
+
+      //
       // constructors & destructors
       //
       Catalog();

@@ -63,6 +63,16 @@ namespace nucleus
       if (Nucleus::Factory.Register< neutron::Access >
 	  (neutron::ComponentAccess) == elle::StatusError)
 	escape("unable to register the factory product");
+
+      if (Nucleus::Factory.Register< proton::Seam<neutron::Catalog> >
+	  (neutron::ComponentSeamCatalog) == elle::StatusError)
+	escape("unable to register the factory product");
+
+      if (Nucleus::Factory.Register< proton::Quill<neutron::Catalog> >
+	  (neutron::ComponentQuillCatalog) == elle::StatusError)
+	escape("unable to register the factory product");
+
+      // XXX same for data
     }
 
     // initialize the proton.

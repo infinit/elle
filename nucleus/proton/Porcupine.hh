@@ -18,7 +18,9 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Nodule.hh>
+#include <nucleus/proton/Seam.hh>
 #include <nucleus/proton/Quill.hh>
 
 namespace nucleus
@@ -35,8 +37,7 @@ namespace nucleus
     /// blocks which does not require all the blocks to remain in main
     /// memory.
     ///
-    template <typename K,
-	      typename V>
+    template <typename V>
     class Porcupine:
       public elle::Object
     {
@@ -44,17 +45,18 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Porcupine() {} // XXX
       Porcupine(const elle::Callback<
+		  elle::Status,
 		  elle::Parameters<
 		    const Address&,
-		    V&
+		    Block&
 		    >
 		  >&,
 		const elle::Callback<
+		  elle::Status,
 		  elle::Parameters<
 		    const Address&,
-		    const V&
+		    const Block&
 		    >
 		  >&);
       ~Porcupine();
@@ -64,14 +66,19 @@ namespace nucleus
       //
       elle::Status		Create();
 
-      elle::Status		Add(const K&,
-				    const V&);
-      elle::Status		Modify(const K&,
-				       const V&);
-      elle::Status		Remove(const K&);
+      elle::Status		Add(const typename V::K&,
+				    const V*);
+      elle::Status		Modify(const typename V::K&,
+				       const V*);
+      elle::Status		Remove(const typename V::K&);
 
-      elle::Status		Lookup(const K&,
-				       Quill<K, V>*&);
+      elle::Status		Lookup(const typename V::K&,
+				       Quill<V>*&);
+
+      elle::Status		Load(const Address&,
+				     Nodule<V>*&);
+      elle::Status		Unload(const Address&,
+				       const Nodule<V>*);
 
       // XXX Lookup, Locate
       // XXX first, last, next, previous and foreach(LEAF OR INTERNAL OR BOTH)
@@ -81,17 +88,22 @@ namespace nucleus
       //
       // attributes
       //
-      /* XXX
       elle::Callback<
+	elle::Status,
 	elle::Parameters<
+	  const Address&,
+	  Block&
 	  >
-	>			xload;
+	>			load;
       elle::Callback<
+	elle::Status,
 	elle::Parameters<
+	  const Address&,
+	  const Block&
 	  >
-	>			xunload;
-      */
-      Nodule*			root;
+	>			unload;
+
+      Nodule<V>*		nodule;
     };
 
   }

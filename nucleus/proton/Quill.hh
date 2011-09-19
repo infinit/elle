@@ -17,8 +17,9 @@
 
 #include <elle/Elle.hh>
 
+#include <nucleus/proton/Address.hh>
+#include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Nodule.hh>
-#include <nucleus/proton/Chassis.hh>
 
 namespace nucleus
 {
@@ -32,16 +33,35 @@ namespace nucleus
     ///
     /// XXX leaf node
     ///
-    template <typename K,
-	      typename V>
+    template <typename V>
     class Quill:
-      public Nodule
+      public Nodule<V>
     {
     public:
       //
+      // classes
+      //
+      class Entry:
+	public elle::Object
+      {
+      public:
+	//
+	// constructors & destructors
+	//
+	Entry(const typename V::K&,
+	      const V*);
+
+	//
+	// attributes
+	//
+	typename V::K	key;
+	V*		block;
+      };
+
+      //
       // types
       //
-      typedef std::vector< Chassis<K, V> >		Container;
+      typedef std::vector<Entry*>			Container;
       typedef typename Container::iterator		Iterator;
       typedef typename Container::const_iterator	Scoutor;
 
@@ -49,16 +69,47 @@ namespace nucleus
       // constructors & destructors
       //
       Quill();
+      Quill(const elle::Callback<
+	      elle::Status,
+	      elle::Parameters<
+		const Address&,
+		Nodule<V>*&
+		>
+	      >&,
+	    const elle::Callback<
+	      elle::Status,
+	      elle::Parameters<
+		const Address&,
+		const Nodule<V>*
+		>
+	      >&);
 
       //
-      // methods
+      // interfaces
       //
-      elle::Status		Lookup(const K&,
-				       Quill<K, V>*&);
+
+      // nodule
+    elle::Status		Lookup(const typename V::K&,
+				       Quill<V>*&);
 
       //
       // attributes
       //
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  const Address&,
+	  Nodule<V>*&
+	  >
+	>			load;
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  const Address&,
+	  const Nodule<V>*
+	  >
+	>			unload;
+
       Container			container;
       elle::Natural32		size;
     };

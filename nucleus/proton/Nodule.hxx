@@ -5,14 +5,11 @@
 //
 // license       infinit
 //
-// author        julien quintard   [fri sep 16 21:35:38 2011]
+// author        julien quintard   [sun sep 18 14:35:06 2011]
 //
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <nucleus/proton/Nodule.hh>
+#ifndef NUCLEUS_PROTON_NODULE_HXX
+#define NUCLEUS_PROTON_NODULE_HXX
 
 namespace nucleus
 {
@@ -26,7 +23,8 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    Nodule::Nodule(const Type					type):
+    template <typename V>
+    Nodule<V>::Nodule(const Type				type):
       type(type),
       parent(NULL),
       left(NULL),
@@ -36,3 +34,5 @@ namespace nucleus
 
   }
 }
+
+#endif

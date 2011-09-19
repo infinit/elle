@@ -11,13 +11,6 @@
 #ifndef NUCLEUS_PROTON_PORCUPINE_HXX
 #define NUCLEUS_PROTON_PORCUPINE_HXX
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <nucleus/proton/Seam.hh>
-#include <nucleus/proton/Quill.hh>
-
 namespace nucleus
 {
   namespace proton
@@ -30,38 +23,36 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    template <typename K,
-	      typename V>
-    Porcupine<K, V>::Porcupine(const elle::Callback<
-				 elle::Parameters<
-				   const Address&,
-				   V&
-				   >
-				 >&				load,
-			       const elle::Callback<
-				 elle::Parameters<
-				   const Address&,
-				   const V&
-				   >
-				 >&				unload):
-    /* XXX
+    template <typename V>
+    Porcupine<V>::Porcupine(const elle::Callback<
+			      elle::Status,
+			      elle::Parameters<
+				const Address&,
+				Block&
+				>
+			      >&				load,
+			    const elle::Callback<
+			      elle::Status,
+			      elle::Parameters<
+				const Address&,
+				const Block&
+				>
+			      >&				unload):
       load(load),
       unload(unload),
-    */
-      root(NULL)
+      nodule(NULL)
     {
     }
 
     ///
     /// destructor.
     ///
-    template <typename K,
-	      typename V>
-    Porcupine<K, V>::~Porcupine()
+    template <typename V>
+    Porcupine<V>::~Porcupine()
     {
       // delete the root nodule, if present.
-      if (this->root != NULL)
-	delete this->root;
+      if (this->nodule != NULL)
+	delete this->nodule;
     }
 
 //
@@ -71,20 +62,21 @@ namespace nucleus
     ///
     /// XXX
     ///
-    template <typename K,
-	      typename V>
-    elle::Status	Porcupine<K, V>::Create()
+    template <typename V>
+    elle::Status	Porcupine<V>::Create()
     {
-      Quill<K, V>*	quill;
+      Quill<V>*		quill;
 
       enter(instance(quill));
 
       // at first, allocate an initial root nodule which happens to be
       // a leaf since alone.
-      quill = new Quill<K, V>;
+      quill = new Quill<V>(
+	        elle::Callback<>::Infer(&Porcupine::Load, this),
+		elle::Callback<>::Infer(&Porcupine::Unload, this));
 
       // set the root nodule.
-      this->root = quill;
+      this->nodule = quill;
 
       // waive the tracking.
       waive(quill);
@@ -95,12 +87,11 @@ namespace nucleus
     ///
     /// XXX
     ///
-    template <typename K,
-	      typename V>
-    elle::Status	Porcupine<K, V>::Add(const K&		key,
-					     const V&		value)
+    template <typename V>
+    elle::Status	Porcupine<V>::Add(const typename V::K&	key,
+					  const V*		value)
     {
-      Quill<K, V>*	quill;
+      Quill<V>*		quill;
 
       enter();
 
@@ -108,7 +99,11 @@ namespace nucleus
       if (this->Lookup(key, quill) == elle::StatusError)
 	escape("unable to locate a quill for this key");
 
-      // XXX
+      // XXX if value->Footprint() > Porcupine<>::Footprint
+      // XXX   -> split quill: allocate new quill, quill->Balance(q)
+      // XXX     -> new root? else update the hierarchy
+      // XXX else
+      // XXX   -> insert
 
       leave();
     }
@@ -116,41 +111,50 @@ namespace nucleus
     ///
     /// XXX
     ///
-    template <typename K,
-	      typename V>
-    elle::Status	Porcupine<K, V>::Lookup(const K&	key,
-						Quill<K, V>*&	quill)
+    template <typename V>
+    elle::Status	Porcupine<V>::Lookup(const typename V::K& key,
+					     Quill<V>*&		quill)
     {
       enter();
 
-      // trigger the lookup method on the root nodule, depending on its type.
-      switch (this->root->type)
-	{
-	case Nodule::TypeSeam:
-	  {
-	    Seam<K>*		nodule;
+      // trigger the lookup method on the root nodule.
+      if (this->nodule->Lookup(key, quill) == elle::StatusError)
+	escape("unable to locate the quill for this key");
 
-	    // cast the nodule.
-	    nodule = static_cast< Seam<K>* >(this->root);
+      leave();
+    }
 
-	    if (nodule->Lookup(key, quill) == elle::StatusError)
-	      escape("unable to locate the quill for this key");
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Load(const Address&	address,
+					   Nodule<V>*&		nodule)
+    {
+      enter();
 
-	    break;
-	  }
-	case Nodule::TypeQuill:
-	  {
-	    Quill<K, V>*	nodule;
+      // build a block according to the component.
+      if (Nucleus::Factory.Build(address.component,
+				 nodule) == elle::StatusError)
+	escape("unable to build the nodule");
 
-	    // cast the nodule.
-	    nodule = static_cast< Quill<K, V>* >(this->root);
+      // call the given load callback.
+      if (this->load(address, *nodule) == elle::StatusError)
+	escape("unable to load the nodule");
 
-	    if (nodule->Lookup(key, quill) == elle::StatusError)
-	      escape("unable to locate the quill for this key");
+      leave();
+    }
 
-	    break;
-	  }
-	}
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Unload(const Address&	address,
+					     const Nodule<V>*	nodule)
+    {
+      enter();
+
+      // XXX
 
       leave();
     }

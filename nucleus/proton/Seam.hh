@@ -19,7 +19,7 @@
 
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Nodule.hh>
-#include <nucleus/proton/Chassis.hh>
+#include <nucleus/proton/Quill.hh>
 
 namespace nucleus
 {
@@ -33,28 +33,86 @@ namespace nucleus
     ///
     /// XXX internal nodule
     ///
-    template <typename K>
+    template <typename V>
     class Seam:
-      public Nodule
+      public Nodule<V>
     {
     public:
       //
+      // classes
+      //
+      class Entry:
+	public elle::Object
+      {
+      public:
+	//
+	// constructors & destructors
+	//
+	Entry(const typename V::K&,
+	      const Address&);
+	~Entry();
+
+	//
+	// attributes
+	//
+	typename V::K	key;
+	Address		address;
+	Nodule<V>*	nodule;
+      };
+
+      //
       // types
       //
-      typedef std::vector< Chassis<K, Address> >	Container;
+      typedef std::vector<Entry*>			Container;
       typedef typename Container::iterator		Iterator;
       typedef typename Container::const_iterator	Scoutor;
 
       //
-      // methods
+      // constructors & destructors
       //
-      template <typename V>
-      elle::Status		Lookup(const K&,
-				       Quill<K, V>*&);
+      Seam();
+      Seam(const elle::Callback<
+	     elle::Status,
+	     elle::Parameters<
+	       const Address&,
+	       Nodule<V>*&
+	       >
+	     >&,
+	   const elle::Callback<
+	     elle::Status,
+	     elle::Parameters<
+	       const Address&,
+	       const Nodule<V>*
+	       >
+	     >&);
+      ~Seam();
+
+      //
+      // interfaces
+      //
+
+      // nodule
+      elle::Status		Lookup(const typename V::K&,
+				       Quill<V>*&);
 
       //
       // attributes
       //
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  const Address&,
+	  Nodule<V>*&
+	  >
+	>			load;
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  const Address&,
+	  const Nodule<V>*
+	  >
+	>			unload;
+
       Container			container;
       elle::Natural32		size;
     };

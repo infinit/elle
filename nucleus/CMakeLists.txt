@@ -13,7 +13,6 @@ ADD_LIBRARY(nucleus
   proton/Location.cc
   proton/MutableBlock.cc
   proton/Network.cc
-  proton/Nodule.cc
   proton/OwnerKeyBlock.cc
   proton/Proton.cc
   proton/PublicKeyBlock.cc

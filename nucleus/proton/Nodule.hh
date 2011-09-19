@@ -23,14 +23,28 @@ namespace nucleus
   {
 
 //
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    class Seam;
+
+    template <typename V>
+    class Quill;
+
+//
 // ---------- classes ---------------------------------------------------------
 //
 
     ///
     /// XXX
     ///
+    template <typename V>
     class Nodule:
-      public elle::Object
+      public ContentHashBlock
     {
     public:
       //
@@ -48,16 +62,35 @@ namespace nucleus
       Nodule(const Type);
 
       //
+      // virtual methods
+      //
+      virtual elle::Status	Lookup(const typename V::K&,
+				       Quill<V>*&) = 0;
+
+      //
       // attributes
       //
       Type		type;
 
-      Nodule*		parent;
+      Seam<V>*		parent;
       Nodule*		left;
       Nodule*		right;
     };
 
   }
 }
+
+//
+// ---------- templates -------------------------------------------------------
+//
+
+#include <nucleus/proton/Nodule.hxx>
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <nucleus/proton/Seam.hh>
+#include <nucleus/proton/Quill.hh>
 
 #endif

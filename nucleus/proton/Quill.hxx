@@ -23,26 +23,51 @@ namespace nucleus
     ///
     /// XXX
     ///
-    template <typename K,
-	      typename V>
-    Quill<K, V>::Quill():
-      Nodule(Nodule::TypeQuill),
+    template <typename V>
+    Quill<V>::Quill():
+      Nodule<V>(Nodule<V>::TypeQuill),
 
       size(0)
     {
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    Quill<V>::Quill(const elle::Callback<
+		      elle::Status,
+		      elle::Parameters<
+		        const Address&,
+			Nodule<V>*&
+			>
+		      >&					load,
+		    const elle::Callback<
+		      elle::Status,
+		      elle::Parameters<
+			const Address&,
+			const Nodule<V>*
+			>
+		      >&					unload):
+      Nodule<V>(Nodule<V>::TypeQuill),
+
+      size(0),
+
+      load(load),
+      unload(unload)
+    {
+    }
+
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- nodule ----------------------------------------------------------
 //
 
     ///
     /// XXX
     ///
-    template <typename K,
-	      typename V>
-    elle::Status	Quill<K, V>::Lookup(const K&		key,
-					    Quill<K, V>*&	quill)
+    template <typename V>
+    elle::Status	Quill<V>::Lookup(const typename V::K&,
+					 Quill<V>*&		quill)
     {
       enter();
 

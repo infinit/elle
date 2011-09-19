@@ -36,6 +36,9 @@ namespace nucleus
 	ComponentUser,
 	ComponentGroup,
 
+	ComponentSeamCatalog,
+	ComponentQuillCatalog,
+
 	Components = ComponentAccess + 1
       };
 
