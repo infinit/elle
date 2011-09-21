@@ -16,7 +16,9 @@
 
 #include <lune/Lune.hh>
 
-#include <pig/PIG.hh>
+#if INFINIT_UNIX
+# include <pig/PIG.hh>
+#endif
 
 namespace lune
 {
@@ -64,8 +66,14 @@ namespace lune
   const elle::Character	Configuration::Default::History::Indicator::Slab =
     '%';
 
+#if INFINIT_UNIX
   const elle::Natural32	Configuration::Default::FUSE::FUker =
     static_cast<elle::Natural32>(pig::FUker::TypeSequential);
+#elif INFINIT_WIN32
+  const elle::Natural32	Configuration::Default::FUSE::FUker = 0;
+#else
+# error "unsupported platform"
+#endif
 
 //
 // ---------- methods ---------------------------------------------------------
