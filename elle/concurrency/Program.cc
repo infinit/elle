@@ -87,7 +87,6 @@ namespace elle
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
-      ::signal(SIGKILL, &Program::Exception);
 #elif INFINIT_WIN32
       // XXX
 #else
@@ -148,13 +147,6 @@ namespace elle
 
 	    break;
 	  }
-#if INFINIT_UNIX
-	case SIGKILL:
-	  {
-	    // exit brutally!!!
-	    ::exit(EXIT_FAILURE);
-	  }
-#endif
 	}
     }
 
