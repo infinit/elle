@@ -28,6 +28,8 @@
 # include <fcntl.h>
 # if INFINIT_WIN32
 #  include <process.h>
+#  include <windows.h>
+#  include <wincrypt.h>
 # endif
 #include <elle/idiom/Open.hh>
 
@@ -46,12 +48,15 @@ namespace elle
     Status		Random::Initialize()
     {
       uint8_t		temporary[256];
-      int		fd;
 
       enter();
 
       // initialise the random generator.
-      ::srand(::getpid()); 
+      ::srand(::time(NULL));
+
+#if INFINIT_UNIX
+
+      int		fd = -1;
 
       // get some random data.
       if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
@@ -67,6 +72,27 @@ namespace elle
 
       // close the file descriptor.
       ::close(fd);
+
+#elif INFINIT_WIN32
+
+      HCRYPTPROV        h_provider = 0;
+
+      if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
+                                  CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
+        escape("failed to acquire cryptographic context");
+
+      if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
+        {
+          ::CryptReleaseContext(h_provider, 0);
+          escape("failed to generate the random seed");
+        }
+
+      if (!::CryptReleaseContext(h_provider, 0))
+        escape("failed to release cryptographic context");
+
+#else
+# error "unsupported platform"
+#endif
 
       // seed the random generator.
       ::RAND_seed(temporary, sizeof (temporary));
