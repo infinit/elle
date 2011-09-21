@@ -20,7 +20,9 @@
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
-#include <pig/PIG.hh>
+#if INFINIT_UNIX
+# include <pig/PIG.hh>
+#endif
 
 // XXX
 #include <nucleus/proton/Porcupine.hh>
@@ -104,9 +106,11 @@ elle::Status		Main(elle::Natural32			argc,
   if (hole::Hole::Options() == elle::StatusError)
     escape("unable to set up the options");
 
+#if INFINIT_UNIX
   // set up the pig-specific options.
   if (pig::PIG::Options() == elle::StatusError)
     escape("unable to set up the options");
+#endif
 
   // parse.
   if (Infinit::Parser->Parse() == elle::StatusError)
@@ -130,9 +134,11 @@ elle::Status		Main(elle::Natural32			argc,
   if (hole::Hole::Initialize() == elle::StatusError)
     escape("unable to initialize Hole");
 
+#if INFINIT_UNIX
   // initialize PIG.
   if (pig::PIG::Initialize() == elle::StatusError)
     escape("unable to initialize PIG");
+#endif
 
   // launch the program.
   if (elle::Program::Launch() == elle::StatusError)
@@ -144,9 +150,11 @@ elle::Status		Main(elle::Natural32			argc,
   // waive.
   waive(Infinit::Parser);
 
+#if INFINIT_UNIX
   // clean PIG.
   if (pig::PIG::Clean() == elle::StatusError)
     escape("unable to clean PIG");
+#endif
 
   // clean Hole.
   if (hole::Hole::Clean() == elle::StatusError)
