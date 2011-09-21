@@ -300,7 +300,7 @@ namespace application
 	    escape("unable to create the passport");
 
 	  // display a message.
-	  std::cout << "The passport has been author  successfully!"
+	  std::cout << "The passport has been created successfully!"
 		    << std::endl;
 
 	  break;

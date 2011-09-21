@@ -275,7 +275,7 @@ namespace application
 	    escape("unable to create the authority");
 
 	  // display a message.
-	  std::cout << "The authority has been author  successfully!"
+	  std::cout << "The authority has been created successfully!"
 		    << std::endl;
 
 	  break;

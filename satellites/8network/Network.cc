@@ -507,7 +507,7 @@ namespace application
 	    escape("unable to create the network");
 
 	  // display a message.
-	  std::cout << "The network has been author  successfully!"
+	  std::cout << "The network has been created successfully!"
 		    << std::endl;
 
 	  break;

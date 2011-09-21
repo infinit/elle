@@ -395,7 +395,7 @@ namespace application
 	    escape("unable to create the user");
 
 	  // display a message.
-	  std::cout << "The user has been author  successfully!"
+	  std::cout << "The user has been created successfully!"
 		    << std::endl;
 
 	  break;
