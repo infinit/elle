@@ -46,34 +46,36 @@ namespace elle
     /// this macro-function links the type to the enum value in a simple
     /// call.
     ///
-#define ArchiveDeclare(_type_)						\
+#define ArchiveDeclare(_type_, _footprint_)				\
   template <>								\
   struct ArchiveType<_type_>						\
   {									\
     static const Natural8			Value =			\
       Archive::Type ## _type_;						\
+    static const Natural32			Footprint =		\
+      _footprint_;							\
   };
 
     ///
     /// these macro-function calls actually generate the specialized-templates
     /// for every basic type of the elle library.
     ///
-    ArchiveDeclare(Null);
-    ArchiveDeclare(Boolean);
-    ArchiveDeclare(Character);
-    ArchiveDeclare(Real);
-    ArchiveDeclare(Integer8);
-    ArchiveDeclare(Integer16);
-    ArchiveDeclare(Integer32);
-    ArchiveDeclare(Integer64);
-    ArchiveDeclare(Natural8);
-    ArchiveDeclare(Natural16);
-    ArchiveDeclare(Natural32);
-    ArchiveDeclare(Natural64);
-    ArchiveDeclare(Large);
-    ArchiveDeclare(String);
-    ArchiveDeclare(Region);
-    ArchiveDeclare(Archive);
+    ArchiveDeclare(Null, 0);
+    ArchiveDeclare(Boolean, 1);
+    ArchiveDeclare(Character, 1);
+    ArchiveDeclare(Real, 8);
+    ArchiveDeclare(Integer8, 1);
+    ArchiveDeclare(Integer16, 2);
+    ArchiveDeclare(Integer32, 4);
+    ArchiveDeclare(Integer64, 8);
+    ArchiveDeclare(Natural8, 1);
+    ArchiveDeclare(Natural16, 2);
+    ArchiveDeclare(Natural32, 4);
+    ArchiveDeclare(Natural64, 8);
+    ArchiveDeclare(Large, 0);
+    ArchiveDeclare(String, 0);
+    ArchiveDeclare(Region, 0);
+    ArchiveDeclare(Archive, 0);
 
 //
 // ---------- behaviours ------------------------------------------------------
@@ -139,13 +141,27 @@ namespace elle
     }
 
     ///
+    /// this method returns the footprint of a basic type.
+    ///
+    /// the reader can notice that two bytes are added to every type's
+    /// footprint. this comes from the fact that the both the Archive
+    /// class and the serialization mechanism record the type of the element
+    /// being serialized.
+    ///
+    template <typename T, Boolean C>
+    Natural32	Archive::Behaviour<T, C>::Footprint(const T&	element)
+    {
+      return (1 + 1 + Archive::Size(element));
+    }
+
+    ///
     /// this method serialize a compound type.
     ///
     /// note that such objects must inherits the Archivable interface,
     /// hence provide the Serialize() and Extract() methods.
     ///
     template <typename T>
-    inline Status	Archive::Behaviour<T, true>::Serialize(
+    Status		Archive::Behaviour<T, true>::Serialize(
 			  Archive&				archive,
 			  const Archivable&			element)
     {
@@ -156,11 +172,21 @@ namespace elle
     /// this method extract a compound type.
     ///
     template <typename T>
-    inline Status	Archive::Behaviour<T, true>::Extract(
+    Status		Archive::Behaviour<T, true>::Extract(
 			  Archive&				archive,
 			  Archivable&				element)
     {
       return (element.Extract(archive));
+    }
+
+    ///
+    /// this method returns the footprint of a compound type.
+    ///
+    template <typename T>
+    Natural32		Archive::Behaviour<T, true>::Footprint(
+			  const Archivable&			element)
+    {
+      return (element.Footprint());
     }
 
 //
@@ -373,47 +399,6 @@ namespace elle
     }
 
 //
-// ---------- print -----------------------------------------------------------
-//
-
-    ///
-    /// this method displays information on an element belonging to an
-    /// archive.
-    ///
-    template <typename T>
-    inline Status	Print(const T&				element,
-			      const Natural32			margin)
-    {
-      String		alignment(margin, ' ');
-
-      enter();
-
-      std::cout << alignment << "[" << Type<T>::Name << "] "
-		<< element << std::endl;
-
-      leave();
-    }
-
-    ///
-    /// this method specializes the Print() method for the Region type
-    /// which is a non-core, non-archivable type, a rare exception.
-    ///
-    template <>
-    inline Status	Print<Region>(const Region&		element,
-				      const Natural32		margin)
-    {
-      String		alignment(margin, ' ');
-
-      enter();
-
-      std::cout << alignment << "[Region] "
-		<< static_cast<Void*>(element.contents) << " :: "
-		<< element.size << "/" << element.capacity << std::endl;
-
-      leave();
-    }
-
-//
 // ---------- object-like -----------------------------------------------------
 //
 
@@ -439,6 +424,91 @@ namespace elle
 
       // return StatusOk in order to avoid including Report, Status and Maid.
       return (StatusOk);
+    }
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this template returns the footprint of a single item.
+    ///
+    template <typename T>
+    Natural32		Archive::Footprint(const T&		element)
+    {
+      return
+	(Archive::Behaviour<T,
+	                    ArchiveType<T>::Value
+                              ==
+                            Archive::TypeUnknown>::Footprint(element));
+    }
+
+    ///
+    /// this method returns the footprint of a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
+    Natural32		Archive::Footprint(const T&		parameter,
+					   const TT&...		parameters)
+    {
+      return (Archive::Footprint(parameter) +
+	      Archive::Footprint(parameters...));
+    }
+
+    ///
+    /// this template returns the footprint of a single item.
+    ///
+    template <typename T>
+    Natural32		Archive::Footprint(const T*		element)
+    {
+      return
+	(Archive::Behaviour<T,
+	                    ArchiveType<T>::Value
+                              ==
+                            Archive::TypeUnknown>::Footprint(*element));
+    }
+
+    ///
+    /// this method returns the footprint of a set of items.
+    ///
+    template <typename T,
+	      typename... TT>
+    Natural32		Archive::Footprint(const T*		parameter,
+					   const TT*...		parameters)
+    {
+      return (Archive::Footprint(parameter) +
+	      Archive::Footprint(parameters...));
+    }
+
+    ///
+    /// this method returns the size of the given element.
+    ///
+    /// note that if this method is called, this means that the element's size
+    /// is static depending on the type. in other words, two elements of
+    /// the given type will always have the same size once serialized.
+    ///
+    template <typename T>
+    Natural32		Archive::Size(const T&			element)
+    {
+      return (ArchiveType<T>::Footprint);
+    }
+
+    ///
+    /// this method displays information on an element belonging to an
+    /// archive.
+    ///
+    template <typename T>
+    Status		Archive::Print(const T&			element,
+				       const Natural32		margin)
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[" << core::Type<T>::Name << "] "
+		<< element << std::endl;
+
+      leave();
     }
 
   }
