@@ -120,7 +120,6 @@ namespace nucleus
 					Quill<V>*&		quill)
     {
       Seam<V>::Scoutor	scoutor;
-      Seam<V>::Entry*	entry;
 
       enter();
 
@@ -129,44 +128,29 @@ namespace nucleus
 	   scoutor != this->container.end();
 	   scoutor++)
 	{
-	  // retrieve the entry.
-	  entry = *scoutor;
+	  Seam<V>::Entry*	entry = *scoutor;
 
 	  // check if this entry is responsible for the given key or
 	  // the end of the seam has been reached.
-	  if (key < entry->key)
+	  if ((key <= entry->key) ||
+	      (entry == this->container.back()))
 	    {
-	      // load the child nodule.
-	      if (this->load.Call(entry->address,
-				  entry->nodule) == elle::StatusError)
-		escape("unable to load the child nodule");
+	      // load the child, if necessary
+	      if (entry->nodule == NULL)
+		{
+		  // load the child nodule.
+		  if (this->load.Call(entry->address,
+				      entry->nodule) == elle::StatusError)
+		    escape("unable to load the child nodule");
+		}
 
 	      // lookup in this nodule.
 	      if (entry->nodule->Lookup(key, quill) == elle::StatusError)
 		escape("unable to locate the quill for the given key");
 
-	      leave();
+	      break;
 	    }
 	}
-
-      //
-      // if this code is reached, this means that the key exceeds the
-      // highest registered one.
-      //
-      // the very last entry should thus be responsible for it.
-      //
-
-      // retrieve the entry i.e the latest.
-      entry = this->container.back();
-
-      // load the child nodule.
-      if (this->load.Call(entry->address,
-			  entry->nodule) == elle::StatusError)
-	escape("unable to load the child nodule");
-
-      // lookup in this nodule.
-      if (entry->nodule->Lookup(key, quill) == elle::StatusError)
-	escape("unable to locate the quill for the given key");
 
       leave();
     }

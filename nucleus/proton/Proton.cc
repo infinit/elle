@@ -51,25 +51,9 @@ namespace nucleus
     {
       enter();
 
-      //
-      // retrieve some descriptor specific configuration values.
-      //
-      {
-	if (hole::Hole::Descriptor.Get(
-	      "general", "size.low",
-	      Proton::Size::Low) == elle::StatusError)
-	  escape("unable to retrieve the descriptor's value");
-
-	if (hole::Hole::Descriptor.Get(
-	      "general", "size.normal",
-	      Proton::Size::Normal) == elle::StatusError)
-	  escape("unable to retrieve the descriptor's value");
-
-	if (hole::Hole::Descriptor.Get(
-	      "general", "size.High",
-	      Proton::Size::High) == elle::StatusError)
-	  escape("unable to retrieve the descriptor's value");
-      }
+      // initialize the porcupine data structure.
+      if (Porcupine<>::Initialize() == elle::StatusError)
+	escape("unable to initialize the porcupine");
 
       leave();
     }
@@ -80,8 +64,10 @@ namespace nucleus
     elle::Status	Proton::Clean()
     {
       enter();
-
-      // XXX
+ 
+      // clean the porcupine data structure.
+      if (Porcupine<>::Clean() == elle::StatusError)
+	escape("unable to clean the porcupine");
 
       leave();
     }

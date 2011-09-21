@@ -49,13 +49,16 @@ namespace nucleus
 	// constructors & destructors
 	//
 	Entry(const typename V::K&,
-	      const V*);
+	      const Address&);
+	~Entry();
 
 	//
 	// attributes
 	//
 	typename V::K	key;
-	V*		block;
+	Address		address;
+
+	V*		value;
       };
 
       //
@@ -85,11 +88,22 @@ namespace nucleus
 	      >&);
 
       //
+      // methods
+      //
+      elle::Status		Add(const typename V::K&,
+				    V*);
+
+      elle::Status		Lookup(const typename V::K&,
+				       V*&) const;
+      elle::Status		Locate(const typename V::K&,
+				       V*&) const;
+
+      //
       // interfaces
       //
 
       // nodule
-    elle::Status		Lookup(const typename V::K&,
+      elle::Status		Lookup(const typename V::K&,
 				       Quill<V>*&);
 
       //

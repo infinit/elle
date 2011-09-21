@@ -57,6 +57,7 @@ namespace nucleus
 	//
 	typename V::K	key;
 	Address		address;
+
 	Nodule<V>*	nodule;
       };
 

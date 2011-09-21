@@ -11,6 +11,12 @@
 #ifndef NUCLEUS_PROTON_PORCUPINE_HXX
 #define NUCLEUS_PROTON_PORCUPINE_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <nucleus/Nucleus.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -99,7 +105,11 @@ namespace nucleus
       if (this->Lookup(key, quill) == elle::StatusError)
 	escape("unable to locate a quill for this key");
 
-      // XXX if value->Footprint() > Porcupine<>::Footprint
+      // add the value to the quill.
+      if (quill->Add(key, value) == elle::StatusError)
+	escape("unable to add the value to the quill");
+
+      // XXX if quill->Footprint() > Porcupine<>::Footprint
       // XXX   -> split quill: allocate new quill, quill->Balance(q)
       // XXX     -> new root? else update the hierarchy
       // XXX else
@@ -114,12 +124,35 @@ namespace nucleus
     template <typename V>
     elle::Status	Porcupine<V>::Lookup(const typename V::K& key,
 					     Quill<V>*&		quill)
+      const
     {
       enter();
 
       // trigger the lookup method on the root nodule.
       if (this->nodule->Lookup(key, quill) == elle::StatusError)
 	escape("unable to locate the quill for this key");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Locate(const typename V::K& key,
+					     Quill<V>*&		quill,
+					     V*&		value)
+      const
+    {
+      enter();
+
+      // trigger the lookup method on the root nodule.
+      if (this->nodule->Lookup(key, quill) == elle::StatusError)
+	escape("unable to locate the quill for this key");
+
+      // locate the entry with the exact given key.
+      if (quill->Locate(key, value) == elle::StatusError)
+	escape("unable to locate the value");
 
       leave();
     }

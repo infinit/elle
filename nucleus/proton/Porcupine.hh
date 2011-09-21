@@ -33,12 +33,18 @@ namespace nucleus
 //
 
     ///
+    /// XXX
+    ///
+    template <typename... T>
+    class Porcupine;
+
+    ///
     /// this class makes it easy to build a tree-based data structure of
     /// blocks which does not require all the blocks to remain in main
     /// memory.
     ///
     template <typename V>
-    class Porcupine:
+    class Porcupine<V>:
       public elle::Object
     {
     public:
@@ -73,7 +79,10 @@ namespace nucleus
       elle::Status		Remove(const typename V::K&);
 
       elle::Status		Lookup(const typename V::K&,
-				       Quill<V>*&);
+				       Quill<V>*&) const;
+      elle::Status		Locate(const typename V::K&,
+				       Quill<V>*&,
+				       V*&) const;
 
       elle::Status		Load(const Address&,
 				     Nodule<V>*&);
@@ -104,6 +113,20 @@ namespace nucleus
 	>			unload;
 
       Nodule<V>*		nodule;
+    };
+
+    ///
+    /// XXX
+    ///
+    template <>
+    class Porcupine<>
+    {
+    public:
+      //
+      // static methods
+      //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
     };
 
   }

@@ -17,6 +17,8 @@
 
 #include <elle/Elle.hh>
 
+#include <nucleus/proton/ContentHashBlock.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -67,7 +69,7 @@ namespace nucleus
       virtual elle::Status	Lookup(const typename V::K&,
 				       Quill<V>*&) = 0;
 
-      //
+     //
       // attributes
       //
       Type		type;
