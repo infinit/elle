@@ -59,8 +59,8 @@ namespace elle
       // set the static definitions.
       //
 
-      System::Path::Separator =
-	::QDir::separator().toAscii();
+      System::Path::Separator = '/';
+	// ::QDir::separator().toAscii();
 
       System::Path::Root =
 	::QDir::root().canonicalPath().toStdString();
