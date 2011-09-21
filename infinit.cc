@@ -53,8 +53,6 @@ elle::Status		Main(elle::Natural32			argc,
 					      const nucleus::Block&
 					      >
 					    >::Null);
-
-    exit(1);
   }
   // XXX
 

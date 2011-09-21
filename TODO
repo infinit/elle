@@ -8,6 +8,8 @@
 - resoudre probleme avec les size_t sur 64-bit -> warnings
 - virer bpt.h?
 
+- revoir taille des types une fois serialises dans Archive.hxx
+
 #
 # ---------- porcupine --------------------------------------------------------
 #
