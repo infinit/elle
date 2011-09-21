@@ -136,7 +136,7 @@ namespace elle
       // stop the program depending on the signal.
       switch (signal)
 	{
-#if INFINIT_POSIX
+#if INFINIT_UNIX
 	case SIGQUIT:
 #endif
 	case SIGINT:
@@ -148,7 +148,7 @@ namespace elle
 
 	    break;
 	  }
-#if INFINIT_POSIX
+#if INFINIT_UNIX
 	case SIGKILL:
 	  {
 	    // exit brutally!!!

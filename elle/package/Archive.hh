@@ -84,6 +84,9 @@ namespace elle
     /// set up in the buffer comes from an acquired region and therefore
     /// must be deleted.
     ///
+    /// noteworthy is that the Footprint() and Size() method do not return
+    /// a Status though it is the common usage.
+    ///
     class Archive
     {
     public:
@@ -205,24 +208,55 @@ namespace elle
       Status		Fetch(enum Type&);
 
       //
+      // static methods
+      //
+      template <typename T>
+      static Natural32	Footprint(const T&);
+      template <typename T,
+		typename... TT>
+      static Natural32	Footprint(const T&,
+				  const TT&...);
+      template <typename T>
+      static Natural32	Footprint(const T*);
+      template <typename T,
+		typename... TT>
+      static Natural32	Footprint(const T*,
+				  const TT*...);
+
+      template <typename T>
+      static Natural32	Size(const T&);
+      static Natural32	Size(const Large&);
+      static Natural32	Size(const String&);
+      static Natural32	Size(const Region&);
+      static Natural32	Size(const Archive&);
+
+      template <typename T>
+      static Status	Print(const T&,
+			      const Natural32);
+      static Status	Print(const Region&,
+			      const Natural32);
+
+      //
       // behaviours
       //
       template <typename T, Boolean C>
       struct		Behaviour
       {
-	static Status	Serialize(Archive&,
-				  const T&);
-	static Status	Extract(Archive&,
-				T&);
+	static Status		Serialize(Archive&,
+					  const T&);
+	static Status		Extract(Archive&,
+					T&);
+	static Natural32	Footprint(const T&);
       };
 
       template <typename T>
       struct		Behaviour<T, true>
       {
-	static Status	Serialize(Archive&,
-				  const Archivable&);
-	static Status	Extract(Archive&,
-				Archivable&);
+	static Status		Serialize(Archive&,
+					  const Archivable&);
+	static Status		Extract(Archive&,
+					Archivable&);
+	static Natural32	Footprint(const Archivable&);
       };
 
       //
