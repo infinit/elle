@@ -657,7 +657,7 @@ namespace elle
 		if (archive.Extract(none) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(none, margin + 2) == StatusError)
+		if (Archive::Print(none, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -669,7 +669,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -681,7 +681,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -693,7 +693,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -705,7 +705,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -717,7 +717,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -729,7 +729,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -741,7 +741,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -753,7 +753,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -765,7 +765,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -777,7 +777,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -789,7 +789,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -801,7 +801,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		::BN_clear_free(&value);
@@ -815,7 +815,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -827,7 +827,7 @@ namespace elle
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the next element");
 
-		if (Print(value, margin + 2) == StatusError)
+		if (Archive::Print(value, margin + 2) == StatusError)
 		  escape("unable to print the element");
 
 		break;
@@ -936,6 +936,62 @@ namespace elle
     Boolean		Archive::operator!=(const Archive&	element) const
     {
       return (!(*this == element));
+    }
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this method returns the size---i.e once serialized---of the given
+    /// element.
+    ///
+    Natural32		Archive::Size(const Large&		element)
+    {
+      return (BN_num_bytes(&element));
+    }
+
+    ///
+    /// this method returns the size of the string.
+    ///
+    Natural32		Archive::Size(const String&		element)
+    {
+      // XXX is the ending zero considered?
+      return (element.length());
+    }
+
+    ///
+    /// this method returns the size of the region.
+    ///
+    Natural32		Archive::Size(const Region&		element)
+    {
+      return (element.size);
+    }
+
+    ///
+    /// this method returns the size of the archive.
+    ///
+    Natural32		Archive::Size(const Archive&		element)
+    {
+      return (element.size);
+    }
+
+    ///
+    /// this method specializes the Print() method for the Region type
+    /// which is a non-core, non-archivable type, a rare exception.
+    ///
+    Status		Archive::Print(const Region&		element,
+				       const Natural32		margin)
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Region] "
+		<< static_cast<Void*>(element.contents) << " :: "
+		<< element.size << "/" << element.capacity << std::endl;
+
+      leave();
     }
 
   }

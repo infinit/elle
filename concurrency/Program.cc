@@ -87,7 +87,6 @@ namespace elle
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
-      ::signal(SIGKILL, &Program::Exception);
 #elif INFINIT_WIN32
       // XXX
 #else
@@ -136,7 +135,7 @@ namespace elle
       // stop the program depending on the signal.
       switch (signal)
 	{
-#if INFINIT_POSIX
+#if INFINIT_UNIX
 	case SIGQUIT:
 #endif
 	case SIGINT:
@@ -148,13 +147,6 @@ namespace elle
 
 	    break;
 	  }
-#if INFINIT_POSIX
-	case SIGKILL:
-	  {
-	    // exit brutally!!!
-	    ::exit(EXIT_FAILURE);
-	  }
-#endif
 	}
     }
 

@@ -51,5 +51,16 @@ namespace elle
       escape("this method should never have been called");
     }
 
+    ///
+    /// this method returns the footprint---i.e the size once serialized---of
+    /// the instance.
+    ///
+    Natural32		Archivable::Footprint() const
+    {
+      enter();
+
+      escape("this method should never have been called");
+    }
+
   }
 }
