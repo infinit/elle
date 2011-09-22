@@ -70,7 +70,7 @@ namespace elle
                target.string.c_str(), ::strerror(errno));
 #elif INFINIT_WIN32
       {
-        struct stat st;
+        struct ::stat st;
 
         if (::stat(link.string.c_str(), &st))
           escape("stat(%s) failed: %s",
