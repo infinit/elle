@@ -27,6 +27,11 @@
 // XXX
 #include <nucleus/proton/Porcupine.hh>
 
+#include <elle/idiom/Close.hh>
+# include <exception>
+#include <elle/idiom/Open.hh>
+
+
 //
 // ---------- functions -------------------------------------------------------
 //
@@ -187,6 +192,24 @@ elle::Status		Main(elle::Natural32			argc,
   leave();
 }
 
+
+static void terminate_handler()
+{
+  std::cerr << "uncaught excpection";
+  try {
+    throw;
+  }
+  catch (std::exception & e) {
+    std::cerr << ": `" << e.what() << "'" << std::endl;
+  }
+  catch (...) {
+    std::cerr << std::endl;
+  }
+
+  // XXX print the back trace
+  _exit(1);
+}
+
 //
 // ---------- main ------------------------------------------------------------
 //
@@ -194,6 +217,8 @@ elle::Status		Main(elle::Natural32			argc,
 int			main(int				argc,
 			     char*				argv[])
 {
+  std::set_terminate(terminate_handler);
+
   try
     {
       if (Main(argc, argv) == elle::StatusError)
