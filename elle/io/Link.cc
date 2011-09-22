@@ -32,6 +32,8 @@
 # include <libgen.h>
 # if INFINIT_WIN32
 #  include <windows.h>
+// For QFile::link()
+#  include <QFile>
 # endif
 #include <elle/idiom/Open.hh>
 
@@ -69,24 +71,10 @@ namespace elle
         escape("symlink failed: %s -> %s: %s", link.string.c_str(),
                target.string.c_str(), ::strerror(errno));
 #elif INFINIT_WIN32
-      {
-        struct ::stat st;
-
-        if (::stat(link.string.c_str(), &st))
-          escape("stat(%s) failed: %s",
-		 link.string.c_str(),
-		 ::strerror(errno));
-
-        if (!CreateSymbolicLink(target.string.c_str(),
-				link.string.c_str(),
-                                S_ISDIR(st.st_mode) ?
-				SYMBOLIC_LINK_FLAG_DIRECTORY :
-				0))
-          escape("symlink failed: %s -> %s: (error: %lu)",
-		 link.string.c_str(),
-                 target.string.c_str(),
-		 ::GetLastError());
-      }
+      if (!QFile::link(QString::fromStdString(link.string),
+                       QString::fromStdString(target.string)))
+        escape("symlink failed: %s -> %s", link.string.c_str(),
+               target.string.c_str());
 #else
 # error "symlink not supported on your platform"
 #endif

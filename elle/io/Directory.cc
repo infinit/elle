@@ -32,6 +32,7 @@
 # include <libgen.h>
 # include <sys/types.h>
 # include <dirent.h>
+# include <QDir>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -52,6 +53,14 @@ namespace elle
     {
       enter();
 
+      if (!QDir().mkpath(QString::fromStdString(path.string)))
+        escape("failed to mkpath: %s", path.string.c_str());
+
+      leave();
+
+#if 0
+      enter();
+
       // does the directory already exist.
       if (Directory::Exist(path) == StatusTrue)
 	escape("the directory seems to already exist");
@@ -66,12 +75,13 @@ namespace elle
         escape(::strerror(errno));
 #elif INFINIT_WIN32
       if (::mkdir(path.string.c_str()) != 0)
-	escape(::strerror(errno));
+	escape("unable to create %s: %s", path.string.c_str(), ::strerror(errno));
 #else
 # error "mkdir not supported"
 #endif
 
       leave();
+#endif
     }
 
     ///
@@ -117,6 +127,16 @@ namespace elle
     ///
     Status		Directory::Dig(const Path&			path)
     {
+      String		directory(::dirname(const_cast<char*>(path.string.c_str())));
+
+      enter();
+
+      if (!QDir().mkpath(QString::fromStdString(directory)))
+        escape("failed to mkpath: %s", directory.c_str());
+
+      leave();
+
+#if 0
       String		target(::strdup(path.string.c_str()));
       String		directory(::dirname(
 				    const_cast<char*>(target.c_str())));
@@ -149,6 +169,7 @@ namespace elle
 	}
 
       leave();
+#endif
     }
 
     ///
@@ -159,7 +180,7 @@ namespace elle
       ::DIR*		directory;
       struct ::dirent*	entry;
 
-      enter();
+      enter(slab(directory, ::closedir));
 
       // is the path pointing to a valid directory.
       if (Directory::Exist(path) == StatusFalse)
@@ -225,6 +246,9 @@ namespace elle
       // close the directory.
       ::closedir(directory);
 
+      // waive.
+      waive(directory);
+
       leave();
     }
 
@@ -234,17 +258,17 @@ namespace elle
     Status		Directory::List(const Path&		path,
 					Set&			set)
     {
-      ::DIR*		dp;
+      ::DIR*		directory;
       struct ::dirent*	entry;
 
-      enter();
+      enter(slab(directory, ::closedir));
 
       // open the directory.
-      if ((dp = ::opendir(path.string.c_str())) == NULL)
+      if ((directory = ::opendir(path.string.c_str())) == NULL)
 	escape("unable to open the directory");
 
       // go through the entries.
-      while ((entry = ::readdir(dp)) != NULL)
+      while ((entry = ::readdir(directory)) != NULL)
 	{
 	  // ignore the '.' and '..' entries.
 	  if ((String(entry->d_name) == ".") ||
@@ -255,7 +279,11 @@ namespace elle
 	  set.push_back(String(entry->d_name));
 	}
 
-      ::closedir(dp);
+      // close the directory.
+      ::closedir(directory);
+
+      // waive.
+      waive(directory);
 
       leave();
     }
