@@ -173,6 +173,7 @@ namespace elle
       while ((entry = ::readdir(directory)) != NULL)
 	{
 	  Path		target;
+          struct ::stat st;
 
 	  // ignore the . and ..
 	  if ((::strcmp(entry->d_name, ".") == 0) ||
@@ -185,13 +186,12 @@ namespace elle
 			    String(entry->d_name)) == StatusError)
 	    escape("unable to create the target path");
 
-          std::ostringstream os;
-          os << path << "/" << entry->d_name;
-          std::string entry_path(os.str());
-
-          struct ::stat st;
-          if (::stat(entry_path.c_str(), &st))
-            continue;
+	  // stat the entry as entry->d_type is not standard
+          if (::stat(target.string.c_str(), &st))
+            // the stat my fail but it's ok to continue as it's not fatal
+	    // and the entry may have been destroy/moved between the readdir
+            // and now.
+	    continue;
 
 	  // perform an action depending on the nature of the target.
           if (S_ISDIR(st.st_mode))
