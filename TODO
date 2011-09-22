@@ -1,7 +1,14 @@
+- idee: par defaut, taux de repli = nb de hosts
+ -> ainsi les donnees sont tjs accessibles
+ -> puis quand un certain seuil est atteint on propose a l'admin de changer
 - faire un test avec gros fichiers sans Porcupine -> mettre dans Wiki
 - coder Porcupine dans elle/
+  - virer les Null sur les callbacks
+  - eventuellement: changer les vecteurs en map dans quill/seam
 - resoudre probleme avec les size_t sur 64-bit -> warnings
 - virer bpt.h?
+
+- revoir taille des types une fois serialises dans Archive.hxx
 
 #
 # ---------- porcupine --------------------------------------------------------

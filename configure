@@ -9,10 +9,10 @@ DEBUG=1
 MAKEOPT="--quiet -j$(($(grep processor /proc/cpuinfo | wc -l) + 1))"
 CPPFLAGS="$CPPFLAGS -DYYENABLE_NLS=1 -DENABLE_NLS=1"
 CFLAGS="$CFLAGS -W -Wall -Wstrict-prototypes -pipe"
-CFLAGS="$CFLAGS -Wfloat-equal -Wundef -Wshadow -Wpointer-arith"
+CFLAGS="$CFLAGS -Wfloat-equal -Wundef -Wpointer-arith"
 CFLAGS="$CFLAGS -Wmissing-declarations -Wnested-externs"
-CFLAGS="$CFLAGS -Wmissing-prototypes -fPIC"
-CXXFLAGS="$CXXFLAGS -W -Wall -pipe -Wundef -Wshadow -Wpointer-arith -Wabi -fPIC"
+CFLAGS="$CFLAGS -Wmissing-prototypes"
+CXXFLAGS="$CXXFLAGS -W -Wall -pipe -Wundef -Wpointer-arith -Wabi"
 LDFLAGS="$LDFLAGS"
 PREFIX="/usr/local"
 QTCREATOR=0

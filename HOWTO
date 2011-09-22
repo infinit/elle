@@ -25,6 +25,7 @@ rm -rf build-win32 &&
 mkdir build-win32 &&
 cd build-win32 &&
 QMAKESPEC=/usr/share/qt/mkspecs/win32-x-g++/ cmake \
+-G"CodeBlocks - Unix Makefiles" \
 -DCMAKE_SYSTEM_NAME=Windows \
 -DCMAKE_C_COMPILER=/usr/bin/i486-mingw32-gcc \
 -DCMAKE_CXX_COMPILER=/usr/bin/i486-mingw32-g++ \
@@ -72,3 +73,8 @@ Then in elle/system/Platform.hh is defined:
   #define INFINIT_WIN32 1/0
   #define INFINIT_UNIX 1/0
 depending on your current build.
+
+### how to use infinit
+8setup -i
+8authority -c
+
