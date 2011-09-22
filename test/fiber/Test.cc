@@ -42,7 +42,7 @@ namespace elle
     Status		Fiber4()
     {
       enter();
-#if 0
+#if 1
 
       printf("[Fiber4] Start\n");
 
@@ -147,7 +147,7 @@ namespace elle
     Status		Fiber1()
     {
       enter();
-#if 0
+#if 1
       printf("[Fiber1] Start\n");
 
       printf("[Fiber1] Wait(ResourceA)\n");
@@ -199,7 +199,7 @@ namespace elle
       // start the timer1, launching the fiber1.
       if (Test::Timer1.Start(100) == StatusError)
 	escape("unable to start the timer");
-#if 0
+#if 1
       // create the timer2.
       if (Test::Timer2.Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
