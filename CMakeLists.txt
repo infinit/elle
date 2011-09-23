@@ -34,7 +34,7 @@ IF(${WIN32})
   ADD_SUBDIRECTORY(iig)
 ENDIF()
 ADD_SUBDIRECTORY(hole)
-ADD_SUBDIRECTORY(applications)
+# XXX ADD_SUBDIRECTORY(applications)
 
 ADD_LIBRARY(infinit
   Infinit.cc
@@ -45,6 +45,17 @@ ADD_EXECUTABLE(Infinit
 )
 
 TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole pig
+                              ${QT_QTCORE_LIBRARIES}
+                              ${QT_QTNETWORK_LIBRARIES}
+                              ${QT_QTCORE_LIBRARIES})
+
+# XXX
+
+ADD_EXECUTABLE(XXX
+  XXX.cc
+)
+
+TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit
                               ${QT_QTCORE_LIBRARIES}
                               ${QT_QTNETWORK_LIBRARIES}
                               ${QT_QTCORE_LIBRARIES})

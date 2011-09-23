@@ -1,3 +1,7 @@
+- Block a une Footprint classe qui contient la taille et un state.
+ -> si l'instance est modifie, on ivnalide le footprint. et quand on appelle
+    Footprint(), c'est recompute que si necessaire.
+
 - idee: par defaut, taux de repli = nb de hosts
  -> ainsi les donnees sont tjs accessibles
  -> puis quand un certain seuil est atteint on propose a l'admin de changer

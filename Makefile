@@ -91,6 +91,23 @@ status:
 	  cd ..								; \
 	done
 
+commit:
+	@echo "---[ infinit"
+	@$(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
+	if [ $${?} -eq 0 ] ; then					\
+	  $(GIT) commit -a && $(GIT) commit				; \
+	fi
+
+	@for component in $(COMPONENTS); do				\
+	  echo "---[ $${component}"					&& \
+	  cd $${component}						&& \
+	  $(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
+	  if [ $${?} -eq 0 ] ; then					\
+	    $(GIT) commit -a && $(GIT) commit				; \
+	  fi								; \
+	  cd ..								; \
+	done
+
 push:
 	@echo "---[ infinit"
 	@$(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
