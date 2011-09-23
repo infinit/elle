@@ -185,6 +185,16 @@
 	}								\
     } while (false)
 
+
+///
+/// this macro helps you to log your current location
+///
+#define log_here                                                        \
+  do {                                                                  \
+    ::printf("[%d] %s:%d %s\n", __COUNTER__, __FILE__,                  \
+             __LINE__, __PRETTY_FUNCTION__);                            \
+  } while (0)
+
 //
 // ---------- report ----------------------------------------------------------
 //
