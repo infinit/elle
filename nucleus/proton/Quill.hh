@@ -21,6 +21,10 @@
 #include <nucleus/proton/Block.hh>
 #include <nucleus/proton/Nodule.hh>
 
+#include <elle/idiom/Close.hh>
+# include <map>
+#include <elle/idiom/Open.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -48,23 +52,28 @@ namespace nucleus
 	//
 	// constructors & destructors
 	//
-	Entry(const typename V::K&,
-	      const Address&);
+	Entry(V*);
+	Entry(const Address&);
 	~Entry();
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	elle::Status	Dump(const elle::Natural32 = 0) const;
 
 	//
 	// attributes
 	//
-	typename V::K	key;
 	Address		address;
-
 	V*		value;
       };
 
       //
       // types
       //
-      typedef std::vector<Entry*>			Container;
+      typedef std::map<const typename V::K, Entry*>	Container;
       typedef typename Container::iterator		Iterator;
       typedef typename Container::const_iterator	Scoutor;
 
@@ -91,7 +100,7 @@ namespace nucleus
       // methods
       //
       elle::Status		Add(const typename V::K&,
-				    V*);
+				    Entry*);
 
       elle::Status		Lookup(const typename V::K&,
 				       V*&) const;
@@ -105,6 +114,9 @@ namespace nucleus
       // nodule
       elle::Status		Lookup(const typename V::K&,
 				       Quill<V>*&);
+
+      // dumpable
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
@@ -125,7 +137,6 @@ namespace nucleus
 	>			unload;
 
       Container			container;
-      elle::Natural32		size;
     };
 
   }

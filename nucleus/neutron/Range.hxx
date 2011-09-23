@@ -411,6 +411,35 @@ namespace nucleus
       leave();
     }
 
+    ///
+    /// this method returns the footprint of the object.
+    ///
+    template <typename T>
+    elle::Natural32	Range<T>::Footprint() const
+    {
+      Range<T>::Scoutor	scoutor;
+      elle::Natural32	footprint;
+
+      // initialize the footprint.
+      footprint = 0;
+
+      // compute the size's footprint.
+      footprint += elle::Archive::Weight<Size>();
+
+      // retrieve every item's footprint
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  T*		item = *scoutor;
+
+	  // compute the item's footprint and add it to the sum.
+	  footprint += elle::Archive::Footprint(*item);
+	}
+
+      return (footprint);
+    }
+
   }
 }
 

@@ -22,25 +22,6 @@ namespace nucleus
   {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// XXX
-    ///
-    elle::Natural32		Proton::Size::Low;
-
-    ///
-    /// XXX
-    ///
-    elle::Natural32		Proton::Size::Normal;
-
-    ///
-    /// XXX
-    ///
-    elle::Natural32		Proton::Size::High;
-
-//
 // ---------- methods ---------------------------------------------------------
 //
 

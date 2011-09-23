@@ -67,6 +67,7 @@ namespace nucleus
       // archivable
       elle::Status	Serialize(elle::Archive&) const;
       elle::Status	Extract(elle::Archive&);
+      elle::Natural32	Footprint() const;
 
       // rangeable
       elle::String&	Symbol();

@@ -34,16 +34,6 @@ namespace nucleus
     {
     public:
       //
-      // static attributes
-      //
-      struct			Size
-      {
-	static elle::Natural32	Low;
-	static elle::Natural32	Normal;
-	static elle::Natural32	High;
-      };
-
-      //
       // static methods
       //
       static elle::Status	Initialize();

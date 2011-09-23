@@ -24,9 +24,16 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    Seam<V>::Entry::Entry(const typename V::K&			key,
-			  const Address&			address):
-      key(key),
+    Seam<V>::Entry::Entry(const Nodule<V>&			nodule):
+      nodule(nodule)
+    {
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    Seam<V>::Entry::Entry(const Address&			address):
       address(address),
       nodule(NULL)
     {
@@ -43,6 +50,38 @@ namespace nucleus
 	delete this->nodule;
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Entry::Dump(const elle::Natural32 margin)
+      const
+    {
+      elle::String	alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Entry] " << this << std::endl;
+
+      // dump the address.
+      if (this->address.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the address");
+
+      // dump the nodule, if present.
+      if (this->nodule != NULL)
+	{
+	  if (this->nodule->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the nodule");
+	}
+      else
+	{
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << elle::none << std::endl;
+	}
+
+      leave();
+    }
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -52,9 +91,7 @@ namespace nucleus
     ///
     template <typename V>
     Seam<V>::Seam():
-      Nodule<V>(Nodule<V>::TypeSeam),
-
-      size(0)
+      Nodule<V>(Nodule<V>::TypeSeam)
     {
     }
 
@@ -78,8 +115,6 @@ namespace nucleus
 		    >&						unload):
       Nodule<V>(Nodule<V>::TypeSeam),
 
-      size(0),
-
       load(load),
       unload(unload)
     {
@@ -98,7 +133,7 @@ namespace nucleus
 	   scoutor != this->container.end();
 	   scoutor++)
 	{
-	  Seam<V>::Entry*	entry = *scoutor;
+	  Seam<V>::Entry*	entry = scoutor->second;
 
 	  // delete the entry.
 	  delete entry;
@@ -128,12 +163,12 @@ namespace nucleus
 	   scoutor != this->container.end();
 	   scoutor++)
 	{
-	  Seam<V>::Entry*	entry = *scoutor;
+	  Seam<V>::Entry*	entry = scoutor->second;
 
 	  // check if this entry is responsible for the given key or
 	  // the end of the seam has been reached.
-	  if ((key <= entry->key) ||
-	      (entry == this->container.back()))
+	  if ((key <= scoutor->first) ||
+	      (entry == this->container.rbegin()->second))
 	    {
 	      // load the child, if necessary
 	      if (entry->nodule == NULL)
@@ -150,6 +185,65 @@ namespace nucleus
 
 	      break;
 	    }
+	}
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Dump(const elle::Natural32	margin)
+      const
+    {
+      elle::String		alignment(margin, ' ');
+      typename Seam<V>::Scoutor	scoutor;
+
+      enter();
+
+      std::cout << alignment << "[Seam] " << this << std::endl;
+
+      /* XXX
+      // dump the load callback.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Load]" << std::endl;
+
+      if (this->load.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the callback");
+
+      // dump the unload callback.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Unload]" << std::endl;
+
+      if (this->unload.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the callback");
+      */
+
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Items]" << std::endl;
+
+      // go through the container.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << elle::Dumpable::Shift
+		    << "[Item]" << std::endl;
+
+	  // dump the key.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << elle::Dumpable::Shift << elle::Dumpable::Shift
+		    << "[Key] " << scoutor->first << std::endl;
+
+	  // dump the entry.
+	  if (scoutor->second->Dump(margin + 6) == elle::StatusError)
+	    escape("unable to dump the entry");
 	}
 
       leave();

@@ -73,9 +73,9 @@ namespace nucleus
       elle::Status		Create();
 
       elle::Status		Add(const typename V::K&,
-				    const V*);
+				    V*);
       elle::Status		Modify(const typename V::K&,
-				       const V*);
+				       V*);
       elle::Status		Remove(const typename V::K&);
 
       elle::Status		Lookup(const typename V::K&,
@@ -93,6 +93,13 @@ namespace nucleus
       // XXX first, last, next, previous and foreach(LEAF OR INTERNAL OR BOTH)
 
       elle::Status		Grow(); // XXX: new root
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes

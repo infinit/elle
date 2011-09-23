@@ -68,6 +68,8 @@ namespace nucleus
     ///
     /// XXX
     ///
+    /// XXX remove this?
+    ///
     template <typename V>
     elle::Status	Porcupine<V>::Create()
     {
@@ -95,20 +97,34 @@ namespace nucleus
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Add(const typename V::K&	key,
-					  const V*		value)
+					  V*			value)
     {
-      Quill<V>*		quill;
+      Quill<V>*			quill;
+      typename Quill<V>::Entry*	entry;
 
-      enter();
+      enter(instance(entry));
 
       // look up for the quill responsible for the given key.
       if (this->Lookup(key, quill) == elle::StatusError)
 	escape("unable to locate a quill for this key");
 
+      // create an entry.
+      entry = new typename Quill<V>::Entry(value);
+
       // add the value to the quill.
-      if (quill->Add(key, value) == elle::StatusError)
+      if (quill->Add(key, entry) == elle::StatusError)
 	escape("unable to add the value to the quill");
 
+      waive(entry);
+
+      // XXX peut etre Footprint etc. return Status?
+
+      // XXX
+      // check & split
+
+      // XXX gerer a la main le fait de pas recalculer footprint
+
+      // XXX est-ce qu'on ajoute un Footprint
       // XXX if quill->Footprint() > Porcupine<>::Footprint
       // XXX   -> split quill: allocate new quill, quill->Balance(q)
       // XXX     -> new root? else update the hierarchy
@@ -171,9 +187,11 @@ namespace nucleus
 				 nodule) == elle::StatusError)
 	escape("unable to build the nodule");
 
+      /* XXX
       // call the given load callback.
       if (this->load(address, *nodule) == elle::StatusError)
 	escape("unable to load the nodule");
+      */
 
       leave();
     }
@@ -188,6 +206,55 @@ namespace nucleus
       enter();
 
       // XXX
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Dump(const elle::Natural32 margin)
+      const
+    {
+      elle::String	alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Porcupine]" << std::endl;
+
+      // dump the load callback.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Load]" << std::endl;
+
+      if (this->load.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the callback");
+
+      // dump the unload callback.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Unload]" << std::endl;
+
+      if (this->unload.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the callback");
+
+      // dump the hierarchy, if present.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Data]" << std::endl;
+
+      if (this->nodule != NULL)
+	{
+	  if (this->nodule->Dump(margin + 4) == elle::StatusError)
+	    escape("unable to dump the nodule");
+	}
+      else
+	{
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << elle::Dumpable::Shift << elle::none << std::endl;
+	}
 
       leave();
     }
