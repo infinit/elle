@@ -45,7 +45,7 @@ namespace elle
 	{
 	  this->timer->stop();
 	  this->timer->deleteLater();
-          this->timer = nullptr;
+          this->timer = NULL;
 	}
     }
 
