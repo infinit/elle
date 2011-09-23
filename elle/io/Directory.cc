@@ -32,6 +32,7 @@
 # include <libgen.h>
 # include <sys/types.h>
 # include <dirent.h>
+# include <QDir>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -52,6 +53,14 @@ namespace elle
     {
       enter();
 
+      if (!QDir().mkpath(QString::fromStdString(path.string)))
+        escape("failed to mkpath: %s", path.string.c_str());
+
+      leave();
+
+#if 0
+      enter();
+
       // does the directory already exist.
       if (Directory::Exist(path) == StatusTrue)
 	escape("the directory seems to already exist");
@@ -66,12 +75,13 @@ namespace elle
         escape(::strerror(errno));
 #elif INFINIT_WIN32
       if (::mkdir(path.string.c_str()) != 0)
-	escape(::strerror(errno));
+	escape("unable to create %s: %s", path.string.c_str(), ::strerror(errno));
 #else
 # error "mkdir not supported"
 #endif
 
       leave();
+#endif
     }
 
     ///
@@ -117,6 +127,16 @@ namespace elle
     ///
     Status		Directory::Dig(const Path&			path)
     {
+      String		directory(::dirname(const_cast<char*>(path.string.c_str())));
+
+      enter();
+
+      if (!QDir().mkpath(QString::fromStdString(directory)))
+        escape("failed to mkpath: %s", directory.c_str());
+
+      leave();
+
+#if 0
       String		target(::strdup(path.string.c_str()));
       String		directory(::dirname(
 				    const_cast<char*>(target.c_str())));
@@ -149,6 +169,7 @@ namespace elle
 	}
 
       leave();
+#endif
     }
 
     ///
@@ -173,6 +194,7 @@ namespace elle
       while ((entry = ::readdir(directory)) != NULL)
 	{
 	  Path		target;
+          struct ::stat st;
 
 	  // ignore the . and ..
 	  if ((::strcmp(entry->d_name, ".") == 0) ||
@@ -185,15 +207,12 @@ namespace elle
 			    String(entry->d_name)) == StatusError)
 	    escape("unable to create the target path");
 
-	  // XXX
-          std::ostringstream os;
-          os << path << "/" << entry->d_name;
-          std::string entry_path(os.str());
-
-          struct ::stat st;
-          if (::stat(entry_path.c_str(), &st))
-            continue;
-	  // XXX
+	  // stat the entry as entry->d_type is not standard
+          if (::stat(target.string.c_str(), &st))
+            // the stat my fail but it's ok to continue as it's not fatal
+	    // and the entry may have been destroy/moved between the readdir
+            // and now.
+	    continue;
 
 	  // perform an action depending on the nature of the target.
           if (S_ISDIR(st.st_mode))

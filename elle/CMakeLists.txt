@@ -100,7 +100,15 @@ ADD_LIBRARY(elle
   ${elle_WIN32}
 )
 
-TARGET_LINK_LIBRARIES(elle comet msgpack crypto ssl dl readline)
+TARGET_LINK_LIBRARIES(elle comet msgpack crypto ssl readline)
+
+IF(${UNIX})
+  TARGET_LINK_LIBRARIES(elle dl)
+ENDIF()
+
+IF(${WIN32})
+  TARGET_LINK_LIBRARIES(elle pdcurses)
+ENDIF()
 
 ADD_SUBDIRECTORY(test)
-#ADD_SUBDIRECTORY(benchmark)
+ADD_SUBDIRECTORY(benchmark)

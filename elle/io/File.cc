@@ -49,6 +49,7 @@ namespace elle
     {
       struct ::stat	status;
       int		fd;
+      int               roffset = 0;
 
       enter();
 
@@ -72,12 +73,24 @@ namespace elle
 	escape(::strerror(errno));
 
       // read the file's content.
-      if (::read(fd, data.contents, data.size) == -1)
-	{
-	  ::close(fd);
+      while (true)
+        {
+          int rbytes = ::read(fd, data.contents + roffset, data.size - roffset);
 
-	  escape(::strerror(errno));
-	}
+          if (rbytes == 0)
+            break;
+
+          if (rbytes == -1)
+            {
+              ::close(fd);
+
+              escape(::strerror(errno));
+            }
+
+          roffset += rbytes;
+        }
+
+      data.size = roffset;
 
       // close the file.
       ::close(fd);

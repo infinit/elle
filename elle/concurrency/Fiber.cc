@@ -12,6 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Fiber.hh>
 
 namespace elle
@@ -633,8 +634,9 @@ namespace elle
       if (Fiber::Awaken(this->timer) != StatusTrue)
 	escape("unable to awaken the fiber");
 
-      // delete the timer.
-      delete this->timer;
+      // don't delete the timer because it is in use
+      this->timer->Stop();
+      bury(this->timer);
 
       // reset the pointer.
       this->timer = NULL;
