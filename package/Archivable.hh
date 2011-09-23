@@ -52,7 +52,7 @@ namespace elle
     {
     public:
       //
-      // methods
+      // virtual methods
       //
       virtual Status	Serialize(Archive&) const;
       virtual Status	Extract(Archive&);
