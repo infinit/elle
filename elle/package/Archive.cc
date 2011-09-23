@@ -943,37 +943,45 @@ namespace elle
 //
 
     ///
-    /// this method returns the size---i.e once serialized---of the given
+    /// this method returns the footprint---i.e once serialized---of the given
     /// element.
     ///
-    Natural32		Archive::Size(const Large&		element)
+    Natural32		Archive::Footprint(const Large&		element)
     {
-      return (BN_num_bytes(&element));
+      return (ArchiveType<Byte>::Weight +
+	      ArchiveType<Natural8>::Weight +
+	      BN_num_bytes(&element));
     }
 
     ///
-    /// this method returns the size of the string.
+    /// this method returns the footprint of the string.
     ///
-    Natural32		Archive::Size(const String&		element)
+    Natural32		Archive::Footprint(const String&	element)
     {
       // XXX is the ending zero considered?
-      return (element.length());
+      return (ArchiveType<Byte>::Weight +
+	      ArchiveType<Natural8>::Weight +
+	      element.length());
     }
 
     ///
-    /// this method returns the size of the region.
+    /// this method returns the footprint of the region.
     ///
-    Natural32		Archive::Size(const Region&		element)
+    Natural32		Archive::Footprint(const Region&	element)
     {
-      return (element.size);
+      return (ArchiveType<Byte>::Weight +
+	      ArchiveType<Natural8>::Weight +
+	      element.size);
     }
 
     ///
-    /// this method returns the size of the archive.
+    /// this method returns the footprint of the archive.
     ///
-    Natural32		Archive::Size(const Archive&		element)
+    Natural32		Archive::Footprint(const Archive&	element)
     {
-      return (element.size);
+      return (ArchiveType<Byte>::Weight +
+	      ArchiveType<Natural8>::Weight +
+	      element.size);
     }
 
     ///

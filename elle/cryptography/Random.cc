@@ -51,7 +51,7 @@ namespace elle
       enter();
 
       // initialise the random generator.
-      ::srand(::getpid()); 
+      ::srand(::time(NULL)); 
 
       // get some random data.
       if ((fd = ::open("/dev/random", O_RDONLY)) == -1)

@@ -50,7 +50,9 @@ namespace elle
       // set up the node
       if (node.Setup(String(argv[1]),
 		     String(argv[2]),
-		     (Port)::strtoul(argv[3], NULL, 0)) == StatusError)
+		     static_cast<Port>(::strtoul(argv[3],
+						 NULL,
+						 0))) == StatusError)
 	escape("unable to start the node");
 
       // start the node.
