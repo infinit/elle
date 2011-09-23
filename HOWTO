@@ -69,7 +69,12 @@ echo | i486-mingw32-gcc -E -dM -
   #define WINNT 1
   #define i386 1
 
-Then in elle/Platform.hh is defined:
+Then in elle/system/Platform.hh is defined:
   #define INFINIT_WIN32 1/0
   #define INFINIT_UNIX 1/0
 depending on your current build.
+
+### how to use infinit
+8setup -i
+8authority -c
+
