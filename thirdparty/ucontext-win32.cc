@@ -20,6 +20,7 @@
  *      59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
+#include <stdio.h>
 #include "ucontext-win32.hh"
 
 int getcontext(ucontext_t *ucp)
@@ -29,6 +30,7 @@ int getcontext(ucontext_t *ucp)
   /* Retrieve the full machine context */
   ucp->uc_mcontext.ContextFlags = CONTEXT_FULL;
   ret = GetThreadContext(GetCurrentThread(), &ucp->uc_mcontext);
+  printf("getcontext(%p) => EIP: %p, ESP: %p\n", ucp, ucp->uc_mcontext.Eip, ucp->uc_mcontext.Esp);
 
   return (ret == 0) ? -1: 0;
 }
@@ -37,6 +39,7 @@ int setcontext(const ucontext_t *ucp)
 {
   int ret;
 
+  printf("setcontext(%p) => EIP: %p, ESP: %p\n", ucp, ucp->uc_mcontext.Eip, ucp->uc_mcontext.Esp);
   /* Restore the full machine context (already set) */
   ret = SetThreadContext(GetCurrentThread(), &ucp->uc_mcontext);
 
@@ -48,6 +51,8 @@ int makecontext(ucontext_t *ucp, void (*func)(), int argc, ...)
   int i;
   va_list ap;
   char *sp;
+
+  printf("makecontext(%p)\n", ucp);
 
   /* Stack grows down */
   sp = (char *) (size_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size;
@@ -83,6 +88,7 @@ int swapcontext(ucontext_t *oucp, const ucontext_t *ucp)
 {
   int ret;
 
+  printf("swapcontext(%p, %p)\n", oucp, ucp);
   if ((oucp == NULL) || (ucp == NULL)) {
     /*errno = EINVAL;*/
     return -1;
