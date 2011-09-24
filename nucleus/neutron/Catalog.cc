@@ -239,13 +239,5 @@ namespace nucleus
       leave();
     }
 
-    ///
-    /// this method returns the footprint of the catalog.
-    ///
-    elle::Natural32	Catalog::Footprint() const
-    {
-      return (elle::Archive::Footprint(this->range));
-    }
-
   }
 }

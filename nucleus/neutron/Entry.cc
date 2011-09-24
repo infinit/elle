@@ -137,14 +137,6 @@ namespace nucleus
       leave();
     }
 
-    ///
-    /// this method returns the footprint of the entry.
-    ///
-    elle::Natural32	Entry::Footprint() const
-    {
-      return (elle::Archive::Footprint(this->name, this->address));
-    }
-
 //
 // ---------- rangeable -------------------------------------------------------
 //

@@ -238,23 +238,5 @@ namespace nucleus
       leave();
     }
 
-    ///
-    /// this method returns the footprint of the object.
-    ///
-    elle::Natural32	Address::Footprint() const
-    {
-      if (this->digest != NULL)
-	{
-	  return (elle::Archive::Footprint(
-		    static_cast<elle::Natural8>(this->family),
-		    static_cast<elle::Natural8>(this->component),
-		    *this->digest));
-	}
-      else
-	{
-	  return (elle::Archive::Footprint(elle::none));
-	}
-    }
-
   }
 }
