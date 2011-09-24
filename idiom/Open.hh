@@ -177,7 +177,9 @@
 		      elle::String(_message_));				\
       else								\
 	{								\
-	  std::cerr << _message_ << std::endl;				\
+	  std::cerr << _message_					\
+		    << " (" << _location_ << ") @"			\
+		    << _time_ << std::endl;				\
 									\
 	  show();							\
 	}								\

@@ -59,7 +59,7 @@ namespace elle
     {
       enter();
 
-      escape("this method should never have been called");
+      yield(0, "this method should never have been called");
     }
 
   }
