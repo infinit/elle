@@ -21,10 +21,13 @@
 #include <elle/standalone/Report.hh>
 #include <elle/standalone/Log.hh>
 
+#include <elle/radix/Allege.hh>
+
 namespace elle
 {
   using namespace core;
   using namespace standalone;
+  using namespace radix;
 
   namespace package
   {
@@ -46,14 +49,14 @@ namespace elle
     /// this macro-function links the type to the enum value in a simple
     /// call.
     ///
-#define ArchiveDeclare(_type_, _footprint_)				\
+#define ArchiveDeclare(_type_, _weight_)				\
   template <>								\
   struct ArchiveType<_type_>						\
   {									\
     static const Natural8			Value =			\
       Archive::Type ## _type_;						\
-    static const Natural32			Footprint =		\
-      _footprint_;							\
+    static const Natural32			Weight =		\
+      _weight_;								\
   };
 
     ///
@@ -141,7 +144,7 @@ namespace elle
     }
 
     ///
-    /// this method returns the footprint of a basic type.
+    /// this method returns the weight of a basic type.
     ///
     /// the reader can notice that two bytes are added to every type's
     /// footprint. this comes from the fact that the both the Archive
@@ -149,9 +152,20 @@ namespace elle
     /// being serialized.
     ///
     template <typename T, Boolean C>
-    Natural32	Archive::Behaviour<T, C>::Footprint(const T&	element)
+    Natural32	Archive::Behaviour<T, C>::Weight()
     {
-      return (1 + 1 + Archive::Size(element));
+      return (ArchiveType<Byte>::Weight +
+	      ArchiveType<Natural8>::Weight +
+	      ArchiveType<T>::Weight);
+    }
+
+    ///
+    /// this method returns the footprint of a basic type.
+    ///
+    template <typename T, Boolean C>
+    Natural32	Archive::Behaviour<T, C>::Footprint(const T&)
+    {
+      return (Archive::Weight<T>());
     }
 
     ///
@@ -177,6 +191,22 @@ namespace elle
 			  Archivable&				element)
     {
       return (element.Extract(archive));
+    }
+
+    ///
+    /// this method returns the weight of a variable-size or compound type.
+    ///
+    /// note that this causes an compilation failure because Archive
+    /// cannot determine the weight of such types i.e an instance is
+    /// required. the Footprint() method should be used instead.
+    ///
+    template <typename T>
+    Natural32		Archive::Behaviour<T, true>::Weight()
+    {
+      // stop the compiling process.
+      allege(false);
+
+      return (0);
     }
 
     ///
@@ -431,6 +461,43 @@ namespace elle
 //
 
     ///
+    /// this template returns the weight of a single type i.e once serialized.
+    ///
+    template <typename T>
+    Natural32		Archive::Weight()
+    {
+      return
+	(Archive::Behaviour<T,
+			    (ArchiveType<T>::Value
+			       ==
+			     ArchiveType<Large>::Value) ||
+			    (ArchiveType<T>::Value
+			       ==
+			     ArchiveType<String>::Value) ||
+			    (ArchiveType<T>::Value
+			       ==
+			     ArchiveType<Region>::Value) ||
+			    (ArchiveType<T>::Value
+			       ==
+			     ArchiveType<Archive>::Value) ||
+	                    (ArchiveType<T>::Value
+			       ==
+			     Archive::TypeUnknown)>::Weight());
+    }
+
+    ///
+    /// this method returns the weight of a set of types.
+    ///
+    template <typename T,
+	      typename TT,
+	      typename... TTT>
+    Natural32		Archive::Weight()
+    {
+      return (Archive::Weight<T>() +
+	      Archive::Weight<TT, TTT...>());
+    }
+
+    ///
     /// this template returns the footprint of a single item.
     ///
     template <typename T>
@@ -478,19 +545,6 @@ namespace elle
     {
       return (Archive::Footprint(parameter) +
 	      Archive::Footprint(parameters...));
-    }
-
-    ///
-    /// this method returns the size of the given element.
-    ///
-    /// note that if this method is called, this means that the element's size
-    /// is static depending on the type. in other words, two elements of
-    /// the given type will always have the same size once serialized.
-    ///
-    template <typename T>
-    Natural32		Archive::Size(const T&			element)
-    {
-      return (ArchiveType<T>::Footprint);
     }
 
     ///

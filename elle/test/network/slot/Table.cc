@@ -191,7 +191,8 @@ namespace elle
       enter();
 
       // serialize the number of neighbours.
-      if (archive.Serialize((Natural32)this->container.size()) == StatusError)
+      if (archive.Serialize(static_cast<Natural32>(this->container.size())) ==
+	  StatusError)
 	escape("unable to serialize the neighbour");
       
       // serialize the table by going through it.

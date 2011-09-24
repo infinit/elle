@@ -84,8 +84,15 @@ namespace elle
     /// set up in the buffer comes from an acquired region and therefore
     /// must be deleted.
     ///
-    /// noteworthy is that the Footprint() and Size() method do not return
-    /// a Status though it is the common usage.
+    /// noteworthy is that the Footprint() and Weight() method do not return
+    /// a Status though it is the common usage. these methods compute the
+    /// footprint of a given variable (or of a type) i.e the size of the
+    /// object once serialized. note however that the underlying serialization
+    /// mechanism may perform optimisations. this functionality therefore
+    /// does not return the exact serialization size but rather an upper-bound
+    /// approximation. indeed, given a Natural64 holding the number 42,
+    /// the serialization mechanism will turn it into a Natural8 since
+    /// sufficient to hold the given value.
     ///
     class Archive
     {
@@ -223,12 +230,17 @@ namespace elle
       static Natural32	Footprint(const T*,
 				  const TT*...);
 
+      static Natural32	Footprint(const Large&);
+      static Natural32	Footprint(const String&);
+      static Natural32	Footprint(const Region&);
+      static Natural32	Footprint(const Archive&);
+
       template <typename T>
-      static Natural32	Size(const T&);
-      static Natural32	Size(const Large&);
-      static Natural32	Size(const String&);
-      static Natural32	Size(const Region&);
-      static Natural32	Size(const Archive&);
+      static Natural32	Weight();
+      template <typename T,
+		typename TT,
+		typename... TTT>
+      static Natural32	Weight();
 
       template <typename T>
       static Status	Print(const T&,
@@ -246,6 +258,8 @@ namespace elle
 					  const T&);
 	static Status		Extract(Archive&,
 					T&);
+
+	static Natural32	Weight();
 	static Natural32	Footprint(const T&);
       };
 
@@ -256,6 +270,8 @@ namespace elle
 					  const Archivable&);
 	static Status		Extract(Archive&,
 					Archivable&);
+
+	static Natural32	Weight();
 	static Natural32	Footprint(const Archivable&);
       };
 

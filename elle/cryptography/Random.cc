@@ -52,7 +52,7 @@ namespace elle
       enter();
 
       // initialise the random generator.
-      ::srand(::time(NULL));
+      ::srand(::time(NULL)); 
 
 #if INFINIT_UNIX
 
