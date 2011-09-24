@@ -36,8 +36,12 @@ ENDIF()
 ADD_SUBDIRECTORY(hole)
 # XXX ADD_SUBDIRECTORY(applications)
 
+# just to make files appears on qtcreator
+file(GLOB HEADERS *.hh *.hxx */*.hh */*.hxx)
+
 ADD_LIBRARY(infinit
   Infinit.cc
+  ${HEADERS}
 )
 
 ADD_EXECUTABLE(Infinit
