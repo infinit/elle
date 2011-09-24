@@ -46,6 +46,7 @@ ADD_LIBRARY(elle
 
   package/Archivable.cc
   package/Archive.cc
+  package/Footprint.cc
 
   system/System.cc
 

@@ -32,5 +32,6 @@ namespace elle
 #include <elle/package/Archivable.hh>
 #include <elle/package/Archive.hh>
 #include <elle/package/Derivable.hh>
+#include <elle/package/Footprint.hh>
 
 #endif
