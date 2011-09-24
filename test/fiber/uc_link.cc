@@ -21,27 +21,17 @@
 #elif INFINIT_WIN32
 # include <elle/thirdparty/ucontext-win32.hh>
 #endif
-#include <elle/idiom/Idiom.hh>
 
 ucontext_t auc,buc,mainuc;
 
 void a()
 {
-  log_here;
-  swapcontext(&auc, &buc);         /* switch to main thread */
-  log_here;
-  swapcontext(&auc, &buc);         /* switch to main thread */
-  log_here;
-  swapcontext(&auc, &mainuc);         /* switch to main thread */
+  printf("a");
 }
 
 void b()
 {
-  log_here;
-  swapcontext(&buc, &auc);         /* switch to main thread */
-  log_here;
-  swapcontext(&buc, &auc);         /* switch to main thread */
-  log_here;
+  printf("b");
 }
 
 int main(void)
@@ -56,6 +46,7 @@ int main(void)
         perror("malloc"), exit(1);
 
     auc.uc_stack.ss_flags = 0;
+    auc.uc_link = &mainuc;
     makecontext(&auc, a, 0);
 
     /* Set up context for thread B */
@@ -66,11 +57,11 @@ int main(void)
         perror("malloc"), exit(1);
 
     buc.uc_stack.ss_flags = 0;
+    buc.uc_link = &auc;
     makecontext(&buc, b, 0);
 
     /* Switch to A */
-    getcontext(&mainuc);           /* Save the context of main thread */
-    swapcontext(&mainuc, &auc);    /* Switch to thread A */
+    swapcontext(&mainuc, &buc);    /* Switch to thread A */
 
     printf("\ndone\n");  /* Execution control returned to main thread */
     return 0;

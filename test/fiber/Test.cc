@@ -147,12 +147,12 @@ namespace elle
       enter();
 
       printf("[Fiber1] Start\n");
-
+#if 0
       printf("[Fiber1] Wait(ResourceA)\n");
 
       // wait for ResourceA.
       if (Fiber::Wait(&Test::ResourceA) == StatusError)
-	escape("unable to wait for the resource");
+        escape("unable to wait for the resource");
 
       printf("[Fiber1] /Wait(ResourceA)\n");
 
@@ -160,10 +160,10 @@ namespace elle
 
       // awaken ResourceB.
       if (Fiber::Awaken(&Test::ResourceB) == StatusError)
-	escape("unable to awaken the resource");
+        escape("unable to awaken the resource");
 
       printf("[Fiber1] /Awaken(ResourceB)\n");
-
+#endif
       printf("[Fiber1] End\n");
 
       leave();
@@ -185,6 +185,13 @@ namespace elle
       if (Program::Setup() == StatusError)
 	escape("unable to set up the program");
 
+      Closure< Status,
+	       Parameters<> >	closure(Callback<>::Infer(&Fiber1));
+
+      Fiber::Spawn(closure);
+      log_here;
+
+#if 0
       // create the timer1.
       if (Test::Timer1.Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
@@ -223,7 +230,7 @@ namespace elle
       // start the timer3, launching the fiber3.
       if (Test::Timer3.Start(10000) == StatusError)
 	escape("unable to start the timer");
-
+#endif
       // launch the program.
       if (Program::Launch() == StatusError)
 	escape("an error occured in the program");
