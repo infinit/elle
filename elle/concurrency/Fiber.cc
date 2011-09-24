@@ -313,9 +313,11 @@ namespace elle
 	      if (Fiber::Trigger(PhaseRestore) == StatusError)
 		escape("unable to restore the environment");
 
+              log_here;
 	      // set the context of the suspended fiber.
 	      if (::setcontext(&Fiber::Current->context) == -1)
 		escape("unable to set the context");
+              log_here;
 
 	      //
 	      // since the setcontext() function never returns we should
@@ -358,6 +360,7 @@ namespace elle
 
       // allocate an environment.
       fiber->environment = new Environment;
+      memset(&fiber->context, 0, sizeof (fiber->context));
 
       leave();
     }

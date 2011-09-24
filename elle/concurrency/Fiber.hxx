@@ -37,9 +37,11 @@ namespace elle
     {
       enter();
 
+      log_here;
       // trigger the closure and, should there are errors, display them.
       if (closure->Call() == StatusError)
 	yield(_(), "an error occured in the fiber");
+      log_here;
 
       // set the fiber state.
       Fiber::Current->state = Fiber::StateCompleted;
@@ -52,8 +54,14 @@ namespace elle
       // set the state of the parent's fiber as awaken.
       Fiber::Current->link->state = Fiber::StateAwaken;
 
+      log_here;
+      // swap to the link as we don't rely on uc_link
+      ::swapcontext(&Fiber::Current->context, &Fiber::Current->link->context);
+      log_here;
+
       // release the resources.
       release();
+      fail("this code should never be reached");
     }
 
     ///
@@ -68,6 +76,9 @@ namespace elle
       // in the future.
       if (::getcontext(&Fiber::Current->context) == -1)
 	escape("unable to get the context");
+
+      log_here;
+      Fiber::Current->Dump();
 
       // if we are in the fiber spawning a new fiber...
       if (Fiber::Current->state == Fiber::StateActive)
@@ -104,7 +115,7 @@ namespace elle
 
 	  // modify the context manually so that, once completed, the
 	  // execution comes back to the parent fiber i.e the current fiber.
-	  fiber->context.uc_link = &fiber->link->context;
+	  fiber->context.uc_link = NULL;
 	  fiber->context.uc_stack.ss_sp = fiber->frame->stack;
 	  fiber->context.uc_stack.ss_size = fiber->frame->size;
 	  fiber->context.uc_flags = 0;
@@ -116,6 +127,8 @@ namespace elle
 			1,
 			&closure);
 
+          log_here;
+
 	  // set the fiber state.
 	  fiber->state = Fiber::StateActive;
 
@@ -126,9 +139,11 @@ namespace elle
 	  if (Fiber::Trigger(PhaseInitialize) == StatusError)
 	    escape("unable to initialize the environment");
 
+          log_here;
 	  // set the new context.
 	  if (::setcontext(&Fiber::Current->context) == -1)
 	    escape("unable to set the context");
+          log_here;
 
 	  //
 	  // should never reach this point since ::setcontext() never
