@@ -49,36 +49,34 @@ namespace elle
     /// this macro-function links the type to the enum value in a simple
     /// call.
     ///
-#define ArchiveDeclare(_type_, _weight_)				\
+#define ArchiveDeclare(_type_)						\
   template <>								\
   struct ArchiveType<_type_>						\
   {									\
     static const Natural8			Value =			\
       Archive::Type ## _type_;						\
-    static const Natural32			Weight =		\
-      _weight_;								\
   };
 
     ///
     /// these macro-function calls actually generate the specialized-templates
     /// for every basic type of the elle library.
     ///
-    ArchiveDeclare(Null, 0);
-    ArchiveDeclare(Boolean, 1);
-    ArchiveDeclare(Character, 1);
-    ArchiveDeclare(Real, 8);
-    ArchiveDeclare(Integer8, 1);
-    ArchiveDeclare(Integer16, 2);
-    ArchiveDeclare(Integer32, 4);
-    ArchiveDeclare(Integer64, 8);
-    ArchiveDeclare(Natural8, 1);
-    ArchiveDeclare(Natural16, 2);
-    ArchiveDeclare(Natural32, 4);
-    ArchiveDeclare(Natural64, 8);
-    ArchiveDeclare(Large, 0);
-    ArchiveDeclare(String, 0);
-    ArchiveDeclare(Region, 0);
-    ArchiveDeclare(Archive, 0);
+    ArchiveDeclare(Null);
+    ArchiveDeclare(Boolean);
+    ArchiveDeclare(Character);
+    ArchiveDeclare(Real);
+    ArchiveDeclare(Integer8);
+    ArchiveDeclare(Integer16);
+    ArchiveDeclare(Integer32);
+    ArchiveDeclare(Integer64);
+    ArchiveDeclare(Natural8);
+    ArchiveDeclare(Natural16);
+    ArchiveDeclare(Natural32);
+    ArchiveDeclare(Natural64);
+    ArchiveDeclare(Large);
+    ArchiveDeclare(String);
+    ArchiveDeclare(Region);
+    ArchiveDeclare(Archive);
 
 //
 // ---------- behaviours ------------------------------------------------------
@@ -144,31 +142,6 @@ namespace elle
     }
 
     ///
-    /// this method returns the weight of a basic type.
-    ///
-    /// the reader can notice that two bytes are added to every type's
-    /// footprint. this comes from the fact that the both the Archive
-    /// class and the serialization mechanism record the type of the element
-    /// being serialized.
-    ///
-    template <typename T, Boolean C>
-    Natural32	Archive::Behaviour<T, C>::Weight()
-    {
-      return (ArchiveType<Byte>::Weight +
-	      ArchiveType<Natural8>::Weight +
-	      ArchiveType<T>::Weight);
-    }
-
-    ///
-    /// this method returns the footprint of a basic type.
-    ///
-    template <typename T, Boolean C>
-    Natural32	Archive::Behaviour<T, C>::Footprint(const T&)
-    {
-      return (Archive::Weight<T>());
-    }
-
-    ///
     /// this method serialize a compound type.
     ///
     /// note that such objects must inherits the Archivable interface,
@@ -191,32 +164,6 @@ namespace elle
 			  Archivable&				element)
     {
       return (element.Extract(archive));
-    }
-
-    ///
-    /// this method returns the weight of a variable-size or compound type.
-    ///
-    /// note that this causes an compilation failure because Archive
-    /// cannot determine the weight of such types i.e an instance is
-    /// required. the Footprint() method should be used instead.
-    ///
-    template <typename T>
-    Natural32		Archive::Behaviour<T, true>::Weight()
-    {
-      // stop the compiling process.
-      allege(false);
-
-      return (0);
-    }
-
-    ///
-    /// this method returns the footprint of a compound type.
-    ///
-    template <typename T>
-    Natural32		Archive::Behaviour<T, true>::Footprint(
-			  const Archivable&			element)
-    {
-      return (element.Footprint());
     }
 
 //
@@ -368,67 +315,6 @@ namespace elle
     }
 
 //
-// ---------- store -----------------------------------------------------------
-//
-
-    ///
-    /// this method records an element of the given type in the archive.
-    ///
-    /// note that this method is used whenever a type-specific one has
-    /// not been written. the actual purpose of this method is therefore
-    /// to handle all the numeric types: integers and naturals.
-    ///
-    template <typename T>
-    Status		Archive::Store(const T&			element)
-    {
-      enter();
-
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
-
-      leave();
-    }
-
-//
-// ---------- load ------------------------------------------------------------
-//
-
-    ///
-    /// this method loads an element of the given type from the archive.
-    ///
-    /// note that this method is used whenever a type-specific one has
-    /// not been written. the actual purpose of this method is therefore
-    /// to handle all the numeric types: integers and naturals.
-    ///
-    template <typename T>
-    Status		Archive::Load(T&			element)
-    {
-      ::msgpack::unpacked	message;
-      ::msgpack::object		object;
-
-      enter();
-
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
-
-      // retrieve the object.
-      object = message.get();
-
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
-
-      // extract the element.
-      object >> element;
-
-      leave();
-    }
-
-//
 // ---------- object-like -----------------------------------------------------
 //
 
@@ -459,93 +345,6 @@ namespace elle
 //
 // ---------- static methods --------------------------------------------------
 //
-
-    ///
-    /// this template returns the weight of a single type i.e once serialized.
-    ///
-    template <typename T>
-    Natural32		Archive::Weight()
-    {
-      return
-	(Archive::Behaviour<T,
-			    (ArchiveType<T>::Value
-			       ==
-			     ArchiveType<Large>::Value) ||
-			    (ArchiveType<T>::Value
-			       ==
-			     ArchiveType<String>::Value) ||
-			    (ArchiveType<T>::Value
-			       ==
-			     ArchiveType<Region>::Value) ||
-			    (ArchiveType<T>::Value
-			       ==
-			     ArchiveType<Archive>::Value) ||
-	                    (ArchiveType<T>::Value
-			       ==
-			     Archive::TypeUnknown)>::Weight());
-    }
-
-    ///
-    /// this method returns the weight of a set of types.
-    ///
-    template <typename T,
-	      typename TT,
-	      typename... TTT>
-    Natural32		Archive::Weight()
-    {
-      return (Archive::Weight<T>() +
-	      Archive::Weight<TT, TTT...>());
-    }
-
-    ///
-    /// this template returns the footprint of a single item.
-    ///
-    template <typename T>
-    Natural32		Archive::Footprint(const T&		element)
-    {
-      return
-	(Archive::Behaviour<T,
-	                    ArchiveType<T>::Value
-                              ==
-                            Archive::TypeUnknown>::Footprint(element));
-    }
-
-    ///
-    /// this method returns the footprint of a set of items.
-    ///
-    template <typename T,
-	      typename... TT>
-    Natural32		Archive::Footprint(const T&		parameter,
-					   const TT&...		parameters)
-    {
-      return (Archive::Footprint(parameter) +
-	      Archive::Footprint(parameters...));
-    }
-
-    ///
-    /// this template returns the footprint of a single item.
-    ///
-    template <typename T>
-    Natural32		Archive::Footprint(const T*		element)
-    {
-      return
-	(Archive::Behaviour<T,
-	                    ArchiveType<T>::Value
-                              ==
-                            Archive::TypeUnknown>::Footprint(*element));
-    }
-
-    ///
-    /// this method returns the footprint of a set of items.
-    ///
-    template <typename T,
-	      typename... TT>
-    Natural32		Archive::Footprint(const T*		parameter,
-					   const TT*...		parameters)
-    {
-      return (Archive::Footprint(parameter) +
-	      Archive::Footprint(parameters...));
-    }
 
     ///
     /// this method displays information on an element belonging to an

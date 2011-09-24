@@ -84,16 +84,6 @@ namespace elle
     /// set up in the buffer comes from an acquired region and therefore
     /// must be deleted.
     ///
-    /// noteworthy is that the Footprint() and Weight() method do not return
-    /// a Status though it is the common usage. these methods compute the
-    /// footprint of a given variable (or of a type) i.e the size of the
-    /// object once serialized. note however that the underlying serialization
-    /// mechanism may perform optimisations. this functionality therefore
-    /// does not return the exact serialization size but rather an upper-bound
-    /// approximation. indeed, given a Natural64 holding the number 42,
-    /// the serialization mechanism will turn it into a Natural8 since
-    /// sufficient to hold the given value.
-    ///
     class Archive
     {
     public:
@@ -190,58 +180,48 @@ namespace elle
       Status		Extract(T*,
 				TT*...);
 
-      template <typename T>
-      Status		Store(const T&);
-      Status		Store(const Null&);
-      Status		Store(const Boolean&);
-      Status		Store(const Character&);
-      Status		Store(const Real&);
-      Status		Store(const Large&);
-      Status		Store(const String&);
-      Status		Store(const Region&);
-      Status		Store(const Archive&);
-
-      template <typename T>
-      Status		Load(T&);
-      Status		Load(Null&);
-      Status		Load(Boolean&);
-      Status		Load(Character&);
-      Status		Load(Real&);
-      Status		Load(Large&);
-      Status		Load(String&);
-      Status		Load(Region&);
-      Status		Load(Archive&);
-
       Status		Fetch(enum Type&);
+
+      //
+      // virtual methods
+      //
+      virtual Status	Store(const Null&);
+      virtual Status	Store(const Boolean&);
+      virtual Status	Store(const Character&);
+      virtual Status	Store(const Real&);
+      virtual Status	Store(const Integer8&);
+      virtual Status	Store(const Integer16&);
+      virtual Status	Store(const Integer32&);
+      virtual Status	Store(const Integer64&);
+      virtual Status	Store(const Natural8&);
+      virtual Status	Store(const Natural16&);
+      virtual Status	Store(const Natural32&);
+      virtual Status	Store(const Natural64&);
+      virtual Status	Store(const Large&);
+      virtual Status	Store(const String&);
+      virtual Status	Store(const Region&);
+      virtual Status	Store(const Archive&);
+
+      virtual Status	Load(Null&);
+      virtual Status	Load(Boolean&);
+      virtual Status	Load(Character&);
+      virtual Status	Load(Real&);
+      virtual Status	Load(Integer8&);
+      virtual Status	Load(Integer16&);
+      virtual Status	Load(Integer32&);
+      virtual Status	Load(Integer64&);
+      virtual Status	Load(Natural8&);
+      virtual Status	Load(Natural16&);
+      virtual Status	Load(Natural32&);
+      virtual Status	Load(Natural64&);
+      virtual Status	Load(Large&);
+      virtual Status	Load(String&);
+      virtual Status	Load(Region&);
+      virtual Status	Load(Archive&);
 
       //
       // static methods
       //
-      template <typename T>
-      static Natural32	Footprint(const T&);
-      template <typename T,
-		typename... TT>
-      static Natural32	Footprint(const T&,
-				  const TT&...);
-      template <typename T>
-      static Natural32	Footprint(const T*);
-      template <typename T,
-		typename... TT>
-      static Natural32	Footprint(const T*,
-				  const TT*...);
-
-      static Natural32	Footprint(const Large&);
-      static Natural32	Footprint(const String&);
-      static Natural32	Footprint(const Region&);
-      static Natural32	Footprint(const Archive&);
-
-      template <typename T>
-      static Natural32	Weight();
-      template <typename T,
-		typename TT,
-		typename... TTT>
-      static Natural32	Weight();
-
       template <typename T>
       static Status	Print(const T&,
 			      const Natural32);
@@ -258,9 +238,6 @@ namespace elle
 					  const T&);
 	static Status		Extract(Archive&,
 					T&);
-
-	static Natural32	Weight();
-	static Natural32	Footprint(const T&);
       };
 
       template <typename T>
@@ -270,9 +247,6 @@ namespace elle
 					  const Archivable&);
 	static Status		Extract(Archive&,
 					Archivable&);
-
-	static Natural32	Weight();
-	static Natural32	Footprint(const Archivable&);
       };
 
       //
