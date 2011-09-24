@@ -141,13 +141,5 @@ namespace elle
       leave();
     }
 
-    ///
-    /// this method returns the footprint of the object.
-    ///
-    Natural32		Digest::Footprint() const
-    {
-      return (Archive::Footprint(this->region));
-    }
-
   }
 }
