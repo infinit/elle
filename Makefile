@@ -82,12 +82,12 @@ pull:
 
 status:
 	@echo "---[ infinit"
-	@$(GIT) status --porcelain
+	@$(GIT) status
 
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) status --porcelain					&& \
+	  $(GIT) status							&& \
 	  cd ..								; \
 	done
 

@@ -48,9 +48,18 @@ int main()
 
   p.Create();
   p.Add("e100", x);
-  p.Dump();
+  // XXX p.Dump();
 
-  printf("footprint: %u\n", x->Footprint());
+  elle::Archive ar;
+  ar.Create();
+  ar.Serialize(*x);
+  ar.Dump();
+
+  elle::Natural32	size;
+
+  elle::Footprint::Compute(*x, size);
+
+  printf("footprint: %u\n", size);
 
   expose();
 
