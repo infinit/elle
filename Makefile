@@ -93,34 +93,22 @@ status:
 
 commit:
 	@echo "---[ infinit"
-	@$(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
-	if [ $${?} -eq 0 ] ; then					\
-	  $(GIT) commit -a						; \
-	fi
+	@$(GIT) commit -a
 
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
-	  if [ $${?} -eq 0 ] ; then					\
-	    $(GIT) commit -a						; \
-	  fi								; \
+	  $(GIT) commit -a						; \
 	  cd ..								; \
 	done
 
 push:
 	@echo "---[ infinit"
-	@$(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
-	if [ $${?} -eq 0 ] ; then					\
-	  $(GIT) push							; \
-	fi
+	@$(GIT) push
 
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) status --porcelain | $(GREP) -v "?" | $(GREP) ".*"	; \
-	  if [ $${?} -eq 0 ] ; then					\
-	    $(GIT) push							; \
-	  fi								; \
+	  $(GIT) push							; \
 	  cd ..								; \
 	done
