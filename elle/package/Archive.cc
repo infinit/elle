@@ -282,6 +282,110 @@ namespace elle
     }
 
     ///
+    /// this method stores an integer.
+    ///
+    Status		Archive::Store(const Integer8&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores an integer.
+    ///
+    Status		Archive::Store(const Integer16&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores an integer.
+    ///
+    Status		Archive::Store(const Integer32&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores an integer.
+    ///
+    Status		Archive::Store(const Integer64&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores a natural.
+    ///
+    Status		Archive::Store(const Natural8&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores a natural.
+    ///
+    Status		Archive::Store(const Natural16&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores a natural.
+    ///
+    Status		Archive::Store(const Natural32&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
+    /// this method stores a natural.
+    ///
+    Status		Archive::Store(const Natural64&		element)
+    {
+      enter();
+
+      // pack the element.
+      ::msgpack::pack(this->buffer, element);
+
+      leave();
+    }
+
+    ///
     /// this method stores a BIGNUM into the archive.
     ///
     Status		Archive::Store(const Large&		element)
@@ -462,6 +566,246 @@ namespace elle
       // check the object's type.
       if (object.type != ::msgpack::type::DOUBLE)
 	escape("the next element does not seem to be a double type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads an integer.
+    ///
+    Status		Archive::Load(Integer8&			element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads an integer.
+    ///
+    Status		Archive::Load(Integer16&		element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads an integer.
+    ///
+    Status		Archive::Load(Integer32&		element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads an integer.
+    ///
+    Status		Archive::Load(Integer64&		element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads a natural.
+    ///
+    Status		Archive::Load(Natural8&			element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads a natural.
+    ///
+    Status		Archive::Load(Natural16&		element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads a natural.
+    ///
+    Status		Archive::Load(Natural32&		element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
+
+      // extract the element.
+      object >> element;
+
+      leave();
+    }
+
+    ///
+    /// this method loads a natural.
+    ///
+    Status		Archive::Load(Natural64&		element)
+    {
+      ::msgpack::unpacked	message;
+      ::msgpack::object		object;
+
+      enter();
+
+      // extract the unpacked message.
+      ::msgpack::unpack(&message,
+			reinterpret_cast<const char*>(this->contents),
+			this->size,
+			&this->offset);
+
+      // retrieve the object.
+      object = message.get();
+
+      // check the object's type.
+      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	escape("the next element does not seem to be a numeric type");
 
       // extract the element.
       object >> element;
@@ -941,48 +1285,6 @@ namespace elle
 //
 // ---------- static methods --------------------------------------------------
 //
-
-    ///
-    /// this method returns the footprint---i.e once serialized---of the given
-    /// element.
-    ///
-    Natural32		Archive::Footprint(const Large&		element)
-    {
-      return (ArchiveType<Byte>::Weight +
-	      ArchiveType<Natural8>::Weight +
-	      BN_num_bytes(&element));
-    }
-
-    ///
-    /// this method returns the footprint of the string.
-    ///
-    Natural32		Archive::Footprint(const String&	element)
-    {
-      // XXX is the ending zero considered?
-      return (ArchiveType<Byte>::Weight +
-	      ArchiveType<Natural8>::Weight +
-	      element.length());
-    }
-
-    ///
-    /// this method returns the footprint of the region.
-    ///
-    Natural32		Archive::Footprint(const Region&	element)
-    {
-      return (ArchiveType<Byte>::Weight +
-	      ArchiveType<Natural8>::Weight +
-	      element.size);
-    }
-
-    ///
-    /// this method returns the footprint of the archive.
-    ///
-    Natural32		Archive::Footprint(const Archive&	element)
-    {
-      return (ArchiveType<Byte>::Weight +
-	      ArchiveType<Natural8>::Weight +
-	      element.size);
-    }
 
     ///
     /// this method specializes the Print() method for the Region type

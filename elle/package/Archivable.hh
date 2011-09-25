@@ -56,7 +56,6 @@ namespace elle
       //
       virtual Status	Serialize(Archive&) const;
       virtual Status	Extract(Archive&);
-      virtual Natural32	Footprint() const;
     };
 
   }

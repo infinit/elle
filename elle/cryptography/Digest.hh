@@ -72,7 +72,6 @@ namespace elle
       // archivable
       Status		Serialize(Archive&) const;
       Status		Extract(Archive&);
-      Natural32		Footprint() const;
 
       //
       // attributes
