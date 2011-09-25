@@ -37,11 +37,9 @@ namespace elle
     {
       enter();
 
-      log_here;
       // trigger the closure and, should there are errors, display them.
       if (closure->Call() == StatusError)
-	yield(_(), "an error occured in the fiber");
-      log_here;
+        yield(_(), "an error occured in the fiber");
 
       // set the fiber state.
       Fiber::Current->state = Fiber::StateCompleted;
@@ -49,15 +47,13 @@ namespace elle
       // remove the parent fiber from the container since it is going
       // to be scheduled as soon as this function returns.
       if (Fiber::Remove(Fiber::Current->link) == StatusError)
-	yield(_(), "unable to remove the fiber");
+        yield(_(), "unable to remove the fiber");
 
       // set the state of the parent's fiber as awaken.
       Fiber::Current->link->state = Fiber::StateAwaken;
 
-      log_here;
       // swap to the link as we don't rely on uc_link
-      ::swapcontext(&Fiber::Current->context, &Fiber::Current->link->context);
-      log_here;
+      ::swapcontext(&Fiber::Current->context, &Fiber::Program->context);
 
       // release the resources.
       release();
@@ -72,153 +68,75 @@ namespace elle
     {
       enter();
 
-      // get the current context in order to resume execution for this point
-      // in the future.
-      if (::getcontext(&Fiber::Current->context) == -1)
-	escape("unable to get the context");
+      // if we are already in a fiber, don't create another one.
+      if (Fiber::Current != Fiber::Program)
+        {
+          if (closure.Call() == StatusError)
+            log("an error occured in the fiber");
+          leave();
+        }
 
-      log_here;
+      // declare a launch function pointer in order to bypass the type
+      // checking system through casts.
+      Void		(*launch)(Closure<Status, T...>*) = &Fiber::Launch;
+      Fiber*	fiber;
 
-      // if we are in the fiber spawning a new fiber...
-      if (Fiber::Current->state == Fiber::StateActive)
-	{
-	  // declare a launch function pointer in order to bypass the type
-	  // checking system through casts.
-	  Void		(*launch)(Closure<Status, T...>*) = &Fiber::Launch;
-	  Fiber*	fiber;
+      // set the current fiber as suspended.
+      Fiber::Current->state = Fiber::StateSuspended;
 
-	  // set the current fiber as suspended.
-	  Fiber::Current->state = Fiber::StateSuspended;
+      // the current fiber is waiting for its child fiber to complete.
+      Fiber::Current->type = Fiber::TypeFiber;
 
-	  // the current fiber is waiting for its child fiber to complete.
-	  Fiber::Current->type = Fiber::TypeFiber;
+      // save the environment.
+      if (Fiber::Trigger(PhaseSave) == StatusError)
+        escape("unable to save the environment");
 
-	  // save the environment.
-	  if (Fiber::Trigger(PhaseSave) == StatusError)
-	    escape("unable to save the environment");
+      // add the current fiber to the container.
+      if (Fiber::Add(Fiber::Current) == StatusError)
+        escape("unable to add the fiber to the container");
 
-	  // add the current fiber to the container.
-	  if (Fiber::Add(Fiber::Current) == StatusError)
-	    escape("unable to add the fiber to the container");
+      // allocate a new fiber.
+      if (Fiber::New(fiber) == StatusError)
+        escape("unable to allocate a new fiber");
 
-	  // allocate a new fiber.
-	  if (Fiber::New(fiber) == StatusError)
-	    escape("unable to allocate a new fiber");
+      // set the parent fiber.
+      fiber->link = Fiber::Current;
 
-	  // set the parent fiber.
-	  fiber->link = Fiber::Current;
+      // get the context in order to create a new one.
+      if (::getcontext(&fiber->context) == -1)
+        escape("unable to get the context");
 
-	  // get the context in order to create a new one.
-	  if (::getcontext(&fiber->context) == -1)
-	    escape("unable to get the context");
+      // modify the context manually so that, once completed, the
+      // execution comes back to the parent fiber i.e the current fiber.
+      fiber->context.uc_link = NULL;
+      fiber->context.uc_stack.ss_sp = fiber->frame->stack;
+      fiber->context.uc_stack.ss_size = fiber->frame->size;
+      fiber->context.uc_flags = 0;
 
-	  // modify the context manually so that, once completed, the
-	  // execution comes back to the parent fiber i.e the current fiber.
-	  fiber->context.uc_link = NULL;
-	  fiber->context.uc_stack.ss_sp = fiber->frame->stack;
-	  fiber->context.uc_stack.ss_size = fiber->frame->size;
-	  fiber->context.uc_flags = 0;
+      // create a context for the new fiber, with the Fiber::Launch
+      // as entry point.
+      ::makecontext(&fiber->context,
+                    reinterpret_cast<void (*)()>(launch),
+                    1,
+                    &closure);
 
-	  // create a context for the new fiber, with the Fiber::Launch
-	  // as entry point.
-	  ::makecontext(&fiber->context,
-			reinterpret_cast<void (*)()>(launch),
-			1,
-			&closure);
+      // set the fiber state.
+      fiber->state = Fiber::StateActive;
 
-          log_here;
+      // set the new fiber as the current one.
+      Fiber::Current = fiber;
 
-	  // set the fiber state.
-	  fiber->state = Fiber::StateActive;
+      // initialize the environment.
+      if (Fiber::Trigger(PhaseInitialize) == StatusError)
+        escape("unable to initialize the environment");
 
-	  // set the new fiber as the current one.
-	  Fiber::Current = fiber;
+      // set the new context.
+      if (::swapcontext(&Fiber::Program->context, &Fiber::Current->context) == -1)
+        escape("unable to set the context");
 
-	  // initialize the environment.
-	  if (Fiber::Trigger(PhaseInitialize) == StatusError)
-	    escape("unable to initialize the environment");
+      Fiber::CheckCurrentFiber();
 
-          log_here;
-	  // set the new context.
-	  if (::setcontext(&Fiber::Current->context) == -1)
-	    escape("unable to set the context");
-          log_here;
-
-	  //
-	  // should never reach this point since ::setcontext() never
-	  // returns.
-	  //
-	  release();
-	  fail("this code should never have been reached");
-	}
-      else
-	{
-	  Fiber*	fiber;
-
-	  //
-	  // at this point, we just came back from a fiber.
-	  //
-
-	  // perform an action depending on the state of the fiber.
-	  switch (Fiber::Current->state)
-	    {
-	    case Fiber::StateCompleted:
-	      {
-		// select the parent fiber for scheduling which is
-		// referenced through the link.
-		fiber = Fiber::Current->link;
-
-		// clean the environment.
-		if (Fiber::Trigger(PhaseClean) == StatusError)
-		  escape("unable to initialize the environment");
-
-		// if the fiber has completed, delete it.
-		if (Fiber::Delete(Fiber::Current) == StatusError)
-		  escape("unable to delete the fiber");
-
-		break;
-	      }
-	    case Fiber::StateSuspended:
-	      {
-		//
-		// do not delete this fiber as it will be resumed later.
-		//
-
-		// select the program fiber.
-		fiber = Fiber::Program;
-
-		break;
-	      }
-	    case Fiber::StateActive:
-	    case Fiber::StateUnknown:
-	    default:
-	      {
-		escape("at this point a fiber cannot be in an unknown or "
-		       "active state");
-	      }
-	    }
-
-	  // set the current fiber as being the selected fiber.
-	  Fiber::Current = fiber;
-
-	  // set the fiber as active.
-	  Fiber::Current->state = Fiber::StateActive;
-
-	  // schedule the awaken fibers, only if we are in the program
-	  // fiber i.e the root fiber. otherwise just come back to the
-	  // fiber's execution.
-	  if (Fiber::Current == Fiber::Program)
-	    {
-	      if (Fiber::Schedule() == StatusError)
-		escape("unable to schedule the awaken fibers");
-	    }
-
-	  // restore the environment.
-	  if (Fiber::Trigger(PhaseRestore) == StatusError)
-	    escape("unable to restore the environment");
-
-	  leave();
-	}
+      leave();
     }
 
     ///
@@ -227,13 +145,13 @@ namespace elle
     ///
     template <typename T>
     Status		Fiber::Wait(const Event&		event,
-				    T*&				data)
+                                    T*&				data)
     {
       enter();
 
       // check if the current fiber is the program.
       if (Fiber::Current == Fiber::Program)
-	escape("unable to wait while in the program fiber");
+        escape("unable to wait while in the program fiber");
 
       // set the fiber has been suspended.
       Fiber::Current->state = Fiber::StateSuspended;
@@ -246,11 +164,11 @@ namespace elle
 
       // save the environment.
       if (Fiber::Trigger(PhaseSave) == StatusError)
-	escape("unable to save the environment");
+        escape("unable to save the environment");
 
       // add the current fiber to the container.
       if (Fiber::Add(Fiber::Current) == StatusError)
-	escape("unable to add the fiber to the container");
+        escape("unable to add the fiber to the container");
 
       // set the state of the program's fiber as awaken as we
       // are about to come back to it.
@@ -259,8 +177,8 @@ namespace elle
       // switch to the program's context and save the current one
       // in order to carry on at this point when woken up.
       if (::swapcontext(&Fiber::Current->context,
-			&Fiber::Program->context) == -1)
-	escape("unable to swap to the program context");
+                        &Fiber::Program->context) == -1)
+        escape("unable to swap to the program context");
 
       // retrieve the data.
       data = static_cast<T*>(Fiber::Current->data);
@@ -281,13 +199,13 @@ namespace elle
     ///
     template <typename T>
     Status		Fiber::Wait(const Resource*		resource,
-				    T*&				data)
+                                    T*&				data)
     {
       enter();
 
       // check if the current fiber is the program.
       if (Fiber::Current == Fiber::Program)
-	escape("unable to wait while in the program fiber");
+        escape("unable to wait while in the program fiber");
 
       // set the fiber has been suspended.
       Fiber::Current->state = Fiber::StateSuspended;
@@ -300,11 +218,11 @@ namespace elle
 
       // save the environment.
       if (Fiber::Trigger(PhaseSave) == StatusError)
-	escape("unable to save the environment");
+        escape("unable to save the environment");
 
       // add the current fiber to the container.
       if (Fiber::Add(Fiber::Current) == StatusError)
-	escape("unable to add the fiber to the container");
+        escape("unable to add the fiber to the container");
 
       // set the state of the program's fiber as awaken as we
       // are about to come back to it.
@@ -313,8 +231,8 @@ namespace elle
       // switch to the program's context and save the current one
       // in order to carry on at this point when woken up.
       if (::swapcontext(&Fiber::Current->context,
-			&Fiber::Program->context) == -1)
-	escape("unable to swap to the program context");
+                        &Fiber::Program->context) == -1)
+        escape("unable to swap to the program context");
 
       // retrieve the data.
       data = static_cast<T*>(Fiber::Current->data);
@@ -327,7 +245,7 @@ namespace elle
     ///
     template <typename T>
     Status		Fiber::Awaken(const Event&		event,
-				      T*			data)
+                                      T*			data)
     {
       Fiber::F::Iterator	iterator;
       Boolean			awaken;
@@ -336,15 +254,15 @@ namespace elle
 
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)
-	false();
+        false();
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
 
       // locate, awaken and remove fibers as long as found.
       while (Fiber::Locate(event, iterator) == true)
-	{
-	  Fiber*	fiber = *iterator;
+        {
+          Fiber*	fiber = *iterator;
 
 	  // set the boolean to true.
 	  awaken = true;
@@ -365,7 +283,7 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-	true();
+        true();
 
       false();
     }
@@ -375,7 +293,7 @@ namespace elle
     ///
     template <typename T>
     Status		Fiber::Awaken(const Resource*		resource,
-				      T*			data)
+                                      T*			data)
     {
       Fiber::F::Iterator	iterator;
       Boolean			awaken;
@@ -384,15 +302,15 @@ namespace elle
 
       // check if there are blocked fibers.
       if (Fiber::Fibers.empty() == true)
-	false();
+        false();
 
       // set the boolean to false meaning that no fiber has been woken up.
       awaken = false;
 
       // locate, awaken and remove fibers as long as found.
       while (Fiber::Locate(resource, iterator) == true)
-	{
-	  Fiber*	fiber = *iterator;
+        {
+          Fiber*	fiber = *iterator;
 
 	  // set the boolean to true.
 	  awaken = true;
@@ -412,7 +330,7 @@ namespace elle
 
       // return true if at least one fiber has been awaken.
       if (awaken == true)
-	true();
+        true();
 
       false();
     }
