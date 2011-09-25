@@ -69,6 +69,20 @@ echo | i486-mingw32-gcc -E -dM -
   #define WINNT 1
   #define i386 1
 
+On FreeBSD 8.2, amd64
+echo | gcc -E -dM -
+  #define __unix 1
+  #define __unix__ 1
+  #define __GNUC__ 4
+  #define __FreeBSD_cc_version 800001
+  #define __amd64 1
+  #define __x86_64 1
+  #define unix 1
+  #define __ELF__ 1
+  #define __FreeBSD__ 8
+  #define __x86_64__ 1
+  #define __amd64__ 1
+
 Then in elle/system/Platform.hh is defined:
   #define INFINIT_WIN32 1/0
   #define INFINIT_UNIX 1/0
