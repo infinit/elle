@@ -60,6 +60,7 @@ void b()
 void
 QtObj::tetons()
 {
+#if 0
   printf("start\n");                  /* main thread starts */
 
   /* Set up context for thread A (Unix code, see manpages) */
@@ -87,6 +88,7 @@ QtObj::tetons()
   swapcontext(&mainuc, &auc);    /* Switch to thread A */
 
   printf("\ndone\n");  /* Execution control returned to main thread */
+#endif
 
   log_here;
   Fiber::Initialize();
