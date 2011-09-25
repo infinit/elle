@@ -78,7 +78,6 @@ namespace elle
 	escape("unable to get the context");
 
       log_here;
-      Fiber::Current->Dump();
 
       // if we are in the fiber spawning a new fiber...
       if (Fiber::Current->state == Fiber::StateActive)

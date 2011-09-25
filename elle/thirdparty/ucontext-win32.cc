@@ -30,7 +30,7 @@ int getcontext(ucontext_t *ucp)
   /* Retrieve the full machine context */
   ucp->uc_mcontext.ContextFlags = CONTEXT_FULL;
   ret = GetThreadContext(GetCurrentThread(), &ucp->uc_mcontext);
-  printf("getcontext(%p) => EIP: %p, ESP: %p\n", ucp, ucp->uc_mcontext.Eip, ucp->uc_mcontext.Esp);
+  printf("getcontext(%p) => ESP: %p\n", ucp, ucp->uc_mcontext.Esp);
 
   return (ret == 0) ? -1: 0;
 }
@@ -39,7 +39,7 @@ int setcontext(const ucontext_t *ucp)
 {
   int ret;
 
-  printf("setcontext(%p) => EIP: %p, ESP: %p\n", ucp, ucp->uc_mcontext.Eip, ucp->uc_mcontext.Esp);
+  printf("setcontext(%p) => ESP: %p\n", ucp, ucp->uc_mcontext.Esp);
   /* Restore the full machine context (already set) */
   ret = SetThreadContext(GetCurrentThread(), &ucp->uc_mcontext);
 

@@ -565,7 +565,7 @@ namespace elle
 		      << std::hex << fiber << std::endl;
 	  }
       }
-      
+
       leave();
     }
 
@@ -581,6 +581,7 @@ namespace elle
       frame(NULL),
       state(Fiber::StateUnknown),
       type(Fiber::TypeNone),
+      event(NULL),
       environment(NULL),
       data(NULL),
       timer(NULL)
