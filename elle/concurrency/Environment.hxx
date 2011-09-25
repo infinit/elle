@@ -72,7 +72,7 @@ namespace elle
 	    }
 	}
 
-      escape("unable to locate the element");
+      escape("unable to locate the element `%s'", name.c_str());
     }
 
   }

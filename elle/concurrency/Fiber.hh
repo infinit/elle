@@ -166,6 +166,8 @@ namespace elle
 
       static P::Container	Phases;
 
+      static bool               IsScheduling;
+
       //
       // static methods
       //
@@ -260,6 +262,9 @@ namespace elle
       Meta*		data;
 
       Timer*		timer;
+
+    private:
+      static Status     CheckCurrentFiber();
     };
   }
 }
