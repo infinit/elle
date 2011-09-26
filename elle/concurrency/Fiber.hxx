@@ -131,7 +131,8 @@ namespace elle
         escape("unable to initialize the environment");
 
       // set the new context.
-      if (::swapcontext(&Fiber::Program->context, &Fiber::Current->context) == -1)
+      if (::swapcontext(&Fiber::Program->context,
+			&Fiber::Current->context) == -1)
         escape("unable to set the context");
 
       Fiber::CheckCurrentFiber();

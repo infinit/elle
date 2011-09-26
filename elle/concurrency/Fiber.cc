@@ -333,7 +333,8 @@ namespace elle
                 }
 
               // set the context of the suspended fiber.
-	      if (::swapcontext(&Fiber::Program->context, &Fiber::Current->context) == -1)
+	      if (::swapcontext(&Fiber::Program->context,
+				&Fiber::Current->context) == -1)
                 {
                   Fiber::IsScheduling = false;
                   escape("unable to swapcontext");
