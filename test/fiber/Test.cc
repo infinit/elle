@@ -185,11 +185,6 @@ namespace elle
       if (Program::Setup() == StatusError)
 	escape("unable to set up the program");
 
-      Closure< Status,
-	       Parameters<> >	closure(Callback<>::Infer(&Fiber1));
-
-      Fiber::Spawn(closure);
-
       // create the timer1.
       if (Test::Timer1.Create(Timer::ModeSingle) == StatusError)
 	escape("unable to create the timer");
