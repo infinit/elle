@@ -474,6 +474,10 @@ class Path(object):
             self.__path = ['.']
         self.__absolute = self.__path[0] == ''
 
+    @classmethod
+    def cwd(self):
+        return Path(_OS.getcwd())
+
 _CACHEDIR = Path('.drake')
 
 _DEPFILE_BUILDER = Path('drake.Builder')
