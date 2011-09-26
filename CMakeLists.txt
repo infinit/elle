@@ -34,7 +34,7 @@ IF(${WIN32})
   ADD_SUBDIRECTORY(iig)
 ENDIF()
 ADD_SUBDIRECTORY(hole)
-# XXX ADD_SUBDIRECTORY(applications)
+ADD_SUBDIRECTORY(applications)
 
 # just to make files appears on qtcreator
 FILE(GLOB_RECURSE HEADERS *.hh *.hxx)
@@ -51,6 +51,10 @@ ADD_EXECUTABLE(Infinit
 TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole)
 IF(${UNIX})
   TARGET_LINK_LIBRARIES(Infinit pig)
+ENDIF()
+
+IF(${WIN32})
+  TARGET_LINK_LIBRARIES(Infinit iig)
 ENDIF()
 
 TARGET_LINK_LIBRARIES(Infinit ${QT_QTCORE_LIBRARIES}
