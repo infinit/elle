@@ -199,7 +199,7 @@ class GccToolkit(Toolkit):
         if p.returncode != 0:
             raise Exception(
                 'Preprocessing failed with return code %s.\nInput:\n%s\nStderr:\n%s\n' \
-                    % (code, code, stderr))
+                    % (p.returncode, code, stderr))
         return stdout.decode("utf-8")
 
     def object_extension(self):
