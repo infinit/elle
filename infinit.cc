@@ -20,8 +20,11 @@
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
+
 #if INFINIT_UNIX
 # include <pig/PIG.hh>
+#elif INFINIT_WIN32
+# include <iig/IIG.hh>
 #endif
 
 #include <elle/idiom/Close.hh>
@@ -36,7 +39,7 @@
 /// this is the entry point of pig.
 ///
 elle::Status		Main(elle::Natural32			argc,
-			     elle::Character*			argv[])
+                             elle::Character*			argv[])
 {
   enter(instance(Infinit::Parser));
 
@@ -74,10 +77,10 @@ elle::Status		Main(elle::Natural32			argc,
   // register the options.
   if (Infinit::Parser->Register(
         "Help",
-	'h',
-	"help",
-	"display the help",
-	elle::Parser::KindNone) == elle::StatusError)
+        'h',
+        "help",
+        "display the help",
+        elle::Parser::KindNone) == elle::StatusError)
     escape("unable to register the option");
 
   // set up the agent-specific options.
@@ -92,6 +95,10 @@ elle::Status		Main(elle::Natural32			argc,
   // set up the pig-specific options.
   if (pig::PIG::Options() == elle::StatusError)
     escape("unable to set up the options");
+#elif INFINIT_WIN32
+  // set up the iig-specifi options.
+  if (iig::IIG::Options() == elle::StatusError)
+    escape("unable to set up iig options");
 #endif
 
   // parse.
@@ -120,6 +127,10 @@ elle::Status		Main(elle::Natural32			argc,
   // initialize PIG.
   if (pig::PIG::Initialize() == elle::StatusError)
     escape("unable to initialize PIG");
+#elif INFINIT_WIN32
+  // initialize IIG.
+  if (iig::IIG::Initialize() == elle::StatusError)
+    escape("unable to initialize IIG");
 #endif
 
   // launch the program.
@@ -136,6 +147,10 @@ elle::Status		Main(elle::Natural32			argc,
   // clean PIG.
   if (pig::PIG::Clean() == elle::StatusError)
     escape("unable to clean PIG");
+#elif INFINIT_IIG
+  // clean IIG.
+  if (iig::IIG::Clean() == elle::StatusError)
+    escape("unable to clean IIG");
 #endif
 
   // clean Hole.
@@ -192,15 +207,15 @@ static void terminate_handler()
 //
 
 int			main(int				argc,
-			     char*				argv[])
+                             char*				argv[])
 {
   std::set_terminate(terminate_handler);
 
   try
     {
       if (Main(argc, argv) == elle::StatusError)
-	{
-	  show();
+        {
+          show();
 
 	  return (1);
 	}
@@ -208,7 +223,7 @@ int			main(int				argc,
   catch (std::exception& e)
     {
       std::cout << "The program has been terminated following "
-		<< "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error (" << e.what() << ")." << std::endl;
 
       return (1);
     }
