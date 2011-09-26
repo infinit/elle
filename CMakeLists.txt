@@ -52,6 +52,7 @@ ADD_EXECUTABLE(Infinit
 )
 
 TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole)
+
 IF(${UNIX})
   TARGET_LINK_LIBRARIES(Infinit pig)
 ENDIF()
