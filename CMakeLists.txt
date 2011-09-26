@@ -66,7 +66,6 @@ TARGET_LINK_LIBRARIES(Infinit ${QT_QTCORE_LIBRARIES}
                               ${QT_QTCORE_LIBRARIES})
 
 # XXX
-
 ADD_EXECUTABLE(XXX
   XXX.cc
 )
