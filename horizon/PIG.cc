@@ -62,7 +62,9 @@ namespace pig
       struct ::passwd*	passwd;
 
       // retrieve the passwd structure related to the user 'somebody'.
-      if ((passwd = ::getpwnam("somebody")) == NULL)
+      // if NULL, try to fallback to 'nobody'.
+      if ((passwd = ::getpwnam("somebody")) == NULL &&
+          (passwd = ::getpwnam("nobody")) == NULL)
 	escape("it seems that the user 'somebody' does not exist");
 
       // set the uid and gid.
