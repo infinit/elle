@@ -43,13 +43,15 @@ namespace lune
     // constants
     //
     static const elle::String		Extension;
+    static const elle::Natural32	Extent;
 
     //
     // methods
     //
     elle::Status	Create(const elle::String&,
 			       const hole::Model&,
-			       const nucleus::Address&);
+			       const nucleus::Address&,
+			       const elle::Natural32);
 
     elle::Status	Seal(const Authority&);
     elle::Status	Validate(const Authority&) const;
@@ -79,6 +81,7 @@ namespace lune
     elle::String	name;
     hole::Model		model;
     nucleus::Address	root;
+    elle::Natural32	extent;
     elle::Signature	signature;
   };
 

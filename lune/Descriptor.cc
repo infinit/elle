@@ -27,6 +27,12 @@ namespace lune
   ///
   const elle::String		Descriptor::Extension = ".dsc";
 
+  ///
+  /// this constant defines the size of the blocks stored within this
+  /// network.
+  ///
+  const elle::Natural32		Descriptor::Extent = 200; // XXX 8192
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -36,7 +42,8 @@ namespace lune
   ///
   elle::Status		Descriptor::Create(const elle::String&	name,
 					   const hole::Model&	model,
-					   const nucleus::Address& root)
+					   const nucleus::Address& root,
+					   const elle::Natural32 extent)
   {
     enter();
 
@@ -44,6 +51,7 @@ namespace lune
     this->name = name;
     this->model = model;
     this->root = root;
+    this->extent = extent;
 
     leave();
   }
@@ -59,6 +67,7 @@ namespace lune
     if (authority.k->Sign(this->name,
 			  this->model,
 			  this->root,
+			  this->extent,
 			  this->signature) == elle::StatusError)
       escape("unable to sign the attributes with the authority");
 
@@ -77,7 +86,8 @@ namespace lune
     if (authority.K.Verify(this->signature,
 			   this->name,
 			   this->model,
-			   this->root) == elle::StatusError)
+			   this->root,
+			   this->extent) == elle::StatusError)
       escape("unable to verify the signature");
 
     leave();
@@ -108,6 +118,11 @@ namespace lune
     if (elle::Settings::Set(
 	  "general", "root",
 	  this->root) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "general", "extent",
+	  this->extent) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -143,6 +158,11 @@ namespace lune
     if (elle::Settings::Get(
 	  "general", "root",
 	  this->root) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "general", "extent",
+	  this->extent) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
