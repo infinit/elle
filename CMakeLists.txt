@@ -27,17 +27,20 @@ ADD_SUBDIRECTORY(nucleus)
 ADD_SUBDIRECTORY(etoile)
 ADD_SUBDIRECTORY(agent)
 ADD_SUBDIRECTORY(lune)
+
 IF(${UNIX})
   ADD_SUBDIRECTORY(pig)
 ENDIF()
+
 IF(${WIN32})
   ADD_SUBDIRECTORY(iig)
 ENDIF()
+
 ADD_SUBDIRECTORY(hole)
 ADD_SUBDIRECTORY(applications)
 
 # just to make files appears on qtcreator
-file(GLOB HEADERS *.hh *.hxx */*.hh */*.hxx)
+FILE(GLOB_RECURSE HEADERS *.hh *.hxx)
 
 ADD_LIBRARY(infinit
   Infinit.cc
@@ -49,8 +52,13 @@ ADD_EXECUTABLE(Infinit
 )
 
 TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole)
+
 IF(${UNIX})
   TARGET_LINK_LIBRARIES(Infinit pig)
+ENDIF()
+
+IF(${WIN32})
+  TARGET_LINK_LIBRARIES(Infinit iig)
 ENDIF()
 
 TARGET_LINK_LIBRARIES(Infinit ${QT_QTCORE_LIBRARIES}
