@@ -8,12 +8,31 @@
 // author           [thu sep 22 08:57:11 2011]
 //
 
+#include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
+#include <hole/Hole.hh>
 
-int main()
+#include <XXX/Porcupine.hh>
+
+int main(int argc, char** argv)
 {
+  // allocate a new parser.
+  Infinit::Parser = new elle::Parser(argc, argv);
+
+  elle::Elle::Initialize();
+  nucleus::Nucleus::Initialize();
+  lune::Lune::Initialize();
+  Infinit::Initialize();
+  hole::Hole::Options();
+
+  Infinit::Parser->Parse();
+
+  hole::Hole::Initialize();
+
+  expose();
+
   nucleus::Porcupine<nucleus::Catalog> p(elle::Callback<
 					   elle::Status,
 					   elle::Parameters<
@@ -29,37 +48,36 @@ int main()
 					     >
 					   >::Null);
 
-  nucleus::Catalog* x = new nucleus::Catalog;
   nucleus::ContentHashBlock	chb;
   nucleus::Address		a;
+  int i = 0;
 
   chb.Bind(a);
 
-  for (int i = 0; i < 5; i++)
+  p.Create();
+
+  for (int j = 0; j < 5; j++)
     {
+      nucleus::Catalog* x = new nucleus::Catalog;
       char name[1024];
 
-      sprintf(name, "e%u", i);
+      do
+	{
+	  memset(name, 0x0, sizeof (name));
 
-      nucleus::Entry* e = new nucleus::Entry(name, a);
+	  sprintf(name, "e%u", i);
 
-      x->Add(e);
+	  nucleus::Entry* e = new nucleus::Entry(name, a);
+
+	  x->Add(e);
+	} while (0);
+
+      i++;
+
+      p.Add(name, x);
     }
 
-  p.Create();
-  p.Add("e100", x);
-  // XXX p.Dump();
-
-  elle::Archive ar;
-  ar.Create();
-  ar.Serialize(*x);
-  ar.Dump();
-
-  elle::Natural32	size;
-
-  elle::Footprint::Compute(*x, size);
-
-  printf("footprint: %u\n", size);
+  //p.Dump();
 
   expose();
 

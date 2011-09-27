@@ -2,6 +2,10 @@
  -> si l'instance est modifie, on ivnalide le footprint. et quand on appelle
     Footprint(), c'est recompute que si necessaire.
 
+- attentiion les attributs dans Object ne peuvent pas etre infinis -> ou
+  a mettre dans un CHB
+- make Catalog, Data, Link and Access derive CHB
+
 - idee: par defaut, taux de repli = nb de hosts
  -> ainsi les donnees sont tjs accessibles
  -> puis quand un certain seuil est atteint on propose a l'admin de changer
