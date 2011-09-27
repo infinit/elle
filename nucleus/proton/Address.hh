@@ -54,6 +54,13 @@ namespace nucleus
       // constants
       //
       static const Address	Null;
+      static Address		Vacuum;
+
+      //
+      // static methods
+      //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
 
       //
       // constructors & destructors
@@ -67,10 +74,10 @@ namespace nucleus
       //
       template <typename T,
 		typename... TT>
-      elle::Status	Create(const Family&,
-			       const neutron::Component&,
-			       const T&,
-			       const TT&...);
+      elle::Status		Create(const Family&,
+				       const neutron::Component&,
+				       const T&,
+				       const TT&...);
 
       //
       // interfaces
@@ -78,15 +85,15 @@ namespace nucleus
 
       // object
       declare(Address);
-      elle::Boolean	operator==(const Address&) const;
-      elle::Boolean	operator<(const Address&) const;
+      elle::Boolean		operator==(const Address&) const;
+      elle::Boolean		operator<(const Address&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status		Serialize(elle::Archive&) const;
+      elle::Status		Extract(elle::Archive&);
 
       //
       // attributes

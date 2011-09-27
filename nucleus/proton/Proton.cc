@@ -31,10 +31,10 @@ namespace nucleus
     elle::Status	Proton::Initialize()
     {
       enter();
-
-      // initialize the porcupine data structure.
-      if (Porcupine<>::Initialize() == elle::StatusError)
-	escape("unable to initialize the porcupine");
+ 
+      // initialize the address.
+      if (Address::Initialize() == elle::StatusError)
+	escape("unable to initialize the address");
 
       leave();
     }
@@ -45,10 +45,10 @@ namespace nucleus
     elle::Status	Proton::Clean()
     {
       enter();
- 
-      // clean the porcupine data structure.
-      if (Porcupine<>::Clean() == elle::StatusError)
-	escape("unable to clean the porcupine");
+
+      // clean the address.
+      if (Address::Clean() == elle::StatusError)
+	escape("unable to clean the address");
 
       leave();
     }

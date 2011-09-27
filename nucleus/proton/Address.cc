@@ -28,6 +28,47 @@ namespace nucleus
     ///
     const Address		Address::Null;
 
+    ///
+    /// this variable is similar to Null except that it is constructed
+    /// so as not to be considered "empty". this constant is particularly
+    /// useful when one wants to know the footprint of such an Address type.
+    ///
+    Address			Address::Vacuum;
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this method initializes the address system.
+    ///
+    elle::Status	Address::Initialize()
+    {
+      enter();
+
+      // create the vacuum address with default meaningless values.
+      if (Address::Vacuum.Create(
+	    Address::Vacuum.family, Address::Vacuum.component,
+	    static_cast<elle::Natural8>(Address::Vacuum.family),
+	    static_cast<elle::Natural8>(Address::Vacuum.component)) ==
+	  elle::StatusError)
+	escape("unable to create the vacuum address");
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the address system.
+    ///
+    elle::Status	Address::Clean()
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
 //
 // ---------- constructors & destructors --------------------------------------
 //

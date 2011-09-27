@@ -56,15 +56,16 @@ namespace nucleus
 #include <nucleus/proton/History.hh>
 #include <nucleus/proton/ImmutableBlock.hh>
 #include <nucleus/proton/ImprintBlock.hh>
+// XXX #include <nucleus/proton/Inlet.hh>
 #include <nucleus/proton/Location.hh>
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/proton/Network.hh>
-#include <nucleus/proton/Nodule.hh>
+   // XXX #include <nucleus/proton/Nodule.hh>
 #include <nucleus/proton/OwnerKeyBlock.hh>
-#include <nucleus/proton/Porcupine.hh>
+      // XXX #include <nucleus/proton/Porcupine.hh>
 #include <nucleus/proton/PublicKeyBlock.hh>
-#include <nucleus/proton/Quill.hh>
-#include <nucleus/proton/Seam.hh>
+	 // XXX #include <nucleus/proton/Quill.hh>
+	 // XXX #include <nucleus/proton/Seam.hh>
 #include <nucleus/proton/Stamp.hh>
 #include <nucleus/proton/State.hh>
 #include <nucleus/proton/Version.hh>

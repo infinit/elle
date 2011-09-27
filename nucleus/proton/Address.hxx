@@ -47,7 +47,10 @@ namespace nucleus
       // allocate the digest object.
       this->digest = new elle::Digest;
 
-      // compute the digest based on the parameters including the family.
+      // compute the digest based on the parameters. note that most of
+      // the components requesting this method pass family and component
+      // in the parameters as well. for examples, please refer to
+      // ContentHashBlock, PublicKeyBlock etc.
       if (elle::OneWay::Hash(parameter, parameters...,
 			     *this->digest) == elle::StatusError)
 	escape("unable to hash the given parameter(s)");

@@ -14,7 +14,7 @@ ADD_LIBRARY(nucleus
   proton/MutableBlock.cc
   proton/Network.cc
   proton/OwnerKeyBlock.cc
-  proton/Porcupine.cc
+# XXX  proton/Porcupine.cc
   proton/Proton.cc
   proton/PublicKeyBlock.cc
   proton/Stamp.cc

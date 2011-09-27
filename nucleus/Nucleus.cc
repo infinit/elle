@@ -14,6 +14,8 @@
 
 #include <nucleus/Nucleus.hh>
 
+#include <hole/Hole.hh>
+
 namespace nucleus
 {
 
@@ -64,6 +66,7 @@ namespace nucleus
 	  (neutron::ComponentAccess) == elle::StatusError)
 	escape("unable to register the factory product");
 
+      /* XXX
       if (Nucleus::Factory.Register< proton::Seam<neutron::Catalog> >
 	  (neutron::ComponentSeamCatalog) == elle::StatusError)
 	escape("unable to register the factory product");
@@ -71,7 +74,7 @@ namespace nucleus
       if (Nucleus::Factory.Register< proton::Quill<neutron::Catalog> >
 	  (neutron::ComponentQuillCatalog) == elle::StatusError)
 	escape("unable to register the factory product");
-
+      */
       // XXX same for data
     }
 
