@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author           [sat sep 24 23:35:29 2011]
+// author        julien.quintard   [sat sep 24 23:35:29 2011]
 //
 
 #ifndef ELLE_PACKAGE_FOOTPRINT_HXX
@@ -15,6 +15,37 @@ namespace elle
 {
   namespace package
   {
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this method computes the footprint of the given type.
+    ///
+    template <typename T>
+    Status		Footprint::Compute(const T&		element,
+					   Natural32&		size)
+    {
+      Footprint		footprint;
+
+      enter();
+
+      // create the footprint i.e archive in order to set it in
+      // serialization mode.
+      if (footprint.Create() == StatusError)
+	escape("unable to create the footprint");
+
+      // serialize the element with the footprint as argument so
+      // as to compute its footprint.
+      if (footprint.Serialize(element) == StatusError)
+	escape("unable to serialize the element");
+
+      // return the footprint's size.
+      size = footprint.size;
+
+      leave();
+    }
 
 //
 // ---------- object-like -----------------------------------------------------

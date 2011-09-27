@@ -12,7 +12,6 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Fiber.hh>
 
 namespace elle
@@ -313,11 +312,9 @@ namespace elle
 	      if (Fiber::Trigger(PhaseRestore) == StatusError)
 		escape("unable to restore the environment");
 
-              log_here;
 	      // set the context of the suspended fiber.
 	      if (::setcontext(&Fiber::Current->context) == -1)
 		escape("unable to set the context");
-              log_here;
 
 	      //
 	      // since the setcontext() function never returns we should
@@ -360,7 +357,6 @@ namespace elle
 
       // allocate an environment.
       fiber->environment = new Environment;
-      memset(&fiber->context, 0, sizeof (fiber->context));
 
       leave();
     }
@@ -565,7 +561,7 @@ namespace elle
 		      << std::hex << fiber << std::endl;
 	  }
       }
-
+      
       leave();
     }
 
@@ -581,7 +577,6 @@ namespace elle
       frame(NULL),
       state(Fiber::StateUnknown),
       type(Fiber::TypeNone),
-      event(NULL),
       environment(NULL),
       data(NULL),
       timer(NULL)
@@ -638,9 +633,8 @@ namespace elle
       if (Fiber::Awaken(this->timer) != StatusTrue)
 	escape("unable to awaken the fiber");
 
-      // don't delete the timer because it is in use
-      this->timer->Stop();
-      bury(this->timer);
+      // delete the timer.
+      delete this->timer;
 
       // reset the pointer.
       this->timer = NULL;

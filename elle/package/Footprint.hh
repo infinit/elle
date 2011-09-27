@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author           [fri sep 23 10:51:23 2011]
+// author        julien.quintard   [fri sep 23 10:51:23 2011]
 //
 
 #ifndef ELLE_PACKAGE_FOOTPRINT_HH
@@ -38,10 +38,24 @@ namespace elle
     /// object once serialized without actually performing the serialization
     /// process.
     ///
+    /// the Footprint class does not derive anything, such as the Object
+    /// class. instead, the class implements an object-like interface
+    /// in order to prevent conflicts.
+    ///
     class Footprint:
       public Archive
     {
     public:
+      //
+      // enumerations
+      //
+      enum State
+	{
+	  StateUnknown,
+	  StateConsistent,
+	  StateInconsistent
+	};
+
       //
       // constants
       //
@@ -50,13 +64,20 @@ namespace elle
       //
       // static methods
       //
-      static Status	Compute(const Archivable&,
+      template <typename T>
+      static Status	Compute(const T&,
 				Natural32&);
 
       //
       // constructors & destructors
       //
       Footprint();
+      Footprint(const Archivable&);
+
+      //
+      // methods
+      //
+      Status		Compute();
 
       //
       // interfaces
@@ -114,6 +135,8 @@ namespace elle
       //
       // attributes
       //
+      State		state;
+      const Archivable*	archivable;
       Natural32		size;
     };
 
