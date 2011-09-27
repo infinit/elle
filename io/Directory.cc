@@ -194,7 +194,7 @@ namespace elle
       while ((entry = ::readdir(directory)) != NULL)
 	{
 	  Path		target;
-          struct ::stat st;
+          struct ::stat	stat;
 
 	  // ignore the . and ..
 	  if ((::strcmp(entry->d_name, ".") == 0) ||
@@ -208,14 +208,14 @@ namespace elle
 	    escape("unable to create the target path");
 
 	  // stat the entry as entry->d_type is not standard
-          if (::stat(target.string.c_str(), &st))
-            // the stat my fail but it's ok to continue as it's not fatal
-	    // and the entry may have been destroy/moved between the readdir
+          if (::lstat(target.string.c_str(), &stat) == -1)
+            // the stat may fail but it's ok to continue as it's not fatal
+	    // and the entry may have been destroyed/moved between the readdir
             // and now.
 	    continue;
 
 	  // perform an action depending on the nature of the target.
-          if (S_ISDIR(st.st_mode))
+          if (S_ISDIR(stat.st_mode))
             {
               // empty it as well.
               if (Directory::Clear(target) == StatusError)
@@ -225,14 +225,14 @@ namespace elle
               if (Directory::Remove(target) == StatusError)
                 escape("unable to remove the subdirectory");
             }
-          else if (S_ISREG(st.st_mode))
+          else if (S_ISREG(stat.st_mode))
             {
               // remove the file.
               if (File::Erase(target) == StatusError)
                 escape("unable to remove the file");
             }
 #if INFINIT_UNIX
-          else if (S_ISLNK(st.st_mode))
+          else if (S_ISLNK(stat.st_mode))
             {
               // remove the link.
               if (Link::Erase(target) == StatusError)

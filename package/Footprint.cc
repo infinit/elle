@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author           [sat sep 24 11:26:13 2011]
+// author        julien.quintard   [sat sep 24 11:26:13 2011]
 //
 
 //
@@ -27,12 +27,16 @@ namespace elle
     /// this constant defines the size of the meta information recorded
     /// before an element.
     ///
-    /// note that both the low-level serialization mechanism and the
-    /// Archive class record the type of the element being serialized,
-    /// hence two bytes.
+    /// note that the low-level serialization mechanism records the type
+    /// of the element being serialized in a byte. noteworthy is that
+    /// many cases are optimised. this is way the footprint functionality
+    /// is not extremely precise in terms of prediction. this explains
+    /// why a small Natural8 is actually serialized in only one byte,
+    /// packing both the type and its value within a byte, while the
+    /// footprint assumes a byte is used for the type and another byte
+    /// is used for the value.
     ///
-    const Natural32			Footprint::Meta =
-      sizeof (Byte) + sizeof (Natural8);
+    const Natural32			Footprint::Meta = sizeof (Byte);
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -42,37 +46,83 @@ namespace elle
     /// default constructor.
     ///
     Footprint::Footprint():
+      state(Footprint::StateUnknown),
+      archivable(NULL),
+      size(0)
+    {
+    }
+
+    ///
+    /// specific constructor.
+    ///
+    Footprint::Footprint(const Archivable&			archivable):
+      state(Footprint::StateUnknown),
+      archivable(&archivable),
       size(0)
     {
     }
 
 //
-// ---------- static methods --------------------------------------------------
+// ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method computes the footprint of the given archivable
-    /// object.
+    /// this method computes the footprint of the given archivable.
     ///
-    Status		Footprint::Compute(const Archivable&	archivable,
-					   Natural32&		size)
+    Status		Footprint::Compute()
     {
-      Footprint		footprint;
-
       enter();
 
-      // create the footprint i.e archive in order to set it in
-      // serialization mode.
-      if (footprint.Create() == StatusError)
-	escape("unable to create the footprint");
+      // check that an archivable has been assigned to the footprint.
+      if (this->archivable == NULL)
+	escape("no archivable has been assigned to this footprint");
 
-      // serialize the archivable with the footprint as argument so
-      // as to compute its footprint.
-      if (archivable.Serialize(footprint) == StatusError)
-	escape("unable to serialize the archivable");
+      // operate depending on the state.
+      switch (this->state)
+	{
+	case StateUnknown:
+	  {
+	    // create the footprint i.e archive in order to set it in
+	    // serialization mode.
+	    if (this->Create() == StatusError)
+	      escape("unable to create the footprint");
 
-      // return the footprint's size.
-      size = footprint.size;
+	    // serialize the archivable with the footprint as argument so
+	    // as to compute its footprint.
+	    if (this->archivable->Serialize(*this) == StatusError)
+	      escape("unable to serialize the archivable");
+
+	    break;
+	  }
+	case StateConsistent:
+	  {
+	    //
+	    // do not proceed since the footprint has already been computed
+	    // and the object has not been modified since.
+	    //
+
+	    break;
+	  }
+	case StateInconsistent:
+	  {
+	    //
+	    // proceed with the computation.
+	    //
+
+	    // reset the size.
+	    this->size = 0;
+
+	    // serialize the archivable with the footprint as argument so
+	    // as to compute its footprint.
+	    if (this->archivable->Serialize(*this) == StatusError)
+	      escape("unable to serialize the archivable");
+
+	    break;
+	  }
+	}
+
+      // set the state as consistent.
+      this->state = Footprint::StateConsistent;
 
       leave();
     }
@@ -91,7 +141,8 @@ namespace elle
 
       enter();
 
-      std::cout << alignment << "[Footprint] " << this->size << std::endl;
+      std::cout << alignment << "[Footprint] "
+		<< std::dec << this->size << std::endl;
 
       leave();
     }

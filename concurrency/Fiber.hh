@@ -15,8 +15,6 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/system/Platform.hh>
-
 #include <elle/core/Natural.hh>
 #include <elle/core/Void.hh>
 
@@ -35,13 +33,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <list>
-# if INFINIT_UNIX
-#  include <ucontext.h>
-# elif INFINIT_WIN32
-#  include <elle/thirdparty/ucontext-win32.hh>
-# else
-#  error "No makecontext support on this plateform."
-# endif
+# include <ucontext.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -147,7 +139,7 @@ namespace elle
 	typedef std::vector<
 	  Callback<
 	    Status,
-	    Parameters<Phase, Fiber*> >* >              Container;
+	    Parameters<Phase, Fiber*> >* >	Container;
 	typedef Container::iterator			Iterator;
 	typedef Container::const_iterator		Scoutor;
       };
