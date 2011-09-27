@@ -15,6 +15,7 @@
 #include <pig/Crux.hh>
 #include <pig/PIG.hh>
 #include <pig/Janitor.hh>
+#include <pig/Handle.hh>
 
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
@@ -79,11 +80,15 @@ namespace pig
       error("unable to load the object",
 	    ENOENT);
 
-    // set the identifier in the fuse_file_info structure.
+    // create a local handle.
+    Handle			handle(Handle::OperationGetattr,
+				       identifier);
+
+    // set the handle in the fuse_file_info structure.
     //
     // be careful, the address is local but it is alright since it is
     // used in Fgetattr() only.
-    info.fh = reinterpret_cast<uint64_t>(&identifier);
+    info.fh = reinterpret_cast<uint64_t>(&handle);
 
     // call the Fgetattr() method.
     result = Crux::Fgetattr(path, stat, &info);
@@ -110,7 +115,7 @@ namespace pig
 				       struct stat*		stat,
 				       struct ::fuse_file_info*	info)
   {
-    etoile::gear::Identifier*		identifier;
+    Handle*				handle;
     etoile::miscellaneous::Information	information;
     etoile::path::Way			way(path);
     elle::String*			name;
@@ -124,11 +129,11 @@ namespace pig
     // clear the stat structure.
     ::memset(stat, 0x0, sizeof (struct stat));
 
-    // retrieve the identifier.
-    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
+    // retrieve the handle.
+    handle = reinterpret_cast<Handle*>(info->fh);
 
     // retrieve information on the object.
-    if (etoile::wall::Object::Information(*identifier,
+    if (etoile::wall::Object::Information(handle->identifier,
 					  information) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR);
@@ -223,7 +228,7 @@ namespace pig
 	    stat->st_mode |= S_IWUSR;
 
 	  // retrieve the attribute.
-	  if (etoile::wall::Attributes::Get(*identifier,
+	  if (etoile::wall::Attributes::Get(handle->identifier,
 					    "posix::exec",
 					    trait) == elle::StatusError)
 	    error("unable to retrieve an attribute",
@@ -325,7 +330,8 @@ namespace pig
     // duplicate the identifier and save it in the info structure's file
     // handle.
     info->fh =
-      reinterpret_cast<uint64_t>(new etoile::gear::Identifier(identifier));
+      reinterpret_cast<uint64_t>(new Handle(Handle::OperationOpendir,
+					    identifier));
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -345,9 +351,9 @@ namespace pig
 				      off_t			offset,
 				      struct ::fuse_file_info*	info)
   {
-    etoile::path::Way			way(path);
-    etoile::gear::Identifier*		identifier;
-    off_t				next;
+    etoile::path::Way	way(path);
+    Handle*		handle;
+    off_t		next;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -355,9 +361,9 @@ namespace pig
 	     __FUNCTION__,
 	     path, buffer, filler, static_cast<elle::Natural64>(offset), info);
 
-    // set the identifier pointer to the file handle that has been
-    // filled by Opendir().
-    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
+    // set the handle pointer to the file handle that has been filled by
+    // Opendir().
+    handle = reinterpret_cast<Handle*>(info->fh);
 
     // fill the . and .. entries.
     if (offset == 0)
@@ -383,7 +389,7 @@ namespace pig
 
 	// read the directory entries.
 	if (etoile::wall::Directory::Consult(
-	      *identifier,
+	      handle->identifier,
 	      static_cast<nucleus::Offset>(offset),
 	      Crux::Range,
 	      range) == elle::StatusError)
@@ -436,7 +442,7 @@ namespace pig
   int			Crux::Releasedir(const char*		path,
 					 struct ::fuse_file_info* info)
   {
-    etoile::gear::Identifier*	identifier;
+    Handle*		handle;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -444,17 +450,18 @@ namespace pig
 	     __FUNCTION__,
 	     path, info);
 
-    // set the identifier pointer to the file handle that has been
-    // filled by Opendir().
-    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
+    // set the handle pointer to the file handle that has been filled by
+    // Opendir().
+    handle = reinterpret_cast<Handle*>(info->fh);
 
     // discard the object.
-    if (etoile::wall::Directory::Discard(*identifier) == elle::StatusError)
+    if (etoile::wall::Directory::Discard(
+	  handle->identifier) == elle::StatusError)
       error("unable to discard the directory",
 	    EINTR);
 
-    // delete the identifier.
-    delete identifier;
+    // delete the handle.
+    delete handle;
 
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
@@ -1311,12 +1318,8 @@ namespace pig
 	    EINTR,
 	    directory);
 
-    // compute the permissions.
-    if (mode & S_IRUSR)
-      permissions |= nucleus::PermissionRead;
-
-    if (mode & S_IWUSR)
-      permissions |= nucleus::PermissionWrite;
+    // set default permissions: read and write.
+    permissions = nucleus::PermissionRead | nucleus::PermissionWrite;
 
     // set the owner permissions.
     if (etoile::wall::Access::Grant(file,
@@ -1373,9 +1376,20 @@ namespace pig
       error("unable to load the file",
 	    ENOENT);
 
+    // compute the future permissions as the current ones are temporary.
+    permissions = nucleus::PermissionNone;
+
+    if (mode & S_IRUSR)
+      permissions |= nucleus::PermissionRead;
+
+    if (mode & S_IWUSR)
+      permissions |= nucleus::PermissionWrite;
+
     // store the identifier in the file handle.
     info->fh =
-      reinterpret_cast<uint64_t>(new etoile::gear::Identifier(file));
+      reinterpret_cast<uint64_t>(new Handle(Handle::OperationCreate,
+					    file,
+					    permissions));
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -1414,7 +1428,8 @@ namespace pig
 
     // store the identifier in the file handle.
     info->fh =
-      reinterpret_cast<uint64_t>(new etoile::gear::Identifier(identifier));
+      reinterpret_cast<uint64_t>(new Handle(Handle::OperationOpen,
+					    identifier));
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -1434,8 +1449,8 @@ namespace pig
 				    off_t			offset,
 				    struct ::fuse_file_info*	info)
   {
-    etoile::gear::Identifier*	identifier;
-    elle::Region		region;
+    Handle*		handle;
+    elle::Region	region;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -1444,8 +1459,8 @@ namespace pig
 	     path, buffer, static_cast<elle::Natural64>(size),
 	     static_cast<elle::Natural64>(offset), info);
 
-    // retrieve the identifier.
-    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
+    // retrieve the handle;
+    handle = reinterpret_cast<Handle*>(info->fh);
 
     // wrap the buffer.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(buffer),
@@ -1454,7 +1469,7 @@ namespace pig
 	    EINTR);
 
     // write the file.
-    if (etoile::wall::File::Write(*identifier,
+    if (etoile::wall::File::Write(handle->identifier,
 				  static_cast<nucleus::Offset>(offset),
 				  region) == elle::StatusError)
       error("unable to write the file",
@@ -1479,8 +1494,8 @@ namespace pig
 				   off_t			offset,
 				   struct ::fuse_file_info*	info)
   {
-    etoile::gear::Identifier*	identifier;
-    elle::Region		region;
+    Handle*		handle;
+    elle::Region	region;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -1489,11 +1504,11 @@ namespace pig
 	     path, buffer, static_cast<elle::Natural64>(size),
 	     static_cast<elle::Natural64>(offset), info);
 
-    // retrieve the identifier.
-    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
+    // retrieve the handle.
+    handle = reinterpret_cast<Handle*>(info->fh);
 
     // read the file.
-    if (etoile::wall::File::Read(*identifier,
+    if (etoile::wall::File::Read(handle->identifier,
 				 static_cast<nucleus::Offset>(offset),
 				 static_cast<nucleus::Size>(size),
 				 region) == elle::StatusError)
@@ -1541,8 +1556,12 @@ namespace pig
       error("unable to load the file",
 	    ENOENT);
 
-    // set the identifier in the fuse_file_info structure.
-    info.fh = reinterpret_cast<uint64_t>(&identifier);
+    // create a local handle.
+    Handle			handle(Handle::OperationTruncate,
+				       identifier);
+
+    // set the handle in the fuse_file_info structure.
+    info.fh = reinterpret_cast<uint64_t>(&handle);
 
     // call the Ftruncate() method.
     result = Crux::Ftruncate(path, size, &info);
@@ -1568,7 +1587,7 @@ namespace pig
 					off_t			size,
 					struct ::fuse_file_info* info)
   {
-    etoile::gear::Identifier*	identifier;
+    Handle*		handle;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -1576,11 +1595,11 @@ namespace pig
 	     __FUNCTION__,
 	     path, static_cast<elle::Natural64>(size), info);
 
-    // retrieve the identifier.
-    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
+    // retrieve the handle.
+    handle = reinterpret_cast<Handle*>(info->fh);
 
     // adjust the file's size.
-    if (etoile::wall::File::Adjust(*identifier,
+    if (etoile::wall::File::Adjust(handle->identifier,
 				   size) == elle::StatusError)
       error("unable to adjust the size of the file",
 	    ENOENT);
@@ -1600,8 +1619,8 @@ namespace pig
   int			Crux::Release(const char*		path,
 				      struct ::fuse_file_info*	info)
   {
-    etoile::path::Way		way(path);
-    etoile::gear::Identifier*	identifier;
+    etoile::path::Way	way(path);
+    Handle*		handle;
 
     // debug.
     if (Infinit::Configuration.debug.pig == true)
@@ -1609,16 +1628,52 @@ namespace pig
 	     __FUNCTION__,
 	     path, info);
 
-    // retrieve the identifier.
-    identifier = reinterpret_cast<etoile::gear::Identifier*>(info->fh);
+    // retrieve the handle.
+    handle = reinterpret_cast<Handle*>(info->fh);
+
+    // perform final actions depending on the initial operation.
+    switch (handle->operation)
+      {
+      case Handle::OperationCreate:
+	{
+	  //
+	  // the permissions settings have been delayed in order to support
+	  // a read-only file being copied in which case a file is created
+	  // with read-only permissions before being written.
+	  //
+	  // such a normal behaviour would result in runtime permission
+	  // errors. therefore, the permissions are set once the created
+	  // file is released in order to overcome this issue.
+	  //
+
+	  // set the owner permissions.
+	  if (etoile::wall::Access::Grant(
+	        handle->identifier,
+		agent::Agent::Subject,
+		handle->permissions) == elle::StatusError)
+	    error("unable to update the access records",
+		  EINTR,
+		  handle->identifier);
+
+	  break;
+	}
+      default:
+	{
+	  //
+	  // nothing special to do.
+	  //
+
+	  break;
+	}
+      }
 
     // store the file.
-    if (etoile::wall::File::Store(*identifier) == elle::StatusError)
+    if (etoile::wall::File::Store(handle->identifier) == elle::StatusError)
       error("unable to store the file",
 	    ENOENT);
 
-    // delete the identifier.
-    delete identifier;
+    // delete the handle.
+    delete handle;
 
     // reset the file handle.
     info->fh = 0;
