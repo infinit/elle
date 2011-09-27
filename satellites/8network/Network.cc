@@ -145,9 +145,11 @@ namespace application
     //
     {
       // create the descriptor.
-      if (descriptor.Create(name,
-			    model,
-			    address) == elle::StatusError)
+      if (descriptor.Create(
+	    name,
+	    model,
+	    address,
+	    lune::Descriptor::Extent) == elle::StatusError)
 	escape("unable to create the network's descriptor");
 
       // seal the descriptor.
