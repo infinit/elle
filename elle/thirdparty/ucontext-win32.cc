@@ -30,7 +30,6 @@ int getcontext(ucontext_t *ucp)
   /* Retrieve the full machine context */
   ucp->uc_mcontext.ContextFlags = CONTEXT_FULL;
   ret = GetThreadContext(GetCurrentThread(), &ucp->uc_mcontext);
-  printf("getcontext(%p) => ESP: %p\n", ucp, ucp->uc_mcontext.Esp);
 
   return (ret == 0) ? -1: 0;
 }
@@ -39,7 +38,6 @@ int setcontext(const ucontext_t *ucp)
 {
   int ret;
 
-  printf("setcontext(%p) => ESP: %p\n", ucp, ucp->uc_mcontext.Esp);
   /* Restore the full machine context (already set) */
   ret = SetThreadContext(GetCurrentThread(), &ucp->uc_mcontext);
 
@@ -52,12 +50,11 @@ int makecontext(ucontext_t *ucp, void (*func)(), int argc, ...)
   va_list ap;
   char *sp;
 
-  printf("makecontext(%p)\n", ucp);
-
   /* Stack grows down */
   sp = (char *) (size_t) ucp->uc_stack.ss_sp + ucp->uc_stack.ss_size;
 
-  /* Reserve stack space for the arguments (maximum possible: argc*(8 bytes per argument)) */
+  /* Reserve stack space for the arguments (maximum possible:
+   * argc*(8 bytes per argument)) */
   sp -= argc*8;
 
   if ( sp < (char *)ucp->uc_stack.ss_sp) {
@@ -88,7 +85,6 @@ int swapcontext(ucontext_t *oucp, const ucontext_t *ucp)
 {
   int ret;
 
-  printf("swapcontext(%p, %p)\n", oucp, ucp);
   if ((oucp == NULL) || (ucp == NULL)) {
     /*errno = EINVAL;*/
     return -1;

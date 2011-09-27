@@ -12,6 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Fiber.hh>
 
 namespace elle
@@ -75,6 +76,11 @@ namespace elle
     ///
     Fiber::P::Container		Fiber::Phases;
 
+    ///
+    /// is the method Fiber::Schedule running ?
+    ///
+    bool                        Fiber::IsScheduling = false;
+
 //
 // ---------- static methods --------------------------------------------------
 //
@@ -113,7 +119,7 @@ namespace elle
       // first, clean the phases callbacks.
       //
       {
-	Fiber::P::Scoutor	scoutor;
+        Fiber::P::Scoutor	scoutor;
 
 	// go through the phases.
 	for (scoutor = Fiber::Phases.begin();
@@ -133,7 +139,7 @@ namespace elle
       // then, clean the cached fibers.
       //
       {
-	Fiber::C::Scoutor	scoutor;
+        Fiber::C::Scoutor	scoutor;
 
 	// go through the cache.
 	for (scoutor = Fiber::Cache.begin();
@@ -155,7 +161,7 @@ namespace elle
       // finally, delete all the fibers waiting for something.
       //
       {
-	Fiber::F::Scoutor	scoutor;
+        Fiber::F::Scoutor	scoutor;
 
 	// then go through the blocked fibers container.
 	for (scoutor = Fiber::Fibers.begin();
@@ -177,9 +183,9 @@ namespace elle
       // delete also the program.
       //
       {
-	// delete the program's environment.
-	if (Fiber::Program->environment != NULL)
-	  delete Fiber::Program->environment;
+        // delete the program's environment.
+        if (Fiber::Program->environment != NULL)
+          delete Fiber::Program->environment;
 
 	// delete the program fiber.
 	delete Fiber::Program;
@@ -204,20 +210,20 @@ namespace elle
 
       // create the timer.
       if (Fiber::Current->timer->Create(Timer::ModeSingle) == StatusError)
-	escape("unable to create the timer");
+        escape("unable to create the timer");
 
       // subscribe to the timer's signal.
       if (Fiber::Current->timer->signal.timeout.Subscribe(
-	    Callback<>::Infer(&Fiber::Timeout, Fiber::Current)) == StatusError)
-	escape("unable to subscribe to the signal");
+            Callback<>::Infer(&Fiber::Timeout, Fiber::Current)) == StatusError)
+        escape("unable to subscribe to the signal");
 
       // set up the timer.
       if (Fiber::Current->timer->Start(duration) == StatusError)
-	escape("unable to start the timer");
+        escape("unable to start the timer");
 
       // wait for the resource represented by the timer's address.
       if (Fiber::Wait(Fiber::Current->timer) == StatusError)
-	escape("unable to wait for the resource");
+        escape("unable to wait for the resource");
 
       leave();
     }
@@ -227,19 +233,19 @@ namespace elle
     /// need to be saved or restored, depending on the given phase.
     ///
     Status		Fiber::Register(const
-					  Callback<
-					    Status,
-					    Parameters<Phase, Fiber*>
-					    >			c)
+                                          Callback<
+                                            Status,
+                                            Parameters<Phase, Fiber*>
+                                            >			c)
     {
       Callback< Status,
-		Parameters<Phase, Fiber*> >*	callback;
+                Parameters<Phase, Fiber*> >*	callback;
 
       enter();
 
       // clone the callback.
       callback = new Callback< Status,
-			       Parameters<Phase, Fiber*> >(c);
+                               Parameters<Phase, Fiber*> >(c);
 
       // store in the container.
       Fiber::Phases.push_back(callback);
@@ -258,13 +264,13 @@ namespace elle
 
       // go through the appropriate container.
       for (scoutor = Fiber::Phases.begin();
-	   scoutor != Fiber::Phases.end();
-	   scoutor++)
-	{
-	  // trigger the callback, passing the current fiber.
-	  if ((*scoutor)->Call(phase, Fiber::Current) == StatusError)
-	    escape("an error occured in the callback");
-	}
+           scoutor != Fiber::Phases.end();
+           scoutor++)
+        {
+          // trigger the callback, passing the current fiber.
+          if ((*scoutor)->Call(phase, Fiber::Current) == StatusError)
+            escape("an error occured in the callback");
+        }
 
       leave();
     }
@@ -278,23 +284,34 @@ namespace elle
 
       enter();
 
+      if (Fiber::IsScheduling)
+        escape("don't call Fiber::Schedule() if Fiber::IsScheduling is true.");
+      Fiber::IsScheduling = true;
+
       // if there is not fibers, return.
       if (Fiber::Fibers.empty() == true)
-	leave();
+        leave();
 
       // iterate over the container.
       for (iterator = Fiber::Fibers.begin();
-	   iterator != Fiber::Fibers.end();
-	   iterator++)
-	{
-	  Fiber*		fiber = *iterator;
+           iterator != Fiber::Fibers.end();
+           )
+        {
+          Fiber*		fiber = *iterator;
 
 	  // if this fiber needs scheduling.
 	  if (fiber->state == Fiber::StateAwaken)
 	    {
 	      // remove the fiber from the container.
 	      if (Fiber::Remove(fiber) == StatusError)
-		escape("unable to remove the fiber");
+                {
+                  Fiber::IsScheduling = false;
+                  escape("unable to remove the fiber");
+                }
+
+              // save the environment.
+              if (Fiber::Trigger(PhaseSave) == StatusError)
+                escape("unable to save the environment");
 
 	      // set the current fiber as suspended.
 	      Fiber::Current->state = Fiber::StateSuspended;
@@ -310,21 +327,29 @@ namespace elle
 
 	      // restore the environment.
 	      if (Fiber::Trigger(PhaseRestore) == StatusError)
-		escape("unable to restore the environment");
+                {
+                  Fiber::IsScheduling = false;
+                  escape("unable to restore the environment");
+                }
 
-	      // set the context of the suspended fiber.
-	      if (::setcontext(&Fiber::Current->context) == -1)
-		escape("unable to set the context");
+              // set the context of the suspended fiber.
+	      if (::swapcontext(&Fiber::Program->context,
+				&Fiber::Current->context) == -1)
+                {
+                  Fiber::IsScheduling = false;
+                  escape("unable to swapcontext");
+                }
 
-	      //
-	      // since the setcontext() function never returns we should
-	      // never reach that point.
-	      ///
-	      release();
-	      fail("this code should never have been reached");
+              // check if the current fiber state
+              Fiber::CheckCurrentFiber();
+
+              iterator = Fiber::Fibers.begin();
 	    }
+          else
+            iterator++;
 	}
 
+      Fiber::IsScheduling = false;
       leave();
     }
 
@@ -338,17 +363,17 @@ namespace elle
 
       // check the cache.
       if (Fiber::Cache.empty() == false)
-	{
-	  // return the cached fiber.
-	  fiber = Fiber::Cache.front();
+        {
+          // return the cached fiber.
+          fiber = Fiber::Cache.front();
 
 	  // remove the picked cached fiber.
 	  Fiber::Cache.pop_front();
 	}
       else
-	{
-	  // otherwise, allocate a new fiber.
-	  fiber = new Fiber;
+        {
+          // otherwise, allocate a new fiber.
+          fiber = new Fiber;
 
 	  // create the fiber.
 	  if (fiber->Create() == StatusError)
@@ -357,6 +382,7 @@ namespace elle
 
       // allocate an environment.
       fiber->environment = new Environment;
+      memset(&fiber->context, 0, sizeof (fiber->context));
 
       leave();
     }
@@ -374,22 +400,22 @@ namespace elle
       // do not delete the fiber and store in the cache if the cache
       // is empty.
       if (Fiber::Cache.size() == Fiber::Capacity)
-	{
-      	  // reset the fiber's attributes but keep the stack.
-	  fiber->link = NULL;
-	  fiber->state = Fiber::StateUnknown;
-	  fiber->type = Fiber::TypeNone;
-	  fiber->environment = NULL;
-	  fiber->data = NULL;
+        {
+          // reset the fiber's attributes but keep the stack.
+          fiber->link = NULL;
+          fiber->state = Fiber::StateUnknown;
+          fiber->type = Fiber::TypeNone;
+          fiber->environment = NULL;
+          fiber->data = NULL;
 
 	  // store it in the cache.
 	  Fiber::Cache.push_front(fiber);
 	}
       else
-	{
-	  // otherwise, delete the fiber.
-	  delete fiber;
-	}
+        {
+          // otherwise, delete the fiber.
+          delete fiber;
+        }
 
       leave();
     }
@@ -404,7 +430,7 @@ namespace elle
       // ignore the program fiber which is special as it is
       // used as the root fiber.
       if (fiber == Fiber::Program)
-	leave();
+        leave();
 
       // push the fiber.
       Fiber::Fibers.push_front(fiber);
@@ -424,14 +450,14 @@ namespace elle
       // ignore the program fiber which is special as it is
       // used as the root fiber.
       if (fiber == Fiber::Program)
-	leave();
+        leave();
 
       // iterate over the container.
       for (iterator = Fiber::Fibers.begin();
-	   iterator != Fiber::Fibers.end();
-	   iterator++)
-	{
-	  Fiber*	f = *iterator;
+           iterator != Fiber::Fibers.end();
+           iterator++)
+        {
+          Fiber*	f = *iterator;
 
 	  if (fiber == f)
 	    {
@@ -453,16 +479,16 @@ namespace elle
     /// the given event.
     ///
     Status		Fiber::Locate(const Event&		event,
-				      F::Iterator&		iterator)
+                                      F::Iterator&		iterator)
     {
       enter();
 
       // iterator over the container.
       for (iterator = Fiber::Fibers.begin();
-	   iterator != Fiber::Fibers.end();
-	   iterator++)
-	{
-	  Fiber*	fiber = *iterator;
+           iterator != Fiber::Fibers.end();
+           iterator++)
+        {
+          Fiber*	fiber = *iterator;
 
 	  // check if this fiber is waiting for the given event.
 	  if ((fiber->state == Fiber::StateSuspended) &&
@@ -479,16 +505,16 @@ namespace elle
     /// the given resource.
     ///
     Status		Fiber::Locate(const Resource*		resource,
-				      F::Iterator&		iterator)
+                                      F::Iterator&		iterator)
     {
       enter();
 
       // iterator over the container.
       for (iterator = Fiber::Fibers.begin();
-	   iterator != Fiber::Fibers.end();
-	   iterator++)
-	{
-	  Fiber*	fiber = *iterator;
+           iterator != Fiber::Fibers.end();
+           iterator++)
+        {
+          Fiber*	fiber = *iterator;
 
 	  // check if this fiber is waiting for the given resource.
 	  if ((fiber->state == Fiber::StateSuspended) &&
@@ -513,9 +539,9 @@ namespace elle
 
       // dump the fibers.
       {
-	Fiber::F::Scoutor	scoutor;
+        Fiber::F::Scoutor	scoutor;
 
-	std::cout << alignment << Dumpable::Shift << "[Fibers]" << std::endl;
+        std::cout << alignment << Dumpable::Shift << "[Fibers]" << std::endl;
 
 	// dump every fiber waiting for an event/resource.
 	for (scoutor = Fiber::Fibers.begin();
@@ -532,23 +558,23 @@ namespace elle
 
       // dump the program.
       std::cout << alignment << Dumpable::Shift
-		<< "[Program]" << std::endl;
+                << "[Program]" << std::endl;
 
       if (Fiber::Program->Dump(margin + 4) == StatusError)
-	escape("unable to dump the program fiber");
+        escape("unable to dump the program fiber");
 
       // dump the current fiber.
       std::cout << alignment << Dumpable::Shift << "[Current]"
-		<< std::endl;
+                << std::endl;
 
       if (Fiber::Current->Dump(margin + 4) == StatusError)
-	escape("unable to dump the current fiber");
+        escape("unable to dump the current fiber");
 
       // dump the cache.
       {
-	Fiber::F::Scoutor	scoutor;
+        Fiber::F::Scoutor	scoutor;
 
-	std::cout << alignment << Dumpable::Shift << "[Cache]" << std::endl;
+        std::cout << alignment << Dumpable::Shift << "[Cache]" << std::endl;
 
 	// dump every fiber of the cache.
 	for (scoutor = Fiber::Cache.begin();
@@ -561,7 +587,7 @@ namespace elle
 		      << std::hex << fiber << std::endl;
 	  }
       }
-      
+
       leave();
     }
 
@@ -577,6 +603,7 @@ namespace elle
       frame(NULL),
       state(Fiber::StateUnknown),
       type(Fiber::TypeNone),
+      event(NULL),
       environment(NULL),
       data(NULL),
       timer(NULL)
@@ -590,11 +617,11 @@ namespace elle
     {
       // release the frame.
       if (this->frame != NULL)
-	delete this->frame;
+        delete this->frame;
 
       // release the timer.
       if (this->timer != NULL)
-	delete this->timer;
+        delete this->timer;
     }
 
 //
@@ -613,7 +640,7 @@ namespace elle
 
       // create the frame.
       if (this->frame->Create(size) == StatusError)
-	escape("unable to create the frame");
+        escape("unable to create the frame");
 
       leave();
     }
@@ -631,10 +658,11 @@ namespace elle
 
       // awaken the fiber.
       if (Fiber::Awaken(this->timer) != StatusTrue)
-	escape("unable to awaken the fiber");
+        escape("unable to awaken the fiber");
 
-      // delete the timer.
-      delete this->timer;
+      // don't delete the timer because it is in use
+      this->timer->Stop();
+      bury(this->timer);
 
       // reset the pointer.
       this->timer = NULL;
@@ -659,33 +687,33 @@ namespace elle
 
       // dump the link
       std::cout << alignment << Dumpable::Shift << "[Link] "
-		<< std::hex << this->link << std::endl;
+                << std::hex << this->link << std::endl;
 
       // dump the frame.
       if (this->frame != NULL)
-	{
-	  if (this->frame->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the frame");
-	}
+        {
+          if (this->frame->Dump(margin + 2) == StatusError)
+            escape("unable to dump the frame");
+        }
       else
-	std::cout << alignment << Dumpable::Shift
-		  << "[Frame] null" << std::endl;
+        std::cout << alignment << Dumpable::Shift
+                  << "[Frame] null" << std::endl;
 
       // dump the state.
       std::cout << alignment << Dumpable::Shift << "[State] "
-		<< this->state << std::endl;
+                << this->state << std::endl;
 
       // dump the type.
       std::cout << alignment << Dumpable::Shift << "[Type] "
-		<< this->type << std::endl;
+                << this->type << std::endl;
 
       switch (this->type)
-	{
-	case Fiber::TypeEvent:
-	  {
-	    // dump the event.
-	    if (this->event->Dump(margin + 4) == StatusError)
-	      escape("unable to dump the event");
+        {
+        case Fiber::TypeEvent:
+          {
+            // dump the event.
+            if (this->event->Dump(margin + 4) == StatusError)
+              escape("unable to dump the event");
 
 	    break;
 	  }
@@ -706,24 +734,83 @@ namespace elle
 
       // dump the environment.
       if (this->environment->Dump(margin + 2) == StatusError)
-	escape("unable to dump the environment");
+        escape("unable to dump the environment");
 
       // dump the data value.
       std::cout << alignment << Dumpable::Shift << "[Data] "
-		<< std::hex << this->data << std::endl;
+                << std::hex << this->data << std::endl;
 
       // dump the timer.
       if (this->timer != NULL)
-	{
-	  if (this->timer->Dump(margin + 2) == StatusError)
-	    escape("unable to dump the timer");
-	}
+        {
+          if (this->timer->Dump(margin + 2) == StatusError)
+            escape("unable to dump the timer");
+        }
       else
-	{
-	  // dump none.
-	  std::cout << alignment << Dumpable::Shift << "[Timer] "
-		    << none << std::endl;
-	}
+        {
+          // dump none.
+          std::cout << alignment << Dumpable::Shift << "[Timer] "
+                    << none << std::endl;
+        }
+
+      leave();
+    }
+
+    Status              Fiber::CheckCurrentFiber()
+    {
+      enter();
+
+      if (!Fiber::Current)
+        escape("you should not call %s with null Fiber::Current",
+               __PRETTY_FUNCTION__);
+
+      //
+      // at this point, we just came back from a fiber.
+      //
+
+      // perform an action depending on the state of the fiber.
+      switch (Fiber::Current->state)
+        {
+        case Fiber::StateCompleted:
+          {
+            // clean the environment.
+            if (Fiber::Trigger(PhaseClean) == StatusError)
+              escape("unable to initialize the environment");
+
+            // if the fiber has completed, delete it.
+            if (Fiber::Delete(Fiber::Current) == StatusError)
+              escape("unable to delete the fiber");
+
+            break;
+          }
+        case Fiber::StateSuspended:
+          {
+            //
+            // do not delete this fiber as it will be resumed later.
+            //
+            break;
+          }
+        case Fiber::StateActive:
+        case Fiber::StateUnknown:
+        default:
+          {
+            escape("at this point a fiber cannot be in an unknown or "
+                   "active state");
+          }
+        }
+
+      // set the current fiber as being the selected fiber.
+      Fiber::Current = Fiber::Program;
+
+      // set the fiber as active.
+      Fiber::Current->state = Fiber::StateActive;
+
+      // restore the environment.
+      if (Fiber::Trigger(PhaseRestore) == StatusError)
+        escape("unable to restore the environment");
+
+      if (!Fiber::IsScheduling)
+        Schedule();
 
       leave();
     }
