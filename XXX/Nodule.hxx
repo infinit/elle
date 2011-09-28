@@ -24,12 +24,29 @@ namespace nucleus
     /// default constructor.
     ///
     template <typename V>
-    Nodule<V>::Nodule(const Type				type):
+    Nodule<V>::Nodule(const Type				type,
+		      const elle::Callback<
+			elle::Status,
+			elle::Parameters<
+			  const Address&,
+			  Nodule<V>*&
+			  >
+			>&					load,
+		      const elle::Callback<
+			elle::Status,
+			elle::Parameters<
+			  const Address&,
+			  const Nodule<V>*
+			  >
+			>&					unload):
       type(type),
 
+      _load(load),
+      _unload(unload),
       _parent(NULL),
       _left(NULL),
-      _right(NULL)
+      _right(NULL),
+      _footprint(*this)
     {
     }
 

@@ -61,23 +61,52 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Nodule(const Type);
+      Nodule(const Type,
+	     const elle::Callback<
+	       elle::Status,
+	       elle::Parameters<
+		 const Address&,
+		 Nodule<V>*&
+		 >
+	       >&,
+	     const elle::Callback<
+	       elle::Status,
+	       elle::Parameters<
+		 const Address&,
+		 const Nodule<V>*
+		 >
+	       >&);
 
       //
       // virtual methods
       //
+      virtual elle::Status	Major(typename V::K&) const = 0;
       virtual elle::Status	Lookup(const typename V::K&,
 				       Quill<V>*&) = 0;
-      virtual elle::Status	Root(Nodule<V>*&) const = 0;
 
       //
       // attributes
       //
-      Type		type;
+      Type			type;
 
-      Seam<V>*		_parent;
-      Nodule*		_left;
-      Nodule*		_right;
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  const Address&,
+	  Nodule<V>*&
+	  >
+	>			_load;
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  const Address&,
+	  const Nodule<V>*
+	  >
+	>			_unload;
+      Seam<V>*			_parent;
+      Nodule*			_left;
+      Nodule*			_right;
+      elle::Footprint		_footprint;
     };
 
   }

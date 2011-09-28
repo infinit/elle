@@ -77,6 +77,12 @@ namespace nucleus
       //
       elle::Status		Create();
 
+      template <typename N,
+		typename W>
+      elle::Status		Insert(N*,
+				       const typename V::K&,
+				       W*);
+
       elle::Status		Add(const typename V::K&,
 				    V*);
       elle::Status		Modify(const typename V::K&,
@@ -88,6 +94,7 @@ namespace nucleus
       elle::Status		Locate(const typename V::K&,
 				       Quill<V>*&,
 				       V*&) const;
+      elle::Status		Grow();
 
       elle::Status		Load(const Address&,
 				     Nodule<V>*&);
@@ -107,22 +114,23 @@ namespace nucleus
       //
       // attributes
       //
+      elle::Natural32		height;
+
       elle::Callback<
 	elle::Status,
 	elle::Parameters<
 	  const Address&,
 	  Block&
 	  >
-	>			load;
+	>			_load;
       elle::Callback<
 	elle::Status,
 	elle::Parameters<
 	  const Address&,
 	  const Block&
 	  >
-	>			unload;
-
-      Nodule<V>*		root;
+	>			_unload;
+      Nodule<V>*		_root;
     };
 
   }

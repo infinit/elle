@@ -53,11 +53,7 @@ namespace nucleus
 			const Nodule<V>*
 			>
 		      >&					unload):
-      Nodule<V>(Nodule<V>::TypeQuill),
-
-      _load(load),
-      _unload(unload),
-      _footprint(*this)
+      Nodule<V>(Nodule<V>::TypeQuill, load, unload)
     {
     }
 
@@ -73,7 +69,7 @@ namespace nucleus
     {
       enter();
 
-      // compute the initial footprint from which the Add(), Remove()
+      // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
       if (this->_footprint.Compute() == elle::StatusError)
 	escape("unable to compute the footprint");
@@ -85,21 +81,44 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Quill<V>::Add(const typename V::K&	key,
-				      I*			inlet)
+    elle::Status	Quill<V>::Insert(const typename V::K&	key,
+					 V*			value)
+    {
+      typename Quill<V>::I*	inlet;
+
+      enter(instance(inlet));
+
+      // create an inlet.
+      inlet = new typename Quill<V>::I(key, value);
+
+      // add the inlet to the quill.
+      if (this->Insert(inlet) == elle::StatusError)
+	escape("unable to add the value to the quill");
+
+      // waive.
+      waive(inlet);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Quill<V>::Insert(I*			inlet)
     {
       std::pair<Quill<V>::Iterator, elle::Boolean>	result;
 
       enter();
 
       // check if this key has already been recorded.
-      if (this->container.find(key) != this->container.end())
+      if (this->container.find(inlet->key) != this->container.end())
 	escape("this key seems to have already been recorded");
 
       // insert the inlet in the container.
       result = this->container.insert(
 	         std::pair<const typename V::K,
-			   Quill<V>::I*>(key, inlet));
+			   Quill<V>::I*>(inlet->key, inlet));
 
       // check if the insertion was successful.
       if (result.second == false)
@@ -109,46 +128,8 @@ namespace nucleus
       if (inlet->_footprint.Compute() == elle::StatusError)
 	escape("unable to compute the inlet's footprint");
 
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status	Quill<V>::Lookup(const typename V::K&	key,
-					 V*&			value)
-      const
-    {
-      Quill<V>::Scoutor	scoutor;
-
-      enter();
-
-      // go through the container.
-      for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
-	{
-	  Quill<V>::I*	inlet = scoutor->second;
-
-	  // check the key.
-	  if (key <= scoutor->first)
-	    {
-	      // load the value, if necessary.
-	      if (inlet->_value == NULL)
-		{
-		  // load the value.
-		  if (this->_load.Call(inlet->address,
-				       inlet->_value) == elle::StatusError)
-		    escape("unable to load the value");
-		}
-
-	      // return the value.
-	      value = inlet->_value;
-
-	      break;
-	    }
-	}
+      // add the inlet footprint to the quill's.
+      this->_footprint.size += inlet->_footprint.size;
 
       leave();
     }
@@ -192,16 +173,15 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Quill<V>::Split()
+    elle::Status	Quill<V>::Split(Quill<V>*&		right)
     {
       Quill<V>::Iterator	i;
       Quill<V>::Iterator	j;
       elle::Natural32		footprint;
       elle::Natural32		size;
-      Quill<V>*			right;
-      Seam<V>*			root;
+      Quill<V>*			r;
 
-      enter(instance(right));
+      enter(instance(r));
 
       // initialize the footprint as being the original quill's footprint.
       footprint = this->_footprint.size;
@@ -240,14 +220,14 @@ namespace nucleus
 	}
 
       // allocate a new quill.
-      right = new Quill<V>(this->_load, this->_unload);
+      r = new Quill<V>(this->_load, this->_unload);
 
       // create the quill.
-      if (right->Create() == elle::StatusError)
+      if (r->Create() == elle::StatusError)
 	escape("unable to create the quill");
 
       // go through the remaining entries in order to move them to
-      // the new (right) quill.
+      // the new (r) quill.
       for (j = i; j != this->container.end(); j++)
 	{
 	  Quill<V>::I*		inlet = j->second;
@@ -259,8 +239,8 @@ namespace nucleus
 	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
 	    escape("unable to split the quill into two extent-valid quills");
 
-	  // add the inlet to the new quill.
-	  if (right->Add(inlet->key, inlet) == elle::StatusError)
+	  // insert the inlet to the new quill.
+	  if (r->Insert(inlet) == elle::StatusError)
 	    escape("unable to add the inlet");
 	}
 
@@ -269,74 +249,13 @@ namespace nucleus
 
       // set both quills' footprint as consistent.
       this->_footprint.state = elle::Footprint::StateConsistent;
-      right->_footprint.state = elle::Footprint::StateConsistent;
+      r->_footprint.state = elle::Footprint::StateConsistent;
 
-      //
-      // finally, add the new quill to the parent, if possible.
-      //
+      // set the output right quill.
+      right = r;
 
-      // create a parent node if necessary.
-      if (this->_parent == NULL)
-	{
-	  Seam<V>*	seam;
-
-	  enter(instance(seam));
-
-	  // allocate a new seam.
-	  seam = new Seam<V>(this->_load, this->_unload);
-
-	  // create the root seam.
-	  if (seam->Create() == elle::StatusError)
-	    escape("unable to create the seam");
-
-	  // link the left quill.
-	  this->_parent = seam;
-
-	  // waive seam.
-	  waive(seam);
-
-	  release();
-	}
-
-      // retrieve the root.
-      //
-      // note that it is assumed that the parent block is loaded.
-      root = this->_parent;
-
-      /* XXX
-      // add the left quill.
-      if (root->Add(this->container.rbegin()->first,
-		    this) == elle::StatusError)
-	escape("unable to add the left quill to the seam");
-
-      // add the right quill.
-      if (root->Add(right->container.rbegin()->first,
-		    right) == elle::StatusError)
-	escape("unable to add the left quill to the seam");
-      */
-
-      // link the right quill's parent.
-      right->_parent = root;
-
-      // tight the brothers.
-      this->_right = right;
-      right->_left = this;
-
-      // waive the right quill.
-      waive(right);
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status	Quill<V>::Root(Nodule<V>*&		root) const
-    {
-      enter();
-
-      // XXX
+      // waive the r variable.
+      waive(r);
 
       leave();
     }
@@ -344,6 +263,20 @@ namespace nucleus
 //
 // ---------- nodule ----------------------------------------------------------
 //
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Quill<V>::Major(typename V::K&		major) const
+    {
+      enter();
+
+      // return the major key.
+      major = this->container.rbegin()->first;
+
+      leave();
+    }
 
     ///
     /// XXX
@@ -395,7 +328,7 @@ namespace nucleus
       */
 
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Entries] " << this->container.size() << std::endl;
+		<< "[Inlets] " << this->container.size() << std::endl;
 
       // go through the container.
       for (scoutor = this->container.begin();
@@ -469,7 +402,6 @@ namespace nucleus
       // iterator.
       for (i = 0; i < size; i++)
 	{
-	  typename V::K	key;
 	  Quill<V>::I*	inlet;
 
 	  enter(instance(inlet));
@@ -482,7 +414,7 @@ namespace nucleus
 	    escape("unable to extract the key/inlet tuple");
 
 	  // add the tuple to the quill.
-	  if (this->Add(inlet->key, inlet) == elle::StatusError)
+	  if (this->Insert(inlet) == elle::StatusError)
 	    escape("unable to add the key/tuple inlet to the quill");
 
 	  // waive.

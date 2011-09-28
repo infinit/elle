@@ -16,6 +16,49 @@
 
 #include <XXX/Porcupine.hh>
 
+class C:
+  public elle::Object
+{
+public:
+  typedef int	K;
+
+  C(const elle::String s):
+    name(s)
+  {
+  }
+
+  elle::Status	Dump(const elle::Natural32	margin) const
+  {
+    elle::String			alignment(margin, ' ');
+
+    enter();
+
+    std::cout << alignment << "[C] " << this->name << std::endl;
+
+    leave();
+  }
+
+  elle::Status	Serialize(elle::Archive&	archive) const
+  {
+    enter();
+
+    archive.Serialize(this->name);
+
+    leave();
+  }
+
+  elle::Status	Extract(elle::Archive&		archive)
+  {
+    enter();
+
+    archive.Extract(this->name);
+
+    leave();
+  }
+
+  elle::String	name;
+};
+
 int main(int argc, char** argv)
 {
   // allocate a new parser.
@@ -33,7 +76,7 @@ int main(int argc, char** argv)
 
   expose();
 
-  nucleus::Porcupine<nucleus::Catalog> p(elle::Callback<
+  nucleus::Porcupine<C> p(elle::Callback<
 					   elle::Status,
 					   elle::Parameters<
 					     const nucleus::Address&,
@@ -48,36 +91,22 @@ int main(int argc, char** argv)
 					     >
 					   >::Null);
 
-  nucleus::ContentHashBlock	chb;
-  nucleus::Address		a;
-  int i = 0;
-
-  chb.Bind(a);
-
   p.Create();
 
-  for (int j = 0; j < 5; j++)
+  for (int i = 0; i < 50000; i++)
     {
-      nucleus::Catalog* x = new nucleus::Catalog;
       char name[1024];
 
-      do
-	{
-	  memset(name, 0x0, sizeof (name));
+      memset(name, 0x0, sizeof (name));
 
-	  sprintf(name, "e%u", i);
+      sprintf(name, "entry-%u", i);
 
-	  nucleus::Entry* e = new nucleus::Entry(name, a);
+      C* c = new C(name);
 
-	  x->Add(e);
-	} while (0);
-
-      i++;
-
-      p.Add(name, x);
+      p.Add(i, c);
     }
 
-  //p.Dump();
+  p.Dump();
 
   expose();
 

@@ -47,11 +47,7 @@ namespace nucleus
 		      const Nodule<V>*
 		      >
 		    >&						unload):
-      Nodule<V>(Nodule<V>::TypeSeam),
-
-      _load(load),
-      _unload(unload),
-      _footprint(*this)
+      Nodule<V>(Nodule<V>::TypeSeam, load, unload)
     {
     }
 
@@ -90,7 +86,7 @@ namespace nucleus
     {
       enter();
 
-      // compute the initial footprint from which the Add(), Remove()
+      // compute the initial footprint from which the Insert(), Delete()
       // methods will work in order to adjust it.
       if (this->_footprint.Compute() == elle::StatusError)
 	escape("unable to compute the footprint");
@@ -102,12 +98,149 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Seam<V>::Add(const typename V::K&	key,
-				     I*				nodule)
+    elle::Status	Seam<V>::Insert(const typename V::K&	key,
+					Nodule<V>*		nodule)
     {
+      typename Seam<V>::I*	inlet;
+
+      enter(instance(inlet));
+
+      // create an inlet.
+      inlet = new typename Seam<V>::I(key, nodule);
+
+      // add the inlet to the seam.
+      if (this->Insert(inlet) == elle::StatusError)
+	escape("unable to add the value to the seam");
+
+      // waive.
+      waive(inlet);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Insert(I*			inlet)
+    {
+      std::pair<Seam<V>::Iterator, elle::Boolean>	result;
+
       enter();
 
-      // XXX
+      // check if this key has already been recorded.
+      if (this->container.find(inlet->key) != this->container.end())
+	escape("this key seems to have already been recorded");
+
+      // insert the inlet in the container.
+      result = this->container.insert(
+	         std::pair<const typename V::K,
+			   Seam<V>::I*>(inlet->key, inlet));
+
+      // check if the insertion was successful.
+      if (result.second == false)
+	escape("unable to insert the inlet in the container");
+
+      // set the quill's parent link.
+      inlet->_value->_parent = this;
+
+      // compute the inlet's footprint.
+      if (inlet->_footprint.Compute() == elle::StatusError)
+	escape("unable to compute the inlet's footprint");
+
+      // add the inlet footprint to the seam's.
+      this->_footprint.size += inlet->_footprint.size;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Split(Seam<V>*&		right)
+    {
+      Seam<V>::Iterator	i;
+      Seam<V>::Iterator	j;
+      elle::Natural32	footprint;
+      elle::Natural32	size;
+      Seam<V>*		r;
+
+      enter(instance(r));
+
+      // initialize the footprint as being the original seam's footprint.
+      footprint = this->_footprint.size;
+
+      // compute the future seams' sizes.
+      size = footprint / 2;
+
+      // reinitialize the current seam's footprint.
+      this->_footprint.size = 0;
+
+      // go through the seam's entries until the future size is reached
+      // after which all the remaining entries will be moved to the
+      // new seam.
+      for (i = this->container.begin();
+	   i != this->container.end();
+	   i++)
+	{
+	  Seam<V>::I*		inlet = i->second;
+
+	  // check whether the new seam's size has been reached.
+	  if (this->_footprint.size >= size)
+	    break;
+
+	  //
+	  // otherwise, add this inlet to the seam.
+	  //
+
+	  // note however that another check is performed in order to make
+	  // sure that additing this inlet will not make the seam too large.
+	  if ((this->_footprint.size +
+	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+	    break;
+
+	  // add the inlet's footprint to the footprint.
+	  this->_footprint.size += inlet->_footprint.size;
+	}
+
+      // allocate a new seam.
+      r = new Seam<V>(this->_load, this->_unload);
+
+      // create the seam.
+      if (r->Create() == elle::StatusError)
+	escape("unable to create the seam");
+
+      // go through the remaining entries in order to move them to
+      // the new (r) seam.
+      for (j = i; j != this->container.end(); j++)
+	{
+	  Seam<V>::I*		inlet = j->second;
+
+	  // check whether the new seam is about to exceed the extent
+	  // which would mean that splitting the seam has not resulted
+	  // in two valid seams.
+	  if ((this->_footprint.size +
+	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+	    escape("unable to split the seam into two extent-valid seams");
+
+	  // insert the inlet to the new seam.
+	  if (r->Insert(inlet) == elle::StatusError)
+	    escape("unable to add the inlet");
+	}
+
+      // remove the right entries from the left (this) seam.
+      this->container.erase(i, this->container.end());
+
+      // set both seams' footprint as consistent.
+      this->_footprint.state = elle::Footprint::StateConsistent;
+      r->_footprint.state = elle::Footprint::StateConsistent;
+
+      // set the output right seam.
+      right = r;
+
+      // waive the r variable.
+      waive(r);
 
       leave();
     }
@@ -115,6 +248,20 @@ namespace nucleus
 //
 // ---------- nodule ----------------------------------------------------------
 //
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Major(typename V::K&		major) const
+    {
+      enter();
+
+      // return the major key.
+      major = this->container.rbegin()->first;
+
+      leave();
+    }
 
     ///
     /// XXX
@@ -159,19 +306,6 @@ namespace nucleus
       leave();
     }
 
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status	Seam<V>::Root(Nodule<V>*&		root) const
-    {
-      enter();
-
-      // XXX
-
-      leave();
-    }
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -207,24 +341,15 @@ namespace nucleus
       */
 
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Items] " << this->container.size() << std::endl;
+		<< "[Inlets] " << this->container.size() << std::endl;
 
       // go through the container.
       for (scoutor = this->container.begin();
 	   scoutor != this->container.end();
 	   scoutor++)
 	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << elle::Dumpable::Shift
-		    << "[Item]" << std::endl;
-
-	  // dump the key.
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << elle::Dumpable::Shift << elle::Dumpable::Shift
-		    << "[Key] " << scoutor->first << std::endl;
-
 	  // dump the inlet.
-	  if (scoutor->second->Dump(margin + 6) == elle::StatusError)
+	  if (scoutor->second->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the inlet");
 	}
 

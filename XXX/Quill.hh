@@ -79,22 +79,21 @@ namespace nucleus
       //
       elle::Status		Create();
 
-      elle::Status		Add(const typename V::K&,
-				    I*);
+      elle::Status		Insert(const typename V::K&,
+				       V*);
+      elle::Status		Insert(I*);
 
-      elle::Status		Lookup(const typename V::K&,
-				       V*&) const;
       elle::Status		Locate(const typename V::K&,
 				       V*&) const;
 
-      elle::Status		Split();
-      elle::Status		Root(Nodule<V>*&) const;
+      elle::Status		Split(Quill<V>*&);
 
       //
       // interfaces
       //
 
       // nodule
+      elle::Status		Major(typename V::K&) const;
       elle::Status		Lookup(const typename V::K&,
 				       Quill<V>*&);
 
@@ -109,22 +108,6 @@ namespace nucleus
       // attributes
       //
       Container			container;
-
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  const Address&,
-	  Nodule<V>*&
-	  >
-	>			_load;
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  const Address&,
-	  const Nodule<V>*
-	  >
-	>			_unload;
-      elle::Footprint		_footprint;
     };
 
   }
