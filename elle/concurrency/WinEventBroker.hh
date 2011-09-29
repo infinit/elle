@@ -44,8 +44,9 @@ namespace elle
     /// this class represents a broker of event which can be attached to
     /// an event loop so as to be taken into account.
     ///
-    /// the broker is notified whenever data is ready on its file descriptor
-    /// so that it can take action accordingly i.e emit the ready signal.
+    /// the broker is notified whenever the windows event handle received
+    /// an event. So that it can take action accordingly i.e emit the ready
+    /// signal.
     ///
     class WinEventBroker:
       public ::QObject
