@@ -162,7 +162,7 @@ namespace pig
       this->broker =
 	new elle::Broker(fd);
 
-      // subscribe to the timer's signal.
+      // subscribe to the broker's signal.
       if (this->broker->signal.ready.Subscribe(
 	    elle::Callback<>::Infer(&InterlacedFUker::Event,
 				    this)) == elle::StatusError)
