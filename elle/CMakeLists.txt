@@ -1,5 +1,15 @@
 PROJECT(Elle CXX)
 
+IF(${WIN32})
+  SET(elle_MOCS_WIN32
+    concurrency/WinEventBroker.hh)
+
+  SET(elle_WIN32
+    thirdparty/ucontext-win32.cc
+    concurrency/WinEventBroker.cc)
+ENDIF()
+
+
 QT4_WRAP_CPP(elle_MOCS
   network/Bridge.hh
   network/Door.hh
@@ -9,10 +19,14 @@ QT4_WRAP_CPP(elle_MOCS
 
   concurrency/Timer.hh
   concurrency/Broker.hh
+
+  ${elle_MOCS_WIN32}
 )
 
 IF(${WIN32})
-  SET(elle_WIN32 thirdparty/ucontext-win32.cc)
+  SET(elle_WIN32
+    thirdparty/ucontext-win32.cc
+    concurrency/WinEventBroker.cc)
 ENDIF()
 
 ADD_LIBRARY(elle
