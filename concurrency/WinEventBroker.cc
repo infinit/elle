@@ -91,7 +91,7 @@ namespace elle
 //
 
     ///
-    /// this slot is launched whenever data is present on the file descriptor.
+    /// this slot is launched whenever we receive an event.
     ///
     /// the callback is therefored triggered.
     ///
