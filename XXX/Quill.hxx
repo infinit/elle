@@ -108,8 +108,13 @@ namespace nucleus
     elle::Status	Quill<V>::Insert(I*			inlet)
     {
       std::pair<Quill<V>::Iterator, elle::Boolean>	result;
+      typename V::K					major;
 
       enter();
+
+      // XXX
+      printf("-----------------------------------------------------------\n");
+      this->Dump();
 
       // check if this key has already been recorded.
       if (this->container.find(inlet->key) != this->container.end())
@@ -130,6 +135,27 @@ namespace nucleus
 
       // add the inlet footprint to the quill's.
       this->_footprint.size += inlet->_footprint.size;
+
+      // retrieve the current major key.
+      if (this->Major(major) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // XXX
+      std::cout << "inserted: " << inlet->key << std::endl;
+      this->Dump();
+      std::cout << "major: " << major << std::endl;
+      printf("parent: %p\n", this->_parent);
+
+      // should have the inserted key become the major key, update the parent
+      // seam, if present.
+      if ((inlet->key == major) && (this->_parent != NULL))
+	{
+	  // XXX load parent.
+
+	  // update the parent seam.
+	  if (this->_parent->Update(major) == elle::StatusError)
+	    escape("unable to update the parent seam");
+	}
 
       leave();
     }
@@ -177,20 +203,25 @@ namespace nucleus
     {
       Quill<V>::Iterator	i;
       Quill<V>::Iterator	j;
-      elle::Natural32		footprint;
       elle::Natural32		size;
       Quill<V>*			r;
+      typename V::K		major;
 
       enter(instance(r));
 
-      // initialize the footprint as being the original quill's footprint.
-      footprint = this->_footprint.size;
+      // allocate a new quill.
+      r = new Quill<V>(this->_load, this->_unload);
 
-      // compute the future quills' sizes.
-      size = footprint / 2;
+      // create the quill.
+      if (r->Create() == elle::StatusError)
+	escape("unable to create the quill");
 
-      // reinitialize the current quill's footprint.
-      this->_footprint.size = 0;
+      // initialize the size as being the future quills' normal sizes.
+      size = hole::Hole::Descriptor.extent / 2;
+
+      // reinitialize the current quill's footprint according to the
+      // quill's initial footprint
+      this->_footprint.size = r->_footprint.size;
 
       // go through the quill's entries until the future size is reached
       // after which all the remaining entries will be moved to the
@@ -202,7 +233,7 @@ namespace nucleus
 	  Quill<V>::I*		inlet = i->second;
 
 	  // check whether the new quill's size has been reached.
-	  if (this->_footprint.size >= size)
+	  if (this->_footprint.size > size)
 	    break;
 
 	  //
@@ -219,13 +250,6 @@ namespace nucleus
 	  this->_footprint.size += inlet->_footprint.size;
 	}
 
-      // allocate a new quill.
-      r = new Quill<V>(this->_load, this->_unload);
-
-      // create the quill.
-      if (r->Create() == elle::StatusError)
-	escape("unable to create the quill");
-
       // go through the remaining entries in order to move them to
       // the new (r) quill.
       for (j = i; j != this->container.end(); j++)
@@ -235,7 +259,7 @@ namespace nucleus
 	  // check whether the new quill is about to exceed the extent
 	  // which would mean that splitting the quill has not resulted
 	  // in two valid quills.
-	  if ((this->_footprint.size +
+	  if ((r->_footprint.size +
 	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
 	    escape("unable to split the quill into two extent-valid quills");
 
@@ -246,6 +270,21 @@ namespace nucleus
 
       // remove the right entries from the left (this) quill.
       this->container.erase(i, this->container.end());
+
+      // recompute the quill's major key since the far right, i.e highest,
+      // entries just go removed.
+      if (this->Major(major) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // update the parent, if present.
+      if (this->_parent != NULL)
+	{
+	  // XXX load parent.
+
+	  // update the parent seam.
+	  if (this->_parent->Update(major) == elle::StatusError)
+	    escape("unable to update the parent seam");
+	}
 
       // set both quills' footprint as consistent.
       this->_footprint.state = elle::Footprint::StateConsistent;
@@ -282,7 +321,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Quill<V>::Lookup(const typename V::K&,
+    elle::Status	Quill<V>::Search(const typename V::K&,
 					 Quill<V>*&		quill)
     {
       enter();
@@ -311,22 +350,11 @@ namespace nucleus
 
       std::cout << alignment << "[Quill] " << this << std::endl;
 
-      /* XXX
-      // dump the load callback.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Load]" << std::endl;
+      // dump the parent nodule.
+      if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the nodule");
 
-      if (this->load.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the callback");
-
-      // dump the unload callback.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Unload]" << std::endl;
-
-      if (this->unload.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the callback");
-      */
-
+      // dump the inlets.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Inlets] " << this->container.size() << std::endl;
 

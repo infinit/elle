@@ -112,8 +112,8 @@ namespace nucleus
 
       enter();
 
-      // look up for the quill responsible for the given key.
-      if (this->Lookup(key, quill) == elle::StatusError)
+      // search for the quill responsible for the given key.
+      if (this->Search(key, quill) == elle::StatusError)
 	escape("unable to locate a quill for this key");
 
       // insert the key/value tuple in the given quill.
@@ -133,22 +133,60 @@ namespace nucleus
 					     const typename V::K& key,
 					     W*			value)
     {
-      enter();
+      typename N::I*	inlet;
 
-      // add the value to the nodule.
-      if (nodule->Insert(key, value) == elle::StatusError)
-	escape("unable to add the value to the nodule");
+      enter(instance(inlet));
 
-      // check if the nodule's footprint has exceeded the extent.
-      if (nodule->_footprint.size > hole::Hole::Descriptor.extent)
+      // create an inlet here in order to be able to compute its footprint.
+      inlet = new typename N::I(key, value);
+
+      // compute the inlet's footprint.
+      if (inlet->_footprint.Compute() == elle::StatusError)
+	escape("unable to compute the inlet's footprint");
+
+      // check if the future nodule's footprint---i.e should the inlet
+      // be inserted---would exceed the extent.
+      if ((nodule->_footprint.size +
+	   inlet->_footprint.size) > hole::Hole::Descriptor.extent)
 	{
 	  N*			right;
 	  Seam<V>*		parent;
 	  typename V::K		major;
 
+	  //
+	  // in this case, the inlet is not inserted in order to prevent
+	  // the tree from being updated though we know the nodule will
+	  // be split.
+	  //
+	  // thus, the nodule is split first, then the inlet will be inserted.
+	  //
+
 	  // split the nodule.
 	  if (nodule->Split(right) == elle::StatusError)
 	    escape("unable to split the nodule");
+
+	  // retrieve the left nodule's major key.
+	  if (nodule->Major(major) == elle::StatusError)
+	    escape("unable to retrieve the major key");
+
+	  // insert the inlet depending on its key: if its key is lower than
+	  // the major, then it falls in the left nodule; otherwise in the
+	  // right.
+	  if (inlet->key < major)
+	    {
+	      // add the inlet to the left nodule.
+	      if (nodule->Insert(inlet) == elle::StatusError)
+		escape("unable to add the inlet to the nodule");
+	    }
+	  else
+	    {
+	      // add the inlet to the right nodule.
+	      if (right->Insert(inlet) == elle::StatusError)
+		escape("unable to add the inlet to the nodule");
+	    }
+
+	  // waive.
+	  waive(inlet);
 
 	  // create a parent node if necessary i.e if the current nodule
 	  // was the root.
@@ -175,6 +213,20 @@ namespace nucleus
 	  if (this->Insert(parent, major, right) == elle::StatusError)
 	    escape("unable to add the right nodule to its parent");
 	}
+      else
+	{
+	  //
+	  // in this case, the nodule can accept the new inlet and does
+	  // not need to be split.
+	  //
+
+	  // add the inlet to the nodule.
+	  if (nodule->Insert(inlet) == elle::StatusError)
+	    escape("unable to add the inlet to the nodule");
+
+	  // waive.
+	  waive(inlet);
+	}
 
       leave();
     }
@@ -183,37 +235,15 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Porcupine<V>::Lookup(const typename V::K& key,
+    elle::Status	Porcupine<V>::Search(const typename V::K& key,
 					     Quill<V>*&		quill)
       const
     {
       enter();
 
-      // trigger the lookup method on the root nodule.
-      if (this->_root->Lookup(key, quill) == elle::StatusError)
+      // trigger the search method on the root nodule.
+      if (this->_root->Search(key, quill) == elle::StatusError)
 	escape("unable to locate the quill for this key");
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status	Porcupine<V>::Locate(const typename V::K& key,
-					     Quill<V>*&		quill,
-					     V*&		value)
-      const
-    {
-      enter();
-
-      // trigger the lookup method on the root nodule.
-      if (this->_root->Lookup(key, quill) == elle::StatusError)
-	escape("unable to locate the quill for this key");
-
-      // retrieve the value associated with the given key.
-      if (quill->Locate(key, value) == elle::StatusError)
-	escape("unable to locate the value");
 
       leave();
     }

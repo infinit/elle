@@ -20,7 +20,7 @@ class C:
   public elle::Object
 {
 public:
-  typedef int	K;
+  typedef elle::Natural32	K;
 
   C(const elle::String s):
     name(s)
@@ -93,8 +93,12 @@ int main(int argc, char** argv)
 
   p.Create();
 
-  for (int i = 0; i < 50000; i++)
+  for (int i = 0; i < 12; i++)
     {
+      printf("===========================================================\n");
+      p.Dump();
+      printf("===========================================================\n");
+
       char name[1024];
 
       memset(name, 0x0, sizeof (name));

@@ -84,7 +84,26 @@ namespace nucleus
 				       Nodule<V>*);
       elle::Status		Insert(I*);
 
+      elle::Status		Delete(const typename V::K&);
+      elle::Status		Delete(Iterator&);
+
+      elle::Status		Lookup(const typename V::K&,
+				       Iterator&);
+      elle::Status		Lookup(const typename V::K&,
+				       I*&);
+      elle::Status		Lookup(const typename V::K&,
+				       Nodule<V>*&);
+
+      elle::Status		Locate(const typename V::K&,
+				       Iterator&);
+      elle::Status		Locate(const typename V::K&,
+				       I*&);
+      elle::Status		Locate(const typename V::K&,
+				       Nodule<V>*&);
+
       elle::Status		Split(Seam<V>*&);
+
+      elle::Status		Update(const typename V::K&);
 
       //
       // interfaces
@@ -92,11 +111,13 @@ namespace nucleus
 
       // nodule
       elle::Status		Major(typename V::K&) const;
-      elle::Status		Lookup(const typename V::K&,
+      elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
 
       // dumpable
       elle::Status		Dump(const elle::Natural32 = 0) const;
+
+      // XXX archivable
 
       //
       // attributes

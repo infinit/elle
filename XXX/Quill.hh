@@ -83,6 +83,11 @@ namespace nucleus
 				       V*);
       elle::Status		Insert(I*);
 
+      // XXX delete, delete
+
+      // XXX lookup, lookup, lookup
+
+      // XXX locate, locate
       elle::Status		Locate(const typename V::K&,
 				       V*&) const;
 
@@ -94,7 +99,7 @@ namespace nucleus
 
       // nodule
       elle::Status		Major(typename V::K&) const;
-      elle::Status		Lookup(const typename V::K&,
+      elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
 
       // dumpable

@@ -125,6 +125,7 @@ namespace nucleus
     elle::Status	Seam<V>::Insert(I*			inlet)
     {
       std::pair<Seam<V>::Iterator, elle::Boolean>	result;
+      typename V::K					major;
 
       enter();
 
@@ -151,8 +152,137 @@ namespace nucleus
       // add the inlet footprint to the seam's.
       this->_footprint.size += inlet->_footprint.size;
 
+      // retrieve the major key.
+      if (this->Major(major) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // should have the inserted key become the major key, update the parent
+      // seam, if present.
+      if ((inlet->key == major) && (this->_parent != NULL))
+	{
+	  // XXX load parent.
+
+	  // update the parent seam.
+	  if (this->_parent->Update(major) == elle::StatusError)
+	    escape("unable to update the parent seam");
+	}
+
       leave();
     }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Delete(const typename V::K&	key)
+    {
+      Seam<V>::Iterator	iterator;
+
+      enter();
+
+      // locate the inlet for the given key.
+      if (this->Locate(key, iterator) == elle::StatusError)
+	escape("unable to locate the given key");
+
+      // delete the entry associated with the given iterator.
+      if (this->Delete(iterator) == elle::StatusError)
+	escape("unable to delete the entry associated with the iterator");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Delete(Iterator&		iterator)
+    {
+      Seam<V>::I*	inlet;
+      typename V::K	key;
+      typename V::K	major;
+
+      enter();
+
+      // retrieve the inlet.
+      inlet = iterator->second;
+
+      // copy the inlet key before it gets removed.
+      key = inlet->key;
+
+      // retrieve the current major key.
+      if (this->Major(major) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // finally, erase the entry.
+      this->container.erase(iterator);
+
+      // should have the deleted key changed the major key, update the
+      // parent, if present.
+      if ((key == major) && (this->_parent != NULL))
+	{
+	  // retrieve the new major key.
+	  if (this->Major(major) == elle::StatusError)
+	    escape("unable to retrieve the major key");
+
+	  // XXX load parent.
+
+	  // update the parent seam.
+	  if (this->_parent->Update(major) == elle::StatusError)
+	    escape("unable to update the parent seam");
+	}
+
+      leave();
+    }
+
+    ///
+    /// XXX 
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Lookup(const typename V::K&	key,
+					Iterator&		iterator)
+    {
+      enter();
+
+      // go through the container.
+      for (iterator = this->container.begin();
+	   iterator != this->container.end();
+	   iterator++)
+	{
+	  Seam<V>::I*	inlet = iterator->second;
+
+	  // check if this inlet is responsible for the given key or
+	  // the end of the seam has been reached.
+	  if ((key <= iterator->first) ||
+	      (inlet == this->container.rbegin()->second))
+	    {
+	      // return with the correct iterator set.
+	      
+	      leave();
+	    }
+	}
+
+      escape("unable to look up the entry responsible for the given key");
+    }
+
+    ///
+    /// XXX lookup
+    ///
+
+    ///
+    /// XXX lookup
+    ///
+
+    ///
+    /// XXX locate
+    ///
+
+    ///
+    /// XXX locate
+    ///
+
+    ///
+    /// XXX locate
+    ///
 
     ///
     /// XXX
@@ -162,20 +292,25 @@ namespace nucleus
     {
       Seam<V>::Iterator	i;
       Seam<V>::Iterator	j;
-      elle::Natural32	footprint;
       elle::Natural32	size;
       Seam<V>*		r;
+      typename V::K	major;
 
       enter(instance(r));
 
-      // initialize the footprint as being the original seam's footprint.
-      footprint = this->_footprint.size;
+      // allocate a new seam.
+      r = new Seam<V>(this->_load, this->_unload);
 
-      // compute the future seams' sizes.
-      size = footprint / 2;
+      // create the seam.
+      if (r->Create() == elle::StatusError)
+	escape("unable to create the seam");
 
-      // reinitialize the current seam's footprint.
-      this->_footprint.size = 0;
+      // initialize the size as being the future quills' normal sizes.
+      size = hole::Hole::Descriptor.extent / 2;
+
+      // reinitialize the current quill's footprint according to the
+      // quill's initial footprint
+      this->_footprint.size = r->_footprint.size;
 
       // go through the seam's entries until the future size is reached
       // after which all the remaining entries will be moved to the
@@ -187,7 +322,7 @@ namespace nucleus
 	  Seam<V>::I*		inlet = i->second;
 
 	  // check whether the new seam's size has been reached.
-	  if (this->_footprint.size >= size)
+	  if (this->_footprint.size > size)
 	    break;
 
 	  //
@@ -204,13 +339,6 @@ namespace nucleus
 	  this->_footprint.size += inlet->_footprint.size;
 	}
 
-      // allocate a new seam.
-      r = new Seam<V>(this->_load, this->_unload);
-
-      // create the seam.
-      if (r->Create() == elle::StatusError)
-	escape("unable to create the seam");
-
       // go through the remaining entries in order to move them to
       // the new (r) seam.
       for (j = i; j != this->container.end(); j++)
@@ -220,7 +348,7 @@ namespace nucleus
 	  // check whether the new seam is about to exceed the extent
 	  // which would mean that splitting the seam has not resulted
 	  // in two valid seams.
-	  if ((this->_footprint.size +
+	  if ((r->_footprint.size +
 	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
 	    escape("unable to split the seam into two extent-valid seams");
 
@@ -232,6 +360,21 @@ namespace nucleus
       // remove the right entries from the left (this) seam.
       this->container.erase(i, this->container.end());
 
+      // recompute the seam's major key since the far right, i.e highest,
+      // entries just go removed.
+      if (this->Major(major) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // update the parent, if present.
+      if (this->_parent != NULL)
+	{
+	  // XXX load parent.
+
+	  // update the parent seam.
+	  if (this->_parent->Update(major) == elle::StatusError)
+	    escape("unable to update the parent seam");
+	}
+
       // set both seams' footprint as consistent.
       this->_footprint.state = elle::Footprint::StateConsistent;
       r->_footprint.state = elle::Footprint::StateConsistent;
@@ -241,6 +384,47 @@ namespace nucleus
 
       // waive the r variable.
       waive(r);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Update(const typename V::K&	key)
+    {
+      Seam<V>::Iterator	iterator;
+      Seam<V>::I*	inlet;
+
+      enter();
+
+      // lookup the entry responsible for the given key.
+      if (this->Lookup(key, iterator) == elle::StatusError)
+	escape("unable to look up the entry responsible for this key");
+
+      // retrieve the inlet.
+      inlet = iterator->second;
+
+      // should the given key be different from the current one, update the
+      // entry.
+      if (key != inlet->key)
+	{
+	  // manually erase the entry as Delete() may update the tree
+	  // which would incurr additional work.
+	  this->container.erase(iterator);
+
+	  // update the inlet's key.
+	  inlet->key = key;
+
+	  // re-insert the inlet.
+	  //
+	  // note that by doing so, should the key be the new highest
+	  // of the seam, the Insert() method will take care of updating
+	  // the parent node.
+	  if (this->Insert(inlet) == elle::StatusError)
+	    escape("unable to insert the inlet");
+	}
 
       leave();
     }
@@ -267,41 +451,33 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Seam<V>::Lookup(const typename V::K&	key,
+    elle::Status	Seam<V>::Search(const typename V::K&	key,
 					Quill<V>*&		quill)
     {
-      Seam<V>::Scoutor	scoutor;
+      Seam<V>::Iterator	iterator;
+      Seam<V>::I*	inlet;
 
       enter();
 
-      // go through the container.
-      for (scoutor = this->container.begin();
-	   scoutor != this->container.end();
-	   scoutor++)
+      // look up the entry responsible for this key.
+      if (this->Lookup(key, iterator) == elle::StatusError)
+	escape("unable to look up the entry");
+
+      // retrieve the inlet.
+      inlet = iterator->second;
+
+      // load the child nodule, if necessary
+      if (inlet->_value == NULL)
 	{
-	  Seam<V>::I*	inlet = scoutor->second;
-
-	  // check if this inlet is responsible for the given key or
-	  // the end of the seam has been reached.
-	  if ((key <= scoutor->first) ||
-	      (inlet == this->container.rbegin()->second))
-	    {
-	      // load the child, if necessary
-	      if (inlet->_value == NULL)
-		{
-		  // load the child nodule.
-		  if (this->_load.Call(inlet->address,
-				       inlet->_value) == elle::StatusError)
-		    escape("unable to load the child nodule");
-		}
-
-	      // lookup in this nodule.
-	      if (inlet->_value->Lookup(key, quill) == elle::StatusError)
-		escape("unable to locate the quill for the given key");
-
-	      break;
-	    }
+	  // load the child nodule.
+	  if (this->_load.Call(inlet->address,
+			       inlet->_value) == elle::StatusError)
+	    escape("unable to load the child nodule");
 	}
+
+      // search in this nodule.
+      if (inlet->_value->Search(key, quill) == elle::StatusError)
+	escape("unable to locate the quill for the given key");
 
       leave();
     }
@@ -324,22 +500,11 @@ namespace nucleus
 
       std::cout << alignment << "[Seam] " << this << std::endl;
 
-      /* XXX
-      // dump the load callback.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Load]" << std::endl;
+      // dump the parent nodule.
+      if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the nodule");
 
-      if (this->load.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the callback");
-
-      // dump the unload callback.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Unload]" << std::endl;
-
-      if (this->unload.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the callback");
-      */
-
+      // dump the inlets.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Inlets] " << this->container.size() << std::endl;
 

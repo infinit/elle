@@ -81,8 +81,17 @@ namespace nucleus
       // virtual methods
       //
       virtual elle::Status	Major(typename V::K&) const = 0;
-      virtual elle::Status	Lookup(const typename V::K&,
+      virtual elle::Status	Search(const typename V::K&,
 				       Quill<V>*&) = 0;
+
+      //
+      // interfaces
+      //
+
+      // dumpable
+      elle::Status		Dump(const elle::Natural32 = 0) const;
+
+      // XXX archivable
 
       //
       // attributes

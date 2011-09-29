@@ -89,20 +89,15 @@ namespace nucleus
 				       V*);
       elle::Status		Remove(const typename V::K&);
 
-      elle::Status		Lookup(const typename V::K&,
+      elle::Status		Search(const typename V::K&,
 				       Quill<V>*&) const;
-      elle::Status		Locate(const typename V::K&,
-				       Quill<V>*&,
-				       V*&) const;
+
       elle::Status		Grow();
 
       elle::Status		Load(const Address&,
 				     Nodule<V>*&);
       elle::Status		Unload(const Address&,
 				       const Nodule<V>*);
-
-      // XXX Lookup, Locate
-      // XXX first, last, next, previous and foreach(LEAF OR INTERNAL OR BOTH)
 
       //
       // interfaces

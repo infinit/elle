@@ -88,7 +88,8 @@ namespace nucleus
 
       // dump the key.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Key] " << this->key << std::endl;
+		<< "[Key] " << std::dec << this->key << std::endl;
+      // XXX remove std::dec
 
       // dump the address.
       if (this->address.Dump(margin + 2) == elle::StatusError)

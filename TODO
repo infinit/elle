@@ -1,3 +1,8 @@
+- pour les liens freres: c'est la merde car lorsque l'on charge un block
+  il faut genre trouver le frere en remontant et redescandant dans
+  la hierarchie: pas pratique.
+  -> peut etre autant faire direct un parcours via cette methode?
+
 - Block a une Footprint classe qui contient la taille et un state.
  -> si l'instance est modifie, on ivnalide le footprint. et quand on appelle
     Footprint(), c'est recompute que si necessaire.
