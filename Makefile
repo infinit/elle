@@ -69,26 +69,23 @@ pull:
 	@echo "---[ infinit"
 	@$(GIT) pull
 
-	@for component in $(COMPONENTS); do				\
-	  echo "---[ $${component}"					&& \
+	@for component in $(COMPONENTS); do (				\
+	  echo "---[ $${component}" &&					\
 	  if [ -d $${component} ] ; then				\
-	    cd $${component}						&& \
-	    $(GIT) pull							&& \
-	    cd ..							; \
+	    cd $${component} && $(GIT) pull ;				\
 	  else								\
-	    $(GIT) clone $(REPOSITORY)/$${component}			; \
-	  fi								\
+	    $(GIT) clone $(REPOSITORY)/$${component} ;			\
+	  fi )								\
 	done
 
 status:
 	@echo "---[ infinit"
 	@$(GIT) status
 
-	@for component in $(COMPONENTS); do				\
+	@for component in $(COMPONENTS); do (				\
 	  echo "---[ $${component}"					&& \
 	  cd $${component}						&& \
-	  $(GIT) status							&& \
-	  cd ..								; \
+	  $(GIT) status	)						\
 	done
 
 commit:
