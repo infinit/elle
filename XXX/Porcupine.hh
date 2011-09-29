@@ -77,21 +77,19 @@ namespace nucleus
       //
       elle::Status		Create();
 
+      elle::Status		Add(const typename V::K&,
+				    V*);
+      elle::Status		Modify(const typename V::K&,
+				       V*); // XXX
+      elle::Status		Remove(const typename V::K&); // XXX
+
+      elle::Status		Search(const typename V::K&,
+				       Quill<V>*&) const;
       template <typename N,
 		typename W>
       elle::Status		Insert(N*,
 				       const typename V::K&,
 				       W*);
-
-      elle::Status		Add(const typename V::K&,
-				    V*);
-      elle::Status		Modify(const typename V::K&,
-				       V*);
-      elle::Status		Remove(const typename V::K&);
-
-      elle::Status		Search(const typename V::K&,
-				       Quill<V>*&) const;
-
       elle::Status		Grow();
 
       elle::Status		Load(const Address&,

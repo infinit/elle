@@ -91,6 +91,12 @@ namespace nucleus
       if (this->_footprint.Compute() == elle::StatusError)
 	escape("unable to compute the footprint");
 
+      //
+      // note that after this call, the footprint will be considered
+      // consistent though it will probably never be since the footprint
+      // will be manually manipulated.
+      //
+
       leave();
     }
 
@@ -414,6 +420,14 @@ namespace nucleus
 	  // which would incurr additional work.
 	  this->container.erase(iterator);
 
+	  // potentially recompute the inlet's footprint.
+	  if (inlet->_footprint.Compute() == elle::StatusError)
+	    escape("unable to compute the footprint");
+
+	  // note that the inlet's footprint must be substracted since it
+	  // will be re-added through the Insert() call.
+	  this->_footprint.size -= inlet->_footprint.size;
+
 	  // update the inlet's key.
 	  inlet->key = key;
 
@@ -502,7 +516,7 @@ namespace nucleus
 
       // dump the parent nodule.
       if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the nodule");
+	escape("unable to dump the parent nodule");
 
       // dump the inlets.
       std::cout << alignment << elle::Dumpable::Shift
@@ -518,9 +532,90 @@ namespace nucleus
 	    escape("unable to dump the inlet");
 	}
 
-      // dump the footprint.
-      if (this->_footprint.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the footprint");
+      leave();
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method archives the seam.
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Serialize(elle::Archive&	archive) const
+    {
+      Seam<V>::Scoutor	scoutor;
+      elle::Natural32	size;
+
+      enter();
+
+      // serialize the parent nodule.
+      if (Nodule<V>::Serialize(archive) == elle::StatusError)
+	escape("unable to serialize the parent nodule");
+
+      // retrieve the container size.
+      size = this->container.size();
+
+      // serialize the container size.
+      if (archive.Serialize(size) == elle::StatusError)
+	escape("unable to serialize the size");
+
+      // go through the container.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  // serialize the key and inlet.
+	  if (archive.Serialize(*scoutor->second) == elle::StatusError)
+	    escape("unable to serialize the key/inlet tuple");
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method extracts the attributes.
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Extract(elle::Archive&	archive)
+    {
+      elle::Natural32	size;
+      elle::Natural32	i;
+
+      enter();
+
+      // extract the parent nodule.
+      if (Nodule<V>::Extract(archive) == elle::StatusError)
+	escape("unable to extract the parent nodule");
+
+      // extract the container size.
+      if (archive.Extract(size) == elle::StatusError)
+	escape("unable to extract the size");
+
+      // iterator.
+      for (i = 0; i < size; i++)
+	{
+	  Seam<V>::I*	inlet;
+
+	  enter(instance(inlet));
+
+	  // allocate an inlet.
+	  inlet = new Seam<V>::I;
+
+	  // extract the key and inlet.
+	  if (archive.Extract(*inlet) == elle::StatusError)
+	    escape("unable to extract the key/inlet tuple");
+
+	  // add the tuple to the seam.
+	  if (this->Insert(inlet) == elle::StatusError)
+	    escape("unable to add the key/tuple inlet to the seam");
+
+	  // waive.
+	  waive(inlet);
+
+	  release();
+	}
 
       leave();
     }

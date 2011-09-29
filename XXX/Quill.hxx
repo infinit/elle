@@ -74,6 +74,12 @@ namespace nucleus
       if (this->_footprint.Compute() == elle::StatusError)
 	escape("unable to compute the footprint");
 
+      //
+      // note that after this call, the footprint will be considered
+      // consistent though it will probably never be since the footprint
+      // will be manually manipulated.
+      //
+
       leave();
     }
 
@@ -112,10 +118,6 @@ namespace nucleus
 
       enter();
 
-      // XXX
-      printf("-----------------------------------------------------------\n");
-      this->Dump();
-
       // check if this key has already been recorded.
       if (this->container.find(inlet->key) != this->container.end())
 	escape("this key seems to have already been recorded");
@@ -140,17 +142,11 @@ namespace nucleus
       if (this->Major(major) == elle::StatusError)
 	escape("unable to retrieve the major key");
 
-      // XXX
-      std::cout << "inserted: " << inlet->key << std::endl;
-      this->Dump();
-      std::cout << "major: " << major << std::endl;
-      printf("parent: %p\n", this->_parent);
-
       // should have the inserted key become the major key, update the parent
       // seam, if present.
       if ((inlet->key == major) && (this->_parent != NULL))
 	{
-	  // XXX load parent.
+	  // XXX the parent is assumed to be loaded here!
 
 	  // update the parent seam.
 	  if (this->_parent->Update(major) == elle::StatusError)
@@ -352,7 +348,7 @@ namespace nucleus
 
       // dump the parent nodule.
       if (Nodule<V>::Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the nodule");
+	escape("unable to dump the parent nodule");
 
       // dump the inlets.
       std::cout << alignment << elle::Dumpable::Shift
@@ -367,10 +363,6 @@ namespace nucleus
 	  if (scoutor->second->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the inlet");
 	}
-
-      // dump the footprint.
-      if (this->_footprint.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the footprint");
 
       leave();
     }
@@ -390,7 +382,9 @@ namespace nucleus
 
       enter();
 
-      // XXX call Nodule
+      // serialize the parent nodule.
+      if (Nodule<V>::Serialize(archive) == elle::StatusError)
+	escape("unable to serialize the parent nodule");
 
       // retrieve the container size.
       size = this->container.size();
@@ -422,6 +416,10 @@ namespace nucleus
       elle::Natural32	i;
 
       enter();
+
+      // extract the parent nodule.
+      if (Nodule<V>::Extract(archive) == elle::StatusError)
+	escape("unable to extract the parent nodule");
 
       // extract the container size.
       if (archive.Extract(size) == elle::StatusError)

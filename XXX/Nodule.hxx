@@ -67,9 +67,11 @@ namespace nucleus
 
       std::cout << alignment << "[Nodule]" << std::endl;
 
+      /* XXX
       // dump the type.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Type] " << std::dec << this->type << std::endl;
+      */
 
       /* XXX
       // dump the load callback.
@@ -91,6 +93,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Parent] " << std::hex << this->_parent << std::endl;
 
+      /* XXX
       // dump the left link.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Left] " << std::hex << this->_left << std::endl;
@@ -98,10 +101,51 @@ namespace nucleus
       // dump the right link.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Right] " << std::hex << this->_right << std::endl;
+      */
 
       // dump the footprint.
       if (this->_footprint.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the footprint");
+
+      leave();
+    }
+
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method archives the nodule.
+    ///
+    template <typename V>
+    elle::Status	Nodule<V>::Serialize(elle::Archive&	archive) const
+    {
+      enter();
+
+      // serialize the attributes.
+      if (archive.Serialize(
+	    static_cast<elle::Natural8>(this->type)) == elle::StatusError)
+	escape("unable to serialize the attributes");
+
+      leave();
+    }
+
+    ///
+    /// this method extracts the attributes.
+    ///
+    template <typename V>
+    elle::Status	Nodule<V>::Extract(elle::Archive&	archive)
+    {
+      elle::Natural8	type;
+
+      enter();
+
+      // extract the attributes.
+      if (archive.Extract(type) == elle::StatusError)
+	escape("unable to extract the attributes");
+
+      // cast the type.
+      this->type = static_cast<Nodule<V>::Type>(type);
 
       leave();
     }

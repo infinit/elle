@@ -27,8 +27,8 @@ namespace nucleus
 	      typename T>
     Inlet<V, T>::Inlet():
       address(Address::Vacuum),
-      _value(NULL),
-      _footprint(*this)
+      _footprint(*this),
+      _value(NULL)
     {
     }
 
@@ -41,8 +41,8 @@ namespace nucleus
 		       T*					value):
       key(key),
       address(Address::Vacuum),
-      _value(value),
-      _footprint(*this)
+      _footprint(*this),
+      _value(value)
     {
     }
 
@@ -55,8 +55,8 @@ namespace nucleus
 		       const Address&				address):
       key(key),
       address(address),
-      _value(NULL),
-      _footprint(*this)
+      _footprint(*this),
+      _value(NULL)
     {
     }
 
@@ -91,9 +91,15 @@ namespace nucleus
 		<< "[Key] " << std::dec << this->key << std::endl;
       // XXX remove std::dec
 
+      /* XXX
       // dump the address.
       if (this->address.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the address");
+      */
+
+      // dump the footprint.
+      if (this->_footprint.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the footprint");
 
       // dump the value, if present.
       if (this->_value != NULL)
@@ -104,12 +110,8 @@ namespace nucleus
       else
 	{
 	  std::cout << alignment << elle::Dumpable::Shift
-		    << elle::none << std::endl;
+		    << "[Value] " << elle::none << std::endl;
 	}
-
-      // dump the footprint.
-      if (this->_footprint.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the footprint");
 
       leave();
     }

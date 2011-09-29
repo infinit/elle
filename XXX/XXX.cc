@@ -93,12 +93,8 @@ int main(int argc, char** argv)
 
   p.Create();
 
-  for (int i = 0; i < 12; i++)
+  for (int i = 0; i < 15000; i++)
     {
-      printf("===========================================================\n");
-      p.Dump();
-      printf("===========================================================\n");
-
       char name[1024];
 
       memset(name, 0x0, sizeof (name));
@@ -107,7 +103,7 @@ int main(int argc, char** argv)
 
       C* c = new C(name);
 
-      p.Add(i, c);
+      p.Add(i, NULL);
     }
 
   p.Dump();

@@ -64,8 +64,8 @@ namespace nucleus
       typename V::K		key;
       Address			address;
 
-      T*			_value;
       elle::Footprint		_footprint;
+      T*			_value;
     };
 
   }
