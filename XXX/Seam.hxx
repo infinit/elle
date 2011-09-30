@@ -148,7 +148,7 @@ namespace nucleus
       if (result.second == false)
 	escape("unable to insert the inlet in the container");
 
-      // set the quill's parent link.
+      // set the seam's parent link.
       inlet->_value->_parent = this;
 
       // compute the inlet's footprint.
@@ -180,6 +180,82 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
+    elle::Status	Seam<V>::Delete(Iterator&		iterator)
+    {
+      Seam<V>::I*	inlet;
+      typename V::K	key;
+      typename V::K	major;
+
+      enter();
+
+      // retrieve the current major key.
+      if (this->Major(major) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // retrieve the inlet.
+      inlet = iterator->second;
+
+      // copy the inlet key before it gets removed.
+      key = inlet->key;
+
+      // compute the inlet's footprint.
+      if (inlet->_footprint.Compute() == elle::StatusError)
+	escape("unable to compute the inlet's footprint");
+
+      // substract the inlet footprint to the seam's.
+      this->_footprint.size -= inlet->_footprint.size;
+
+      // delete the inlet.
+      delete inlet;
+
+      // finally, erase the entry.
+      this->container.erase(iterator);
+
+      // should the seam not be empty and have the deleted key changed
+      // the major key, update the parent, if present.
+      if ((this->container.empty() == false) &&
+	  (key == major) &&
+	  (this->_parent != NULL))
+	{
+	  // retrieve the new major key.
+	  if (this->Major(major) == elle::StatusError)
+	    escape("unable to retrieve the major key");
+
+	  // XXX load parent.
+
+	  // update the parent seam.
+	  if (this->_parent->Update(major) == elle::StatusError)
+	    escape("unable to update the parent seam");
+	}
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Delete(Nodule<V>*		nodule)
+    {
+      Seam<V>::Iterator	iterator;
+
+      enter();
+
+      // locate the inlet for the given nodule.
+      if (this->Locate(nodule, iterator) == elle::StatusError)
+	escape("unable to locate the given nodule");
+
+      // delete the entry associated with the given iterator.
+      if (this->Delete(iterator) == elle::StatusError)
+	escape("unable to delete the entry associated with the iterator");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
     elle::Status	Seam<V>::Delete(const typename V::K&	key)
     {
       Seam<V>::Iterator	iterator;
@@ -193,49 +269,6 @@ namespace nucleus
       // delete the entry associated with the given iterator.
       if (this->Delete(iterator) == elle::StatusError)
 	escape("unable to delete the entry associated with the iterator");
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status	Seam<V>::Delete(Iterator&		iterator)
-    {
-      Seam<V>::I*	inlet;
-      typename V::K	key;
-      typename V::K	major;
-
-      enter();
-
-      // retrieve the inlet.
-      inlet = iterator->second;
-
-      // copy the inlet key before it gets removed.
-      key = inlet->key;
-
-      // retrieve the current major key.
-      if (this->Major(major) == elle::StatusError)
-	escape("unable to retrieve the major key");
-
-      // finally, erase the entry.
-      this->container.erase(iterator);
-
-      // should have the deleted key changed the major key, update the
-      // parent, if present.
-      if ((key == major) && (this->_parent != NULL))
-	{
-	  // retrieve the new major key.
-	  if (this->Major(major) == elle::StatusError)
-	    escape("unable to retrieve the major key");
-
-	  // XXX load parent.
-
-	  // update the parent seam.
-	  if (this->_parent->Update(major) == elle::StatusError)
-	    escape("unable to update the parent seam");
-	}
 
       leave();
     }
@@ -273,22 +306,106 @@ namespace nucleus
     ///
     /// XXX lookup
     ///
+    template <typename V>
+    elle::Status	Seam<V>::Lookup(const typename V::K&	key,
+					I*&			inlet)
+    {
+      Seam<V>::Iterator	iterator;
+
+      enter();
+
+      // lookup the entry responsible for the given key.
+      if (this->Lookup(key, iterator) == elle::StatusError)
+	escape("unable to locate the entry");
+
+      // return the inlet.
+      inlet = iterator->second;
+
+      leave();
+    }
 
     ///
     /// XXX lookup
     ///
+    template <typename V>
+    elle::Status	Seam<V>::Lookup(const typename V::K&	key,
+					Nodule<V>*&		nodule)
+    {
+      Seam<V>::I*	inlet;
+
+      enter();
+
+      // lookup the inlet associated with the given key.
+      if (this->Lookup(key, inlet) == elle::StatusError)
+	escape("unable to locate the inlet");
+
+      // XXX load the _value.
+
+      // return the nodule.
+      nodule = inlet->_value;
+
+      leave();
+    }
 
     ///
     /// XXX locate
     ///
+    template <typename V>
+    elle::Status	Seam<V>::Locate(const typename V::K&	key,
+					Iterator&		iterator)
+    {
+      enter();
+
+      // locate the given key.
+      if ((iterator = this->container.find(key)) == this->container.end())
+	escape("unable to locate the given key");
+
+      leave();
+    }
 
     ///
     /// XXX locate
     ///
+    template <typename V>
+    elle::Status	Seam<V>::Locate(const typename V::K&	key,
+					I*&			inlet)
+    {
+      Seam<V>::Iterator	iterator;
+
+      enter();
+
+      // locate the given key.
+      if (this->Locate(key, iterator) == elle::StatusError)
+	escape("unable to locate the entry associated with the given key");
+
+      // return the inlet.
+      inlet = iterator->second;
+
+      leave();
+    }
 
     ///
     /// XXX locate
     ///
+    template <typename V>
+    elle::Status	Seam<V>::Locate(const typename V::K&	key,
+					Nodule<V>*&		nodule)
+    {
+      Seam<V>::I*	inlet;
+
+      enter();
+
+      // locate the given key.
+      if (this->Locate(key, inlet) == elle::StatusError)
+	escape("unable to locate the inlet associated with the given key");
+
+      // XXX load?
+
+      // return the nodule.
+      nodule = inlet->_value;
+
+      leave();
+    }
 
     ///
     /// XXX
@@ -304,6 +421,11 @@ namespace nucleus
 
       enter(instance(r));
 
+      // initialize _size_ as being the future left quills' size.
+      size =
+	hole::Hole::Descriptor.extent *
+	hole::Hole::Descriptor.balancing.high;
+
       // allocate a new seam.
       r = new Seam<V>(this->_load, this->_unload);
 
@@ -311,11 +433,8 @@ namespace nucleus
       if (r->Create() == elle::StatusError)
 	escape("unable to create the seam");
 
-      // initialize the size as being the future quills' normal sizes.
-      size = hole::Hole::Descriptor.extent / 2;
-
-      // reinitialize the current quill's footprint according to the
-      // quill's initial footprint
+      // reinitialize the current seam's footprint according to the
+      // seam's initial footprint
       this->_footprint.size = r->_footprint.size;
 
       // go through the seam's entries until the future size is reached

@@ -83,13 +83,23 @@ namespace nucleus
 				       V*);
       elle::Status		Insert(I*);
 
-      // XXX delete, delete
+      elle::Status		Delete(Iterator&);
+      elle::Status		Delete(V*);
+      elle::Status		Delete(const typename V::K&);
 
-      // XXX lookup, lookup, lookup
+      elle::Status		Lookup(const typename V::K&,
+				       Iterator&);
+      elle::Status		Lookup(const typename V::K&,
+				       I*&);
+      elle::Status		Lookup(const typename V::K&,
+				       V*&);
 
-      // XXX locate, locate
       elle::Status		Locate(const typename V::K&,
-				       V*&) const;
+				       Iterator&);
+      elle::Status		Locate(const typename V::K&,
+				       I*&);
+      elle::Status		Locate(const typename V::K&,
+				       V*&);
 
       elle::Status		Split(Quill<V>*&);
 

@@ -84,8 +84,9 @@ namespace nucleus
 				       Nodule<V>*);
       elle::Status		Insert(I*);
 
-      elle::Status		Delete(const typename V::K&);
       elle::Status		Delete(Iterator&);
+      elle::Status		Delete(Nodule<V>*);
+      elle::Status		Delete(const typename V::K&);
 
       elle::Status		Lookup(const typename V::K&,
 				       Iterator&);

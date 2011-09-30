@@ -70,40 +70,6 @@ namespace nucleus
     ///
     /// XXX
     ///
-    /// XXX remove this?
-    ///
-    template <typename V>
-    elle::Status	Porcupine<V>::Create()
-    {
-      Quill<V>*		quill;
-
-      enter(instance(quill));
-
-      // at first, allocate an initial root nodule which happens to be
-      // a leaf since alone.
-      quill = new Quill<V>(
-	        elle::Callback<>::Infer(&Porcupine::Load, this),
-		elle::Callback<>::Infer(&Porcupine::Unload, this));
-
-      // create the quill.
-      if (quill->Create() == elle::StatusError)
-	escape("unable to create the quill");
-
-      // set the root nodule.
-      this->_root = quill;
-
-      // waive the tracking.
-      waive(quill);
-
-      // increment the height.
-      height++;
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
     template <typename V>
     elle::Status	Porcupine<V>::Add(const typename V::K&	key,
 					  V*			value)
@@ -119,6 +85,49 @@ namespace nucleus
       // insert the key/value tuple in the given quill.
       if (this->Insert(quill, key, value) == elle::StatusError)
 	escape("unable to insert the key/value tuple");
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Locate(const typename V::K& key,
+					     V*&		value)
+    {
+      Quill<V>*			quill;
+
+      enter();
+
+      // search for the quill responsible for the given key.
+      if (this->Search(key, quill) == elle::StatusError)
+	escape("unable to locate a quill for this key");
+
+      // locate the value within the quill.
+      if (quill->Locate(key, value) == elle::StatusError)
+	escape("unable to locate the value");
+
+      leave();
+    }
+
+    ///
+    /// XXX remove
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Remove(const typename V::K& key)
+    {
+      Quill<V>*			quill;
+
+      enter();
+
+      // search for the quill responsible for the given key.
+      if (this->Search(key, quill) == elle::StatusError)
+	escape("unable to locate a quill for this key");
+
+      // delete the key/value tuple from the given quill.
+      if (this->Delete(quill, key) == elle::StatusError)
+	escape("unable to delete the key tuple");
 
       leave();
     }
@@ -174,15 +183,15 @@ namespace nucleus
 	  // right.
 	  if (inlet->key < major)
 	    {
-	      // add the inlet to the left nodule.
+	      // insert the inlet to the left nodule.
 	      if (nodule->Insert(inlet) == elle::StatusError)
-		escape("unable to add the inlet to the nodule");
+		escape("unable to insert the inlet to the nodule");
 	    }
 	  else
 	    {
-	      // add the inlet to the right nodule.
+	      // insert the inlet to the right nodule.
 	      if (right->Insert(inlet) == elle::StatusError)
-		escape("unable to add the inlet to the nodule");
+		escape("unable to insert the inlet to the nodule");
 	    }
 
 	  // waive.
@@ -211,7 +220,7 @@ namespace nucleus
 
 	  // insert the right nodule in its new parent.
 	  if (this->Insert(parent, major, right) == elle::StatusError)
-	    escape("unable to add the right nodule to its parent");
+	    escape("unable to insert the right nodule to its parent");
 	}
       else
 	{
@@ -220,9 +229,9 @@ namespace nucleus
 	  // not need to be split.
 	  //
 
-	  // add the inlet to the nodule.
+	  // insert the inlet to the nodule.
 	  if (nodule->Insert(inlet) == elle::StatusError)
-	    escape("unable to add the inlet to the nodule");
+	    escape("unable to insert the inlet to the nodule");
 
 	  // waive.
 	  waive(inlet);
@@ -235,11 +244,93 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
+    template <typename N>
+    elle::Status	Porcupine<V>::Delete(N*			nodule,
+					     const typename V::K& key)
+    {
+      typename V::K	major;
+
+      enter();
+
+      // retrieve the nodule's major.
+      if (nodule->Major(major) == elle::StatusError)
+	escape("unable to retrieve the nodule's major key");
+
+      // delete the inlet to the nodule.
+      if (nodule->Delete(key) == elle::StatusError)
+	escape("unable to delete the inlet from the nodule");
+
+      // operate depending on the state of the nodule.
+      if (nodule->container.empty() == true)
+	{
+	  // if a parent exists...
+	  if (nodule->_parent != NULL)
+	    {
+	      printf("DELETE IN PARENT\n");
+
+	      // XXX assume it is loaded.
+
+	      // delete the nodule from its parent by passing the major i.e
+	      // the key the parent seam uses to referenced the now-empty
+	      // nodule.
+	      if (this->Delete(nodule->_parent, major) == elle::StatusError)
+		escape("unable to delete the nodule from its parent");
+	    }
+	  else
+	    {
+	      printf("DELETE ROOT\n");
+
+	      // in this case, the nodule is the root nodule: delete it
+	      // manually.
+	      delete nodule;
+
+	      // reset the root nodule pointer.
+	      this->_root = NULL;
+	    }
+	}
+      else if (nodule->_footprint.size < 10)
+	{
+	  // XXX
+	}
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
     elle::Status	Porcupine<V>::Search(const typename V::K& key,
 					     Quill<V>*&		quill)
-      const
     {
       enter();
+
+      // if the tree is non-existent, allocate a first quill.
+      if (this->height == 0)
+	{
+	  Quill<V>*		root;
+
+	  enter(instance(root));
+
+	  // at first, allocate an initial root nodule which happens to be
+	  // a leaf since alone.
+	  root = new Quill<V>(
+		   elle::Callback<>::Infer(&Porcupine::Load, this),
+		   elle::Callback<>::Infer(&Porcupine::Unload, this));
+
+	  // create the quill.
+	  if (root->Create() == elle::StatusError)
+	    escape("unable to create the quill");
+
+	  // set the root nodule.
+	  this->_root = root;
+
+	  // waive the tracking.
+	  waive(root);
+
+	  // increment the height.
+	  height++;
+	}
 
       // trigger the search method on the root nodule.
       if (this->_root->Search(key, quill) == elle::StatusError)
@@ -377,7 +468,8 @@ namespace nucleus
       else
 	{
 	  std::cout << alignment << elle::Dumpable::Shift
-		    << elle::Dumpable::Shift << elle::none << std::endl;
+		    << elle::Dumpable::Shift
+		    << "[Root] " << elle::none << std::endl;
 	}
 
       leave();

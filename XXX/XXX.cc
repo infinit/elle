@@ -91,9 +91,9 @@ int main(int argc, char** argv)
 					     >
 					   >::Null);
 
-  p.Create();
+  const int n = 5;
 
-  for (int i = 0; i < 15000; i++)
+  for (int i = 0; i < n; i++)
     {
       char name[1024];
 
@@ -101,14 +101,39 @@ int main(int argc, char** argv)
 
       sprintf(name, "entry-%u", i);
 
-      C* c = new C(name);
+      // XXX C* c = new C(name);
 
       p.Add(i, NULL);
     }
 
   p.Dump();
 
+  for (int i = 0; i < n; i++)
+    {
+      C*	c;
+
+      if (p.Locate(i, c) == elle::StatusError)
+	exit(1);
+    }
+
+  for (int i = 0; i < n; i++)
+    {
+      printf("-------------------- %u\n", i);
+
+      p.Remove(i);
+    }
+
+  p.Dump();
+
   expose();
+
+  delete Infinit::Parser;
+ 
+  hole::Hole::Clean();
+  Infinit::Clean();
+  lune::Lune::Clean();
+  nucleus::Nucleus::Clean();
+  elle::Elle::Clean();
 
   return 0;
 }
