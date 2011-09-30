@@ -149,7 +149,9 @@ namespace application
 	    name,
 	    model,
 	    address,
-	    lune::Descriptor::Extent) == elle::StatusError)
+	    lune::Descriptor::Extent,
+	    lune::Descriptor::Balancing::Low,
+	    lune::Descriptor::Balancing::High) == elle::StatusError)
 	escape("unable to create the network's descriptor");
 
       // seal the descriptor.
