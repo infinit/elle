@@ -33,6 +33,22 @@ namespace lune
   ///
   const elle::Natural32		Descriptor::Extent = 200; // XXX 8192
 
+  ///
+  /// this constant defines the low bound which, once reached, implies
+  /// that data from a porcupine nodule get balanced on neighbour nodes,
+  /// if possible.
+  ///
+  const elle::Real		Descriptor::Balancing::Low = 0.2;
+
+  ///
+  /// this constant defines the high balancing bound. this value is
+  /// used to know how much data must stay in the porcupine nodule being
+  /// split.
+  ///
+  /// this value can be used to prevent most nodes to be half filled.
+  ///
+  const elle::Real		Descriptor::Balancing::High = 0.7;
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -43,7 +59,9 @@ namespace lune
   elle::Status		Descriptor::Create(const elle::String&	name,
 					   const hole::Model&	model,
 					   const nucleus::Address& root,
-					   const elle::Natural32 extent)
+					   const elle::Natural32 extent,
+					   const elle::Real&	low,
+					   const elle::Real&	high)
   {
     enter();
 
@@ -52,6 +70,8 @@ namespace lune
     this->model = model;
     this->root = root;
     this->extent = extent;
+    this->balancing.low = low;
+    this->balancing.high = high;
 
     leave();
   }
@@ -68,6 +88,8 @@ namespace lune
 			  this->model,
 			  this->root,
 			  this->extent,
+			  this->balancing.low,
+			  this->balancing.high,
 			  this->signature) == elle::StatusError)
       escape("unable to sign the attributes with the authority");
 
@@ -87,7 +109,9 @@ namespace lune
 			   this->name,
 			   this->model,
 			   this->root,
-			   this->extent) == elle::StatusError)
+			   this->extent,
+			   this->balancing.low,
+			   this->balancing.high) == elle::StatusError)
       escape("unable to verify the signature");
 
     leave();
@@ -121,8 +145,18 @@ namespace lune
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "general", "extent",
+	  "porcupine", "extent",
 	  this->extent) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "porcupine", "balancing.low",
+	  this->balancing.low) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "porcupine", "balancing.high",
+	  this->balancing.high) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -161,8 +195,18 @@ namespace lune
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "general", "extent",
+	  "porcupine", "extent",
 	  this->extent) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "porcupine", "balancing.low",
+	  this->balancing.low) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "porcupine", "balancing.high",
+	  this->balancing.high) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
