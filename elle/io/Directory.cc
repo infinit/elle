@@ -208,7 +208,13 @@ namespace elle
 	    escape("unable to create the target path");
 
 	  // stat the entry as entry->d_type is not standard
+#if INFINIT_UNIX
           if (::lstat(target.string.c_str(), &stat) == -1)
+#elif INFINIT_WIN32
+          if (::stat(target.string.c_str(), &stat) == -1)
+#else
+# error "unsupported platform"
+#endif
             // the stat may fail but it's ok to continue as it's not fatal
 	    // and the entry may have been destroyed/moved between the readdir
             // and now.
