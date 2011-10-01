@@ -28,6 +28,12 @@ namespace lune
   const elle::String		Descriptor::Extension = ".dsc";
 
   ///
+  /// this constant defines whether or not the history functionality
+  /// is activated for this network.
+  ///
+  const elle::Boolean		Descriptor::History = false;
+
+  ///
   /// this constant defines the size of the blocks stored within this
   /// network.
   ///
@@ -59,6 +65,7 @@ namespace lune
   elle::Status		Descriptor::Create(const elle::String&	name,
 					   const hole::Model&	model,
 					   const nucleus::Address& root,
+					   const elle::Boolean	history,
 					   const elle::Natural32 extent,
 					   const elle::Real&	low,
 					   const elle::Real&	high)
@@ -69,6 +76,7 @@ namespace lune
     this->name = name;
     this->model = model;
     this->root = root;
+    this->history = history;
     this->extent = extent;
     this->balancing.low = low;
     this->balancing.high = high;
@@ -87,6 +95,7 @@ namespace lune
     if (authority.k->Sign(this->name,
 			  this->model,
 			  this->root,
+			  this->history,
 			  this->extent,
 			  this->balancing.low,
 			  this->balancing.high,
@@ -109,6 +118,7 @@ namespace lune
 			   this->name,
 			   this->model,
 			   this->root,
+			   this->history,
 			   this->extent,
 			   this->balancing.low,
 			   this->balancing.high) == elle::StatusError)
@@ -142,6 +152,11 @@ namespace lune
     if (elle::Settings::Set(
 	  "general", "root",
 	  this->root) == elle::StatusError)
+      escape("unable to update the parameter");
+
+    if (elle::Settings::Set(
+	  "porcupine", "history",
+	  this->history) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -192,6 +207,11 @@ namespace lune
     if (elle::Settings::Get(
 	  "general", "root",
 	  this->root) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+
+    if (elle::Settings::Get(
+	  "porcupine", "history",
+	  this->history) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(

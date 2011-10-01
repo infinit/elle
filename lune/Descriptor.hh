@@ -43,6 +43,8 @@ namespace lune
     // constants
     //
     static const elle::String		Extension;
+
+    static const elle::Boolean		History;
     static const elle::Natural32	Extent;
     struct				Balancing
     {
@@ -56,6 +58,7 @@ namespace lune
     elle::Status	Create(const elle::String&,
 			       const hole::Model&,
 			       const nucleus::Address&,
+			       const elle::Boolean,
 			       const elle::Natural32,
 			       const elle::Real&,
 			       const elle::Real&);
@@ -88,6 +91,7 @@ namespace lune
     elle::String	name;
     hole::Model		model;
     nucleus::Address	root;
+    elle::Boolean	history;
     elle::Natural32	extent;
     struct
     {
