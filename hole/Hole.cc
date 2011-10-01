@@ -217,6 +217,8 @@ namespace hole
   {
     enter();
 
+    // XXX check the block's footprint which should not exceed Extent
+
     // forward the request depending on the nature of the block which
     // the address indicates.
     switch (address.family)
