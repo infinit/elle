@@ -1,3 +1,7 @@
+- gerer le @ via un fichier plutot qu'un lien
+- check footprint in hole::Push (XXX)
+- stocker en binaire plutot qu'hexa?
+
 - mettre les attributs dans un autre block? voire seulement si ca depasse
   un nombre d'entrees/footprint?
 

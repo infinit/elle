@@ -18,6 +18,7 @@
 #include <elle/Elle.hh>
 
 #include <nucleus/proton/ContentHashBlock.hh>
+#include <nucleus/proton/State.hh>
 
 namespace nucleus
 {
@@ -100,6 +101,11 @@ namespace nucleus
       //
       Type			type;
 
+      Address			parent;
+      Address			left;
+      Address			right;
+
+      State			_state;
       elle::Callback<
 	elle::Status,
 	elle::Parameters<

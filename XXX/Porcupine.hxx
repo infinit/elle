@@ -210,6 +210,12 @@ namespace nucleus
 	    }
 	  else
 	    {
+	      // load the parent nodule, if necessary.
+	      if (nodule->_parent == NULL)
+		{
+		  // XXX load nodule->parent into nodule->_parent
+		}
+
 	      // set the parent.
 	      parent = nodule->_parent;
 	    }
@@ -264,11 +270,13 @@ namespace nucleus
       if (nodule->container.empty() == true)
 	{
 	  // if a parent exists...
-	  if (nodule->_parent != NULL)
+	  if (nodule->parent != Address::Null)
 	    {
-	      printf("DELETE IN PARENT\n");
-
-	      // XXX assume it is loaded.
+	      // load the parent nodule, if necessary.
+	      if (nodule->_parent == NULL)
+		{
+		  // XXX load the parent nodule
+		}
 
 	      // delete the nodule from its parent by passing the major i.e
 	      // the key the parent seam uses to referenced the now-empty
@@ -278,14 +286,16 @@ namespace nucleus
 	    }
 	  else
 	    {
-	      printf("DELETE ROOT\n");
-
 	      // in this case, the nodule is the root nodule: delete it
 	      // manually.
 	      delete nodule;
 
-	      // reset the root nodule pointer.
+	      // reset the root nodule address and pointer.
+	      this->root = Address::Null;
 	      this->_root = NULL;
+
+	      // decrease the tree's height.
+	      this->height--;
 	    }
 	}
       else if (nodule->_footprint.size < 10)
@@ -305,31 +315,18 @@ namespace nucleus
     {
       enter();
 
-      // if the tree is non-existent, allocate a first quill.
+      // if the tree is non-existent, create a first level by making it grow.
       if (this->height == 0)
 	{
-	  Quill<V>*		root;
+	  // make the tree grow.
+	  if (this->Grow() == elle::StatusError)
+	    escape("unable to make the tree grow");
+	}
 
-	  enter(instance(root));
-
-	  // at first, allocate an initial root nodule which happens to be
-	  // a leaf since alone.
-	  root = new Quill<V>(
-		   elle::Callback<>::Infer(&Porcupine::Load, this),
-		   elle::Callback<>::Infer(&Porcupine::Unload, this));
-
-	  // create the quill.
-	  if (root->Create() == elle::StatusError)
-	    escape("unable to create the quill");
-
-	  // set the root nodule.
-	  this->_root = root;
-
-	  // waive the tracking.
-	  waive(root);
-
-	  // increment the height.
-	  height++;
+      // load the root nodule as one must be present, if necessary.
+      if (this->_root == NULL)
+	{
+	  // XXX load the root nodule
 	}
 
       // trigger the search method on the root nodule.
@@ -350,31 +347,66 @@ namespace nucleus
 
       enter(instance(seam));
 
-      // retrieve the current root's major key.
-      if (this->_root->Major(major) == elle::StatusError)
-	escape("unable to retrieve the major key");
+      // if the tree does not exist, create a root nodule.
+      if (this->height == 0)
+      {
+	Quill<V>*	root;
 
-      // allocate a new seam.
-      seam = new Seam<V>(
-	       elle::Callback<>::Infer(&Porcupine::Load, this),
-	       elle::Callback<>::Infer(&Porcupine::Unload, this));
+	enter(instance(root));
 
-      // create the root seam.
-      if (seam->Create() == elle::StatusError)
-	escape("unable to create the seam");
+	// at first, allocate an initial root nodule which happens to be
+	// a leaf since alone.
+	root = new Quill<V>(
+	         elle::Callback<>::Infer(&Porcupine::Load, this),
+		 elle::Callback<>::Infer(&Porcupine::Unload, this));
 
-      // add the current root nodule in the new root seam.
-      if (seam->Insert(major, this->_root) == elle::StatusError)
-	escape("unable to add the current root in the new root nodule");
+	// create the quill.
+	if (root->Create() == elle::StatusError)
+	  escape("unable to create the quill");
 
-      // link the existing root to the new root.
-      this->_root->_parent = seam;
+	// set the root nodule address and pointer.
+	this->root = Address::Some;
+	this->_root = root;
 
-      // set the new root.
-      this->_root = seam;
+	// waive the tracking.
+	waive(root);
+      }
+      else
+	{
+	  // load the root nodule, if necessary.
+	  if (this->_root == NULL)
+	    {
+	      // XXX load the root nodule
+	    }
 
-      // waive seam.
-      waive(seam);
+	  // retrieve the current root's major key.
+	  if (this->_root->Major(major) == elle::StatusError)
+	    escape("unable to retrieve the major key");
+
+	  // allocate a new seam.
+	  seam = new Seam<V>(
+		   elle::Callback<>::Infer(&Porcupine::Load, this),
+		   elle::Callback<>::Infer(&Porcupine::Unload, this));
+
+	  // create the root seam.
+	  if (seam->Create() == elle::StatusError)
+	    escape("unable to create the seam");
+
+	  // add the current root nodule in the new root seam.
+	  if (seam->Insert(major, this->_root) == elle::StatusError)
+	    escape("unable to add the current root in the new root nodule");
+
+	  // link the existing root to the new root.
+	  this->_root->parent = Address::Some;
+	  this->_root->_parent = seam;
+
+	  // set the new root.
+	  this->root = Address::Some;
+	  this->_root = seam;
+
+	  // waive seam.
+	  waive(seam);
+	}
 
       // increment the height.
       height++;
@@ -436,32 +468,38 @@ namespace nucleus
 
       std::cout << alignment << "[Porcupine]" << std::endl;
 
-      /* XXX
-      // dump the load callback.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Load]" << std::endl;
-
-      if (this->load.Dump(margin + 4) == elle::StatusError)
-	escape("unable to dump the callback");
-
-      // dump the unload callback.
-      std::cout << alignment << elle::Dumpable::Shift
-		<< "[Unload]" << std::endl;
-
-      if (this->unload.Dump(margin + 4) == elle::StatusError)
-	escape("unable to dump the callback");
-      */
-
       // dump the height.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Height] " << std::dec << this->height << std::endl;
 
-      // dump the hierarchy, if present.
+      // dump the root.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Data]" << std::endl;
+		<< "[Root]" << std::endl;
 
+      if (this->root.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the address");
+
+      // dump the load callback.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[_Load]" << std::endl;
+
+      if (this->_load.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the callback");
+
+      // dump the unload callback.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[_Unload]" << std::endl;
+
+      if (this->_unload.Dump(margin + 4) == elle::StatusError)
+	escape("unable to dump the callback");
+
+      // dump the hiearchy.
       if (this->_root != NULL)
 	{
+	  // dump the hierarchy, if present.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[_Root]" << std::endl;
+
 	  if (this->_root->Dump(margin + 4) == elle::StatusError)
 	    escape("unable to dump the nodule");
 	}
@@ -469,7 +507,7 @@ namespace nucleus
 	{
 	  std::cout << alignment << elle::Dumpable::Shift
 		    << elle::Dumpable::Shift
-		    << "[Root] " << elle::none << std::endl;
+		    << "[_Root] " << elle::none << std::endl;
 	}
 
       leave();

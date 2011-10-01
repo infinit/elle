@@ -41,6 +41,7 @@ namespace nucleus
 			>&					unload):
       type(type),
 
+      _state(StateClean),
       _load(load),
       _unload(unload),
       _parent(NULL),
@@ -67,11 +68,30 @@ namespace nucleus
 
       std::cout << alignment << "[Nodule]" << std::endl;
 
-      /* XXX
       // dump the type.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Type] " << std::dec << this->type << std::endl;
-      */
+
+      // dump the parent.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Parent]" << std::endl;
+
+      if (this->parent.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the parent");
+
+      // dump the left.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Left]" << std::endl;
+
+      if (this->left.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the left");
+
+      // dump the right.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Right]" << std::endl;
+
+      if (this->right.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the right");
 
       /* XXX
       // dump the load callback.
@@ -91,20 +111,21 @@ namespace nucleus
 
       // dump the parent link.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Parent] " << std::hex << this->_parent << std::endl;
+		<< "[_Parent] " << std::hex << this->_parent << std::endl;
 
-      /* XXX
       // dump the left link.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Left] " << std::hex << this->_left << std::endl;
+		<< "[_Left] " << std::hex << this->_left << std::endl;
 
       // dump the right link.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Right] " << std::hex << this->_right << std::endl;
-      */
+		<< "[_Right] " << std::hex << this->_right << std::endl;
 
       // dump the footprint.
-      if (this->_footprint.Dump(margin + 2) == elle::StatusError)
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[_Footprint]" << std::endl;
+
+      if (this->_footprint.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the footprint");
 
       leave();

@@ -111,6 +111,7 @@ namespace nucleus
       // attributes
       //
       elle::Natural32		height;
+      Address			root;
 
       elle::Callback<
 	elle::Status,
