@@ -149,6 +149,7 @@ namespace application
 	    name,
 	    model,
 	    address,
+	    lune::Descriptor::History,
 	    lune::Descriptor::Extent,
 	    lune::Descriptor::Balancing::Low,
 	    lune::Descriptor::Balancing::High) == elle::StatusError)
