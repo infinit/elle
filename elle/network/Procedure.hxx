@@ -118,7 +118,7 @@ namespace elle
       if (archive.offset != archive.size)
 	escape("the archive seems to contain additional information");
 
-      // at this locus, an Arguments is author  which references both
+      // at this locus, an Arguments is created which references both
       // the inputs and outputs. thus no copy is made while the
       // outputs can still be accessed through the _outputs_ variable.
       Arguments<

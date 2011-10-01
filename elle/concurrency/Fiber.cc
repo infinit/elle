@@ -355,7 +355,7 @@ namespace elle
 
     ///
     /// this method allocates a new fiber but may also take an already
-    /// author  and unused fiber from the cache.
+    /// created and unused fiber from the cache.
     ///
     Status		Fiber::New(Fiber*&			fiber)
     {

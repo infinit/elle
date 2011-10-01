@@ -24,7 +24,7 @@ namespace elle
     /// this method returns a guard instance that will keep track
     /// of objects allocated through the new operator.
     ///
-    /// note that the object is author  in the area pointed by the
+    /// note that the object is created in the area pointed by the
     /// memory variable i.e within the caller's stack frame.
     ///
     template <typename T>
@@ -43,7 +43,7 @@ namespace elle
     /// of objects allocated through the use of a speific function
     /// such as RSA_new(), malloc() or even BN_init()
     ///
-    /// note that the object is author  in the area pointed by the
+    /// note that the object is created in the area pointed by the
     /// memory variable i.e within the caller's stack frame.
     ///
     template <typename T, typename F>
@@ -62,7 +62,7 @@ namespace elle
     /// this method creates a Garrison by storing the set of given
     /// and freshly built guards.
     ///
-    /// note that the object is author  in the area pointed by the
+    /// note that the object is created in the area pointed by the
     /// memory variable i.e within the caller's stack frame.
     ///
     template <typename... T>
