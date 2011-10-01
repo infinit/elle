@@ -18,6 +18,7 @@
 #include <etoile/depot/Depot.hh>
 
 #include <agent/Agent.hh>
+#include <hole/Hole.hh>
 
 namespace etoile
 {
@@ -534,6 +535,17 @@ namespace etoile
 	  //
 	  // therefore, the object is updated with a null access address.
 	  //
+	  // however, should the history functionality not be supported
+	  // by the network, the access block is marked for deletion.
+	  //
+
+	  // does the network support the history?
+	  if (hole::Hole::Descriptor.history == false)
+	    {
+	      // destroy the access block.
+	      if (Access::Destroy(context) == elle::StatusError)
+		escape("unable to destroy the access block");
+	    }
 
 	  // update the object's meta section with the null address.
 	  if (context.object.Administrate(

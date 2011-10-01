@@ -16,6 +16,7 @@
 #include <etoile/path/Route.hh>
 
 #include <agent/Agent.hh>
+#include <hole/Hole.hh>
 
 namespace etoile
 {
@@ -133,8 +134,10 @@ namespace etoile
 	  slab = way.path.substr(start, end - start);
 
 	  // check if the slab represents the root directory i.e starts
-	  // with '@' and follows with a possible version number.
-	  if ((Infinit::Configuration.history.status == true) &&
+	  // with '@' and follows with a possible version number, should
+	  // the network support history though.
+	  if ((hole::Hole::Descriptor.history == true) &&
+	      (Infinit::Configuration.history.status == true) &&
 	      (slab[0] == Infinit::Configuration.history.indicator.root))
 	    {
 	      // modify the '@' character with the version indicator '%'.

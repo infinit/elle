@@ -44,7 +44,7 @@ namespace etoile
     /// attached to the scope.
     ///
     /// finally, note that anonymous scope are also kept. indeed, a file
-    /// author  by an application for instance does not have a chemin
+    /// created by an application for instance does not have a chemin
     /// since the file has not be attached to the file system hierarchy
     /// yet. therefore, such scope are maintained in an anonymous data
     /// structure for as long as necessary.

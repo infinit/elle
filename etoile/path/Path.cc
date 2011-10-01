@@ -25,6 +25,7 @@
 #include <etoile/shrub/Shrub.hh>
 
 #include <agent/Agent.hh>
+#include <hole/Hole.hh>
 
 namespace etoile
 {
@@ -258,39 +259,71 @@ namespace etoile
 
       enter();
 
-      // compute the start index.
-      start = slab.find_last_of(
-	        Infinit::Configuration.history.indicator.slab);
-
-      // if the in-path versioning has been activated and a version
-      // seems to have been found.
-      if ((Infinit::Configuration.history.status == true) &&
-	  (start != elle::String::npos))
-	{
-	  // retrieve the slab's length.
-	  length = slab.length();
-
-	  // retrieve the slice.
-	  slice = elle::String(slab, 0, start);
-
-	  // transform the string into a number.
-	  if (elle::Variable::Convert(elle::String(slab,
-						   start + 1,
-						   length - (start + 1)),
-				      n) == elle::StatusError)
-	    escape("unable to convert the string-based version number");
-
-	  // create the version.
-	  if (version.Create(n) == elle::StatusError)
-	    escape("unable to create the version");
-	}
-      else
+      // if the history mechanism is not supported by the network or
+      // has not been activated through the user's configuration, return.
+      if ((hole::Hole::Descriptor.history == false) ||
+	  (Infinit::Configuration.history.status == false))
 	{
 	  // set the slice as being the entire slab.
 	  slice = slab;
 
 	  // and set the version as being the latest possible.
 	  version = nucleus::Version::Last;
+	}
+      else
+	{
+	  //
+	  // otherwise, try to handle the history parsing.
+	  //
+
+	  // compute the start index, should the in-path versioning be
+	  // activated.
+	  if (Infinit::Configuration.history.status == true)
+	    {
+	      // try to locate the start index for the version number.
+	      start = slab.find_last_of(
+		        Infinit::Configuration.history.indicator.slab);
+	    }
+	  else
+	    {
+	      // set the start index as invalid since the user's
+	      // configuration has not activated this functionality.
+	      start = elle::String::npos;
+	    }
+
+	  // if a version seems to have been found.
+	  if (start != elle::String::npos)
+	    {
+	      // retrieve the slab's length.
+	      length = slab.length();
+
+	      // retrieve the slice.
+	      slice = elle::String(slab, 0, start);
+
+	      // transform the string into a number.
+	      if (elle::Variable::Convert(elle::String(slab,
+						       start + 1,
+						       length - (start + 1)),
+					  n) == elle::StatusError)
+		escape("unable to convert the string-based version number");
+
+	      // create the version.
+	      if (version.Create(n) == elle::StatusError)
+		escape("unable to create the version");
+	    }
+	  else
+	    {
+	      //
+	      // otherwise, act as if history was not supported by the
+	      // network.
+	      //
+
+	      // set the slice as being the entire slab.
+	      slice = slab;
+
+	      // and set the version as being the latest possible.
+	      version = nucleus::Version::Last;
+	    }
 	}
 
       leave();

@@ -45,7 +45,7 @@ namespace etoile
     ///
     /// this method tries to locate an existing scope given the chemin.
     ///
-    /// if none exists, a scope is author  and added to the container.
+    /// if none exists, a scope is created and added to the container.
     ///
     elle::Status	Scope::Acquire(const path::Chemin&	chemin,
 				       Scope*&			scope)

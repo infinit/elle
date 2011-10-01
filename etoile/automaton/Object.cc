@@ -95,7 +95,7 @@ namespace etoile
     ///
     /// therefore, the user willing to completely remove the blocks
     /// associated with an object, no matter the version, should take a
-    /// look at the purge functionality.
+    /// look at the Purge() functionality.
     ///
     elle::Status	Object::Destroy(
 			  gear::Object&				context)

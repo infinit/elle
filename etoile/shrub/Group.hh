@@ -34,7 +34,7 @@ namespace etoile
 
     ///
     /// this class represents a set of riffles grouped together because
-    /// they have been author  or refreshed at the exact same time.
+    /// they have been created or refreshed at the exact same time.
     ///
     /// note that a very simple data structure is being used in this
     /// class because no more than a dozen riffles are stored in a single
