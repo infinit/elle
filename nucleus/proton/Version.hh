@@ -46,6 +46,7 @@ namespace nucleus
       static const Version		Last;
 
       static const Version		Any;
+      static const Version&		Some;
 
       //
       // constructors & destructors

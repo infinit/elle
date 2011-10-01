@@ -41,6 +41,11 @@ namespace nucleus
     ///
     const Version		Version::Any(Version::Last);
 
+    ///
+    /// this constant is an alias of Any.
+    ///
+    const Version&		Version::Some = Version::Any;
+
 //
 // ---------- constructors & destructors --------------------------------------
 //

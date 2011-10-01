@@ -33,7 +33,12 @@ namespace nucleus
     /// so as not to be considered "empty". this constant is particularly
     /// useful when one wants to know the footprint of such an Address type.
     ///
-    Address			Address::Vacuum;
+    Address			Address::Any;
+
+    ///
+    /// this variable is an alias of Any.
+    ///
+    Address&			Address::Some = Address::Any;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -46,13 +51,13 @@ namespace nucleus
     {
       enter();
 
-      // create the vacuum address with default meaningless values.
-      if (Address::Vacuum.Create(
-	    Address::Vacuum.family, Address::Vacuum.component,
-	    static_cast<elle::Natural8>(Address::Vacuum.family),
-	    static_cast<elle::Natural8>(Address::Vacuum.component)) ==
+      // create the any address with default meaningless values.
+      if (Address::Any.Create(
+	    Address::Any.family, Address::Any.component,
+	    static_cast<elle::Natural8>(Address::Any.family),
+	    static_cast<elle::Natural8>(Address::Any.component)) ==
 	  elle::StatusError)
-	escape("unable to create the vacuum address");
+	escape("unable to create the any address");
 
       leave();
     }
@@ -191,25 +196,34 @@ namespace nucleus
       // display the name.
       std::cout << alignment << "[Address]" << std::endl;
 
-      // display the family.
-      std::cout << alignment << elle::Dumpable::Shift << "[Family] "
-		<< this->family << std::endl;
-
-      // display the component.
-      std::cout << alignment << elle::Dumpable::Shift << "[Component] "
-		<< this->component << std::endl;
-
-      // display the address depending on its value.
+      // check the value.
       if (*this == Address::Null)
 	{
 	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Digest] " << elle::none << std::endl;
+		    << "[Address] " << elle::none << std::endl;
 	}
       else
 	{
-	  // dump the digest.
-	  if (this->digest->Dump(margin + 2) == elle::StatusError)
-	    escape("unable to dump the digest");
+	  // display the family.
+	  std::cout << alignment << elle::Dumpable::Shift << "[Family] "
+		    << this->family << std::endl;
+
+	  // display the component.
+	  std::cout << alignment << elle::Dumpable::Shift << "[Component] "
+		    << this->component << std::endl;
+
+	  // display the address depending on its value.
+	  if (*this == Address::Null)
+	    {
+	      std::cout << alignment << elle::Dumpable::Shift
+			<< "[Digest] " << elle::none << std::endl;
+	    }
+	  else
+	    {
+	      // dump the digest.
+	      if (this->digest->Dump(margin + 2) == elle::StatusError)
+		escape("unable to dump the digest");
+	    }
 	}
 
       leave();

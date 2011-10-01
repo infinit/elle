@@ -49,7 +49,7 @@ namespace nucleus
     ///
     /// note that in addition, a stamp and salt are also included in
     /// hash in order to prevent conflicts i.e several ImprintBlocks
-    /// being author  by the same user at the same time.
+    /// being created by the same user at the same time.
     ///
     class ImprintBlock:
       public MutableBlock

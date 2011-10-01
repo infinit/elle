@@ -54,7 +54,8 @@ namespace nucleus
       // constants
       //
       static const Address	Null;
-      static Address		Vacuum;
+      static Address		Any;
+      static Address&		Some;
 
       //
       // static methods

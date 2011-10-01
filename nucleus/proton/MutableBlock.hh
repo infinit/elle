@@ -44,6 +44,15 @@ namespace nucleus
     /// note that a version number is included in order to distinguish the
     /// different version of a block's history.
     ///
+    /// a specific file ending with the '@' character links to the
+    /// last version of the mutable block. this way, the history does
+    /// not have to be loaded which would incurr a huge performance overhead.
+    ///
+    /// noteworthy is that altough a symbolic link would have been perfect
+    /// for this, the number of the last version is manually stored in
+    /// a regular file in order to be portable since Windows, for instance,
+    /// does not support symbolic links.
+    ///
     /// the _base attribute is used internally to keep a view of the
     /// block's original state i.e before being modified.
     ///
