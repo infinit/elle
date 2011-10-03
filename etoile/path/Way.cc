@@ -13,10 +13,7 @@
 //
 
 #include <etoile/path/Way.hh>
-
-#include <elle/idiom/Close.hh>
-# include <windows.h>
-#include <elle/idiom/Open.hh>
+#include <elle/utility/Unicode.hh>
 
 namespace etoile
 {
@@ -69,38 +66,24 @@ namespace etoile
     {
     }
 
-#if INFINIT_WIN32
+
+    ///
+    /// wide char constructor
+    ///
     Way::Way(const wchar_t *                                    u16_str):
       path()
     {
-      int size = 0;
+      char *    str      = NULL;
+      size_t    str_size = 0;
 
-      size = WideCharToMultiByte(CP_UTF8, // CodePage
-                                 0,       // dwFlags
-                                 u16_str,
-                                 -1,      // cchWideChar
-                                 NULL,    // lpMultiByteStr
-                                 0,       // cbMultiByte
-                                 NULL,    // lpDefaultChar
-                                 NULL);   // lpUsedDefaultChar
-
-      if (size <= 0)
+      if (elle::utility::Utf16To8(u16_str, -1, &str, &str_size) == elle::StatusError)
+          log("failed to convert the path to uft8");
+      else
         {
-          log("failed to convert from UTF-16 to UTF-8\n");
-          return;
+          path.assign(str, str_size);
+          free(str);
         }
-
-      path.resize(size);
-      WideCharToMultiByte(CP_UTF8,     // CodePage
-                          0,           // dwFlags
-                          u16_str,
-                          -1,          // cchWideChar
-                          &path[0],    // lpMultiByteStr
-                          path.size(), // cbMultiByte
-                          NULL,        // lpDefaultChar
-                          NULL);       // lpUsedDefaultChar
     }
-#endif
 
 
     ///
