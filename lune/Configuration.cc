@@ -237,7 +237,7 @@ namespace lune
       escape("unable to retrieve the parameter");
 #endif
 
-#if INFINIT_UNIX
+#if INFINIT_WIN32
     if (elle::Settings::Get(
 	  "debug", "iig",
 	  this->debug.iig,
