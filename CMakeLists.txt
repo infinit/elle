@@ -26,7 +26,13 @@ QT4_WRAP_CPP(elle_MOCS
 IF(${WIN32})
   SET(elle_WIN32
     thirdparty/ucontext-win32.cc
-    concurrency/WinEventBroker.cc)
+    concurrency/WinEventBroker.cc
+    utility/Unicode-win32.cc)
+ENDIF()
+
+IF(${UNIX})
+  SET(elle_UNIX
+    utility/Unicode-unix.cc)
 ENDIF()
 
 ADD_LIBRARY(elle
@@ -108,11 +114,13 @@ ADD_LIBRARY(elle
   utility/Parser.cc
   utility/Settings.cc
   utility/Time.cc
+  utility/Unicode.cc
 
   Elle.cc
 
   ${elle_MOCS}
   ${elle_WIN32}
+  ${elle_UNIX}
 )
 
 TARGET_LINK_LIBRARIES(elle comet msgpack crypto ssl readline)
