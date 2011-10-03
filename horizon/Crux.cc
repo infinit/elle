@@ -391,7 +391,7 @@ namespace pig
 	// read the directory entries.
 	if (etoile::wall::Directory::Consult(
 	      handle->identifier,
-	      static_cast<nucleus::Offset>(offset),
+	      static_cast<nucleus::Index>(offset),
 	      Crux::Range,
 	      range) == elle::StatusError)
 	  error("unable to retrieve some directory entries",
