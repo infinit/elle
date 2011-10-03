@@ -44,6 +44,7 @@ namespace application
     {
       { "help", Shell::Help },
       { "quit", Shell::Quit },
+      { "dump", Shell::Dump },
       { NULL, NULL }
     };
 
@@ -77,6 +78,31 @@ namespace application
 
     // exit.
     ::exit(0);
+
+    leave();
+  }
+
+  ///
+  /// this command dumps a block given its address
+  ///
+  elle::Status		Shell::Dump(const elle::String&		line)
+  {
+    std::istringstream	iss(line);
+    elle::String	command;
+    elle::String	address;
+
+    // XXX XXX -> ameliorer Parser
+
+    enter();
+
+    // ignore the command.
+    iss >> command;
+
+    // retrieve the address.
+    iss >> address;
+
+    // XXX
+    std::cout << address << std::endl;
 
     leave();
   }
@@ -194,7 +220,15 @@ namespace application
     // waive.
     waive(Infinit::Parser);
 
-    // clean the Etoile.
+    // clean Hole.
+    if (hole::Hole::Clean() == elle::StatusError)
+      escape("unable to clean Hole");
+
+    // clean the Agent library.
+    if (agent::Agent::Clean() == elle::StatusError)
+      escape("unable to clean Agent");
+
+    // clean the Etoile library.
     if (etoile::Etoile::Clean() == elle::StatusError)
       escape("unable to clean Etoile");
 

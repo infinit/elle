@@ -48,9 +48,9 @@ namespace application
     //
     // methods
     //
-    static elle::Status		Dump(const elle::String&);
     static elle::Status		Help(const elle::String&);
     static elle::Status		Quit(const elle::String&);
+    static elle::Status		Dump(const elle::String&);
 
     //
     // attributes
