@@ -443,8 +443,6 @@ namespace pig
   int			Crux::Releasedir(const char*		path,
 					 struct ::fuse_file_info* info)
   {
-    Handle*		handle;
-
     // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
