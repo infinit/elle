@@ -51,6 +51,10 @@ namespace etoile
       Way(const Way&,
 	  Slice&);
 
+#if INFINIT_WIN32
+      Way(const wchar_t * u16_str);
+#endif
+
       //
       // methods
       //

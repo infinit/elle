@@ -14,6 +14,10 @@
 
 #include <etoile/path/Way.hh>
 
+#include <elle/idiom/Close.hh>
+# include <windows.h>
+#include <elle/idiom/Open.hh>
+
 namespace etoile
 {
   namespace path
@@ -64,6 +68,40 @@ namespace etoile
       path(string)
     {
     }
+
+#if INFINIT_WIN32
+    Way::Way(const wchar_t *                                    u16_str):
+      path()
+    {
+      int size = 0;
+
+      size = WideCharToMultiByte(CP_UTF8, // CodePage
+                                 0,       // dwFlags
+                                 u16_str,
+                                 -1,      // cchWideChar
+                                 NULL,    // lpMultiByteStr
+                                 0,       // cbMultiByte
+                                 NULL,    // lpDefaultChar
+                                 NULL);   // lpUsedDefaultChar
+
+      if (size <= 0)
+        {
+          log("failed to convert from UTF-16 to UTF-8\n");
+          return;
+        }
+
+      path.resize(size);
+      WideCharToMultiByte(CP_UTF8,     // CodePage
+                          0,           // dwFlags
+                          u16_str,
+                          -1,          // cchWideChar
+                          &path[0],    // lpMultiByteStr
+                          path.size(), // cbMultiByte
+                          NULL,        // lpDefaultChar
+                          NULL);       // lpUsedDefaultChar
+    }
+#endif
+
 
     ///
     /// this constructor creates a way but returns the last element of the path
