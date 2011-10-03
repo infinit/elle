@@ -95,7 +95,7 @@ namespace etoile
     ///
     elle::Status	Scope::Supply(Scope*&			scope)
     {
-      Scope*						s;
+      Scope*		s;
 
       enter(instance(s));
 
@@ -357,8 +357,16 @@ namespace etoile
 	    if (this->context->state == Context::StateDestroyed)
 	      leave();
 
-	    // flush the transcript.
-	    this->context->transcript.Flush();
+	    // clear the transcript from about-to-be-pushed blocks.
+	    this->context->transcript.Clear(Action::TypePush);
+
+	    // XXX ici meme chose qu'en bas pour parer le scenar suivant:
+	    // XXX un remove detruit le bloc de donnees. puis un autre
+	    // XXX actor modifie les meta donnees par exemple et le store.
+	    // XXX si on flush toutes les modifs precedentes, on va perdre
+	    // XXX de vue le block qui a ete marque pour destruction.
+
+	    printf("FLUSH 1\n");
 
 	    break;
 	  }
@@ -378,7 +386,17 @@ namespace etoile
 	      leave();
 
 	    // flush the transcript.
-	    this->context->transcript.Flush();
+	    this->context->transcript.Clear(Action::TypePush);
+
+	    // XXX ici flush que les blocs modifies puisqu'ils vont etre
+	    // XXX detruits mais gardes les blocs deja detruits.
+	    // XXX on evite les problemes du scenario: un actor remove
+	    // XXX quelque chose -> destruction du block de donnees
+	    // XXX puis l'objet est detruit et on flush tout en oubliant
+	    // XXX le block deja marque pour deletion => il ne faut pas
+	    // XXX flusher les blocks wiped.
+
+	    printf("FLUSH 2\n");
 
 	    break;
 	  }

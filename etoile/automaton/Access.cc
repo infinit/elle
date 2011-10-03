@@ -563,6 +563,18 @@ namespace etoile
 	  // otherwise, compute the address of the new access block and
 	  // update the object accordingly.
 	  //
+	  // note that the previous access block is not removed since
+	  // objects benefit from the history i.e multiple versions; unless
+	  // the history support is not activated for this network.
+	  //
+
+	  // does the network support the history?
+	  if (hole::Hole::Descriptor.history == false)
+	    {
+	      // destroy the access block.
+	      if (Access::Destroy(context) == elle::StatusError)
+		escape("unable to destroy the access block");
+	    }
 
 	  // bind the access as, since the block has changed, its address
 	  // is going to be different.

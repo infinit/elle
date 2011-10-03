@@ -268,6 +268,10 @@ namespace etoile
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Scope] " << std::hex << this->scope << std::endl;
 
+      // dump the state.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[State] " << std::dec << this->state << std::endl;
+
       leave();
     }
 

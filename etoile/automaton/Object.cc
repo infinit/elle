@@ -118,6 +118,10 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
 
+      // XXX
+      printf("automata::Object::Destroy\n");
+      context.transcript.Dump();
+
       leave();
     }
 

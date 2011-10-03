@@ -82,6 +82,45 @@ namespace etoile
     }
 
     ///
+    /// this method clears the transcript from some previously registered
+    /// actions i.e depending on the given type of action.
+    ///
+    elle::Status	Transcript::Clear(const Action::Type	type)
+    {
+      Transcript::Iterator	iterator;
+
+      enter();
+
+      // for every action.
+      for (iterator = this->container.begin();
+	   iterator != this->container.end();
+	   )
+	{
+	  Action*	action = *iterator;
+
+	  // ignore actions mismatching the given type.
+	  if (action->type != type)
+	    {
+	      // increase the iterator.
+	      iterator++;
+
+	      continue;
+	    }
+
+	  // delete the action.
+	  delete action;
+
+	  // erase the entry.
+	  this->container.erase(iterator);
+
+	  // reset the iterator.
+	  iterator = this->container.begin();
+	}
+
+      leave();
+    }
+
+    ///
     /// this method flushes the transcript from the previously registered
     /// actions.
     ///

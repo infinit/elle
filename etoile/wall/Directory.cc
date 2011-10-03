@@ -394,6 +394,12 @@ namespace etoile
     elle::Status	Directory::Discard(
 			  const gear::Identifier&		identifier)
     {
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  gear::Directory&
+	  >
+	>		callback;
       gear::Actor*	actor;
 
       enter(instance(actor));

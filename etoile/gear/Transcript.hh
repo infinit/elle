@@ -57,6 +57,7 @@ namespace etoile
 			     const nucleus::Block*);
       elle::Status	Wipe(const nucleus::Address&);
 
+      elle::Status	Clear(const Action::Type);
       elle::Status	Flush();
 
       //
