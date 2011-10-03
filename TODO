@@ -1,4 +1,7 @@
-- gerer le @ via un fichier plutot qu'un lien
+- chercher pourquoi copier kaneton/sample puis rm -Rf supprime des blocks
+  qui n'existent plus!
+- regler le probleme du WEIRD qui arrive avec boost copier/detruit: radix/Obj
+
 - check footprint in hole::Push (XXX)
 - stocker en binaire plutot qu'hexa?
 
