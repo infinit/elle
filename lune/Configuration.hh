@@ -59,7 +59,14 @@ namespace lune
 
       struct				Debug
       {
+#if INFINIT_UNIX
 	static const elle::Boolean	PIG;
+#endif
+
+#if INFINIT_WIN32
+        static const elle::Boolean      IIG;
+#endif
+
 	static const elle::Boolean	Etoile;
 	static const elle::Boolean	Nucleus;
 	static const elle::Boolean	Hole;
@@ -129,7 +136,14 @@ namespace lune
 
     struct
     {
+#if INFINIT_UNIX
       elle::Boolean		pig;
+#endif
+
+#if INFINIT_WIN32
+      elle::Boolean             iig;
+#endif
+
       elle::Boolean		etoile;
       elle::Boolean		nucleus;
       elle::Boolean		hole;

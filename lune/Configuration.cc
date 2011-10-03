@@ -50,8 +50,16 @@ namespace lune
   const elle::Natural32	Configuration::Default::Reserve::Capacity =
     1073741824;
 
+#if INFINIT_UNIX
   const elle::Boolean	Configuration::Default::Debug::PIG =
     false;
+#endif
+
+#if INFINIT_WIN32
+  const elle::Boolean	Configuration::Default::Debug::IIG =
+    false;
+#endif
+
   const elle::Boolean	Configuration::Default::Debug::Etoile =
     false;
   const elle::Boolean	Configuration::Default::Debug::Nucleus =
@@ -121,10 +129,19 @@ namespace lune
 	  this->reserve.capacity) == elle::StatusError)
       escape("unable to update the parameter");
 
+#if INFINIT_UNIX
     if (elle::Settings::Set(
 	  "debug", "pig",
 	  this->debug.pig) == elle::StatusError)
       escape("unable to update the parameter");
+#endif
+
+#if INFINIT_WIN32
+    if (elle::Settings::Set(
+	  "debug", "iig",
+	  this->debug.iig) == elle::StatusError)
+      escape("unable to update the parameter");
+#endif
 
     if (elle::Settings::Set(
 	  "debug", "etoile",
@@ -212,11 +229,21 @@ namespace lune
 	  Configuration::Default::Reserve::Capacity) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
+#if INFINIT_UNIX
     if (elle::Settings::Get(
 	  "debug", "pig",
 	  this->debug.pig,
 	  Configuration::Default::Debug::PIG) == elle::StatusError)
       escape("unable to retrieve the parameter");
+#endif
+
+#if INFINIT_UNIX
+    if (elle::Settings::Get(
+	  "debug", "iig",
+	  this->debug.iig,
+	  Configuration::Default::Debug::IIG) == elle::StatusError)
+      escape("unable to retrieve the parameter");
+#endif
 
     if (elle::Settings::Get(
 	  "debug", "etoile",
