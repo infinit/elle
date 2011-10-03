@@ -194,10 +194,19 @@ namespace etoile
 	  // the object updated accordingly.
 	  //
 	  // note that the previous content block is not removed since
-	  // objects benefit from the history i.e multiple versions.
+	  // objects benefit from the history i.e multiple versions; unless
+	  // the history support is not activated for this network.
 	  //
 
 	  nucleus::Address	address;
+
+	  // does the network support the history?
+	  if (hole::Hole::Descriptor.history == false)
+	    {
+	      // destroy the contents block.
+	      if (Contents::Destroy(context) == elle::StatusError)
+		escape("unable to destroy the contents block");
+	    }
 
 	  // generate a secret key.
 	  if (key.Generate() == elle::StatusError)

@@ -19,6 +19,8 @@
 
 #include <etoile/depot/Depot.hh>
 
+#include <Infinit.hh>
+
 namespace etoile
 {
   namespace journal
@@ -37,6 +39,10 @@ namespace etoile
       gear::Transcript::Scoutor		scoutor;
 
       enter();
+
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] journal::Journal::Record()\n");
 
       // first, if actors are still operating on the scope, delay the
       // journal processing.
