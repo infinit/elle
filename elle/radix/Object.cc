@@ -78,6 +78,8 @@ namespace elle
     {
       enter();
 
+      printf("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX WEIRD\n");
+
       flee("this method should never have been called");
     }
 
