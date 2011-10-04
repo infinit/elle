@@ -26,7 +26,7 @@ namespace elle
                     size_t *     output_size)
     {
       enter();
-      escape("XXX implement me");
+      escape("XXX implement me with iconv_open/iconv/iconv_close");
       leave();
     }
 
@@ -36,7 +36,7 @@ namespace elle
                     size_t *        output_size)
     {
       enter();
-      escape("XXX implement me");
+      escape("XXX implement me with iconv_open/iconv/iconv_close");
       leave();
     }
 
