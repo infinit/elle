@@ -31,7 +31,8 @@ namespace pig
 #define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      log(_text_);							\
+      report(_text_);							\
+      show(); \
 									\
       Janitor::Clear(_identifiers_);					\
 									\
@@ -1709,6 +1710,7 @@ namespace pig
 	//
 	etoile::path::Chemin		chemin;
 	etoile::gear::Identifier	directory;
+	nucleus::Entry*			entry;
 
 	// resolve the path.
 	if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
@@ -1720,6 +1722,33 @@ namespace pig
 					  directory) == elle::StatusError)
 	  error("unable to load the directory",
 		ENOENT);
+
+	// lookup for the target name.
+	if (etoile::wall::Directory::Lookup(directory,
+					    t,
+					    entry) == elle::StatusError)
+	  error("unable to lookup the target name",
+		ENOENT,
+		directory);
+
+	// check if an entry actually exist for the target name meaning
+	// that an object is about to get overwritten.
+	if (entry != NULL)
+	  {
+	    //
+	    // in this case, the target object must be destroyed.
+	    //
+
+	    // unlink the object, assuming it is either a file or a link.
+	    //
+	    // note that the Crux's method is called in order not to have
+	    // to deal with the target's genre.
+	    if (Crux::Unlink(target) != 0)
+	      error("unable to unlink the target object which is "
+		    "about to get overwritte",
+		    ENOENT,
+		    directory);
+	  }
 
 	// rename the entry from _f_ to _t_.
 	if (etoile::wall::Directory::Rename(directory,
