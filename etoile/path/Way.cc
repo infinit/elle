@@ -13,6 +13,7 @@
 //
 
 #include <etoile/path/Way.hh>
+#include <elle/utility/Unicode.hh>
 
 namespace etoile
 {
@@ -64,6 +65,26 @@ namespace etoile
       path(string)
     {
     }
+
+
+    ///
+    /// wide char constructor
+    ///
+    Way::Way(const wchar_t *                                    u16_str):
+      path()
+    {
+      char *    str      = NULL;
+      size_t    str_size = 0;
+
+      if (elle::utility::Utf16To8(u16_str, -1, &str, &str_size) == elle::StatusError)
+          log("failed to convert the path to uft8");
+      else
+        {
+          path.assign(str, str_size);
+          free(str);
+        }
+    }
+
 
     ///
     /// this constructor creates a way but returns the last element of the path

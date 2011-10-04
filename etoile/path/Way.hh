@@ -50,6 +50,7 @@ namespace etoile
       Way(const elle::String&);
       Way(const Way&,
 	  Slice&);
+      Way(const wchar_t * u16_str);
 
       //
       // methods
