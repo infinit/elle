@@ -74,6 +74,7 @@ namespace elle
       declare(Time);
       Boolean		operator==(const Time&) const;
       Boolean		operator<(const Time&) const;
+      Boolean		operator>(const Time&) const;
 
       Time		operator+(const Time&);
       Time		operator-(const Time&);

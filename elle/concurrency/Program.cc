@@ -88,7 +88,7 @@ namespace elle
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
 #elif INFINIT_WIN32
-      // XXX
+      // XXX to implement
 #else
 # error "unsupported platform"
 #endif

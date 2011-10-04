@@ -231,6 +231,20 @@ namespace elle
     }
 
     ///
+    /// this operator compares two times.
+    ///
+    Boolean		Time::operator>(const Time&		element) const
+    {
+      enter();
+
+      // check the address as this may actually be the same object.
+      if (this == &element)
+	false();
+
+      return (!this->operator<(element));
+    }
+
+    ///
     /// this operator adds a time to the current one.
     ///
     Time		Time::operator+(const Time&		element)
