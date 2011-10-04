@@ -93,8 +93,8 @@ commit:
 	@$(GIT) commit -a
 
 	@for component in $(COMPONENTS); do				\
-	  echo "---[ $${component}"					&& \
-	  cd $${component}						&& \
+	  echo "---[ $${component}"					; \
+	  cd $${component}						; \
 	  $(GIT) commit -a						; \
 	  cd ..								; \
 	done
