@@ -83,8 +83,8 @@ status:
 	@$(GIT) status
 
 	@for component in $(COMPONENTS); do (				\
-	  echo "---[ $${component}"					&& \
-	  cd $${component}						&& \
+	  echo "---[ $${component}"					; \
+	  cd $${component}						; \
 	  $(GIT) status	)						\
 	done
 
@@ -104,8 +104,8 @@ push:
 	@$(GIT) push
 
 	@for component in $(COMPONENTS); do				\
-	  echo "---[ $${component}"					&& \
-	  cd $${component}						&& \
+	  echo "---[ $${component}"					; \
+	  cd $${component}						; \
 	  $(GIT) push							; \
 	  cd ..								; \
 	done
