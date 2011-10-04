@@ -229,7 +229,7 @@ namespace pig
 
 	  // retrieve the attribute.
 	  if (etoile::wall::Attributes::Get(handle->identifier,
-					    "posix::exec",
+					    "perm::exec",
 					    trait) == elle::StatusError)
 	    error("unable to retrieve an attribute",
 		  ENOENT);
@@ -685,9 +685,9 @@ namespace pig
 	    {
 	      nucleus::Trait*	trait;
 
-	      // get the posix::exec attribute
+	      // get the perm::exec attribute
 	      if (etoile::wall::Attributes::Get(identifier,
-						"posix::exec",
+						"perm::exec",
 						trait) == elle::StatusError)
 		error("unable to retrieve the attribute",
 		      ENOENT,
@@ -706,9 +706,9 @@ namespace pig
 	    {
 	      nucleus::Trait*	trait;
 
-	      // get the posix::exec attribute
+	      // get the perm::exec attribute
 	      if (etoile::wall::Attributes::Get(identifier,
-						"posix::exec",
+						"perm::exec",
 						trait) == elle::StatusError)
 		error("unable ti retrive the attribute",
 		      ENOENT,
@@ -832,15 +832,15 @@ namespace pig
     // if the execution bit is to be set...
     if (mode & S_IXUSR)
       {
-	// set the posix::exec attribute if necessary i.e depending on the
+	// set the perm::exec attribute if necessary i.e depending on the
 	// file genre.
 	switch (information.genre)
 	  {
 	  case nucleus::GenreFile:
 	    {
-	      // set the posix::exec attribute
+	      // set the perm::exec attribute
 	      if (etoile::wall::Attributes::Set(identifier,
-						"posix::exec",
+						"perm::exec",
 						"true") == elle::StatusError)
 		error("unable to set the attribute",
 		      EACCES,
@@ -1324,12 +1324,12 @@ namespace pig
 	    EINTR,
 	    file, directory);
 
-    // if the file has the exec bit, add the posix::exec attribute.
+    // if the file has the exec bit, add the perm::exec attribute.
     if (mode & S_IXUSR)
       {
-	// set the posix::exec attribute
+	// set the perm::exec attribute
 	if (etoile::wall::Attributes::Set(file,
-					  "posix::exec",
+					  "perm::exec",
 					  "true") == elle::StatusError)
 	  error("unable to set the attributes",
 		EACCES,
