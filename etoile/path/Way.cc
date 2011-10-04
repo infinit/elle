@@ -76,13 +76,15 @@ namespace etoile
       char *    str      = NULL;
       size_t    str_size = 0;
 
-      if (elle::utility::Utf16To8(u16_str, -1, &str, &str_size) == elle::StatusError)
-          log("failed to convert the path to uft8");
-      else
-        {
-          path.assign(str, str_size);
-          free(str);
-        }
+      if (elle::utility::Utf16To8(u16_str,
+				  -1,
+				  &str,
+				  &str_size) == elle::StatusError)
+	fail("failed to convert the path to uft8");
+
+      path.assign(str, str_size);
+
+      free(str);
     }
 
 
