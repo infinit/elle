@@ -60,7 +60,6 @@ namespace elle
       //
 
       System::Path::Separator = '/';
-	// ::QDir::separator().toAscii();
 
       System::Path::Root =
 	::QDir::root().canonicalPath().toStdString();

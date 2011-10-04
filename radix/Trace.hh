@@ -9,6 +9,7 @@
 //
 
 #if 0
+
 #ifndef ELLE_RADIX_TRACE_HH
 #define ELLE_RADIX_TRACE_HH
 
@@ -25,8 +26,8 @@
 #include <elle/io/Dumpable.hh>
 
 #include <elle/idiom/Close.hh>
-# include <list>
 # include <cxxabi.h>
+# include <execinfo.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle
