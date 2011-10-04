@@ -37,5 +37,6 @@ namespace elle
 #include <elle/utility/Product.hh>
 #include <elle/utility/Settings.hh>
 #include <elle/utility/Time.hh>
+#include <elle/utility/Unicode.hh>
 
 #endif
