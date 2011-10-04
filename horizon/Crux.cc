@@ -390,7 +390,7 @@ namespace pig
 	// read the directory entries.
 	if (etoile::wall::Directory::Consult(
 	      handle->identifier,
-	      static_cast<nucleus::Offset>(offset),
+	      static_cast<nucleus::Index>(offset),
 	      Crux::Range,
 	      range) == elle::StatusError)
 	  error("unable to retrieve some directory entries",
@@ -442,8 +442,6 @@ namespace pig
   int			Crux::Releasedir(const char*		path,
 					 struct ::fuse_file_info* info)
   {
-    Handle*		handle;
-
     // debug.
     if (Infinit::Configuration.debug.pig == true)
       printf("[pig] %s(%s, %p)\n",
@@ -452,16 +450,13 @@ namespace pig
 
     // set the handle pointer to the file handle that has been filled by
     // Opendir().
-    handle = reinterpret_cast<Handle*>(info->fh);
+    std::unique_ptr<Handle> handle(reinterpret_cast<Handle*>(info->fh));
 
     // discard the object.
     if (etoile::wall::Directory::Discard(
 	  handle->identifier) == elle::StatusError)
       error("unable to discard the directory",
 	    EINTR);
-
-    // delete the handle.
-    delete handle;
 
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
