@@ -42,6 +42,13 @@ namespace nucleus
     {
       enter();
 
+      // XXX
+      if (entry->name == elle::String("conftest.nm"))
+	{
+	  this->Dump();
+	  entry->Dump();
+	}
+
       // add the entry in the range.
       if (this->range.Add(entry) == elle::StatusError)
 	escape("unable to add the entry in the range");
@@ -144,6 +151,14 @@ namespace nucleus
       Entry*		entry;
 
       enter();
+
+      // if _from_ and _to_ are identical, return.
+      if (from == to)
+	leave();
+
+      // check that an entry _to_ does not already exist.
+      if (this->range.Locate(to) == elle::StatusTrue)
+	escape("an entry already exists with the to-be-renamed name");
 
       // look in the range.
       if (this->range.Lookup(from, entry) == elle::StatusError)
