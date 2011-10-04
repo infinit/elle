@@ -167,7 +167,14 @@ namespace etoile
     elle::Status	Object::Discard(
 			  const gear::Identifier&		identifier)
     {
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  gear::Object&
+	  >
+	>		callback;
       gear::Actor*	actor;
+      gear::Object*	context;
 
       enter(instance(actor));
 
@@ -184,16 +191,26 @@ namespace etoile
 	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate(gear::OperationDiscard) == elle::StatusError)
+      if (actor->scope->Operate<automaton::Object>(
+	    gear::OperationDiscard,
+	    callback) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
+
+      // retrieve the context.
+      if (actor->scope->Use(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // trigger the closing callback.
+      if (callback.Call(*context) == elle::StatusError)
+	escape("unable to perform the closing operation");
 
       // detach the actor.
       if (actor->Detach() == elle::StatusError)
 	escape("unable to detach the actor from the scope");
 
-      // relinquish the scope.
-      if (gear::Scope::Relinquish(actor->scope) == elle::StatusError)
-	escape("unable to relinquish the scope");
+      // record the scope in the journal.
+      if (journal::Journal::Record(actor->scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
 
       // delete the actor.
       delete actor;
@@ -211,6 +228,12 @@ namespace etoile
     elle::Status	Object::Store(
 			  const gear::Identifier&		identifier)
     {
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  gear::Object&
+	  >
+	>		callback;
       gear::Object*	context;
       gear::Actor*	actor;
 
@@ -229,16 +252,18 @@ namespace etoile
 	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate(gear::OperationStore) == elle::StatusError)
+      if (actor->scope->Operate<automaton::Object>(
+	    gear::OperationStore,
+	    callback) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
       if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the store automaton on the context.
-      if (automaton::Object::Store(*context) == elle::StatusError)
-	escape("unable to store the object");
+      // trigger the closing callback.
+      if (callback.Call(*context) == elle::StatusError)
+	escape("unable to perform the closing operation");
 
       // detach the actor.
       if (actor->Detach() == elle::StatusError)
@@ -267,6 +292,12 @@ namespace etoile
     elle::Status	Object::Destroy(
 			  const gear::Identifier&		identifier)
     {
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  gear::Object&
+	  >
+	>		callback;
       gear::Actor*	actor;
       gear::Object*	context;
 
@@ -285,16 +316,18 @@ namespace etoile
 	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate(gear::OperationDestroy) == elle::StatusError)
+      if (actor->scope->Operate<automaton::Object>(
+	    gear::OperationDestroy,
+	    callback) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the context.
       if (actor->scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the destroy automaton on the context.
-      if (automaton::Object::Destroy(*context) == elle::StatusError)
-	escape("unable to destroy the object");
+      // trigger the closing callback.
+      if (callback.Call(*context) == elle::StatusError)
+	escape("unable to perform the closing operation");
 
       // detach the actor.
       if (actor->Detach() == elle::StatusError)

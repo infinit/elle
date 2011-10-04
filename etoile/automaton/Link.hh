@@ -49,6 +49,7 @@ namespace etoile
       static elle::Status	Resolve(gear::Link&,
 					path::Way&);
 
+      static elle::Status	Discard(gear::Link&);
       static elle::Status	Store(gear::Link&);
       static elle::Status	Destroy(gear::Link&);
     };

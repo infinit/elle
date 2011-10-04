@@ -142,6 +142,12 @@ namespace etoile
 	  Slice			slice;
 	  nucleus::Entry*	entry;
 	  nucleus::Location	location;
+	  elle::Callback<
+	    elle::Status,
+	    elle::Parameters<
+	      gear::Directory&
+	      >
+	    >			callback;
 
 	  enter(instance(actor));
 
@@ -197,10 +203,15 @@ namespace etoile
 	    address = entry->address;
 
 	  // specify the closing operation performed on the scope.
-	  if (actor->scope->Operate(gear::OperationDiscard) ==
-	      elle::StatusError)
+	  if (actor->scope->Operate<automaton::Directory>(
+	        gear::OperationDiscard,
+		callback) == elle::StatusError)
 	    escape("unable to specify the operation being performed "
 		   "on the scope");
+
+	  // trigger the closing callback.
+	  if (callback.Call(*context) == elle::StatusError)
+	    escape("unable to perform the closing operation");
 
 	  // detach the actor.
 	  if (actor->Detach() == elle::StatusError)

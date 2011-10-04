@@ -79,6 +79,20 @@ namespace etoile
     }
 
     ///
+    /// this method is called whenever the context is being closed without
+    /// any modification having been performed.
+    ///
+    elle::Status	Object::Discard(
+			  gear::Object&)
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
     /// this method permanently destroys the object along with all its
     /// history i.e all its versions.
     ///
@@ -117,10 +131,6 @@ namespace etoile
 
       // set the context's state.
       context.state = gear::Context::StateDestroyed;
-
-      // XXX
-      printf("automata::Object::Destroy\n");
-      context.transcript.Dump();
 
       leave();
     }

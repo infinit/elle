@@ -26,6 +26,7 @@ namespace etoile
     ///
     enum Operation
       {
+	OperationUnknown,
 	OperationDiscard,
 	OperationStore,
 	OperationDestroy

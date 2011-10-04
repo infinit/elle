@@ -240,6 +240,11 @@ namespace etoile
 
 	    break;
 	  }
+	case OperationUnknown:
+	  {
+	    escape("unable to process the closing operation '%u'\n",
+		   operation);
+	  }
 	}
 
       leave();

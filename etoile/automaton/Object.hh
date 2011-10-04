@@ -50,6 +50,7 @@ namespace etoile
       static elle::Status	Information(gear::Object&,
 					    miscellaneous::Information&);
 
+      static elle::Status	Discard(gear::Object&);
       static elle::Status	Destroy(gear::Object&);
       static elle::Status	Store(gear::Object&);
     };

@@ -191,6 +191,20 @@ namespace etoile
     }
 
     ///
+    /// this method is called whenever the context is being closed without
+    /// any modification having been performed.
+    ///
+    elle::Status	File::Discard(
+			  gear::File&)
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
     /// this method destroys the file by marking all the blocks
     /// as dying for future removal.
     ///

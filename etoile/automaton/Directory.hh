@@ -61,6 +61,7 @@ namespace etoile
       static elle::Status	Remove(gear::Directory&,
 				       const path::Slice&);
 
+      static elle::Status	Discard(gear::Directory&);
       static elle::Status	Destroy(gear::Directory&);
       static elle::Status	Store(gear::Directory&);
     };

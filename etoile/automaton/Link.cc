@@ -152,6 +152,20 @@ namespace etoile
     }
 
     ///
+    /// this method is called whenever the context is being closed without
+    /// any modification having been performed.
+    ///
+    elle::Status	Link::Discard(
+			  gear::Link&)
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
     /// this method destroys the link by marking all the blocks
     /// as dying for future removal.
     ///

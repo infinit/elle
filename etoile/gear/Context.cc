@@ -28,7 +28,8 @@ namespace etoile
     ///
     Context::Context(const Nature				nature):
       nature(nature),
-      state(Context::StateUnknown)
+      state(Context::StateUnknown),
+      operation(OperationUnknown)
     {
     }
 
@@ -55,6 +56,10 @@ namespace etoile
       // display the state.
       std::cout << alignment << elle::Dumpable::Shift << "[State] "
 		<< this->state << std::endl;
+
+      // display the operation.
+      std::cout << alignment << elle::Dumpable::Shift << "[Operation] "
+		<< this->operation << std::endl;
 
       // dump the transcript.
       if (this->transcript.Dump(margin + 2) == elle::StatusError)

@@ -52,6 +52,7 @@ namespace etoile
       static elle::Status	Adjust(gear::File&,
 				       const nucleus::Size&);
 
+      static elle::Status	Discard(gear::File&);
       static elle::Status	Destroy(gear::File&);
       static elle::Status	Store(gear::File&);
     };

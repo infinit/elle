@@ -119,7 +119,15 @@ namespace etoile
       template <typename T>
       elle::Status	Use(T*&);
 
-      elle::Status	Operate(const Operation);
+      template <typename X,
+		typename T>
+      elle::Status	Operate(const Operation,
+				elle::Callback<
+				  elle::Status,
+				  elle::Parameters<
+				    T&
+				    >
+				  >&);
 
       //
       // interfaces

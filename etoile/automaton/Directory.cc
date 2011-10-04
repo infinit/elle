@@ -264,6 +264,20 @@ namespace etoile
     }
 
     ///
+    /// this method is called whenever the context is being closed without
+    /// any modification having been performed.
+    ///
+    elle::Status	Directory::Discard(
+			  gear::Directory&)
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
     /// this method destroys the directory by marking all the blocks
     /// as dying for future removal.
     ///
