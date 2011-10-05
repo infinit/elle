@@ -20,6 +20,22 @@ namespace nucleus
   {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this constant defines the component for the porcupine's seams
+    /// associated with Catalogs.
+    ///
+    const Component			Catalog::S = ComponentSeamCatalog;
+
+    ///
+    /// this constant defines the component for the porcupine's quills
+    /// associated with Catalogs.
+    ///
+    const Component			Catalog::Q = ComponentQuillCatalog;
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 

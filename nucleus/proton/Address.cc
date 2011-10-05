@@ -193,17 +193,20 @@ namespace nucleus
 
       enter();
 
-      // display the name.
-      std::cout << alignment << "[Address]" << std::endl;
-
       // check the value.
       if (*this == Address::Null)
 	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Address] " << elle::none << std::endl;
+	  std::cout << alignment << "[Address] " << elle::none << std::endl;
+	}
+      else if (*this == Address::Some)
+	{
+	  std::cout << alignment << "[Address] " << "(undef)" << std::endl;
 	}
       else
 	{
+	  // display the name.
+	  std::cout << alignment << "[Address]" << std::endl;
+
 	  // display the family.
 	  std::cout << alignment << elle::Dumpable::Shift << "[Family] "
 		    << this->family << std::endl;

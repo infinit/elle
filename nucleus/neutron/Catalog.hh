@@ -22,6 +22,7 @@
 #include <nucleus/neutron/Offset.hh>
 #include <nucleus/neutron/Range.hh>
 #include <nucleus/neutron/Entry.hh>
+#include <nucleus/neutron/Component.hh>
 
 namespace nucleus
 {
@@ -48,6 +49,12 @@ namespace nucleus
       // types
       //
       typedef elle::String			K;
+
+      //
+      // constants
+      //
+      static const Component			S;
+      static const Component			Q;
 
       //
       // constructors & destructors
