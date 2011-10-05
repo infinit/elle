@@ -123,7 +123,13 @@ ADD_LIBRARY(elle
   ${elle_UNIX}
 )
 
-TARGET_LINK_LIBRARIES(elle comet msgpack crypto ssl readline)
+TARGET_LINK_LIBRARIES(elle comet
+  ${QT_QTNETWORK_LIBRARIES}
+  ${QT_QTCORE_LIBRARIES}
+  msgpack
+  crypto
+  ssl
+  readline)
 
 IF(${UNIX})
   TARGET_LINK_LIBRARIES(elle dl)
