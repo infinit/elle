@@ -151,8 +151,8 @@ namespace application
 	    address,
 	    lune::Descriptor::History,
 	    lune::Descriptor::Extent,
-	    lune::Descriptor::Balancing::Low,
-	    lune::Descriptor::Balancing::High) == elle::StatusError)
+	    lune::Descriptor::Contention,
+	    lune::Descriptor::Balancing) == elle::StatusError)
 	escape("unable to create the network's descriptor");
 
       // seal the descriptor.
