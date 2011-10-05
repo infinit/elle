@@ -96,9 +96,10 @@ namespace etoile
 	     Slice&						name):
       path()
     {
-      name.clear();
-
       elle::String::size_type	last_slash;
+
+      // clear the name, just in case.
+      name.clear();
 
       // find the position.
       last_slash = way.path.rfind(elle::System::Path::Separator);
