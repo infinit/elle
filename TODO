@@ -21,6 +21,16 @@
 	quoi que ce soit (attention tout de meme aux objects qui devrait
 	surement reset les states etc. puisque sealed i.e faire que Consistent
 	= Clean a la limite)
+===> en fait j'opte pour l'option: on stocke temporairement sur le disque
+  les blocs (comme un cache) jusqu'a ce que le bloc soit ferme. ainsi on
+  evite 3 choses: (i) pas besoin de calculer l'adresse du bloc a chaque modif
+  pour que si le cache le vire il puisse etre stocke tout en ayant le porcupine
+  qui le reference correctement (ii) on a pas besoin de se faire chier a
+  regulierement decharge sur le reseau pour liberer de la RAM et (iii) si
+  on decharge un block qui est ensuite re-modifie, pour faire les choses
+  proprement il faudrait delete l'ancienne version temporaire
+  -> petit probleme: pour decharger sur le disque, il faut tout de meme un
+     identifiant de reference: adresse de stockage ou autre.
 
 - check footprint in hole::Push (XXX)
 - stocker en binaire plutot qu'hexa?

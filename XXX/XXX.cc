@@ -86,10 +86,11 @@ int main(int argc, char** argv)
       sprintf(name, "%u", i);
 
       printf("-------------------- %s\n", name);
-      p->Dump();
 
       p->Remove(name);
     }
+
+  // XXX tester l'impact de calculer un hash a chaque modif
 
   p->Dump();
 

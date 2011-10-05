@@ -174,12 +174,44 @@ namespace nucleus
 	  if (nodule->Split(right) == elle::StatusError)
 	    escape("unable to split the nodule");
 
-	  // set the nodules' neighbourhood i.e the current nodule's right
-	  // is the new nodule and respectively.
-	  nodule->right = Address::Some;
-	  nodule->_right = right;
+	  //
+	  // update the nodule's previous right neighbour.
+	  //
+	  // this operation is required in order to make the left/right
+	  // links consistent by updating the neighbours this way:
+	  //
+	  //   [old right nodule]->left = [new right nodule]
+	  //
+	  //   [new right nodule]->left = [current nodule]
+	  //   [new right nodule]->right = [old right nodule]
+	  //
+	  //   [current nodule]->right = [new right nodule]
+	  //
+
+	  // if a right neighbour exists...
+	  if (nodule->right != Address::Null)
+	    {
+	      // load the right nodule, if necessary.
+	      if (nodule->_right == NULL)
+		{
+		  // XXX load the right nodule
+		}
+
+	      // update the old right nodule's neighbour links.
+	      nodule->_right->left = Address::Some;
+	      nodule->_right->_left = right;
+	    }
+
+	  // set the new right nodule's neighbour links.
 	  right->left = Address::Some;
 	  right->_left = nodule;
+
+	  right->right = nodule->right;
+	  right->_right = nodule->_right;
+
+	  // finally, update the current nodule's right neighbour link.
+	  nodule->right = Address::Some;
+	  nodule->_right = right;
 
 	  // retrieve the left nodule's major key.
 	  if (nodule->Major(major) == elle::StatusError)
