@@ -64,6 +64,8 @@ namespace etoile
     Way::Way(const elle::String&				string):
       path(string)
     {
+      if (!path.empty() && path[0] != '/')
+        path.clear();
     }
 
 
@@ -82,7 +84,8 @@ namespace etoile
 				  &str_size) == elle::StatusError)
 	fail("failed to convert the path to uft8");
 
-      path.assign(str, str_size);
+      if (str_size > 0 && str[0] == '/')
+        path.assign(str, str_size);
 
       free(str);
     }
@@ -94,19 +97,22 @@ namespace etoile
     ///
     Way::Way(const Way&						way,
 	     Slice&						name):
-      path(way.path,
-	   0,
-	   way.path.find_last_of(elle::System::Path::Separator) + 1)
+      path()
     {
-      Length	start;
-      Length	end;
+      name.clear();
 
-      // compute the offsets.
-      end = way.path.find_last_of(elle::System::Path::Separator);
-      start = way.path.find_first_not_of(elle::System::Path::Separator, end);
+      elle::String::size_type	last_slash;
 
-      // compute name.
-      name.assign(way.path.substr(start, name.npos));
+      // find the position.
+      last_slash = way.path.rfind(elle::System::Path::Separator);
+
+      // check if way.path contains at least a slash
+      if (last_slash == elle::String::npos)
+        return;
+
+      // extract path and name
+      path.assign(way.path.substr(0, last_slash == 0 ? 1 : last_slash));
+      name.assign(way.path.substr(last_slash + 1, way.path.npos));
     }
 
 //
