@@ -37,23 +37,24 @@ namespace lune
   /// this constant defines the size of the blocks stored within this
   /// network.
   ///
-  const elle::Natural32		Descriptor::Extent = 200; // XXX 8192
+  const elle::Natural32		Descriptor::Extent = 400; // XXX 8192
 
   ///
-  /// this constant defines the low bound which, once reached, implies
-  /// that data from a porcupine nodule get balanced on neighbour nodes,
+  /// this constant defines how much data must stay in the porcupine
+  /// nodule being split.
+  ///
+  /// this value can be used to prevent most nodes to be half filled
+  /// especially when data is added in a single sequential manner leading
+  /// to blocks getting filled and split.
+  ///
+  const elle::Real		Descriptor::Contention = 0.7;
+
+  ///
+  /// this constant defines the bound which, once reached, implies
+  /// that data from a porcupine nodule must be balanced on neighbour nodes,
   /// if possible.
   ///
-  const elle::Real		Descriptor::Balancing::Low = 0.2;
-
-  ///
-  /// this constant defines the high balancing bound. this value is
-  /// used to know how much data must stay in the porcupine nodule being
-  /// split.
-  ///
-  /// this value can be used to prevent most nodes to be half filled.
-  ///
-  const elle::Real		Descriptor::Balancing::High = 0.7;
+  const elle::Real		Descriptor::Balancing = 0.2;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -67,8 +68,8 @@ namespace lune
 					   const nucleus::Address& root,
 					   const elle::Boolean	history,
 					   const elle::Natural32 extent,
-					   const elle::Real&	low,
-					   const elle::Real&	high)
+					   const elle::Real&	contention,
+					   const elle::Real&	balancing)
   {
     enter();
 
@@ -78,8 +79,8 @@ namespace lune
     this->root = root;
     this->history = history;
     this->extent = extent;
-    this->balancing.low = low;
-    this->balancing.high = high;
+    this->contention = contention;
+    this->balancing = balancing;
 
     leave();
   }
@@ -97,8 +98,8 @@ namespace lune
 			  this->root,
 			  this->history,
 			  this->extent,
-			  this->balancing.low,
-			  this->balancing.high,
+			  this->contention,
+			  this->balancing,
 			  this->signature) == elle::StatusError)
       escape("unable to sign the attributes with the authority");
 
@@ -120,8 +121,8 @@ namespace lune
 			   this->root,
 			   this->history,
 			   this->extent,
-			   this->balancing.low,
-			   this->balancing.high) == elle::StatusError)
+			   this->contention,
+			   this->balancing) == elle::StatusError)
       escape("unable to verify the signature");
 
     leave();
@@ -155,23 +156,23 @@ namespace lune
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "porcupine", "history",
+	  "general", "history",
 	  this->history) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "porcupine", "extent",
+	  "general", "extent",
 	  this->extent) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "porcupine", "balancing.low",
-	  this->balancing.low) == elle::StatusError)
+	  "general", "contention",
+	  this->contention) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
-	  "porcupine", "balancing.high",
-	  this->balancing.high) == elle::StatusError)
+	  "general", "balancing",
+	  this->balancing) == elle::StatusError)
       escape("unable to update the parameter");
 
     if (elle::Settings::Set(
@@ -210,23 +211,23 @@ namespace lune
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "porcupine", "history",
+	  "general", "history",
 	  this->history) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "porcupine", "extent",
+	  "general", "extent",
 	  this->extent) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "porcupine", "balancing.low",
-	  this->balancing.low) == elle::StatusError)
+	  "general", "contention",
+	  this->contention) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
-	  "porcupine", "balancing.high",
-	  this->balancing.high) == elle::StatusError)
+	  "general", "balancing",
+	  this->balancing) == elle::StatusError)
       escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(

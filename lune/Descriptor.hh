@@ -46,11 +46,8 @@ namespace lune
 
     static const elle::Boolean		History;
     static const elle::Natural32	Extent;
-    struct				Balancing
-    {
-      static const elle::Real		Low;
-      static const elle::Real		High;
-    };
+    static const elle::Real		Contention;
+    static const elle::Real		Balancing;
 
     //
     // methods
@@ -93,11 +90,8 @@ namespace lune
     nucleus::Address	root;
     elle::Boolean	history;
     elle::Natural32	extent;
-    struct
-    {
-      elle::Real	low;
-      elle::Real	high;
-    }			balancing;
+    elle::Real		contention;
+    elle::Real		balancing;
     elle::Signature	signature;
   };
 
