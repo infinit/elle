@@ -64,8 +64,8 @@ namespace etoile
     Way::Way(const elle::String&				string):
       path(string)
     {
-      if (!this->path.empty() && this->path[0] != '/')
-	this->path.clear();
+      if (!path.empty() && path[0] != elle::System::Path::Separator)
+        path.clear();
     }
 
 
@@ -84,7 +84,7 @@ namespace etoile
 				  &str_size) == elle::StatusError)
 	fail("failed to convert the path to uft8");
 
-      if (str_size > 0 && str[0] == '/')
+      if (str_size > 0 && str[0] == elle::System::Path::Separator)
         path.assign(str, str_size);
 
       free(str);
