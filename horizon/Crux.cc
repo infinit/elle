@@ -117,7 +117,6 @@ namespace pig
   {
     Handle*				handle;
     etoile::miscellaneous::Information	information;
-    etoile::path::Way			way(path);
     elle::String*			name;
 
     // debug.
