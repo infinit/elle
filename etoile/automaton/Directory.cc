@@ -128,6 +128,11 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
+      // XXX
+      nucleus::Address a;
+      context.object.Bind(a);
+      // XXX
+
       leave();
     }
 
@@ -159,6 +164,11 @@ namespace etoile
       if (context.contents->content->Lookup(name,
 					    entry) == elle::StatusError)
 	escape("unable to find the entry in the directory");
+
+      // XXX
+      nucleus::Address a;
+      context.object.Bind(a);
+      // XXX
 
       leave();
     }
@@ -195,6 +205,11 @@ namespace etoile
 					     range) == elle::StatusError)
 	escape("unable to consult the directory");
 
+      // XXX
+      nucleus::Address a;
+      context.object.Bind(a);
+      // XXX
+
       leave();
     }
 
@@ -228,6 +243,11 @@ namespace etoile
       // set the context's state.
       context.state = gear::Context::StateModified;
 
+      // XXX
+      nucleus::Address a;
+      context.object.Bind(a);
+      // XXX
+
       leave();
     }
 
@@ -259,6 +279,11 @@ namespace etoile
 
       // set the context's state.
       context.state = gear::Context::StateModified;
+
+      // XXX
+      nucleus::Address a;
+      context.object.Bind(a);
+      // XXX
 
       leave();
     }

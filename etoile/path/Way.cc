@@ -64,8 +64,8 @@ namespace etoile
     Way::Way(const elle::String&				string):
       path(string)
     {
-      if (!path.empty() && path[0] != '/')
-        path.clear();
+      if (!this->path.empty() && this->path[0] != '/')
+	this->path.clear();
     }
 
 
