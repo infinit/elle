@@ -16,49 +16,6 @@
 
 #include <XXX/Porcupine.hh>
 
-class C:
-  public elle::Object
-{
-public:
-  typedef elle::Natural32	K;
-
-  C(const elle::String s):
-    name(s)
-  {
-  }
-
-  elle::Status	Dump(const elle::Natural32	margin) const
-  {
-    elle::String			alignment(margin, ' ');
-
-    enter();
-
-    std::cout << alignment << "[C] " << this->name << std::endl;
-
-    leave();
-  }
-
-  elle::Status	Serialize(elle::Archive&	archive) const
-  {
-    enter();
-
-    archive.Serialize(this->name);
-
-    leave();
-  }
-
-  elle::Status	Extract(elle::Archive&		archive)
-  {
-    enter();
-
-    archive.Extract(this->name);
-
-    leave();
-  }
-
-  elle::String	name;
-};
-
 int main(int argc, char** argv)
 {
   // allocate a new parser.
@@ -76,7 +33,8 @@ int main(int argc, char** argv)
 
   expose();
 
-  nucleus::Porcupine<C> p(elle::Callback<
+  nucleus::Porcupine<nucleus::Catalog>* p =
+    new nucleus::Porcupine<nucleus::Catalog>(elle::Callback<
 					   elle::Status,
 					   elle::Parameters<
 					     const nucleus::Address&,
@@ -91,7 +49,7 @@ int main(int argc, char** argv)
 					     >
 					   >::Null);
 
-  const int n = 5;
+  const int n = 30;
 
   for (int i = 0; i < n; i++)
     {
@@ -99,31 +57,43 @@ int main(int argc, char** argv)
 
       memset(name, 0x0, sizeof (name));
 
-      sprintf(name, "entry-%u", i);
+      sprintf(name, "%u", i);
 
-      // XXX C* c = new C(name);
-
-      p.Add(i, NULL);
+      p->Add(name, NULL);
     }
 
-  p.Dump();
+  p->Dump();
 
   for (int i = 0; i < n; i++)
     {
-      C*	c;
+      nucleus::Catalog*	c;
+      char name[1024];
 
-      if (p.Locate(i, c) == elle::StatusError)
+      memset(name, 0x0, sizeof (name));
+
+      sprintf(name, "%u", i);
+
+      if (p->Locate(name, c) == elle::StatusError)
 	exit(1);
     }
 
   for (int i = 0; i < n; i++)
     {
-      printf("-------------------- %u\n", i);
+      char name[1024];
 
-      p.Remove(i);
+      memset(name, 0x0, sizeof (name));
+
+      sprintf(name, "%u", i);
+
+      printf("-------------------- %s\n", name);
+      p->Dump();
+
+      p->Remove(name);
     }
 
-  p.Dump();
+  p->Dump();
+
+  delete p;
 
   expose();
 

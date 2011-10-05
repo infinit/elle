@@ -39,9 +39,10 @@ namespace nucleus
 			  const Nodule<V>*
 			  >
 			>&					unload):
+      ContentHashBlock(type == TypeSeam ? V::S : V::Q),
+
       type(type),
 
-      _state(StateClean),
       _load(load),
       _unload(unload),
       _parent(NULL),
@@ -68,6 +69,10 @@ namespace nucleus
 
       std::cout << alignment << "[Nodule]" << std::endl;
 
+      // dump the parent.
+      if (ContentHashBlock::Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the content hash block");
+
       // dump the type.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Type] " << std::dec << this->type << std::endl;
@@ -76,21 +81,21 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Parent]" << std::endl;
 
-      if (this->parent.Dump(margin + 2) == elle::StatusError)
+      if (this->parent.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the parent");
 
       // dump the left.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Left]" << std::endl;
 
-      if (this->left.Dump(margin + 2) == elle::StatusError)
+      if (this->left.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the left");
 
       // dump the right.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Right]" << std::endl;
 
-      if (this->right.Dump(margin + 2) == elle::StatusError)
+      if (this->right.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the right");
 
       /* XXX
@@ -98,14 +103,14 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Load]" << std::endl;
 
-      if (this->load.Dump(margin + 2) == elle::StatusError)
+      if (this->load.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the callback");
 
       // dump the unload callback.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Unload]" << std::endl;
 
-      if (this->unload.Dump(margin + 2) == elle::StatusError)
+      if (this->unload.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the callback");
       */
 
@@ -145,7 +150,10 @@ namespace nucleus
 
       // serialize the attributes.
       if (archive.Serialize(
-	    static_cast<elle::Natural8>(this->type)) == elle::StatusError)
+	    static_cast<elle::Natural8>(this->type),
+	    this->parent,
+	    this->left,
+	    this->right) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -162,7 +170,10 @@ namespace nucleus
       enter();
 
       // extract the attributes.
-      if (archive.Extract(type) == elle::StatusError)
+      if (archive.Extract(type,
+			  this->parent,
+			  this->left,
+			  this->right) == elle::StatusError)
 	escape("unable to extract the attributes");
 
       // cast the type.

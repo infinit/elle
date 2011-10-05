@@ -57,6 +57,29 @@ namespace nucleus
     {
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    Quill<V>::~Quill()
+    {
+      Quill<V>::Scoutor	scoutor;
+
+      // go through the container.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  Quill<V>::I*	inlet = scoutor->second;
+
+	  // delete the inlet.
+	  delete inlet;
+	}
+
+      // clear the container.
+      this->container.clear();
+    }
+
 //
 // ---------- methods ---------------------------------------------------------
 //
@@ -79,6 +102,9 @@ namespace nucleus
       // consistent though it will probably never be since the footprint
       // will be manually manipulated.
       //
+
+      // set the state.
+      this->_state = StateDirty;
 
       leave();
     }
@@ -138,15 +164,22 @@ namespace nucleus
       // add the inlet footprint to the quill's.
       this->_footprint.size += inlet->_footprint.size;
 
+      // set the state.
+      this->_state = StateDirty;
+
       // retrieve the current major key.
       if (this->Major(major) == elle::StatusError)
 	escape("unable to retrieve the major key");
 
       // should have the inserted key become the major key, update the parent
       // seam, if present.
-      if ((inlet->key == major) && (this->_parent != NULL))
+      if ((inlet->key == major) && (this->parent != Address::Null))
 	{
-	  // XXX the parent is assumed to be loaded here!
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent nodule
+	    }
 
 	  // update the parent seam.
 	  if (this->_parent->Update(major) == elle::StatusError)
@@ -182,7 +215,7 @@ namespace nucleus
       if (inlet->_footprint.Compute() == elle::StatusError)
 	escape("unable to compute the inlet's footprint");
 
-      // substract the inlet footprint to the seam's.
+      // substract the inlet footprint to the quill's.
       this->_footprint.size -= inlet->_footprint.size;
 
       // delete the inlet.
@@ -191,17 +224,24 @@ namespace nucleus
       // finally, erase the entry.
       this->container.erase(iterator);
 
+      // set the state.
+      this->_state = StateDirty;
+
       // should the quill not be empty and have the deleted key changed
       // the major key, update the parent, if present.
       if ((this->container.empty() == false) &&
 	  (key == major) &&
-	  (this->_parent != NULL))
+	  (this->parent != Address::Null))
 	{
 	  // retrieve the new major key.
 	  if (this->Major(major) == elle::StatusError)
 	    escape("unable to retrieve the major key");
 
-	  // XXX load parent.
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent nodule
+	    }
 
 	  // update the parent quill.
 	  if (this->_parent->Update(major) == elle::StatusError)
@@ -319,7 +359,11 @@ namespace nucleus
       if (this->Lookup(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet");
 
-      // XXX load the _value.
+      // load the value block, if necessary.
+      if (inlet->_value == NULL)
+	{
+	  // XXX load the value block: _value
+	}
 
       // return the value.
       value = inlet->_value;
@@ -379,7 +423,11 @@ namespace nucleus
       if (this->Locate(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet associated with the given key");
 
-      // XXX load & extract value?
+      // load the value block, if necessary.
+      if (inlet->_value == NULL)
+	{
+	  // XXX load the value block: _value
+	}
 
       // return the value.
       value = inlet->_value;
@@ -403,8 +451,7 @@ namespace nucleus
 
       // initialize _size_ as being the future left quills' size.
       size =
-	hole::Hole::Descriptor.extent *
-	hole::Hole::Descriptor.balancing.high;
+	hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
 
       // allocate a new quill.
       r = new Quill<V>(this->_load, this->_unload);
@@ -444,6 +491,12 @@ namespace nucleus
 	  this->_footprint.size += inlet->_footprint.size;
 	}
 
+      // set the current quill's state.
+      //
+      // note that that new quill's state is not set since both Create()
+      // and Insert() are called, each of which reset the state.
+      this->_state = StateDirty;
+
       // go through the remaining entries in order to move them to
       // the new (r) quill.
       for (j = i; j != this->container.end(); j++)
@@ -465,24 +518,28 @@ namespace nucleus
       // remove the right entries from the left (this) quill.
       this->container.erase(i, this->container.end());
 
+      // set both quills' footprint as consistent.
+      this->_footprint.state = elle::Footprint::StateConsistent;
+      r->_footprint.state = elle::Footprint::StateConsistent;
+
       // recompute the quill's major key since the far right, i.e highest,
       // entries just go removed.
       if (this->Major(major) == elle::StatusError)
 	escape("unable to retrieve the major key");
 
       // update the parent, if present.
-      if (this->_parent != NULL)
+      if (this->parent != Address::Null)
 	{
-	  // XXX load parent.
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent nodule
+	    }
 
 	  // update the parent seam.
 	  if (this->_parent->Update(major) == elle::StatusError)
 	    escape("unable to update the parent seam");
 	}
-
-      // set both quills' footprint as consistent.
-      this->_footprint.state = elle::Footprint::StateConsistent;
-      r->_footprint.state = elle::Footprint::StateConsistent;
 
       // set the output right quill.
       right = r;

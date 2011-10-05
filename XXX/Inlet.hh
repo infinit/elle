@@ -31,6 +31,12 @@ namespace nucleus
     ///
     /// XXX
     ///
+    /// XXX Address::Some est utilisee pour avoir un footprint equivalent
+    ///     a une adresse valide; Address::Null a une petite empreinte
+    ///     a noter que ceci est possible car un inlet aura toujours une
+    ///     addresse differente de null. ce qui n'est poas le cas de nodule
+    ///     pour parent, left, right.
+    ///
     template <typename V,
 	      typename T>
     class Inlet:

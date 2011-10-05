@@ -97,6 +97,9 @@ namespace nucleus
       // will be manually manipulated.
       //
 
+      // set the state.
+      this->_state = StateDirty;
+
       leave();
     }
 
@@ -149,6 +152,12 @@ namespace nucleus
 	escape("unable to insert the inlet in the container");
 
       // set the seam's parent link.
+      //
+      // note that the actual parent nodule's address is not computed as
+      // it may need recomputing afterwards. therefore, the address is set
+      // as being different from null but undefined so as to get computed only
+      // once.
+      inlet->_value->parent = Address::Some;
       inlet->_value->_parent = this;
 
       // compute the inlet's footprint.
@@ -158,15 +167,22 @@ namespace nucleus
       // add the inlet footprint to the seam's.
       this->_footprint.size += inlet->_footprint.size;
 
+      // set the state.
+      this->_state = StateDirty;
+
       // retrieve the major key.
       if (this->Major(major) == elle::StatusError)
 	escape("unable to retrieve the major key");
 
       // should have the inserted key become the major key, update the parent
       // seam, if present.
-      if ((inlet->key == major) && (this->_parent != NULL))
+      if ((inlet->key == major) && (this->parent != Address::Null))
 	{
-	  // XXX load parent.
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent nodule
+	    }
 
 	  // update the parent seam.
 	  if (this->_parent->Update(major) == elle::StatusError)
@@ -211,17 +227,24 @@ namespace nucleus
       // finally, erase the entry.
       this->container.erase(iterator);
 
+      // set the state.
+      this->_state = StateDirty;
+
       // should the seam not be empty and have the deleted key changed
       // the major key, update the parent, if present.
       if ((this->container.empty() == false) &&
 	  (key == major) &&
-	  (this->_parent != NULL))
+	  (this->parent != Address::Null))
 	{
 	  // retrieve the new major key.
 	  if (this->Major(major) == elle::StatusError)
 	    escape("unable to retrieve the major key");
 
-	  // XXX load parent.
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent nodule
+	    }
 
 	  // update the parent seam.
 	  if (this->_parent->Update(major) == elle::StatusError)
@@ -339,7 +362,11 @@ namespace nucleus
       if (this->Lookup(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet");
 
-      // XXX load the _value.
+      // load the value nodule, if necessary.
+      if (inlet->_value == NULL)
+	{
+	  // XXX load the value nodule.
+	}
 
       // return the nodule.
       nodule = inlet->_value;
@@ -399,7 +426,11 @@ namespace nucleus
       if (this->Locate(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet associated with the given key");
 
-      // XXX load?
+      // load the value nodule, if necessary.
+      if (inlet->_value == NULL)
+	{
+	  // XXX load the value nodule.
+	}
 
       // return the nodule.
       nodule = inlet->_value;
@@ -423,8 +454,7 @@ namespace nucleus
 
       // initialize _size_ as being the future left quills' size.
       size =
-	hole::Hole::Descriptor.extent *
-	hole::Hole::Descriptor.balancing.high;
+	hole::Hole::Descriptor.extent * hole::Hole::Descriptor.contention;
 
       // allocate a new seam.
       r = new Seam<V>(this->_load, this->_unload);
@@ -464,6 +494,12 @@ namespace nucleus
 	  this->_footprint.size += inlet->_footprint.size;
 	}
 
+      // set the current seam's state.
+      //
+      // note that that new seam's state is not set since both Create()
+      // and Insert() are called, each of which reset the state.
+      this->_state = StateDirty;
+
       // go through the remaining entries in order to move them to
       // the new (r) seam.
       for (j = i; j != this->container.end(); j++)
@@ -485,24 +521,28 @@ namespace nucleus
       // remove the right entries from the left (this) seam.
       this->container.erase(i, this->container.end());
 
+      // set both seams' footprint as consistent.
+      this->_footprint.state = elle::Footprint::StateConsistent;
+      r->_footprint.state = elle::Footprint::StateConsistent;
+
       // recompute the seam's major key since the far right, i.e highest,
       // entries just go removed.
       if (this->Major(major) == elle::StatusError)
 	escape("unable to retrieve the major key");
 
       // update the parent, if present.
-      if (this->_parent != NULL)
+      if (this->parent != Address::Null)
 	{
-	  // XXX load parent.
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent nodule.
+	    }
 
 	  // update the parent seam.
 	  if (this->_parent->Update(major) == elle::StatusError)
 	    escape("unable to update the parent seam");
 	}
-
-      // set both seams' footprint as consistent.
-      this->_footprint.state = elle::Footprint::StateConsistent;
-      r->_footprint.state = elle::Footprint::StateConsistent;
 
       // set the output right seam.
       right = r;
@@ -553,7 +593,7 @@ namespace nucleus
 	  // re-insert the inlet.
 	  //
 	  // note that by doing so, should the key be the new highest
-	  // of the seam, the Insert() method will take care of updating
+	  // in the seam, the Insert() method will take care of updating
 	  // the parent node.
 	  if (this->Insert(inlet) == elle::StatusError)
 	    escape("unable to insert the inlet");
@@ -602,10 +642,12 @@ namespace nucleus
       // load the child nodule, if necessary
       if (inlet->_value == NULL)
 	{
+	  /* XXX load value
 	  // load the child nodule.
 	  if (this->_load.Call(inlet->address,
 			       inlet->_value) == elle::StatusError)
 	    escape("unable to load the child nodule");
+	  */
 	}
 
       // search in this nodule.

@@ -73,6 +73,7 @@ namespace nucleus
 		const Nodule<V>*
 		>
 	      >&);
+      ~Quill();
 
       //
       // methods

@@ -91,9 +91,12 @@ namespace nucleus
       template <typename N>
       elle::Status		Delete(N*,
 				       const typename V::K&);
+
+      elle::Status		Grow();
+      elle::Status		Shrink();
+
       elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
-      elle::Status		Grow();
 
       elle::Status		Load(const Address&,
 				     Nodule<V>*&);

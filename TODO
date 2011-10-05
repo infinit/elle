@@ -1,6 +1,26 @@
-- chercher pourquoi copier kaneton/sample puis rm -Rf supprime des blocks
-  qui n'existent plus!
-- regler le probleme du WEIRD qui arrive avec boost copier/detruit: radix/Obj
+- il est possible qu'on ait une merde: en deletant une entree, on delete
+  le block, donc on met a jour les left/right nodules pour qu'ils ne pointent
+  plus sur le nodule deleted. donc on load les right/left. malheureusement,
+  si plus tard une operation load le(s) parent(s) qui veulent loader le meme
+  nodule, le systeme ne va pas faire le lien et le meme nodule va etre loade
+  deux fois. pour resoudre ce probleme:
+  -> soit on garde dans Porcupine un set Address/Nodule* des nodules loades
+     dans le system.
+  -> soit on load et unload immediatement et ensuite ca va dans un cache
+     qui lui aura une limite de taille max (donc c'est mieux car system-wide)
+     et (i) il ecrit sur disque si modifie et plus de place (ii) on a plus
+     le probleme en question puisqu'on reload lorsque necessaire.
+     => dans ce cas c'est Journal qui va s'occuper de ca. il recoit des blocks
+        les garde pour un certain temps (ou si la taille max est atteinte)
+        et les decharge si necessaire: appellant Depot si les blocs ont
+        ete modifies.
+     => donc chaque load doit etre suivi d'un unload une fois le block utilise
+     => a noter que puisque les scopes gerent deja les multiples acces, journal
+        peut considerer que ses blocs sont uniques. ainsi si un block est
+	demande, celui-ci peut tout simplement le refiler sans se soucier de
+	quoi que ce soit (attention tout de meme aux objects qui devrait
+	surement reset les states etc. puisque sealed i.e faire que Consistent
+	= Clean a la limite)
 
 - check footprint in hole::Push (XXX)
 - stocker en binaire plutot qu'hexa?

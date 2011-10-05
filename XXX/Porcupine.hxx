@@ -174,6 +174,13 @@ namespace nucleus
 	  if (nodule->Split(right) == elle::StatusError)
 	    escape("unable to split the nodule");
 
+	  // set the nodules' neighbourhood i.e the current nodule's right
+	  // is the new nodule and respectively.
+	  nodule->right = Address::Some;
+	  nodule->_right = right;
+	  right->left = Address::Some;
+	  right->_left = nodule;
+
 	  // retrieve the left nodule's major key.
 	  if (nodule->Major(major) == elle::StatusError)
 	    escape("unable to retrieve the major key");
@@ -278,29 +285,66 @@ namespace nucleus
 		  // XXX load the parent nodule
 		}
 
-	      // delete the nodule from its parent by passing the major i.e
-	      // the key the parent seam uses to referenced the now-empty
-	      // nodule.
+	      //
+	      // update the neighbour nodules. note that this step is performed
+	      // before actually deleting the entry as this would imply
+	      // destroying the nodule completely.
+	      //
+	      // this operation is required in order to make the left/right
+	      // links consistent by updating the neighbours this way:
+	      //
+	      //   [left nodule]->right = [deleted nodule]->right
+	      //   [right nodule]->left = [deleted nodule]->left
+	      //
+
+	      // if a left neighbour exists...
+	      if (nodule->left != Address::Null)
+		{
+		  // load the left nodule, if necessary.
+		  if (nodule->_left == NULL)
+		    {
+		      // XXX load the left nodule
+		    }
+
+		  // update the left nodule's right neighbour.
+		  nodule->_left->right = nodule->right;
+		  nodule->_left->_right = nodule->_right;
+		}
+
+	      // if a right neighbour exists...
+	      if (nodule->right != Address::Null)
+		{
+		  // load the right nodule, if necessary.
+		  if (nodule->_right == NULL)
+		    {
+		      // XXX load the right nodule
+		    }
+
+		  // update the right nodule's left neighbour.
+		  nodule->_right->left = nodule->left;
+		  nodule->_right->_left = nodule->_left;
+		}
+
+	      // finally, delete the nodule from its parent by passing
+	      // the major i.e the key the parent seam uses to referenced
+	      // the now-empty nodule.
 	      if (this->Delete(nodule->_parent, major) == elle::StatusError)
 		escape("unable to delete the nodule from its parent");
 	    }
 	  else
 	    {
-	      // in this case, the nodule is the root nodule: delete it
-	      // manually.
-	      delete nodule;
-
-	      // reset the root nodule address and pointer.
-	      this->root = Address::Null;
-	      this->_root = NULL;
-
-	      // decrease the tree's height.
-	      this->height--;
+	      // shrink the tree as the current nodule represents the
+	      // root.
+	      if (this->Shrink() == elle::StatusError)
+		escape("unable to shrink the tree");
 	    }
 	}
-      else if (nodule->_footprint.size < 10)
+      else if (nodule->_footprint.size <
+	       (hole::Hole::Descriptor.extent *
+		hole::Hole::Descriptor.balancing))
 	{
 	  // XXX
+	  printf("HERE\n");
 	}
 
       leave();
@@ -418,6 +462,28 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
+    elle::Status	Porcupine<V>::Shrink()
+    {
+      enter();
+
+      // delete the root nodule manually, if necessary.
+      if (this->_root != NULL)
+	delete this->_root;
+
+      // reset the root nodule address and pointer.
+      this->root = Address::Null;
+      this->_root = NULL;
+
+      // decrease the tree's height.
+      this->height--;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
     elle::Status	Porcupine<V>::Load(const Address&	address,
 					   Nodule<V>*&		nodule)
     {
@@ -427,6 +493,9 @@ namespace nucleus
       if (Nucleus::Factory.Build(address.component,
 				 nodule) == elle::StatusError)
 	escape("unable to build the nodule");
+
+      // XXX ne pas recevoir de load/unload dans Porcupine et utiliser
+      // XXX directement Journal::Get puis si pas present, Depot::Get
 
       /* XXX
       // call the given load callback.
@@ -476,7 +545,7 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Root]" << std::endl;
 
-      if (this->root.Dump(margin + 2) == elle::StatusError)
+      if (this->root.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the address");
 
       // dump the load callback.

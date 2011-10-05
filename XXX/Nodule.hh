@@ -105,7 +105,6 @@ namespace nucleus
       Address			left;
       Address			right;
 
-      State			_state;
       elle::Callback<
 	elle::Status,
 	elle::Parameters<
