@@ -51,7 +51,7 @@ ADD_LIBRARY(infinit
 )
 
 ADD_EXECUTABLE(Infinit
-  infinit.cc
+  _infinit.cc
 )
 
 TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole)
