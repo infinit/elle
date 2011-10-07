@@ -1,5 +1,3 @@
-PROJECT(Hole CXX)
-
 ADD_LIBRARY(hole
   implementations/local/Implementation.cc
   implementations/local/Local.cc
