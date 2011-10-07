@@ -26,7 +26,7 @@ ADD_LIBRARY(hole
 )
 
 ADD_EXECUTABLE(Hole
-  hole.cc
+  _hole.cc
 )
 
 TARGET_LINK_LIBRARIES(Hole infinit elle nucleus lune hole
