@@ -14,7 +14,10 @@ MESSAGE("CMAKE_HOST_SYSTEM: ${CMAKE_HOST_SYSTEM}")
 #
 # for C++0x
 #
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=gnu++0x -g -Wcast-align -Wold-style-cast")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+IF(${UNIX})
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -std=gnu++0x -Wcast-align -Wold-style-cast")
+ENDIF()
 
 #
 # for FUSE
