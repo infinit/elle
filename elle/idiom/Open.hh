@@ -42,8 +42,8 @@
 /// this macro function is sometimes use to group several parameter which
 /// can be pretty useful when a parameter contains a comma for instance.
 ///
-#define _(_parameters_...)						\
-  _parameters_
+#define _(...)						\
+  __VA_ARGS__
 
 //
 // ---------- meta ------------------------------------------------------------
@@ -156,7 +156,7 @@
 ///
 /// this macro-function registers a log entry.
 ///
-#define log(_format_, _arguments_...)					\
+#define log(_format_, ...)					\
   do									\
     {									\
       elle::standalone::Log*	_log_;					\
@@ -168,7 +168,7 @@
       elle::core::String	_location_(_tmp_.str());		\
       elle::core::String	_time_(__DATE__ " " __TIME__);		\
 									\
-      ::sprintf(_message_, _format_, ##_arguments_);			\
+      ::sprintf(_message_, _format_, ##__VA_ARGS_);			\
 									\
       if (elle::standalone::Log::Instance(_log_) ==			\
 	  elle::radix::StatusTrue)					\
@@ -206,7 +206,7 @@
 /// the macro functions below should be used: leave, escape, true
 /// etc.
 ///
-#define report(_format_, _arguments_...)				\
+#define report(_format_, ...)				\
   do									\
     {									\
       elle::standalone::Report*	_report_;				\
@@ -218,7 +218,7 @@
       elle::core::String	_location_(_tmp_.str());		\
       elle::core::String	_time_(__DATE__ " " __TIME__);		\
 									\
-      ::sprintf(_message_, _format_, ##_arguments_);			\
+      ::sprintf(_message_, _format_, ##__VA_ARGS__);			\
 									\
       if (elle::standalone::Report::Instance(_report_) ==		\
 	  elle::radix::StatusTrue)					\
@@ -297,10 +297,10 @@
 /// this macro-function indicates that an error occured
 /// and returns StatusError.
 ///
-#define escape(_format_, _arguments_...)				\
+#define escape(_format_, ...)				\
   do									\
     {									\
-      report(_format_, ##_arguments_);					\
+      report(_format_, ##__VA_ARGS__);					\
 									\
       release();							\
 									\
@@ -311,10 +311,10 @@
 /// this macro-function logs the fact that an error occured
 /// and returns StatusFalse.
 ///
-#define flee(_format_, _arguments_...)					\
+#define flee(_format_, ...)					\
   do									\
     {									\
-      log(_format_, ##_arguments_);					\
+      log(_format_, ##__VA_ARGS__);					\
 									\
       release();							\
 									\
@@ -330,10 +330,10 @@
 /// note that no parentheses are put around _return_ in case it
 /// would be empty.
 ///
-#define yield(_return_, _format_, _arguments_...)			\
+#define yield(_return_, _format_, ...)			\
   do									\
     {									\
-      log(_format_, ##_arguments_);					\
+      log(_format_, ##__VA_ARGS__);					\
 									\
       release();							\
       									\
@@ -346,10 +346,10 @@
 ///
 /// this macro-function is especially useful in constructors.
 ///
-#define fail(_format_, _arguments_...)					\
+#define fail(_format_, ...)					\
   do									\
     {									\
-      report(_format_, ##_arguments_);					\
+      report(_format_, ##__VA_ARGS__);					\
 									\
       show();								\
 									\
@@ -436,12 +436,18 @@
 /// this macro function allocates memory within the current scope through
 /// the use of alloca() before creating a Garrison of Guards.
 ///
-#define enter(_guards_...)						\
+#define enter()                                                         \
+  elle::standalone::Maid::Garrison* _maid_ =				\
+    elle::standalone::Maid::Install(					\
+      static_cast<elle::core::Void*>(					\
+        alloca(sizeof (elle::standalone::Maid::Garrison))))
+
+#define enterx(...)						\
   elle::standalone::Maid::Garrison* _maid_ =				\
     elle::standalone::Maid::Install(					\
       static_cast<elle::core::Void*>(					\
         alloca(sizeof (elle::standalone::Maid::Garrison))),             \
-      ##_guards_)
+      ##__VA_ARGS__)
 
 ///
 /// this macro wraps a local non-pointer variable by creating a pointer
@@ -451,7 +457,7 @@
 /// and untrack() macro-functions.
 ///
 #define wrap(_name_)							\
-  typeof(_name_)*	_ ## _name_ ## _
+  decltype(_name_)*	_ ## _name_ ## _
 
 ///
 /// this macro function emulates a slab tracking but for local
@@ -573,8 +579,8 @@
 ///
 /// syntaxic sugar.
 ///
-#define parameters(_parameters_...)					\
-  _parameters_
+#define parameters(...)					\
+  __VA_ARGS__
 
 //
 // ---------- network ---------------------------------------------------------
@@ -584,7 +590,7 @@
 /// this macro-function reserves a range of _capacity_ tags for the
 /// _component_ which depends upon the _dependencies_ components.
 ///
-#define range(_component_, _capacity_, _dependency_...)			\
+#define range(_component_, _capacity_, ...)			\
   namespace elle							\
   {									\
     namespace network							\
@@ -594,7 +600,7 @@
         public Capacity<_capacity_>					\
       {									\
         static const int		First =				\
-	  Dependency<_dependency_>::Last + 1;				\
+	  Dependency<__VA_ARGS__>::Last + 1;				\
 	static const int		Last = First + Size;		\
       };								\
     }									\

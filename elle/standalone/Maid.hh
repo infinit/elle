@@ -162,7 +162,7 @@ namespace elle
     ///   ::RSA*	rsa;
     ///   PublicKey*	pk;
     ///
-    ///   enter(instance(pk),
+    ///   enterx(instance(pk),
     ///         slab(rsa, ::RSA_free));
     ///
     ///   [...]
@@ -185,7 +185,7 @@ namespace elle
     ///   ::EVP_MD_CTX	context;
     ///
     ///   wrap(context);
-    ///   enter(local(context, ::EVP_MD_CTX_cleanup));
+    ///   enterx(local(context, ::EVP_MD_CTX_cleanup));
     ///
     ///   ::EVP_MD_CTX_init(&context);
     ///

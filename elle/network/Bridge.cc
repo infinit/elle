@@ -155,7 +155,7 @@ namespace elle
       std::pair<Bridge::Iterator, Boolean>	result;
       BridgePorter*				porter;
 
-      enter(instance(porter));
+      enterx(instance(porter));
 
       // check if this locus is not already listened on.
       if (Bridge::Locate(locus) == StatusTrue)
@@ -329,7 +329,7 @@ namespace elle
       ::QTcpSocket*	socket;
       Gate*		gate;
 
-      enter(instance(gate));
+      enterx(instance(gate));
 
       // retrieve the socket from the server.
       if ((socket = this->server->nextPendingConnection()) == NULL)

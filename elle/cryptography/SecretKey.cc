@@ -132,7 +132,7 @@ namespace elle
       ::EVP_CIPHER_CTX	context;
 
       wrap(context);
-      enter(local(context, ::EVP_CIPHER_CTX_cleanup));
+      enterx(local(context, ::EVP_CIPHER_CTX_cleanup));
 
       // generate a salt.
       ::RAND_pseudo_bytes(salt, sizeof (salt));
@@ -229,7 +229,7 @@ namespace elle
       ::EVP_CIPHER_CTX	context;
 
       wrap(context);
-      enter(local(context, ::EVP_CIPHER_CTX_cleanup));
+      enterx(local(context, ::EVP_CIPHER_CTX_cleanup));
 
       // check whether the cipher was produced with a salt.
       if (::memcmp(SecretKey::Magic,

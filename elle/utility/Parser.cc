@@ -170,7 +170,7 @@ namespace elle
     {
       Parser::Option*	option;
 
-      enter(instance(option));
+      enterx(instance(option));
 
       // create a new option.
       option = new Parser::Option(name,

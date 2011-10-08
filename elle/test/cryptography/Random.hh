@@ -63,7 +63,7 @@ namespace elle
 	Byte*		buffer;
 	Natural32	i;
 
-	enter(slab(buffer, ::free));
+	enterx(slab(buffer, ::free));
 
 	// allocate a buffer.
 	if ((buffer = (Byte*)::malloc(size)) == NULL)
