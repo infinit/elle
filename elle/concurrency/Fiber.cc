@@ -28,7 +28,7 @@ namespace elle
 //
 
     ///
-    /// this value defines fibers' stack size, in bytes: 1MB
+    /// this value defines fibers' stack size, in bytes: 2MB
     ///
     const Natural32		Fiber::Size = 2048576;
 
