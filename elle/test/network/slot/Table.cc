@@ -70,7 +70,7 @@ namespace elle
 	{
 	  Neighbour*	neighbour;
 
-	  enter(instance(neighbour));
+	  enterx(instance(neighbour));
 
 	  // allocate a new neighbour.
 	  neighbour = new Neighbour;

@@ -35,7 +35,7 @@ namespace elle
     {
       Element*		element;
 
-      enter(instance(element));
+      enterx(instance(element));
 
       element = new Element;
 

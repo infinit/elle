@@ -252,7 +252,7 @@ namespace elle
 	  Region	frame;
 	  Parcel*	parcel;
 
-	  enter(instance(parcel));
+	  enterx(instance(parcel));
 
 	  // create the frame based on the previously extracted raw.
 	  if (frame.Wrap(raw.contents + offset,

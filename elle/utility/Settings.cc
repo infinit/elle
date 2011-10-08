@@ -131,7 +131,7 @@ namespace elle
     {
       Settings::Assignment*	assignment;
 
-      enter(instance(assignment));
+      enterx(instance(assignment));
 
       // check if another assignment with that name already exists.
       if (this->Locate(name) == StatusTrue)
@@ -239,7 +239,7 @@ namespace elle
     {
       Settings::Section*	section;
 
-      enter(instance(section));
+      enterx(instance(section));
 
       // check if another section with that identifier already exists.
       if (this->Locate(identifier) == StatusTrue)

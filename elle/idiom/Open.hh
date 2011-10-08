@@ -436,7 +436,13 @@
 /// this macro function allocates memory within the current scope through
 /// the use of alloca() before creating a Garrison of Guards.
 ///
-#define enter(_guards_...)						\
+#define enter()                                                         \
+  elle::standalone::Maid::Garrison* _maid_ =				\
+    elle::standalone::Maid::Install(					\
+      static_cast<elle::core::Void*>(					\
+        alloca(sizeof (elle::standalone::Maid::Garrison))))
+
+#define enterx(_guards_...)						\
   elle::standalone::Maid::Garrison* _maid_ =				\
     elle::standalone::Maid::Install(					\
       static_cast<elle::core::Void*>(					\
@@ -451,7 +457,7 @@
 /// and untrack() macro-functions.
 ///
 #define wrap(_name_)							\
-  typeof(_name_)*	_ ## _name_ ## _
+  decltype(_name_)*	_ ## _name_ ## _
 
 ///
 /// this macro function emulates a slab tracking but for local

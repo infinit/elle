@@ -180,7 +180,7 @@ namespace elle
       ::DIR*		directory;
       struct ::dirent*	entry;
 
-      enter(slab(directory, ::closedir));
+      enterx(slab(directory, ::closedir));
 
       // is the path pointing to a valid directory.
       if (Directory::Exist(path) == StatusFalse)
@@ -267,7 +267,7 @@ namespace elle
       ::DIR*		directory;
       struct ::dirent*	entry;
 
-      enter(slab(directory, ::closedir));
+      enterx(slab(directory, ::closedir));
 
       // open the directory.
       if ((directory = ::opendir(path.string.c_str())) == NULL)

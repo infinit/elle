@@ -105,7 +105,7 @@ namespace elle
     {
       Parcel*		parcel;
 
-      enter(instance(parcel));
+      enterx(instance(parcel));
 
       // retrieve the argument and takes over the tracking.
       parcel = p;
