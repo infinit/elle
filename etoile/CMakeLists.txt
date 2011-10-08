@@ -50,6 +50,6 @@ ADD_LIBRARY(etoile
   Etoile.cc
 )
 
-TARGET_LINK_LIBRARIES(etoile elle nucleus lune agent)
+TARGET_LINK_LIBRARIES(etoile nucleus lune agent)
 
 ADD_SUBDIRECTORY(tests)
