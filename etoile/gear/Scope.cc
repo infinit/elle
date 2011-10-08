@@ -61,7 +61,7 @@ namespace etoile
 	  std::pair<Scope::S::O::Iterator, elle::Boolean>	result;
 	  Scope*						s;
 
-	  enter(instance(s));
+	  enterx(instance(s));
 
 	  // allocate a new scope.
 	  s = new Scope(chemin);
@@ -97,7 +97,7 @@ namespace etoile
     {
       Scope*		s;
 
-      enter(instance(s));
+      enterx(instance(s));
 
       // allocate a new scope.
       s = new Scope;

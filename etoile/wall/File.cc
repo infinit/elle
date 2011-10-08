@@ -48,7 +48,7 @@ namespace etoile
       gear::File*	context;
       gear::Actor*	actor;
 
-      enter(instance(actor));
+      enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -95,7 +95,7 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enter(instance(actor));
+      enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -295,7 +295,7 @@ namespace etoile
       gear::Actor*	actor;
       gear::File*	context;
 
-      enter(instance(actor));
+      enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -356,7 +356,7 @@ namespace etoile
       gear::Actor*	actor;
       gear::File*	context;
 
-      enter(instance(actor));
+      enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -416,7 +416,7 @@ namespace etoile
       gear::Actor*	actor;
       gear::File*	context;
 
-      enter(instance(actor));
+      enterx(instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)

@@ -45,7 +45,7 @@ namespace etoile
     {
       Action*		action;
 
-      enter(instance(action));
+      enterx(instance(action));
 
       // allocate an action.
       action = new Action(address, block);
@@ -67,7 +67,7 @@ namespace etoile
     {
       Action*		action;
 
-      enter(instance(action));
+      enterx(instance(action));
 
       // allocate an action.
       action = new Action(address);

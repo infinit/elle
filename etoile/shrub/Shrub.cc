@@ -318,7 +318,7 @@ namespace etoile
       // make sure the root riffle is present, if not create it.
       if (Shrub::Riffles == NULL)
 	{
-	  enter(instance(riffle));
+	  enterx(instance(riffle));
 
 	  // allocate a new root riffle.
 	  riffle = new Riffle;

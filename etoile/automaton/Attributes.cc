@@ -56,7 +56,7 @@ namespace etoile
 	  nucleus::Trait*	trait;
 
 	  // otherwise, create a new track.
-	  enter(instance(trait));
+	  enterx(instance(trait));
 
 	  // allocate a new trait.
 	  trait = new nucleus::Trait(name, value);

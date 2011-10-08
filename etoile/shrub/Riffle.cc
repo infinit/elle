@@ -99,7 +99,7 @@ namespace etoile
 	{
 	  Riffle*	riffle;
 
-	  enter(instance(riffle));
+	  enterx(instance(riffle));
 
 	  // check that available slots remain i.e it is possible that
 	  // the whole shrub's capacity is not large enough to hold

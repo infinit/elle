@@ -125,7 +125,7 @@ namespace etoile
 	    }
 	  else
 	    {
-	      enter(instance(record));
+	      enterx(instance(record));
 
 	      // allocate a new record.
 	      record = new nucleus::Record;
@@ -250,7 +250,7 @@ namespace etoile
 	  nucleus::Record*	record;
 	  nucleus::Subject	subject;
 
-	  enter(instance(record));
+	  enterx(instance(record));
 
 	  // create a subject for the owner.
 	  if (subject.Create(context.object.owner.K) == elle::StatusError)

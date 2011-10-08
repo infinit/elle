@@ -40,7 +40,7 @@ namespace etoile
 	  std::pair<Queue::Iterator, elle::Boolean>	result;
 	  Group*					g;
 
-	  enter(instance(g));
+	  enterx(instance(g));
 
 	  // allocate a group.
 	  g = new Group;

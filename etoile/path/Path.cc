@@ -149,7 +149,7 @@ namespace etoile
 	      >
 	    >			callback;
 
-	  enter(instance(actor));
+	  enterx(instance(actor));
 
 	  // extract the slice/version from the current slab.
 	  if (Path::Parse(*scoutor,

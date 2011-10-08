@@ -100,7 +100,7 @@ namespace etoile
     {
       nucleus::Entry*	entry;
 
-      enter(instance(entry));
+      enterx(instance(entry));
 
       // determine the rights.
       if (Rights::Determine(context) == elle::StatusError)
