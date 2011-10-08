@@ -144,7 +144,7 @@ namespace nucleus
     {
       typename N::I*	inlet;
 
-      enter(instance(inlet));
+      enterx(instance(inlet));
 
       // create an inlet here in order to be able to compute its footprint.
       inlet = new typename N::I(key, value);
@@ -421,14 +421,14 @@ namespace nucleus
       Seam<V>*		seam;
       typename V::K	major;
 
-      enter(instance(seam));
+      enterx(instance(seam));
 
       // if the tree does not exist, create a root nodule.
       if (this->height == 0)
       {
 	Quill<V>*	root;
 
-	enter(instance(root));
+	enterx(instance(root));
 
 	// at first, allocate an initial root nodule which happens to be
 	// a leaf since alone.

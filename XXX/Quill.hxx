@@ -118,7 +118,7 @@ namespace nucleus
     {
       typename Quill<V>::I*	inlet;
 
-      enter(instance(inlet));
+      enterx(instance(inlet));
 
       // create an inlet.
       inlet = new typename Quill<V>::I(key, value);
@@ -447,7 +447,7 @@ namespace nucleus
       Quill<V>*			r;
       typename V::K		major;
 
-      enter(instance(r));
+      enterx(instance(r));
 
       // initialize _size_ as being the future left quills' size.
       size =
@@ -685,7 +685,7 @@ namespace nucleus
 	{
 	  Quill<V>::I*	inlet;
 
-	  enter(instance(inlet));
+	  enterx(instance(inlet));
 
 	  // allocate an inlet.
 	  inlet = new Quill<V>::I;
