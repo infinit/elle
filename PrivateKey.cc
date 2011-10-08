@@ -117,7 +117,7 @@ namespace elle
     {
       ::RSA*		rsa;
 
-      enter(slab(rsa, ::RSA_free));
+      enterx(slab(rsa, ::RSA_free));
 
       //
       // key
@@ -449,8 +449,8 @@ namespace elle
       ::EVP_PKEY*	key;
       ::RSA*		rsa;
 
-      enter(slab(key, ::EVP_PKEY_free),
-	    slab(rsa, ::RSA_free));
+      enterx(slab(key, ::EVP_PKEY_free),
+             slab(rsa, ::RSA_free));
 
       // create an EVP key.
       if ((key = ::EVP_PKEY_new()) == NULL)
@@ -617,14 +617,14 @@ namespace elle
       wrap(dmp1);
       wrap(dmq1);
       wrap(iqmp);
-      enter(local(n, ::BN_free),
-	    local(e, ::BN_free),
-	    local(d, ::BN_free),
-	    local(p, ::BN_free),
-	    local(q, ::BN_free),
-	    local(dmp1, ::BN_free),
-	    local(dmq1, ::BN_free),
-	    local(iqmp, ::BN_free));
+      enterx(local(n, ::BN_free),
+             local(e, ::BN_free),
+             local(d, ::BN_free),
+             local(p, ::BN_free),
+             local(q, ::BN_free),
+             local(dmp1, ::BN_free),
+             local(dmq1, ::BN_free),
+             local(iqmp, ::BN_free));
 
       // extract the numbers.
       if (archive.Extract(n, e, d, p, q, dmp1, dmq1, iqmp) == StatusError)

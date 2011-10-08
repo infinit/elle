@@ -105,7 +105,7 @@ namespace elle
     {
       ::RSA*		rsa;
 
-      enter(slab(rsa, ::RSA_free));
+      enterx(slab(rsa, ::RSA_free));
 
       //
       // key
@@ -521,8 +521,8 @@ namespace elle
 
       wrap(n);
       wrap(e);
-      enter(local(n, ::BN_free),
-	    local(e, ::BN_free));
+      enterx(local(n, ::BN_free),
+             local(e, ::BN_free));
 
       // extract the numbers.
       if (archive.Extract(n, e) == StatusError)
