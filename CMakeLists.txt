@@ -3,8 +3,9 @@ PROJECT(Infinit C CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 FIND_PACKAGE(Qt4 4.5 REQUIRED QtCore QtNetwork)
+FIND_PACKAGE(OpenSSL REQUIRED)
 
-INCLUDE_DIRECTORIES(. ${QT_INCLUDES})
+INCLUDE_DIRECTORIES(. ${QT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
 
 MESSAGE("UNIX: ${UNIX}")
 MESSAGE("WIN32: ${WIN32}")
@@ -12,11 +13,18 @@ MESSAGE("CMAKE_SYSTEM: ${CMAKE_SYSTEM}")
 MESSAGE("CMAKE_HOST_SYSTEM: ${CMAKE_HOST_SYSTEM}")
 
 #
-# for C++0x
+# GNU CXXFLAGS
+# XXX switch from -std=gnu++0x to -std=c++0x
 #
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-IF(${UNIX})
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -std=gnu++0x -Wcast-align -Wold-style-cast")
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=gnu++0x -Wcast-align -Wold-style-cast")
+ENDIF()
+
+#
+# MSVC CXXFLAGS
+#
+IF(MSVC)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++0x -Wcast-align -Wold-style-cast")
 ENDIF()
 
 #
@@ -64,8 +72,7 @@ IF(${WIN32})
   TARGET_LINK_LIBRARIES(Infinit iig)
 ENDIF()
 
-TARGET_LINK_LIBRARIES(Infinit ${QT_QTCORE_LIBRARIES}
-                              ${QT_QTNETWORK_LIBRARIES}
+TARGET_LINK_LIBRARIES(Infinit ${QT_QTNETWORK_LIBRARIES}
                               ${QT_QTCORE_LIBRARIES})
 
 # XXX
@@ -74,6 +81,5 @@ ADD_EXECUTABLE(XXX
 )
 
 TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit
-                              ${QT_QTCORE_LIBRARIES}
                               ${QT_QTNETWORK_LIBRARIES}
                               ${QT_QTCORE_LIBRARIES})
