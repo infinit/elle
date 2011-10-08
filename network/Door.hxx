@@ -85,7 +85,7 @@ namespace elle
     {
       Parcel*		parcel;
 
-      enter(instance(parcel));
+      enterx(instance(parcel));
 
       // block the current fiber until the given event is received.
       if (Fiber::Wait(event, parcel) == StatusError)

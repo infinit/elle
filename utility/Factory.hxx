@@ -63,7 +63,7 @@ namespace elle
       Factory::Generatoid<T>*			generatoid;
       std::pair<Factory::Iterator, Boolean>	result;
 
-      enter(instance(generatoid));
+      enterx(instance(generatoid));
 
       // check if there is already such an identifier registerd.
       if (this->container.find(identifier) != this->container.end())

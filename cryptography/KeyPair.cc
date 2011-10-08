@@ -136,7 +136,7 @@ namespace elle
     {
       ::EVP_PKEY*	key;
 
-      enter(slab(key, ::EVP_PKEY_free));
+      enterx(slab(key, ::EVP_PKEY_free));
 
       // set the key length.
       if (::EVP_PKEY_CTX_set_rsa_keygen_bits(KeyPair::Contexts::Generate,
@@ -192,7 +192,7 @@ namespace elle
       ::EVP_PKEY*	key;
       ::RSA*		rsa;
 
-      enter(slab(key, ::EVP_PKEY_free),
+      enterx(slab(key, ::EVP_PKEY_free),
 	    slab(rsa, ::RSA_free));
 
       // create an EVP key.

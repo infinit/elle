@@ -146,7 +146,7 @@ namespace elle
       std::pair<Lane::Iterator, Boolean>	result;
       LanePorter*				porter;
 
-      enter(instance(porter));
+      enterx(instance(porter));
 
       // check if this name is not already listened on.
       if (Lane::Locate(name) == StatusTrue)
@@ -320,7 +320,7 @@ namespace elle
       ::QLocalSocket*	socket;
       Door*		door;
 
-      enter(instance(door));
+      enterx(instance(door));
 
       // retrieve the socket from the server.
       if ((socket = this->server->nextPendingConnection()) == NULL)
