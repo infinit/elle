@@ -557,6 +557,21 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
+    elle::Status	Seam<V>::Balance()
+    {
+      enter();
+
+	  // XXX 1) balance: s = [size(l) + size(c) + size(r)] / 3
+	  // XXX   si parent.{l,c,r} equivalent && .state && s > balancing
+	  // XXX 2) merge
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
     elle::Status	Seam<V>::Update(const typename V::K&	key)
     {
       Seam<V>::Iterator	iterator;

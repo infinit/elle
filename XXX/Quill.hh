@@ -103,6 +103,7 @@ namespace nucleus
 				       V*&);
 
       elle::Status		Split(Quill<V>*&);
+      elle::Status		Balance();
 
       //
       // interfaces

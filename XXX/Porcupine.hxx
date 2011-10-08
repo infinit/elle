@@ -375,8 +375,11 @@ namespace nucleus
 	       (hole::Hole::Descriptor.extent *
 		hole::Hole::Descriptor.balancing))
 	{
-	  // XXX
-	  printf("HERE\n");
+	  // try to balance the nodule's content with its neighbours.
+	  if (nodule->Balance() == elle::StatusError)
+	    escape("unable to balance the nodule's content");
+
+	  // XXX if nodule empty, delete it from its parent.
 	}
 
       leave();

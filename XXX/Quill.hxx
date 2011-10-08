@@ -463,6 +463,8 @@ namespace nucleus
       // reinitialize the current quill's footprint according to the
       // quill's initial footprint
       this->_footprint.size = r->_footprint.size;
+      // XXX plutot que de faire ca, substract au fur et a mesure qu'on
+      // XXX ajoute au nouveau
 
       // go through the quill's entries until the future size is reached
       // after which all the remaining entries will be moved to the
@@ -546,6 +548,189 @@ namespace nucleus
 
       // waive the r variable.
       waive(r);
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    /// XXX try not to load the left/right parent nodes i.e compare the
+    ///     addresses
+    template <typename V>
+    elle::Status	Quill<V>::Balance()
+    {
+      elle::Natural32	size;
+      Quill<V>*		left;
+      Quill<V>*		right;
+
+      enter();
+
+      // retrieve the parent, if present.
+      if (this->parent != Address::Null)
+	{
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent nodule
+	    }
+	}
+
+      // retrieve the left quill.
+      if (this->left != Address::Null)
+	{
+	  // load the left nodule, if necessary.
+	  if (this->_left == NULL)
+	    {
+	      // XXX load the left quill
+	    }
+
+	  // set the left.
+	  left = static_cast<Quill<V>*>(this->_left);
+	}
+      else
+	{
+	  left = NULL;
+	}
+
+      // retrieve the right quill.
+      if (this->right != Address::Null)
+	{
+	  // load the right nodule, if necessary.
+	  if (this->_right == NULL)
+	    {
+	      // XXX load the right quill
+	    }
+
+	  // set the right.
+	  right = static_cast<Quill<V>*>(this->_right);
+	}
+      else
+	{
+	  right = NULL;
+	}
+
+      // XXX
+      if ((left != NULL) && (right != NULL) &&
+	  (left->_state == StateDirty) &&
+	  (right->_state == StateDirty) &&
+	  ((size = ((left->_footprint.size +
+		     this->_footprint.size +
+		     right->_footprint.size) / 3)) >
+	   static_cast<elle::Natural32>(
+	     hole::Hole::Descriptor.extent *
+	     hole::Hole::Descriptor.balancing)) &&
+	  (left->parent == this->parent) &&
+	  (right->parent == this->parent))
+	{
+	  Quill<V>::Iterator	i;
+
+	  printf("CAS(1)\n");
+
+	  printf("size = %u / %u\n", size,
+		 (elle::Natural32)(hole::Hole::Descriptor.extent *
+		  hole::Hole::Descriptor.balancing));
+
+	  // XXX
+	  for (i = left->container.begin();
+	       i != left->container.end();
+	       i++)
+	    {
+	      // XXX
+	      if (left->_footprint.size > size)
+		break;
+	    }
+
+	  // XXX
+	  for (;
+	       i != left->container.end();
+	       i++)
+	    {
+	      Quill<V>::I*	inlet = i->second;
+
+	      // XXX
+	      left->_footprint.size -= inlet->_footprint.size;
+
+	      if (this->Insert(inlet) == elle::StatusError)
+		escape("unable to insert the inlet");
+	    }
+
+	  // XXX
+	  for (i = this->container.begin();
+	       i != this->container.end();
+	       i++)
+	    {
+	      // XXX
+	      if (left->_footprint.size > size)
+		break;
+	    }
+
+	  // XXX
+	  for (;
+	       i != this->container.end();
+	       i++)
+	    {
+	      Quill<V>::I*	inlet = i->second;
+
+	      // XXX
+	      left->_footprint.size -= inlet->_footprint.size;
+
+	      if (this->Insert(inlet) == elle::StatusError)
+		escape("unable to insert the inlet");
+	    }
+
+	  // XXX pas si simple car en faisant ca le Insert pourrait spliter?
+
+	  // XXX on pourrait optimiser Insert() pour ne pas faire l'Update
+	  //  mais plutot appeler a la main quand necessaire.
+
+	  // XXX on peut equilibrer sur 3 noeuds
+	}
+      else if ((left != NULL) &&
+	       (left->_state == StateDirty) &&
+	       (left->parent == this->parent))
+	{
+	  printf("CAS(2)\n");
+
+	  // XXX on peut equilibrer sur 2 noeuds: left
+	}
+      else if ((right != NULL) &&
+	       (right->_state = StateDirty) &&
+	       (right->parent == this->parent))
+	{
+	  printf("CAS(3)\n");
+
+	  // XXX on peut equilibrer sur 2 noeuds: right
+	}
+      else if ((left != NULL) && (right != NULL) &&
+	       (left->parent == this->parent) &&
+	       (right->parent == this->parent))
+	{
+	  printf("CAS(4)\n");
+
+	  // XXX on peut equilibrer sur 3 noeuds
+	}
+      else if ((left != NULL) &&
+	       (left->parent == this->parent))
+	{
+	  printf("CAS(5)\n");
+
+	  // XXX on peut equilibrer sur 2 noeuds: left
+	}
+      else if ((right != NULL) &&
+	       (right->parent == this->parent))
+	{
+	  printf("CAS(6)\n");
+
+	  // XXX on peut equilibrer sur 2 noeuds: right
+	}
+      else
+	{
+	  printf("CAS(4) NOTHING TO DO\n");
+	}
+
+      // XXX si parent.{l,c,r} equivalent && .state && s > balancing
+      // XXX sinon merge a bouger toutes les entrees de this
 
       leave();
     }

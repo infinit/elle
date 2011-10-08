@@ -103,6 +103,7 @@ namespace nucleus
 				       Nodule<V>*&);
 
       elle::Status		Split(Seam<V>*&);
+      elle::Status		Balance();
 
       elle::Status		Update(const typename V::K&);
 
