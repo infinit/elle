@@ -390,7 +390,7 @@ namespace nucleus
 	{
 	  T*		item;
 
-	  enter(instance(item));
+	  enterx(instance(item));
 
 	  // allocate a new item.
 	  item = new T;
