@@ -194,7 +194,7 @@ namespace pig
     char*		buffer;
     int			res;
 
-    enter(slab(buffer, ::free));
+    enterx(slab(buffer, ::free));
 
     // allocate a buffer.
     if ((buffer = static_cast<char*>(::malloc(this->size))) == NULL)

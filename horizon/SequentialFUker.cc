@@ -209,7 +209,7 @@ namespace pig
     struct ::fuse_chan*		channel = this->channel;
     SequentialFUker::Item	item;
 
-    enter(slab(item.buffer, ::free));
+    enterx(slab(item.buffer, ::free));
 
     // allocate a buffer.
     if ((item.buffer = static_cast<char*>(::malloc(this->size))) == NULL)
