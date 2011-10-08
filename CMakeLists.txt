@@ -24,7 +24,7 @@ ENDIF()
 # MSVC CXXFLAGS
 #
 IF(MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++0x -Wcast-align -Wold-style-cast")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wall")
 ENDIF()
 
 #
