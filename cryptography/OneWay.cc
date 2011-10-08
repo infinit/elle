@@ -43,7 +43,7 @@ namespace elle
       unsigned int	size;
 
       wrap(context);
-      enter(local(context, ::EVP_MD_CTX_cleanup));
+      enterx(local(context, ::EVP_MD_CTX_cleanup));
 
       // allocate the digest's contents.
       if (digest.region.Prepare(EVP_MD_size(OneWay::Algorithm)) == StatusError)

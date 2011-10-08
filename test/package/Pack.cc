@@ -265,7 +265,7 @@ namespace elle
 		void*		buffer;
 		Natural32	size;
 
-		enter(slab(buffer, ::free));
+		enterx(slab(buffer, ::free));
 
 		if (Generator::Create(value) == StatusError)
 		  escape("unable to create a large");
@@ -545,7 +545,7 @@ namespace elle
 		Natural32	s;
 		void*		buffer;
 
-		enter(slab(buffer, ::free));
+		enterx(slab(buffer, ::free));
 
 		if (archive.Extract(value) == StatusError)
 		  escape("unable to extract the element");

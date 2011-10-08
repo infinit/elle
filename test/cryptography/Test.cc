@@ -46,7 +46,7 @@ namespace elle
       SecretKey*	sk;
       Natural32		i;
 
-      enter(instance(kp),
+      enterx(instance(kp),
 	    instance(sk));
 
       // init the library.

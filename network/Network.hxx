@@ -40,7 +40,7 @@ namespace elle
       Selectionoid< Procedure<I, O, E> >*	selectionoid;
       std::pair<Network::Iterator, Boolean>	result;
 
-      enter(instance(selectionoid));
+      enterx(instance(selectionoid));
 
       // check if this tag has already been recorded.
       if (Network::Procedures.find(I) != Network::Procedures.end())

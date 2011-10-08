@@ -82,7 +82,7 @@ namespace elle
 	Boolean
 	>			result;
 
-      enter(instance(selectionoid));
+      enterx(instance(selectionoid));
 
       // increment the counter and set the stream.
       stream = ++this->counter;
