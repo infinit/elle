@@ -112,7 +112,7 @@ namespace nucleus
     {
       typename Seam<V>::I*	inlet;
 
-      enter(instance(inlet));
+      enterx(instance(inlet));
 
       // create an inlet.
       inlet = new typename Seam<V>::I(key, nodule);
@@ -450,7 +450,7 @@ namespace nucleus
       Seam<V>*		r;
       typename V::K	major;
 
-      enter(instance(r));
+      enterx(instance(r));
 
       // initialize _size_ as being the future left quills' size.
       size =
@@ -774,7 +774,7 @@ namespace nucleus
 	{
 	  Seam<V>::I*	inlet;
 
-	  enter(instance(inlet));
+	  enterx(instance(inlet));
 
 	  // allocate an inlet.
 	  inlet = new Seam<V>::I;

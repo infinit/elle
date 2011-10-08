@@ -1,0 +1,15 @@
+CMakeLists.txt.shared
+CMakeLists.txt.user
+agent
+applications
+build*
+comet
+config.hh
+config.mk
+elle
+etoile
+hole
+iig
+lune
+nucleus
+pig
