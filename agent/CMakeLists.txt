@@ -4,4 +4,4 @@ ADD_LIBRARY(agent
   Agent.cc
 )
 
-TARGET_LINK_LIBRARIES(agent elle nucleus lune)
+TARGET_LINK_LIBRARIES(agent nucleus lune)
