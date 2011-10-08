@@ -17,7 +17,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <ostream>
-# include <inttypes.h>
+# include <cstdint>
 #include <elle/idiom/Open.hh>
 
 namespace elle
