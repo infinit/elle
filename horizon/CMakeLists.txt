@@ -13,4 +13,4 @@ ADD_LIBRARY(pig
   SequentialFUker.cc
 )
 
-TARGET_LINK_LIBRARIES(pig elle nucleus lune etoile fuse)
+TARGET_LINK_LIBRARIES(pig etoile fuse)
