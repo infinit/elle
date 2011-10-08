@@ -417,7 +417,7 @@ namespace hole
       {
 	Customer*	customer;
 
-	enter(instance(customer));
+	enterx(instance(customer));
 
 	if (Infinit::Configuration.debug.hole == true)
 	  std::cout << "[hole] Server::Connection()"
@@ -614,7 +614,7 @@ namespace hole
 	elle::Session*	session;
 	nucleus::Block*	block;
 
-	enter(instance(block));
+	enterx(instance(block));
 
 	if (Infinit::Configuration.debug.hole == true)
 	  std::cout << "[hole] Server::Pull()"

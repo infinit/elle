@@ -142,7 +142,7 @@ namespace hole
 
 	  // XXX improve this with getting a list of hosts.
 
-	  enter(instance(neighbour));
+	  enterx(instance(neighbour));
 
 	  // allocate the neighbour.
 	  neighbour = new Neighbour;
@@ -376,7 +376,7 @@ namespace hole
       {
 	Neighbour*	neighbour;
 
-	enter(instance(neighbour));
+	enterx(instance(neighbour));
 
 	// debug.
 	if (Infinit::Configuration.debug.hole == true)
@@ -659,7 +659,7 @@ namespace hole
 	    elle::Locus		locus = *scoutor;
 	    Neighbour*		neighbour;
 
-	    enter(instance(neighbour));
+	    enterx(instance(neighbour));
 
 	    // check if this locus is already registered.
 	    if (this->neighbourhood.Exist(locus) == elle::StatusTrue)

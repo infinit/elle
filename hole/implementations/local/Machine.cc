@@ -72,7 +72,7 @@ namespace hole
 	  {
 	    nucleus::MutableBlock*	current;
 
-	    enter(instance(current));
+	    enterx(instance(current));
 
 	    // build a block according to the component.
 	    if (nucleus::Nucleus::Factory.Build(address.component,

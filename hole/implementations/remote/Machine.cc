@@ -93,7 +93,7 @@ namespace hole
 	{
 	  Client*		client;
 
-	  enter(instance(client));
+	  enterx(instance(client));
 
 	  // allocate a client.
 	  client = new Client(locus);
@@ -124,7 +124,7 @@ namespace hole
 	{
 	  Server*		server;
 
-	  enter(instance(server));
+	  enterx(instance(server));
 
 	  // allocate a server.
 	  server = new Server(locus);

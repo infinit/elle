@@ -31,7 +31,7 @@ namespace hole
   elle::Status		Main(elle::Natural32			argc,
 			     elle::Character*			argv[])
   {
-    enter(instance(Infinit::Parser));
+    enterx(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
