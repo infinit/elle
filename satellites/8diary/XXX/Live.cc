@@ -92,7 +92,7 @@ namespace pig
     {
       Live::Item*	item;
 
-      enter(instance(item));
+      enterx(instance(item));
 
       // allocate the item.
       item = new Live::Item(passive, active);

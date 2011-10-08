@@ -180,7 +180,7 @@ namespace application
   {
     Passport::Operation	operation;
 
-    enter(instance(Infinit::Parser));
+    enterx(instance(Infinit::Parser));
 
     // initialize the Elle library.
     if (elle::Elle::Initialize() == elle::StatusError)
