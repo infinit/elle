@@ -156,7 +156,7 @@
 ///
 /// this macro-function registers a log entry.
 ///
-#define log(_format_, ...)					\
+#define log(_format_, ...)                                              \
   do									\
     {									\
       elle::standalone::Log*	_log_;					\
@@ -442,7 +442,7 @@
       static_cast<elle::core::Void*>(					\
         alloca(sizeof (elle::standalone::Maid::Garrison))))
 
-#define enterx(...)						\
+#define enterx(...)                                                     \
   elle::standalone::Maid::Garrison* _maid_ =				\
     elle::standalone::Maid::Install(					\
       static_cast<elle::core::Void*>(					\
@@ -590,7 +590,7 @@
 /// this macro-function reserves a range of _capacity_ tags for the
 /// _component_ which depends upon the _dependencies_ components.
 ///
-#define range(_component_, _capacity_, ...)			\
+#define range(_component_, _capacity_, ...)                             \
   namespace elle							\
   {									\
     namespace network							\
