@@ -42,7 +42,7 @@
 /// this macro function is sometimes use to group several parameter which
 /// can be pretty useful when a parameter contains a comma for instance.
 ///
-#define _(...)						\
+#define _(...)								\
   __VA_ARGS__
 
 //
