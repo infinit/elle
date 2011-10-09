@@ -32,10 +32,10 @@ namespace nucleus
     ///
     /// XXX
     ///
-    template <typename V>
+    template <typename... T>
     class Seam;
 
-    template <typename V>
+    template <typename... T>
     class Quill;
 
 //
@@ -62,6 +62,7 @@ namespace nucleus
       //
       // constructors & destructors
       //
+      Nodule(const Type);
       Nodule(const Type,
 	     const elle::Callback<
 	       elle::Status,
@@ -77,6 +78,13 @@ namespace nucleus
 		 const Nodule<V>*
 		 >
 	       >&);
+
+      //
+      // methods
+      //
+      template <typename T>
+      elle::Status		Export(const elle::Natural32,
+				       T*);
 
       //
       // virtual methods

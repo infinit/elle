@@ -160,7 +160,17 @@ namespace nucleus
 	{
 	  N*			right;
 	  Seam<V>*		parent;
-	  typename V::K		major;
+	  struct
+	  {
+	    typename V::K	ancient;
+	    typename V::K	recent;
+
+	    typename V::K	temporary;
+	  }			major;
+
+	  // first, retrieve the major key of the current nodule.
+	  if (nodule->Major(major.ancient) == elle::StatusError)
+	    escape("unable to retrive the major");
 
 	  //
 	  // in this case, the inlet is not inserted in order to prevent
@@ -214,13 +224,13 @@ namespace nucleus
 	  nodule->_right = right;
 
 	  // retrieve the left nodule's major key.
-	  if (nodule->Major(major) == elle::StatusError)
+	  if (nodule->Major(major.temporary) == elle::StatusError)
 	    escape("unable to retrieve the major key");
 
 	  // insert the inlet depending on its key: if its key is lower than
 	  // the major, then it falls in the left nodule; otherwise in the
 	  // right.
-	  if (inlet->key < major)
+	  if (inlet->key < major.temporary)
 	    {
 	      // insert the inlet to the left nodule.
 	      if (nodule->Insert(inlet) == elle::StatusError)
@@ -257,14 +267,31 @@ namespace nucleus
 
 	      // set the parent.
 	      parent = nodule->_parent;
+
+	      // retrieve the current nodule's new major key.
+	      if (nodule->Major(major.recent) == elle::StatusError)
+		escape("unable to retrive the major");
+
+	      // then, update the parent nodule, should the major key have
+	      // changed.
+	      if (major.recent != major.ancient)
+		{
+		  // update the parent nodule.
+		  if (nodule->_parent->Update(
+		        major.ancient,
+			major.recent) == elle::StatusError)
+		    escape("unable to update the parent nodule");
+		}
 	    }
 
 	  // retrieve the major key.
-	  if (right->Major(major) == elle::StatusError)
+	  if (right->Major(major.temporary) == elle::StatusError)
 	    escape("unable to retrieve the major key");
 
 	  // insert the right nodule in its new parent.
-	  if (this->Insert(parent, major, right) == elle::StatusError)
+	  if (this->Insert(parent,
+			   major.temporary,
+			   right) == elle::StatusError)
 	    escape("unable to insert the right nodule to its parent");
 	}
       else
@@ -273,13 +300,76 @@ namespace nucleus
 	  // in this case, the nodule can accept the new inlet and does
 	  // not need to be split.
 	  //
+	  // however, operate depending on the nodule's state i.e whether
+	  // inlets have been inserted before.
+	  //
+	  if (nodule->container.empty() == true)
+	    {
+	      //
+	      // the nodule is empty: insert the inlet.
+	      //
 
-	  // insert the inlet to the nodule.
-	  if (nodule->Insert(inlet) == elle::StatusError)
-	    escape("unable to insert the inlet to the nodule");
+	      // insert the inlet to the nodule.
+	      if (nodule->Insert(inlet) == elle::StatusError)
+		escape("unable to insert the inlet to the nodule");
 
-	  // waive.
-	  waive(inlet);
+	      // waive.
+	      waive(inlet);
+
+	      // note that a nodule being empty in this case implies
+	      // that the nodule is the root. therefore, there is no
+	      // need to propagate the major key.
+
+	      // XXX
+	      assert(nodule->parent == Address::Null);
+	    }
+	  else
+	    {
+	      //
+	      // the nodule is not empty: insert the inlet and update
+	      // the parent nodule if necessary.
+	      //
+
+	      struct
+	      {
+		typename V::K	ancient;
+		typename V::K	recent;
+	      }			major;
+
+	      // retrieve the current nodule's major key.
+	      if (nodule->Major(major.ancient) == elle::StatusError)
+		escape("unable to retrive the major");
+
+	      // insert the inlet to the nodule.
+	      if (nodule->Insert(inlet) == elle::StatusError)
+		escape("unable to insert the inlet to the nodule");
+
+	      // waive.
+	      waive(inlet);
+
+	      // retrieve the nodule's new major key.
+	      if (nodule->Major(major.recent) == elle::StatusError)
+		escape("unable to retrive the major");
+
+	      // finally, update the parent nodule, should the major key have
+	      // changed.
+	      if ((major.recent != major.ancient) &&
+		  (nodule->parent != Address::Null))
+		{
+		  // load the parent nodule, if necessary.
+		  if (nodule->_parent == NULL)
+		    {
+		      // XXX load nodule->parent into nodule->_parent
+		    }
+
+		  // propagate the change of major key throughout the
+		  // hiearchy.
+		  if (nodule->_parent->Propagate(
+		        major.ancient,
+			major.recent) == elle::StatusError)
+		    escape("unable to update the parent nodule");
+		}
+	    }
 	}
 
       leave();
@@ -293,12 +383,16 @@ namespace nucleus
     elle::Status	Porcupine<V>::Delete(N*			nodule,
 					     const typename V::K& key)
     {
-      typename V::K	major;
+      struct
+      {
+	typename V::K	ancient;
+	typename V::K	recent;
+      }			major;
 
       enter();
 
       // retrieve the nodule's major.
-      if (nodule->Major(major) == elle::StatusError)
+      if (nodule->Major(major.ancient) == elle::StatusError)
 	escape("unable to retrieve the nodule's major key");
 
       // delete the inlet to the nodule.
@@ -358,9 +452,10 @@ namespace nucleus
 		}
 
 	      // finally, delete the nodule from its parent by passing
-	      // the major i.e the key the parent seam uses to referenced
+	      // the major i.e the key the parent seam uses to reference
 	      // the now-empty nodule.
-	      if (this->Delete(nodule->_parent, major) == elle::StatusError)
+	      if (this->Delete(nodule->_parent,
+			       major.ancient) == elle::StatusError)
 		escape("unable to delete the nodule from its parent");
 	    }
 	  else
@@ -375,8 +470,59 @@ namespace nucleus
 	       (hole::Hole::Descriptor.extent *
 		hole::Hole::Descriptor.balancing))
 	{
-	  // XXX
-	  printf("HERE\n");
+	  // try to balance the nodule's content with its neighbours.
+	  if (nodule->Balance() == elle::StatusError)
+	    escape("unable to balance the nodule's content");
+
+	  // XXX si empty? sinon?
+
+	  // retrieve the nodule's new major.
+	  if (nodule->Major(major.recent) == elle::StatusError)
+	    escape("unable to retrieve the nodule's major key");
+
+	  // finally, update the parent nodule, should the major key have
+	  // changed.
+	  if ((major.recent != major.ancient) &&
+	      (nodule->parent != Address::Null))
+	    {
+	      // load the parent nodule, if necessary.
+	      if (nodule->_parent == NULL)
+		{
+		  // XXX load nodule->parent into nodule->_parent
+		}
+
+	      // propagate the change of major key throughout the
+	      // hiearchy.
+	      if (nodule->_parent->Propagate(
+		    major.ancient,
+		    major.recent) == elle::StatusError)
+		escape("unable to update the parent nodule");
+	    }
+	}
+      else
+	{
+	  // retrieve the nodule's new major.
+	  if (nodule->Major(major.recent) == elle::StatusError)
+	    escape("unable to retrieve the nodule's major key");
+
+	  // finally, update the parent nodule, should the major key have
+	  // changed.
+	  if ((major.recent != major.ancient) &&
+	      (nodule->parent != Address::Null))
+	    {
+	      // load the parent nodule, if necessary.
+	      if (nodule->_parent == NULL)
+		{
+		  // XXX load nodule->parent into nodule->_parent
+		}
+
+	      // propagate the change of major key throughout the
+	      // hiearchy.
+	      if (nodule->_parent->Propagate(
+		    major.ancient,
+		    major.recent) == elle::StatusError)
+		escape("unable to update the parent nodule");
+	    }
 	}
 
       leave();
@@ -425,28 +571,28 @@ namespace nucleus
 
       // if the tree does not exist, create a root nodule.
       if (this->height == 0)
-      {
-	Quill<V>*	root;
+	{
+	  Quill<V>*	root;
 
-	enterx(instance(root));
+	  enterx(instance(root));
 
-	// at first, allocate an initial root nodule which happens to be
-	// a leaf since alone.
-	root = new Quill<V>(
-	         elle::Callback<>::Infer(&Porcupine::Load, this),
-		 elle::Callback<>::Infer(&Porcupine::Unload, this));
+	  // at first, allocate an initial root nodule which happens to be
+	  // a leaf since alone.
+	  root = new Quill<V>(
+	           elle::Callback<>::Infer(&Porcupine::Load, this),
+		   elle::Callback<>::Infer(&Porcupine::Unload, this));
 
-	// create the quill.
-	if (root->Create() == elle::StatusError)
-	  escape("unable to create the quill");
+	  // create the quill.
+	  if (root->Create() == elle::StatusError)
+	    escape("unable to create the quill");
 
-	// set the root nodule address and pointer.
-	this->root = Address::Some;
-	this->_root = root;
+	  // set the root nodule address and pointer.
+	  this->root = Address::Some;
+	  this->_root = root;
 
-	// waive the tracking.
-	waive(root);
-      }
+	  // waive the tracking.
+	  waive(root);
+	}
       else
 	{
 	  // load the root nodule, if necessary.

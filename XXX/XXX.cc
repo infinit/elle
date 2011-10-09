@@ -18,6 +18,8 @@
 
 int main(int argc, char** argv)
 {
+  enter();
+
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);
 
@@ -32,6 +34,9 @@ int main(int argc, char** argv)
   hole::Hole::Initialize();
 
   expose();
+
+  // XXX
+  nucleus::Porcupine<>::Initialize();
 
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>(elle::Callback<
@@ -59,7 +64,11 @@ int main(int argc, char** argv)
 
       sprintf(name, "%u", i);
 
-      p->Add(name, NULL);
+      printf("-------------> %s\n", name);
+      //p->Dump();
+
+      if (p->Add(name, NULL) == elle::StatusError)
+	fail("XXX");
     }
 
   p->Dump();
@@ -73,9 +82,13 @@ int main(int argc, char** argv)
 
       sprintf(name, "%u", i);
 
+      printf("-------------= %s\n", name);
+
       if (p->Locate(name, c) == elle::StatusError)
-	exit(1);
+	fail("XXX");
     }
+
+  p->Dump();
 
   for (int i = 0; i < n; i++)
     {
@@ -85,12 +98,12 @@ int main(int argc, char** argv)
 
       sprintf(name, "%u", i);
 
-      printf("-------------------- %s\n", name);
+      printf("-------------< %s\n", name);
+      //p->Dump();
 
-      p->Remove(name);
+      if (p->Remove(name) == elle::StatusError)
+	fail("XXX");
     }
-
-  // XXX tester l'impact de calculer un hash a chaque modif
 
   p->Dump();
 
@@ -105,6 +118,8 @@ int main(int argc, char** argv)
   lune::Lune::Clean();
   nucleus::Nucleus::Clean();
   elle::Elle::Clean();
+
+  release();
 
   return 0;
 }

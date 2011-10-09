@@ -36,13 +36,30 @@ namespace nucleus
 //
 
     ///
+    /// XXX
+    ///
+    template <typename... T>
+    class Quill;
+
+    ///
     /// XXX leaf node
     ///
     template <typename V>
-    class Quill:
+    class Quill<V>:
       public Nodule<V>
     {
     public:
+      //
+      // static attributes
+      //
+      static elle::Natural32	Footprint;
+
+      //
+      // static methods
+      //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
+
       //
       // types
       //
@@ -51,9 +68,19 @@ namespace nucleus
       //
       // types
       //
-      typedef std::map<const typename V::K, I*>		Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+      typedef std::map<const typename V::K, I*>			Container;
+
+      struct							Iterator
+      {
+	typedef typename Container::iterator			Forward;
+	typedef typename Container::reverse_iterator		Backward;
+      };
+
+      struct							Scoutor
+      {
+	typedef typename Container::const_iterator		Forward;
+	typedef typename Container::const_reverse_iterator	Backward;
+      };
 
       //
       // constructors & destructors
@@ -84,25 +111,26 @@ namespace nucleus
 				       V*);
       elle::Status		Insert(I*);
 
-      elle::Status		Delete(Iterator&);
+      elle::Status		Delete(typename Iterator::Forward&);
       elle::Status		Delete(V*);
       elle::Status		Delete(const typename V::K&);
 
       elle::Status		Lookup(const typename V::K&,
-				       Iterator&);
+				       typename Iterator::Forward&);
       elle::Status		Lookup(const typename V::K&,
 				       I*&);
       elle::Status		Lookup(const typename V::K&,
 				       V*&);
 
       elle::Status		Locate(const typename V::K&,
-				       Iterator&);
+				       typename Iterator::Forward&);
       elle::Status		Locate(const typename V::K&,
 				       I*&);
       elle::Status		Locate(const typename V::K&,
 				       V*&);
 
       elle::Status		Split(Quill<V>*&);
+      elle::Status		Balance();
 
       //
       // interfaces

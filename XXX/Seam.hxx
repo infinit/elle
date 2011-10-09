@@ -11,6 +11,12 @@
 #ifndef NUCLEUS_PROTON_SEAM_HXX
 #define NUCLEUS_PROTON_SEAM_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <hole/Hole.hh>
+
 namespace nucleus
 {
   namespace proton
@@ -57,7 +63,7 @@ namespace nucleus
     template <typename V>
     Seam<V>::~Seam()
     {
-      Seam<V>::Scoutor	scoutor;
+      typename Seam<V>::Scoutor::Forward	scoutor;
 
       // go through the container.
       for (scoutor = this->container.begin();
@@ -86,16 +92,8 @@ namespace nucleus
     {
       enter();
 
-      // compute the initial footprint from which the Insert(), Delete()
-      // methods will work in order to adjust it.
-      if (this->_footprint.Compute() == elle::StatusError)
-	escape("unable to compute the footprint");
-
-      //
-      // note that after this call, the footprint will be considered
-      // consistent though it will probably never be since the footprint
-      // will be manually manipulated.
-      //
+      // initialize the footprint.
+      this->_footprint.size = Seam<V>::Footprint;
 
       // set the state.
       this->_state = StateDirty;
@@ -133,8 +131,8 @@ namespace nucleus
     template <typename V>
     elle::Status	Seam<V>::Insert(I*			inlet)
     {
-      std::pair<Seam<V>::Iterator, elle::Boolean>	result;
-      typename V::K					major;
+      std::pair<typename Seam<V>::Iterator::Forward,
+		elle::Boolean>					result;
 
       enter();
 
@@ -170,25 +168,6 @@ namespace nucleus
       // set the state.
       this->_state = StateDirty;
 
-      // retrieve the major key.
-      if (this->Major(major) == elle::StatusError)
-	escape("unable to retrieve the major key");
-
-      // should have the inserted key become the major key, update the parent
-      // seam, if present.
-      if ((inlet->key == major) && (this->parent != Address::Null))
-	{
-	  // load the parent nodule, if necessary.
-	  if (this->_parent == NULL)
-	    {
-	      // XXX load the parent nodule
-	    }
-
-	  // update the parent seam.
-	  if (this->_parent->Update(major) == elle::StatusError)
-	    escape("unable to update the parent seam");
-	}
-
       leave();
     }
 
@@ -196,23 +175,15 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Seam<V>::Delete(Iterator&		iterator)
+    elle::Status	Seam<V>::Delete(
+			  typename Iterator::Forward&		iterator)
     {
       Seam<V>::I*	inlet;
-      typename V::K	key;
-      typename V::K	major;
 
       enter();
 
-      // retrieve the current major key.
-      if (this->Major(major) == elle::StatusError)
-	escape("unable to retrieve the major key");
-
       // retrieve the inlet.
       inlet = iterator->second;
-
-      // copy the inlet key before it gets removed.
-      key = inlet->key;
 
       // compute the inlet's footprint.
       if (inlet->_footprint.Compute() == elle::StatusError)
@@ -230,27 +201,6 @@ namespace nucleus
       // set the state.
       this->_state = StateDirty;
 
-      // should the seam not be empty and have the deleted key changed
-      // the major key, update the parent, if present.
-      if ((this->container.empty() == false) &&
-	  (key == major) &&
-	  (this->parent != Address::Null))
-	{
-	  // retrieve the new major key.
-	  if (this->Major(major) == elle::StatusError)
-	    escape("unable to retrieve the major key");
-
-	  // load the parent nodule, if necessary.
-	  if (this->_parent == NULL)
-	    {
-	      // XXX load the parent nodule
-	    }
-
-	  // update the parent seam.
-	  if (this->_parent->Update(major) == elle::StatusError)
-	    escape("unable to update the parent seam");
-	}
-
       leave();
     }
 
@@ -260,7 +210,7 @@ namespace nucleus
     template <typename V>
     elle::Status	Seam<V>::Delete(Nodule<V>*		nodule)
     {
-      Seam<V>::Iterator	iterator;
+      typename Seam<V>::Iterator::Forward	iterator;
 
       enter();
 
@@ -281,7 +231,7 @@ namespace nucleus
     template <typename V>
     elle::Status	Seam<V>::Delete(const typename V::K&	key)
     {
-      Seam<V>::Iterator	iterator;
+      typename Seam<V>::Iterator::Forward	iterator;
 
       enter();
 
@@ -300,8 +250,9 @@ namespace nucleus
     /// XXX 
     ///
     template <typename V>
-    elle::Status	Seam<V>::Lookup(const typename V::K&	key,
-					Iterator&		iterator)
+    elle::Status	Seam<V>::Lookup(
+			  const typename V::K&			key,
+			  typename Iterator::Forward&		iterator)
     {
       enter();
 
@@ -333,7 +284,7 @@ namespace nucleus
     elle::Status	Seam<V>::Lookup(const typename V::K&	key,
 					I*&			inlet)
     {
-      Seam<V>::Iterator	iterator;
+      typename Seam<V>::Iterator::Forward	iterator;
 
       enter();
 
@@ -378,8 +329,9 @@ namespace nucleus
     /// XXX locate
     ///
     template <typename V>
-    elle::Status	Seam<V>::Locate(const typename V::K&	key,
-					Iterator&		iterator)
+    elle::Status	Seam<V>::Locate(
+			  const typename V::K&			key,
+			  typename Iterator::Forward&		iterator)
     {
       enter();
 
@@ -397,7 +349,7 @@ namespace nucleus
     elle::Status	Seam<V>::Locate(const typename V::K&	key,
 					I*&			inlet)
     {
-      Seam<V>::Iterator	iterator;
+      typename Seam<V>::Iterator::Forward	iterator;
 
       enter();
 
@@ -442,13 +394,100 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
+    elle::Status	Seam<V>::Update(const typename V::K&	from,
+					const typename V::K&	to)
+    {
+      typename Seam<V>::Iterator::Forward	iterator;
+      Seam<V>::I*				inlet;
+
+      enter();
+
+      // locate the inlet.
+      if (this->Locate(from, iterator) == elle::StatusError)
+	escape("unable to locate the given inlet");
+
+      // retrieve the inlet.
+      inlet = iterator->second;
+
+      // should the given key be different from the current one, update the
+      // entry.
+      if (to != inlet->key)
+	{
+	  std::pair<typename Seam<V>::Iterator::Forward,
+		    elle::Boolean>		result;
+
+	  // manually erase the entry.
+	  this->container.erase(iterator);
+
+	  // update the inlet's key.
+	  inlet->key = to;
+
+	  // insert the inlet in the container.
+	  result = this->container.insert(
+		     std::pair<const typename V::K,
+			       Seam<V>::I*>(inlet->key, inlet));
+
+	  // check if the insertion was successful.
+	  if (result.second == false)
+	    escape("unable to insert the inlet in the container");
+
+	  // set the state.
+	  this->_state = StateDirty;
+	}
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Propagate(const typename V::K&	from,
+					   const typename V::K&	to)
+    {
+      typename V::K	ancient;
+      typename V::K	recent;
+
+      enter();
+
+      // retrieve the current major key.
+      if (this->Major(ancient) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // update the seam.
+      if (this->Update(from, to) == elle::StatusError)
+	escape("unable to update the nodule");
+
+      // retrieve the new major key.
+      if (this->Major(recent) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // finally, propagate the update should have the major key changed
+      // and if a parent nodule exists.
+      if ((recent != ancient) && (this->parent != Address::Null))
+	{
+	  // load the parent nodule, if necessary.
+	  if (this->_parent == NULL)
+	    {
+	      // XXX load the parent.
+	    }
+
+	  // progate the update.
+	  if (this->_parent->Propagate(ancient, recent) == elle::StatusError)
+	    escape("unable to propagate the update");
+	}
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
     elle::Status	Seam<V>::Split(Seam<V>*&		right)
     {
-      Seam<V>::Iterator	i;
-      Seam<V>::Iterator	j;
       elle::Natural32	size;
       Seam<V>*		r;
-      typename V::K	major;
 
       enterx(instance(r));
 
@@ -463,86 +502,9 @@ namespace nucleus
       if (r->Create() == elle::StatusError)
 	escape("unable to create the seam");
 
-      // reinitialize the current seam's footprint according to the
-      // seam's initial footprint
-      this->_footprint.size = r->_footprint.size;
-
-      // go through the seam's entries until the future size is reached
-      // after which all the remaining entries will be moved to the
-      // new seam.
-      for (i = this->container.begin();
-	   i != this->container.end();
-	   i++)
-	{
-	  Seam<V>::I*		inlet = i->second;
-
-	  // check whether the new seam's size has been reached.
-	  if (this->_footprint.size > size)
-	    break;
-
-	  //
-	  // otherwise, add this inlet to the seam.
-	  //
-
-	  // note however that another check is performed in order to make
-	  // sure that additing this inlet will not make the seam too large.
-	  if ((this->_footprint.size +
-	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
-	    break;
-
-	  // add the inlet's footprint to the footprint.
-	  this->_footprint.size += inlet->_footprint.size;
-	}
-
-      // set the current seam's state.
-      //
-      // note that that new seam's state is not set since both Create()
-      // and Insert() are called, each of which reset the state.
-      this->_state = StateDirty;
-
-      // go through the remaining entries in order to move them to
-      // the new (r) seam.
-      for (j = i; j != this->container.end(); j++)
-	{
-	  Seam<V>::I*		inlet = j->second;
-
-	  // check whether the new seam is about to exceed the extent
-	  // which would mean that splitting the seam has not resulted
-	  // in two valid seams.
-	  if ((r->_footprint.size +
-	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
-	    escape("unable to split the seam into two extent-valid seams");
-
-	  // insert the inlet to the new seam.
-	  if (r->Insert(inlet) == elle::StatusError)
-	    escape("unable to add the inlet");
-	}
-
-      // remove the right entries from the left (this) seam.
-      this->container.erase(i, this->container.end());
-
-      // set both seams' footprint as consistent.
-      this->_footprint.state = elle::Footprint::StateConsistent;
-      r->_footprint.state = elle::Footprint::StateConsistent;
-
-      // recompute the seam's major key since the far right, i.e highest,
-      // entries just go removed.
-      if (this->Major(major) == elle::StatusError)
-	escape("unable to retrieve the major key");
-
-      // update the parent, if present.
-      if (this->parent != Address::Null)
-	{
-	  // load the parent nodule, if necessary.
-	  if (this->_parent == NULL)
-	    {
-	      // XXX load the parent nodule.
-	    }
-
-	  // update the parent seam.
-	  if (this->_parent->Update(major) == elle::StatusError)
-	    escape("unable to update the parent seam");
-	}
+      // export inlets from the current seam into the new seam.
+      if (this->Export(size, r) == elle::StatusError)
+	escape("unable to export inlets");
 
       // set the output right seam.
       right = r;
@@ -557,47 +519,13 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Seam<V>::Update(const typename V::K&	key)
+    elle::Status	Seam<V>::Balance()
     {
-      Seam<V>::Iterator	iterator;
-      Seam<V>::I*	inlet;
-
       enter();
 
-      // lookup the entry responsible for the given key.
-      if (this->Lookup(key, iterator) == elle::StatusError)
-	escape("unable to look up the entry responsible for this key");
-
-      // retrieve the inlet.
-      inlet = iterator->second;
-
-      // should the given key be different from the current one, update the
-      // entry.
-      if (key != inlet->key)
-	{
-	  // manually erase the entry as Delete() may update the tree
-	  // which would incurr additional work.
-	  this->container.erase(iterator);
-
-	  // potentially recompute the inlet's footprint.
-	  if (inlet->_footprint.Compute() == elle::StatusError)
-	    escape("unable to compute the footprint");
-
-	  // note that the inlet's footprint must be substracted since it
-	  // will be re-added through the Insert() call.
-	  this->_footprint.size -= inlet->_footprint.size;
-
-	  // update the inlet's key.
-	  inlet->key = key;
-
-	  // re-insert the inlet.
-	  //
-	  // note that by doing so, should the key be the new highest
-	  // in the seam, the Insert() method will take care of updating
-	  // the parent node.
-	  if (this->Insert(inlet) == elle::StatusError)
-	    escape("unable to insert the inlet");
-	}
+	  // XXX 1) balance: s = [size(l) + size(c) + size(r)] / 3
+	  // XXX   si parent.{l,c,r} equivalent && .state && s > balancing
+	  // XXX 2) merge
 
       leave();
     }
@@ -627,8 +555,8 @@ namespace nucleus
     elle::Status	Seam<V>::Search(const typename V::K&	key,
 					Quill<V>*&		quill)
     {
-      Seam<V>::Iterator	iterator;
-      Seam<V>::I*	inlet;
+      typename Seam<V>::Iterator::Forward	iterator;
+      Seam<V>::I*				inlet;
 
       enter();
 
@@ -668,8 +596,8 @@ namespace nucleus
     elle::Status	Seam<V>::Dump(const elle::Natural32	margin)
       const
     {
-      elle::String		alignment(margin, ' ');
-      typename Seam<V>::Scoutor	scoutor;
+      elle::String				alignment(margin, ' ');
+      typename Seam<V>::Scoutor::Forward	scoutor;
 
       enter();
 
@@ -706,8 +634,8 @@ namespace nucleus
     template <typename V>
     elle::Status	Seam<V>::Serialize(elle::Archive&	archive) const
     {
-      Seam<V>::Scoutor	scoutor;
-      elle::Natural32	size;
+      typename Seam<V>::Scoutor::Forward	scoutor;
+      elle::Natural32				size;
 
       enter();
 
@@ -777,6 +705,53 @@ namespace nucleus
 
 	  release();
 	}
+
+      leave();
+    }
+
+//
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Natural32		Seam<V>::Footprint;
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Initialize()
+    {
+      Seam<V>		seam;
+
+      enter();
+
+      // create the seam.
+      if (seam.Create() == elle::StatusError)
+	escape("unable to create a seam");
+
+      // retrieve the initial seam footprint.
+      Seam<V>::Footprint = seam._footprint.size;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Clean()
+    {
+      enter();
+
+      // nothing to do.
 
       leave();
     }
