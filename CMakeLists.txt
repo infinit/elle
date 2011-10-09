@@ -17,7 +17,7 @@ MESSAGE("CMAKE_HOST_SYSTEM: ${CMAKE_HOST_SYSTEM}")
 # XXX switch from -std=gnu++0x to -std=c++0x
 #
 IF(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++0x -Wcast-align -Wold-style-cast")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=gnu++0x -Wcast-align -Wold-style-cast")
 ENDIF()
 
 #
