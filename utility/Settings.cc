@@ -36,7 +36,7 @@ namespace elle
 				       String&			output,
 				       const String&		delimiters)
     {
-      size_t		index;
+      std::string::size_type    index;
 
       enter();
 
