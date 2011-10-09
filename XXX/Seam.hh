@@ -39,10 +39,21 @@ namespace nucleus
     /// XXX internal nodule
     ///
     template <typename V>
-    class Seam:
+    class Seam<V>:
       public Nodule<V>
     {
     public:
+      //
+      // static attributes
+      //
+      static elle::Natural32	Footprint;
+
+      //
+      // static methods
+      //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
+
       //
       // types
       //
@@ -51,9 +62,19 @@ namespace nucleus
       //
       // types
       //
-      typedef std::map<const typename V::K, I*>		Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+      typedef std::map<const typename V::K, I*>			Container;
+
+      struct							Iterator
+      {
+	typedef typename Container::iterator			Forward;
+	typedef typename Container::reverse_iterator		Backward;
+      };
+
+      struct							Scoutor
+      {
+	typedef typename Container::const_iterator		Forward;
+	typedef typename Container::const_reverse_iterator	Backward;
+      };
 
       //
       // constructors & destructors
@@ -84,28 +105,31 @@ namespace nucleus
 				       Nodule<V>*);
       elle::Status		Insert(I*);
 
-      elle::Status		Delete(Iterator&);
+      elle::Status		Delete(typename Iterator::Forward&);
       elle::Status		Delete(Nodule<V>*);
       elle::Status		Delete(const typename V::K&);
 
       elle::Status		Lookup(const typename V::K&,
-				       Iterator&);
+				       typename Iterator::Forward&);
       elle::Status		Lookup(const typename V::K&,
 				       I*&);
       elle::Status		Lookup(const typename V::K&,
 				       Nodule<V>*&);
 
       elle::Status		Locate(const typename V::K&,
-				       Iterator&);
+				       typename Iterator::Forward&);
       elle::Status		Locate(const typename V::K&,
 				       I*&);
       elle::Status		Locate(const typename V::K&,
 				       Nodule<V>*&);
+
+      elle::Status		Update(const typename V::K&,
+				       const typename V::K&);
+      elle::Status		Propagate(const typename V::K&,
+					  const typename V::K&);
 
       elle::Status		Split(Seam<V>*&);
       elle::Status		Balance();
-
-      elle::Status		Update(const typename V::K&);
 
       //
       // interfaces

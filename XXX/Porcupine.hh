@@ -33,15 +33,19 @@ namespace nucleus
     ///
     /// XXX
     ///
-    template <typename V>
+    template <typename... T>
     class Seam;
 
-    template <typename V>
+    template <typename... T>
     class Quill;
 
 //
 // ---------- classes ---------------------------------------------------------
 //
+
+    // XXX
+    template <typename... T>
+    class Porcupine;
 
     ///
     /// this class makes it easy to build a tree-based data structure of
@@ -49,7 +53,7 @@ namespace nucleus
     /// memory.
     ///
     template <typename V>
-    class Porcupine:
+    class Porcupine<V>:
       public elle::Object
     {
     public:
@@ -131,6 +135,20 @@ namespace nucleus
 	  >
 	>			_unload;
       Nodule<V>*		_root;
+    };
+
+    ///
+    /// XXX
+    ///
+    template <>
+    class Porcupine<>
+    {
+    public:
+      //
+      // static methods
+      //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
     };
 
   }
