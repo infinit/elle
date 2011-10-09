@@ -42,7 +42,7 @@
 /// this macro function is sometimes use to group several parameter which
 /// can be pretty useful when a parameter contains a comma for instance.
 ///
-#define _(...)						\
+#define _(...)								\
   __VA_ARGS__
 
 //
@@ -168,7 +168,7 @@
       elle::core::String	_location_(_tmp_.str());		\
       elle::core::String	_time_(__DATE__ " " __TIME__);		\
 									\
-      ::sprintf(_message_, _format_, ##__VA_ARGS_);			\
+      ::sprintf(_message_, _format_, ##__VA_ARGS__);			\
 									\
       if (elle::standalone::Log::Instance(_log_) ==			\
 	  elle::radix::StatusTrue)					\
