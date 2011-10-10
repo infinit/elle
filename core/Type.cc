@@ -16,6 +16,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <fstream>
+# include <climits>
 #include <elle/idiom/Open.hh>
 
 namespace elle
