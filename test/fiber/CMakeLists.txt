@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(test-fiber EXCLUDE_FROM_ALL Test.cc)
+ADD_EXECUTABLE(test-fiber Test.cc)
 
 TARGET_LINK_LIBRARIES(test-fiber elle
 				 ${QT_QTNETWORK_LIBRARIES}
