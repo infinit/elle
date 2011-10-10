@@ -292,6 +292,7 @@ namespace elle
         leave();
 
       Fiber::IsScheduling = true;
+
       // iterate over the container.
       for (iterator = Fiber::Fibers.begin();
            iterator != Fiber::Fibers.end();
