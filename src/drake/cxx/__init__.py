@@ -117,6 +117,7 @@ class Config:
     def __add__(self, rhs):
 
         res = Config(self)
+        res._defines.update(rhs._defines)
         res._local_includes.update(rhs._local_includes)
         res._system_includes.update(rhs._system_includes)
         res._includes.update(rhs._includes)
