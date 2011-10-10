@@ -76,14 +76,17 @@ namespace etoile
       char *    str      = NULL;
       ssize_t   str_size = 0;
 
+      // convert the wchar string.
       if (elle::utility::Utf16To8(u16_str,
 				  -1,
 				  &str,
 				  &str_size) == elle::StatusError)
 	fail("failed to convert the path to uft8");
 
+      // assign the string.
       path.assign(str, str_size);
 
+      // release the temporary string.
       free(str);
     }
 

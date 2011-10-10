@@ -107,8 +107,8 @@ namespace etoile
     ///
     elle::Status	Route::Create(const Way&		way)
     {
-      std::string::size_type	start;
-      std::string::size_type	end;
+      elle::String::size_type	start;
+      elle::String::size_type	end;
       Slab			slab;
 
       enter();
