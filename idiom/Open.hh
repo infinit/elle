@@ -189,6 +189,7 @@
 ///
 /// this macro helps you to log your current location
 ///
+// XXX
 #define log_here                                                        \
   do {                                                                  \
     ::printf("[%d] %s:%d %s\n", __COUNTER__, __FILE__,                  \
