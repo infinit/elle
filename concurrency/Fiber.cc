@@ -286,12 +286,12 @@ namespace elle
 
       if (Fiber::IsScheduling)
         escape("don't call Fiber::Schedule() if Fiber::IsScheduling is true.");
-      Fiber::IsScheduling = true;
 
       // if there is not fibers, return.
       if (Fiber::Fibers.empty() == true)
         leave();
 
+      Fiber::IsScheduling = true;
       // iterate over the container.
       for (iterator = Fiber::Fibers.begin();
            iterator != Fiber::Fibers.end();
