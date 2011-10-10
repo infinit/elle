@@ -74,7 +74,7 @@ namespace etoile
       path()
     {
       char *    str      = NULL;
-      size_t    str_size = 0;
+      ssize_t   str_size = 0;
 
       if (elle::utility::Utf16To8(u16_str,
 				  -1,
