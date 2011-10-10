@@ -30,6 +30,7 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <libgen.h>
+# include <string.h>
 # if INFINIT_WIN32
 #  include <windows.h>
 // For QFile::link()
@@ -133,14 +134,17 @@ namespace elle
     ///
     Status		Link::Dig(const Path&			path)
     {
-      String		target(::strdup(path.string.c_str()));
-      String		directory(::dirname(
-				    const_cast<char*>(target.c_str())));
+      String		target(path.string);
+      char *            tmp_str = ::strdup(path.string.c_str());
+      String		directory(::dirname(tmp_str));
       std::stringstream	stream(directory);
       String		item;
       Path		chemin;
 
       enter();
+
+      // free the temporary string used for directory
+      free(tmp_str);
 
       // go through the components of the path.
       while (std::getline(stream, item, System::Path::Separator))
