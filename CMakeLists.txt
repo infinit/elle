@@ -62,7 +62,7 @@ ADD_EXECUTABLE(Infinit
   _infinit.cc
 )
 
-TARGET_LINK_LIBRARIES(Infinit infinit elle nucleus lune agent etoile hole)
+TARGET_LINK_LIBRARIES(Infinit infinit etoile nucleus lune agent hole)
 
 IF(${UNIX})
   TARGET_LINK_LIBRARIES(Infinit pig)
