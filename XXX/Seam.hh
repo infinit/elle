@@ -129,7 +129,7 @@ namespace nucleus
 					  const typename V::K&);
 
       elle::Status		Split(Seam<V>*&);
-      elle::Status		Balance();
+      elle::Status		Merge(Seam<V>*);
 
       //
       // interfaces

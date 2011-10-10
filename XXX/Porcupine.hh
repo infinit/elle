@@ -60,20 +60,7 @@ namespace nucleus
       //
       // constructors & destructors
       //
-      Porcupine(const elle::Callback<
-		  elle::Status,
-		  elle::Parameters<
-		    const Address&,
-		    Block&
-		    >
-		  >&,
-		const elle::Callback<
-		  elle::Status,
-		  elle::Parameters<
-		    const Address&,
-		    const Block&
-		    >
-		  >&);
+      Porcupine();
       ~Porcupine();
 
       //
@@ -120,20 +107,6 @@ namespace nucleus
       elle::Natural32		height;
       Address			root;
 
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  const Address&,
-	  Block&
-	  >
-	>			_load;
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  const Address&,
-	  const Block&
-	  >
-	>			_unload;
       Nodule<V>*		_root;
     };
 
@@ -150,6 +123,9 @@ namespace nucleus
       static elle::Status	Initialize();
       static elle::Status	Clean();
     };
+
+    // XXX
+    extern int DEBUG;
 
   }
 }

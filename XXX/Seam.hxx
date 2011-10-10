@@ -23,6 +23,23 @@ namespace nucleus
   {
 
 //
+// ---------- macro-functions -------------------------------------------------
+//
+
+///
+/// XXX
+///
+#define SeamLoad(_object_, _element_)					\
+  if (_object_->_element_ != Address::Null)				\
+    {									\
+      if (_object_->_ ## _element_ == NULL)				\
+	{								\
+	  printf("SEAM LOAD\n");					\
+	}								\
+    }									\
+  if (_object_->_ ## _element_ != NULL)
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 
@@ -150,11 +167,6 @@ namespace nucleus
 	escape("unable to insert the inlet in the container");
 
       // set the seam's parent link.
-      //
-      // note that the actual parent nodule's address is not computed as
-      // it may need recomputing afterwards. therefore, the address is set
-      // as being different from null but undefined so as to get computed only
-      // once.
       inlet->_value->parent = Address::Some;
       inlet->_value->_parent = this;
 
@@ -313,11 +325,8 @@ namespace nucleus
       if (this->Lookup(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet");
 
-      // load the value nodule, if necessary.
-      if (inlet->_value == NULL)
-	{
-	  // XXX load the value nodule.
-	}
+      // load the value block.
+      SeamLoad(inlet, value);
 
       // return the nodule.
       nodule = inlet->_value;
@@ -378,11 +387,8 @@ namespace nucleus
       if (this->Locate(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet associated with the given key");
 
-      // load the value nodule, if necessary.
-      if (inlet->_value == NULL)
-	{
-	  // XXX load the value nodule.
-	}
+      // load the value block.
+      SeamLoad(inlet, value);
 
       // return the nodule.
       nodule = inlet->_value;
@@ -464,13 +470,11 @@ namespace nucleus
 
       // finally, propagate the update should have the major key changed
       // and if a parent nodule exists.
-      if ((recent != ancient) && (this->parent != Address::Null))
+      if ((recent != ancient) &&
+	  (this->parent != Address::Null))
 	{
-	  // load the parent nodule, if necessary.
-	  if (this->_parent == NULL)
-	    {
-	      // XXX load the parent.
-	    }
+	  // load the parent nodule.
+	  SeamLoad(this, parent);
 
 	  // progate the update.
 	  if (this->_parent->Propagate(ancient, recent) == elle::StatusError)
@@ -503,7 +507,7 @@ namespace nucleus
 	escape("unable to create the seam");
 
       // export inlets from the current seam into the new seam.
-      if (this->Export(size, r) == elle::StatusError)
+      if (this->Export(r, size) == elle::StatusError)
 	escape("unable to export inlets");
 
       // set the output right seam.
@@ -519,13 +523,34 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Seam<V>::Balance()
+    elle::Status	Seam<V>::Merge(Seam<V>*			seam)
     {
+      typename V::K	t;
+      typename V::K	s;
+
       enter();
 
-	  // XXX 1) balance: s = [size(l) + size(c) + size(r)] / 3
-	  // XXX   si parent.{l,c,r} equivalent && .state && s > balancing
-	  // XXX 2) merge
+      // retrieve the major key.
+      if (this->Major(t) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // retrieve the major key.
+      if (seam->Major(s) == elle::StatusError)
+	escape("unable to retrieve the major key");
+
+      // check which nodule has the lowest keys.
+      if (s < t)
+	{
+	  // in this case, export the lower seam's inlets into the current's.
+	  if (seam->Export(this) == elle::StatusError)
+	    escape("unable to export the inlets");
+	}
+      else
+	{
+	  // otherwise, import the higher seam's inlets into the current's.
+	  if (this->Import(seam) == elle::StatusError)
+	    escape("unable to import the inlets");
+	}
 
       leave();
     }
@@ -541,6 +566,10 @@ namespace nucleus
     elle::Status	Seam<V>::Major(typename V::K&		major) const
     {
       enter();
+
+      // XXX
+      if (this->container.empty())
+	escape("XXX");
 
       // return the major key.
       major = this->container.rbegin()->first;
@@ -567,16 +596,8 @@ namespace nucleus
       // retrieve the inlet.
       inlet = iterator->second;
 
-      // load the child nodule, if necessary
-      if (inlet->_value == NULL)
-	{
-	  /* XXX load value
-	  // load the child nodule.
-	  if (this->_load.Call(inlet->address,
-			       inlet->_value) == elle::StatusError)
-	    escape("unable to load the child nodule");
-	  */
-	}
+      // load the child nodule.
+      SeamLoad(inlet, value);
 
       // search in this nodule.
       if (inlet->_value->Search(key, quill) == elle::StatusError)
@@ -733,9 +754,10 @@ namespace nucleus
 
       enter();
 
-      // create the seam.
-      if (seam.Create() == elle::StatusError)
-	escape("unable to create a seam");
+      // compute the initial footprint from which the Insert(), Delete()
+      // methods will work in order to adjust it.
+      if (seam._footprint.Compute() == elle::StatusError)
+	escape("unable to compute the footprint");
 
       // retrieve the initial seam footprint.
       Seam<V>::Footprint = seam._footprint.size;

@@ -15,12 +15,31 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <XXX/Porcupine.hh>
+
 #include <hole/Hole.hh>
 
 namespace nucleus
 {
   namespace proton
   {
+
+//
+// ---------- macro-functions -------------------------------------------------
+//
+
+///
+/// XXX
+///
+#define QuillLoad(_object_, _element_)					\
+  if (_object_->_element_ != Address::Null)				\
+    {									\
+      if (_object_->_ ## _element_ == NULL)				\
+	{								\
+	  printf("QUILL LOAD\n");					\
+	}								\
+    }									\
+  if (_object_->_ ## _element_ != NULL)
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -304,11 +323,8 @@ namespace nucleus
       if (this->Lookup(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet");
 
-      // load the value block, if necessary.
-      if (inlet->_value == NULL)
-	{
-	  // XXX load the value block: _value
-	}
+      // load the value block.
+      QuillLoad(inlet, value);
 
       // return the value.
       value = inlet->_value;
@@ -369,11 +385,8 @@ namespace nucleus
       if (this->Locate(key, inlet) == elle::StatusError)
 	escape("unable to locate the inlet associated with the given key");
 
-      // load the value block, if necessary.
-      if (inlet->_value == NULL)
-	{
-	  // XXX load the value block: _value
-	}
+      // load the value block.
+      QuillLoad(inlet, value);
 
       // return the value.
       value = inlet->_value;
@@ -404,7 +417,7 @@ namespace nucleus
 	escape("unable to create the quill");
 
       // export inlets from the current seam into the new seam.
-      if (this->Export(size, r) == elle::StatusError)
+      if (this->Export(r, size) == elle::StatusError)
 	escape("unable to export inlets");
 
       // set the output right quill.
@@ -419,291 +432,34 @@ namespace nucleus
     ///
     /// XXX
     ///
-    /// XXX try not to load the left/right parent nodes i.e compare the
-    ///     addresses
     template <typename V>
-    elle::Status	Quill<V>::Balance()
+    elle::Status	Quill<V>::Merge(Quill<V>*		quill)
     {
-      elle::Natural32	size;
-      Quill<V>*		left;
-      Quill<V>*		right;
+      typename V::K	t;
+      typename V::K	q;
 
       enter();
 
-      // retrieve the parent, if present.
-      if (this->parent != Address::Null)
-	{
-	  // load the parent nodule, if necessary.
-	  if (this->_parent == NULL)
-	    {
-	      // XXX load the parent nodule
-	    }
-	}
+      // retrieve the major key.
+      if (this->Major(t) == elle::StatusError)
+	escape("unable to retrieve the major key");
 
-      // retrieve the left quill.
-      if (this->left != Address::Null)
-	{
-	  // load the left nodule, if necessary.
-	  if (this->_left == NULL)
-	    {
-	      // XXX load the left quill
-	    }
+      // retrieve the major key.
+      if (quill->Major(q) == elle::StatusError)
+	escape("unable to retrieve the major key");
 
-	  // set the left.
-	  left = static_cast<Quill<V>*>(this->_left);
+      // check which nodule has the lowest keys.
+      if (q < t)
+	{
+	  // in this case, export the lower quill's inlets into the current's.
+	  if (quill->Export(this) == elle::StatusError)
+	    escape("unable to export the inlets");
 	}
       else
 	{
-	  left = NULL;
-	}
-
-      // retrieve the right quill.
-      if (this->right != Address::Null)
-	{
-	  // load the right nodule, if necessary.
-	  if (this->_right == NULL)
-	    {
-	      // XXX load the right quill
-	    }
-
-	  // set the right.
-	  right = static_cast<Quill<V>*>(this->_right);
-	}
-      else
-	{
-	  right = NULL;
-	}
-
-      // XXX
-      if ((left != NULL) && (right != NULL) &&
-	  (left->_state == StateDirty) &&
-	  (right->_state == StateDirty) &&
-	  ((size = ((left->_footprint.size +
-		     this->_footprint.size +
-		     right->_footprint.size) / 3)) >
-	   static_cast<elle::Natural32>(
-	     hole::Hole::Descriptor.extent *
-	     hole::Hole::Descriptor.balancing)) &&
-	  (left->parent == this->parent) &&
-	  (right->parent == this->parent))
-	{
-	  typename V::K		major;
-
-	  printf("CAS(1)\n");
-
-	  printf("size = %u / %u\n", size,
-		 (elle::Natural32)(hole::Hole::Descriptor.extent *
-		  hole::Hole::Descriptor.balancing));
-
-	  // XXX
-	  left->Dump();
-	  this->Dump();
-	  right->Dump();
-
-	  // XXX
-	  if (left->_footprint.size > size)
-	    {
-	      elle::Natural32				footprint;
-	      typename Quill<V>::Iterator::Forward	i;
-	      typename Quill<V>::Iterator::Forward	j;
-
-	      // XXX
-	      footprint = Quill<V>::Footprint;
-
-	      // XXX
-	      for (i = left->container.begin();
-		   i != left->container.end();
-		   i++)
-		{
-		  Quill<V>::I*	inlet = i->second;
-
-		  // XXX
-		  if (footprint > size)
-		    break;
-
-		  // XXX compute footprint inlet
-
-		  // XXX
-		  footprint += inlet->_footprint.size;
-		}
-
-	      // XXX
-	      for (j = i;
-		   j != left->container.end();
-		   j++)
-		{
-		  Quill<V>::I*	inlet = j->second;
-
-		  // XXX
-		  left->_footprint.size -= inlet->_footprint.size;
-
-		  // XXX
-		  if (this->Insert(inlet) == elle::StatusError)
-		    escape("unable to insert the inlet");
-		}
-
-	      // XXX
-	      left->container.erase(i, left->container.end());
-
-	      // XXX
-	      left->_footprint.state = elle::Footprint::StateConsistent;
-	    }
-
-	  // XXX
-	  if (this->_footprint.size > size)
-	    {
-	      elle::Natural32				footprint;
-	      typename Quill<V>::Iterator::Forward	i;
-	      typename Quill<V>::Iterator::Forward	j;
-
-	      // XXX
-	      footprint = Quill<V>::Footprint;
-
-	      // XXX
-	      for (i = this->container.begin();
-		   i != this->container.end();
-		   i++)
-		{
-		  Quill<V>::I*	inlet = i->second;
-
-		  // XXX
-		  if (footprint > size)
-		    break;
-
-		  // XXX compute footprint inlet
-
-		  // XXX
-		  footprint += inlet->_footprint.size;
-		}
-
-	      // XXX
-	      for (j = i;
-		   j != this->container.end();
-		   j++)
-		{
-		  Quill<V>::I*	inlet = j->second;
-
-		  // XXX
-		  this->_footprint.size -= inlet->_footprint.size;
-
-		  // XXX
-		  if (right->Insert(inlet) == elle::StatusError)
-		    escape("unable to insert the inlet");
-		}
-
-	      // XXX
-	      this->container.erase(i, this->container.end());
-
-	      // XXX
-	      this->_footprint.state = elle::Footprint::StateConsistent;
-	    }
-
-	  // XXX
-	  if (right->_footprint.size > size)
-	    {
-	      elle::Natural32				footprint;
-	      typename Quill<V>::Iterator::Backward	i;
-	      typename Quill<V>::Iterator::Backward	j;
-
-	      // XXX
-	      footprint = Quill<V>::Footprint;
-
-	      // XXX
-	      for (i = right->container.rbegin();
-		   i != right->container.rend();
-		   i++)
-		{
-		  Quill<V>::I*	inlet = i->second;
-
-		  // XXX
-		  if (footprint > size)
-		    break;
-
-		  // XXX compute footprint inlet
-
-		  // XXX
-		  footprint += inlet->_footprint.size;
-		}
-
-	      // XXX
-	      for (j = i;
-		   j != right->container.rend();
-		   j++)
-		{
-		  Quill<V>::I*	inlet = j->second;
-
-		  // XXX
-		  right->_footprint.size -= inlet->_footprint.size;
-
-		  // XXX
-		  if (this->Insert(inlet) == elle::StatusError)
-		    escape("unable to insert the inlet");
-		}
-
-	      // XXX
-	      right->container.erase(right->container.begin(), i.base());
-
-	      // XXX
-	      right->_footprint.state = elle::Footprint::StateConsistent;
-	    }
-
-	  // XXX
-	  left->Dump();
-	  this->Dump();
-	  right->Dump();
-
-	  /* XXX
-	  // XXX
-	  if (left->Major(major) == elle::StatusError)
-	    escape("unable to retrieve the major key");
-
-	  // update the parent seam.
-	  if (left->_parent->Update(major) == elle::StatusError)
-	    escape("unable to update the parent seam");
-
-	  // XXX
-	  if (this->Major(major) == elle::StatusError)
-	    escape("unable to retrieve the major key");
-
-	  // update the parent seam.
-	  if (this->_parent->Update(major) == elle::StatusError)
-	    escape("unable to update the parent seam");
-
-	  // XXX
-	  if (right->Major(major) == elle::StatusError)
-	    escape("unable to retrieve the major key");
-
-	  // update the parent seam.
-	  if (right->_parent->Update(major) == elle::StatusError)
-	    escape("unable to update the parent seam");
-	  */
-
-	  // XXX pas si simple car en faisant ca le Insert pourrait spliter?
-
-	  // XXX on pourrait optimiser Insert() pour ne pas faire l'Update
-	  //  mais plutot appeler a la main quand necessaire.
-
-	  // XXX on peut equilibrer sur 3 noeuds
-	}
-      else if ((left != NULL) &&
-	       (left->_state == StateDirty) &&
-	       (left->parent == this->parent))
-	{
-	  printf("CAS(2)\n");
-
-	  // XXX on peut equilibrer sur 2 noeuds: left
-	}
-      else if ((right != NULL) &&
-	       (right->_state = StateDirty) &&
-	       (right->parent == this->parent))
-	{
-	  printf("CAS(3)\n");
-
-	  // XXX on peut equilibrer sur 2 noeuds: right
-	}
-      else
-	{
-	  printf("CAS(4) NOTHING TO DO ... OR ... TRY TO MERGE\n");
+	  // otherwise, import the higher quill's inlets into the current's.
+	  if (this->Import(quill) == elle::StatusError)
+	    escape("unable to import the inlets");
 	}
 
       leave();
@@ -720,6 +476,10 @@ namespace nucleus
     elle::Status	Quill<V>::Major(typename V::K&		major) const
     {
       enter();
+
+      // XXX
+      if (this->container.empty())
+	escape("XXX");
 
       // return the major key.
       major = this->container.rbegin()->first;
@@ -890,9 +650,10 @@ namespace nucleus
 
       enter();
 
-      // create the quill.
-      if (quill.Create() == elle::StatusError)
-	escape("unable to create a quill");
+      // compute the initial footprint from which the Insert(), Delete()
+      // methods will work in order to adjust it.
+      if (quill._footprint.Compute() == elle::StatusError)
+	escape("unable to compute the footprint");
 
       // retrieve the initial quill footprint.
       Quill<V>::Footprint = quill._footprint.size;

@@ -83,8 +83,8 @@ namespace nucleus
     ///
     template <typename V>
     template <typename T>
-    elle::Status	Nodule<V>::Export(const elle::Natural32	size,
-					  T*			right)
+    elle::Status	Nodule<V>::Export(T*			right,
+					  const elle::Natural32	size)
     {
       T*				left = static_cast<T*>(this);
       elle::Natural32			footprint;
@@ -123,9 +123,6 @@ namespace nucleus
 	  footprint += inlet->_footprint.size;
 	}
 
-      // set the nodule's state.
-      left->_state = StateDirty;
-
       // go through the remaining entries in order to move them to
       // the right nodule.
       for (j = i; j != left->container.end(); j++)
@@ -143,6 +140,84 @@ namespace nucleus
 
       // remove the right entries from the left nodule.
       left->container.erase(i, left->container.end());
+
+      // set the nodules' states.
+      left->_state = StateDirty;
+      right->_state = StateDirty;
+
+      // set both nodules' footprint as consistent.
+      left->_footprint.state = elle::Footprint::StateConsistent;
+      right->_footprint.state = elle::Footprint::StateConsistent;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    template <typename T>
+    elle::Status	Nodule<V>::Import(T*			right,
+					  const elle::Natural32	size)
+    {
+      T*				left = static_cast<T*>(this);
+      elle::Natural32			footprint;
+      typename T::Iterator::Backward	i;
+      typename T::Iterator::Backward	j;
+
+      enter();
+
+      // initialize the temporary footprint.
+      footprint = T::Footprint;
+
+      // go through the right nodule's entries until the future size is reached
+      // after which all the remaining entries will be moved to the left
+      // nodule.
+      for (i = right->container.rbegin();
+	   i != right->container.rend();
+	   i++)
+	{
+	  typename T::I*		inlet = i->second;
+
+	  // check whether the new nodule's size has been reached.
+	  if (footprint > size)
+	    break;
+
+	  //
+	  // otherwise, leave this inlet in the nodule.
+	  //
+
+	  // note however that another check is performed in order to make
+	  // sure that adding this inlet will not make the nodule too large.
+	  if ((footprint +
+	       inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+	    break;
+
+	  // add the inlet's footprint to the footprint.
+	  footprint += inlet->_footprint.size;
+	}
+
+      // go through the remaining entries in order to move them to
+      // the left nodule.
+      for (j = i; j != right->container.rend(); j++)
+	{
+	  typename T::I*		inlet = j->second;
+
+	  // substract the inlet's footprint from the current nodule since
+	  // it is getting moved to the left one.
+	  right->_footprint.size -= inlet->_footprint.size;
+
+	  // insert the inlet into the left nodule.
+	  if (left->Insert(inlet) == elle::StatusError)
+	    escape("unable to add the inlet");
+	}
+
+      // remove the left entries from the right nodule.
+      right->container.erase(right->container.begin(), i.base());
+
+      // set the nodules' states.
+      left->_state = StateDirty;
+      right->_state = StateDirty;
 
       // set both nodules' footprint as consistent.
       left->_footprint.state = elle::Footprint::StateConsistent;

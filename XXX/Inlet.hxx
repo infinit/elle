@@ -26,7 +26,7 @@ namespace nucleus
     template <typename V,
 	      typename T>
     Inlet<V, T>::Inlet():
-      address(Address::Some),
+      value(Address::Some),
 
       _footprint(*this),
       _value(NULL)
@@ -41,7 +41,7 @@ namespace nucleus
     Inlet<V, T>::Inlet(const typename V::K&			key,
 		       T*					value):
       key(key),
-      address(Address::Some),
+      value(Address::Some),
 
       _footprint(*this),
       _value(value)
@@ -54,9 +54,9 @@ namespace nucleus
     template <typename V,
 	      typename T>
     Inlet<V, T>::Inlet(const typename V::K&			key,
-		       const Address&				address):
+		       const Address&				value):
       key(key),
-      address(address),
+      value(value),
 
       _footprint(*this),
       _value(NULL)
@@ -95,9 +95,9 @@ namespace nucleus
       // XXX remove std::dec
 
       /* XXX
-      // dump the address.
-      if (this->address.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the address");
+      // dump the value.
+      if (this->value.Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the value");
       */
 
       // dump the footprint.
@@ -140,7 +140,7 @@ namespace nucleus
 
       // serialize the attributes.
       if (archive.Serialize(this->key,
-			    this->address) == elle::StatusError)
+			    this->value) == elle::StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -157,7 +157,7 @@ namespace nucleus
 
       // extracts the attributes.
       if (archive.Extract(this->key,
-			  this->address) == elle::StatusError)
+			  this->value) == elle::StatusError)
 	escape("unable to extract the attributes");
 
       leave();

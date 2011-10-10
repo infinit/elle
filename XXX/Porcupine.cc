@@ -20,6 +20,12 @@ namespace nucleus
   {
 
 //
+// ---------- XXX -------------------------------------------------------------
+//
+
+    int DEBUG = 0;
+
+//
 // ---------- static methods --------------------------------------------------
 //
 
@@ -30,13 +36,18 @@ namespace nucleus
     {
       enter();
 
-      // initialize the seam.
-      if (Seam<nucleus::Catalog>::Initialize() == elle::StatusError)
-	escape("unable to initialize the seam");
+      //
+      // catalog-specific initialization.
+      //
+      {
+	// initialize the seam.
+	if (Seam<nucleus::Catalog>::Initialize() == elle::StatusError)
+	  escape("unable to initialize the seam");
 
-      // initialize the quill.
-      if (Quill<nucleus::Catalog>::Initialize() == elle::StatusError)
-	escape("unable to initialize the quill");
+	// initialize the quill.
+	if (Quill<nucleus::Catalog>::Initialize() == elle::StatusError)
+	  escape("unable to initialize the quill");
+      }
 
       // XXX
 
@@ -50,13 +61,18 @@ namespace nucleus
     {
       enter();
 
-      // clean the quill.
-      if (Quill<nucleus::Catalog>::Clean() == elle::StatusError)
-	escape("unable to clean the quill");
+      //
+      // catalog-specific cleaning.
+      //
+      {
+	// clean the quill.
+	if (Quill<nucleus::Catalog>::Clean() == elle::StatusError)
+	  escape("unable to clean the quill");
 
-      // clean the seam.
-      if (Seam<nucleus::Catalog>::Clean() == elle::StatusError)
-	escape("unable to clean the seam");
+	// clean the seam.
+	if (Seam<nucleus::Catalog>::Clean() == elle::StatusError)
+	  escape("unable to clean the seam");
+      }
 
       // XXX
 

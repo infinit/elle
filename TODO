@@ -1,3 +1,10 @@
+- coder un Handle pour PorcupineLoader
+
+- collecter les blocs qui se font derouilles avant le Seal
+
+- ameliorer Porcupine: balancing delete et balancing add (poruquoi aps)
+  => merge pour reduire taille de l'arbre
+
 - il est possible qu'on ait une merde: en deletant une entree, on delete
   le block, donc on met a jour les left/right nodules pour qu'ils ne pointent
   plus sur le nodule deleted. donc on load les right/left. malheureusement,

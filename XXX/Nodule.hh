@@ -83,8 +83,16 @@ namespace nucleus
       // methods
       //
       template <typename T>
-      elle::Status		Export(const elle::Natural32,
-				       T*);
+      elle::Status		Export(T*,
+				       const elle::Natural32 = 0);
+      template <typename T>
+      elle::Status		Import(T*,
+				       const elle::Natural32 = 0);
+
+      template <typename T>
+      elle::Status		Split(T*&);
+      template <typename T>
+      elle::Status		Merge(T*);
 
       //
       // virtual methods
@@ -108,7 +116,6 @@ namespace nucleus
       // attributes
       //
       Type			type;
-
       Address			parent;
       Address			left;
       Address			right;

@@ -39,22 +39,9 @@ int main(int argc, char** argv)
   nucleus::Porcupine<>::Initialize();
 
   nucleus::Porcupine<nucleus::Catalog>* p =
-    new nucleus::Porcupine<nucleus::Catalog>(elle::Callback<
-					   elle::Status,
-					   elle::Parameters<
-					     const nucleus::Address&,
-					     nucleus::Block&
-					     >
-					   >::Null,
-					 elle::Callback<
-					   elle::Status,
-					   elle::Parameters<
-					     const nucleus::Address&,
-					     const nucleus::Block&
-					     >
-					   >::Null);
+    new nucleus::Porcupine<nucleus::Catalog>;
 
-  const int n = 30;
+  const int n = 80000;
 
   for (int i = 0; i < n; i++)
     {
@@ -65,13 +52,12 @@ int main(int argc, char** argv)
       sprintf(name, "%u", i);
 
       printf("-------------> %s\n", name);
-      //p->Dump();
 
-      if (p->Add(name, NULL) == elle::StatusError)
+      if (p->Add(name, new nucleus::Catalog) == elle::StatusError)
 	fail("XXX");
     }
 
-  p->Dump();
+  //p->Dump();
 
   for (int i = 0; i < n; i++)
     {
@@ -88,7 +74,7 @@ int main(int argc, char** argv)
 	fail("XXX");
     }
 
-  p->Dump();
+  //p->Dump();
 
   for (int i = 0; i < n; i++)
     {
@@ -99,7 +85,6 @@ int main(int argc, char** argv)
       sprintf(name, "%u", i);
 
       printf("-------------< %s\n", name);
-      //p->Dump();
 
       if (p->Remove(name) == elle::StatusError)
 	fail("XXX");
