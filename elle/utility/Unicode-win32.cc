@@ -25,9 +25,9 @@ namespace elle
   {
 
     Status Utf8To16(const char * input,
-                    size_t       input_size,
+                    ssize_t      input_size,
                     wchar_t **   output,
-                    size_t *     output_size)
+                    ssize_t *    output_size)
     {
       enter();
 
@@ -41,7 +41,7 @@ namespace elle
       if (*output_size <= 0)
         escape("failed to convert from UTF-16 to UTF-8\n");
 
-      *output = (wchar_t *)::realloc(*output, *output_size);
+      *output = (wchar_t *)::realloc(*output, (1 + *output_size) * sizeof (wchar_t));
       if (!*output)
         escape("Out Of Memory!");
 
@@ -51,14 +51,15 @@ namespace elle
                           input_size,
                           *output,
                           *output_size);
+      output[*output_size] = L'\0';
 
       leave();
     }
 
     Status Utf16To8(const wchar_t * input,
-                    size_t          input_size,
+                    ssize_t         input_size,
                     char **         output,
-                    size_t *        output_size)
+                    ssize_t *       output_size)
     {
       enter();
 
@@ -74,18 +75,19 @@ namespace elle
       if (*output_size <= 0)
         escape("failed to convert from UTF-16 to UTF-8\n");
 
-      *output = (char *)::realloc(*output, *output_size);
+      *output = (char *)::realloc(*output, *output_size + 1);
       if (!*output)
         escape("Out Of Memory!");
 
-      WideCharToMultiByte(CP_UTF8, // CodePage
-                          0,    // dwFlags
+      WideCharToMultiByte(CP_UTF8,      // CodePage
+                          0,            // dwFlags
                           input,
-                          input_size, // cchWideChar
-                          *output, // lpMultiByteStr
+                          input_size,   // cchWideChar
+                          *output,      // lpMultiByteStr
                           *output_size, // cbMultiByte
-                          NULL, // lpDefaultChar
-                          NULL); // lpUsedDefaultChar
+                          NULL,         // lpDefaultChar
+                          NULL);        // lpUsedDefaultChar
+      output[*output_size] = '\0';
 
       leave();
     }
