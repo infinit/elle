@@ -20,6 +20,9 @@ namespace elle
     ///
     class NonCopyable
     {
+    public:
+      inline NonCopyable() {}
+
     private:
       /// disable copy constructor
       NonCopyable(const NonCopyable &);
