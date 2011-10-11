@@ -14,6 +14,7 @@
 
 #include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Fiber.hh>
+#include <elle/utility/ScopeReset.hh>
 
 namespace elle
 {
@@ -291,6 +292,9 @@ namespace elle
       if (Fiber::Fibers.empty() == true)
         leave();
 
+      // We are now scheduling
+      utility::ScopeReset<decltype (Fiber::IsScheduling)>
+        reset_scheduling(Fiber::IsScheduling, false);
       Fiber::IsScheduling = true;
 
       // iterate over the container.
@@ -305,10 +309,7 @@ namespace elle
 	    {
 	      // remove the fiber from the container.
 	      if (Fiber::Remove(fiber) == StatusError)
-                {
-                  Fiber::IsScheduling = false;
                   escape("unable to remove the fiber");
-                }
 
               // save the environment.
               if (Fiber::Trigger(PhaseSave) == StatusError)
@@ -328,18 +329,12 @@ namespace elle
 
 	      // restore the environment.
 	      if (Fiber::Trigger(PhaseRestore) == StatusError)
-                {
-                  Fiber::IsScheduling = false;
                   escape("unable to restore the environment");
-                }
 
               // set the context of the suspended fiber.
 	      if (::swapcontext(&Fiber::Program->context,
 				&Fiber::Current->context) == -1)
-                {
-                  Fiber::IsScheduling = false;
                   escape("unable to swapcontext");
-                }
 
               // check if the current fiber state
               Fiber::CheckCurrentFiber();
@@ -350,7 +345,6 @@ namespace elle
             iterator++;
 	}
 
-      Fiber::IsScheduling = false;
       leave();
     }
 
