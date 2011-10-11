@@ -38,5 +38,7 @@ namespace elle
 #include <elle/utility/Settings.hh>
 #include <elle/utility/Time.hh>
 #include <elle/utility/Unicode.hh>
+#include <elle/utility/ScopeReset.hh>
+#include <elle/utility/NonCopyable.hh>
 
 #endif
