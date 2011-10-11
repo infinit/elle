@@ -194,7 +194,8 @@ class GccToolkit(Toolkit):
 
     def preprocess(self, code, config = Config()):
 
-        p = subprocess.Popen([self.cxx, '-x',  'c++', '-E', '-'],
+        cmd = [self.cxx] + self.cppflags(config) + ['-x',  'c++', '-E', '-']
+        p = subprocess.Popen(cmd,
                              stdin = subprocess.PIPE,
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE)
@@ -210,20 +211,24 @@ class GccToolkit(Toolkit):
         return 'o'
 
     def cppflags(self, cfg):
-
-        def print_define(arg):
-            (name, v) = arg
+        res = []
+        for name, v in cfg.defines().items():
             if v is None:
-                return '-D%s' % name
+                res.append('-D%s' % name)
             else:
-                return '-D%s=%s' % (name, utils.shell_escape(v))
-        defines = ' '.join(map(print_define, cfg.defines().items()))
-        system_includes = ' '.join(map(lambda i: '-isystem %s' % utils.shell_escape(i), cfg.system_include_path()))
-        local_includes  = ' '.join(map(lambda i: '-I %s -I %s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
-        return ' '.join([system_includes, local_includes, defines])
+                res.append('-D%s=%s' % (name, utils.shell_escape(v)))
+        for include in cfg.system_include_path():
+            res.append('-isystem')
+            res.append(utils.shell_escape(include))
+        for include in cfg.local_include_path():
+            res.append('-I')
+            res.append(utils.shell_escape(srctree() / include))
+            res.append('-I')
+            res.append(utils.shell_escape(include))
+        return res
 
     def compile(self, cfg, src, obj, c = False):
-        return ' '.join([c and self.c or self.cxx] + cfg.flags + [self.cppflags(cfg), '-c', str(src), '-o', str(obj)])
+        return ' '.join([c and self.c or self.cxx] + cfg.flags + self.cppflags(cfg) + ['-c', str(src), '-o', str(obj)])
 
 
     def archive(self, cfg, objs, lib):
