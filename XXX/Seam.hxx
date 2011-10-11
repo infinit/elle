@@ -259,6 +259,21 @@ namespace nucleus
     }
 
     ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Exist(const typename V::K&	key)
+    {
+      enter();
+
+      // locate the given key.
+      if (this->container.find(key) == this->container.end())
+	false();
+
+      true();
+    }
+
+    ///
     /// XXX 
     ///
     template <typename V>
@@ -555,20 +570,6 @@ namespace nucleus
       leave();
     }
 
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status	Seam<V>::Clear()
-    {
-      enter();
-
-      // clear the container without deleting the inlets.
-      this->container.clear();
-
-      leave();
-    }
-
 //
 // ---------- nodule ----------------------------------------------------------
 //
@@ -793,6 +794,14 @@ namespace nucleus
 
       // retrieve the initial seam footprint.
       Seam<V>::Footprint = seam._footprint.size;
+
+      // register the seams to the nucleus' factory.
+      {
+	// register the catalog-specific seam.
+	if (Nucleus::Factory.Register< proton::Seam<neutron::Catalog> >
+	    (neutron::ComponentSeamCatalog) == elle::StatusError)
+	  escape("unable to register the factory product");
+      }
 
       leave();
     }

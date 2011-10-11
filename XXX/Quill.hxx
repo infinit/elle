@@ -257,6 +257,21 @@ namespace nucleus
     }
 
     ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Quill<V>::Exist(const typename V::K&	key)
+    {
+      enter();
+
+      // locate the given key.
+      if (this->container.find(key) == this->container.end())
+	false();
+
+      true();
+    }
+
+    ///
     /// XXX 
     ///
     template <typename V>
@@ -461,20 +476,6 @@ namespace nucleus
 	  if (this->Import(quill) == elle::StatusError)
 	    escape("unable to import the inlets");
 	}
-
-      leave();
-    }
-
-    ///
-    /// XXX
-    ///
-    template <typename V>
-    elle::Status	Quill<V>::Clear()
-    {
-      enter();
-
-      // clear the container without deleting the inlets.
-      this->container.clear();
 
       leave();
     }
@@ -689,6 +690,14 @@ namespace nucleus
 
       // retrieve the initial quill footprint.
       Quill<V>::Footprint = quill._footprint.size;
+
+      // register the quills to the nucleus' factory.
+      {
+	// register the catalog-specific quill.
+	if (Nucleus::Factory.Register< proton::Quill<neutron::Catalog> >
+	    (neutron::ComponentQuillCatalog) == elle::StatusError)
+	  escape("unable to register the factory product");
+      }
 
       leave();
     }

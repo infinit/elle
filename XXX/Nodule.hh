@@ -30,11 +30,14 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class needs forward declaration to prevent conflicts.
     ///
     template <typename... T>
     class Seam;
 
+    ///
+    /// this class needs forward declaration to prevent conflicts.
+    ///
     template <typename... T>
     class Quill;
 

@@ -27,7 +27,7 @@ namespace nucleus
 //
 
 ///
-/// XXX
+/// this macro-function makes it easier to load a block.
 ///
 #define PorcupineLoad(_object_, _element_)				\
   if (_object_->_element_ != Address::Null)				\
@@ -70,7 +70,8 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method can be used in order to add a value to the tree given
+    /// its key.
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Add(const typename V::K&	key,
@@ -92,7 +93,28 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method returns true if a value exists for the given key.
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Exist(const typename V::K& key)
+    {
+      Quill<V>*			quill;
+
+      enter();
+
+      // search for the quill responsible for the given key.
+      if (this->Search(key, quill) == elle::StatusError)
+	escape("unable to locate a quill for this key");
+
+      // check whether a value exist for this key.
+      if (quill->Exist(key) == elle::StatusFalse)
+	false();
+
+      true();
+    }
+
+    ///
+    /// this method can be used for retrieving a value given its key.
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Locate(const typename V::K& key,
@@ -114,7 +136,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX remove
+    /// this method removes the value associated with the given key.
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Remove(const typename V::K& key)
@@ -135,10 +157,12 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method is called recursively for inserting the key/value tuple
+    /// in the given nodule.
     ///
-    /// XXX clean with _current, _left and _right
-    /// XXX add balancing on insertion
+    /// the recursion is necessary because inserting a tuple may imply
+    /// creating a new nodule, after splitting for instance, which would
+    /// in turn require inserting the newly created nodule.
     ///
     template <typename V>
     template <typename N,
@@ -147,9 +171,26 @@ namespace nucleus
 					     const typename V::K& key,
 					     W*			value)
     {
+      struct
+      {
+	struct
+	{
+	  typename V::K	recent;
+	}		right;
+	struct
+	{
+	  typename V::K	ancient;
+	  typename V::K	temporary;
+	  typename V::K	recent;
+	}		current;
+      }			mayor;
+      N*		_current;
       typename N::I*	inlet;
 
       enterx(instance(inlet));
+
+      // set the convenient _current alias.
+      _current = nodule;
 
       // create an inlet here in order to be able to compute its footprint.
       inlet = new typename N::I(key, value);
@@ -160,21 +201,14 @@ namespace nucleus
 
       // check if the future nodule's footprint---i.e should the inlet
       // be inserted---would exceed the extent.
-      if ((nodule->_footprint.size +
-	   inlet->_footprint.size) > hole::Hole::Descriptor.extent)
+      if ((_current->_footprint.size + inlet->_footprint.size) >
+	  hole::Hole::Descriptor.extent)
 	{
-	  N*			right;
-	  Seam<V>*		parent;
-	  struct
-	  {
-	    typename V::K	ancient;
-	    typename V::K	recent;
-
-	    typename V::K	temporary;
-	  }			mayor;
+	  Seam<V>*	_parent;
+	  N*		_right;
 
 	  // first, retrieve the mayor key of the current nodule.
-	  if (nodule->Mayor(mayor.ancient) == elle::StatusError)
+	  if (_current->Mayor(mayor.current.ancient) == elle::StatusError)
 	    escape("unable to retrive the mayor");
 
 	  //
@@ -186,7 +220,7 @@ namespace nucleus
 	  //
 
 	  // split the nodule.
-	  if (nodule->Split(right) == elle::StatusError)
+	  if (_current->Split(_right) == elle::StatusError)
 	    escape("unable to split the nodule");
 
 	  //
@@ -204,93 +238,92 @@ namespace nucleus
 	  //
 
 	  // load the right nodule, if possible.
-	  PorcupineLoad(nodule, right)
+	  PorcupineLoad(_current, right)
 	    {
 	      // update the old right nodule's neighbour links.
-	      nodule->_right->left = Address::Some;
-	      nodule->_right->_left = right;
+	      _current->_right->left = Address::Some;
+	      _current->_right->_left = _right;
 	    }
 
 	  // set the new right nodule's neighbour links.
-	  right->left = Address::Some;
-	  right->_left = nodule;
-
-	  right->right = nodule->right;
-	  right->_right = nodule->_right;
+	  _right->left = Address::Some;
+	  _right->_left = _current;
+	  _right->right = _current->right;
+	  _right->_right = _current->_right;
 
 	  // finally, update the current nodule's right neighbour link.
-	  nodule->right = Address::Some;
-	  nodule->_right = right;
+	  _current->right = Address::Some;
+	  _current->_right = _right;
 
-	  // retrieve the left nodule's mayor key.
-	  if (nodule->Mayor(mayor.temporary) == elle::StatusError)
+	  // retrieve the current nodule's mayor key.
+	  if (_current->Mayor(mayor.current.temporary) == elle::StatusError)
 	    escape("unable to retrieve the mayor key");
 
 	  // insert the inlet depending on its key: if its key is lower than
 	  // the mayor, then it falls in the left nodule; otherwise in the
 	  // right.
-	  if (inlet->key < mayor.temporary)
+	  if (inlet->key < mayor.current.temporary)
 	    {
 	      // insert the inlet to the left nodule.
-	      if (nodule->Insert(inlet) == elle::StatusError)
+	      if (_current->Insert(inlet) == elle::StatusError)
 		escape("unable to insert the inlet to the nodule");
 	    }
 	  else
 	    {
 	      // insert the inlet to the right nodule.
-	      if (right->Insert(inlet) == elle::StatusError)
+	      if (_right->Insert(inlet) == elle::StatusError)
 		escape("unable to insert the inlet to the nodule");
 	    }
 
 	  // waive.
 	  waive(inlet);
 
+	  // load the root, just in case.
+	  PorcupineLoad(this, root);
+
 	  // create a parent node if necessary i.e if the current nodule
 	  // was the root.
-	  if (nodule == this->_root)
+	  if (_current == this->_root)
 	    {
 	      // make the porcupine grow.
 	      if (this->Grow() == elle::StatusError)
 		escape("unable to make the porcupine grow");
 
-	      // increment the height.
-	      this->height++;
-
 	      // set the parent by casting the root into a seam.
-	      parent = static_cast<Seam<V>*>(this->_root);
+	      _parent = static_cast<Seam<V>*>(this->_root);
 	    }
 	  else
 	    {
 	      // load the parent nodule.
-	      PorcupineLoad(nodule, parent);
+	      PorcupineLoad(_current, parent);
 
 	      // set the parent.
-	      parent = nodule->_parent;
+	      _parent = _current->_parent;
 
 	      // retrieve the current nodule's new mayor key.
-	      if (nodule->Mayor(mayor.recent) == elle::StatusError)
+	      if (_current->Mayor(mayor.current.recent) == elle::StatusError)
 		escape("unable to retrive the mayor");
 
 	      // then, update the parent nodule, should the mayor key have
 	      // changed.
-	      if (mayor.recent != mayor.ancient)
+	      if (mayor.current.recent != mayor.current.ancient)
 		{
 		  // propagate the update to the parent nodules.
-		  if (nodule->_parent->Propagate(
-		        mayor.ancient,
-			mayor.recent) == elle::StatusError)
+		  if (_current->_parent->Propagate(
+		        mayor.current.ancient,
+			mayor.current.recent) == elle::StatusError)
 		    escape("unable to update the parent nodule");
 		}
 	    }
 
-	  // retrieve the mayor key.
-	  if (right->Mayor(mayor.temporary) == elle::StatusError)
+	  // retrieve the right nodule's mayor key.
+	  if (_right->Mayor(mayor.right.recent) == elle::StatusError)
 	    escape("unable to retrieve the mayor key");
 
 	  // insert the right nodule in its new parent.
-	  if (this->Insert(parent,
-			   mayor.temporary,
-			   right) == elle::StatusError)
+	  if (this->Insert(_parent,
+			   mayor.right.recent,
+			   _right) == elle::StatusError)
 	    escape("unable to insert the right nodule to its parent");
 	}
       else
@@ -302,14 +335,16 @@ namespace nucleus
 	  // however, operate depending on the nodule's state i.e whether
 	  // inlets have been inserted before.
 	  //
-	  if (nodule->container.empty() == true)
+
+	  // is the container empty...
+	  if (_current->container.empty() == true)
 	    {
 	      //
 	      // the nodule is empty: insert the inlet.
 	      //
 
-	      // insert the inlet to the nodule.
-	      if (nodule->Insert(inlet) == elle::StatusError)
+	      // insert the inlet into the nodule.
+	      if (_current->Insert(inlet) == elle::StatusError)
 		escape("unable to insert the inlet to the nodule");
 
 	      // waive.
@@ -323,43 +358,37 @@ namespace nucleus
 	    {
 	      //
 	      // the nodule is not empty: insert the inlet and update
-	      // the parent nodule if necessary.
+	      // the parent nodule, if necessary.
 	      //
 
-	      struct
-	      {
-		typename V::K	ancient;
-		typename V::K	recent;
-	      }			mayor;
-
 	      // retrieve the current nodule's mayor key.
-	      if (nodule->Mayor(mayor.ancient) == elle::StatusError)
+	      if (_current->Mayor(mayor.current.ancient) == elle::StatusError)
 		escape("unable to retrive the mayor");
 
 	      // insert the inlet to the nodule.
-	      if (nodule->Insert(inlet) == elle::StatusError)
+	      if (_current->Insert(inlet) == elle::StatusError)
 		escape("unable to insert the inlet to the nodule");
 
 	      // waive.
 	      waive(inlet);
 
 	      // retrieve the nodule's new mayor key.
-	      if (nodule->Mayor(mayor.recent) == elle::StatusError)
+	      if (_current->Mayor(mayor.current.recent) == elle::StatusError)
 		escape("unable to retrive the mayor");
 
 	      // finally, update the parent nodule, should the mayor key have
 	      // changed.
-	      if ((mayor.recent != mayor.ancient) &&
-		  (nodule->parent != Address::Null))
+	      if ((mayor.current.recent != mayor.current.ancient) &&
+		  (_current->parent != Address::Null))
 		{
 		  // load the parent nodule.
-		  PorcupineLoad(nodule, parent);
+		  PorcupineLoad(_current, parent);
 
 		  // propagate the change of mayor key throughout the
 		  // hiearchy.
-		  if (nodule->_parent->Propagate(
-		        mayor.ancient,
-			mayor.recent) == elle::StatusError)
+		  if (_current->_parent->Propagate(
+		        mayor.current.ancient,
+			mayor.current.recent) == elle::StatusError)
 		    escape("unable to update the parent nodule");
 		}
 	    }
@@ -369,9 +398,16 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method deletes the entry referenced by the given key from the
+    /// nodule, in a recursive way.
     ///
-    /// XXX add balancing on three nodules
+    /// indeed, as for Insert(), this method may merge nodules together,
+    /// leading to the deletion of another nodule, potentially recursively
+    /// up to the top of the tree.
+    ///
+    /// note that the root nodule may also be completely destroyed should
+    /// the tree become empty. likewise, the root nodule may be replaced
+    /// by another one should it become to small.
     ///
     template <typename V>
     template <typename N>
@@ -397,37 +433,11 @@ namespace nucleus
 	}		right;
       }			mayor;
       N*		_current;
-      N*		_left;
-      N*		_right;
 
       enter();
 
       // set the convenient _current alias.
       _current = nodule;
-
-      // load the left nodule, if possible.
-      PorcupineLoad(_current, left)
-	{
-	  // set the _left alias.
-	  _left = static_cast<N*>(_current->_left);
-	}
-      else
-	{
-	  // reset the pointer.
-	  _left = NULL;
-	}
-
-      // load the right nodule, if possible.
-      PorcupineLoad(_current, right)
-	{
-	  // set the _right alias.
-	  _right = static_cast<N*>(_current->_right);
-	}
-      else
-	{
-	  // reset the pointer.
-	  _right = NULL;
-	}
 
       // retrieve the nodule's mayor.
       if (_current->Mayor(mayor.current.ancient) == elle::StatusError)
@@ -441,14 +451,18 @@ namespace nucleus
       if (_current->container.empty() == true)
 	{
 	  //
-	  // XXX
+	  // if the nodule became empty, it can be removed as well.
+	  //
+	  // if the nodule is the root one, the tree is now empty, otherwise
+	  // the nodule must be deleted from its parent nodule.
 	  //
 
 	  // if a parent exists...
 	  if (_current->parent != Address::Null)
 	    {
 	      //
-	      // XXX
+	      // a parent nodule seems to exist: delete the nodule from
+	      // it taking care to update the neighbour links.
 	      //
 
 	      // load the parent nodule.
@@ -492,7 +506,12 @@ namespace nucleus
 	  else
 	    {
 	      //
-	      // XXX
+	      // in this case, there does not seem to be a parent node.
+	      //
+	      // in other words, the current nodule is the root one, and
+	      // is now empty.
+	      //
+	      // the tree can therefore be reset.
 	      //
 
 	      // delete the root nodule manually, if necessary.
@@ -512,22 +531,56 @@ namespace nucleus
 		hole::Hole::Descriptor.balancing))
 	{
 	  //
-	  // XXX
+	  // the nodule may not be empty but could have reached a size
+	  // small enough for the tree to be simplified.
 	  //
+	  // indeed, neighbour nodes could be balanced in order to better
+	  // support future insertions and deletions or could even be
+	  // merged in order to potentially reduced the tree complexity
+	  // and height.
+	  //
+
+	  N*		_left;
+	  N*		_right;
+
+	  // load the left nodule, if possible.
+	  PorcupineLoad(_current, left)
+	    {
+	      // set the _left alias.
+	      _left = static_cast<N*>(_current->_left);
+	    }
+	  else
+	    {
+	      // reset the pointer.
+	      _left = NULL;
+	    }
+
+	  // load the right nodule, if possible.
+	  PorcupineLoad(_current, right)
+	    {
+	      // set the _right alias.
+	      _right = static_cast<N*>(_current->_right);
+	    }
+	  else
+	    {
+	      // reset the pointer.
+	      _right = NULL;
+	    }
 
 	  // load the parent nodule, if possible.
 	  PorcupineLoad(_current, parent);
 
-	  // XXX optimiser avec des cas pour _state = Dirty
-
-	  // XXX
-	  if (_current->_parent == NULL) // XXXparent
+	  /* XXX
+	  // operate depending of several configurations, ranging from
+	  // the easiest or more convenient to the less optimised.
+	  if (_current->_parent == NULL) // XXX parent
 	    {
 	      //
-	      // in this case, the tree is shrunk if possible i.e if
+	      // in this case, the nodule does not seem to have a parent i.e
+	      // is the root nodule. the tree is shrunk, if possible---i.e if
 	      // the root nodule is not alone but most importantly if the
-	      // root nodule contains a single inlet; which will become
-	      // the new root.
+	      // root nodule contains a single inlet---in which case its
+	      // maiden inlet will become the new root nodule.
 	      //
 	      // note that this case is tested first so that the following
 	      // ones do not have to test for the parent address to be
@@ -538,9 +591,9 @@ namespace nucleus
 	      if (this->Shrink() == elle::StatusError)
 		escape("unable to shrink the tree");
 	    }
-	  else if ((_left != NULL) &&
+	    else */if ((_left != NULL) &&
 		   (_left->_state == StateDirty) &&
-		   (_left->_parent == _current->_parent) && //XXXparent
+		   (_left->_parent == _current->_parent) && //XXX parent
 		   ((_left->_footprint.size +
 		     _current->_footprint.size -
 		     N::Footprint) <
@@ -552,14 +605,15 @@ namespace nucleus
 	      // be already dirty.
 	      //
 	      // this scenario is considered first because it can reduce
-	      // the number of modified nodules which would then need to
-	      // be pushed onto the network.
+	      // the number of modified nodules i.e blocks which would
+	      // then need to be pushed onto the network.
 	      //
 	      goto _merge_left;
 	    }
+	  /* XXX
 	  else if ((_right != NULL) &&
 		   (_right->_state == StateDirty) &&
-		   (_right->_parent == _current->_parent) && //XXXparent
+		   (_right->_parent == _current->_parent) && //XXX parent
 		   ((_current->_footprint.size -
 		     N::Footprint +
 		     _right->_footprint.size) <
@@ -571,15 +625,22 @@ namespace nucleus
 	      //
 	      goto _merge_right;
 	    }
+	  */
 	  else if ((_left != NULL) &&
-		   (_left->_parent == _current->_parent) && //XXXparent
+		   (_left->_parent == _current->_parent) && //XXX parent
 		   ((_left->_footprint.size +
 		     _current->_footprint.size -
 		     N::Footprint) <
 		    hole::Hole::Descriptor.extent))
 	    {
 	      //
-	      // XXX
+	      // in this case the left neighbour nodule seems to be present.
+	      //
+	      // besides, both the current and the left nodules have the same
+	      // parent. this is important because merging both nodules will
+	      // imply updating a single parent nodule; the number of updates
+	      // is reduced implying less computation but also less nodules
+	      // i.e blocks being potentially modified.
 	      //
 	    _merge_left:
 
@@ -629,12 +690,12 @@ namespace nucleus
 
 		  // load the left nodule's parent. note that this is
 		  // necessary because the left nodule may have lost its
-		  // parent on the way.
+		  // parent on the way i.e through the recusive deletion.
 		  //
 		  // indeed, for instance, by removing the current nodule
 		  // from its parent and so forth up to the root nodule,
 		  // the tree may have been shrunk, leading for instance
-		  // the _left_ nodule as the new root; in which case
+		  // the _left_ nodule to become the new root; in which case
 		  // this nodule would no longer have a parent.
 		  PorcupineLoad(_left, parent)
 		    {
@@ -651,15 +712,17 @@ namespace nucleus
 		    }
 		}
 	    }
+	  /*
 	  else if ((_right != NULL) &&
-		   (_right->_parent == _current->_parent) && //XXXparent
+		   (_right->_parent == _current->_parent) && //XXX parent
 		   ((_current->_footprint.size -
 		     N::Footprint +
 		     _right->_footprint.size) <
 		    hole::Hole::Descriptor.extent))
 	    {
 	      //
-	      // XXX
+	      // this case is identical to the previous one except that
+	      // merging occurs between the current and right nodules.
 	      //
 	    _merge_right:
 
@@ -699,10 +762,11 @@ namespace nucleus
 
 		  // note that the parent nodule does not need to be updated
 		  // regarding the new inlets merged into the right nodule
-		  // because the added inlets have lower key compared to
+		  // because the added inlets have lower keys compared to
 		  // the already existing ones in the right nodule.
 		}
 	    }
+	  */
 	  else
 	    {
 	      //
@@ -713,7 +777,7 @@ namespace nucleus
 	      // therefore, the nodule is left as such, taking care however
 	      // to update the parent nodules for consistency.
 	      //
-	      goto _propagate;
+	      goto _normal;
 	    }
 	}
       else
@@ -726,7 +790,7 @@ namespace nucleus
 	  // the update on the parent nodules since the mayor key may
 	  // have changed following the deletion.
 	  //
-	_propagate:
+	_normal:
 
 	  // retrieve the nodule's new mayor.
 	  if (_current->Mayor(mayor.current.recent) == elle::StatusError)
@@ -753,7 +817,11 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method is used for retrieving the quill responsible for the
+    /// given key.
+    ///
+    /// this method is widely used being for inserting, locating or
+    /// deleting entries.
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Search(const typename V::K& key,
@@ -762,14 +830,14 @@ namespace nucleus
       enter();
 
       // if the tree is non-existent, create a first level by making it grow.
+      //
+      // note that this may occur at the very beginning but also after
+      // the tree has been emptied.
       if (this->height == 0)
 	{
 	  // make the tree grow.
 	  if (this->Grow() == elle::StatusError)
 	    escape("unable to make the tree grow");
-
-	  // increment the height.
-	  this->height++;
 	}
 
       // load the root nodule.
@@ -783,7 +851,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method make the tree grow, adding a level to the hiearchy.
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Grow()
@@ -793,9 +861,13 @@ namespace nucleus
 
       enterx(instance(seam));
 
-      // if the tree does not exist, create a root nodule.
+      // depending on the current height.
       if (this->height == 0)
 	{
+	  //
+	  // if the tree does not exist, create a root nodule.
+	  //
+
 	  Quill<V>*	root;
 
 	  enterx(instance(root));
@@ -819,6 +891,11 @@ namespace nucleus
 	}
       else
 	{
+	  //
+	  // otherwise, create a new seam and add the current root in
+	  // this new seam which will become the new root.
+	  //
+
 	  // load the root nodule.
 	  PorcupineLoad(this, root);
 
@@ -851,18 +928,24 @@ namespace nucleus
 	  waive(seam);
 	}
 
+      // increment the height.
+      this->height++;
+
       leave();
     }
 
     ///
-    /// XXX
+    /// this method shrinks the tree, removing the current root nodule
+    /// by its maiden child nodule.
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Shrink()
     {
-      typename V::K	maiden;
-      Seam<V>*		seam;
-      Nodule<V>*	root;
+      typename V::K		maiden;
+      Seam<V>*			seam;
+      typename Seam<V>::I*	inlet;
+      Address			root;
+      Nodule<V>*		_root;
 
       enter();
 
@@ -873,30 +956,41 @@ namespace nucleus
       // load the root nodule.
       PorcupineLoad(this, root);
 
-      // retrieve the maiden key.
-      if (this->_root->Maiden(maiden) == elle::StatusError)
-	escape("unable to retrieve the maiden key");
+      // XXX
+      //this->Dump();
 
       // note that since the Shrink() method proceeds only for trees
       // with a two-level heigh and more, the root nodule cannot be anything
       // but a seam.
       seam = static_cast<Seam<V>*>(this->_root);
 
-      // retrieve the nodule associated with the given key.
-      if (seam->Locate(maiden, root) == elle::StatusError)
+      // retrieve the maiden key.
+      if (seam->Maiden(maiden) == elle::StatusError)
+	escape("unable to retrieve the maiden key");
+
+      // retrieve the inlet associated with the given key.
+      if (seam->Locate(maiden, inlet) == elle::StatusError)
 	escape("unable to retrieve the nodule");
 
-      // clear the seam from its entries without deleting anything
-      // as we want to keep _root_ alive.
-      if (seam->Clear() == elle::StatusError)
-	escape("unable to clear the seam");
+      // retrieve the new root nodule.
+      root = inlet->value;
+      _root = inlet->_value;
+
+      /* XXX
+      // XXX unload the inlet's data though deleting it will simply unload
+      //  the value
+      inlet->_value = NULL;
 
       // delete the seam.
       delete seam;
+      */
 
       // finally, set the new root nodule.
-      this->root = Address::Some;
-      this->_root = root;
+      this->root = root;
+      this->_root = _root;
+
+      // load the new root.
+      PorcupineLoad(this, root);
 
       // update the new root links.
       this->_root->parent = Address::Null;
@@ -904,6 +998,10 @@ namespace nucleus
 
       // decrease the tree's height.
       this->height--;
+
+      // XXX
+      //this->Dump();
+      //exit(1);
 
       leave();
     }
@@ -922,14 +1020,7 @@ namespace nucleus
 				 nodule) == elle::StatusError)
 	escape("unable to build the nodule");
 
-      // XXX ne pas recevoir de load/unload dans Porcupine et utiliser
-      // XXX directement Journal::Get puis si pas present, Depot::Get
-
-      /* XXX
-      // call the given load callback.
-      if (this->load(address, *nodule) == elle::StatusError)
-	escape("unable to load the nodule");
-      */
+      // XXX
 
       leave();
     }
@@ -953,7 +1044,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method dumps the porcupine.
     ///
     template <typename V>
     elle::Status	Porcupine<V>::Dump(const elle::Natural32 margin)

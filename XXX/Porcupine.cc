@@ -20,17 +20,11 @@ namespace nucleus
   {
 
 //
-// ---------- XXX -------------------------------------------------------------
-//
-
-    int DEBUG = 0;
-
-//
 // ---------- static methods --------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method initializes the porcupine.
     ///
     elle::Status	Porcupine<>::Initialize()
     {
@@ -55,7 +49,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method cleans the porcupine.
     ///
     elle::Status	Porcupine<>::Clean()
     {

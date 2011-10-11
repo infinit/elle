@@ -41,7 +41,7 @@ int main(int argc, char** argv)
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;
 
-  const int n = 80000;
+  const int n = 200;
 
   for (int i = 0; i < n; i++)
     {
@@ -69,6 +69,7 @@ int main(int argc, char** argv)
       sprintf(name, "%u", i);
 
       printf("-------------= %s\n", name);
+      //p->Dump();
 
       if (p->Locate(name, c) == elle::StatusError)
 	fail("XXX");

@@ -115,6 +115,8 @@ namespace nucleus
       elle::Status		Delete(V*);
       elle::Status		Delete(const typename V::K&);
 
+      elle::Status		Exist(const typename V::K&);
+
       elle::Status		Lookup(const typename V::K&,
 				       typename Iterator::Forward&);
       elle::Status		Lookup(const typename V::K&,
@@ -131,8 +133,6 @@ namespace nucleus
 
       elle::Status		Split(Quill<V>*&);
       elle::Status		Merge(Quill<V>*);
-
-      elle::Status		Clear();
 
       //
       // interfaces

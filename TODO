@@ -1,5 +1,16 @@
+- ameliorer le reseau: si Hole n'a pas les donnees et est lance, il
+  repond un tag Exception(21) alors qu'on attend autre chose Block(19).
+  dans Gate.hxx dans ce cas la (unexpected tag) il faudrait dispatch le
+  message puis retourner une erreur a Receive bloquant.
+
 - faire un test de batard.
 - ajouter first/next/previous/last etc.
+
+- pour un Catalog, il faut que le Porcupine garde dans l'arbre le nombre
+  d'entrees pour facilement retrouve par index!
+
+- calculer impact des meta donnees: rep de zic (pas d'imapct?), quelle
+  proportion de fichiers <= 200octets
 
 - balance dans insert/delete
 - collecter les blocs qui se font derouilles avant le Seal
