@@ -153,7 +153,7 @@ namespace elle
       //
       static Status	Trim(const String&,
 			     String&,
-			     const String& = "\n\t ");
+			     const String& = "\n\t\r\v ");
 
       //
       // constructors & destructors
