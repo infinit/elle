@@ -14,6 +14,7 @@
 
 #include <elle/standalone/Morgue.hh>
 #include <elle/concurrency/Fiber.hh>
+#include <elle/utility/ScopeReset.hh>
 
 namespace elle
 {
@@ -292,7 +293,8 @@ namespace elle
         leave();
 
       // We are now scheduling
-      utility::ScopeReset reset_scheduling(Fiber::IsScheduling, false);
+      utility::ScopeReset<decltype (Fiber::IsScheduling)>
+        reset_scheduling(Fiber::IsScheduling, false);
       Fiber::IsScheduling = true;
 
       // iterate over the container.
