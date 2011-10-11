@@ -1,9 +1,10 @@
-- coder un Handle pour PorcupineLoader
+- faire un test de batard.
+- ajouter first/next/previous/last etc.
 
+- balance dans insert/delete
 - collecter les blocs qui se font derouilles avant le Seal
 
-- ameliorer Porcupine: balancing delete et balancing add (poruquoi aps)
-  => merge pour reduire taille de l'arbre
+- coder un Handle pour PorcupineLoader
 
 - il est possible qu'on ait une merde: en deletant une entree, on delete
   le block, donc on met a jour les left/right nodules pour qu'ils ne pointent
@@ -41,6 +42,9 @@
 
 - check footprint in hole::Push (XXX)
 - stocker en binaire plutot qu'hexa?
+
+- pour simplifier la suppression de blocs: on peut linker chaque bloc
+  a l'Object et dans Object mettre une permission suppression.
 
 - mettre les attributs dans un autre block? voire seulement si ca depasse
   un nombre d'entrees/footprint?

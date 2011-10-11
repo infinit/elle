@@ -41,7 +41,7 @@ int main(int argc, char** argv)
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;
 
-  const int n = 2000;
+  const int n = 80000;
 
   for (int i = 0; i < n; i++)
     {

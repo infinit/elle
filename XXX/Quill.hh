@@ -132,12 +132,15 @@ namespace nucleus
       elle::Status		Split(Quill<V>*&);
       elle::Status		Merge(Quill<V>*);
 
+      elle::Status		Clear();
+
       //
       // interfaces
       //
 
       // nodule
-      elle::Status		Major(typename V::K&) const;
+      elle::Status		Mayor(typename V::K&) const;
+      elle::Status		Maiden(typename V::K&) const;
       elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
 

@@ -131,12 +131,15 @@ namespace nucleus
       elle::Status		Split(Seam<V>*&);
       elle::Status		Merge(Seam<V>*);
 
+      elle::Status		Clear();
+
       //
       // interfaces
       //
 
       // nodule
-      elle::Status		Major(typename V::K&) const;
+      elle::Status		Mayor(typename V::K&) const;
+      elle::Status		Maiden(typename V::K&) const;
       elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
 

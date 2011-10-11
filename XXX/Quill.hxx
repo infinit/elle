@@ -440,13 +440,13 @@ namespace nucleus
 
       enter();
 
-      // retrieve the major key.
-      if (this->Major(t) == elle::StatusError)
-	escape("unable to retrieve the major key");
+      // retrieve the mayor key.
+      if (this->Mayor(t) == elle::StatusError)
+	escape("unable to retrieve the mayor key");
 
-      // retrieve the major key.
-      if (quill->Major(q) == elle::StatusError)
-	escape("unable to retrieve the major key");
+      // retrieve the mayor key.
+      if (quill->Mayor(q) == elle::StatusError)
+	escape("unable to retrieve the mayor key");
 
       // check which nodule has the lowest keys.
       if (q < t)
@@ -465,6 +465,20 @@ namespace nucleus
       leave();
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Quill<V>::Clear()
+    {
+      enter();
+
+      // clear the container without deleting the inlets.
+      this->container.clear();
+
+      leave();
+    }
+
 //
 // ---------- nodule ----------------------------------------------------------
 //
@@ -473,7 +487,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Quill<V>::Major(typename V::K&		major) const
+    elle::Status	Quill<V>::Mayor(typename V::K&		mayor) const
     {
       enter();
 
@@ -481,8 +495,26 @@ namespace nucleus
       if (this->container.empty())
 	escape("XXX");
 
-      // return the major key.
-      major = this->container.rbegin()->first;
+      // return the mayor key.
+      mayor = this->container.rbegin()->first;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Quill<V>::Maiden(typename V::K&		maiden) const
+    {
+      enter();
+
+      // check if a single inlet is present.
+      if (this->container.size() != 1)
+	escape("unable to retrieve the maiden; multiple inlets are present");
+
+      // return the maiden key.
+      maiden = this->container.begin()->first;
 
       leave();
     }

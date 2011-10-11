@@ -97,7 +97,8 @@ namespace nucleus
       //
       // virtual methods
       //
-      virtual elle::Status	Major(typename V::K&) const = 0;
+      virtual elle::Status	Mayor(typename V::K&) const = 0;
+      virtual elle::Status	Maiden(typename V::K&) const = 0;
       virtual elle::Status	Search(const typename V::K&,
 				       Quill<V>*&) = 0;
 

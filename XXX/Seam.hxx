@@ -456,19 +456,19 @@ namespace nucleus
 
       enter();
 
-      // retrieve the current major key.
-      if (this->Major(ancient) == elle::StatusError)
-	escape("unable to retrieve the major key");
+      // retrieve the current mayor key.
+      if (this->Mayor(ancient) == elle::StatusError)
+	escape("unable to retrieve the mayor key");
 
       // update the seam.
       if (this->Update(from, to) == elle::StatusError)
 	escape("unable to update the nodule");
 
-      // retrieve the new major key.
-      if (this->Major(recent) == elle::StatusError)
-	escape("unable to retrieve the major key");
+      // retrieve the new mayor key.
+      if (this->Mayor(recent) == elle::StatusError)
+	escape("unable to retrieve the mayor key");
 
-      // finally, propagate the update should have the major key changed
+      // finally, propagate the update should have the mayor key changed
       // and if a parent nodule exists.
       if ((recent != ancient) &&
 	  (this->parent != Address::Null))
@@ -530,13 +530,13 @@ namespace nucleus
 
       enter();
 
-      // retrieve the major key.
-      if (this->Major(t) == elle::StatusError)
-	escape("unable to retrieve the major key");
+      // retrieve the mayor key.
+      if (this->Mayor(t) == elle::StatusError)
+	escape("unable to retrieve the mayor key");
 
-      // retrieve the major key.
-      if (seam->Major(s) == elle::StatusError)
-	escape("unable to retrieve the major key");
+      // retrieve the mayor key.
+      if (seam->Mayor(s) == elle::StatusError)
+	escape("unable to retrieve the mayor key");
 
       // check which nodule has the lowest keys.
       if (s < t)
@@ -555,6 +555,20 @@ namespace nucleus
       leave();
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Clear()
+    {
+      enter();
+
+      // clear the container without deleting the inlets.
+      this->container.clear();
+
+      leave();
+    }
+
 //
 // ---------- nodule ----------------------------------------------------------
 //
@@ -563,7 +577,7 @@ namespace nucleus
     /// XXX
     ///
     template <typename V>
-    elle::Status	Seam<V>::Major(typename V::K&		major) const
+    elle::Status	Seam<V>::Mayor(typename V::K&		mayor) const
     {
       enter();
 
@@ -571,8 +585,26 @@ namespace nucleus
       if (this->container.empty())
 	escape("XXX");
 
-      // return the major key.
-      major = this->container.rbegin()->first;
+      // return the mayor key.
+      mayor = this->container.rbegin()->first;
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Maiden(typename V::K&		maiden) const
+    {
+      enter();
+
+      // check if a single inlet is present.
+      if (this->container.size() != 1)
+	escape("unable to retrieve the maiden; multiple inlets are present");
+
+      // return the maiden key.
+      maiden = this->container.begin()->first;
 
       leave();
     }
