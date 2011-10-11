@@ -23,7 +23,7 @@ namespace elle
     Status Utf8To16(const char * input,
                     ssize_t      input_size,
                     wchar_t **   output,
-                    size_t *     output_size)
+                    ssize_t *    output_size)
     {
       enter();
       escape("XXX implement me with iconv_open/iconv/iconv_close");
@@ -33,7 +33,7 @@ namespace elle
     Status Utf16To8(const wchar_t * input,
                     ssize_t         input_size,
                     char **         output,
-                    size_t *        output_size)
+                    ssize_t *       output_size)
     {
       enter();
       escape("XXX implement me with iconv_open/iconv/iconv_close");
