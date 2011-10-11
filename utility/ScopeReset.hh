@@ -10,6 +10,9 @@
 
 #include <elle/utility/NonCopyable.hh>
 
+#ifndef ELLE_UTILITY_SCOPERESET_HH
+# define ELLE_UTILITY_SCOPERESET_HH
+
 namespace elle
 {
   namespace utility
@@ -50,3 +53,5 @@ namespace elle
     };
   }
 }
+
+#endif
