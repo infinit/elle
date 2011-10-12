@@ -90,12 +90,12 @@ status:
 
 commit:
 	@echo "---[ infinit"
-	@$(GIT) status | grep 'nothing to commit' || $(GIT) commit -a
+	@$(GIT) status | grep 'nothing' || $(GIT) commit -a
 
 	@for component in $(COMPONENTS); do				\
 	  echo "---[ $${component}"					; \
 	  cd $${component}						; \
-	  $(GIT) status | grep 'nothing to commit' || $(GIT)  commit -a ; \
+	  $(GIT) status | grep 'nothing' || $(GIT)  commit -a ; \
 	  cd ..								; \
 	done
 
