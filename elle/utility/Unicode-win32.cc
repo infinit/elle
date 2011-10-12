@@ -47,7 +47,7 @@ namespace elle
                                         input_size,
                                         *output,
                                         *output_size);
-      output[*output_size] = L'\0';
+      (*output)[*output_size] = L'\0';
 
       if (nchars != *output_size)
         escape("failed to convert string");
@@ -86,7 +86,7 @@ namespace elle
                                         *output_size, // cbMultiByte
                                         NULL,         // lpDefaultChar
                                         NULL);        // lpUsedDefaultChar
-      output[*output_size] = '\0';
+      (*output)[*output_size] = '\0';
 
       if (nchars != *output_size)
         escape("failed to convert string");
