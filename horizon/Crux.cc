@@ -1827,7 +1827,6 @@ namespace pig
 		    directory);
 	  }
 
-
 	// add an entry.
 	if (etoile::wall::Directory::Add(directory,
 					 t,
