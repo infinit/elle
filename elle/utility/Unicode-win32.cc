@@ -11,11 +11,7 @@
 #include <elle/Elle.hh>
 
 #include <elle/idiom/Close.hh>
-
-# if INFINIT_WIN32
-#  include <windows.h>
-# endif
-
+# include <windows.h>
 #include <elle/idiom/Open.hh>
 
 
@@ -45,13 +41,16 @@ namespace elle
       if (!*output)
         escape("Out Of Memory!");
 
-      MultiByteToWideChar(CP_UTF8, // CodePage
-                          0,       // dwFlags
-                          input,
-                          input_size,
-                          *output,
-                          *output_size);
+      auto nchars = MultiByteToWideChar(CP_UTF8, // CodePage
+                                        0,       // dwFlags
+                                        input,
+                                        input_size,
+                                        *output,
+                                        *output_size);
       output[*output_size] = L'\0';
+
+      if (nchars != *output_size)
+        escape("failed to convert string");
 
       leave();
     }
@@ -79,15 +78,18 @@ namespace elle
       if (!*output)
         escape("Out Of Memory!");
 
-      WideCharToMultiByte(CP_UTF8,      // CodePage
-                          0,            // dwFlags
-                          input,
-                          input_size,   // cchWideChar
-                          *output,      // lpMultiByteStr
-                          *output_size, // cbMultiByte
-                          NULL,         // lpDefaultChar
-                          NULL);        // lpUsedDefaultChar
+      auto nchars = WideCharToMultiByte(CP_UTF8,      // CodePage
+                                        0,            // dwFlags
+                                        input,
+                                        input_size,   // cchWideChar
+                                        *output,      // lpMultiByteStr
+                                        *output_size, // cbMultiByte
+                                        NULL,         // lpDefaultChar
+                                        NULL);        // lpUsedDefaultChar
       output[*output_size] = '\0';
+
+      if (nchars != *output_size)
+        escape("failed to convert string");
 
       leave();
     }
