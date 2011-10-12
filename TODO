@@ -1,3 +1,5 @@
+- passer en binaire: MutableBlock, ImmutableBlock, History
+
 - ameliorer le reseau: si Hole n'a pas les donnees et est lance, il
   repond un tag Exception(21) alors qu'on attend autre chose Block(19).
   dans Gate.hxx dans ce cas la (unexpected tag) il faudrait dispatch le
