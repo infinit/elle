@@ -63,6 +63,11 @@ namespace etoile
     {
     public:
       //
+      // constants
+      //
+      static const Nature			N = NatureObject;
+
+      //
       // constructors & destructors
       //
       Object();

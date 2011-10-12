@@ -38,7 +38,8 @@ namespace etoile
 
       // return the context by dynamically casting it.
       if ((context = dynamic_cast<T*>(this->context)) == NULL)
-	escape("invalid context nature");
+	escape("invalid context nature: got(%u) expected(%u)",
+	       this->context->nature, T::N);
 
       leave();
     }

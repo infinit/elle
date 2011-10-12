@@ -42,6 +42,11 @@ namespace etoile
     {
     public:
       //
+      // constants
+      //
+      static const Nature			N = NatureFile;
+
+      //
       // types
       //
       typedef nucleus::Data			C;

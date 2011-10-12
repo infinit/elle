@@ -44,6 +44,11 @@ namespace etoile
     {
     public:
       //
+      // constants
+      //
+      static const Nature			N = NatureDirectory;
+
+      //
       // types
       //
       typedef nucleus::Catalog			C;

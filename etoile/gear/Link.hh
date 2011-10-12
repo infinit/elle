@@ -42,6 +42,11 @@ namespace etoile
     {
     public:
       //
+      // constants
+      //
+      static const Nature			N = NatureLink;
+
+      //
       // types
       //
       typedef nucleus::Reference		C;
