@@ -1,3 +1,5 @@
+- du -sh dans Infinit ne marche pas
+
 - passer en binaire: MutableBlock, ImmutableBlock, History
 
 - ameliorer le reseau: si Hole n'a pas les donnees et est lance, il
