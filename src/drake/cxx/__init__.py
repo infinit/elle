@@ -106,7 +106,7 @@ class Config:
         if path == Path('/lib') or path == Path('/usr/lib'):
             return
         p = Path(path)
-        if not p.absolute:
+        if not p.absolute():
             p = srctree() / prefix() / p
         self.lib_paths[p] = None
 
