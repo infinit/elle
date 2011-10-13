@@ -237,6 +237,7 @@ namespace nucleus
       elle::Path	path;
       elle::String	unique;
       elle::Region	region;
+      elle::Archive	archive;
 
       enter();
 
@@ -259,12 +260,13 @@ namespace nucleus
       if (elle::File::Read(path, region) == elle::StatusError)
 	escape("unable to read the file's content");
 
-      // decode and extract the object.
-      if (elle::Hexadecimal::Decode(
-	    elle::String(reinterpret_cast<char*>(region.contents),
-			 region.size),
-	    *this) == elle::StatusError)
-	escape("unable to decode the object");
+      // wrap the region into an archive.
+      if (archive.Wrap(region) == elle::StatusError)
+	escape("unable to prepare the archive");
+
+      // extract from the archive.
+      if (archive.Extract(*this) == elle::StatusError)
+	escape("unable to extract the archive");
 
       leave();
     }
@@ -278,7 +280,7 @@ namespace nucleus
       elle::Path	path;
       elle::String	unique;
       elle::Region	region;
-      elle::String	string;
+      elle::Archive	archive;
 
       enter();
 
@@ -297,14 +299,18 @@ namespace nucleus
 			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
 	escape("unable to complete the path");
 
-      // encode in hexadecimal.
-      if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-	escape("unable to encode the object in hexadecimal");
+      // create the archive.
+      if (archive.Create() == elle::StatusError)
+	escape("unable to create the archive");
+
+      // serialize the object.
+      if (archive.Serialize(*this) == elle::StatusError)
+	escape("unable to serialize the object");
 
       // wrap the string.
-      if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-		      string.length()) == elle::StatusError)
-	escape("unable to wrap the string in a region");
+      if (region.Wrap(reinterpret_cast<const elle::Byte*>(archive.contents),
+		      archive.size) == elle::StatusError)
+	escape("unable to wrap the archive in a region");
 
       // write the file's content.
       if (elle::File::Write(path, region) == elle::StatusError)

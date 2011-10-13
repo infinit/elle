@@ -159,6 +159,7 @@ namespace nucleus
       if (hole::Hole::Descriptor.history == false)
 	{
 	  elle::Region	region;
+	  elle::Archive	archive;
 
 	  // complete the path with the network name.
 	  if (path.Complete(elle::Piece("%NETWORK%", network.name),
@@ -171,17 +172,19 @@ namespace nucleus
 	  if (elle::File::Read(path, region) == elle::StatusError)
 	    escape("unable to read the file's content");
 
-	  // decode and extract the object.
-	  if (elle::Hexadecimal::Decode(
-	        elle::String(reinterpret_cast<char*>(region.contents),
-			     region.size),
-		*this) == elle::StatusError)
-	    escape("unable to decode the object");
+	  // wrap the region into an archive.
+	  if (archive.Wrap(region) == elle::StatusError)
+	    escape("unable to prepare the archive");
+
+	  // extract from the archive.
+	  if (archive.Extract(*this) == elle::StatusError)
+	    escape("unable to extract the archive");
 	}
       else
 	{
 	  elle::Region	region;
 	  elle::String	number;
+	  elle::Archive	archive;
 
 	  // if the requested version is the latest...
 	  if (version == Version::Last)
@@ -226,12 +229,13 @@ namespace nucleus
 	  if (elle::File::Read(path, region) == elle::StatusError)
 	    escape("unable to read the file's content");
 
-	  // decode and extract the object.
-	  if (elle::Hexadecimal::Decode(
-	        elle::String(reinterpret_cast<char*>(region.contents),
-			     region.size),
-		*this) == elle::StatusError)
-	    escape("unable to decode the object");
+	  // wrap the region into an archive.
+	  if (archive.Wrap(region) == elle::StatusError)
+	    escape("unable to prepare the archive");
+
+	  // extract from the archive.
+	  if (archive.Extract(*this) == elle::StatusError)
+	    escape("unable to extract the archive");
 	}
 
       leave();
@@ -276,7 +280,7 @@ namespace nucleus
 	  // if the history is not supported, store the mutable block
 	  // in a file without version number extension.
 	  //
-	  elle::String		string;
+	  elle::Archive		archive;
 	  elle::Region		region;
 
 	  // complete the file path.
@@ -284,14 +288,19 @@ namespace nucleus
 	      elle::StatusError)
 	    escape("unable to complete the path");
 
-	  // encode in hexadecimal.
-	  if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-	    escape("unable to encode the object in hexadecimal");
+	  // create the archive.
+	  if (archive.Create() == elle::StatusError)
+	    escape("unable to create the archive");
 
-	  // wrap the string.
-	  if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-			  string.length()) == elle::StatusError)
-	    escape("unable to wrap the string in a region");
+	  // serialize the object.
+	  if (archive.Serialize(*this) == elle::StatusError)
+	    escape("unable to serialize the object");
+
+	  // wrap the archive.
+	  if (region.Wrap(reinterpret_cast<const elle::Byte*>(
+			    archive.contents),
+			  archive.size) == elle::StatusError)
+	    escape("unable to wrap the archive in a region");
 
 	  // write the file's content.
 	  if (elle::File::Write(file, region) == elle::StatusError)
@@ -308,7 +317,7 @@ namespace nucleus
 	  elle::String		number;
 	  elle::Path		link;
 	  elle::Region		region;
-	  elle::String		string;
+	  elle::Archive		archive;
 	  nucleus::History	history;
 
 	  // convert the version number into a string.
@@ -324,14 +333,19 @@ namespace nucleus
 	      elle::StatusError)
 	    escape("unable to complete the path");
 
-	  // encode in hexadecimal.
-	  if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
-	    escape("unable to encode the object in hexadecimal");
+	  // create the archive.
+	  if (archive.Create() == elle::StatusError)
+	    escape("unable to create the archive");
 
-	  // wrap the string.
-	  if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
-			  string.length()) == elle::StatusError)
-	    escape("unable to wrap the string in a region");
+	  // serialize the object.
+	  if (archive.Serialize(*this) == elle::StatusError)
+	    escape("unable to serialize the object");
+
+	  // wrap the archive.
+	  if (region.Wrap(reinterpret_cast<const elle::Byte*>(
+			    archive.contents),
+			  archive.size) == elle::StatusError)
+	    escape("unable to wrap the archive in a region");
 
 	  // write the file's content.
 	  if (elle::File::Write(file, region) == elle::StatusError)
