@@ -51,11 +51,7 @@ namespace elle
 
 	  UnitMilliseconds,
 	  UnitSeconds,
-	  UnitMinutes,
-	  UnitHours,
-	  UnitDays,
-	  UnitMonths,
-	  UnitYears
+	  UnitMinutes
 	};
 
       //
