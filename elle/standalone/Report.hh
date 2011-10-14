@@ -121,7 +121,7 @@ namespace elle
       ///
       /// note that everything is kept simple to prevent relying on
       /// other functionalities on the library. for instance the time
-      /// is represented as a String rather that a Time object.
+      /// is represented as a String rather than a Time object.
       ///
       struct Entry
       {
