@@ -47,7 +47,7 @@ namespace lune
   /// especially when data is added in a single sequential manner leading
   /// to blocks getting filled and split.
   ///
-  const elle::Real		Descriptor::Contention = 0.7;
+  const elle::Real		Descriptor::Contention = 0.5;
 
   ///
   /// this constant defines the bound which, once reached, implies
