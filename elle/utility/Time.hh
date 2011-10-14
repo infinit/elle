@@ -28,6 +28,11 @@
 #include <elle/idiom/Close.hh>
 # include <QDateTime>
 # include <ctime>
+
+# if INFINIT_WIN32
+#  include <windows.h>
+# endif
+
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -66,6 +71,11 @@ namespace elle
       Status		Set(const ::time_t&);
       Status		Set(const ::QDateTime&);
 
+#if INFINIT_WIN32
+      Status		Get(::FILETIME&) const;
+      Status		Set(const ::FILETIME&);
+#endif
+
       //
       // interfaces
       //
@@ -92,14 +102,7 @@ namespace elle
       //
       // attributes
       //
-      Natural16		millisecond;
-      Natural8		second;
-      Natural8		minute;
-      Natural8		hour;
-
-      Natural8		day;
-      Natural8		month;
-      Natural16		year;
+      Natural64		millisecond; ///< the number of msecs since Epoch UTC
     };
 
   }
