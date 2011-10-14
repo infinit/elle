@@ -36,13 +36,19 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class is declared in order to allow specialization, especially
+    /// Quill<>.
     ///
     template <typename... T>
     class Quill;
 
     ///
-    /// XXX leaf node
+    /// this class represents a tree's leaf node. such an element basically
+    /// contains a set of inlets referencing the child nodules.
+    ///
+    /// note that since the block size of the nodules can be configured,
+    /// the internal data structure is hierachical in order to handle
+    /// blocks with thousand entries.
     ///
     template <typename V>
     class Quill<V>:
@@ -143,6 +149,7 @@ namespace nucleus
       elle::Status		Maiden(typename V::K&) const;
       elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
+      elle::Status		Check() const;
 
       // dumpable
       elle::Status		Dump(const elle::Natural32 = 0) const;

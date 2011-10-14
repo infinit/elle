@@ -79,7 +79,13 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method takes the given nodule _right_ and moves inlets to the
+    /// current nodule in order to transfer an amount equal or greater that
+    /// size bytes.
+    ///
+    /// note that the _right_ nodule is supposed to contain higher keys
+    /// so that the inlets from the current nodule with the highest keys
+    /// are moved to _right_ in order to maintain consistency.
     ///
     template <typename V>
     template <typename T>
@@ -153,7 +159,11 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method does the opposite of Export(), moving at least _size_
+    /// bytes of inlets from the _right_ nodule to the current one.
+    ///
+    /// note that the inlets with the lowest keys are moved in order to
+    /// maintain consistency.
     ///
     template <typename V>
     template <typename T>
@@ -231,7 +241,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method dumps the nodule.
     ///
     template <typename V>
     elle::Status	Nodule<V>::Dump(const elle::Natural32	margin)

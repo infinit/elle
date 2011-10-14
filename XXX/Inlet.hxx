@@ -21,7 +21,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// default constructor.
     ///
     template <typename V,
 	      typename T>
@@ -34,7 +34,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// object-specific constructor.
     ///
     template <typename V,
 	      typename T>
@@ -49,7 +49,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// address-specific constructor.
     ///
     template <typename V,
 	      typename T>
@@ -64,7 +64,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// destructor.
     ///
     template <typename V,
 	      typename T>
@@ -76,7 +76,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method dumps the inlet.
     ///
     template <typename V,
 	      typename T>

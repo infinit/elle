@@ -29,7 +29,7 @@ namespace nucleus
 //
 
 ///
-/// XXX
+/// this macro-function loads a block.
 ///
 #define QuillLoad(_object_, _element_)					\
   if (_object_->_element_ != Address::Null)				\
@@ -46,7 +46,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// default constructor.
     ///
     template <typename V>
     Quill<V>::Quill():
@@ -55,7 +55,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// specific constructor.
     ///
     template <typename V>
     Quill<V>::Quill(const elle::Callback<
@@ -77,7 +77,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// destructor.
     ///
     template <typename V>
     Quill<V>::~Quill()
@@ -104,7 +104,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method creates a quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Create()
@@ -121,7 +121,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method inserts a value in the quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Insert(const typename V::K&	key,
@@ -145,7 +145,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method inserts an inlet in the quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Insert(I*			inlet)
@@ -182,7 +182,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method deletes an entry from the quill, given an iterator.
     ///
     template <typename V>
     elle::Status	Quill<V>::Delete(
@@ -215,7 +215,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method deletes a value from the quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Delete(V*			value)
@@ -236,7 +236,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method deletes a key from the quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Delete(const typename V::K&	key)
@@ -257,7 +257,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method returns true if the given key exists in the quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Exist(const typename V::K&	key)
@@ -272,7 +272,11 @@ namespace nucleus
     }
 
     ///
-    /// XXX 
+    /// this method returns an iterator on the inlet responsible for
+    /// the given key.
+    ///
+    /// note that contrary to Locate(), Lookup() does not look for the
+    /// exact key but for the key just greater than the given one.
     ///
     template <typename V>
     elle::Status	Quill<V>::Lookup(
@@ -303,7 +307,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX lookup
+    /// this method returns the inlet responsible for the given key.
     ///
     template <typename V>
     elle::Status	Quill<V>::Lookup(const typename V::K&	key,
@@ -324,7 +328,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX lookup
+    /// this method returns the value responsible for the given key.
     ///
     template <typename V>
     elle::Status	Quill<V>::Lookup(const typename V::K&	key,
@@ -348,7 +352,8 @@ namespace nucleus
     }
 
     ///
-    /// XXX locate
+    /// this method returns an iterator on the inlet associated with
+    /// the given key.
     ///
     template <typename V>
     elle::Status	Quill<V>::Locate(
@@ -365,7 +370,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX locate
+    /// this method returns the inlet associated with the given key.
     ///
     template <typename V>
     elle::Status	Quill<V>::Locate(const typename V::K&	key,
@@ -386,7 +391,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX locate
+    /// this method returns the value associated with the given key.
     ///
     template <typename V>
     elle::Status	Quill<V>::Locate(const typename V::K&	key,
@@ -410,7 +415,8 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method splits the current quill and returns in the given
+    /// _right_ variable the newly created quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Split(Quill<V>*&		right)
@@ -445,7 +451,8 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method takes the current quill and the given one and merges
+    /// them into a single one i.e the current one.
     ///
     template <typename V>
     elle::Status	Quill<V>::Merge(Quill<V>*		quill)
@@ -485,16 +492,12 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method returns the mayor key i.e the key with the higest value.
     ///
     template <typename V>
     elle::Status	Quill<V>::Mayor(typename V::K&		mayor) const
     {
       enter();
-
-      // XXX
-      if (this->container.empty())
-	escape("XXX");
 
       // return the mayor key.
       mayor = this->container.rbegin()->first;
@@ -503,7 +506,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method returns the maiden key i.e the single remaining key.
     ///
     template <typename V>
     elle::Status	Quill<V>::Maiden(typename V::K&		maiden) const
@@ -521,7 +524,9 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method returns the quill responsible for the given key.
+    ///
+    /// since the current nodule is a quill, it is its responsability.
     ///
     template <typename V>
     elle::Status	Quill<V>::Search(const typename V::K&,
@@ -535,12 +540,37 @@ namespace nucleus
       leave();
     }
 
+    ///
+    /// this method checks the quill's consistency.
+    ///
+    template <typename V>
+    elle::Status	Quill<V>::Check() const
+    {
+      typename Quill<V>::Scoutor::Forward	scoutor;
+
+      enter();
+
+      // go through the inlets.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  Quill<V>::I*				inlet = scoutor->second;
+
+	  // check the key.
+	  if (inlet->key != scoutor->first)
+	    escape("invalid key");
+	}
+
+      leave();
+    }
+
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method dumps the quill.
     ///
     template <typename V>
     elle::Status	Quill<V>::Dump(const elle::Natural32	margin)
@@ -664,17 +694,17 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this variable defines the quills' initial footprint.
     ///
     template <typename V>
-    elle::Natural32		Quill<V>::Footprint;
+    elle::Natural32	Quill<V>::Footprint;
 
 //
 // ---------- static methods --------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method initializes the quills.
     ///
     template <typename V>
     elle::Status	Quill<V>::Initialize()
@@ -703,7 +733,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method cleans the quills.
     ///
     template <typename V>
     elle::Status	Quill<V>::Clean()

@@ -132,6 +132,8 @@ namespace nucleus
       elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
 
+      elle::Status		Check() const;
+
       elle::Status		Load(const Address&,
 				     Nodule<V>*&);
       elle::Status		Unload(const Address&,

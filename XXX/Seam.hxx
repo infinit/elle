@@ -27,7 +27,7 @@ namespace nucleus
 //
 
 ///
-/// XXX
+/// this macro-function loads a block.
 ///
 #define SeamLoad(_object_, _element_)					\
   if (_object_->_element_ != Address::Null)				\
@@ -44,7 +44,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// default constructor.
     ///
     template <typename V>
     Seam<V>::Seam():
@@ -53,7 +53,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// specific constructor.
     ///
     template <typename V>
     Seam<V>::Seam(const elle::Callback<
@@ -75,7 +75,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// destructor.
     ///
     template <typename V>
     Seam<V>::~Seam()
@@ -102,7 +102,7 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method creates a seam.
     ///
     template <typename V>
     elle::Status	Seam<V>::Create()
@@ -119,7 +119,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method inserts the given nodule in the seam.
     ///
     template <typename V>
     elle::Status	Seam<V>::Insert(const typename V::K&	key,
@@ -143,7 +143,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method inserts the given inlet in the seam.
     ///
     template <typename V>
     elle::Status	Seam<V>::Insert(I*			inlet)
@@ -184,7 +184,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method deletes the inlet referenced by the given iterator.
     ///
     template <typename V>
     elle::Status	Seam<V>::Delete(
@@ -217,7 +217,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method deletes the given nodule from the seam.
     ///
     template <typename V>
     elle::Status	Seam<V>::Delete(Nodule<V>*		nodule)
@@ -238,7 +238,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method deletes the given key from the seam.
     ///
     template <typename V>
     elle::Status	Seam<V>::Delete(const typename V::K&	key)
@@ -259,7 +259,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method returns true if the given key exists.
     ///
     template <typename V>
     elle::Status	Seam<V>::Exist(const typename V::K&	key)
@@ -274,7 +274,12 @@ namespace nucleus
     }
 
     ///
-    /// XXX 
+    /// this method returns an iterator on the inlet responsible for the
+    /// given key.
+    ///
+    /// note that contrary to Locate(), the Lookup() methods do not look
+    /// for an exact match but instead return the inlet with the key
+    /// immediately greater than the given key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Lookup(
@@ -305,7 +310,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX lookup
+    /// this method returns the inlet responsible for the given key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Lookup(const typename V::K&	key,
@@ -326,7 +331,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX lookup
+    /// this method returns the nodule responsible for the given key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Lookup(const typename V::K&	key,
@@ -350,7 +355,8 @@ namespace nucleus
     }
 
     ///
-    /// XXX locate
+    /// this method returns an iterator on the inlet associated with
+    /// the given key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Locate(
@@ -367,7 +373,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX locate
+    /// this method returns the inlet associated with the given key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Locate(const typename V::K&	key,
@@ -388,7 +394,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX locate
+    /// this method returns the nodule associated with the given key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Locate(const typename V::K&	key,
@@ -412,7 +418,8 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method takes the ancient key _from_, locates the inlet with
+    /// this key and updates it with its new key i.e _to_.
     ///
     template <typename V>
     elle::Status	Seam<V>::Update(const typename V::K&	from,
@@ -460,7 +467,9 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method is similar to Update() but also takes care of updating
+    /// the parent nodule, if present, up to the tree's root nodule if
+    /// necessary.
     ///
     template <typename V>
     elle::Status	Seam<V>::Propagate(const typename V::K&	from,
@@ -500,7 +509,8 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method splits the current seam and returns a newly allocated
+    /// seam i.e _right_.
     ///
     template <typename V>
     elle::Status	Seam<V>::Split(Seam<V>*&		right)
@@ -535,7 +545,8 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method takes the given seam and merges its inlets with the
+    /// current one.
     ///
     template <typename V>
     elle::Status	Seam<V>::Merge(Seam<V>*			seam)
@@ -575,16 +586,13 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this method returns the current seam's mayor key i.e the higehst
+    /// key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Mayor(typename V::K&		mayor) const
     {
       enter();
-
-      // XXX
-      if (this->container.empty())
-	escape("XXX");
 
       // return the mayor key.
       mayor = this->container.rbegin()->first;
@@ -593,7 +601,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method returns the maiden key i.e the only remaining key.
     ///
     template <typename V>
     elle::Status	Seam<V>::Maiden(typename V::K&		maiden) const
@@ -611,7 +619,11 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method returns the quill responsible for the given key.
+    ///
+    /// since the current nodule is not a quill, the request is forwarded
+    /// to the child nodule which is responsible for the given key until
+    /// the last level---i.e the quill---is reached.
     ///
     template <typename V>
     elle::Status	Seam<V>::Search(const typename V::K&	key,
@@ -639,12 +651,55 @@ namespace nucleus
       leave();
     }
 
+    ///
+    /// this method checks the seam's consistency by making sure the child
+    /// nodules' mayor key is the one being referenced in the inlets.
+    ///
+    template <typename V>
+    elle::Status	Seam<V>::Check() const
+    {
+      typename Seam<V>::Scoutor::Forward	scoutor;
+
+      enter();
+
+      // go through the inlets.
+      for (scoutor = this->container.begin();
+	   scoutor != this->container.end();
+	   scoutor++)
+	{
+	  Seam<V>::I*				inlet = scoutor->second;
+	  typename V::K				mayor;
+
+	  // check the key.
+	  if (inlet->key != scoutor->first)
+	    escape("invalid key");
+
+	  // load the value block.
+	  SeamLoad(inlet, value);
+
+	  // retrieve the child's mauor key.
+	  if (inlet->_value->Mayor(mayor) == elle::StatusError)
+	    escape("unable to retrieve the mayor key");
+
+	  // compare the mayor key with the inlet's reference.
+	  if (inlet->key != mayor)
+	    escape("the child nodule's mayor key differs from its "
+		   "reference");
+
+	  // trigger the check on the child nodule.
+	  if (inlet->_value->Check() == elle::StatusError)
+	    escape("unable to check the child nodule's consistency");
+	}
+
+      leave();
+    }
+
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method dumps the seam.
     ///
     template <typename V>
     elle::Status	Seam<V>::Dump(const elle::Natural32	margin)
@@ -768,17 +823,17 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this variable defines the seams' initial footprint.
     ///
     template <typename V>
-    elle::Natural32		Seam<V>::Footprint;
+    elle::Natural32	Seam<V>::Footprint;
 
 //
 // ---------- static methods --------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// this method initializes the seams.
     ///
     template <typename V>
     elle::Status	Seam<V>::Initialize()
@@ -807,7 +862,7 @@ namespace nucleus
     }
 
     ///
-    /// XXX
+    /// this method cleans the seams.
     ///
     template <typename V>
     elle::Status	Seam<V>::Clean()

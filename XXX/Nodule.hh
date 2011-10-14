@@ -46,7 +46,11 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class abstract the notion of tree node in a nodule.
+    ///
+    /// every nodule therefore encapsulates the type i.e seam or quill
+    /// along with common information such as the addresses of the parent
+    /// and neighbour nodules.
     ///
     template <typename V>
     class Nodule:
@@ -104,6 +108,7 @@ namespace nucleus
       virtual elle::Status	Maiden(typename V::K&) const = 0;
       virtual elle::Status	Search(const typename V::K&,
 				       Quill<V>*&) = 0;
+      virtual elle::Status	Check() const = 0;
 
       //
       // interfaces

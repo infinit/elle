@@ -36,7 +36,19 @@ namespace nucleus
 //
 
     ///
-    /// XXX internal nodule
+    /// this generic class makes it possible to specialize Seam, especially
+    /// for Seam<>.
+    ///
+    template <typename... T>
+    class Seam;
+
+    ///
+    /// this class represents an internal tree node. such a node contains
+    /// a data structure containing inlets which reference sub-nodules.
+    ///
+    /// note that since the block size of the nodules can be configured,
+    /// the internal data structure is hierachical in order to handle
+    /// blocks with thousand entries.
     ///
     template <typename V>
     class Seam<V>:
@@ -142,6 +154,7 @@ namespace nucleus
       elle::Status		Maiden(typename V::K&) const;
       elle::Status		Search(const typename V::K&,
 				       Quill<V>*&);
+      elle::Status		Check() const;
 
       // dumpable
       elle::Status		Dump(const elle::Natural32 = 0) const;

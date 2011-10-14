@@ -29,13 +29,23 @@ namespace nucleus
 //
 
     ///
-    /// XXX
+    /// this class represents a nodule item being for seams or quills.
     ///
-    /// XXX Address::Some est utilisee pour avoir un footprint equivalent
-    ///     a une adresse valide; Address::Null a une petite empreinte
-    ///     a noter que ceci est possible car un inlet aura toujours une
-    ///     addresse differente de null. ce qui n'est poas le cas de nodule
-    ///     pour parent, left, right.
+    /// an inlet therefore embeds the item's key along with the address
+    /// of the value whose type depends upon the nodule's nature. indeed,
+    /// while seams' entries reference other nodules, i.e sub-seams or quills,
+    /// quills' entries reference the final value.
+    ///
+    /// as said above, every inlet embeds the address of the value object.
+    /// note however that should the inlet just be created (common case),
+    /// the address would be null, hence empty. unfortunately, the address
+    /// will eventually be computed. since the size of the address differs
+    /// between its creation and its sealing, the footprint calculation is
+    /// biaised and thus incorrect.
+    ///
+    /// in order to circumvent this issue, the initial empty address is set
+    /// to Address::Some, whose role is to provide an address with a valid
+    /// size.
     ///
     template <typename V,
 	      typename T>

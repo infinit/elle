@@ -570,7 +570,6 @@ namespace nucleus
 	  // load the parent nodule, if possible.
 	  PorcupineLoad(_current, parent);
 
-	  /* XXX
 	  // operate depending of several configurations, ranging from
 	  // the easiest or more convenient to the less optimised.
 	  if (_current->_parent == NULL) // XXX parent
@@ -591,7 +590,7 @@ namespace nucleus
 	      if (this->Shrink() == elle::StatusError)
 		escape("unable to shrink the tree");
 	    }
-	    else */if ((_left != NULL) &&
+	  else if ((_left != NULL) &&
 		   (_left->_state == StateDirty) &&
 		   (_left->_parent == _current->_parent) && //XXX parent
 		   ((_left->_footprint.size +
@@ -610,7 +609,6 @@ namespace nucleus
 	      //
 	      goto _merge_left;
 	    }
-	  /* XXX
 	  else if ((_right != NULL) &&
 		   (_right->_state == StateDirty) &&
 		   (_right->_parent == _current->_parent) && //XXX parent
@@ -625,7 +623,6 @@ namespace nucleus
 	      //
 	      goto _merge_right;
 	    }
-	  */
 	  else if ((_left != NULL) &&
 		   (_left->_parent == _current->_parent) && //XXX parent
 		   ((_left->_footprint.size +
@@ -702,17 +699,21 @@ namespace nucleus
 		      // update the parent so that the left nodule gets
 		      // referenced with the proper key.
 		      //
-		      // note however that the mayor key does not need
-		      // propagation because the highest index key has not
-		      // changed through merging.
-		      if (_left->_parent->Update(
+		      // note that although the mayor key would theoretically
+		      // would not need propagation because the highest index
+		      // key has not changed through merging, the fact that
+		      // that parent Delete()ing has been performed above
+		      // may have updated the parent key to a small one :(
+		      //
+		      // thus propagation is actually required for ensuring
+		      // the tree's consistency.
+		      if (_left->_parent->Propagate(
 			    mayor.left.ancient,
 			    mayor.left.recent) == elle::StatusError)
 			escape("unable to update the parent nodule");
 		    }
 		}
 	    }
-	  /*
 	  else if ((_right != NULL) &&
 		   (_right->_parent == _current->_parent) && //XXX parent
 		   ((_current->_footprint.size -
@@ -766,7 +767,6 @@ namespace nucleus
 		  // the already existing ones in the right nodule.
 		}
 	    }
-	  */
 	  else
 	    {
 	      //
@@ -812,40 +812,6 @@ namespace nucleus
 		escape("unable to update the parent nodule");
 	    }
 	}
-
-      leave();
-    }
-
-    ///
-    /// this method is used for retrieving the quill responsible for the
-    /// given key.
-    ///
-    /// this method is widely used being for inserting, locating or
-    /// deleting entries.
-    ///
-    template <typename V>
-    elle::Status	Porcupine<V>::Search(const typename V::K& key,
-					     Quill<V>*&		quill)
-    {
-      enter();
-
-      // if the tree is non-existent, create a first level by making it grow.
-      //
-      // note that this may occur at the very beginning but also after
-      // the tree has been emptied.
-      if (this->height == 0)
-	{
-	  // make the tree grow.
-	  if (this->Grow() == elle::StatusError)
-	    escape("unable to make the tree grow");
-	}
-
-      // load the root nodule.
-      PorcupineLoad(this, root);
-
-      // trigger the search method on the root nodule.
-      if (this->_root->Search(key, quill) == elle::StatusError)
-	escape("unable to locate the quill for this key");
 
       leave();
     }
@@ -956,9 +922,6 @@ namespace nucleus
       // load the root nodule.
       PorcupineLoad(this, root);
 
-      // XXX
-      //this->Dump();
-
       // note that since the Shrink() method proceeds only for trees
       // with a two-level heigh and more, the root nodule cannot be anything
       // but a seam.
@@ -976,14 +939,12 @@ namespace nucleus
       root = inlet->value;
       _root = inlet->_value;
 
-      /* XXX
       // XXX unload the inlet's data though deleting it will simply unload
       //  the value
       inlet->_value = NULL;
 
       // delete the seam.
       delete seam;
-      */
 
       // finally, set the new root nodule.
       this->root = root;
@@ -999,9 +960,60 @@ namespace nucleus
       // decrease the tree's height.
       this->height--;
 
-      // XXX
-      //this->Dump();
-      //exit(1);
+      leave();
+    }
+
+    ///
+    /// this method is used for retrieving the quill responsible for the
+    /// given key.
+    ///
+    /// this method is widely used being for inserting, locating or
+    /// deleting entries.
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Search(const typename V::K& key,
+					     Quill<V>*&		quill)
+    {
+      enter();
+
+      // if the tree is non-existent, create a first level by making it grow.
+      //
+      // note that this may occur at the very beginning but also after
+      // the tree has been emptied.
+      if (this->height == 0)
+	{
+	  // make the tree grow.
+	  if (this->Grow() == elle::StatusError)
+	    escape("unable to make the tree grow");
+	}
+
+      // load the root nodule.
+      PorcupineLoad(this, root);
+
+      // trigger the search method on the root nodule.
+      if (this->_root->Search(key, quill) == elle::StatusError)
+	escape("unable to locate the quill for this key");
+
+      leave();
+    }
+
+    ///
+    /// this method is used for checking the tree's consistency by verifying
+    /// that every inlet's reference key is equivalent to the child nodule's
+    /// mayor key.
+    ///
+    template <typename V>
+    elle::Status	Porcupine<V>::Check() const
+    {
+      enter();
+
+      // load the parent nodule
+      PorcupineLoad(this, root)
+	{
+	  // trigger the check method on the root nodule.
+	  if (this->_root->Check() == elle::StatusError)
+	    escape("unable to check the root nodule's consistency");
+	}
 
       leave();
     }

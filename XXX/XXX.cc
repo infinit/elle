@@ -41,7 +41,7 @@ int main(int argc, char** argv)
   nucleus::Porcupine<nucleus::Catalog>* p =
     new nucleus::Porcupine<nucleus::Catalog>;
 
-  const int n = 200;
+  const int n = 90000;
 
   for (int i = 0; i < n; i++)
     {
@@ -56,6 +56,9 @@ int main(int argc, char** argv)
       if (p->Add(name, new nucleus::Catalog) == elle::StatusError)
 	fail("XXX");
     }
+
+  if (p->Check() == elle::StatusError)
+    fail("XXX");
 
   //p->Dump();
 
@@ -75,6 +78,9 @@ int main(int argc, char** argv)
 	fail("XXX");
     }
 
+  if (p->Check() == elle::StatusError)
+    fail("XXX");
+
   //p->Dump();
 
   for (int i = 0; i < n; i++)
@@ -86,10 +92,14 @@ int main(int argc, char** argv)
       sprintf(name, "%u", i);
 
       printf("-------------< %s\n", name);
+      // p->Dump();
 
       if (p->Remove(name) == elle::StatusError)
 	fail("XXX");
     }
+
+  if (p->Check() == elle::StatusError)
+    fail("XXX");
 
   p->Dump();
 
