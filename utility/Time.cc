@@ -90,10 +90,12 @@ namespace elle
     {
       enter();
 
-      uint64_t time = this->millisecond * 10;
+      ULARGE_INTEGER    value;
 
-      ft.dwLowDateTime  = time & 0xffffffff;
-      ft.dwHighDateTime = time >> 32;
+      value.QuadPart = this->millisecond * 10;
+
+      ft.dwLowDateTime  = value.LowPart;
+      ft.dwHighDateTime = value.HighPart;
 
       leave();
     }
@@ -132,9 +134,12 @@ namespace elle
     {
       enter();
 
-      uint64_t time = ft.dwLowDateTime |
-        (static_cast<uint64_t> (ft.dwHighDateTime) << 32);
-      this->millisecond = time / 1000;
+      ULARGE_INTEGER    value;
+
+      value.LowPart = ft.dwLowDateTime;
+      value.HighPart = ft.dwHighDateTime;
+
+      this->millisecond = value.QuadPart / 10;
 
       leave();
     }
