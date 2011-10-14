@@ -92,7 +92,8 @@ namespace elle
 
       ULARGE_INTEGER    value;
 
-      value.QuadPart = this->millisecond * 10;
+      // quad part is in 100ns
+      value.QuadPart = this->millisecond * 10000;
 
       ft.dwLowDateTime  = value.LowPart;
       ft.dwHighDateTime = value.HighPart;
@@ -139,7 +140,7 @@ namespace elle
       value.LowPart = ft.dwLowDateTime;
       value.HighPart = ft.dwHighDateTime;
 
-      this->millisecond = value.QuadPart / 10;
+      this->millisecond = value.QuadPart / 10000;
 
       leave();
     }
