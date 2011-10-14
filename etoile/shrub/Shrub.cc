@@ -194,10 +194,11 @@ namespace etoile
     {
       Riffle*			riffle;
       path::Route::Scoutor	scoutor;
-      elle::Duration	lifespan(elle::Duration::UnitSeconds,
-				 Infinit::Configuration.shrub.lifespan);
-      elle::Time	current;
-      elle::Time	threshold;
+      elle::Duration		lifespan(
+        elle::Duration::UnitSeconds,
+	Infinit::Configuration.shrub.lifespan);
+      elle::Time		current;
+      elle::Time		threshold;
 
       enter();
 
