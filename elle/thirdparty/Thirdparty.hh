@@ -21,10 +21,4 @@ namespace elle
   }
 }
 
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <elle/thirdparty/bpt.h>
-
 #endif

@@ -49,6 +49,7 @@ namespace elle
 	{
 	  UnitUnknown,
 
+	  UnitNanoseconds,
 	  UnitMilliseconds,
 	  UnitSeconds,
 	  UnitMinutes,
