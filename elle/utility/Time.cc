@@ -92,8 +92,10 @@ namespace elle
 
       ULARGE_INTEGER    value;
 
-      // quad part is in 100ns
-      value.QuadPart = this->millisecond * 10000;
+      // quad part is in 100ns, since 1601-01-01 ... fuck ms
+      value.QuadPart = this->millisecond * 10000
+        + ((369ULL * 365 + 89) * 24 * 60 * 60 * 1000 * 1000 * 10);
+      //   y         d     bis   h    m    s    ms     us     100ns
 
       ft.dwLowDateTime  = value.LowPart;
       ft.dwHighDateTime = value.HighPart;
