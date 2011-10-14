@@ -25,6 +25,8 @@
 
 #include <elle/utility/Duration.hh>
 
+#include <elle/system/Platform.hh>
+
 #include <elle/idiom/Close.hh>
 # include <QDateTime>
 # include <ctime>

@@ -18,10 +18,10 @@
 #include <elle/standalone/Report.hh>
 
 #include <elle/idiom/Close.hh>
-# include <pthread.h>
 
-# include <time.h>
+# include <pthread.h>
 # include <ctime>
+
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -90,10 +90,10 @@ namespace elle
     {
       enter();
 
-      uint64_t time = this->milliseconds * 10;
+      uint64_t time = this->millisecond * 10;
 
-      fd.dwLowDateTime  = time & 0xffffffff;
-      fd.dwHighDateTime = time >> 32;
+      ft.dwLowDateTime  = time & 0xffffffff;
+      ft.dwHighDateTime = time >> 32;
 
       leave();
     }
@@ -128,12 +128,13 @@ namespace elle
     ///
     /// This method converts a FILETIME into a Time object.
     ///
-    Status              Time::Set(const ::FILETIME&		ft) const
+    Status              Time::Set(const ::FILETIME&		ft)
     {
       enter();
 
-      uint64_t time = fd.dwLowDateTime | ((uint64_t)fd.dwHighDateTime << 32);
-      this->milliseconds = time / 1000;
+      uint64_t time = ft.dwLowDateTime |
+        (static_cast<uint64_t> (ft.dwHighDateTime) << 32);
+      this->millisecond = time / 1000;
 
       leave();
     }
