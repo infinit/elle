@@ -50,6 +50,7 @@ namespace elle
 	  UnitUnknown,
 
 	  UnitNanoseconds,
+	  UnitMicroseconds,
 	  UnitMilliseconds,
 	  UnitSeconds,
 	  UnitMinutes
