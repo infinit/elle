@@ -51,7 +51,8 @@ namespace elle
 //
 
     ///
-    /// this class represents a timestamp.
+    /// this class represents a timestamp through the number of milliseconds
+    /// since epoch.
     ///
     class Time:
       public Object
@@ -104,7 +105,7 @@ namespace elle
       //
       // attributes
       //
-      Natural64		millisecond; ///< the number of msecs since Epoch UTC
+      Natural64		millisecond;
     };
 
   }
