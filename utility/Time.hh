@@ -51,7 +51,7 @@ namespace elle
 //
 
     ///
-    /// this class represents a timestamp through the number of milliseconds
+    /// this class represents a timestamp through the number of nanoseconds
     /// since epoch.
     ///
     class Time:
@@ -69,9 +69,9 @@ namespace elle
       Status		Current();
 
       Status		Get(::time_t&) const;
-      Status		Get(::QDateTime&) const;
-
       Status		Set(const ::time_t&);
+
+      Status		Get(::QDateTime&) const;
       Status		Set(const ::QDateTime&);
 
 #if INFINIT_WIN32
@@ -105,7 +105,7 @@ namespace elle
       //
       // attributes
       //
-      Natural64		millisecond;
+      Natural64		nanoseconds;
     };
 
   }

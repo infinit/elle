@@ -37,7 +37,7 @@ namespace elle
     /// the constructor.
     ///
     Time::Time():
-      millisecond(0)
+      nanoseconds(0)
     {
     }
 
@@ -52,8 +52,8 @@ namespace elle
     {
       enter();
 
-      // gets the number of milliseconds since Epoch UTC
-      this->millisecond = ::QDateTime::currentMSecsSinceEpoch();
+      // gets the number of nanoseconds since Epoch UTC
+      this->nanoseconds = ::QDateTime::currentMSecsSinceEpoch() * 1000000;
 
       leave();
     }
@@ -65,7 +65,20 @@ namespace elle
     {
       enter();
 
-      time = this->millisecond / 1000;
+      // set the time i.e in seconds.
+      time = this->nanoseconds / 1000000000;
+
+      leave();
+    }
+
+    ///
+    /// this method converts a time_t into a time object.
+    ///
+    Status		Time::Set(const ::time_t&		time)
+    {
+      enter();
+
+      this->nanoseconds = time * 1000000000;
 
       leave();
     }
@@ -77,7 +90,21 @@ namespace elle
     {
       enter();
 
-      dt.setMSecsSinceEpoch(this->millisecond);
+      // set the date/time.
+      dt.setMSecsSinceEpoch(this->nanoseconds / 1000000);
+
+      leave();
+    }
+
+    ///
+    /// this method converts a QDateTime into a time object.
+    ///
+    Status		Time::Set(const ::QDateTime&		dt)
+    {
+      enter();
+
+      // set the attributes.
+      this->nanoseconds = dt.toMSecsSinceEpoch() * 1000000;
 
       leave();
     }
@@ -93,7 +120,7 @@ namespace elle
       ULARGE_INTEGER    value;
 
       // quad part is in 100ns, since 1601-01-01 ... fuck ms
-      value.QuadPart = this->millisecond * 10000
+      value.QuadPart = this->nanoseconds / 100
         + ((369ULL * 365 + 89) * 24 * 60 * 60 * 1000 * 1000 * 10);
       //   y         d     bis   h    m    s    ms     us     100ns
 
@@ -102,34 +129,7 @@ namespace elle
 
       leave();
     }
-#endif
 
-    ///
-    /// this method converts a time_t into a time object.
-    ///
-    Status		Time::Set(const ::time_t&		time)
-    {
-      enter();
-
-      this->millisecond = time * 1000;
-
-      leave();
-    }
-
-    ///
-    /// this method converts a QDateTime into a time object.
-    ///
-    Status		Time::Set(const ::QDateTime&		dt)
-    {
-      enter();
-
-      // set the attributes.
-      this->millisecond = dt.toMSecsSinceEpoch();
-
-      leave();
-    }
-
-#if INFINIT_WIN32
     ///
     /// This method converts a FILETIME into a Time object.
     ///
@@ -142,7 +142,7 @@ namespace elle
       value.LowPart = ft.dwLowDateTime;
       value.HighPart = ft.dwHighDateTime;
 
-      this->millisecond = value.QuadPart / 10000;
+      this->nanoseconds = value.QuadPart * 100;
 
       leave();
     }
@@ -159,7 +159,7 @@ namespace elle
     {
       enter();
 
-      if (this->millisecond != element.millisecond)
+      if (this->nanoseconds != element.nanoseconds)
         false();
 
       true();
@@ -172,7 +172,7 @@ namespace elle
     {
       enter();
 
-      if (this->millisecond < element.millisecond)
+      if (this->nanoseconds < element.nanoseconds)
 	true();
 
       false();
@@ -185,7 +185,7 @@ namespace elle
     {
       enter();
 
-      if (this->millisecond > element.millisecond)
+      if (this->nanoseconds > element.nanoseconds)
 	true();
 
       false();
@@ -198,7 +198,7 @@ namespace elle
     {
       Time              time;
 
-      time.millisecond = this->millisecond + element.millisecond;
+      time.nanoseconds = this->nanoseconds + element.nanoseconds;
 
       return (time);
     }
@@ -210,7 +210,7 @@ namespace elle
     {
       Time              time;
 
-      time.millisecond = this->millisecond - element.millisecond;
+      time.nanoseconds = this->nanoseconds - element.nanoseconds;
 
       return (time);
     }
@@ -227,35 +227,53 @@ namespace elle
       // depending on the unit.
       switch (duration.unit)
 	{
+	case Duration::UnitNanoseconds:
+	  {
+	    // add the value.
+	    result.nanoseconds += duration.value;
+
+	    break;
+	  }
+	case Duration::UnitMicroseconds:
+	  {
+	    // add the value.
+	    result.nanoseconds += duration.value * 1000;
+
+	    break;
+	  }
 	case Duration::UnitMilliseconds:
 	  {
 	    // add the value.
-            result.millisecond += duration.value;
+            result.nanoseconds += duration.value * 1000000;
 
 	    break;
 	  }
 	case Duration::UnitSeconds:
 	  {
 	    // add the value.
-            result.millisecond += duration.value * 1000;
+            result.nanoseconds += duration.value * 1000000000LU;
 
 	    break;
 	  }
 	case Duration::UnitMinutes:
 	  {
 	    // add the value.
-            result.millisecond += duration.value * 1000 * 60;
+            result.nanoseconds += duration.value * 1000000000LU * 60;
 
 	    break;
 	  }
 	case Duration::UnitUnknown:
 	  {
 	    log("unknown duration unit");
-            break;
+
+	    goto _return;
 	  }
 	}
 
+    _return:
+      // release.
       release();
+
       return (result);
     }
 
@@ -271,24 +289,38 @@ namespace elle
       // depending on the unit.
       switch (duration.unit)
 	{
+	case Duration::UnitNanoseconds:
+	  {
+	    // add the value.
+            result.nanoseconds -= duration.value;
+
+	    break;
+	  }
+	case Duration::UnitMicroseconds:
+	  {
+	    // add the value.
+            result.nanoseconds -= duration.value * 1000;
+
+	    break;
+	  }
 	case Duration::UnitMilliseconds:
 	  {
 	    // add the value.
-            result.millisecond -= duration.value;
+            result.nanoseconds -= duration.value * 1000000;
 
 	    break;
 	  }
 	case Duration::UnitSeconds:
 	  {
 	    // add the value.
-            result.millisecond -= duration.value * 1000;
+            result.nanoseconds -= duration.value * 1000000000L;
 
 	    break;
 	  }
 	case Duration::UnitMinutes:
 	  {
 	    // add the value.
-            result.millisecond -= duration.value * 1000 * 60;
+            result.nanoseconds -= duration.value * 1000000000 * 60;
 
 	    break;
 	  }
@@ -296,10 +328,13 @@ namespace elle
 	  {
 	    log("unknown duration unit");
 
-            break;
+	    goto _return;
 	  }
 	}
 
+    _return:
+
+      // release.
       release();
 
       return (result);
@@ -320,20 +355,23 @@ namespace elle
     Status		Time::Dump(Natural32			margin) const
     {
       String		alignment(margin, ' ');
-      ::tm *            tm;
-      ::time_t          time;
+      ::tm*		tm;
+      ::time_t		time;
 
       enter();
 
-      time = this->millisecond / 1000;
+      // convert the nanoseconds in a time_t.
+      time = this->nanoseconds / 1000000000;
 
+      // retrieve a _tm_ structure.
       tm = ::gmtime(&time);
 
+      // display the time.
       std::cout << alignment << "[Time] "
                 << (1900 + tm->tm_year) << "-" << (1 + tm->tm_mon)
                 << "-" << (1 + tm->tm_mday) << " "
                 << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec
-                << "." << (this->millisecond % 1000)
+                << "." << (this->nanoseconds % 1000)
                 << std::endl;
 
       leave();
@@ -351,7 +389,7 @@ namespace elle
       enter();
 
       // serialize the internal attributes.
-      if (archive.Serialize(this->millisecond) == StatusError)
+      if (archive.Serialize(this->nanoseconds) == StatusError)
 	escape("unable to serialize the attributes");
 
       leave();
@@ -365,7 +403,7 @@ namespace elle
       enter();
 
       // extract the internal attributes.
-      if (archive.Extract(this->millisecond) == StatusError)
+      if (archive.Extract(this->nanoseconds) == StatusError)
 	escape("unable to extract the attributes");
 
       leave();
