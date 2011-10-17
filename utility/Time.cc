@@ -185,7 +185,7 @@ namespace elle
     {
       enter();
 
-      if (this->millisecond < element.millisecond)
+      if (this->millisecond > element.millisecond)
 	true();
 
       false();
@@ -220,6 +220,8 @@ namespace elle
     {
       Time              result(*this);
 
+      enter();
+
       // depending on the unit.
       switch (duration.unit)
 	{
@@ -247,11 +249,11 @@ namespace elle
 	case Duration::UnitUnknown:
 	  {
 	    log("unknown duration unit");
-
-	    return result;
+            break;
 	  }
 	}
 
+      release();
       return (result);
     }
 
@@ -261,6 +263,8 @@ namespace elle
     Time		Time::operator-(const Duration&		duration)
     {
       Time		result(*this);
+
+      enter();
 
       // depending on the unit.
       switch (duration.unit)
@@ -290,10 +294,11 @@ namespace elle
 	  {
 	    log("unknown duration unit");
 
-	    return result;
+            break;
 	  }
 	}
 
+      release();
       return (result);
     }
 
