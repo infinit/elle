@@ -51,7 +51,8 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enterx(instance(actor));
+      enterx(slab(scope, gear::Scope::Relinquish),
+	     instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -86,6 +87,9 @@ namespace etoile
       if (automaton::Object::Load(*context,
 				  location) == elle::StatusError)
 	escape("unable to load the object");
+
+      // waive the scope.
+      waive(scope);
 
       leave();
     }

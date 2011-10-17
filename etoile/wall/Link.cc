@@ -48,7 +48,8 @@ namespace etoile
       gear::Link*	context;
       gear::Actor*	actor;
 
-      enterx(instance(actor));
+      enterx(slab(scope, gear::Scope::Relinquish),
+	     instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -79,6 +80,9 @@ namespace etoile
       if (automaton::Link::Create(*context) == elle::StatusError)
 	escape("unable to create the link");
 
+      // waive the scope.
+      waive(scope);
+
       leave();
     }
 
@@ -95,7 +99,8 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enterx(instance(actor));
+      enterx(slab(scope, gear::Scope::Relinquish),
+	     instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -130,6 +135,9 @@ namespace etoile
       if (automaton::Link::Load(*context,
 				location) == elle::StatusError)
 	escape("unable to load the link");
+
+      // waive the scope.
+      waive(scope);
 
       leave();
     }

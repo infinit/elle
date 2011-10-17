@@ -161,6 +161,48 @@ namespace etoile
     }
 
     ///
+    /// this method destroys a scope no matter how many actors remain.
+    ///
+    elle::Status	Scope::Annihilate(Scope*		scope)
+    {
+      enter();
+
+      //
+      // otherwise, the scope can be removed.
+      //
+
+      // depending on the scope type.
+      if (scope->chemin == path::Chemin::Null)
+	{
+	  Scope::S::A::Iterator	iterator;
+
+	  //
+	  // in this case the scope is anonymous.
+	  //
+
+	  Scope::Scopes::Anonymous.remove(scope);
+	}
+      else
+	{
+	  Scope::S::O::Iterator	iterator;
+
+	  // find the entry.
+	  if ((iterator =
+	         Scope::Scopes::Onymous.find(scope->chemin)) ==
+	      Scope::Scopes::Onymous.end())
+	    escape("unable to locate the scope associated with the chemin");
+
+	  // erase the entry.
+	  Scope::Scopes::Onymous.erase(iterator);
+	}
+
+      // delete the scope.
+      delete scope;
+
+      leave();
+    }
+
+    ///
     /// this method displays the containers.
     ///
     elle::Status	Scope::Show(const elle::Natural32	margin)
