@@ -1,3 +1,15 @@
+- corriger release des scopes proprement
+
+- faire en sorte que meme lorsque nos serveurs ne fonctionnent pas, les
+  donnees restent accessibles (important). par contre il faut que lorsqu'un
+  user est supprime, il ne puisse plus du tout acceder (invalidate)
+- la self-encryption (qui fait gagner masse de place) devrait etre activee
+  par defaut. et si le mec ne veut pas, il change! cela dit si chaque
+  bloc de donnees contient l'owner ou bien un lien vers l'object, alors
+  ca ne sert a rien car on ne gagnera jamais de place.
+
+- contacter UPMC/Central
+
 - du -sh dans Infinit ne marche pas
 
 - ameliorer le reseau: si Hole n'a pas les donnees et est lance, il
