@@ -301,6 +301,7 @@ namespace elle
 	}
 
       release();
+
       return (result);
     }
 
