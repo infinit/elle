@@ -242,6 +242,8 @@ namespace etoile
     ///
     Scope::~Scope()
     {
+      Scope::A::Scoutor	scoutor;
+
       // delete the context.
       if (this->context != NULL)
 	delete this->context;
@@ -249,6 +251,20 @@ namespace etoile
       // delete the chronicle.
       if (this->chronicle != NULL)
 	delete this->chronicle;
+
+      // release the actors, if some remain.
+      for (scoutor = this->actors.begin();
+	   scoutor != this->actors.end();
+	   scoutor++)
+	{
+	  Actor*	actor = *scoutor;
+
+	  // delete the actor.
+	  delete actor;
+	}
+
+      // clear the actors container.
+      this->actors.clear();
     }
 
 //

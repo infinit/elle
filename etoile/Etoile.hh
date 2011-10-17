@@ -52,6 +52,7 @@ namespace etoile
 #include <etoile/gear/Gear.hh>
 #include <etoile/journal/Journal.hh>
 #include <etoile/miscellaneous/Miscellaneous.hh>
+#include <etoile/nest/Nest.hh>
 #include <etoile/path/Path.hh>
 #include <etoile/shrub/Shrub.hh>
 #include <etoile/wall/Wall.hh>
@@ -66,6 +67,7 @@ namespace etoile
   using namespace gear;
   using namespace journal;
   using namespace miscellaneous;
+  using namespace nest;
   using namespace path;
   using namespace shrub;
   using namespace wall;

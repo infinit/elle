@@ -51,7 +51,8 @@ namespace etoile
       gear::Directory*	context;
       gear::Actor*	actor;
 
-      enterx(instance(actor));
+      enterx(slab(scope, gear::Scope::Relinquish),
+	     instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -82,6 +83,9 @@ namespace etoile
       if (automaton::Directory::Create(*context) == elle::StatusError)
 	escape("unable to create the directory");
 
+      // waive the scope.
+      waive(scope);
+
       leave();
     }
 
@@ -98,7 +102,8 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enterx(instance(actor));
+      enterx(slab(scope, gear::Scope::Relinquish),
+	     instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -133,6 +138,9 @@ namespace etoile
       if (automaton::Directory::Load(*context,
 				     location) == elle::StatusError)
 	escape("unable to load the directory");
+
+      // waive the scope.
+      waive(scope);
 
       leave();
     }
