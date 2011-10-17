@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(test-network-slot
+ADD_EXECUTABLE(test-network-slot EXCLUDE_FROM_ALL
   Test.cc
   Node.cc
   Neighbour.cc

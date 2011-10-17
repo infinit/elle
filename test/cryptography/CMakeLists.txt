@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(test-cryptography
+ADD_EXECUTABLE(test-cryptography EXCLUDE_FROM_ALL
   Test.cc
 )
 
