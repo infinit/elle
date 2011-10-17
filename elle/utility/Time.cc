@@ -199,6 +199,7 @@ namespace elle
       Time              time;
 
       time.millisecond = this->millisecond + element.millisecond;
+
       return (time);
     }
 
@@ -210,6 +211,7 @@ namespace elle
       Time              time;
 
       time.millisecond = this->millisecond - element.millisecond;
+
       return (time);
     }
 
