@@ -368,7 +368,8 @@ namespace elle
 
       // display the time.
       std::cout << alignment << "[Time] "
-                << (1900 + tm->tm_year) << "-" << (1 + tm->tm_mon)
+                << std::dec
+		<< (1900 + tm->tm_year) << "-" << (1 + tm->tm_mon)
                 << "-" << (1 + tm->tm_mday) << " "
                 << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec
                 << "." << (this->nanoseconds % 1000)

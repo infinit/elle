@@ -55,7 +55,7 @@ namespace elle
       template <typename T,
 		typename... TT>
       Status		Complete(T,
-				TT...);
+				 TT...);
       Status		Complete(const String&,
 				 const String&);
 
