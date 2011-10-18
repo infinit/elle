@@ -157,22 +157,6 @@ namespace elle
 
       /// XXX \todo ca segfault si le client est lance sans serveur...???
 
-      // allocate a timer.
-      this->timer = new Timer;
-
-      // create a timer.
-      if (this->timer->Create(Timer::ModeSingle) == StatusError)
-	escape("unable to create the callback");
-
-      // subscribe to the timer's signal.
-      if (this->timer->signal.timeout.Subscribe(
-	    Callback<>::Infer(&Door::Abort, this)) == StatusError)
-	escape("unable to subscribe to the signal");
-
-      // start the timer.
-      if (this->timer->Start(Door::Timeout) == StatusError)
-	escape("unable to start the timer");
-
       // set the state.
       this->state = Channel::StateConnecting;
 
@@ -184,7 +168,21 @@ namespace elle
 	{
 	case Channel::ModeAsynchronous:
 	  {
-	    // do nothing and wait for the 'connected' signal.
+	    // allocate a timer.
+	    this->timer = new Timer;
+
+	    // create a timer.
+	    if (this->timer->Create(Timer::ModeSingle) == StatusError)
+	      escape("unable to create the callback");
+
+	    // subscribe to the timer's signal.
+	    if (this->timer->signal.timeout.Subscribe(
+		  Callback<>::Infer(&Door::Abort, this)) == StatusError)
+	      escape("unable to subscribe to the signal");
+
+	    // start the timer.
+	    if (this->timer->Start(Door::Timeout) == StatusError)
+	      escape("unable to start the timer");
 
 	    break;
 	  }
