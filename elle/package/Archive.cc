@@ -822,12 +822,12 @@ namespace elle
 
       enter();
 
-      // initialize the big number.
-      ::BN_init(&element);
-
       // load a region.
       if (this->Load(region) == StatusError)
 	escape("unable to load the region");
+
+      // initialize the big number.
+      ::BN_init(&element);
 
       // load directly the bignum from the buffer.
       ::BN_bin2bn(region.contents, region.size, &element);
