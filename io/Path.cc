@@ -55,7 +55,7 @@ namespace elle
     Status		Path::Complete(const String&		name,
 				       const String&		value)
     {
-      size_t		position;
+      String::size_type	position;
 
       enter();
 

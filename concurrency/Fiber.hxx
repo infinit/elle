@@ -79,7 +79,7 @@ namespace elle
       // declare a launch function pointer in order to bypass the type
       // checking system through casts.
       Void		(*launch)(Closure<Status, T...>*) = &Fiber::Launch;
-      Fiber*	fiber;
+      Fiber*		fiber;
 
       // set the current fiber as suspended.
       Fiber::Current->state = Fiber::StateSuspended;
