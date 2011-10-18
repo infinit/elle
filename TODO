@@ -1,4 +1,7 @@
-- corriger release des scopes proprement
+- dans le nest: discard (si plus de place) les blocs non modifies
+
+- mettre dans la conf du reseau le Byzantine tolerance fonction du type
+  de block physique.
 
 - faire en sorte que meme lorsque nos serveurs ne fonctionnent pas, les
   donnees restent accessibles (important). par contre il faut que lorsqu'un
