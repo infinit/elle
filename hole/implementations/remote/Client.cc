@@ -65,21 +65,14 @@ namespace hole
 	// register the messages.
 	//
 	{
-	  // register the challenge message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagChallenge>(
-		  elle::Callback<>::Infer(
-		    &Client::Challenge, this))) == elle::StatusError)
-	    escape("unable to register the callback");
-
-	  // register the challenge message.
+	  // register the message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagAuthenticated>(
 		  elle::Callback<>::Infer(
 		    &Client::Authenticated, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
-	  // register the challenge message.
+	  // register the message.
 	  if (elle::Network::Register(
 	        elle::Procedure<TagException>(
 		  elle::Callback<>::Infer(
@@ -121,6 +114,17 @@ namespace hole
 				  elle::Channel::ModeSynchronous) ==
 	      elle::StatusError)
 	    escape("unable to connect to the bridge");
+	}
+
+	//
+	// authenticate to the server.
+	//
+	{
+	  // send the passport.
+	  if (this->gate->Send(
+	        elle::Inputs<TagChallenge>(Hole::Passport)) ==
+	      elle::StatusError)
+	    escape("unable to send the challenge");
 	}
 
 	leave();
@@ -333,27 +337,6 @@ namespace hole
 
 	// disconnect the gate, though that may be unecessary.
 	this->gate->Disconnect();
-
-	leave();
-      }
-
-      ///
-      /// this callback is triggered whenever the client is challenged
-      /// by the server.
-      ///
-      elle::Status	Client::Challenge()
-      {
-	enter();
-
-	// debug.
-	if (Infinit::Configuration.debug.hole == true)
-	  std::cout << "[hole] Client::Challenge()"
-		    << std::endl;
-
-	// return the passport.
-	if (this->gate->Reply(
-	      elle::Inputs<TagResponse>(Hole::Passport)) == elle::StatusError)
-	  escape("unable to return the challenge response");
 
 	leave();
       }

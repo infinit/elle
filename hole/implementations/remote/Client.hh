@@ -77,7 +77,6 @@ namespace hole
 	elle::Status		Disconnected();
 	elle::Status		Error(const elle::String&);
 
-	elle::Status		Challenge();
 	elle::Status		Authenticated();
 	elle::Status		Exception(const elle::Report&);
 

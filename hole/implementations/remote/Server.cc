@@ -81,13 +81,13 @@ namespace hole
 	// register the messages.
 	//
 	{
-	  // register the response message.
+	  // register the challenge message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagResponse,
+	        elle::Procedure<TagChallenge,
 				elle::TagNone,
 				TagException>(
 		  elle::Callback<>::Infer(
-		    &Server::Response, this))) == elle::StatusError)
+		    &Server::Challenge, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the push message.
@@ -443,11 +443,6 @@ namespace hole
 	if (this->Add(customer->gate, customer) == elle::StatusError)
 	  escape("unable to add the customer");
 
-	// send a message to the client in order to challenge it.
-	if (customer->gate->Send(
-	      elle::Inputs<TagChallenge>()) == elle::StatusError)
-	  escape("unable to send a message to the client");
-
 	// waive.
 	waive(customer);
 
@@ -455,10 +450,10 @@ namespace hole
       }
 
       ///
-      /// this callback is triggered whenever the client responds to
-      /// the initial challenge.
+      /// this callback is triggered whenever the client initiate the
+      /// authentication challenge.
       ///
-      elle::Status	Server::Response(const lune::Passport&	passport)
+      elle::Status	Server::Challenge(const lune::Passport&	passport)
       {
 	Customer*	customer;
 	elle::Session*	session;
@@ -466,7 +461,7 @@ namespace hole
 	enter();
 
 	if (Infinit::Configuration.debug.hole == true)
-	  std::cout << "[hole] Server::Response()"
+	  std::cout << "[hole] Server::Challenge()"
 		    << std::endl;
 
 	// retrieve the network session.

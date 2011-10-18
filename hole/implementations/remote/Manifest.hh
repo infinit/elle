@@ -75,7 +75,6 @@ namespace hole
       enum Tag
 	{
 	  TagChallenge = elle::Range<Component>::First + 1,
-	  TagResponse,
 	  TagAuthenticated,
 
 	  TagPush,
@@ -99,8 +98,6 @@ namespace hole
 ///
 
 message(hole::implementations::remote::TagChallenge,
-	parameters())
-message(hole::implementations::remote::TagResponse,
 	parameters(lune::Passport&));
 message(hole::implementations::remote::TagAuthenticated,
 	parameters());

@@ -85,7 +85,7 @@ namespace hole
 	//
 	elle::Status		Connection(elle::Gate*);
 
-	elle::Status		Response(const lune::Passport&);
+	elle::Status		Challenge(const lune::Passport&);
 
 	elle::Status		Sweep(Customer*);
 
