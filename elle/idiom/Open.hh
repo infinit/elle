@@ -194,6 +194,7 @@
   do {                                                                  \
     ::printf("[%d] %s:%d %s\n", __COUNTER__, __FILE__,                  \
              __LINE__, __PRETTY_FUNCTION__);                            \
+    ::fflush(stdout);                                                   \
   } while (0)
 
 //
