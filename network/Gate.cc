@@ -152,22 +152,6 @@ namespace elle
     {
       enter();
 
-      // allocate a timer.
-      this->timer = new Timer;
-
-      // create a timer.
-      if (this->timer->Create(Timer::ModeSingle) == StatusError)
-	escape("unable to create the callback");
-
-      // subscribe to the timer's signal.
-      if (this->timer->signal.timeout.Subscribe(
-	    Callback<>::Infer(&Gate::Abort, this)) == StatusError)
-	escape("unable to subscribe to the signal");
-
-      // start the timer.
-      if (this->timer->Start(Gate::Timeout) == StatusError)
-	escape("unable to start the timer");
-
       // update the state.
       this->state = Channel::StateConnecting;
 
@@ -179,7 +163,21 @@ namespace elle
 	{
 	case Channel::ModeAsynchronous:
 	  {
-	    // do nothing and wait for the 'connected' signal.
+	    // allocate a timer.
+	    this->timer = new Timer;
+
+	    // create a timer.
+	    if (this->timer->Create(Timer::ModeSingle) == StatusError)
+	      escape("unable to create the callback");
+
+	    // subscribe to the timer's signal.
+	    if (this->timer->signal.timeout.Subscribe(
+		  Callback<>::Infer(&Gate::Abort, this)) == StatusError)
+	      escape("unable to subscribe to the signal");
+
+	    // start the timer.
+	    if (this->timer->Start(Gate::Timeout) == StatusError)
+	      escape("unable to start the timer");
 
 	    break;
 	  }
