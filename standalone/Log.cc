@@ -109,11 +109,8 @@ namespace elle
     /// default constructor.
     ///
     Log::Log(const String&					path)
+      : stream_(path.c_str(), std::ios_base::out | std::ios_base::trunc)
     {
-      // open the file.
-      this->fd = ::open(path.c_str(),
-			O_WRONLY | O_APPEND | O_CREAT,
-			0600);
     }
 
     ///
@@ -121,8 +118,6 @@ namespace elle
     ///
     Log::~Log()
     {
-      // close the file.
-      ::close(this->fd);
     }
 
 //
@@ -141,50 +136,40 @@ namespace elle
       //
       // log the actual message.
       //
-      {
-	std::ostringstream	stream;
-
-	// build the string.
-	stream << message << " (" << location << ") @ " << time << std::endl;
-
-	// write it to the log.
-	::write(this->fd, stream.str().c_str(), stream.str().length());
-      }
+      stream_ << message << " (" << location << ") @ " << time << std::endl;
 
       //
       // log the report, if present.
       //
-      {
-	// retrieve the report.
-	if (Report::Instance(report) == StatusTrue)
-	  {
-	    Report::Scoutor	scoutor;
 
-	    // go through the report messages.
-	    for (scoutor = report->container.begin();
-		 scoutor != report->container.end();
-		 scoutor++)
-	      {
-		Report::Entry*		entry = *scoutor;
-		std::ostringstream	stream;
+      // retrieve the report.
+      if (Report::Instance(report) == StatusTrue)
+        {
+          Report::Scoutor	scoutor;
 
-		// build the report.
-		stream << "  "
-		       << entry->message
-		       << " ("
-		       << entry->location
-		       << ") @ "
-		       << entry->time
-		       << std::endl;
+          // go through the report messages.
+          for (scoutor = report->container.begin();
+               scoutor != report->container.end();
+               scoutor++)
+            {
+              Report::Entry*		entry = *scoutor;
 
-		// write it to the log.
-		::write(this->fd, stream.str().c_str(), stream.str().length());
-	      }
+              // build the report.
+              stream_ << "  "
+                      << entry->message
+                      << " ("
+                      << entry->location
+                      << ") @ "
+                      << entry->time
+                      << std::endl;
+            }
 
-	    // flush the report.
-	    report->Flush();
-	  }
-      }
+          // flush the report.
+          report->Flush();
+        }
+
+      // flush the stream
+      stream_.flush();
     }
 
   }
