@@ -101,8 +101,6 @@ namespace elle
 
       data.size = roffset;
 
-      data.Dump();
-
       // close the file.
       ::close(fd);
 
@@ -186,9 +184,12 @@ namespace elle
 	escape("unable to prepare the region");
 
       // open the file.
-      if ((fd = ::CreateFile(path.string.c_str(), GENERIC_READ, 0, NULL,
-                             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
-                             NULL)) == INVALID_HANDLE_VALUE)
+      fd = ::CreateFile(path.string.c_str(), GENERIC_READ,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                        NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
+                        NULL);
+
+      if (fd == INVALID_HANDLE_VALUE)
 	escape("failed to open %s", path.string.c_str());
 
       // read the file's content.
@@ -213,8 +214,6 @@ namespace elle
 
       data.size = roffset;
 
-      data.Dump();
-
       // close the file.
       ::CloseHandle(fd);
 
@@ -237,9 +236,12 @@ namespace elle
 	escape("unable to dig the chain of directories");
 
       // open the file.
-      if ((fd = ::CreateFile(path.string.c_str(), GENERIC_WRITE, 0, NULL,
-                             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
-                             NULL)) == INVALID_HANDLE_VALUE)
+      fd = ::CreateFile(path.string.c_str(), GENERIC_WRITE,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                        NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
+                        NULL);
+
+      if (fd == INVALID_HANDLE_VALUE)
 	escape("failed to open %s", path.string.c_str());
 
       // write the text to the file.
