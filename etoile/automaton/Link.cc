@@ -112,6 +112,12 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
+
       // bind the link.
       if (context.contents->content->Bind(way.path) == elle::StatusError)
 	escape("unable to bind the link");
@@ -143,6 +149,12 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
+
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
 
       // resolve the link.
       if (context.contents->content->Resolve(way.path) == elle::StatusError)

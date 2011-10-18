@@ -118,6 +118,12 @@ namespace etoile
       // allocate a new directory entry.
       entry = new nucleus::Entry(name, address);
 
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
+
       // add the entry in the directory.
       if (context.contents->content->Add(entry) == elle::StatusError)
 	escape("unable to add the entry in the directory");
@@ -155,6 +161,12 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
+
       // look up the entry.
       if (context.contents->content->Lookup(name,
 					    entry) == elle::StatusError)
@@ -189,6 +201,12 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
+
       // consult the directory catalog.
       if (context.contents->content->Consult(index,
 					     size,
@@ -221,6 +239,12 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
+
       // rename the entry.
       if (context.contents->content->Rename(from, to) == elle::StatusError)
 	escape("unable to rename the directory's entry");
@@ -252,6 +276,12 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
+
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
 
       // remove the entry.
       if (context.contents->content->Remove(name) == elle::StatusError)

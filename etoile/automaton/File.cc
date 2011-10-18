@@ -114,6 +114,12 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
+
       // write the file.
       if (context.contents->content->Write(offset,
 					   region) == elle::StatusError)
@@ -149,6 +155,12 @@ namespace etoile
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
 
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
+
       // read the file.
       if (context.contents->content->Read(offset,
 					  size,
@@ -179,6 +191,12 @@ namespace etoile
       // open the contents.
       if (Contents::Open(context) == elle::StatusError)
 	escape("unable to open the contents");
+
+      // check that the content exists: the subject may have lost the
+      // read permission between the previous check and the Contents::Open().
+      if (context.contents->content == NULL)
+	escape("the user does not seem to be able to operate on this "
+	       "directory");
 
       // adjust the size.
       if (context.contents->content->Adjust(size) == elle::StatusError)

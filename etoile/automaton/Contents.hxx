@@ -119,8 +119,9 @@ namespace etoile
       // first, check if the block has been modified i.e exists and is dirty.
       //
       {
-	// if there is no loaded contents, then there is nothing to do.
-	if (context.contents == NULL)
+	// if there is no loaded contents or accessible content, then there
+	// is nothing to do.
+	if (!(context.contents != NULL) && (context.contents->content != NULL))
 	  leave();
 
 	// if the contents has not changed, do nothing.
