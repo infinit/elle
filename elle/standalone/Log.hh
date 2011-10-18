@@ -20,6 +20,10 @@
 
 #include <elle/radix/Meta.hh>
 
+#include <elle/idiom/Close.hh>
+# include <fstream>
+#include <elle/idiom/Open.hh>
+
 namespace elle
 {
   using namespace core;
@@ -71,7 +75,7 @@ namespace elle
       //
       // attributes
       //
-      int		fd;
+      std::ofstream     stream_;
     };
 
   }
