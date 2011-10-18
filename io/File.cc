@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/system/Platform.hh>
+
 #include <elle/io/File.hh>
 #include <elle/io/Directory.hh>
 
@@ -28,6 +30,11 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <libgen.h>
+
+# if INFINIT_WIN32
+#  include <windows.h>
+# endif
+
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -41,6 +48,7 @@ namespace elle
 // ---------- static methods --------------------------------------------------
 //
 
+#if INFINIT_UNIX
     ///
     /// this method reads the given file's content.
     ///
@@ -65,32 +73,35 @@ namespace elle
       if (data.Prepare(static_cast<Natural32>(status.st_size)) == StatusError)
 	escape("unable to prepare the region");
 
-      // set the correct size.
-      data.size = static_cast<Natural32>(status.st_size);
-
       // open the file.
       if ((fd = ::open(path.string.c_str(), O_RDONLY)) == -1)
-	escape(::strerror(errno));
+	escape("failed to open %s: %s", path.string.c_str(), ::strerror(errno));
 
       // read the file's content.
-      while (true)
+      while (roffset < data.capacity)
         {
-          int rbytes = ::read(fd, data.contents + roffset, data.size - roffset);
+          int rbytes = ::read(fd, data.contents + roffset, data.capacity - roffset);
 
           if (rbytes == 0)
             break;
 
-          if (rbytes == -1)
+          if (rbytes < 0)
             {
+              if (errno == EAGAIN ||
+                  errno == EINTR)
+                continue;
+
               ::close(fd);
 
-              escape(::strerror(errno));
+              escape("read error: %s", ::strerror(errno));
             }
 
           roffset += rbytes;
         }
 
       data.size = roffset;
+
+      data.Dump();
 
       // close the file.
       ::close(fd);
@@ -105,6 +116,7 @@ namespace elle
 				    const Region&		data)
     {
       int		fd;
+      int               woffset = 0;
 
       enter();
 
@@ -119,20 +131,140 @@ namespace elle
 	escape(::strerror(errno));
 
       // write the text to the file.
-      if (::write(fd,
-		  data.contents,
-		  data.size) != static_cast<ssize_t>(data.size))
-	{
-	  ::close(fd);
+      while (woffset < data.size)
+        {
+          int           wbytes;
 
-	  escape(::strerror(errno));
-	}
+          wbytes = ::write(fd, data.contents + woffset, data.size - woffset);
+
+          if (wbytes < 0)
+            {
+              if (errno == EAGAIN ||
+                  errno == EINTR)
+                continue;
+
+              ::close(fd);
+              escape(::strerror(errno));
+            }
+
+          if (wbytes == 0)
+            break;
+
+          woffset += wbytes;
+        }
 
       // close the file.
       ::close(fd);
 
       leave();
     }
+#endif
+
+#if INFINIT_WIN32
+    ///
+    /// this method reads the given file's content.
+    ///
+    Status		File::Read(const Path&			path,
+				   Region&			data)
+    {
+      struct ::stat	status;
+      HANDLE		fd;
+      DWORD             roffset = 0;
+
+      enter();
+
+      // does the file exist.
+      if (File::Exist(path) == StatusFalse)
+	escape("the file does not seem to exist");
+
+      // retrieve information.
+      if (::stat(path.string.c_str(), &status) == -1)
+	escape(::strerror(errno));
+
+      // prepare the data.
+      if (data.Prepare(static_cast<Natural32>(status.st_size)) == StatusError)
+	escape("unable to prepare the region");
+
+      // open the file.
+      if ((fd = ::CreateFile(path.string.c_str(), GENERIC_READ, 0, NULL,
+                             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL,
+                             NULL)) == INVALID_HANDLE_VALUE)
+	escape("failed to open %s", path.string.c_str());
+
+      // read the file's content.
+      while (roffset < data.capacity)
+        {
+          DWORD rbytes;
+
+          BOOL succeed = ::ReadFile(fd, data.contents + roffset, data.capacity - roffset,
+                                    &rbytes, NULL);
+
+          if (!succeed)
+            {
+              ::CloseHandle(fd);
+              escape("read error");
+            }
+
+          if (rbytes == 0)
+            break;
+
+          roffset += rbytes;
+        }
+
+      data.size = roffset;
+
+      data.Dump();
+
+      // close the file.
+      ::CloseHandle(fd);
+
+      leave();
+    }
+
+    ///
+    /// this method writes the given data into the given file.
+    ///
+    Status		File::Write(const Path&			path,
+				    const Region&		data)
+    {
+      HANDLE		fd;
+      DWORD             woffset = 0;
+
+      enter();
+
+      // dig the directory which will hold the target file.
+      if (File::Dig(path) == StatusError)
+	escape("unable to dig the chain of directories");
+
+      // open the file.
+      if ((fd = ::CreateFile(path.string.c_str(), GENERIC_WRITE, 0, NULL,
+                             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL,
+                             NULL)) == INVALID_HANDLE_VALUE)
+	escape("failed to open %s", path.string.c_str());
+
+      // write the text to the file.
+      while (woffset < data.size)
+        {
+          DWORD         wbytes;
+          BOOL          succeed;
+
+          succeed = ::WriteFile(fd, data.contents + woffset,
+                                data.size - woffset, &wbytes, NULL);
+
+          if (!succeed)
+            {
+              ::CloseHandle(fd);
+
+              escape("write error");
+            }
+        }
+
+      // close the file.
+      ::CloseHandle(fd);
+
+      leave();
+    }
+#endif
 
     ///
     /// this method erases the given file path.
