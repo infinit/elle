@@ -259,6 +259,11 @@ namespace elle
 
               escape("write error");
             }
+
+          if (wbytes == 0)
+            break;
+
+          woffset += wbytes;
         }
 
       // close the file.
