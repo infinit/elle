@@ -20,10 +20,8 @@
 #include <elle/idiom/Close.hh>
 # include <stdio.h>
 # include <unistd.h>
-// XXX # if INFINIT_UNIX
-#  include <readline/readline.h>
-#  include <readline/history.h>
-// XXX # endif
+# include <readline/readline.h>
+# include <readline/history.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle
