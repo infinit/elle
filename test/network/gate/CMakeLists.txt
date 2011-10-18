@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(test-network-gate
+ADD_EXECUTABLE(test-network-gate EXCLUDE_FROM_ALL
   Test.cc
   Server.cc
   Client.cc

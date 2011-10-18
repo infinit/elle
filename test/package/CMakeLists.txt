@@ -1,4 +1,4 @@
-ADD_EXECUTABLE(test-package
+ADD_EXECUTABLE(test-package EXCLUDE_FROM_ALL
   Generator.cc
   Pack.cc
   Referee.cc
