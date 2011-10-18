@@ -56,6 +56,10 @@ namespace etoile
     {
       enter();
 
+      // make sure the shrub has been activated, return otherwise.
+      if (Infinit::Configuration.shrub.status == false)
+	leave();
+
       // allocate the sweeper timer.
       Shrub::Timer = new elle::Timer;
 
@@ -83,6 +87,10 @@ namespace etoile
     elle::Status	Shrub::Clean()
     {
       enter();
+
+      // make sure the shrub has been activated, return otherwise.
+      if (Infinit::Configuration.shrub.status == false)
+	leave();
 
       // delete the timer, if present.
       if (Shrub::Timer != NULL)
