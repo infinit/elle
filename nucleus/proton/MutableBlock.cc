@@ -161,8 +161,6 @@ namespace nucleus
 	  elle::Region	region;
 	  elle::Archive	archive;
 
-	  printf("XXX History False\n");
-
 	  // complete the path with the network name.
 	  if (path.Complete(elle::Piece("%NETWORK%", network.name),
 			    elle::Piece("%ADDRESS%", unique),
@@ -239,9 +237,6 @@ namespace nucleus
 	  if (archive.Extract(*this) == elle::StatusError)
 	    escape("unable to extract the archive");
 	}
-
-      printf("XXX /proton::MutableBlock::Load(%s)\n",
-	     unique.c_str());
 
       leave();
     }
