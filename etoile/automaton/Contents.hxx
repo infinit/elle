@@ -42,7 +42,7 @@ namespace etoile
 
       // if the contents is already opened, return.
       if (context.contents != NULL)
-	leave();
+        leave();
 
       // otherwise create a new contents according to the context's type.
       context.contents = new nucleus::Contents<typename T::C>;
@@ -121,7 +121,8 @@ namespace etoile
       {
 	// if there is no loaded contents or accessible content, then there
 	// is nothing to do.
-	if (!(context.contents != NULL) && (context.contents->content != NULL))
+	if (!((context.contents != NULL) &&
+              (context.contents->content != NULL)))
 	  leave();
 
 	// if the contents has not changed, do nothing.
