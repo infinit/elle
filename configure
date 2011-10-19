@@ -105,8 +105,8 @@ if [[ $DEBUG -eq 0 ]]; then
     CXXFLAGS="$CXXFLAGS -DNDEBUG -Os"
     echo "---[ settings release flags"
 else
-    CFLAGS="$CFLAGS -ggdb3"
-    CXXFLAGS="$CXXFLAGS -ggdb3"
+    CFLAGS="$CFLAGS -g"
+    CXXFLAGS="$CXXFLAGS -g"
     echo "---[ settings debug flags"
 fi
 
