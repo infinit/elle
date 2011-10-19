@@ -52,7 +52,6 @@ COMPONENTS	:=		elle					\
 all:			build
 
 build::
-	$(TEST) -d $(BUILD) || $(CONFIGURE) --build-dir=$(BUILD)
 	for i in $(BUILDDIRS); do $(MAKE) $(MAKEOPT) -C $$i; done
 
 install:		build
