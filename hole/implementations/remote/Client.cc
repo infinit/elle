@@ -378,15 +378,8 @@ namespace hole
 	// transpose the given report.
 	transpose(report);
 
-	// report the error.
-	report("an error occured on the server side");
-
-	// display the errors before exiting.
-	show();
-
-	// exit the program.
-	if (elle::Program::Exit() == elle::StatusError)
-	  escape("unable to exit the program");
+	// log the error.
+	log("an error occured on the server side");
 
 	leave();
       }
