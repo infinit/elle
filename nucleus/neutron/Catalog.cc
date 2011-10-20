@@ -58,12 +58,9 @@ namespace nucleus
     {
       enter();
 
-      // XXX
-      if (entry->name == elle::String("conftest.nm"))
-	{
-	  this->Dump();
-	  entry->Dump();
-	}
+      // check that the entry is non-empty.
+      if (entry->name.empty() == true)
+	escape("unable to create an empty-named entry in the catalog");
 
       // add the entry in the range.
       if (this->range.Add(entry) == elle::StatusError)
