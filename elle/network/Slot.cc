@@ -297,21 +297,9 @@ namespace elle
 				      parcel->header->event) == StatusError)
 	    escape("unable to create the session");
 
-	  // dispatch this parcel to the network manager.
-	  //
-	  // note that a this locus, the network is longer responsible
-	  // for the parcel and its memory.
-	  if (Network::Dispatch(parcel) == StatusError)
-	    {
-	      // log the errors.
-	      log("an error occured while dispatching a message");
-
-	      // stop tracking the parcel since it should have been deleted
-	      // in Dispatch().
-	      waive(parcel);
-
-	      leave();
-	    }
+	  // trigger the network shipment mechanism.
+	  if (Socket::Ship(parcel) == StatusError)
+	    log("an error occured while shipping the parcel");
 
 	  // stop tracking the parcel.
 	  waive(parcel);

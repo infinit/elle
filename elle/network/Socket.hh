@@ -73,6 +73,11 @@ namespace elle
 	};
 
       //
+      // static methods
+      //
+      static Status	Ship(Parcel*);
+
+      //
       // constructors & destructors
       //
       Socket();
