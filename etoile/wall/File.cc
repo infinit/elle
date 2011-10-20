@@ -48,8 +48,8 @@ namespace etoile
       gear::File*	context;
       gear::Actor*	actor;
 
-      enterx(slab(scope, gear::Scope::Relinquish),
-	     instance(actor));
+      enterx(instance(actor),
+	     slab(scope, gear::Scope::Relinquish));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -73,12 +73,18 @@ namespace etoile
       // return the identifier.
       identifier = actor->identifier;
 
-      // waive the actor.
-      waive(actor);
-
       // apply the create automaton on the context.
       if (automaton::File::Create(*context) == elle::StatusError)
-	escape("unable to create the file");
+	{
+	  // detach the actor.
+          if (actor->Detach() == elle::StatusError)
+	    escape("unable to detach the actor");
+
+	  escape("unable to create the file");
+	}
+
+      // waive the actor.
+      waive(actor);
 
       // waive the scope.
       waive(scope);
@@ -99,8 +105,8 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enterx(slab(scope, gear::Scope::Relinquish),
-	     instance(actor));
+      enterx(instance(actor),
+	     slab(scope, gear::Scope::Relinquish));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -124,9 +130,6 @@ namespace etoile
       // return the identifier.
       identifier = actor->identifier;
 
-      // waive the actor.
-      waive(actor);
-
       // locate the object based on the chemin.
       if (chemin.Locate(location) == elle::StatusError)
 	escape("unable to locate the file");
@@ -134,7 +137,16 @@ namespace etoile
       // apply the load automaton on the context.
       if (automaton::File::Load(*context,
 				location) == elle::StatusError)
-	escape("unable to load the file");
+	{
+	  // detach the actor.
+          if (actor->Detach() == elle::StatusError)
+	    escape("unable to detach the actor");
+
+	  escape("unable to load the file");
+	}
+
+      // waive the actor.
+      waive(actor);
 
       // waive the scope.
       waive(scope);
