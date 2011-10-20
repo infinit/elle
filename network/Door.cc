@@ -505,24 +505,17 @@ namespace elle
 	{
 	  Parcel*	parcel;
 
+	  enterx(instance(parcel));
+
 	  // finally, take the oldest parcel and return it.
 	  parcel = this->queue.front();
 
 	  // remove this packet.
 	  this->queue.pop_front();
 
-	  // otherwise, trigger the network dispatching mechanism.
-	  if (Network::Dispatch(parcel) == StatusError)
-	    {
-	      // log the errors.
-	      log("an error occured while dispatching a message");
-
-	      // stop tracking the parcel since it should have been deleted
-	      // in Dispatch().
-	      waive(parcel);
-
-	      leave();
-	    }
+	  // trigger the network shipment mechanism.
+	  if (Socket::Ship(parcel) == StatusError)
+	    log("an error occured while shipping the parcel");
 
 	  // stop tracking the parcel.
 	  waive(parcel);

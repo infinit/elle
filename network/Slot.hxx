@@ -97,9 +97,15 @@ namespace elle
       // check the tag.
       if (parcel->header->tag != outputs.tag)
 	{
-	  // test if the message received is an error, if so, append
+	  //
+	  // in this case, the blocked fiber received a message whose
+	  // tag does not match the expected one.
+	  //
+	  Tag		tag = parcel->header->tag;
+
+	  // first, test if the message received is an error, if so, append
 	  // the report to the local one.
-	  if (parcel->header->tag == TagError)
+	  if (tag == TagError)
 	    {
 	      Report	report;
 
@@ -110,9 +116,21 @@ namespace elle
 	      // report the remote error.
 	      transpose(report);
 	    }
+	  else
+	    {
+	      // otherwise, try to ship the parcel since a handler may be
+	      // able to treat it.
+	      if (Socket::Ship(parcel) == StatusError)
+		log("an error occured while shipping the parcel");
 
+	      // stop tracking the parcel since Ship() will have taken
+	      // care of it.
+	      waive(parcel);
+	    }
+
+	  // in any case, return an error from the Receive() method.
 	  escape("received a packet with an unexpected tag '%u'",
-		 parcel->header->tag);
+		 tag);
 	}
 
       // extract the arguments.

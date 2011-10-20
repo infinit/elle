@@ -13,6 +13,7 @@
 //
 
 #include <elle/network/Socket.hh>
+#include <elle/network/Network.hh>
 
 #include <elle/idiom/Open.hh>
 
@@ -59,6 +60,24 @@ namespace elle
       // dump the type.
       std::cout << alignment << Dumpable::Shift
 		<< "[Type] " << std::dec << this->type << std::endl;
+
+      leave();
+    }
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this method takes a parcel and dispatches it.
+    ///
+    Status		Socket::Ship(Parcel*			parcel)
+    {
+      enter();
+
+      // otherwise, trigger the network dispatching mechanism.
+      if (Network::Dispatch(parcel) == StatusError)
+	log("an error occured while dispatching a message");
 
       leave();
     }
