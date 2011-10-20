@@ -122,16 +122,23 @@ namespace nucleus
       // go through the catalog entries.
       for (scoutor = this->range.container.begin(), i = 0;
 	   scoutor != this->range.container.end();
-	   scoutor++, i++)
+	   scoutor++)
 	{
 	  Entry*	entry = *scoutor;
 
 	  // if this entry lies in the selected range [index, index + size[
 	  if ((i >= index) && (i < (index + size)))
 	    {
+	      // check if the entry is empty: you never know!
+	      if (entry->name.empty() == true)
+		continue;
+
 	      // add the entry to the range.
 	      if (range.Add(entry) == elle::StatusError)
 		escape("unable to add the entry to the range");
+
+	      // increment the number of recorded entries.
+	      i++;
 	    }
 	}
 
@@ -168,6 +175,10 @@ namespace nucleus
       // if _from_ and _to_ are identical, return.
       if (from == to)
 	leave();
+
+      // check that the entry is non-empty.
+      if (to.empty() == true)
+	escape("unable to rename to a non empty-named entry in the catalog");
 
       // check that an entry _to_ does not already exist.
       if (this->range.Locate(to) == elle::StatusTrue)
