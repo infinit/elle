@@ -1,3 +1,7 @@
+- entree vide dans Catalog: refuser
+
+- ameliorer le log lorsqu'un client accede a un Hole qui n'a pas les donnees
+
 - mauvais utilisateur => segfault client
 
 - si noeud de stockage recoit un block mutable avec une version > 0 et que
