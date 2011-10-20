@@ -147,7 +147,7 @@ elle::Status		Main(elle::Natural32			argc,
   // clean PIG.
   if (pig::PIG::Clean() == elle::StatusError)
     escape("unable to clean PIG");
-#elif INFINIT_IIG
+#elif INFINIT_WIN32
   // clean IIG.
   if (iig::IIG::Clean() == elle::StatusError)
     escape("unable to clean IIG");
