@@ -1,3 +1,18 @@
+- ameliorer le reseau: si Hole n'a pas les donnees et est lance, il
+  repond un tag Exception(21) alors qu'on attend autre chose Block(19).
+  dans Gate.hxx dans ce cas la (unexpected tag) il faudrait dispatch le
+  message puis retourner une erreur a Receive bloquant.
+
+- si noeud de stockage recoit un block mutable avec une version > 0 et que
+  aucune autre version n'existe -> discard. ca resoud un probleme genre
+  open dir, add, close dir mais entre temps le dir a ete destroyed.
+- dans Journal, stocker tous les immutable en parallele, puis stocker les
+  mutable car les storage nodes vont recuper certain immutable (genre Access)
+  pour verifier la validiter de Object par exemple.
+
+- setter un bit a un dans MutableBlock si history est active pour ce
+  block.
+
 - dans le nest: discard (si plus de place) les blocs non modifies
 
 - mettre dans la conf du reseau le Byzantine tolerance fonction du type
@@ -14,11 +29,6 @@
 - contacter UPMC/Central
 
 - du -sh dans Infinit ne marche pas
-
-- ameliorer le reseau: si Hole n'a pas les donnees et est lance, il
-  repond un tag Exception(21) alors qu'on attend autre chose Block(19).
-  dans Gate.hxx dans ce cas la (unexpected tag) il faudrait dispatch le
-  message puis retourner une erreur a Receive bloquant.
 
 - ajouter first/next/previous/last etc.
 
