@@ -48,7 +48,7 @@ namespace etoile
       gear::Link*	context;
       gear::Actor*	actor;
 
-      enterx(slab(scope, gear::Scope::Annihilate),
+      enterx(slab(scope, gear::Scope::Relinquish),
 	     instance(actor));
 
       // debug.
@@ -99,7 +99,7 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enterx(slab(scope, gear::Scope::Annihilate),
+      enterx(slab(scope, gear::Scope::Relinquish),
 	     instance(actor));
 
       // debug.

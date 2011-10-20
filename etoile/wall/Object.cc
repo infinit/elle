@@ -51,7 +51,7 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enterx(slab(scope, gear::Scope::Annihilate),
+      enterx(slab(scope, gear::Scope::Relinquish),
 	     instance(actor));
 
       // debug.

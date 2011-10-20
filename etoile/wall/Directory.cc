@@ -51,7 +51,7 @@ namespace etoile
       gear::Directory*	context;
       gear::Actor*	actor;
 
-      enterx(slab(scope, gear::Scope::Annihilate),
+      enterx(slab(scope, gear::Scope::Relinquish),
 	     instance(actor));
 
       // debug.
@@ -102,8 +102,8 @@ namespace etoile
       gear::Actor*	actor;
       nucleus::Location	location;
 
-      enterx(slab(scope, gear::Scope::Annihilate),
-	     instance(actor));
+      enterx(slab(scope, gear::Scope::Relinquish),
+             instance(actor));
 
       // debug.
       if (Infinit::Configuration.debug.etoile == true)
@@ -127,9 +127,6 @@ namespace etoile
       // return the identifier.
       identifier = actor->identifier;
 
-      // waive the actor.
-      waive(actor);
-
       // locate the object based on the chemin.
       if (chemin.Locate(location) == elle::StatusError)
 	escape("unable to locate the directory");
@@ -137,7 +134,14 @@ namespace etoile
       // apply the load automaton on the context.
       if (automaton::Directory::Load(*context,
 				     location) == elle::StatusError)
-	escape("unable to load the directory");
+        {
+          // XXX
+          actor->Detach();
+          escape("unable to load the directory");
+        }
+
+      // waive the actor.
+      waive(actor);
 
       // waive the scope.
       waive(scope);
