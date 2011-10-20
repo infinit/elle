@@ -1,7 +1,4 @@
-- ameliorer le reseau: si Hole n'a pas les donnees et est lance, il
-  repond un tag Exception(21) alors qu'on attend autre chose Block(19).
-  dans Gate.hxx dans ce cas la (unexpected tag) il faudrait dispatch le
-  message puis retourner une erreur a Receive bloquant.
+- mauvais utilisateur => segfault client
 
 - si noeud de stockage recoit un block mutable avec une version > 0 et que
   aucune autre version n'existe -> discard. ca resoud un probleme genre
