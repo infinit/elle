@@ -18,9 +18,9 @@ CXXFLAGS="$CXXFLAGS -Wcast-align -Wold-style-cast -Wno-empty-body"
 LDFLAGS="$LDFLAGS"
 PREFIX="/usr/local"
 QTCREATOR=0
-LINUX32=0
-LINUX64=0
-WIN32=0
+LINUX32=OFF
+LINUX64=OFF
+WIN32=OFF
 
 function usage()
 {
@@ -33,6 +33,9 @@ function usage()
   --distcc              enable distcc
   --ccache              enable ccache
   --prefix=<path>       set the install prefix
+  --linux32             enable linux 32bit build
+  --linux64             enable linux 64bit build
+  --win32               enable windows 32bit build
 "
     exit
 }
@@ -71,6 +74,15 @@ do
             ;;
         --distcc)
             DISTCC=ON
+            ;;
+        --linux32)
+            LINUX32=ON
+            ;;
+        --linux64)
+            LINUX64=ON
+            ;;
+        --win32)
+            WIN32=ON
             ;;
         --prefix=*)
         PREFIX="${1/--prefix=/}"
@@ -131,7 +143,7 @@ function gen_build_dir()
     echo "---[ configuration for ${BUILDDIR}:"
 
     rm -rf "$BUILDDIR"
-    mkdir "$BUILDDIR" &&
+    mkdir -p "$BUILDDIR" &&
     cd "$BUILDDIR" &&
     cmake \
         -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE \
@@ -143,26 +155,26 @@ function gen_build_dir()
 
 MACHINE=$(uname -m)
 
-if [[ "$MACHINE" = "x86_64" ]] ; then
-    BUILDDIRS="$BUILDDIRS build-64"
+if [[ $LINUX64 = ON ]] ; then
+    BUILDDIRS="$BUILDDIRS build/linux64"
     (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
         CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" \
-        BUILDDIR=build-64 gen_build_dir)
+        BUILDDIR=build/linux64 gen_build_dir)
 fi
 
-if [[ "$MACHINE" = "i686" ]] ; then
-    BUILDDIRS="$BUILDDIRS build-32"
+if [[ $LINUX32 = ON ]] ; then
+    BUILDDIRS="$BUILDDIRS build/linux32"
     (CC="${DISTCC}gcc" CXX="${DISTCC}g++" \
         CFLAGS="${CFLAGS} -m32" CXXFLAGS="${CXXFLAGS} -m32" \
-        BUILDDIR=build-64 gen_build_dir)
+        BUILDDIR=build/linux32 gen_build_dir)
 fi
 
-if which i486-mingw32-gcc 2>/dev/null >/dev/null; then
-    BUILDDIRS="$BUILDDIRS build-win32"
+if [[ $WIN32 = ON ]] ; then
+    BUILDDIRS="$BUILDDIRS build/win32"
     (QMAKESPEC=/usr/share/qt/mkspecs/win32-x-g++/ \
         CC="${DISTCC}i486-mingw32-gcc" CXX="${DISTCC}i486-mingw32-g++" \
         CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" \
-        BUILDDIR=build-win32 gen_build_dir \
+        BUILDDIR=build/win32 gen_build_dir \
         -DCMAKE_SYSTEM_NAME=Windows \
         -DCMAKE_RC_COMPILER=/usr/bin/i486-mingw32-windres \
         -DCMAKE_FIND_ROOT_PATH=/usr/i486-mingw32 \
