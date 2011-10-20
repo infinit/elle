@@ -1,5 +1,3 @@
-- entree vide dans Catalog: refuser
-
 - ameliorer le log lorsqu'un client accede a un Hole qui n'a pas les donnees
 
 - mauvais utilisateur => segfault client
