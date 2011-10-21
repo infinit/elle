@@ -25,6 +25,8 @@ RM		:=		rm -Rf
 GIT		:=		git
 GREP		:=		grep
 WC		:=		wc -l
+DOXYGEN         :=              doxygen
+BROWSER         :=              firefox
 
 CONFIGURE	:=		./configure
 
@@ -57,8 +59,11 @@ build::
 install:		build
 	$(MAKE) -C $(BUILD) install
 
-documentation:
-#	$(DOXYGEN) doc/Doxyfile
+doc:
+	$(DOXYGEN) documentation/sources/Doxyfile
+
+view-doc:
+	$(BROWSER) documentation/sources/html/index.html
 
 clean:
 	$(MAKE) -C $(BUILD) clean
