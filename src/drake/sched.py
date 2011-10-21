@@ -266,6 +266,7 @@ class Coroutine:
     self.__waited = None
     for c in self.__unfrozen_hooks:
       c(self)
+    self.__unfrozen_hooks = []
 
 
 def coro_recurse(res):
