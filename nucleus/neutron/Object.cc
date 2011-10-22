@@ -460,7 +460,7 @@ namespace nucleus
 	escape("unable to dump the meta owner's token");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Genre] " << this->meta.genre << std::endl;
+		<< "[Genre] " << std::dec << this->meta.genre << std::endl;
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Stamp] " << std::endl;
@@ -484,7 +484,7 @@ namespace nucleus
 	escape("unable to dump the meta signature");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[_State] " << this->meta._state << std::endl;
+		<< "[_State] " << std::dec << this->meta._state << std::endl;
 
       // dump the data part.
       std::cout << alignment << elle::Dumpable::Shift << "[Data]" << std::endl;
@@ -495,7 +495,7 @@ namespace nucleus
 	escape("unable to dump the contents' address");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[Size] " << this->data.size << std::endl;
+		<< "[Size] " << std::dec << this->data.size << std::endl;
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
 		<< "[Stamp]" << std::endl;
@@ -511,7 +511,7 @@ namespace nucleus
 	escape("unable to dump the data signature");
 
       std::cout << alignment << elle::Dumpable::Shift << elle::Dumpable::Shift
-		<< "[_State] " << this->data._state << std::endl;
+		<< "[_State] " << std::dec << this->data._state << std::endl;
 
       leave();
     }
