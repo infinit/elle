@@ -68,6 +68,7 @@ namespace elle
 #include <elle/standalone/Standalone.hh>
 #include <elle/radix/Radix.hh>
 #include <elle/package/Package.hh>
+#include <elle/container/Container.hh>
 #include <elle/io/IO.hh>
 #include <elle/cryptography/Cryptography.hh>
 #include <elle/concurrency/Concurrency.hh>
@@ -89,6 +90,7 @@ namespace elle
   using namespace standalone;
   using namespace radix;
   using namespace package;
+  using namespace container;
   using namespace io;
   using namespace cryptography;
   using namespace concurrency;
