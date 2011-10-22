@@ -203,11 +203,14 @@ namespace etoile
 	    address = entry->address;
 
 	  // specify the closing operation performed on the scope.
-	  if (actor->scope->Operate<automaton::Directory>(
-	        gear::OperationDiscard,
-		callback) == elle::StatusError)
+	  if (actor->scope->Operate(
+	        gear::OperationDiscard) == elle::StatusError)
 	    escape("unable to specify the operation being performed "
 		   "on the scope");
+
+	  // retrieve the shutdown callback.
+	  if (actor->scope->Shutdown(callback) == elle::StatusError)
+	    escape("unable to retrieve the shutdown callback");
 
 	  // trigger the closing callback.
 	  if (callback.Call(*context) == elle::StatusError)

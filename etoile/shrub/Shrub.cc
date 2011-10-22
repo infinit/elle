@@ -30,7 +30,7 @@ namespace etoile
     ///
     /// this container represents the root of the hierarchical data container.
     ///
-    Riffle*			Shrub::Riffles = NULL;
+    Riffle*				Shrub::Riffles = NULL;
 
     ///
     /// this queue maintains the freshness timestamps related to the riffles.
@@ -38,12 +38,12 @@ namespace etoile
     /// whenever the capacity is reached, this data structure is used
     /// to quickly locate the least-recently-used riffles.
     ///
-    Queue			Shrub::Timestamps;
+    elle::Timeline<Riffle*>		Shrub::Queue;
 
     ///
     /// this timer triggers the sweeper on a regular basis.
     ///
-    elle::Timer*		Shrub::Timer;
+    elle::Timer				Shrub::Timer;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -60,21 +60,18 @@ namespace etoile
       if (Infinit::Configuration.shrub.status == false)
 	leave();
 
-      // allocate the sweeper timer.
-      Shrub::Timer = new elle::Timer;
-
       // create the sweeper timer.
-      if (Shrub::Timer->Create(
+      if (Shrub::Timer.Create(
 	    elle::Timer::ModeRepetition) == elle::StatusError)
 	escape("unable to create the timer");
 
       // subscribe to the timer's signal.
-      if (Shrub::Timer->signal.timeout.Subscribe(
+      if (Shrub::Timer.signal.timeout.Subscribe(
 	    elle::Callback<>::Infer(&Shrub::Sweeper)) == elle::StatusError)
 	escape("unable to subscribe to the signal");
 
       // start the timer.
-      if (Shrub::Timer->Start(
+      if (Shrub::Timer.Start(
 	    Infinit::Configuration.shrub.frequency) == elle::StatusError)
 	escape("unable to start the timer");
 
@@ -92,9 +89,9 @@ namespace etoile
       if (Infinit::Configuration.shrub.status == false)
 	leave();
 
-      // delete the timer, if present.
-      if (Shrub::Timer != NULL)
-	delete Shrub::Timer;
+      // stop the timer.
+      if (Shrub::Timer.Stop() == elle::StatusError)
+	escape("unable to stop the timer");
 
       // delete the shrub content, if present.
       if (Shrub::Riffles != NULL)
@@ -104,7 +101,8 @@ namespace etoile
 	    escape("unable to flush the riffles");
 
 	  // release the shrub slot.
-	  if (Shrub::Timestamps.Remove(Shrub::Riffles) == elle::StatusError)
+	  if (Shrub::Queue.Delete(Shrub::Riffles->timestamp,
+				  Shrub::Riffles) == elle::StatusError)
 	    escape("unable to remove the riffle");
 
 	  // delete the root riffle.
@@ -134,28 +132,28 @@ namespace etoile
       // as soon as the number of available slots is reached.
       for (i = 0; i < size; i++)
 	{
-	  Group*	group;
-	  Riffle*	riffle;
+	  elle::Bucket<Riffle*>*	bucket;
+	  Riffle*			riffle;
 
 	  // stop if there are enough available slots to proceed.
 	  if ((Infinit::Configuration.shrub.capacity -
-	       Shrub::Timestamps.container.size()) >= size)
+	       Shrub::Queue.container.size()) >= size)
 	    break;
 
 	  // stop if the shrub is empty.
-	  if (Shrub::Timestamps.container.empty() == true)
+	  if (Shrub::Queue.container.empty() == true)
 	    break;
 
-	  // retrieve the least-recently-used group of riffles.
-	  group = Shrub::Timestamps.container.begin()->second;
+	  // retrieve the least-recently-used bucket of riffles.
+	  bucket = Shrub::Queue.container.begin()->second;
 
-	  // retrieve the first group's riffle.
+	  // retrieve the first bucket's riffle.
 	  //
-	  // note that here we do not go through the group's riffles because
+	  // note that here we do not go through the bucket's riffles because
 	  // the destruction of one may actually imply the destruction of
 	  // many others, i.e its children, and therefore perhaps remove
-	  // the group.
-	  riffle = group->container.front();
+	  // the bucket.
+	  riffle = bucket->container.front();
 
 	  // depending on the riffle's parent.
 	  if (riffle->parent != NULL)
@@ -178,8 +176,8 @@ namespace etoile
 		escape("unable to flush the riffles");
 
 	      // release the shrub slot.
-	      if (Shrub::Timestamps.Remove(
-		    Shrub::Riffles) == elle::StatusError)
+	      if (Shrub::Queue.Delete(Shrub::Riffles->timestamp,
+				      Shrub::Riffles) == elle::StatusError)
 		escape("unable to remove the riffle");
 
 	      // delete the root riffle.
@@ -258,8 +256,8 @@ namespace etoile
 		    escape("unable to flush the riffles");
 
 		  // release the shrub slot.
-		  if (Shrub::Timestamps.Remove(Shrub::Riffles) ==
-		      elle::StatusError)
+		  if (Shrub::Queue.Delete(Shrub::Riffles->timestamp,
+					  Shrub::Riffles) == elle::StatusError)
 		    escape("unable to remove the riffle");
 
 		  // delete the root riffle.
@@ -338,7 +336,8 @@ namespace etoile
 	    escape("unable to create the riffle");
 
 	  // add the riffle to the queue.
-	  if (Shrub::Timestamps.Add(riffle) == elle::StatusError)
+	  if (Shrub::Queue.Insert(riffle->timestamp,
+				  riffle) == elle::StatusError)
 	    escape("unable to add the riffle");
 
 	  // set the root riffle.
@@ -441,7 +440,8 @@ namespace etoile
 	    escape("unable to flush the riffles");
 
 	  // release the shrub slot.
-	  if (Shrub::Timestamps.Remove(Shrub::Riffles) == elle::StatusError)
+	  if (Shrub::Queue.Delete(Shrub::Riffles->timestamp,
+				  Shrub::Riffles) == elle::StatusError)
 	    escape("unable to remove the riffle");
 
 	  // delete the root riffle.
@@ -477,7 +477,7 @@ namespace etoile
 	}
 
       // dump the queue.
-      if (Shrub::Timestamps.Dump(margin + 4) == elle::StatusError)
+      if (Shrub::Queue.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the queue");
 
       leave();
@@ -504,6 +504,10 @@ namespace etoile
 
       enter();
 
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] shrub::Shrub::Sweeper()\n");
+
       // retrieve the current timestamp.
       if (current.Current() == elle::StatusError)
 	escape("unable to retrieve the current time");
@@ -514,21 +518,21 @@ namespace etoile
 
       // go through the queue as long as the riffles have expired i.e
       // their update timestamp has reached the threshold.
-      while (Shrub::Timestamps.container.empty() == false)
+      while (Shrub::Queue.container.empty() == false)
 	{
-	  Group*		group;
-	  Riffle*		riffle;
+	  elle::Bucket<Riffle*>*	bucket;
+	  Riffle*			riffle;
 
-	  // retrieve the least-recently-used group.
-	  group = Shrub::Timestamps.container.begin()->second;
+	  // retrieve the least-recently-used bucket.
+	  bucket = Shrub::Queue.container.begin()->second;
 
-	  // retrieve the first group's riffle.
+	  // retrieve the first bucket's riffle.
 	  //
-	  // note that here we do not go through the group's riffles because
+	  // note that here we do not go through the bucket's riffles because
 	  // the destruction of one may actually imply the destruction of
 	  // many others, i.e its children, and therefore perhaps remove
-	  // the group.
-	  riffle = group->container.front();
+	  // the bucket.
+	  riffle = bucket->container.front();
 
 	  // if the riffle has not expired, exit the loop since all the
 	  // following riffles are fresher.
@@ -553,8 +557,8 @@ namespace etoile
 		escape("unable to flush the riffles");
 
 	      // release the shrub slot.
-	      if (Shrub::Timestamps.Remove(Shrub::Riffles) ==
-		  elle::StatusError)
+	      if (Shrub::Queue.Delete(Shrub::Riffles->timestamp,
+				      Shrub::Riffles) == elle::StatusError)
 		escape("unable to remove the riffle");
 
 	      // delete the root riffle.

@@ -41,6 +41,9 @@ namespace etoile
     class Gear
     {
     public:
+      //
+      // static methods
+      //
       static elle::Status	Initialize();
       static elle::Status	Clean();
     };

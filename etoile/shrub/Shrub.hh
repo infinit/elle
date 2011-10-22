@@ -18,7 +18,6 @@
 #include <elle/Elle.hh>
 
 #include <etoile/shrub/Riffle.hh>
-#include <etoile/shrub/Queue.hh>
 
 #include <etoile/path/Slab.hh>
 #include <etoile/path/Route.hh>
@@ -107,19 +106,13 @@ namespace etoile
       //
       // static attributes
       //
-      static Riffle*		Riffles;
-      static Queue		Timestamps;
+      static Riffle*			Riffles;
 
-      static elle::Timer*	Timer;
+      static elle::Timeline<Riffle*>	Queue;
+      static elle::Timer		Timer;
     };
 
   }
 }
-
-//
-// ---------- includes --------------------------------------------------------
-//
-
-#include <etoile/shrub/Group.hh>
 
 #endif

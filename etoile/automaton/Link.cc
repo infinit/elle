@@ -97,6 +97,8 @@ namespace etoile
 			  gear::Link&				context,
 			  const path::Way&			way)
     {
+      nucleus::Size	size;
+
       enter();
 
       // determine the rights.
@@ -121,6 +123,17 @@ namespace etoile
       // bind the link.
       if (context.contents->content->Bind(way.path) == elle::StatusError)
 	escape("unable to bind the link");
+
+      // retrieve the new contents's size.
+      if (context.contents->content->Capacity(size) == elle::StatusError)
+	escape("unable to retrieve the contents's size");
+
+      // update the object data section.
+      if (context.object.Update(
+	    context.object.author,
+	    context.object.data.contents,
+	    size) == elle::StatusError)
+	escape("unable to update the object data section");
 
       // set the context's state.
       context.state = gear::Context::StateModified;

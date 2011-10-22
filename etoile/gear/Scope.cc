@@ -19,6 +19,13 @@
 #include <etoile/gear/Link.hh>
 #include <etoile/gear/Object.hh>
 
+#include <etoile/automaton/Object.hh>
+#include <etoile/automaton/File.hh>
+#include <etoile/automaton/Directory.hh>
+#include <etoile/automaton/Link.hh>
+
+#include <Infinit.hh>
+
 namespace etoile
 {
   namespace gear
@@ -43,6 +50,70 @@ namespace etoile
 //
 
     ///
+    /// this method initializes the scope system.
+    ///
+    elle::Status	Scope::Initialize()
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the scope system.
+    ///
+    elle::Status	Scope::Clean()
+    {
+      enter();
+
+      //
+      // release the onymous scopes.
+      //
+      {
+	Scope::S::O::Scoutor	scoutor;
+
+	// go through the container.
+	for (scoutor = Scope::Scopes::Onymous.begin();
+	     scoutor != Scope::Scopes::Onymous.end();
+	     scoutor++)
+	  {
+	    Scope*		scope = scoutor->second;
+
+	    // delete the scope.
+	    delete scope;
+	  }
+
+	// clear the container.
+	Scope::Scopes::Onymous.clear();
+      }
+
+      //
+      // release the anonymous scopes.
+      //
+      {
+	Scope::S::A::Scoutor	scoutor;
+
+	// go through the container.
+	for (scoutor = Scope::Scopes::Anonymous.begin();
+	     scoutor != Scope::Scopes::Anonymous.end();
+	     scoutor++)
+	  {
+	    Scope*		scope = *scoutor;
+
+	    // delete the scope.
+	    delete scope;
+	  }
+
+	// clear the container.
+	Scope::Scopes::Anonymous.clear();
+      }
+
+      leave();
+    }
+
+    ///
     /// this method tries to locate an existing scope given the chemin.
     ///
     /// if none exists, a scope is created and added to the container.
@@ -65,6 +136,10 @@ namespace etoile
 
 	  // allocate a new scope.
 	  s = new Scope(chemin);
+
+	  // create the scope.
+	  if (s->Create() == elle::StatusError)
+	    escape("unable to create the scope");
 
 	  // insert the scope in the container.
 	  result = Scope::Scopes::Onymous.insert(
@@ -102,7 +177,11 @@ namespace etoile
       // allocate a new scope.
       s = new Scope;
 
-      // add the scope.
+      // create the scope.
+      if (s->Create() == elle::StatusError)
+	escape("unable to create the scope");
+
+      // insert the scope in the anonymous container.
       Scope::Scopes::Anonymous.push_back(s);
 
       // return the scope.
@@ -222,6 +301,7 @@ namespace etoile
     /// default constructor especially useful for anonymous scopes.
     ///
     Scope::Scope():
+      state(StateNone),
       context(NULL),
       chronicle(NULL)
     {
@@ -231,6 +311,7 @@ namespace etoile
     /// chemin-specific constructor.
     ///
     Scope::Scope(const path::Chemin&				chemin):
+      state(StateNone),
       chemin(chemin),
       context(NULL),
       chronicle(NULL)
@@ -243,6 +324,9 @@ namespace etoile
     Scope::~Scope()
     {
       Scope::A::Scoutor	scoutor;
+
+      // stop the timer.
+      this->timer.Stop();
 
       // delete the context.
       if (this->context != NULL)
@@ -270,6 +354,32 @@ namespace etoile
 //
 // ---------- methods ---------------------------------------------------------
 //
+
+    ///
+    /// this method creates a scope.
+    ///
+    elle::Status	Scope::Create()
+    {
+      enter();
+
+      // create the supervisor timer.
+      if (this->timer.Create(
+	    elle::Timer::ModeRepetition) == elle::StatusError)
+	escape("unable to create the timer");
+
+      // subscribe to the timer's signal.
+      if (this->timer.signal.timeout.Subscribe(
+	    elle::Callback<>::Infer(&Scope::Supervisor,
+				    this)) == elle::StatusError)
+	escape("unable to subscribe to the signal");
+
+      // start the timer.
+      if (this->timer.Start(
+	    Infinit::Configuration.gear.lifespan) == elle::StatusError)
+	escape("unable to start the timer");
+
+      leave();
+    }
 
     ///
     /// this method adds an actor to the scope's set of actors.
@@ -332,6 +442,322 @@ namespace etoile
 
       // remove the actor.
       this->actors.erase(iterator);
+
+      leave();
+    }
+
+    ///
+    /// this method is called to indicate the operation being performed
+    /// on the scope by the actor.
+    ///
+    /// note that since multiple actors operate on the same scope, one must
+    /// assume that other actors may have modified or even destroy the
+    /// scope's target.
+    ///
+    elle::Status	Scope::Operate(const Operation		operation)
+    {
+      enter();
+
+      // update the context's closing operation according to its given
+      // value and the given operation.
+      switch (operation)
+	{
+	case OperationDiscard:
+	  {
+	    // depending on the current context's closing operation.
+	    switch (this->context->operation)
+	      {
+	      case OperationUnknown:
+		{
+		  //
+		  // in this case, the given closing operation is the first
+		  // one to take place.
+		  //
+		  // thus, the context is marked as requiring to be discarded.
+		  //
+
+		  // set the context's closing operation.
+		  this->context->operation = operation;
+
+		  break;
+		}
+	      case OperationDiscard:
+		{
+		  //
+		  // the given closing operation is the same as the current
+		  // context's.
+		  //
+		  // thus, everything seems fine this way.
+		  //
+
+		  break;
+		}
+	      case OperationStore:
+		{
+		  //
+		  // the context's modifications have been marked as requiring
+		  // to be stored.
+		  //
+		  // therefore, the given operation does not imply any change
+		  // of plan.
+		  //
+
+		  break;
+		}
+	      case OperationDestroy:
+		{
+		  //
+		  // as for the OperationStore, in this case, the context
+		  // has been marked for deletion.
+		  //
+		  // therefore, the discarding given operation does not
+		  // change the scope's closing operation i.e Destroy.
+		  //
+
+		  break;
+		}
+	      }
+
+	    break;
+	  }
+	case OperationStore:
+	  {
+	    // depending on the current context's closing operation.
+	    switch (this->context->operation)
+	      {
+	      case OperationUnknown:
+		{
+		  //
+		  // in this case, the given closing operation is the first
+		  // one to take place.
+		  //
+		  // thus, the context is marked as requiring to be stored.
+		  //
+
+		  // set the context's closing operation.
+		  this->context->operation = operation;
+
+		  break;
+		}
+	      case OperationDiscard:
+		{
+		  //
+		  // the given closing operation is of higher importance than
+		  // the existing one.
+		  //
+		  // therefore, the closing operation is set to: Store.
+		  //
+
+		  // set the context's closing operation.
+		  this->context->operation = operation;
+
+		  break;
+		}
+	      case OperationStore:
+		{
+		  //
+		  // the context's modifications have been marked as requiring
+		  // to be stored.
+		  //
+		  // since the given operation is identical, the context's
+		  // closing operation does not need to be changed.
+		  //
+
+		  break;
+		}
+	      case OperationDestroy:
+		{
+		  //
+		  // in this case, the context has been marked for deletion.
+		  //
+		  // since the storing given operation is of lower importance,
+		  // the closing operation is maintained.
+		  //
+
+		  break;
+		}
+	      }
+
+	    break;
+	  }
+	case OperationDestroy:
+	  {
+	    // depending on the current context's closing operation.
+	    switch (this->context->operation)
+	      {
+	      case OperationUnknown:
+		{
+		  //
+		  // in this case, the given closing operation is the first
+		  // one to take place.
+		  //
+		  // thus, the context is marked as requiring to be destroyed.
+		  //
+
+		  // set the context's closing operation.
+		  this->context->operation = operation;
+
+		  break;
+		}
+	      case OperationDiscard:
+		{
+		  //
+		  // the given closing operation is of higher importance than
+		  // the existing one.
+		  //
+		  // therefore, the closing operation is set to: Destroy.
+		  //
+
+		  // set the context's closing operation.
+		  this->context->operation = operation;
+
+		  break;
+		}
+	      case OperationStore:
+		{
+		  //
+		  // in this case, although some actors may have modified
+		  // the context---since the current closing operation is
+		  // Store---, the operation is set to Destroy because the
+		  // given operation superseeds the current one.
+		  //
+
+		  // set the context's closing operation.
+		  this->context->operation = operation;
+
+		  break;
+		}
+	      case OperationDestroy:
+		{
+		  //
+		  // in this case, the context has already been marked
+		  // for deletion.
+		  //
+		  // therefore, the closing operation is maintained.
+		  //
+
+		  break;
+		}
+	      }
+
+	    break;
+	  }
+	case OperationUnknown:
+	  {
+	    escape("unable to process the closing operation '%u'\n",
+		   operation);
+	  }
+	}
+
+      leave();
+    }
+
+//
+// ---------- callbacks -------------------------------------------------------
+//
+
+    ///
+    /// this callback is triggered whenever the scope is considered having
+    /// expired.
+    ///
+    /// if the scope has reached a certain lifetime and has not been modified,
+    /// the supervisor refreshes it by fetching a potentially new version of
+    /// the object. this ensures that a scope being still in use because of
+    /// an actor never releasing it, will, from time to time, be refreshed
+    /// in order to provide the active actors the latest view.
+    ///
+    /// likewise, if the scope has reached a certain lifetime and has been
+    /// modified, the supervisor forces the scope's modifications to be
+    /// disclosed so that, although non-active actors remained attached
+    /// to this scope, the network gets updated according to the modifications
+    /// performed locally.
+    ///
+    elle::Status	Scope::Supervisor()
+    {
+      enter();
+
+      // debug.
+      if (Infinit::Configuration.debug.etoile == true)
+	printf("[etoile] gear::Scope::Supervisor()\n");
+
+      // if the scope is already being taking care of, ignore this
+      // supervision.
+      if (this->state != Scope::StateNone)
+	leave();
+
+      // if this scope is anonymous, i.e has been created, there is no
+      // need to refresh it nor too disclose its modifications since nobody
+      // can load it but the actor having created it.
+      if (this->chemin == path::Chemin::Null)
+	leave();
+
+      // depending on the context's state.
+      switch (this->context->state)
+	{
+	case Context::StateUnknown:
+	case Context::StateCleaned:
+	  {
+	    escape("unexpected state '%u'",
+		   this->context->state);
+	  }
+	case Context::StateInitialized:
+	case Context::StateDiscarded:
+	  {
+	    // perform the refreshing depending on the context's nature.
+	    switch (this->context->nature)
+	      {
+	      case NatureUnknown:
+		{
+		  escape("unknown context nature");
+		}
+	      case NatureObject:
+		{
+		  // refresh the scope.
+		  if (this->Refresh<gear::Object>() == elle::StatusError)
+		    escape("unable to refresh the scope");
+
+		  break;
+		}
+	      case NatureFile:
+		{
+		  // refresh the scope.
+		  if (this->Refresh<gear::File>() == elle::StatusError)
+		    escape("unable to refresh the scope");
+
+		  break;
+		}
+	      case NatureDirectory:
+		{
+		  // refresh the scope.
+		  if (this->Refresh<gear::Directory>() == elle::StatusError)
+		    escape("unable to refresh the scope");
+
+		  break;
+		}
+	      case NatureLink:
+		{
+		  // refresh the scope.
+		  if (this->Refresh<gear::Link>() == elle::StatusError)
+		    escape("unable to refresh the scope");
+
+		  break;
+		}
+	      }
+
+	    break;
+	  }
+	case Context::StateModified:
+	case Context::StateStored:
+	case Context::StateDestroyed:
+	  {
+	    // XXX seal context & push the modifications
+
+	    // XXX
+	    printf("M, S OR D\n");
+
+	    break;
+	  }
+	}
 
       leave();
     }

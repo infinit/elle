@@ -18,12 +18,25 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/gear/Directory.hh>
-
 #include <etoile/path/Slice.hh>
 
 namespace etoile
 {
+  namespace gear
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// this class needs to be forwarded declared in order to prevent
+    /// conflits.
+    ///
+    class Directory;
+
+  }
+
   namespace automaton
   {
 
@@ -68,5 +81,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/gear/Directory.hh>
 
 #endif

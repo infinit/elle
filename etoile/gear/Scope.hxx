@@ -45,230 +45,26 @@ namespace etoile
     }
 
     ///
-    /// this method is called to indicate the operation being performed
-    /// on the scope by the actor.
+    /// this method returns the shutdown callback to be carried out which
+    /// is deduced from the current scope's state.
     ///
-    /// note that since multiple actors operate on the same scope, one must
-    /// assume that other actors may have modified or even destroy the
-    /// scope's target.
+    /// note however that if actors are still working on the scope, the
+    /// returned callback is null.
     ///
-    /// therefore, this method returns a callback on the final operation
-    /// to be carried out. however, if actors are still working on the scope,
-    /// the returned callback is null.
-    ///
-    template <typename X,
-	      typename T>
-    elle::Status	Scope::Operate(const Operation		operation,
-				       elle::Callback<
-				         elle::Status,
-				         elle::Parameters<
-				           T&
-				         >
-				       >&			callback)
+    template <typename T>
+    elle::Status	Scope::Shutdown(elle::Callback<
+				          elle::Status,
+				          elle::Parameters<
+				            T&
+				          >
+				        >&			callback)
     {
       enter();
-
-      // first, update the context's closing operation according to
-      // its given value and the given operation.
-      switch (operation)
-	{
-	case OperationDiscard:
-	  {
-	    // depending on the current context's closing operation.
-	    switch (this->context->operation)
-	      {
-	      case OperationUnknown:
-		{
-		  //
-		  // in this case, the given closing operation is the first
-		  // one to take place.
-		  //
-		  // thus, the context is marked as requiring to be discarded.
-		  //
-
-		  // set the context's closing operation.
-		  this->context->operation = operation;
-
-		  break;
-		}
-	      case OperationDiscard:
-		{
-		  //
-		  // the given closing operation is the same as the current
-		  // context's.
-		  //
-		  // thus, everything seems fine this way.
-		  //
-
-		  break;
-		}
-	      case OperationStore:
-		{
-		  //
-		  // the context's modifications have been marked as requiring
-		  // to be stored.
-		  //
-		  // therefore, the given operation does not imply any change
-		  // of plan.
-		  //
-
-		  break;
-		}
-	      case OperationDestroy:
-		{
-		  //
-		  // as for the OperationStore, in this case, the context
-		  // has been marked for deletion.
-		  //
-		  // therefore, the discarding given operation does not
-		  // change the scope's closing operation i.e Destroy.
-		  //
-
-		  break;
-		}
-	      }
-
-	    break;
-	  }
-	case OperationStore:
-	  {
-	    // depending on the current context's closing operation.
-	    switch (this->context->operation)
-	      {
-	      case OperationUnknown:
-		{
-		  //
-		  // in this case, the given closing operation is the first
-		  // one to take place.
-		  //
-		  // thus, the context is marked as requiring to be stored.
-		  //
-
-		  // set the context's closing operation.
-		  this->context->operation = operation;
-
-		  break;
-		}
-	      case OperationDiscard:
-		{
-		  //
-		  // the given closing operation is of higher importance than
-		  // the existing one.
-		  //
-		  // therefore, the closing operation is set to: Store.
-		  //
-
-		  // set the context's closing operation.
-		  this->context->operation = operation;
-
-		  break;
-		}
-	      case OperationStore:
-		{
-		  //
-		  // the context's modifications have been marked as requiring
-		  // to be stored.
-		  //
-		  // since the given operation is identical, the context's
-		  // closing operation does not need to be changed.
-		  //
-
-		  break;
-		}
-	      case OperationDestroy:
-		{
-		  //
-		  // in this case, the context has been marked for deletion.
-		  //
-		  // since the storing given operation is of lower importance,
-		  // the closing operation is maintained.
-		  //
-
-		  break;
-		}
-	      }
-
-	    break;
-	  }
-	case OperationDestroy:
-	  {
-	    // depending on the current context's closing operation.
-	    switch (this->context->operation)
-	      {
-	      case OperationUnknown:
-		{
-		  //
-		  // in this case, the given closing operation is the first
-		  // one to take place.
-		  //
-		  // thus, the context is marked as requiring to be destroyed.
-		  //
-
-		  // set the context's closing operation.
-		  this->context->operation = operation;
-
-		  break;
-		}
-	      case OperationDiscard:
-		{
-		  //
-		  // the given closing operation is of higher importance than
-		  // the existing one.
-		  //
-		  // therefore, the closing operation is set to: Destroy.
-		  //
-
-		  // set the context's closing operation.
-		  this->context->operation = operation;
-
-		  break;
-		}
-	      case OperationStore:
-		{
-		  //
-		  // in this case, although some actors may have modified
-		  // the context---since the current closing operation is
-		  // Store---, the operation is set to Destroy because the
-		  // given operation superseeds the current one.
-		  //
-
-		  // set the context's closing operation.
-		  this->context->operation = operation;
-
-		  break;
-		}
-	      case OperationDestroy:
-		{
-		  //
-		  // in this case, the context has already been marked
-		  // for deletion.
-		  //
-		  // therefore, the closing operation is maintained.
-		  //
-
-		  break;
-		}
-	      }
-
-	    break;
-	  }
-	case OperationUnknown:
-	  {
-	    escape("unable to process the closing operation '%u'\n",
-		   operation);
-	  }
-	}
-
-      //
-      // finally, return a callback to be triggered by the closing actor
-      // depending on both the context's closing operation but also on
-      // the presence of concurrent actors.
-      //
 
       // if actors remain i.e apart from the current one, return a null
       // callback.
       //
-      // indeed, only the final actor will trigger the closing operation. this
+      // indeed, only the final actor will trigger the shutdown operation. this
       // way potential conflicts are prevents while expensive cryptographic
       // operations are performed only once.
       if (this->actors.size() > 1)
@@ -286,7 +82,7 @@ namespace etoile
 	{
 	  //
 	  // otherwise, the current actor is the last one and is responsible
-	  // for triggering the closing operation.
+	  // for triggering the shutdown operation.
 	  //
 	  // therefore, returning a callback depending on the context's
 	  // closing operation.
@@ -298,21 +94,21 @@ namespace etoile
 	    case OperationDiscard:
 	      {
 		// return the callback on the Disard method.
-		callback = elle::Callback<>::Infer(&X::Discard);
+		callback = elle::Callback<>::Infer(&T::A::Discard);
 
 		break;
 	      }
 	    case OperationStore:
 	      {
 		// return the callback on the Store method.
-		callback = elle::Callback<>::Infer(&X::Store);
+		callback = elle::Callback<>::Infer(&T::A::Store);
 
 		break;
 	      }
 	    case OperationDestroy:
 	      {
 		// return the callback on the Destroy method.
-		callback = elle::Callback<>::Infer(&X::Destroy);
+		callback = elle::Callback<>::Infer(&T::A::Destroy);
 
 		break;
 	      }
@@ -324,6 +120,103 @@ namespace etoile
 	      }
 	    }
 	}
+
+      leave();
+    }
+
+    ///
+    /// XXX
+    ///
+    template <typename T>
+    elle::Status	Scope::Refresh()
+    {
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  T&
+	  >
+	>		callback;
+      T*		context;
+      nucleus::Location	location;
+      Actor*		actor;
+
+      enterx(instance(actor),
+	     instance(context));
+
+      // locate the scope based on the chemin.
+      if (this->chemin.Locate(location) == elle::StatusError)
+	escape("unable to locate the scope");
+
+      // allocate an actor.
+      actor = new Actor(this);
+
+      // attach the actor to the scope so that this scope does not
+      // get relinquished until the refreshing process terminates.
+      if (actor->Attach() == elle::StatusError)
+	escape("unable to attach the actor to the scope");
+
+      // set the state.
+      this->state = Scope::StateRefresh;
+
+      // allocate a context.
+      context = new T;
+
+      // load the object.
+      if (T::A::Load(*context, location) == elle::StatusError)
+	{
+	  // reset the state.
+	  this->state = Scope::StateNone;
+
+	  // detach the actor.
+	  if (actor->Detach() == elle::StatusError)
+	    escape("unable to detach the actor");
+
+	  escape("unable to load the object");
+	}
+
+      // verify that the context's state has not change in between.
+      if (!((this->context->state == Context::StateInitialized) ||
+	    (this->context->state == Context::StateDiscarded)))
+	escape("the context's state has changed during the supervision");
+
+      // delete the existing context.
+      delete this->context;
+
+      // set the new context.
+      this->context = context;
+
+      // waive.
+      waive(context);
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(OperationDiscard) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
+
+      // specify the closing operation performed on the scope.
+      if (actor->scope->Operate(OperationDiscard) == elle::StatusError)
+	escape("unable to specify the operation being performed "
+	       "on the scope");
+
+      // retrieve the shutdown callback.
+      if (actor->scope->Shutdown(callback) == elle::StatusError)
+	escape("unable to retrieve the shutdown callback");
+
+      // trigger the closing callback.
+      if (callback.Call(*context) == elle::StatusError)
+	escape("unable to perform the closing operation");
+
+      // detach the actor.
+      if (actor->Detach() == elle::StatusError)
+	escape("unable to detach the actor");
+
+      // delete the actor.
+      delete actor;
+
+      // waive.
+      waive(actor);
+
+      // reset the state.
+      this->state = Scope::StateNone;
 
       leave();
     }

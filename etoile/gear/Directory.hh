@@ -23,6 +23,8 @@
 
 #include <etoile/path/Slice.hh>
 
+#include <etoile/automaton/Directory.hh>
+
 namespace etoile
 {
   namespace gear
@@ -51,6 +53,8 @@ namespace etoile
       //
       // types
       //
+      typedef automaton::Directory		A;
+
       typedef nucleus::Catalog			C;
 
       //

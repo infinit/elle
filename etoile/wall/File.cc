@@ -325,19 +325,21 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the context.
+      if (actor->scope->Use(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // specify the closing operation performed by the actor.
       if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
 	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate<automaton::File>(
-	    gear::OperationDiscard,
-	    callback) == elle::StatusError)
+      if (actor->scope->Operate(gear::OperationDiscard) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
-      // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // retrieve the shutdown callback.
+      if (actor->scope->Shutdown(callback) == elle::StatusError)
+	escape("unable to retrieve the shutdown callback");
 
       // trigger the closing callback.
       if (callback.Call(*context) == elle::StatusError)
@@ -386,19 +388,21 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the context.
+      if (actor->scope->Use(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // specify the closing operation performed by the actor.
       if (actor->Operate(gear::OperationStore) == elle::StatusError)
 	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate<automaton::File>(
-	    gear::OperationStore,
-	    callback) == elle::StatusError)
+      if (actor->scope->Operate(gear::OperationStore) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
-      // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // retrieve the shutdown callback.
+      if (actor->scope->Shutdown(callback) == elle::StatusError)
+	escape("unable to retrieve the shutdown callback");
 
       // trigger the closing callback.
       if (callback.Call(*context) == elle::StatusError)
@@ -446,19 +450,21 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the context.
+      if (actor->scope->Use(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
       // specify the closing operation performed by the actor.
       if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
 	escape("this operation cannot be performed by this actor");
 
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate<automaton::File>(
-	    gear::OperationDestroy,
-	    callback) == elle::StatusError)
+      if (actor->scope->Operate(gear::OperationDestroy) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
-      // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // retrieve the shutdown callback.
+      if (actor->scope->Shutdown(callback) == elle::StatusError)
+	escape("unable to retrieve the shutdown callback");
 
       // trigger the closing callback.
       if (callback.Call(*context) == elle::StatusError)

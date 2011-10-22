@@ -99,6 +99,8 @@ namespace etoile
 			  const nucleus::Offset&		offset,
 			  const elle::Region&			region)
     {
+      nucleus::Size	size;
+
       enter();
 
       // determine the rights.
@@ -124,6 +126,17 @@ namespace etoile
       if (context.contents->content->Write(offset,
 					   region) == elle::StatusError)
 	escape("unable to write the file");
+
+      // retrieve the new contents's size.
+      if (context.contents->content->Capacity(size) == elle::StatusError)
+	escape("unable to retrieve the contents's size");
+
+      // update the object data section.
+      if (context.object.Update(
+	    context.object.author,
+	    context.object.data.contents,
+	    size) == elle::StatusError)
+	escape("unable to update the object data section");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
@@ -175,8 +188,10 @@ namespace etoile
     ///
     elle::Status	File::Adjust(
 			  gear::File&				context,
-			  const nucleus::Size&			size)
+			  const nucleus::Size&			length)
     {
+      nucleus::Size	size;
+
       enter();
 
       // determine the rights.
@@ -198,9 +213,20 @@ namespace etoile
 	escape("the user does not seem to be able to operate on this "
 	       "directory");
 
-      // adjust the size.
-      if (context.contents->content->Adjust(size) == elle::StatusError)
+      // adjust the data size.
+      if (context.contents->content->Adjust(length) == elle::StatusError)
 	escape("unable to adjust the file size");
+
+      // retrieve the new contents's size.
+      if (context.contents->content->Capacity(size) == elle::StatusError)
+	escape("unable to retrieve the contents's size");
+
+      // update the object data section.
+      if (context.object.Update(
+	    context.object.author,
+	    context.object.data.contents,
+	    size) == elle::StatusError)
+	escape("unable to update the object data section");
 
       // set the context's state.
       context.state = gear::Context::StateModified;

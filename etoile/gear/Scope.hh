@@ -54,6 +54,16 @@ namespace etoile
     {
     public:
       //
+      // enumerations
+      //
+      enum State
+	{
+	  StateNone,
+	  StateRefresh,
+	  StateDisclose
+	};
+
+      //
       // types
       //
       struct S
@@ -82,8 +92,11 @@ namespace etoile
       };
 
       //
-      // methods
+      // static methods
       //
+      static elle::Status	Initialize();
+      static elle::Status	Clean();
+
       static elle::Status	Acquire(const path::Chemin&,
 					Scope*&);
       static elle::Status	Supply(Scope*&);
@@ -94,10 +107,10 @@ namespace etoile
       //
       // static attributes
       //
-      struct			Scopes
+      struct				Scopes
       {
-	static S::O::Container	Onymous;
-	static S::A::Container	Anonymous;
+	static S::O::Container		Onymous;
+	static S::A::Container		Anonymous;
       };
 
       //
@@ -110,6 +123,8 @@ namespace etoile
       //
       // methods
       //
+      elle::Status	Create();
+
       elle::Status	Locate(Actor*,
 			       A::Iterator* = NULL);
 
@@ -119,15 +134,23 @@ namespace etoile
       template <typename T>
       elle::Status	Use(T*&);
 
-      template <typename X,
-		typename T>
-      elle::Status	Operate(const Operation,
-				elle::Callback<
+      elle::Status	Operate(const Operation);
+      template <typename T>
+      elle::Status	Shutdown(elle::Callback<
 				  elle::Status,
 				  elle::Parameters<
 				    T&
 				    >
 				  >&);
+
+      template <typename T>
+      elle::Status	Refresh();
+      elle::Status	Disclose();
+
+      //
+      // callbacks
+      //
+      elle::Status	Supervisor();
 
       //
       // interfaces
@@ -139,6 +162,9 @@ namespace etoile
       //
       // attributes
       //
+      State		state;
+      elle::Timer	timer;
+
       path::Chemin	chemin;
 
       Context*		context;

@@ -8,8 +8,8 @@
 // author        julien quintard   [fri aug 14 18:57:08 2009]
 //
 
-#ifndef ETOILE_AUTOMATON_ETOILE_HH
-#define ETOILE_AUTOMATON_ETOILE_HH
+#ifndef ETOILE_AUTOMATON_FILE_HH
+#define ETOILE_AUTOMATON_FILE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -18,10 +18,23 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/gear/File.hh>
-
 namespace etoile
 {
+  namespace gear
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// this class needs to be forwarded declared in order to prevent
+    /// conflits.
+    ///
+    class File;
+
+  }
+
   namespace automaton
   {
 
@@ -59,5 +72,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/gear/File.hh>
 
 #endif

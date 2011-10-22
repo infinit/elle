@@ -21,6 +21,8 @@
 #include <etoile/gear/Object.hh>
 #include <etoile/gear/Nature.hh>
 
+#include <etoile/automaton/File.hh>
+
 namespace etoile
 {
   namespace gear
@@ -49,6 +51,8 @@ namespace etoile
       //
       // types
       //
+      typedef automaton::File			A;
+
       typedef nucleus::Data			C;
 
       //

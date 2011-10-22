@@ -30,7 +30,9 @@ namespace etoile
     {
       enter();
 
-      // nothing to do.
+      // initialize the scope system.
+      if (Scope::Initialize() == elle::StatusError)
+	escape("unable to initialize the scope");
 
       leave();
     }
@@ -42,7 +44,9 @@ namespace etoile
     {
       enter();
 
-      // nothing to do.
+      // clean the scope system.
+      if (Scope::Clean() == elle::StatusError)
+	escape("unable to clean the scope");
 
       leave();
     }

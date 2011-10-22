@@ -104,7 +104,7 @@ namespace etoile
 	  // check that available slots remain i.e it is possible that
 	  // the whole shrub's capacity is not large enough to hold
 	  // all the the route's slabs.
-	  if (Shrub::Timestamps.container.size() >=
+	  if (Shrub::Queue.container.size() >=
 	      Infinit::Configuration.shrub.capacity)
 	    leave();
 
@@ -116,7 +116,8 @@ namespace etoile
 	    escape("unable to create the riffle");
 
 	  // add the riffle to the queue.
-	  if (Shrub::Timestamps.Add(riffle) == elle::StatusError)
+	  if (Shrub::Queue.Insert(riffle->timestamp,
+				  riffle) == elle::StatusError)
 	    escape("unable to add the riffle");
 
 	  // insert it.
@@ -144,7 +145,8 @@ namespace etoile
 	  riffle->location = location;
 
 	  // remove the riffle from the queue.
-	  if (Shrub::Timestamps.Remove(riffle) == elle::StatusError)
+	  if (Shrub::Queue.Delete(riffle->timestamp,
+				  riffle) == elle::StatusError)
 	    escape("unable to remove the riffle");
 
 	  // refresh the timestamp.
@@ -152,7 +154,8 @@ namespace etoile
 	    escape("unable to retrieve the current time");
 
 	  // finally, add the riffle back to the queue i.e at its new position.
-	  if (Shrub::Timestamps.Add(riffle) == elle::StatusError)
+	  if (Shrub::Queue.Insert(riffle->timestamp,
+				  riffle) == elle::StatusError)
 	    escape("unable to add the riffle");
 	}
 
@@ -181,7 +184,8 @@ namespace etoile
 	escape("unable to flush the riffle");
 
       // release the shrub slot.
-      if (Shrub::Timestamps.Remove(riffle) == elle::StatusError)
+      if (Shrub::Queue.Delete(riffle->timestamp,
+			      riffle) == elle::StatusError)
 	escape("unable to remove the riffle");
 
       // delete the referenced riffle, along with its children.
@@ -214,7 +218,8 @@ namespace etoile
 	    escape("unable to flush the riffle");
 
 	  // release the shrub slot.
-	  if (Shrub::Timestamps.Remove(riffle) == elle::StatusError)
+	  if (Shrub::Queue.Delete(riffle->timestamp,
+				  riffle) == elle::StatusError)
 	    escape("unable to remove the riffle");
 
 	  // delete the riffle.

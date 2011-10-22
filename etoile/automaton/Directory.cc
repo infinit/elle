@@ -99,6 +99,7 @@ namespace etoile
 			  const nucleus::Address&		address)
     {
       nucleus::Entry*	entry;
+      nucleus::Size	size;
 
       enterx(instance(entry));
 
@@ -130,6 +131,17 @@ namespace etoile
 
       // stop tracking since the entry has been properly added to the catalog.
       waive(entry);
+
+      // retrieve the new contents's size.
+      if (context.contents->content->Capacity(size) == elle::StatusError)
+	escape("unable to retrieve the contents's size");
+
+      // update the object data section.
+      if (context.object.Update(
+	    context.object.author,
+	    context.object.data.contents,
+	    size) == elle::StatusError)
+	escape("unable to update the object data section");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
@@ -224,6 +236,8 @@ namespace etoile
 			  const path::Slice&			from,
 			  const path::Slice&			to)
     {
+      nucleus::Size	size;
+
       enter();
 
       // determine the rights.
@@ -249,6 +263,18 @@ namespace etoile
       if (context.contents->content->Rename(from, to) == elle::StatusError)
 	escape("unable to rename the directory's entry");
 
+      // retrieve the new contents's size.
+      if (context.contents->content->Capacity(size) == elle::StatusError)
+	escape("unable to retrieve the contents's size");
+
+      // update the object data section though renaming an entry may
+      // not impact the object's data size.
+      if (context.object.Update(
+	    context.object.author,
+	    context.object.data.contents,
+	    size) == elle::StatusError)
+	escape("unable to update the object data section");
+
       // set the context's state.
       context.state = gear::Context::StateModified;
 
@@ -262,6 +288,8 @@ namespace etoile
 			  gear::Directory&			context,
 			  const path::Slice&			name)
     {
+      nucleus::Size	size;
+
       enter();
 
       // determine the rights.
@@ -286,6 +314,17 @@ namespace etoile
       // remove the entry.
       if (context.contents->content->Remove(name) == elle::StatusError)
 	escape("unable to remove the directory's entry");
+
+      // retrieve the new contents's size.
+      if (context.contents->content->Capacity(size) == elle::StatusError)
+	escape("unable to retrieve the contents's size");
+
+      // update the object data section.
+      if (context.object.Update(
+	    context.object.author,
+	    context.object.data.contents,
+	    size) == elle::StatusError)
+	escape("unable to update the object data section");
 
       // set the context's state.
       context.state = gear::Context::StateModified;

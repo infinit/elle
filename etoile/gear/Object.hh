@@ -20,6 +20,8 @@
 
 #include <etoile/gear/Context.hh>
 #include <etoile/gear/Nature.hh>
+
+#include <etoile/automaton/Object.hh>
  
 namespace etoile
 {
@@ -66,6 +68,11 @@ namespace etoile
       // constants
       //
       static const Nature			N = NatureObject;
+
+      //
+      // types
+      //
+      typedef automaton::Object			A;
 
       //
       // constructors & destructors
