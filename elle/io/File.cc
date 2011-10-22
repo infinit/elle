@@ -57,7 +57,7 @@ namespace elle
     {
       struct ::stat	status;
       int		fd;
-      int               roffset = 0;
+      Natural32		roffset = 0;
 
       enter();
 
@@ -75,7 +75,8 @@ namespace elle
 
       // open the file.
       if ((fd = ::open(path.string.c_str(), O_RDONLY)) == -1)
-	escape("failed to open %s: %s", path.string.c_str(), ::strerror(errno));
+	escape("failed to open %s: %s",
+	       path.string.c_str(), ::strerror(errno));
 
       // read the file's content.
       while (roffset < data.capacity)
@@ -114,7 +115,7 @@ namespace elle
 				    const Region&		data)
     {
       int		fd;
-      int               woffset = 0;
+      Natural32		woffset = 0;
 
       enter();
 
