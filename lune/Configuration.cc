@@ -35,6 +35,9 @@ namespace lune
   ///
   /// these are the default parameters.
   ///
+  const elle::Natural32	Configuration::Default::Gear::Lifespan =
+    2000;
+
   const elle::Boolean	Configuration::Default::Shrub::Status =
     true;
   const elle::Natural32	Configuration::Default::Shrub::Capacity =
@@ -98,6 +101,11 @@ namespace lune
     //
     // update the settings with the parameters.
     //
+
+    if (elle::Settings::Set(
+	  "gear", "lifespan",
+	  this->gear.lifespan) == elle::StatusError)
+      escape("unable to update the parameter");
 
     if (elle::Settings::Set(
 	  "shrub", "status",
@@ -192,6 +200,12 @@ namespace lune
     //
     // retrieve the parameters from the settings.
     //
+
+    if (elle::Settings::Get(
+	  "gear", "lifespan",
+	  this->gear.lifespan,
+	  Configuration::Default::Gear::Lifespan) == elle::StatusError)
+      escape("unable to retrieve the parameter");
 
     if (elle::Settings::Get(
 	  "shrub", "status",

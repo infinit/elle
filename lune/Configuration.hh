@@ -39,6 +39,11 @@ namespace lune
 
     struct				Default
     {
+      struct				Gear
+      {
+	static const elle::Natural32	Lifespan;
+      };
+
       struct				Shrub
       {
 	static const elle::Boolean	Status;
@@ -114,6 +119,11 @@ namespace lune
     //
     // attributes
     //
+    struct
+    {
+      elle::Natural32		lifespan;
+    }				gear;
+
     struct
     {
       elle::Boolean		status;
