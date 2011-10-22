@@ -1,4 +1,6 @@
-- ameliorer le log lorsqu'un client accede a un Hole qui n'a pas les donnees
+- renommer gear.lifespan en autre chose: containment
+
+- refaire serialization system (boost?) mais il faut que ca marche avec PHP
 
 - mauvais utilisateur => segfault client
 
