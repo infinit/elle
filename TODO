@@ -1,5 +1,9 @@
 - renommer gear.lifespan en autre chose: containment
 
+- par defaut: ne montrer que les elements auxquels le user a access
+
+- invite 10 users and create a network => 1TB free
+
 - refaire serialization system (boost?) mais il faut que ca marche avec PHP
 
 - mauvais utilisateur => segfault client
