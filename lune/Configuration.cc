@@ -33,57 +33,58 @@ namespace lune
   const elle::String	Configuration::Extension = ".conf";
 
   ///
-  /// these are the default parameters.
+  /// etoile-specific configuration values.
   ///
-  const elle::Natural32	Configuration::Default::Gear::Lifespan =
-    2000;
+  const elle::Boolean
+  Configuration::Default::Etoile::Debug = false;
 
-  const elle::Boolean	Configuration::Default::Shrub::Status =
-    true;
-  const elle::Natural32	Configuration::Default::Shrub::Capacity =
-    1024;
-  const elle::Natural32	Configuration::Default::Shrub::Lifespan =
-    300;
-  const elle::Natural32	Configuration::Default::Shrub::Frequency =
-    120000;
+  const elle::Natural32
+  Configuration::Default::Etoile::Scope::Containment = 2000;
 
-  const elle::Natural32	Configuration::Default::Cache::Capacity =
-    2097152;
+  const elle::Boolean
+  Configuration::Default::Etoile::Shrub::Status = true;
+  const elle::Natural32
+  Configuration::Default::Etoile::Shrub::Capacity = 1024;
+  const elle::Natural32
+  Configuration::Default::Etoile::Shrub::Lifespan = 300;
+  const elle::Natural32
+  Configuration::Default::Etoile::Shrub::Frequency = 120000;
 
-  const elle::Natural32	Configuration::Default::Reserve::Capacity =
-    1073741824;
+  const elle::Boolean
+  Configuration::Default::Etoile::History::Status = false;
+  const elle::Character
+  Configuration::Default::Etoile::History::Indicator::Root = '@';
+  const elle::Character
+  Configuration::Default::Etoile::History::Indicator::Slab = '%';
 
-#if INFINIT_UNIX
-  const elle::Boolean	Configuration::Default::Debug::PIG =
-    false;
-#endif
+  ///
+  /// nucleus-specific configuration values.
+  ///
+  const elle::Boolean
+  Configuration::Default::Nucleus::Debug = false;
 
-#if INFINIT_WIN32
-  const elle::Boolean	Configuration::Default::Debug::IIG =
-    false;
-#endif
-
-  const elle::Boolean	Configuration::Default::Debug::Etoile =
-    false;
-  const elle::Boolean	Configuration::Default::Debug::Nucleus =
-    false;
-  const elle::Boolean	Configuration::Default::Debug::Hole =
-    false;
-
-  const elle::Boolean	Configuration::Default::History::Status =
-    false;
-  const elle::Character	Configuration::Default::History::Indicator::Root =
-    '@';
-  const elle::Character	Configuration::Default::History::Indicator::Slab =
-    '%';
+  ///
+  /// hole-specific configuration values.
+  ///
+  const elle::Boolean
+  Configuration::Default::Hole::Debug = false;
 
 #if INFINIT_UNIX
-  const elle::Natural32	Configuration::Default::FUSE::FUker =
+  ///
+  /// pig-specific configuration values.
+  ///
+  const elle::Boolean
+  Configuration::Default::PIG::Debug = false;
+
+  const elle::Natural32
+  Configuration::Default::PIG::FUker =
     static_cast<elle::Natural32>(pig::FUker::TypeSequential);
 #elif INFINIT_WIN32
-  const elle::Natural32	Configuration::Default::FUSE::FUker = 0;
-#else
-# error "unsupported platform"
+  ///
+  /// iig-specific configuration values.
+  ///
+  const elle::Boolean
+  Configuration::Default::IIG::Debug = false;
 #endif
 
 //
@@ -99,92 +100,103 @@ namespace lune
     enter();
 
     //
-    // update the settings with the parameters.
+    // etoile
     //
+    {
+      if (elle::Settings::Set(
+	    "etoile", "debug",
+	    this->etoile.debug) == elle::StatusError)
+	escape("unable to update the parameter");
 
-    if (elle::Settings::Set(
-	  "gear", "lifespan",
-	  this->gear.lifespan) == elle::StatusError)
+      if (elle::Settings::Set(
+	    "etoile", "scope.containment",
+	    this->etoile.scope.containment) == elle::StatusError)
+	escape("unable to update the parameter");
+
+      if (elle::Settings::Set(
+	    "etoile", "shrub.status",
+	    this->etoile.shrub.status) == elle::StatusError)
+	escape("unable to update the parameter");
+
+      if (elle::Settings::Set(
+	    "etoile", "shrub.capacity",
+	    this->etoile.shrub.capacity) == elle::StatusError)
+	escape("unable to update the parameter");
+
+      if (elle::Settings::Set(
+	    "etoile", "shrub.lifespan",
+	    this->etoile.shrub.lifespan) == elle::StatusError)
+	escape("unable to update the parameter");
+
+      if (elle::Settings::Set(
+	    "etoile", "shrub.frequency",
+	    this->etoile.shrub.frequency) == elle::StatusError)
+	escape("unable to update the parameter");
+
+      if (elle::Settings::Set(
+	    "etoile", "history.status",
+	    this->etoile.history.status) == elle::StatusError)
       escape("unable to update the parameter");
 
-    if (elle::Settings::Set(
-	  "shrub", "status",
-	  this->shrub.status) == elle::StatusError)
-      escape("unable to update the parameter");
+      if (elle::Settings::Set(
+	    "etoile", "history.indicator.root",
+	    this->etoile.history.indicator.root) == elle::StatusError)
+	escape("unable to update the parameter");
 
-    if (elle::Settings::Set(
-	  "shrub", "capacity",
-	  this->shrub.capacity) == elle::StatusError)
-      escape("unable to update the parameter");
+      if (elle::Settings::Set(
+	    "etoile", "history.indicator.slab",
+	    this->etoile.history.indicator.slab) == elle::StatusError)
+	escape("unable to update the parameter");
+    }
 
-    if (elle::Settings::Set(
-	  "shrub", "lifespan",
-	  this->shrub.lifespan) == elle::StatusError)
-      escape("unable to update the parameter");
+    //
+    // nucleus
+    //
+    {
+      if (elle::Settings::Set(
+	    "nucleus", "debug",
+	    this->nucleus.debug) == elle::StatusError)
+	escape("unable to update the parameter");
+    }
 
-    if (elle::Settings::Set(
-	  "shrub", "frequency",
-	  this->shrub.frequency) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "cache", "capacity",
-	  this->cache.capacity) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "reserve", "capacity",
-	  this->reserve.capacity) == elle::StatusError)
-      escape("unable to update the parameter");
+    //
+    // hole
+    //
+    {
+      if (elle::Settings::Set(
+	    "hole", "debug",
+	    this->hole.debug) == elle::StatusError)
+	escape("unable to update the parameter");
+    }
 
 #if INFINIT_UNIX
-    if (elle::Settings::Set(
-	  "debug", "pig",
-	  this->debug.pig) == elle::StatusError)
-      escape("unable to update the parameter");
+    //
+    // pig
+    //
+    {
+      if (elle::Settings::Set(
+	    "pig", "debug",
+	    this->pig.debug) == elle::StatusError)
+	escape("unable to update the parameter");
+
+      if (elle::Settings::Set(
+	    "pig", "fuker",
+	    this->pig.fuker) == elle::StatusError)
+	escape("unable to update the parameter");
+    }
 #endif
 
 #if INFINIT_WIN32
-    if (elle::Settings::Set(
-	  "debug", "iig",
-	  this->debug.iig) == elle::StatusError)
-      escape("unable to update the parameter");
+    //
+    // iig
+    //
+    {
+      if (elle::Settings::Set(
+	    "iig", "debug",
+	    this->iig.debug) == elle::StatusError)
+	escape("unable to update the parameter");
+    }
 #endif
-
-    if (elle::Settings::Set(
-	  "debug", "etoile",
-	  this->debug.etoile) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "debug", "nucleus",
-	  this->debug.nucleus) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "debug", "hole",
-	  this->debug.hole) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "history", "status",
-	  this->history.status) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "history", "indicator.root",
-	  this->history.indicator.root) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "history", "indicator.slab",
-	  this->history.indicator.slab) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Set(
-	  "fuse", "fuker",
-	  this->fuse.fuker) == elle::StatusError)
-      escape("unable to update the parameter");
 
     leave();
   }
@@ -198,110 +210,127 @@ namespace lune
     enter();
 
     //
-    // retrieve the parameters from the settings.
+    // etoile
     //
+    {
+      if (elle::Settings::Get(
+	    "etoile", "debug",
+	    this->etoile.debug,
+	    Configuration::Default::Etoile::Debug) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
 
-    if (elle::Settings::Get(
-	  "gear", "lifespan",
-	  this->gear.lifespan,
-	  Configuration::Default::Gear::Lifespan) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+      if (elle::Settings::Get(
+	    "etoile", "scope.containment",
+	    this->etoile.scope.containment,
+	    Configuration::Default::Etoile::Scope::Containment) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
 
-    if (elle::Settings::Get(
-	  "shrub", "status",
-	  this->shrub.status,
-	  Configuration::Default::Shrub::Status) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+      if (elle::Settings::Get(
+	    "etoile", "shrub.status",
+	    this->etoile.shrub.status,
+	    Configuration::Default::Etoile::Shrub::Status) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
 
-    if (elle::Settings::Get(
-	  "shrub", "capacity",
-	  this->shrub.capacity,
-	  Configuration::Default::Shrub::Capacity) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+      if (elle::Settings::Get(
+	    "etoile", "shrub.capacity",
+	    this->etoile.shrub.capacity,
+	    Configuration::Default::Etoile::Shrub::Capacity) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
 
-    if (elle::Settings::Get(
-	  "shrub", "lifespan",
-	  this->shrub.lifespan,
-	  Configuration::Default::Shrub::Lifespan) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+      if (elle::Settings::Get(
+	    "etoile", "shrub.lifespan",
+	    this->etoile.shrub.lifespan,
+	    Configuration::Default::Etoile::Shrub::Lifespan) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
 
-    if (elle::Settings::Get(
-	  "shrub", "frequency",
-	  this->shrub.frequency,
-	  Configuration::Default::Shrub::Frequency) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+      if (elle::Settings::Get(
+	    "etoile", "shrub.frequency",
+	    this->etoile.shrub.frequency,
+	    Configuration::Default::Etoile::Shrub::Frequency) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
 
-    if (elle::Settings::Get(
-	  "cache", "capacity",
-	  this->cache.capacity,
-	  Configuration::Default::Cache::Capacity) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+      if (elle::Settings::Get(
+	    "etoile", "history.status",
+	    this->etoile.history.status,
+	    Configuration::Default::Etoile::History::Status) ==
+	  elle::StatusError)
+	escape("unable to update the parameter");
 
-    if (elle::Settings::Get(
-	  "reserve", "capacity",
-	  this->reserve.capacity,
-	  Configuration::Default::Reserve::Capacity) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+      if (elle::Settings::Get(
+	    "etoile", "history.indicator.root",
+	    this->etoile.history.indicator.root,
+	    Configuration::Default::Etoile::History::Indicator::Root) ==
+	  elle::StatusError)
+	escape("unable to update the parameter");
+
+      if (elle::Settings::Get(
+	    "etoile", "history.indicator.slab",
+	    this->etoile.history.indicator.slab,
+	    Configuration::Default::Etoile::History::Indicator::Slab) ==
+	  elle::StatusError)
+	escape("unable to update the parameter");
+    }
+
+    //
+    // nucleus
+    //
+    {
+      if (elle::Settings::Get(
+	    "nucleus", "debug",
+	    this->nucleus.debug,
+	    Configuration::Default::Nucleus::Debug) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
+    }
+
+    //
+    // hole
+    //
+    {
+      if (elle::Settings::Get(
+	    "hole", "debug",
+	    this->hole.debug,
+	    Configuration::Default::Hole::Debug) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
+    }
 
 #if INFINIT_UNIX
-    if (elle::Settings::Get(
-	  "debug", "pig",
-	  this->debug.pig,
-	  Configuration::Default::Debug::PIG) == elle::StatusError)
-      escape("unable to retrieve the parameter");
+    //
+    // pig
+    //
+    {
+      if (elle::Settings::Get(
+	    "pig", "debug",
+	    this->pig.debug,
+	    Configuration::Default::PIG::Debug) ==
+	  elle::StatusError)
+	escape("unable to retrieve the parameter");
+
+      if (elle::Settings::Get(
+	    "pig", "fuker",
+	    this->pig.fuker,
+	    Configuration::Default::PIG::FUker) == elle::StatusError)
+	escape("unable to update the parameter");
+    }
+#elif INFINIT_WIN32
+    //
+    // iig
+    //
+    {
+      if (elle::Settings::Get(
+	    "iig", "debug",
+	    this->iig.debug,
+	    Configuration::Default::IIG::Debug) == elle::StatusError)
+	escape("unable to retrieve the parameter");
+    }
 #endif
-
-#if INFINIT_WIN32
-    if (elle::Settings::Get(
-	  "debug", "iig",
-	  this->debug.iig,
-	  Configuration::Default::Debug::IIG) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-#endif
-
-    if (elle::Settings::Get(
-	  "debug", "etoile",
-	  this->debug.etoile,
-	  Configuration::Default::Debug::Etoile) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-	  "debug", "nucleus",
-	  this->debug.nucleus,
-	  Configuration::Default::Debug::Nucleus) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-	  "debug", "hole",
-	  this->debug.hole,
-	  Configuration::Default::Debug::Hole) == elle::StatusError)
-      escape("unable to retrieve the parameter");
-
-    if (elle::Settings::Get(
-	  "history", "status",
-	  this->history.status,
-	  Configuration::Default::History::Status) == elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Get(
-	  "history", "indicator.root",
-	  this->history.indicator.root,
-	  Configuration::Default::History::Indicator::Root) ==
-	elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Get(
-	  "history", "indicator.slab",
-	  this->history.indicator.slab,
-	  Configuration::Default::History::Indicator::Slab) ==
-	elle::StatusError)
-      escape("unable to update the parameter");
-
-    if (elle::Settings::Get(
-	  "fuse", "fuker",
-	  this->fuse.fuker,
-	  Configuration::Default::FUSE::FUker) == elle::StatusError)
-      escape("unable to update the parameter");
 
     leave();
   }

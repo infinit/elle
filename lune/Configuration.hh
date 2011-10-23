@@ -35,63 +35,62 @@ namespace lune
     //
     // constants
     //
-    static const elle::String		Extension;
+    static const elle::String			Extension;
 
-    struct				Default
+    struct					Default
     {
-      struct				Gear
+      struct					Etoile
       {
-	static const elle::Natural32	Lifespan;
-      };
+	static const elle::Boolean		Debug;
 
-      struct				Shrub
-      {
-	static const elle::Boolean	Status;
-	static const elle::Natural32	Capacity;
-	static const elle::Natural32	Lifespan;
-	static const elle::Natural32	Frequency;
-      };
-
-      struct				Cache
-      {
-	static const elle::Natural32	Capacity;
-      };
-
-      struct				Reserve
-      {
-	static const elle::Natural32	Capacity;
-      };
-
-      struct				Debug
-      {
-#if INFINIT_UNIX
-	static const elle::Boolean	PIG;
-#endif
-
-#if INFINIT_WIN32
-        static const elle::Boolean      IIG;
-#endif
-
-	static const elle::Boolean	Etoile;
-	static const elle::Boolean	Nucleus;
-	static const elle::Boolean	Hole;
-      };
-
-      struct				History
-      {
-	static const elle::Boolean	Status;
-
-	struct				Indicator
+	struct					Scope
 	{
-	  static const elle::Character	Root;
-	  static const elle::Character	Slab;
+	  static const elle::Natural32		Containment;
+	};
+
+	struct					Shrub
+	{
+	  static const elle::Boolean		Status;
+	  static const elle::Natural32		Capacity;
+	  static const elle::Natural32		Lifespan;
+	  static const elle::Natural32		Frequency;
+	};
+
+	struct					History
+	{
+	  static const elle::Boolean		Status;
+
+	  struct				Indicator
+	  {
+	    static const elle::Character	Root;
+	    static const elle::Character	Slab;
+	  };
 	};
       };
 
-      struct				FUSE
+      struct					Nucleus
       {
-	static const elle::Natural32	FUker;
+	static const elle::Boolean		Debug;
       };
+
+      struct					Hole
+      {
+	static const elle::Boolean		Debug;
+      };
+
+#if INFINIT_UNIX
+      struct					PIG
+      {
+	static const elle::Boolean		Debug;
+
+	static const elle::Natural32		FUker;
+      };
+#elif INFINIT_WIN32
+      struct					IIG
+      {
+        static const elle::Boolean		Debug;
+      };
+#endif
     };
 
     //
@@ -121,60 +120,56 @@ namespace lune
     //
     struct
     {
-      elle::Natural32		lifespan;
-    }				gear;
-
-    struct
-    {
-      elle::Boolean		status;
-      elle::Natural32		capacity;
-      elle::Natural32		lifespan;
-      elle::Natural32		frequency;
-    }				shrub;
-
-    struct
-    {
-      elle::Boolean		status;
-      elle::Natural32		capacity;
-    }				cache;
-
-    struct
-    {
-      elle::Boolean		status;
-      elle::Natural32		capacity;
-    }				reserve;
-
-    struct
-    {
-#if INFINIT_UNIX
-      elle::Boolean		pig;
-#endif
-
-#if INFINIT_WIN32
-      elle::Boolean             iig;
-#endif
-
-      elle::Boolean		etoile;
-      elle::Boolean		nucleus;
-      elle::Boolean		hole;
-    }				debug;
-
-    struct
-    {
-      elle::Boolean		status;
+      elle::Boolean		debug;
 
       struct
       {
-	elle::Character		root;
-	elle::Character		slab;
-      }				indicator;
-    }				history;
+	elle::Natural32		containment;
+      }				scope;
+
+      struct
+      {
+	elle::Boolean		status;
+	elle::Natural32		capacity;
+	elle::Natural32		lifespan;
+	elle::Natural32		frequency;
+      }				shrub;
+
+      struct
+      {
+	elle::Boolean		status;
+
+	struct
+	{
+	  elle::Character	root;
+	  elle::Character	slab;
+	}			indicator;
+      }				history;
+    }				etoile;
 
     struct
     {
-      elle::Natural32		fuker;
-    }				fuse;
+      elle::Boolean		debug;
+    }				nucleus;
 
+    struct
+    {
+      elle::Boolean		debug;
+    }				hole;
+
+#if INFINIT_UNIX
+    struct
+    {
+      elle::Boolean		debug;
+
+      elle::Natural32		fuker;
+    }				pig;
+#elif INFINIT_WIN32
+    struct
+    {
+      elle::Boolean             debug;
+    }				iig;
+#endif
   };
 
 }
