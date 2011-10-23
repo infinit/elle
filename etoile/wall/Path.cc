@@ -46,7 +46,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Path::Resolve()\n");
 
       // create a route from the way.

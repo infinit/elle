@@ -52,7 +52,7 @@ namespace etoile
 	     slab(scope, gear::Scope::Relinquish));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Create()\n");
 
       // acquire the scope.
@@ -109,7 +109,7 @@ namespace etoile
 	     instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Load()\n");
 
       // acquire the scope.
@@ -166,7 +166,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Lock()\n");
 
       // XXX to implement.
@@ -183,7 +183,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Release()\n");
 
       // XXX to implement.
@@ -204,7 +204,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Bind()\n");
 
       // select the actor.
@@ -239,7 +239,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Resolve()\n");
 
       // select the actor.
@@ -277,7 +277,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Discard()\n");
 
       // select the actor.
@@ -340,7 +340,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Store()\n");
 
       // select the actor.
@@ -402,7 +402,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Destroy()\n");
 
       // select the actor.
@@ -456,7 +456,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Link::Purge()\n");
 
       // XXX to implement.

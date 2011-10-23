@@ -41,7 +41,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] journal::Journal::Record()\n");
 
       // first, if actors are still operating on the scope, delay the

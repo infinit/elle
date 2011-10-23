@@ -105,7 +105,7 @@ namespace etoile
 	  // the whole shrub's capacity is not large enough to hold
 	  // all the the route's slabs.
 	  if (Shrub::Queue.container.size() >=
-	      Infinit::Configuration.shrub.capacity)
+	      Infinit::Configuration.etoile.shrub.capacity)
 	    leave();
 
 	  // allocate a new riffle.

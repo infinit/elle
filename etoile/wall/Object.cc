@@ -55,7 +55,7 @@ namespace etoile
 	     slab(scope, gear::Scope::Relinquish));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Load()\n");
 
       // acquire the scope.
@@ -112,7 +112,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Lock()\n");
 
       // XXX to implement.
@@ -129,7 +129,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Release()\n");
 
       // XXX to implement.
@@ -151,7 +151,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Information()\n");
 
       // select the actor.
@@ -189,7 +189,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Discard()\n");
 
       // select the actor.
@@ -252,7 +252,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Store()\n");
 
       // select the actor.
@@ -318,7 +318,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Destroy()\n");
 
       // select the actor.
@@ -376,7 +376,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Object::Purge()\n");
 
       // XXX to implement.

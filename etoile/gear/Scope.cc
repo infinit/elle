@@ -375,7 +375,8 @@ namespace etoile
 
       // start the timer.
       if (this->timer.Start(
-	    Infinit::Configuration.gear.lifespan) == elle::StatusError)
+	    Infinit::Configuration.etoile.scope.containment) ==
+	  elle::StatusError)
 	escape("unable to start the timer");
 
       leave();
@@ -677,7 +678,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] gear::Scope::Supervisor()\n");
 
       // if the scope is already being taking care of, ignore this
@@ -750,10 +751,46 @@ namespace etoile
 	case Context::StateStored:
 	case Context::StateDestroyed:
 	  {
-	    // XXX seal context & push the modifications
+	    // perform the disclosure depending on the context's nature.
+	    switch (this->context->nature)
+	      {
+	      case NatureUnknown:
+		{
+		  escape("unknown context nature");
+		}
+	      case NatureObject:
+		{
+		  // disclose the scope.
+		  if (this->Disclose<gear::Object>() == elle::StatusError)
+		    escape("unable to disclose the scope");
 
-	    // XXX
-	    printf("M, S OR D\n");
+		  break;
+		}
+	      case NatureFile:
+		{
+		  // disclose the scope.
+		  if (this->Disclose<gear::File>() == elle::StatusError)
+		    escape("unable to disclose the scope");
+
+		  break;
+		}
+	      case NatureDirectory:
+		{
+		  // disclose the scope.
+		  if (this->Disclose<gear::Directory>() == elle::StatusError)
+		    escape("unable to disclose the scope");
+
+		  break;
+		}
+	      case NatureLink:
+		{
+		  // disclose the scope.
+		  if (this->Disclose<gear::Link>() == elle::StatusError)
+		    escape("unable to disclose the scope");
+
+		  break;
+		}
+	      }
 
 	    break;
 	  }

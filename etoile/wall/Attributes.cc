@@ -46,7 +46,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Attributes::Set()\n");
 
       // select the actor.
@@ -84,7 +84,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Attributes::Get()\n");
 
       // select the actor.
@@ -117,7 +117,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Attributes::Fetch()\n");
 
       // select the actor.
@@ -149,7 +149,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Attributes::Omit()\n");
 
       // select the actor.

@@ -221,6 +221,26 @@ namespace etoile
       leave();
     }
 
+    ///
+    /// XXX
+    ///
+    template <typename T>
+    elle::Status	Scope::Disclose()
+    {
+      enter();
+
+      // XXX create scope
+      // XXX move existing context to new scope
+      // XXX attach temporary actor
+      // XXX shutdown this scope (single actor + modified context)
+      // XXX clone sealed Object to existing scope (so actors can continue
+      //       working on this scope)
+      // XXX record new scope in journal
+      // XXX delete actor
+
+      leave();
+    }
+
   }
 }
 

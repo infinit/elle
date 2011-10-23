@@ -55,7 +55,7 @@ namespace etoile
 	     slab(scope, gear::Scope::Relinquish));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Create()\n");
 
       // acquire the scope.
@@ -112,7 +112,7 @@ namespace etoile
 	     slab(scope, gear::Scope::Relinquish));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Load()\n");
 
       // acquire the scope.
@@ -169,7 +169,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Lock()\n");
 
       // XXX to implement.
@@ -186,7 +186,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Release()\n");
 
       // XXX to implement.
@@ -210,7 +210,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Add()\n");
 
       // select the actor.
@@ -259,7 +259,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Lookup()\n");
 
       // select the actor.
@@ -295,7 +295,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Consult()\n");
 
       // select the actor.
@@ -331,7 +331,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Rename()\n");
 
       // select the actor.
@@ -377,7 +377,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Remove()\n");
 
       // select the actor.
@@ -426,7 +426,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Discard()\n");
 
       // select the actor.
@@ -489,7 +489,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Store()\n");
 
       // select the actor.
@@ -551,7 +551,7 @@ namespace etoile
       enterx(instance(actor));
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Destroy()\n");
 
       // select the actor.
@@ -605,7 +605,7 @@ namespace etoile
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] wall::Directory::Purge()\n");
 
       // XXX to implement.

@@ -276,7 +276,7 @@ namespace etoile
       // if the history mechanism is not supported by the network or
       // has not been activated through the user's configuration, return.
       if ((hole::Hole::Descriptor.history == false) ||
-	  (Infinit::Configuration.history.status == false))
+	  (Infinit::Configuration.etoile.history.status == false))
 	{
 	  // set the slice as being the entire slab.
 	  slice = slab;
@@ -292,11 +292,11 @@ namespace etoile
 
 	  // compute the start index, should the in-path versioning be
 	  // activated.
-	  if (Infinit::Configuration.history.status == true)
+	  if (Infinit::Configuration.etoile.history.status == true)
 	    {
 	      // try to locate the start index for the version number.
 	      start = slab.find_last_of(
-		        Infinit::Configuration.history.indicator.slab);
+		        Infinit::Configuration.etoile.history.indicator.slab);
 	    }
 	  else
 	    {

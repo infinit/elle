@@ -137,11 +137,12 @@ namespace etoile
 	  // with '@' and follows with a possible version number, should
 	  // the network support history though.
 	  if ((hole::Hole::Descriptor.history == true) &&
-	      (Infinit::Configuration.history.status == true) &&
-	      (slab[0] == Infinit::Configuration.history.indicator.root))
+	      (Infinit::Configuration.etoile.history.status == true) &&
+	      (slab[0] ==
+	       Infinit::Configuration.etoile.history.indicator.root))
 	    {
 	      // modify the '@' character with the version indicator '%'.
-	      slab[0] = Infinit::Configuration.history.indicator.slab;
+	      slab[0] = Infinit::Configuration.etoile.history.indicator.slab;
 
 	      // record the slab.
 	      this->elements.push_back(slab);

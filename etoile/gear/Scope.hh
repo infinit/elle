@@ -145,6 +145,7 @@ namespace etoile
 
       template <typename T>
       elle::Status	Refresh();
+      template <typename T>
       elle::Status	Disclose();
 
       //

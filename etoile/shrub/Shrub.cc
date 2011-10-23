@@ -57,7 +57,7 @@ namespace etoile
       enter();
 
       // make sure the shrub has been activated, return otherwise.
-      if (Infinit::Configuration.shrub.status == false)
+      if (Infinit::Configuration.etoile.shrub.status == false)
 	leave();
 
       // create the sweeper timer.
@@ -72,7 +72,8 @@ namespace etoile
 
       // start the timer.
       if (Shrub::Timer.Start(
-	    Infinit::Configuration.shrub.frequency) == elle::StatusError)
+	    Infinit::Configuration.etoile.shrub.frequency) ==
+	  elle::StatusError)
 	escape("unable to start the timer");
 
       leave();
@@ -86,7 +87,7 @@ namespace etoile
       enter();
 
       // make sure the shrub has been activated, return otherwise.
-      if (Infinit::Configuration.shrub.status == false)
+      if (Infinit::Configuration.etoile.shrub.status == false)
 	leave();
 
       // stop the timer.
@@ -136,7 +137,7 @@ namespace etoile
 	  Riffle*			riffle;
 
 	  // stop if there are enough available slots to proceed.
-	  if ((Infinit::Configuration.shrub.capacity -
+	  if ((Infinit::Configuration.etoile.shrub.capacity -
 	       Shrub::Queue.container.size()) >= size)
 	    break;
 
@@ -202,14 +203,14 @@ namespace etoile
       path::Route::Scoutor	scoutor;
       elle::Duration		lifespan(
         elle::Duration::UnitSeconds,
-	Infinit::Configuration.shrub.lifespan);
+	Infinit::Configuration.etoile.shrub.lifespan);
       elle::Time		current;
       elle::Time		threshold;
 
       enter();
 
       // make sure the shrub has been activated, return otherwise.
-      if (Infinit::Configuration.shrub.status == false)
+      if (Infinit::Configuration.etoile.shrub.status == false)
 	leave();
 
       // make sure this root riffle is present.
@@ -303,7 +304,7 @@ namespace etoile
       enter();
 
       // make sure the shrub has been activated, return otherwise.
-      if (Infinit::Configuration.shrub.status == false)
+      if (Infinit::Configuration.etoile.shrub.status == false)
 	leave();
 
       //
@@ -391,7 +392,7 @@ namespace etoile
       enter();
 
       // make sure the shrub has been activated, return otherwise.
-      if (Infinit::Configuration.shrub.status == false)
+      if (Infinit::Configuration.etoile.shrub.status == false)
 	leave();
 
       // make sure the root riffle is present.
@@ -498,14 +499,14 @@ namespace etoile
     elle::Status	Shrub::Sweeper()
     {
       elle::Duration	lifespan(elle::Duration::UnitSeconds,
-				 Infinit::Configuration.shrub.lifespan);
+				 Infinit::Configuration.etoile.shrub.lifespan);
       elle::Time	current;
       elle::Time	threshold;
 
       enter();
 
       // debug.
-      if (Infinit::Configuration.debug.etoile == true)
+      if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] shrub::Shrub::Sweeper()\n");
 
       // retrieve the current timestamp.
