@@ -33,7 +33,7 @@ namespace nucleus
       {
 	StateClean = 0,
 	StateDirty,
-	StateConsistent
+	StateConsistent = StateClean
       };
 
   }

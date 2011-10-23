@@ -129,17 +129,21 @@ namespace nucleus
 	  // if this entry lies in the selected range [index, index + size[
 	  if ((i >= index) && (i < (index + size)))
 	    {
-	      // check if the entry is empty: you never know!
+	      // check if the entry is empty: this should never
+	      // happen but you never know!
 	      if (entry->name.empty() == true)
 		continue;
 
 	      // add the entry to the range.
 	      if (range.Add(entry) == elle::StatusError)
 		escape("unable to add the entry to the range");
-
-	      // increment the number of recorded entries.
-	      i++;
 	    }
+
+	  // increment the index.
+	  //
+	  // note that this is done at the end so that empty
+	  // entries are not taken into account.
+	  i++;
 	}
 
       leave();
