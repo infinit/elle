@@ -141,7 +141,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Put[Immutable]()"
 		    << std::endl;
 
@@ -170,7 +170,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Put[Mutable]()"
 		    << std::endl;
 
@@ -198,7 +198,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Get[Immutable]()"
 		    << std::endl;
 
@@ -227,7 +227,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Get[Mutable]()"
 		    << std::endl;
 
@@ -252,7 +252,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Kill()"
 		    << std::endl;
 
@@ -282,7 +282,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Connected()"
 		    << std::endl;
 
@@ -301,7 +301,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Disconnected()"
 		    << std::endl;
 
@@ -331,7 +331,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Error()"
 		    << std::endl;
 
@@ -350,7 +350,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Authenticated()"
 		    << std::endl;
 
@@ -371,7 +371,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Client::Exception()"
 		    << std::endl;
 

@@ -121,7 +121,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Customer::Disconnected()"
 		    << std::endl;
 
@@ -144,7 +144,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Customer::Error()"
 		    << std::endl;
 
@@ -164,7 +164,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Customer::Abort()"
 		    << std::endl;
 
