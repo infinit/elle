@@ -108,7 +108,7 @@ namespace pig
     //
     {
       // according to the configuration...
-      switch (Infinit::Configuration.fuse.fuker)
+      switch (Infinit::Configuration.pig.fuker)
 	{
 	case FUker::TypeSequential:
 	  {
@@ -134,7 +134,7 @@ namespace pig
 	default:
 	  {
 	    escape("unknown fuker '%u'",
-		   Infinit::Configuration.fuse.fuker);
+		   Infinit::Configuration.pig.fuker);
 	  }
 	}
     }

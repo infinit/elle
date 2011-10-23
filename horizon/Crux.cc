@@ -66,7 +66,7 @@ namespace pig
     int				result;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -99,7 +99,7 @@ namespace pig
 	    EINTR);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -120,7 +120,7 @@ namespace pig
     elle::String*			name;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -267,7 +267,7 @@ namespace pig
       }
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, stat);
@@ -282,7 +282,7 @@ namespace pig
 				      const struct timespec[2])
   {
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, ...)\n",
 	     __FUNCTION__,
 	     path);
@@ -292,7 +292,7 @@ namespace pig
     //
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, ...)\n",
 	     __FUNCTION__,
 	     path);
@@ -311,7 +311,7 @@ namespace pig
     etoile::path::Chemin	chemin;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -333,7 +333,7 @@ namespace pig
 					    identifier));
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -355,7 +355,7 @@ namespace pig
     off_t		next;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, filler, static_cast<elle::Natural64>(offset), info);
@@ -406,7 +406,7 @@ namespace pig
 	    if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
 	      {
 		// debug.
-		if (Infinit::Configuration.debug.pig == true)
+		if (Infinit::Configuration.pig.debug == true)
 		  printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 			 __FUNCTION__,
 			 path, buffer, filler,
@@ -427,7 +427,7 @@ namespace pig
       }
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, filler, static_cast<elle::Natural64>(offset), info);
@@ -442,7 +442,7 @@ namespace pig
 					 struct ::fuse_file_info* info)
   {
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -461,7 +461,7 @@ namespace pig
     info->fh = 0;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -483,7 +483,7 @@ namespace pig
     etoile::gear::Identifier	subdirectory;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -539,7 +539,7 @@ namespace pig
 	    EINTR);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -560,7 +560,7 @@ namespace pig
     etoile::gear::Identifier	subdirectory;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s)\n",
 	     __FUNCTION__,
 	     path);
@@ -606,7 +606,7 @@ namespace pig
 	    EINTR);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s)\n",
 	     __FUNCTION__,
 	     path);
@@ -628,7 +628,7 @@ namespace pig
     nucleus::Record*			record;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mask);
@@ -749,7 +749,7 @@ namespace pig
 	    ENOENT);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mask);
@@ -770,7 +770,7 @@ namespace pig
     etoile::miscellaneous::Information	information;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -862,7 +862,7 @@ namespace pig
 	    ENOENT);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, 0%o)\n",
 	     __FUNCTION__,
 	     path, mode);
@@ -878,7 +878,7 @@ namespace pig
 				    gid_t			gid)
   {
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %u, %u)\n",
 	     __FUNCTION__,
 	     path, uid, gid);
@@ -886,7 +886,7 @@ namespace pig
     // XXX to implement.
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %u, %u)\n",
 	     __FUNCTION__,
 	     path, uid, gid);
@@ -911,7 +911,7 @@ namespace pig
     etoile::path::Chemin	chemin;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %s, %p, %u, 0x%x)\n",
 	     __FUNCTION__,
 	     path, name, value, size, flags);
@@ -941,7 +941,7 @@ namespace pig
 	    ENOENT);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %s, %p, %u, 0x%x)\n",
 	     __FUNCTION__,
 	     path, name, value, size, flags);
@@ -963,7 +963,7 @@ namespace pig
     nucleus::Trait*		trait;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, name, value, size);
@@ -997,7 +997,7 @@ namespace pig
 	    ENOATTR);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, name, value, size);
@@ -1033,7 +1033,7 @@ namespace pig
     size_t					offset;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, list, size);
@@ -1061,7 +1061,7 @@ namespace pig
 	    ENOENT);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p, %u)\n",
 	     __FUNCTION__,
 	     path, list, size);
@@ -1114,7 +1114,7 @@ namespace pig
     etoile::path::Chemin	chemin;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     path, name);
@@ -1143,7 +1143,7 @@ namespace pig
 	    ENOENT);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
 	     path, name);
@@ -1166,7 +1166,7 @@ namespace pig
     etoile::path::Chemin	chemin;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     target, source);
@@ -1213,7 +1213,7 @@ namespace pig
 	    ENOENT);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
 	     target, source);
@@ -1234,7 +1234,7 @@ namespace pig
     etoile::path::Way		target;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p, %qu)\n",
 	     __FUNCTION__,
 	     path, buffer, static_cast<elle::Natural64>(size));
@@ -1268,7 +1268,7 @@ namespace pig
 	        size);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p, %qu)\n",
 	     __FUNCTION__,
 	     path, buffer, static_cast<elle::Natural64>(size));
@@ -1291,7 +1291,7 @@ namespace pig
     etoile::gear::Identifier	file;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, 0%o, %p)\n",
 	     __FUNCTION__,
 	     path, mode, info);
@@ -1386,7 +1386,7 @@ namespace pig
 					    permissions));
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, 0%o, %p)\n",
 	     __FUNCTION__,
 	     path, mode, info);
@@ -1405,7 +1405,7 @@ namespace pig
     etoile::gear::Identifier	identifier;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1426,7 +1426,7 @@ namespace pig
 					    identifier));
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1447,7 +1447,7 @@ namespace pig
     elle::Region	region;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, static_cast<elle::Natural64>(size),
@@ -1470,7 +1470,7 @@ namespace pig
 	    EACCES);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, static_cast<elle::Natural64>(size),
@@ -1492,7 +1492,7 @@ namespace pig
     elle::Region	region;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, static_cast<elle::Natural64>(size),
@@ -1513,7 +1513,7 @@ namespace pig
     ::memcpy(buffer, region.contents, region.size);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p, %qu, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, buffer, static_cast<elle::Natural64>(size),
@@ -1535,7 +1535,7 @@ namespace pig
     int				result;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %qu)\n",
 	     __FUNCTION__,
 	     path, static_cast<elle::Natural64>(size));
@@ -1566,7 +1566,7 @@ namespace pig
 	    EINTR);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %qu)\n",
 	     __FUNCTION__,
 	     path, static_cast<elle::Natural64>(size));
@@ -1584,7 +1584,7 @@ namespace pig
     Handle*		handle;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, static_cast<elle::Natural64>(size), info);
@@ -1599,7 +1599,7 @@ namespace pig
 	    ENOENT);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %qu, %p)\n",
 	     __FUNCTION__,
 	     path, static_cast<elle::Natural64>(size), info);
@@ -1617,7 +1617,7 @@ namespace pig
     Handle*		handle;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1673,7 +1673,7 @@ namespace pig
     info->fh = 0;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %p)\n",
 	     __FUNCTION__,
 	     path, info);
@@ -1694,7 +1694,7 @@ namespace pig
     etoile::gear::Identifier	object;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s, %s)\n",
 	     __FUNCTION__,
 	     source, target);
@@ -1873,7 +1873,7 @@ namespace pig
       }
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s, %s)\n",
 	     __FUNCTION__,
 	     source, target);
@@ -1895,7 +1895,7 @@ namespace pig
     etoile::miscellaneous::Information	information;
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] %s(%s)\n",
 	     __FUNCTION__,
 	     path);
@@ -2000,7 +2000,7 @@ namespace pig
 	    EINTR);
 
     // debug.
-    if (Infinit::Configuration.debug.pig == true)
+    if (Infinit::Configuration.pig.debug == true)
       printf("[pig] /%s(%s)\n",
 	     __FUNCTION__,
 	     path);
