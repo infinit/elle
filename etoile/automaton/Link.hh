@@ -54,8 +54,7 @@ namespace etoile
       // static methods
       //
       static elle::Status	Create(gear::Link&);
-      static elle::Status	Load(gear::Link&,
-				     const nucleus::Location&);
+      static elle::Status	Load(gear::Link&);
 
       static elle::Status	Bind(gear::Link&,
 				     const path::Way&);

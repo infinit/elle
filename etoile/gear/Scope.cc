@@ -234,7 +234,7 @@ namespace etoile
 	}
 
       // delete the scope.
-      delete scope;
+      // XXX delete scope;
 
       leave();
     }
@@ -704,18 +704,29 @@ namespace etoile
 	case Context::StateInitialized:
 	case Context::StateDiscarded:
 	  {
+	    // set the state.
+	    this->state = Scope::StateDisclose;
+
 	    // perform the refreshing depending on the context's nature.
 	    switch (this->context->nature)
 	      {
 	      case NatureUnknown:
 		{
+		  // reset the state.
+		  this->state = Scope::StateNone;
+
 		  escape("unknown context nature");
 		}
 	      case NatureObject:
 		{
 		  // refresh the scope.
 		  if (this->Refresh<gear::Object>() == elle::StatusError)
-		    escape("unable to refresh the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to refresh the scope");
+		    }
 
 		  break;
 		}
@@ -723,7 +734,12 @@ namespace etoile
 		{
 		  // refresh the scope.
 		  if (this->Refresh<gear::File>() == elle::StatusError)
-		    escape("unable to refresh the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to refresh the scope");
+		    }
 
 		  break;
 		}
@@ -731,7 +747,12 @@ namespace etoile
 		{
 		  // refresh the scope.
 		  if (this->Refresh<gear::Directory>() == elle::StatusError)
-		    escape("unable to refresh the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to refresh the scope");
+		    }
 
 		  break;
 		}
@@ -739,11 +760,19 @@ namespace etoile
 		{
 		  // refresh the scope.
 		  if (this->Refresh<gear::Link>() == elle::StatusError)
-		    escape("unable to refresh the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to refresh the scope");
+		    }
 
 		  break;
 		}
 	      }
+
+	    // reset the state.
+	    this->state = Scope::StateNone;
 
 	    break;
 	  }
@@ -751,18 +780,29 @@ namespace etoile
 	case Context::StateStored:
 	case Context::StateDestroyed:
 	  {
+	    // set the state.
+	    this->state = Scope::StateRefresh;
+
 	    // perform the disclosure depending on the context's nature.
 	    switch (this->context->nature)
 	      {
 	      case NatureUnknown:
 		{
+		  // reset the state.
+		  this->state = Scope::StateNone;
+
 		  escape("unknown context nature");
 		}
 	      case NatureObject:
 		{
 		  // disclose the scope.
 		  if (this->Disclose<gear::Object>() == elle::StatusError)
-		    escape("unable to disclose the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to disclose the scope");
+		    }
 
 		  break;
 		}
@@ -770,7 +810,12 @@ namespace etoile
 		{
 		  // disclose the scope.
 		  if (this->Disclose<gear::File>() == elle::StatusError)
-		    escape("unable to disclose the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to disclose the scope");
+		    }
 
 		  break;
 		}
@@ -778,7 +823,12 @@ namespace etoile
 		{
 		  // disclose the scope.
 		  if (this->Disclose<gear::Directory>() == elle::StatusError)
-		    escape("unable to disclose the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to disclose the scope");
+		    }
 
 		  break;
 		}
@@ -786,11 +836,19 @@ namespace etoile
 		{
 		  // disclose the scope.
 		  if (this->Disclose<gear::Link>() == elle::StatusError)
-		    escape("unable to disclose the scope");
+		    {
+		      // reset the state.
+		      this->state = Scope::StateNone;
+
+		      escape("unable to disclose the scope");
+		    }
 
 		  break;
 		}
 	      }
+
+	    // reset the state.
+	    this->state = Scope::StateNone;
 
 	    break;
 	  }

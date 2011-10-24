@@ -52,8 +52,7 @@ namespace etoile
       // static methods
       //
       static elle::Status	Create(gear::File&);
-      static elle::Status	Load(gear::File&,
-				     const nucleus::Location&);
+      static elle::Status	Load(gear::File&);
 
       static elle::Status	Write(gear::File&,
 				      const nucleus::Offset&,

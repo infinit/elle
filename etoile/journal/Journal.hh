@@ -17,10 +17,23 @@
 
 #include <elle/Elle.hh>
 
-#include <etoile/gear/Scope.hh>
-
 namespace etoile
 {
+  namespace gear
+  {
+
+//
+// ---------- forward declarations --------------------------------------------
+//
+
+    ///
+    /// this class needs to be forward-declared in order to prevent
+    /// conflicts.
+    ///
+    class Scope;
+
+  }
+
   ///
   /// this namespace contains everything related to the journal which
   /// is responsible for recording and triggering the storage layer operations.
@@ -46,5 +59,11 @@ namespace etoile
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/gear/Scope.hh>
 
 #endif

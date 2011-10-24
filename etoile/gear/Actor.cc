@@ -137,50 +137,44 @@ namespace etoile
       scope(scope),
       state(Actor::StateClean)
     {
+      enter();
+
       // generate an identifier.
       if (this->identifier.Generate() == elle::StatusError)
-	fail("unable to generate the identifier");
-    }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method attaches the actor to the scope.
-    ///
-    elle::Status	Actor::Attach()
-    {
-      enter();
+	yield(_(), "unable to generate the identifier");
 
       // register the actor.
       if (Actor::Add(this->identifier, this) == elle::StatusError)
-	escape("unable to register the actor");
+	yield(_(), "unable to register the actor");
 
       // add the actor to the scope's set.
       if (scope->Attach(this) == elle::StatusError)
-	escape("unable to attach the actor to the scope");
+	yield(_(), "unable to attach the actor to the scope");
 
-      leave();
+      release();
     }
 
     ///
-    /// this method detaches the actor from the scope.
+    /// destructor.
     ///
-    elle::Status	Actor::Detach()
+    Actor::~Actor()
     {
       enter();
 
       // remove the actor from the scope's set.
       if (scope->Detach(this) == elle::StatusError)
-	escape("unable to detach the actor from the scope");
+	yield(_(), "unable to detach the actor from the scope");
 
       // unregister the actor.
       if (Actor::Remove(this->identifier) == elle::StatusError)
-	escape("unable to unregister the actor");
+	yield(_(), "unable to unregister the actor");
 
-      leave();
+      release();
     }
+
+//
+// ---------- methods ---------------------------------------------------------
+//
 
     ///
     /// this method is called to indicate the operation being performed

@@ -41,6 +41,7 @@ namespace etoile
 			  const elle::String&			value)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Object*	context;
 
       enter();
@@ -53,8 +54,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the set automaton on the context.
@@ -79,6 +83,7 @@ namespace etoile
 			  nucleus::Trait*&			trait)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Object*	context;
 
       enter();
@@ -91,8 +96,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the get automaton on the context.
@@ -112,6 +120,7 @@ namespace etoile
 			  nucleus::Range<nucleus::Trait>&	range)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Object*	context;
 
       enter();
@@ -124,8 +133,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the fetch automaton on the context.
@@ -144,6 +156,7 @@ namespace etoile
 			  const elle::String&			name)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Object*	context;
 
       enter();
@@ -156,8 +169,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the omit automaton on the context.

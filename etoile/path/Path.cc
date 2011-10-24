@@ -14,11 +14,9 @@
 
 #include <etoile/path/Path.hh>
 
-#include <etoile/gear/Directory.hh>
-#include <etoile/gear/Scope.hh>
-#include <etoile/gear/Actor.hh>
+#include <etoile/gear/Identifier.hh>
 
-#include <etoile/automaton/Directory.hh>
+#include <etoile/wall/Directory.hh>
 
 #include <etoile/depot/Depot.hh>
 
@@ -127,29 +125,10 @@ namespace etoile
 	   scoutor != route.elements.end();
 	   scoutor++)
 	{
-	  //
-	  // note here that all operations are performed on a local scope.
-	  //
-	  // this scope is not exported because no application needs to
-	  // access it. therefore it is not allocated nor added to the gear
-	  // container.
-	  //
-
 	  Chemin		chemin;
-	  gear::Scope*		scope;
-	  gear::Directory*	context;
-	  gear::Actor*		actor;
 	  Slice			slice;
+	  gear::Identifier	identifier;
 	  nucleus::Entry*	entry;
-	  nucleus::Location	location;
-	  elle::Callback<
-	    elle::Status,
-	    elle::Parameters<
-	      gear::Directory&
-	      >
-	    >			callback;
-
-	  enterx(instance(actor));
 
 	  // extract the slice/version from the current slab.
 	  if (Path::Parse(*scoutor,
@@ -167,75 +146,31 @@ namespace etoile
 			    venue.elements.size()) == elle::StatusError)
 	    escape("unable to create the chemin");
 
-	  // acquire the scope.
-	  if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
-	    escape("unable to acquire the scope");
+	  // load the directory.
+	  if (wall::Directory::Load(chemin, identifier) == elle::StatusError)
+	    escape("unable to load the directory");
 
-	  // retrieve the context.
-	  if (scope->Use(context) == elle::StatusError)
-	    escape("unable to retrieve the context");
-
-	  // allocate an actor.
-	  actor = new gear::Actor(scope);
-
-	  // attach the actor to the scope.
-	  if (actor->Attach() == elle::StatusError)
-	    escape("unable to attach the actor to the scope");
-
-	  // create the location.
-	  if (location.Create(address, version) == elle::StatusError)
-	    escape("unable to create the location");
-
-	  // fetch the directory.
-	  if (automaton::Directory::Load(*context,
-					 location) == elle::StatusError)
-	    escape("unable to fetch the directory object");
-
-	  // look up for the name.
-	  if (automaton::Directory::Lookup(*context,
-					   slice,
-					   entry) == elle::StatusError)
-	    escape("unable to find one of the route's entries");
+	  // lookup the slice.
+	  if (wall::Directory::Lookup(identifier,
+				      slice,
+				      entry) == elle::StatusError)
+	    escape("unable to lookup the slice");
 
 	  // set the address; the version is already set i.e it has
 	  // been extracted from the slab.
 	  if (entry != NULL)
 	    address = entry->address;
 
-	  // specify the closing operation performed on the scope.
-	  if (actor->scope->Operate(
-	        gear::OperationDiscard) == elle::StatusError)
-	    escape("unable to specify the operation being performed "
-		   "on the scope");
-
-	  // retrieve the shutdown callback.
-	  if (actor->scope->Shutdown(callback) == elle::StatusError)
-	    escape("unable to retrieve the shutdown callback");
-
-	  // trigger the closing callback.
-	  if (callback.Call(*context) == elle::StatusError)
-	    escape("unable to perform the closing operation");
-
-	  // detach the actor.
-	  if (actor->Detach() == elle::StatusError)
-	    escape("unable to detach the actor from the scope");
-
-	  // relinquish the scope.
-	  if (gear::Scope::Relinquish(actor->scope) == elle::StatusError)
-	    escape("unable to relinquish the scope");
-
-	  // delete the actor.
-	  delete actor;
-
-	  // waive the actor.
-	  waive(actor);
+	  // discard the directory.
+	  if (wall::Directory::Discard(identifier) == elle::StatusError)
+	    escape("unable to discard the directory");
 
 	  // if there is no such entry, abort.
 	  //
 	  // note that the pointer is used to know whether or not the
 	  // lookup has succeded. however, the entry's content cannot be
 	  // accessed as it has potentially been released with the context
-	  // through the call to Relinquish().
+	  // through the call to Discard().
 	  if (entry == NULL)
 	    escape("unable to locate the directory entry '%s'",
 		   slice.c_str());
@@ -243,9 +178,6 @@ namespace etoile
 	  // first, record the address/version in the venue.
 	  if (venue.Record(address, version) == elle::StatusError)
 	    escape("unable to record the venue address");
-
-	  // release the resources.
-	  release();
 	}
 
       // update the shrub with the resolved path.

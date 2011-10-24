@@ -38,10 +38,6 @@ namespace etoile
 
       enter();
 
-      // return an error if the context has already been manipulated.
-      if (context.state != gear::Context::StateUnknown)
-	escape("unable to create a directory from a non-virgin context");
-
       // create the directory.
       if (context.object.Create(
 	    nucleus::GenreDirectory,
@@ -67,17 +63,12 @@ namespace etoile
     /// given location.
     ///
     elle::Status	Directory::Load(
-			  gear::Directory&			context,
-			  const nucleus::Location&		location)
+			  gear::Directory&			context)
     {
       enter();
 
-      // return if the context has already been loaded.
-      if (context.state != gear::Context::StateUnknown)
-	leave();
-
       // load the object.
-      if (Object::Load(context, location) == elle::StatusError)
+      if (Object::Load(context) == elle::StatusError)
 	escape("unable to fetch the object");
 
       // check that the object is a directory.
@@ -337,11 +328,12 @@ namespace etoile
     /// any modification having been performed.
     ///
     elle::Status	Directory::Discard(
-			  gear::Directory&)
+			  gear::Directory&			context)
     {
       enter();
 
-      // nothing to do.
+      // set the context's state.
+      context.state = gear::Context::StateDiscarded;
 
       leave();
     }

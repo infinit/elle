@@ -33,17 +33,9 @@ namespace etoile
     /// this block be present.
     ///
     elle::Status	Object::Load(
-			  gear::Object&				context,
-			  const nucleus::Location&		location)
+			  gear::Object&				context)
     {
       enter();
-
-      // return if the context has already been loaded.
-      if (context.state != gear::Context::StateUnknown)
-	leave();
-
-      // set the location.
-      context.location = location;
 
       // retrieve the object block.
       if (depot::Depot::Pull(context.location.address,
@@ -83,11 +75,12 @@ namespace etoile
     /// any modification having been performed.
     ///
     elle::Status	Object::Discard(
-			  gear::Object&)
+			  gear::Object&				context)
     {
       enter();
 
-      // nothing to do.
+      // set the context's state.
+      context.state = gear::Context::StateDiscarded;
 
       leave();
     }

@@ -11,6 +11,12 @@
 #ifndef ETOILE_GEAR_SCOPE_HXX
 #define ETOILE_GEAR_SCOPE_HXX
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <etoile/journal/Journal.hh>
+
 namespace etoile
 {
   namespace gear
@@ -38,7 +44,7 @@ namespace etoile
 
       // return the context by dynamically casting it.
       if ((context = dynamic_cast<T*>(this->context)) == NULL)
-	escape("invalid context nature: got(%s) expected(%s)",
+	escape("invalid context nature: scope's(%s) target(%s)",
 	       NatureName(this->context->nature), NatureName(T::N));
 
       leave();
@@ -61,13 +67,12 @@ namespace etoile
     {
       enter();
 
-      // if actors remain i.e apart from the current one, return a null
-      // callback.
+      // if actors remain, return a null callback.
       //
       // indeed, only the final actor will trigger the shutdown operation. this
       // way potential conflicts are prevents while expensive cryptographic
       // operations are performed only once.
-      if (this->actors.size() > 1)
+      if (this->actors.empty() == false)
 	{
 	  // return a null callback.
 	  callback =
@@ -143,36 +148,19 @@ namespace etoile
       enterx(instance(actor),
 	     instance(context));
 
-      // locate the scope based on the chemin.
-      if (this->chemin.Locate(location) == elle::StatusError)
-	escape("unable to locate the scope");
-
       // allocate an actor.
       actor = new Actor(this);
-
-      // attach the actor to the scope so that this scope does not
-      // get relinquished until the refreshing process terminates.
-      if (actor->Attach() == elle::StatusError)
-	escape("unable to attach the actor to the scope");
-
-      // set the state.
-      this->state = Scope::StateRefresh;
 
       // allocate a context.
       context = new T;
 
+      // locate the scope based on the chemin.
+      if (this->chemin.Locate(context->location) == elle::StatusError)
+	escape("unable to locate the scope");
+
       // load the object.
-      if (T::A::Load(*context, location) == elle::StatusError)
-	{
-	  // reset the state.
-	  this->state = Scope::StateNone;
-
-	  // detach the actor.
-	  if (actor->Detach() == elle::StatusError)
-	    escape("unable to detach the actor");
-
-	  escape("unable to load the object");
-	}
+      if (T::A::Load(*context) == elle::StatusError)
+	escape("unable to load the object");
 
       // verify that the context's state has not change in between.
       if (!((this->context->state == Context::StateInitialized) ||
@@ -192,31 +180,26 @@ namespace etoile
       if (actor->Operate(OperationDiscard) == elle::StatusError)
 	escape("this operation cannot be performed by this actor");
 
-      // specify the closing operation performed on the scope.
-      if (actor->scope->Operate(OperationDiscard) == elle::StatusError)
-	escape("unable to specify the operation being performed "
-	       "on the scope");
-
-      // retrieve the shutdown callback.
-      if (actor->scope->Shutdown(callback) == elle::StatusError)
-	escape("unable to retrieve the shutdown callback");
-
-      // trigger the closing callback.
-      if (callback.Call(*context) == elle::StatusError)
-	escape("unable to perform the closing operation");
-
-      // detach the actor.
-      if (actor->Detach() == elle::StatusError)
-	escape("unable to detach the actor");
-
       // delete the actor.
       delete actor;
 
       // waive.
       waive(actor);
 
-      // reset the state.
-      this->state = Scope::StateNone;
+      // specify the closing operation performed on the scope.
+      if (this->Operate(OperationDiscard) == elle::StatusError)
+	escape("unable to specify the operation being performed "
+	       "on the scope");
+
+      // retrieve the shutdown callback.
+      if (this->Shutdown(callback) == elle::StatusError)
+	escape("unable to retrieve the shutdown callback");
+
+      // trigger the closing callback.
+      if (callback.Call(*context) == elle::StatusError)
+	escape("unable to perform the closing operation");
+
+      // XXX record journal, pour la coherence!
 
       leave();
     }
@@ -227,16 +210,95 @@ namespace etoile
     template <typename T>
     elle::Status	Scope::Disclose()
     {
-      enter();
+      std::pair<Scope::S::O::Iterator, elle::Boolean>	result;
+      elle::Callback<
+	elle::Status,
+	elle::Parameters<
+	  T&
+	  >
+	>						callback;
+      T*						context;
+      Scope*						scope;
+      Actor*						actor;
 
-      // XXX create scope
-      // XXX move existing context to new scope
-      // XXX attach temporary actor
-      // XXX shutdown this scope (single actor + modified context)
-      // XXX clone sealed Object to existing scope (so actors can continue
-      //       working on this scope)
-      // XXX record new scope in journal
-      // XXX delete actor
+      enterx(instance(actor),
+	     instance(scope));
+
+      // XXX
+      leave();
+
+      // XXX
+      log("Disclose()");
+
+      // allocate a new scope but do not register it yet.
+      scope = new Scope(this->chemin);
+
+      // create the scope.
+      if (scope->Create() == elle::StatusError)
+	escape("unable to create the scope");
+
+      // move the current scope's context to the new scope.
+      scope->context = this->context;
+
+      // set the current scope's context to null, temporarily.
+      this->context = NULL;
+
+      // allocate an actor on the new scope in order to render it valid.
+      actor = new Actor(scope);
+
+      // retrieve the context.
+      if (scope->Use(context) == elle::StatusError)
+	escape("unable to retrieve the context");
+
+      // specify the closing operation performed by the actor.
+      if (actor->Operate(OperationDiscard) == elle::StatusError)
+	escape("this operation cannot be performed by this actor");
+
+      // delete the actor.
+      delete actor;
+
+      // waive the actor.
+      waive(actor);
+
+      // specify the closing operation performed on the scope.
+      if (scope->Operate(OperationDiscard) == elle::StatusError)
+	escape("unable to specify the operation being performed on the scope");
+
+      // retrieve the shutdown callback.
+      if (scope->Shutdown(callback) == elle::StatusError)
+	escape("unable to retrieve the shutdown callback");
+
+      // trigger the closing callback.
+      if (callback.Call(*context) == elle::StatusError)
+	escape("unable to perform the closing operation");
+
+      // record the scope in the journal.
+      if (journal::Journal::Record(scope) == elle::StatusError)
+	escape("unable to record the scope in the journal");
+
+      // waive the scope.
+      waive(scope);
+
+      // allocate a new context for the current scope.
+      if (this->Use(context) == elle::StatusError)
+	escape("unable to allocate a new context");
+
+      // locate the scope based on the chemin.
+      if (this->chemin.Locate(context->location) == elle::StatusError)
+	escape("unable to locate the scope");
+
+      // XXX try to block.
+
+      // reload the object, theoretically from the journal since it has
+      // been recorded to storage just above.
+      //
+      // note that the fiber must not block or the current actors could
+      // continue accessing the scope which, for now, contains an
+      // uninitialized context.
+      if (T::A::Load(*context) == elle::StatusError)
+	escape("unable to load the object");
+
+      // XXX make sure the call above retrieve from the journal.
 
       leave();
     }

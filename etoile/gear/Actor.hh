@@ -98,13 +98,11 @@ namespace etoile
       // constructors & destructors
       //
       Actor(Scope*);
+      ~Actor();
 
       //
       // methods
       //
-      elle::Status	Attach();
-      elle::Status	Detach();
-
       elle::Status	Operate(const Operation);
 
       //

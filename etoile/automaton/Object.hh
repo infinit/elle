@@ -57,8 +57,7 @@ namespace etoile
       //
       // static methods
       //
-      static elle::Status	Load(gear::Object&,
-				     const nucleus::Location&);
+      static elle::Status	Load(gear::Object&);
 
       static elle::Status	Information(gear::Object&,
 					    miscellaneous::Information&);

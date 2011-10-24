@@ -94,6 +94,9 @@ namespace etoile
       if (gear::Scope::Relinquish(scope) == elle::StatusError)
 	escape("unable to relinquish the scope");
 
+      // XXX
+      delete scope;
+
       leave();
     }
 

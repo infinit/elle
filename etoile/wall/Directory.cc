@@ -69,22 +69,12 @@ namespace etoile
       // allocate an actor.
       actor = new gear::Actor(scope);
 
-      // attach the actor to the scope.
-      if (actor->Attach() == elle::StatusError)
-	escape("unable to attach the actor to the scope");
-
       // return the identifier.
       identifier = actor->identifier;
 
       // apply the create automaton on the context.
       if (automaton::Directory::Create(*context) == elle::StatusError)
-	{
-	  // detach the actor.
-          if (actor->Detach() == elle::StatusError)
-	    escape("unable to detach the actor");
-
-	  escape("unable to create the directory");
-	}
+	escape("unable to create the directory");
 
       // waive the actor.
       waive(actor);
@@ -106,7 +96,6 @@ namespace etoile
       gear::Scope*	scope;
       gear::Directory*	context;
       gear::Actor*	actor;
-      nucleus::Location	location;
 
       enterx(instance(actor),
 	     slab(scope, gear::Scope::Relinquish));
@@ -126,27 +115,16 @@ namespace etoile
       // allocate an actor.
       actor = new gear::Actor(scope);
 
-      // attach the actor to the scope.
-      if (actor->Attach() == elle::StatusError)
-	escape("unable to attach the actor to the scope");
-
       // return the identifier.
       identifier = actor->identifier;
 
       // locate the object based on the chemin.
-      if (chemin.Locate(location) == elle::StatusError)
+      if (chemin.Locate(context->location) == elle::StatusError)
 	escape("unable to locate the directory");
 
       // apply the load automaton on the context.
-      if (automaton::Directory::Load(*context,
-				     location) == elle::StatusError)
-        {
-	  // detach the actor.
-          if (actor->Detach() == elle::StatusError)
-	    escape("unable to detach the actor");
-
-          escape("unable to load the directory");
-        }
+      if (automaton::Directory::Load(*context) == elle::StatusError)
+	escape("unable to load the directory");
 
       // waive the actor.
       waive(actor);
@@ -203,6 +181,7 @@ namespace etoile
 			  const gear::Identifier&		child)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	directory;
       gear::Object*	object;
       nucleus::Address	address;
@@ -217,8 +196,11 @@ namespace etoile
       if (gear::Actor::Select(child, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(object) == elle::StatusError)
+      if (scope->Use(object) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // keep the address.
@@ -228,8 +210,11 @@ namespace etoile
       if (gear::Actor::Select(parent, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(directory) == elle::StatusError)
+      if (scope->Use(directory) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the add automaton on the context.
@@ -254,6 +239,7 @@ namespace etoile
 			  nucleus::Entry*&			entry)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	context;
 
       enter();
@@ -266,8 +252,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the lookup automaton on the context.
@@ -290,6 +279,7 @@ namespace etoile
 			  nucleus::Range<nucleus::Entry>&	range)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	context;
 
       enter();
@@ -302,8 +292,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the consult automaton on the context.
@@ -325,6 +318,7 @@ namespace etoile
 			  const path::Slab&			to)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	context;
       path::Route	route;
 
@@ -338,8 +332,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the rename automaton on the context.
@@ -353,12 +350,14 @@ namespace etoile
 
       // build the route associated with the previous version of
       // the renamed entry.
-      if (route.Create(actor->scope->chemin.route, from) == elle::StatusError)
+      if (route.Create(scope->chemin.route, from) == elle::StatusError)
 	escape("unable to create the route");
 
       // evict the route from the shrub.
       if (shrub::Shrub::Evict(route) == elle::StatusError)
 	escape("unable to evict the route from the shrub");
+
+      // XXX do the same for _to_.
 
       leave();
     }
@@ -371,6 +370,7 @@ namespace etoile
 			  const path::Slab&			name)
     {
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	context;
       path::Route	route;
 
@@ -384,8 +384,11 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // apply the remove automaton on the context.
@@ -397,7 +400,7 @@ namespace etoile
       actor->state = gear::Actor::StateUpdated;
 
       // build the route associated with the removed entry.
-      if (route.Create(actor->scope->chemin.route, name) == elle::StatusError)
+      if (route.Create(scope->chemin.route, name) == elle::StatusError)
 	escape("unable to create the route");
 
       // evict the route from the shrub.
@@ -421,6 +424,7 @@ namespace etoile
 	  >
 	>		callback;
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	context;
 
       enterx(instance(actor));
@@ -433,39 +437,38 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // specify the closing operation performed by the actor.
       if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
 	escape("this operation cannot be performed by this actor");
 
+      // delete the actor.
+      delete actor;
+
+      // waive actor.
+      waive(actor);
+
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate(gear::OperationDiscard) == elle::StatusError)
+      if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the shutdown callback.
-      if (actor->scope->Shutdown(callback) == elle::StatusError)
+      if (scope->Shutdown(callback) == elle::StatusError)
 	escape("unable to retrieve the shutdown callback");
 
       // trigger the closing callback.
       if (callback.Call(*context) == elle::StatusError)
 	escape("unable to perform the closing operation");
 
-      // detach the actor.
-      if (actor->Detach() == elle::StatusError)
-	escape("unable to detach the actor from the scope");
-
       // record the scope in the journal.
-      if (journal::Journal::Record(actor->scope) == elle::StatusError)
+      if (journal::Journal::Record(scope) == elle::StatusError)
 	escape("unable to record the scope in the journal");
-
-      // delete the actor.
-      delete actor;
-
-      // waive actor.
-      waive(actor);
 
       leave();
     }
@@ -484,6 +487,7 @@ namespace etoile
 	  >
 	>		callback;
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	context;
 
       enterx(instance(actor));
@@ -496,39 +500,38 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // specify the closing operation performed by the actor.
       if (actor->Operate(gear::OperationStore) == elle::StatusError)
 	escape("this operation cannot be performed by this actor");
 
+      // delete the actor.
+      delete actor;
+
+      // waive actor.
+      waive(actor);
+
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate(gear::OperationStore) == elle::StatusError)
+      if (scope->Operate(gear::OperationStore) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the shutdown callback.
-      if (actor->scope->Shutdown(callback) == elle::StatusError)
+      if (scope->Shutdown(callback) == elle::StatusError)
 	escape("unable to retrieve the shutdown callback");
 
       // trigger the closing callback.
       if (callback.Call(*context) == elle::StatusError)
 	escape("unable to perform the closing operation");
 
-      // detach the actor.
-      if (actor->Detach() == elle::StatusError)
-	escape("unable to detach the actor from the scope");
-
       // record the scope in the journal.
-      if (journal::Journal::Record(actor->scope) == elle::StatusError)
+      if (journal::Journal::Record(scope) == elle::StatusError)
 	escape("unable to record the scope in the journal");
-
-      // delete the actor.
-      delete actor;
-
-      // waive actor.
-      waive(actor);
 
       leave();
     }
@@ -546,6 +549,7 @@ namespace etoile
 	  >
 	>		callback;
       gear::Actor*	actor;
+      gear::Scope*	scope;
       gear::Directory*	context;
 
       enterx(instance(actor));
@@ -558,39 +562,38 @@ namespace etoile
       if (gear::Actor::Select(identifier, actor) == elle::StatusError)
 	escape("unable to select the actor");
 
+      // retrieve the scope.
+      scope = actor->scope;
+
       // retrieve the context.
-      if (actor->scope->Use(context) == elle::StatusError)
+      if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
       // specify the closing operation performed by the actor.
       if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
 	escape("this operation cannot be performed by this actor");
 
+      // delete the actor.
+      delete actor;
+
+      // waive actor.
+      waive(actor);
+
       // specify the closing operation performed on the scope.
-      if (actor->scope->Operate(gear::OperationDestroy) == elle::StatusError)
+      if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
 	escape("unable to specify the operation being performed on the scope");
 
       // retrieve the shutdown callback.
-      if (actor->scope->Shutdown(callback) == elle::StatusError)
+      if (scope->Shutdown(callback) == elle::StatusError)
 	escape("unable to retrieve the shutdown callback");
 
       // trigger the closing callback.
       if (callback.Call(*context) == elle::StatusError)
 	escape("unable to perform the closing operation");
 
-      // detach the actor.
-      if (actor->Detach() == elle::StatusError)
-	escape("unable to detach the actor from the scope");
-
       // record the scope in the journal.
-      if (journal::Journal::Record(actor->scope) == elle::StatusError)
+      if (journal::Journal::Record(scope) == elle::StatusError)
 	escape("unable to record the scope in the journal");
-
-      // delete the actor.
-      delete actor;
-
-      // waive actor.
-      waive(actor);
 
       leave();
     }
