@@ -39,7 +39,7 @@ namespace lune
   Configuration::Default::Etoile::Debug = false;
 
   const elle::Natural32
-  Configuration::Default::Etoile::Scope::Containment = 2000;
+  Configuration::Default::Etoile::Gear::Containment = 2000;
 
   const elle::Boolean
   Configuration::Default::Etoile::Shrub::Status = true;
@@ -109,8 +109,8 @@ namespace lune
 	escape("unable to update the parameter");
 
       if (elle::Settings::Set(
-	    "etoile", "scope.containment",
-	    this->etoile.scope.containment) == elle::StatusError)
+	    "etoile", "gear.containment",
+	    this->etoile.gear.containment) == elle::StatusError)
 	escape("unable to update the parameter");
 
       if (elle::Settings::Set(
@@ -221,9 +221,9 @@ namespace lune
 	escape("unable to retrieve the parameter");
 
       if (elle::Settings::Get(
-	    "etoile", "scope.containment",
-	    this->etoile.scope.containment,
-	    Configuration::Default::Etoile::Scope::Containment) ==
+	    "etoile", "gear.containment",
+	    this->etoile.gear.containment,
+	    Configuration::Default::Etoile::Gear::Containment) ==
 	  elle::StatusError)
 	escape("unable to retrieve the parameter");
 

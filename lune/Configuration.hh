@@ -43,7 +43,7 @@ namespace lune
       {
 	static const elle::Boolean		Debug;
 
-	struct					Scope
+	struct					Gear
 	{
 	  static const elle::Natural32		Containment;
 	};
@@ -125,7 +125,7 @@ namespace lune
       struct
       {
 	elle::Natural32		containment;
-      }				scope;
+      }				gear;
 
       struct
       {
