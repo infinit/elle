@@ -148,6 +148,9 @@ namespace etoile
       enterx(instance(actor),
 	     instance(context));
 
+      // XXX
+      log("Refresh()");
+
       // allocate an actor.
       actor = new Actor(this);
 
@@ -272,7 +275,8 @@ namespace etoile
       if (callback.Call(*context) == elle::StatusError)
 	escape("unable to perform the closing operation");
 
-      // record the scope in the journal.
+      // deliberately record the scope in the journal as no other
+      // actor is operating on it.
       if (journal::Journal::Record(scope) == elle::StatusError)
 	escape("unable to record the scope in the journal");
 

@@ -101,6 +101,7 @@ namespace etoile
 					Scope*&);
       static elle::Status	Supply(Scope*&);
       static elle::Status	Relinquish(Scope*);
+      static elle::Status	Annihilate(Scope*);
 
       static elle::Status	Show(const elle::Natural32 = 0);
 

@@ -51,7 +51,7 @@ namespace etoile
       gear::Actor*	actor;
 
       enterx(instance(actor),
-	     slab(scope, gear::Scope::Relinquish));
+	     slab(scope, gear::Scope::Annihilate));
 
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
@@ -73,7 +73,7 @@ namespace etoile
 
       // locate the object based on the chemin.
       if (chemin.Locate(context->location) == elle::StatusError)
-	escape("unable to locate the directory");
+	escape("unable to locate the object");
 
       // apply the load automaton on the context.
       if (automaton::Object::Load(*context) == elle::StatusError)
@@ -218,9 +218,38 @@ namespace etoile
       if (callback.Call(*context) == elle::StatusError)
 	escape("unable to perform the closing operation");
 
-      // record the scope in the journal.
-      if (journal::Journal::Record(scope) == elle::StatusError)
-	escape("unable to record the scope in the journal");
+      // depending on the context's state.
+      switch (context->state)
+	{
+	case gear::Context::StateDiscarded:
+	case gear::Context::StateStored:
+	case gear::Context::StateDestroyed:
+	  {
+	    //
+	    // if the object has been sealed, i.e there is no more actor
+	    // operating on it, record it in the journal.
+	    //
+
+	    // relinquish the scope: at this point we know there is not
+	    // remaining actor.
+	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
+	      escape("unable to relinquish the scope");
+
+	    // record the scope in the journal.
+	    if (journal::Journal::Record(scope) == elle::StatusError)
+	      escape("unable to record the scope in the journal");
+
+	    break;
+	  }
+	default:
+	  {
+	    //
+	    // otherwise, some actors are probably still working on it.
+	    //
+
+	    break;
+	  }
+	}
 
       leave();
     }
@@ -281,9 +310,38 @@ namespace etoile
       if (callback.Call(*context) == elle::StatusError)
 	escape("unable to perform the closing operation");
 
-      // record the scope in the journal.
-      if (journal::Journal::Record(scope) == elle::StatusError)
-	escape("unable to record the scope in the journal");
+      // depending on the context's state.
+      switch (context->state)
+	{
+	case gear::Context::StateDiscarded:
+	case gear::Context::StateStored:
+	case gear::Context::StateDestroyed:
+	  {
+	    //
+	    // if the object has been sealed, i.e there is no more actor
+	    // operating on it, record it in the journal.
+	    //
+
+	    // relinquish the scope: at this point we know there is not
+	    // remaining actor.
+	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
+	      escape("unable to relinquish the scope");
+
+	    // record the scope in the journal.
+	    if (journal::Journal::Record(scope) == elle::StatusError)
+	      escape("unable to record the scope in the journal");
+
+	    break;
+	  }
+	default:
+	  {
+	    //
+	    // otherwise, some actors are probably still working on it.
+	    //
+
+	    break;
+	  }
+	}
 
       leave();
     }
@@ -347,9 +405,38 @@ namespace etoile
       if (callback.Call(*context) == elle::StatusError)
 	escape("unable to perform the closing operation");
 
-      // record the scope in the journal.
-      if (journal::Journal::Record(scope) == elle::StatusError)
-	escape("unable to record the scope in the journal");
+      // depending on the context's state.
+      switch (context->state)
+	{
+	case gear::Context::StateDiscarded:
+	case gear::Context::StateStored:
+	case gear::Context::StateDestroyed:
+	  {
+	    //
+	    // if the object has been sealed, i.e there is no more actor
+	    // operating on it, record it in the journal.
+	    //
+
+	    // relinquish the scope: at this point we know there is not
+	    // remaining actor.
+	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
+	      escape("unable to relinquish the scope");
+
+	    // record the scope in the journal.
+	    if (journal::Journal::Record(scope) == elle::StatusError)
+	      escape("unable to record the scope in the journal");
+
+	    break;
+	  }
+	default:
+	  {
+	    //
+	    // otherwise, some actors are probably still working on it.
+	    //
+
+	    break;
+	  }
+	}
 
       leave();
     }

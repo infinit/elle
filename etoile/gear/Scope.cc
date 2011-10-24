@@ -194,19 +194,14 @@ namespace etoile
     }
 
     ///
-    /// this method deletes a scope if no actor is operating on it anymore.
+    /// this method removes the scope from its container making the scope
+    /// orphan.
+    ///
+    /// therefore, it is the responsibility of the caller to delete the scope.
     ///
     elle::Status	Scope::Relinquish(Scope*		scope)
     {
       enter();
-
-      // if actors remain, keep the scope.
-      if (scope->actors.empty() == false)
-	leave();
-
-      //
-      // otherwise, the scope can be removed.
-      //
 
       // depending on the scope type.
       if (scope->chemin == path::Chemin::Null)
@@ -233,8 +228,27 @@ namespace etoile
 	  Scope::Scopes::Onymous.erase(iterator);
 	}
 
-      // delete the scope.
-      // XXX delete scope;
+      leave();
+    }
+
+    ///
+    /// should the given scope become unused---i.e no more actor is
+    /// operating on it---, it is relinquished and deleted.
+    ///
+    elle::Status	Scope::Annihilate(Scope*		scope)
+    {
+      enter();
+
+      // if no actor operates on it anymore.
+      if (scope->actors.empty() == true)
+	{
+	  // relinquish the scope.
+	  if (Scope::Relinquish(scope) == elle::StatusError)
+	    escape("unable to relinquish the scope");
+
+	  // and finally, delete it.
+	  delete scope;
+	}
 
       leave();
     }
@@ -375,7 +389,7 @@ namespace etoile
 
       // start the timer.
       if (this->timer.Start(
-	    Infinit::Configuration.etoile.scope.containment) ==
+	    Infinit::Configuration.etoile.gear.containment) ==
 	  elle::StatusError)
 	escape("unable to start the timer");
 

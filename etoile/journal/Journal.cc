@@ -34,6 +34,8 @@ namespace etoile
     /// this method records a given scope so as to trigger the action
     /// later on.
     ///
+    /// XXX the scope is orphan at this point!
+    ///
     elle::Status	Journal::Record(gear::Scope*		scope)
     {
       gear::Transcript::Scoutor		scoutor;
@@ -43,11 +45,6 @@ namespace etoile
       // debug.
       if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] journal::Journal::Record()\n");
-
-      // first, if actors are still operating on the scope, delay the
-      // journal processing.
-      if (scope->actors.empty() == false)
-	leave();
 
       // go through the transcript's actions.
       for (scoutor = scope->context->transcript.container.begin();
@@ -90,11 +87,7 @@ namespace etoile
       // set the context's state.
       scope->context->state = gear::Context::StateCleaned;
 
-      // relinquish the scope.
-      if (gear::Scope::Relinquish(scope) == elle::StatusError)
-	escape("unable to relinquish the scope");
-
-      // XXX
+      // delete the scope.
       delete scope;
 
       leave();
