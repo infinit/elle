@@ -100,11 +100,35 @@
   (newline)
   )
 
+(defconst infinit-c-style
+  '((c-basic-offset . 2)
+    (c-comment-only-line-offset . (0 . 0))
+    (c-hanging-braces-alist     . ((substatement-open before after)
+                                   (arglist-cont-nonempty)))
+    (c-offsets-alist . ((statement-block-intro . +)
+                        (knr-argdecl-intro . 5)
+                        (substatement-open . +)
+                        (substatement-label . 0)
+                        (label . 0)
+                        (statement-case-open . +)
+                        (statement-cont . +)
+                        ;(arglist-intro . c-lineup-arglist-intro-after-paren)
+                        (arglist-close . c-lineup-arglist)
+                        (inline-open . 0)
+                        (brace-list-open . +)
+                        (topmost-intro-cont
+                         . (first c-lineup-topmost-intro-cont
+                                  c-lineup-gnu-DEFUN-intro-cont))))
+    (c-special-indent-hook . c-gnu-impose-minimum)
+    (c-block-comment-prefix . ""))
+  "Infinit programming style")
+(c-add-style "infinit" infinit-c-style)
+
 (add-hook 'find-file-hooks
           (lambda ()
             (when (string-match ".*/infinit/.*" (buffer-file-name))
               (when (memq major-mode '(c-mode c++-mode))
-                (c-set-style "gnu")
+                (c-set-style "infinit")
                 (highlight-regexp "XXX" "hi-red-b"))
               (when (equal (point-min) (point-max))
                 (infinit-generate-header)
