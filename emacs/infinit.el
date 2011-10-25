@@ -127,6 +127,7 @@
 (add-hook 'find-file-hooks
           (lambda ()
             (when (string-match ".*/infinit/.*" (buffer-file-name))
+              (setq indent-tabs-mode 1)   ; spaces instead of tabs
               (when (memq major-mode '(c-mode c++-mode))
                 (c-set-style "infinit")
                 (highlight-regexp "XXX" "hi-red-b"))
