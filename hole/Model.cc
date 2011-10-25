@@ -40,6 +40,7 @@ namespace hole
       { Model::TypeLocal, "local" },
       { Model::TypeRemote, "remote" },
       { Model::TypeCirkle, "cirkle" },
+      { Model::TypeCirkle, "slug" },
       { Model::TypeKool, "kool" },
     };
 

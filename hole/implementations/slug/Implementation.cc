@@ -129,8 +129,8 @@ namespace hole
 
 	// forward the request to the machine.
 	if (Slug::Computer->Get(address,
-				  version,
-				  block) == elle::StatusError)
+                                version,
+                                block) == elle::StatusError)
 	  escape("unable to get the block");
 
 	leave();

@@ -20,7 +20,7 @@
 
 #include <lune/Lune.hh>
 
-#include <hole/implementations/remote/Manifest.hh>
+#include <hole/implementations/cirkle/Manifest.hh>
 #include <hole/implementations/slug/Cluster.hh>
 
 //
@@ -57,7 +57,7 @@ namespace hole
 ///
 range(hole::implementations::slug::Component,
       hole::implementations::slug::Tags,
-      hole::implementations::remote::Component);
+      hole::implementations::cirkle::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -103,24 +103,24 @@ namespace hole
 message(hole::implementations::slug::TagChallenge,
 	parameters())
 message(hole::implementations::slug::TagPassport,
-	parameters(lune::Passport))
+	parameters(lune::Passport&))
 message(hole::implementations::slug::TagPort,
-	parameters(elle::Port))
+	parameters(elle::Port&))
 message(hole::implementations::slug::TagAuthenticated,
 	parameters())
 
 message(hole::implementations::slug::TagUpdate,
-	parameters(hole::implementations::slug::Cluster))
+	parameters(hole::implementations::slug::Cluster&))
 
 message(hole::implementations::slug::TagPush,
-	parameters(nucleus::Address,
-		   nucleus::Derivable<nucleus::Block>));
+	parameters(nucleus::Address&,
+		   nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::slug::TagPull,
-	parameters(nucleus::Address,
-		   nucleus::Version));
+	parameters(nucleus::Address&,
+		   nucleus::Version&));
 message(hole::implementations::slug::TagBlock,
-	parameters(nucleus::Derivable<nucleus::Block>));
+	parameters(nucleus::Derivable<nucleus::Block>&));
 message(hole::implementations::slug::TagWipe,
-	parameters(nucleus::Address));
+	parameters(nucleus::Address&));
 
 #endif

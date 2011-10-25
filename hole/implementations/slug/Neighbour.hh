@@ -68,9 +68,12 @@ namespace hole
 	//
 	// callbacks
 	//
-	elle::Status	Discard();
+        elle::Status    Connected();
+        elle::Status    Disconnected();
+        elle::Status    Error(const elle::String&);
+        elle::Status    Discard();
 
-	elle::Status	Monitor();
+        elle::Status    RegisterCallbacks();
 
 	//
 	// interfaces
@@ -87,7 +90,7 @@ namespace hole
 	elle::Locus	locus;
 	Label		label;
 
-	elle::Port	port;
+	elle::Port	port; ///< is it different from locus.port ?
 
 	elle::Gate*	gate;
 

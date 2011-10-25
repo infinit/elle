@@ -23,18 +23,18 @@ namespace hole
     namespace slug
     {
 
-//
-// ---------- definitions -----------------------------------------------------
-//
+      //
+      // ---------- definitions -----------------------------------------------------
+      //
 
       ///
       /// XXX 30 sec
       ///
       const elle::Natural32		Neighbour::Timeout = 30000;
 
-//
-// ---------- constructors & destructors --------------------------------------
-//
+      //
+      // ---------- constructors & destructors --------------------------------------
+      //
 
       ///
       /// XXX
@@ -61,9 +61,9 @@ namespace hole
 	  delete this->timer;
       }
 
-//
-// ---------- methods ---------------------------------------------------------
-//
+      //
+      // ---------- methods ---------------------------------------------------------
+      //
 
       ///
       /// XXX
@@ -97,24 +97,39 @@ namespace hole
 	leave();
       }
 
+      elle::Status      Neighbour::RegisterCallbacks()
+      {
+        enter();
+
+        if (this->gate->signal.disconnected.Subscribe(
+              elle::Callback<>::Infer(&Neighbour::Disconnected,
+                                      this)) != elle::StatusError)
+          escape("unable to subscribe the disconnected signal");
+
+        if (this->gate->signal.connected.Subscribe(
+              elle::Callback<>::Infer(&Neighbour::Connected,
+                                      this)) != elle::StatusError)
+          escape("unable to subscribe the disconnected signal");
+
+        if (this->gate->signal.error.Subscribe(
+              elle::Callback<>::Infer(&Neighbour::Error,
+                                      this)) != elle::StatusError)
+          escape("unable to subscribe the disconnected signal");
+
+        leave();
+      }
+
       ///
       /// XXX
       ///
       elle::Status	Neighbour::Create(elle::Gate*		gate)
       {
-	elle::Callback<
-	  elle::Status,
-	  elle::Parameters<>
-	  >		monitor(&Neighbour::Monitor, this);
-
 	enter();
 
 	// set the gate.
 	this->gate = gate;
 
-	// register the monitor callback.
-	if (this->gate->Monitor(monitor) == elle::StatusError)
-	  escape("unable to monitor the connection");
+        this->RegisterCallbacks();
 
 	// XXX add timer for timeout
 
@@ -126,19 +141,12 @@ namespace hole
       ///
       elle::Status	Neighbour::Connect()
       {
-	elle::Callback<
-	  elle::Status,
-	  elle::Parameters<>
-	  >				monitor(&Neighbour::Monitor, this);
-
 	enter();
 
 	// allocate a gate.
 	this->gate = new elle::Gate;
 
-	// register the monitor callback.
-	if (this->gate->Monitor(monitor) == elle::StatusError)
-	  escape("unable to monitor the connection");
+        this->RegisterCallbacks();
 
 	// create the gate.
 	if (this->gate->Create() == elle::StatusError)
@@ -151,9 +159,9 @@ namespace hole
 	leave();
       }
 
-//
-// ---------- callbacks -------------------------------------------------------
-//
+      //
+      // ---------- callbacks -------------------------------------------------------
+      //
 
       ///
       /// XXX
@@ -186,62 +194,57 @@ namespace hole
 	leave();
       }
 
-      ///
-      /// this callback is triggered whenever the socket state changes.
-      ///
-      elle::Status	Neighbour::Monitor()
+      elle::Status	Neighbour::Connected()
       {
 	enter();
 
-	// depending on the state of the socket.
-	switch (this->gate->state)
-	  {
-	  case elle::Channel::StateConnected:
-	    {
-	      // challenge the peer.
-	      if (this->gate->Send(
-		    elle::Inputs<TagChallenge>()) == elle::StatusError)
-		escape("unable to send the challenge");
-
-	      break;
-	    }
-	  case elle::Channel::StateDisconnected:
-	    {
-	      // if the neighbour has been registered in the routing table...
-	      if (Slug::Computer->routingtable.Exist(
-		    this->label) == elle::StatusTrue)
-		{
-		  // remove it.
-		  if (Slug::Computer->routingtable.Remove(
-		        this->label) == elle::StatusError)
-		    escape("unable to remove the neighbour from the "
-			   "routing table");
-		}
-
-	      // remove the neighbour from the neighbourhood.
-	      if (Slug::Computer->neighbourhood.Remove(
-		    this->locus) == elle::StatusError)
-		escape("unable to remove the neighbour from the "
-		       "neighbourhood");
-
-	      // delete the neighbour.
-	      delete this; // XXX rely on signals instead
-
-	      break;
-	    }
-	  default:
-	    {
-	      escape("unexpected socket state '%u'",
-		     this->gate->state);
-	    }
-	  }
+	// challenge the peer.
+	if (this->gate->Send(
+	      elle::Inputs<TagChallenge>()) == elle::StatusError)
+	  escape("unable to send the challenge");
 
 	leave();
       }
 
-//
-// ---------- dumpable --------------------------------------------------------
-//
+      elle::Status	Neighbour::Disconnected()
+      {
+	enter();
+
+	// if the neighbour has been registered in the routing table...
+	if (Slug::Computer->routingtable.Exist(
+	      this->label) == elle::StatusTrue)
+	  {
+	    // remove it.
+	    if (Slug::Computer->routingtable.Remove(
+		  this->label) == elle::StatusError)
+	      escape("unable to remove the neighbour from the "
+		     "routing table");
+	  }
+
+	// remove the neighbour from the neighbourhood.
+	if (Slug::Computer->neighbourhood.Remove(
+	      this->locus) == elle::StatusError)
+	  escape("unable to remove the neighbour from the "
+		 "neighbourhood");
+
+	// delete the neighbour.
+	delete this; // XXX rely on signals instead
+
+	leave();
+      }
+
+      elle::Status	Neighbour::Error(const elle::String & error)
+      {
+	enter();
+
+	this->Disconnected();
+
+	leave();
+      }
+
+      //
+      // ---------- dumpable --------------------------------------------------------
+      //
 
       ///
       /// this function dumps a neighbour object.

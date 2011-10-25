@@ -203,7 +203,7 @@ namespace hole
 	    escape("unable to create the timer");
 
 	  // subscribe to the timer's signal.
-	  if (this->timer->signal.timeout.Subscribe(
+	  if (this->timer.signal.timeout.Subscribe(
 	        elle::Callback<>::Infer(&Machine::Gossip,
 					this)) == elle::StatusError)
 	    escape("unable to subscribe to the signal");
@@ -228,7 +228,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Put[Immutable]()"
 		    << std::endl;
 
@@ -259,7 +259,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Put[Mutable]()"
 		    << std::endl;
 
@@ -289,7 +289,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Get[Immutable]()"
 		    << std::endl;
 
@@ -320,7 +320,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Get[Mutable]()"
 		    << std::endl;
 
@@ -347,7 +347,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Kill()"
 		    << std::endl;
 
@@ -379,7 +379,7 @@ namespace hole
 	enterx(instance(neighbour));
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Connection()"
 		    << std::endl;
 
@@ -421,7 +421,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Challenge()"
 		    << std::endl;
 
@@ -458,7 +458,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Passport()"
 		    << std::endl;
 
@@ -543,7 +543,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Port()"
 		    << std::endl;
 
@@ -599,7 +599,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Authenticated()"
 		    << std::endl;
 
@@ -630,7 +630,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Update()"
 		    << std::endl;
 
@@ -702,7 +702,7 @@ namespace hole
 	enter();
 
 	// debug.
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Machine::Gossip()"
 		    << std::endl;
 
