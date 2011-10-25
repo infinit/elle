@@ -36,7 +36,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] %s(Immutable)\n",
 		 __FUNCTION__);
 
@@ -61,7 +61,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] %s(Mutable)\n",
 		 __FUNCTION__);
 
@@ -116,7 +116,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] %s(Immutable)\n",
 		 __FUNCTION__);
 
@@ -146,7 +146,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] %s(Mutable)\n",
 		 __FUNCTION__);
 
@@ -176,7 +176,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] %s()\n",
 		 __FUNCTION__);
 

@@ -227,7 +227,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Put[Immutable]()"
 		    << std::endl;
 
@@ -252,7 +252,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Put[Mutable]()"
 		    << std::endl;
 
@@ -305,7 +305,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Get[Immutable]()"
 		    << std::endl;
 
@@ -335,7 +335,7 @@ namespace hole
       {
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Get[Mutable]()"
 		    << std::endl;
 
@@ -365,7 +365,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Kill()"
 		    << std::endl;
 
@@ -419,7 +419,7 @@ namespace hole
 
 	enterx(instance(customer));
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Connection()"
 		    << std::endl;
 
@@ -460,7 +460,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Challenge()"
 		    << std::endl;
 
@@ -532,7 +532,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Push()"
 		    << std::endl;
 
@@ -611,7 +611,7 @@ namespace hole
 
 	enterx(instance(block));
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Pull()"
 		    << std::endl;
 
@@ -702,7 +702,7 @@ namespace hole
 
 	enter();
 
-	if (Infinit::Configuration.debug.hole == true)
+	if (Infinit::Configuration.hole.debug == true)
 	  std::cout << "[hole] Server::Wipe()"
 		    << std::endl;
 
