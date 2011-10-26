@@ -106,7 +106,15 @@ namespace pig
 
 	"-s",
 	"-f",
-	"-osubtype='infinit'",
+	"-osubtype=infinit",
+
+	"-o", "no_remote_lock",
+	"-o", "large_read",
+	"-o", "big_writes",
+	"-o", "noauto_cache",
+	"-o", "entry_timeout=0",
+	"-o", "direct_io",
+
 	ofsname.c_str(),
 	FUSE::Mountpoint.c_str()
       };
