@@ -23,8 +23,6 @@ namespace elle
     ///
     /// this enumeration defines the type of access to a lock.
     ///
-    /// \todo XXX is it really used?
-    ///
     enum Mode
       {
 	ModeRead,

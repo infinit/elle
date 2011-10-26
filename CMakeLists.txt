@@ -76,6 +76,7 @@ ADD_LIBRARY(elle
   concurrency/Event.cc
   concurrency/Fiber.cc
   concurrency/Frame.cc
+  concurrency/Hurdle.cc
   concurrency/Program.cc
   concurrency/Routine.cc
   concurrency/Timer.cc
