@@ -62,11 +62,21 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the lookup automaton on the context.
-      if (automaton::Access::Lookup(*context,
-				    subject,
-				    record) == elle::StatusError)
-	escape("unable to lookup the access record");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeRead);
+      {
+	// apply the lookup automaton on the context.
+	if (automaton::Access::Lookup(*context,
+				      subject,
+				      record) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeRead);
+
+	    escape("unable to lookup the access record");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeRead);
 
       leave();
     }
@@ -101,12 +111,22 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the consult automaton on the context.
-      if (automaton::Access::Consult(*context,
-				     index,
-				     size,
-				     range) == elle::StatusError)
-	escape("unable to consult the access records");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeRead);
+      {
+	// apply the consult automaton on the context.
+	if (automaton::Access::Consult(*context,
+				       index,
+				       size,
+				       range) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeRead);
+
+	    escape("unable to consult the access records");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeRead);
 
       leave();
     }
@@ -140,11 +160,21 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the grant automaton on the context.
-      if (automaton::Access::Grant(*context,
-				   subject,
-				   permissions) == elle::StatusError)
-	escape("unable to grant access to the subject");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the grant automaton on the context.
+	if (automaton::Access::Grant(*context,
+				     subject,
+				     permissions) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to grant access to the subject");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;
@@ -181,10 +211,20 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the revoke automaton on the context.
-      if (automaton::Access::Revoke(*context,
-				    subject) == elle::StatusError)
-	escape("unable to revoke the subject's access permissions");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the revoke automaton on the context.
+	if (automaton::Access::Revoke(*context,
+				      subject) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to revoke the subject's access permissions");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;

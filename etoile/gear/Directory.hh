@@ -25,6 +25,8 @@
 
 #include <etoile/automaton/Directory.hh>
 
+#include <etoile/wall/Directory.hh>
+
 namespace etoile
 {
   namespace gear
@@ -53,6 +55,7 @@ namespace etoile
       //
       // types
       //
+      typedef wall::Directory			W;
       typedef automaton::Directory		A;
 
       typedef nucleus::Catalog			C;

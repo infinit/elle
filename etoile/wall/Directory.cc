@@ -72,9 +72,22 @@ namespace etoile
       // return the identifier.
       identifier = actor->identifier;
 
-      // apply the create automaton on the context.
-      if (automaton::Directory::Create(*context) == elle::StatusError)
-	escape("unable to create the directory");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the create automaton on the context.
+	if (automaton::Directory::Create(*context) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to create the directory");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
+
+      // set the actor's state.
+      actor->state = gear::Actor::StateUpdated;
 
       // waive the actor.
       waive(actor);
@@ -122,9 +135,19 @@ namespace etoile
       if (chemin.Locate(context->location) == elle::StatusError)
 	escape("unable to locate the directory");
 
-      // apply the load automaton on the context.
-      if (automaton::Directory::Load(*context) == elle::StatusError)
-	escape("unable to load the directory");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the load automaton on the context.
+	if (automaton::Directory::Load(*context) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to load the directory");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // waive the actor.
       waive(actor);
@@ -217,11 +240,21 @@ namespace etoile
       if (scope->Use(directory) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the add automaton on the context.
-      if (automaton::Directory::Add(*directory,
-				    name,
-				    address) == elle::StatusError)
-	escape("unable to add the directory entry");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the add automaton on the context.
+	if (automaton::Directory::Add(*directory,
+				      name,
+				      address) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to add the directory entry");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;
@@ -259,11 +292,21 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the lookup automaton on the context.
-      if (automaton::Directory::Lookup(*context,
-				       name,
-				       entry) == elle::StatusError)
-	escape("unable to lookup the directory entry");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeRead);
+      {
+	// apply the lookup automaton on the context.
+	if (automaton::Directory::Lookup(*context,
+					 name,
+					 entry) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeRead);
+
+	    escape("unable to lookup the directory entry");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeRead);
 
       leave();
     }
@@ -299,12 +342,22 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the consult automaton on the context.
-      if (automaton::Directory::Consult(*context,
-					offset,
-					size,
-					range) == elle::StatusError)
-	escape("unable to consult the directory entries");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeRead);
+      {
+	// apply the consult automaton on the context.
+	if (automaton::Directory::Consult(*context,
+					  offset,
+					  size,
+					  range) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeRead);
+
+	    escape("unable to consult the directory entries");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeRead);
 
       leave();
     }
@@ -320,7 +373,6 @@ namespace etoile
       gear::Actor*	actor;
       gear::Scope*	scope;
       gear::Directory*	context;
-      path::Route	route;
 
       enter();
 
@@ -339,25 +391,56 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the rename automaton on the context.
-      if (automaton::Directory::Rename(*context,
-				       from,
-				       to) == elle::StatusError)
-	escape("unable to rename the directory entry");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the rename automaton on the context.
+	if (automaton::Directory::Rename(*context,
+					 from,
+					 to) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to rename the directory entry");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;
 
-      // build the route associated with the previous version of
-      // the renamed entry.
-      if (route.Create(scope->chemin.route, from) == elle::StatusError)
-	escape("unable to create the route");
+      //
+      // invalidate the _from_ route from the shrub.
+      //
+      {
+	path::Route	route;
 
-      // evict the route from the shrub.
-      if (shrub::Shrub::Evict(route) == elle::StatusError)
-	escape("unable to evict the route from the shrub");
+	// build the route associated with the previous version of
+	// the renamed entry.
+	if (route.Create(scope->chemin.route, from) == elle::StatusError)
+	  escape("unable to create the route");
 
-      // XXX do the same for _to_.
+	// evict the route from the shrub.
+	if (shrub::Shrub::Evict(route) == elle::StatusError)
+	  escape("unable to evict the route from the shrub");
+      }
+
+      //
+      // invalidate the _to_ route from the shrub.
+      //
+      {
+	path::Route	route;
+
+	// build the route associated with the new version of
+	// the renamed entry.
+	if (route.Create(scope->chemin.route, to) == elle::StatusError)
+	  escape("unable to create the route");
+
+	// evict the route from the shrub.
+	if (shrub::Shrub::Evict(route) == elle::StatusError)
+	  escape("unable to evict the route from the shrub");
+      }
 
       leave();
     }
@@ -391,10 +474,20 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the remove automaton on the context.
-      if (automaton::Directory::Remove(*context,
-				       name) == elle::StatusError)
-	escape("unable to remove the directory entry");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the remove automaton on the context.
+	if (automaton::Directory::Remove(*context,
+					 name) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to remove the directory entry");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;
@@ -462,9 +555,19 @@ namespace etoile
       if (scope->Shutdown(callback) == elle::StatusError)
 	escape("unable to retrieve the shutdown callback");
 
-      // trigger the closing callback.
-      if (callback.Call(*context) == elle::StatusError)
-	escape("unable to perform the closing operation");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// trigger the closing callback.
+	if (callback.Call(*context) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to perform the closing operation");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // depending on the context's state.
       switch (context->state)
@@ -478,7 +581,7 @@ namespace etoile
 	    // operating on it, record it in the journal.
 	    //
 
-	    // relinquish the scope: at this point we know there is not
+	    // relinquish the scope: at this point we know there is no
 	    // remaining actor.
 	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
 	      escape("unable to relinquish the scope");
@@ -554,9 +657,19 @@ namespace etoile
       if (scope->Shutdown(callback) == elle::StatusError)
 	escape("unable to retrieve the shutdown callback");
 
-      // trigger the closing callback.
-      if (callback.Call(*context) == elle::StatusError)
-	escape("unable to perform the closing operation");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// trigger the closing callback.
+	if (callback.Call(*context) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to perform the closing operation");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // depending on the context's state.
       switch (context->state)
@@ -570,7 +683,7 @@ namespace etoile
 	    // operating on it, record it in the journal.
 	    //
 
-	    // relinquish the scope: at this point we know there is not
+	    // relinquish the scope: at this point we know there is no
 	    // remaining actor.
 	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
 	      escape("unable to relinquish the scope");
@@ -645,9 +758,19 @@ namespace etoile
       if (scope->Shutdown(callback) == elle::StatusError)
 	escape("unable to retrieve the shutdown callback");
 
-      // trigger the closing callback.
-      if (callback.Call(*context) == elle::StatusError)
-	escape("unable to perform the closing operation");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// trigger the closing callback.
+	if (callback.Call(*context) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to perform the closing operation");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // depending on the context's state.
       switch (context->state)
@@ -661,7 +784,7 @@ namespace etoile
 	    // operating on it, record it in the journal.
 	    //
 
-	    // relinquish the scope: at this point we know there is not
+	    // relinquish the scope: at this point we know there is no
 	    // remaining actor.
 	    if (gear::Scope::Relinquish(scope) == elle::StatusError)
 	      escape("unable to relinquish the scope");

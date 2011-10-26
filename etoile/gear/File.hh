@@ -23,6 +23,8 @@
 
 #include <etoile/automaton/File.hh>
 
+#include <etoile/wall/File.hh>
+
 namespace etoile
 {
   namespace gear
@@ -51,6 +53,7 @@ namespace etoile
       //
       // types
       //
+      typedef wall::File			W;
       typedef automaton::File			A;
 
       typedef nucleus::Data			C;

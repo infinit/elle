@@ -114,6 +114,36 @@ namespace etoile
     }
 
     ///
+    /// this method inserts the given scope in the appropriate container,
+    /// i.e according to its chemin.
+    ///
+    elle::Status	Scope::Inclose(Scope*			scope)
+    {
+      std::pair<Scope::S::O::Iterator, elle::Boolean>	result;
+
+      enter();
+
+      // depending on the scope i.e its chemin.
+      if (scope->chemin == path::Chemin::Null)
+	{
+	  // insert the scope in the anonymous container.
+	  Scope::Scopes::Anonymous.push_back(scope);
+	}
+      else
+	{
+	  // insert the scope in the container.
+	  result = Scope::Scopes::Onymous.insert(
+	    std::pair<const path::Chemin, Scope*>(scope->chemin, scope));
+
+	  // check the result.
+	  if (result.second == false)
+	    escape("unable to insert the scope in the container");
+	}
+
+      leave();
+    }
+
+    ///
     /// this method tries to locate an existing scope given the chemin.
     ///
     /// if none exists, a scope is created and added to the container.
@@ -129,8 +159,7 @@ namespace etoile
       if ((scoutor = Scope::Scopes::Onymous.find(chemin)) ==
 	  Scope::Scopes::Onymous.end())
 	{
-	  std::pair<Scope::S::O::Iterator, elle::Boolean>	result;
-	  Scope*						s;
+	  Scope*		s;
 
 	  enterx(instance(s));
 
@@ -141,13 +170,9 @@ namespace etoile
 	  if (s->Create() == elle::StatusError)
 	    escape("unable to create the scope");
 
-	  // insert the scope in the container.
-	  result = Scope::Scopes::Onymous.insert(
-		     std::pair<const path::Chemin, Scope*>(chemin, s));
-
-	  // check the result.
-	  if (result.second == false)
-	    escape("unable to insert the scope in the container");
+	  // inclose the scope.
+	  if (Scope::Inclose(s) == elle::StatusError)
+	    escape("unable to inclose the scope");
 
 	  // return the scope.
 	  scope = s;
@@ -181,8 +206,9 @@ namespace etoile
       if (s->Create() == elle::StatusError)
 	escape("unable to create the scope");
 
-      // insert the scope in the anonymous container.
-      Scope::Scopes::Anonymous.push_back(s);
+      // inclose the scope.
+      if (Scope::Inclose(s) == elle::StatusError)
+	escape("unable to inclose the scope");
 
       // return the scope.
       scope = s;
@@ -710,16 +736,21 @@ namespace etoile
       switch (this->context->state)
 	{
 	case Context::StateUnknown:
-	case Context::StateCleaned:
 	  {
 	    escape("unexpected state '%u'",
 		   this->context->state);
+	  }
+	case Context::StateCleaned:
+	  {
+	    // nothing to do.
+
+	    break;
 	  }
 	case Context::StateInitialized:
 	case Context::StateDiscarded:
 	  {
 	    // set the state.
-	    this->state = Scope::StateDisclose;
+	    this->state = Scope::StateRefreshing;
 
 	    // perform the refreshing depending on the context's nature.
 	    switch (this->context->nature)
@@ -795,7 +826,7 @@ namespace etoile
 	case Context::StateDestroyed:
 	  {
 	    // set the state.
-	    this->state = Scope::StateRefresh;
+	    this->state = Scope::StateDisclosing;
 
 	    // perform the disclosure depending on the context's nature.
 	    switch (this->context->nature)
@@ -885,7 +916,7 @@ namespace etoile
 
       enter();
 
-      std::cout << alignment << "[Scope]" << std::endl;
+      std::cout << alignment << "[Scope] " << std::hex << this << std::endl;
 
       // dump the chemin.
       if (this->chemin.Dump(margin + 2) == elle::StatusError)

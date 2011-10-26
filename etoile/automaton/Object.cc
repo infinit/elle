@@ -37,6 +37,10 @@ namespace etoile
     {
       enter();
 
+      // return if the context has already been loaded.
+      if (context.state != gear::Context::StateUnknown)
+	leave();
+
       // retrieve the object block.
       if (depot::Depot::Pull(context.location.address,
 			     context.location.version,

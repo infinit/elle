@@ -130,7 +130,13 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this method is called whenever the scope needs to be refreshed i.e
+    /// has lived long enough in main memory so that the risk of it having
+    /// been updated on another computer is quite high.
+    ///
+    /// therefore, this refreshing process is triggered on a regular basis
+    /// in order to make sure scopes which are always opened pick get
+    /// updated.
     ///
     template <typename T>
     elle::Status	Scope::Refresh()
@@ -142,33 +148,33 @@ namespace etoile
 	  >
 	>		callback;
       T*		context;
-      nucleus::Location	location;
-      Actor*		actor;
 
-      enterx(instance(actor),
-	     instance(context));
-
-      // XXX
-      log("Refresh()");
-
-      // allocate an actor.
-      actor = new Actor(this);
+      enterx(instance(context));
 
       // allocate a context.
       context = new T;
 
-      // locate the scope based on the chemin.
+      // locate the context based on the current scope's chemin.
       if (this->chemin.Locate(context->location) == elle::StatusError)
 	escape("unable to locate the scope");
 
-      // load the object.
-      if (T::A::Load(*context) == elle::StatusError)
-	escape("unable to load the object");
+      // lock the current scope in order to make sure it does not get
+      // relinquished or simply modified.
+      //
+      // this is especially required since Load()ing may block the current
+      // fiber.
+      this->hurdle.Lock(elle::ModeWrite);
+      {
+	// load the object.
+	if (T::A::Load(*context) == elle::StatusError)
+	  {
+	    // unlock.
+	    this->hurdle.Unlock(elle::ModeWrite);
 
-      // verify that the context's state has not change in between.
-      if (!((this->context->state == Context::StateInitialized) ||
-	    (this->context->state == Context::StateDiscarded)))
-	escape("the context's state has changed during the supervision");
+	    escape("unable to load the object");
+	  }
+      }
+      this->hurdle.Unlock(elle::ModeWrite);
 
       // delete the existing context.
       delete this->context;
@@ -179,130 +185,109 @@ namespace etoile
       // waive.
       waive(context);
 
-      // specify the closing operation performed by the actor.
-      if (actor->Operate(OperationDiscard) == elle::StatusError)
-	escape("this operation cannot be performed by this actor");
-
-      // delete the actor.
-      delete actor;
-
-      // waive.
-      waive(actor);
-
-      // specify the closing operation performed on the scope.
-      if (this->Operate(OperationDiscard) == elle::StatusError)
-	escape("unable to specify the operation being performed "
-	       "on the scope");
-
-      // retrieve the shutdown callback.
-      if (this->Shutdown(callback) == elle::StatusError)
-	escape("unable to retrieve the shutdown callback");
-
-      // trigger the closing callback.
-      if (callback.Call(*context) == elle::StatusError)
-	escape("unable to perform the closing operation");
-
-      // XXX record journal, pour la coherence!
-
       leave();
     }
 
     ///
-    /// XXX
+    /// this method does the opposite of the Refresh() method by disclosing,
+    /// i.e storing, the modifications even though the scope has not been
+    /// closed yet.
+    ///
+    /// such a process gets handy when scopes are opened and never closed
+    /// by still modified. thanks to the regular disclosing mechanism, the
+    /// modifications of scopes having lives for too much time in main
+    /// memory are published by force in order to make sure other computers
+    /// take notice of those.
     ///
     template <typename T>
     elle::Status	Scope::Disclose()
     {
-      std::pair<Scope::S::O::Iterator, elle::Boolean>	result;
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  T&
-	  >
-	>						callback;
-      T*						context;
-      Scope*						scope;
-      Actor*						actor;
+      Scope*		scope;
+      T*		context;
+      Actor*		actor;
 
       enterx(instance(actor),
-	     instance(scope));
+	     slab(scope, gear::Scope::Annihilate));
 
-      // XXX
-      leave();
+      //
+      // create a scope, very much as for wall::*::Create(), except
+      // that it works even for objects which cannot, obviously, be created.
+      //
+      {
+	// supply a scope i.e request a new anonymous scope.
+	if (gear::Scope::Supply(scope) == elle::StatusError)
+	  escape("unable to supply a scope");
 
-      // XXX
-      log("Disclose()");
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
 
-      // allocate a new scope but do not register it yet.
-      scope = new Scope(this->chemin);
+	// allocate an actor on the new scope, making the scope valid
+	// for triggering automata.
+	actor = new gear::Actor(scope);
 
-      // create the scope.
-      if (scope->Create() == elle::StatusError)
-	escape("unable to create the scope");
+	// move the new context in a temporary variable.
+	context = static_cast<T*>(actor->scope->context);
+      }
 
-      // move the current scope's context to the new scope.
-      scope->context = this->context;
+      //
+      // swap the contexts.
+      //
+      {
+	// transfer the current scope's context to the new scope.
+	actor->scope->context = this->context;
 
-      // set the current scope's context to null, temporarily.
-      this->context = NULL;
+	// set the current scope's context with the new one.
+	this->context = context;
+      }
 
-      // allocate an actor on the new scope in order to render it valid.
-      actor = new Actor(scope);
+      // protect the access to the current scope.
+      this->hurdle.Lock(elle::ModeWrite);
+      {
+	// store the object which now carries the modified context.
+	if (T::W::Store(actor->identifier) == elle::StatusError)
+	  {
+	    // unlock.
+	    this->hurdle.Unlock(elle::ModeWrite);
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // specify the closing operation performed by the actor.
-      if (actor->Operate(OperationDiscard) == elle::StatusError)
-	escape("this operation cannot be performed by this actor");
-
-      // delete the actor.
-      delete actor;
+	    escape("unable to store the object");
+	  }
+      }
+      this->hurdle.Unlock(elle::ModeWrite);
 
       // waive the actor.
       waive(actor);
 
-      // specify the closing operation performed on the scope.
-      if (scope->Operate(OperationDiscard) == elle::StatusError)
-	escape("unable to specify the operation being performed on the scope");
-
-      // retrieve the shutdown callback.
-      if (scope->Shutdown(callback) == elle::StatusError)
-	escape("unable to retrieve the shutdown callback");
-
-      // trigger the closing callback.
-      if (callback.Call(*context) == elle::StatusError)
-	escape("unable to perform the closing operation");
-
-      // deliberately record the scope in the journal as no other
-      // actor is operating on it.
-      if (journal::Journal::Record(scope) == elle::StatusError)
-	escape("unable to record the scope in the journal");
-
       // waive the scope.
       waive(scope);
 
-      // allocate a new context for the current scope.
-      if (this->Use(context) == elle::StatusError)
-	escape("unable to allocate a new context");
-
-      // locate the scope based on the chemin.
-      if (this->chemin.Locate(context->location) == elle::StatusError)
-	escape("unable to locate the scope");
-
-      // XXX try to block.
-
-      // reload the object, theoretically from the journal since it has
-      // been recorded to storage just above.
       //
-      // note that the fiber must not block or the current actors could
-      // continue accessing the scope which, for now, contains an
-      // uninitialized context.
-      if (T::A::Load(*context) == elle::StatusError)
-	escape("unable to load the object");
+      // at this point, a scope has been created, to which the modified
+      // context has been transferred. this scope has been stored, hence
+      // disclosing its modifications.
+      //
+      // finally, the current scope's context is allocated but initialized
+      // and must therefore be loaded with a fresh version of the object.
+      //
 
-      // XXX make sure the call above retrieve from the journal.
+      // locate the object based on the current scope's chemin.
+      if (this->chemin.Locate(context->location) == elle::StatusError)
+	escape("unable to locate the file");
+
+      // protect the access to the current scope.
+      this->hurdle.Lock(elle::ModeWrite);
+      {
+	// load a fresh version of the object which should happen to be
+	// the one stored above.
+	if (T::A::Load(*context) == elle::StatusError)
+	  {
+	    // unlock.
+	    this->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to load the object");
+	  }
+      }
+      this->hurdle.Unlock(elle::ModeWrite);
 
       leave();
     }

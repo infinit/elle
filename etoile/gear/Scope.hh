@@ -59,8 +59,8 @@ namespace etoile
       enum State
 	{
 	  StateNone,
-	  StateRefresh,
-	  StateDisclose
+	  StateRefreshing,
+	  StateDisclosing
 	};
 
       //
@@ -97,6 +97,7 @@ namespace etoile
       static elle::Status	Initialize();
       static elle::Status	Clean();
 
+      static elle::Status	Inclose(Scope*);
       static elle::Status	Acquire(const path::Chemin&,
 					Scope*&);
       static elle::Status	Supply(Scope*&);
@@ -173,6 +174,8 @@ namespace etoile
       Chronicle*	chronicle;
 
       A::Container	actors;
+
+      elle::Hurdle	hurdle;
     };
 
   }

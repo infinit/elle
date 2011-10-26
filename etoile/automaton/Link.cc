@@ -67,6 +67,10 @@ namespace etoile
     {
       enter();
 
+      // return if the context has already been loaded.
+      if (context.state != gear::Context::StateUnknown)
+	leave();
+
       // load the object.
       if (Object::Load(context) == elle::StatusError)
 	escape("unable to fetch the object");

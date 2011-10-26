@@ -22,6 +22,8 @@
 #include <etoile/gear/Nature.hh>
 
 #include <etoile/automaton/Object.hh>
+
+#include <etoile/wall/Object.hh>
  
 namespace etoile
 {
@@ -72,6 +74,7 @@ namespace etoile
       //
       // types
       //
+      typedef wall::Object			W;
       typedef automaton::Object			A;
 
       //

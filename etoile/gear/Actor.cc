@@ -33,6 +33,45 @@ namespace etoile
 //
 
     ///
+    /// this method initializes the actor system.
+    ///
+    elle::Status	Actor::Initialize()
+    {
+      enter();
+
+      // nothing to do.
+
+      leave();
+    }
+
+    ///
+    /// this method cleans the actor system.
+    ///
+    elle::Status	Actor::Clean()
+    {
+      Actor::Scoutor	scoutor;
+
+      enter();
+
+      // go through the container.
+      for (scoutor = Actor::Actors.begin();
+	   scoutor != Actor::Actors.end();
+	   scoutor++)
+	{
+	  Actor*		actor = scoutor->second;
+
+	  // delete the actor: this action will detach the actor from
+	  // the scope.
+	  delete actor;
+	}
+
+      // clear the container.
+      Actor::Actors.clear();
+
+      leave();
+    }
+
+    ///
     /// this method retrieves an actor according to its identifier.
     ///
     elle::Status	Actor::Add(const Identifier&		identifier,
@@ -162,7 +201,7 @@ namespace etoile
       enter();
 
       // remove the actor from the scope's set.
-      if (scope->Detach(this) == elle::StatusError)
+      if (this->scope->Detach(this) == elle::StatusError)
 	yield(_(), "unable to detach the actor from the scope");
 
       // unregister the actor.

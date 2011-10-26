@@ -61,11 +61,21 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the set automaton on the context.
-      if (automaton::Attributes::Set(*context,
-				     name,
-				     value) == elle::StatusError)
-	escape("unable to set the attribute");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the set automaton on the context.
+	if (automaton::Attributes::Set(*context,
+				       name,
+				       value) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to set the attribute");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;
@@ -103,11 +113,21 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the get automaton on the context.
-      if (automaton::Attributes::Get(*context,
-				     name,
-				     trait) == elle::StatusError)
-	escape("unable to get the attribute");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeRead);
+      {
+	// apply the get automaton on the context.
+	if (automaton::Attributes::Get(*context,
+				       name,
+				       trait) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeRead);
+
+	    escape("unable to get the attribute");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeRead);
 
       leave();
     }
@@ -140,10 +160,20 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the fetch automaton on the context.
-      if (automaton::Attributes::Fetch(*context,
-				       range) == elle::StatusError)
-	escape("unable to fetch the attribute");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeRead);
+      {
+	// apply the fetch automaton on the context.
+	if (automaton::Attributes::Fetch(*context,
+					 range) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeRead);
+
+	    escape("unable to fetch the attribute");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeRead);
 
       leave();
     }
@@ -176,10 +206,20 @@ namespace etoile
       if (scope->Use(context) == elle::StatusError)
 	escape("unable to retrieve the context");
 
-      // apply the omit automaton on the context.
-      if (automaton::Attributes::Omit(*context,
-				      name) == elle::StatusError)
-	escape("unable to omit the attribute");
+      // protect the access.
+      scope->hurdle.Lock(elle::ModeWrite);
+      {
+	// apply the omit automaton on the context.
+	if (automaton::Attributes::Omit(*context,
+					name) == elle::StatusError)
+	  {
+	    // unlock.
+	    scope->hurdle.Unlock(elle::ModeWrite);
+
+	    escape("unable to omit the attribute");
+	  }
+      }
+      scope->hurdle.Unlock(elle::ModeWrite);
 
       // set the actor's state.
       actor->state = gear::Actor::StateUpdated;

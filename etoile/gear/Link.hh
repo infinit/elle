@@ -23,6 +23,8 @@
 
 #include <etoile/automaton/Link.hh>
 
+#include <etoile/wall/Link.hh>
+
 namespace etoile
 {
   namespace gear
@@ -51,6 +53,7 @@ namespace etoile
       //
       // types
       //
+      typedef wall::Link			W;
       typedef automaton::Link			A;
 
       typedef nucleus::Reference		C;

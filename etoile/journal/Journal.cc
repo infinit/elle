@@ -46,6 +46,10 @@ namespace etoile
       if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] journal::Journal::Record()\n");
 
+      // XXX iterer d'abord sur les ajouts (chb puis pkb),
+      // XXX puis sur les deletions
+      // XXX en fait c'est deja bon je pense!
+
       // go through the transcript's actions.
       for (scoutor = scope->context->transcript.container.begin();
 	   scoutor != scope->context->transcript.container.end();
@@ -87,8 +91,9 @@ namespace etoile
       // set the context's state.
       scope->context->state = gear::Context::StateCleaned;
 
-      // delete the scope.
-      delete scope;
+      // bury the scope i.e a scope may have recorded itself; thus bury
+      // it in order to avoid problems.
+      bury(scope);
 
       leave();
     }
