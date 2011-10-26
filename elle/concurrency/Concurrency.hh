@@ -60,6 +60,7 @@ namespace elle
 #include <elle/concurrency/Fiber.hh>
 #include <elle/concurrency/Frame.hh>
 #include <elle/concurrency/Function.hh>
+#include <elle/concurrency/Hurdle.hh>
 #include <elle/concurrency/Method.hh>
 #include <elle/concurrency/Mode.hh>
 #include <elle/concurrency/Mutex.hh>
