@@ -1,6 +1,5 @@
-- renommer gear.lifespan en autre chose: containment
-
 - par defaut: ne montrer que les elements auxquels le user a access
+- par defaut: creer un mapping user cree <-> local user?
 
 - invite 10 users and create a network => 1TB free
 
