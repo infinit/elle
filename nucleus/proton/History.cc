@@ -345,9 +345,13 @@ namespace nucleus
 			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
 	escape("unable to complete the path");
 
-      // erase the file.
-      if (elle::File::Erase(path) == elle::StatusError)
-	escape("unable to erase the file");
+      // is the file present...
+      if (elle::File::Exist(path) == elle::StatusTrue)
+	{
+	  // erase the file.
+	  if (elle::File::Erase(path) == elle::StatusError)
+	    escape("unable to erase the file");
+	}
 
       leave();
     }

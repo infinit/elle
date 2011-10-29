@@ -429,9 +429,13 @@ namespace nucleus
 	      elle::StatusError)
 	    escape("unable to complete the path");
 
-	  // erase the file.
-	  if (elle::File::Erase(path) == elle::StatusError)
-	    escape("unable to erase the file");
+	  // is the file present...
+	  if (elle::File::Exist(path) == elle::StatusTrue)
+	    {
+	      // erase the file.
+	      if (elle::File::Erase(path) == elle::StatusError)
+		escape("unable to erase the file");
+	    }
 	}
       else
 	{
@@ -477,9 +481,13 @@ namespace nucleus
 					    number)) == elle::StatusError)
 		escape("unable to complete the path");
 
-	      // erase the file.
-	      if (elle::File::Erase(file) == elle::StatusError)
-		escape("unable to erase the file");
+	      // is the file present...
+	      if (elle::File::Exist(file) == elle::StatusTrue)
+		{
+		  // erase the file.
+		  if (elle::File::Erase(file) == elle::StatusError)
+		    escape("unable to erase the file");
+		}
 	    }
 
 	  // complete the path with the last version pointer.
@@ -487,9 +495,13 @@ namespace nucleus
 	      elle::StatusError)
 	    escape("unable to complete the path");
 
-	  // delete the link which references the latest version.
-	  if (elle::File::Erase(path) == elle::StatusError)
-	    escape("unable to erase the block link");
+	  // is the file present...
+	  if (elle::File::Exist(path) == elle::StatusTrue)
+	    {
+	      // delete the link which references the latest version.
+	      if (elle::File::Erase(path) == elle::StatusError)
+		escape("unable to erase the block link");
+	    }
 
 	  // erase the history.
 	  if (history.Erase(network, address) == elle::StatusError)
