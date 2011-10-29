@@ -11,23 +11,37 @@
 #ifndef ELLE_CONCURRENCY_MODE_HH
 #define ELLE_CONCURRENCY_MODE_HH
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/core/Natural.hh>
+
 namespace elle
 {
+  using namespace core;
+
   namespace concurrency
   {
 
 //
-// ---------- enumerations ----------------------------------------------------
+// ---------- types -----------------------------------------------------------
 //
 
     ///
     /// this enumeration defines the type of access to a lock.
     ///
-    enum Mode
-      {
-	ModeRead,
-	ModeWrite
-      };
+    typedef Natural8		Mode;
+
+//
+// ---------- constants -------------------------------------------------------
+//
+
+    ///
+    /// default mode values.
+    ///
+    const Mode			ModeRead = 0x1;
+    const Mode			ModeWrite = 0x2;
 
   }
 }

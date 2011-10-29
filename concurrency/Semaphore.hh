@@ -39,6 +39,8 @@ namespace elle
     ///
     /// this class provides a semaphore functionality.
     ///
+    /// XXX to rework.
+    ///
     class Semaphore:
       public Entity
     {

@@ -11,8 +11,13 @@
 #ifndef ELLE_SYSTEM_PLATFORM_HH
 # define ELLE_SYSTEM_PLATEFORM_HH
 
+namespace elle
+{
+  namespace system
+  {
+
 //
-// ---------- portability -----------------------------------------------------
+// ---------- macros ----------------------------------------------------------
 //
 
 # ifdef __WIN32__
@@ -26,5 +31,8 @@
 # else
 #  define INFINIT_UNIX 0
 # endif
+
+  }
+}
 
 #endif

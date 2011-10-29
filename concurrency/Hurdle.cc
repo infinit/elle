@@ -55,9 +55,6 @@ namespace elle
 	  // must be blocked until the hurdle gets released.
 	  //
 
-	  // XXX
-	  printf("WAIT\n");
-
 	  // wait for the hurdle.
 	  if (Fiber::Wait(this) == StatusError)
 	    yield(_(), "an error occured while waiting on the resource");
@@ -90,9 +87,6 @@ namespace elle
 		// the current fiber must be blocked until the number
 		// of readers comes down to zero.
 		//
-
-		// XXX
-		printf("WAIT\n");
 
 		// wait for the hurdle.
 		if (Fiber::Wait(this) == StatusError)
@@ -185,6 +179,41 @@ namespace elle
 	}
 
       true();
+    }
+
+//
+// ---------- object ----------------------------------------------------------
+//
+
+    ///
+    /// this macro-function call generates the object.
+    ///
+    embed(Hurdle, _());
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this method dumps the hurdle.
+    ///
+    Status		Hurdle::Dump(const Natural32		margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Hurdle]" << std::endl;
+
+      // dump the locked boolean.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Locked] " << this->locked << std::endl;
+
+      // dump the number of readers.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Readers] " << std::dec << this->readers << std::endl;
+
+      leave();
     }
 
   }

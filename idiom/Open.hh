@@ -439,10 +439,7 @@
 /// the use of alloca() before creating a Garrison of Guards.
 ///
 #define enter()                                                         \
-  elle::standalone::Maid::Garrison* _maid_ =				\
-    elle::standalone::Maid::Install(					\
-      static_cast<elle::core::Void*>(					\
-        alloca(sizeof (elle::standalone::Maid::Garrison))))
+  elle::standalone::Maid::Garrison* _maid_ = NULL			\
 
 #define enterx(...)                                                     \
   elle::standalone::Maid::Garrison* _maid_ =				\

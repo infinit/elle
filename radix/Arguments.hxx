@@ -108,7 +108,7 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(elements...);
+	object.Trigger(elements...);
       }
 
       template <typename C,
@@ -117,7 +117,7 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(elements...);
+	object.Trigger(elements...);
       }
 
       //
@@ -220,8 +220,8 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    elements...);
+	object.Trigger(this->element1,
+		       elements...);
       }
 
       template <typename C,
@@ -230,8 +230,8 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    elements...);
+	object.Trigger(this->element1,
+		       elements...);
       }
 
       //
@@ -357,9 +357,9 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       elements...);
 
       }
 
@@ -369,9 +369,9 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       elements...);
       }
 
       //
@@ -522,10 +522,10 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       elements...);
       }
 
       template <typename C,
@@ -534,10 +534,10 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       elements...);
       }
 
       //
@@ -718,11 +718,11 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       elements...);
       }
 
       template <typename C,
@@ -731,11 +731,11 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       elements...);
       }
 
       //
@@ -950,12 +950,12 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       elements...);
       }
 
       template <typename C,
@@ -964,12 +964,12 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       elements...);
       }
 
       //
@@ -1226,13 +1226,13 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       elements...);
       }
 
       template <typename C,
@@ -1241,13 +1241,13 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       elements...);
       }
 
       //
@@ -1548,14 +1548,14 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    this->element7,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       this->element7,
+		       elements...);
       }
 
       template <typename C,
@@ -1564,14 +1564,14 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    this->element7,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       this->element7,
+		       elements...);
       }
 
       //
@@ -1920,15 +1920,15 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    this->element7,
-		    this->element8,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       this->element7,
+		       this->element8,
+		       elements...);
       }
 
       template <typename C,
@@ -1937,15 +1937,15 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    this->element7,
-		    this->element8,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       this->element7,
+		       this->element8,
+		       elements...);
       }
 
       //
@@ -2346,16 +2346,16 @@ namespace elle
       Void		Trigger(const C&			object,
 				U&...				elements)
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    this->element7,
-		    this->element8,
-		    this->element9,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       this->element7,
+		       this->element8,
+		       this->element9,
+		       elements...);
       }
 
       template <typename C,
@@ -2364,16 +2364,16 @@ namespace elle
 				U&...				elements)
 	const
       {
-	object.Call(this->element1,
-		    this->element2,
-		    this->element3,
-		    this->element4,
-		    this->element5,
-		    this->element6,
-		    this->element7,
-		    this->element8,
-		    this->element9,
-		    elements...);
+	object.Trigger(this->element1,
+		       this->element2,
+		       this->element3,
+		       this->element4,
+		       this->element5,
+		       this->element6,
+		       this->element7,
+		       this->element8,
+		       this->element9,
+		       elements...);
       }
 
       //

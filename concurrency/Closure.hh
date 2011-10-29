@@ -74,6 +74,16 @@ namespace elle
       Void		Trigger();
 
       //
+      // interfaces
+      //
+
+      // object
+      declare(_(Closure< R, Parameters<U...> >));
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      //
       // attributes
       //
       Callback< R, Parameters<U...> >	callback;
@@ -129,10 +139,59 @@ namespace elle
       Void		Trigger(V&...);
 
       //
+      // interfaces
+      //
+
+      // object
+      declare(_(Closure< R, Parameters<U...>, Parameters<V...> >));
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
+
+      //
       // attributes
       //
       Callback< R, Parameters<U..., V...> >	callback;
       Arguments< Parameters<U...> >		arguments;
+    };
+
+    ///
+    /// a specific class for closure inference.
+    ///
+    template <>
+    class Closure<>
+    {
+    public:
+      //
+      // static methods
+      //
+      template <typename R,
+		typename... U>
+      static Closure< R,
+		      Parameters<U...> >	Infer(R (*)(U...));
+      template <typename R,
+		typename C,
+		typename... U>
+      static Closure< R,
+		      Parameters<U...> >	Infer(R (C::*)(U...),
+						      C*);
+
+      template <typename R,
+		typename... U,
+		typename... V>
+      static Closure< R,
+		      Parameters<U...>,
+		      Parameters<V...> >	Infer(R (*)(U..., V...),
+						      U&...);
+      template <typename R,
+		typename C,
+		typename... U,
+		typename... V>
+      static Closure< R,
+		      Parameters<U...>,
+		      Parameters<V...> >	Infer(R (C::*)(U..., V...),
+						      C*,
+						      U&...);
     };
 
   }
