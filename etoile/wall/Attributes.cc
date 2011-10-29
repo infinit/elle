@@ -57,28 +57,32 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the set automaton on the context.
 	if (automaton::Attributes::Set(*context,
 				       name,
 				       value) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to set the attribute");
 
-	    escape("unable to set the attribute");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
+      section.Leave();
 
       leave();
     }
@@ -109,25 +113,29 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeRead),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeRead));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeRead);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the get automaton on the context.
 	if (automaton::Attributes::Get(*context,
 				       name,
 				       trait) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeRead);
-
-	    escape("unable to get the attribute");
-	  }
+	  escape("unable to get the attribute");
       }
-      scope->hurdle.Unlock(elle::ModeRead);
+      section.Leave();
 
       leave();
     }
@@ -156,24 +164,28 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeRead),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeRead));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeRead);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the fetch automaton on the context.
 	if (automaton::Attributes::Fetch(*context,
 					 range) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeRead);
-
-	    escape("unable to fetch the attribute");
-	  }
+	  escape("unable to fetch the attribute");
       }
-      scope->hurdle.Unlock(elle::ModeRead);
+      section.Leave();
 
       leave();
     }
@@ -202,27 +214,31 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the omit automaton on the context.
 	if (automaton::Attributes::Omit(*context,
 					name) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to omit the attribute");
 
-	    escape("unable to omit the attribute");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
+      section.Leave();
 
       leave();
     }

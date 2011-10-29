@@ -46,6 +46,9 @@ namespace etoile
       if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] journal::Journal::Record()\n");
 
+      // set the context's state.
+      scope->context->state = gear::Context::StateJournaled;
+
       // XXX iterer d'abord sur les ajouts (chb puis pkb),
       // XXX puis sur les deletions
       // XXX en fait c'est deja bon je pense!

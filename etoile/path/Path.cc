@@ -154,7 +154,13 @@ namespace etoile
 	  if (wall::Directory::Lookup(identifier,
 				      slice,
 				      entry) == elle::StatusError)
-	    escape("unable to lookup the slice");
+	    {
+	      // discard the directory.
+	      if (wall::Directory::Discard(identifier) == elle::StatusError)
+		escape("unable to discard the directory");
+
+	      escape("unable to lookup the slice");
+	    }
 
 	  // set the address; the version is already set i.e it has
 	  // been extracted from the slab.

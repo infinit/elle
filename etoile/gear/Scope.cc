@@ -740,6 +740,7 @@ namespace etoile
 	    escape("unexpected state '%u'",
 		   this->context->state);
 	  }
+	case Context::StateJournaled:
 	case Context::StateCleaned:
 	  {
 	    // nothing to do.

@@ -58,25 +58,29 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeRead),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeRead));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeRead);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the lookup automaton on the context.
 	if (automaton::Access::Lookup(*context,
 				      subject,
 				      record) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeRead);
-
-	    escape("unable to lookup the access record");
-	  }
+	  escape("unable to lookup the access record");
       }
-      scope->hurdle.Unlock(elle::ModeRead);
+      section.Leave();
 
       leave();
     }
@@ -107,26 +111,30 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeRead),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeRead));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeRead);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the consult automaton on the context.
 	if (automaton::Access::Consult(*context,
 				       index,
 				       size,
 				       range) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeRead);
-
-	    escape("unable to consult the access records");
-	  }
+	  escape("unable to consult the access records");
       }
-      scope->hurdle.Unlock(elle::ModeRead);
+      section.Leave();
 
       leave();
     }
@@ -156,28 +164,32 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the grant automaton on the context.
 	if (automaton::Access::Grant(*context,
 				     subject,
 				     permissions) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to grant access to the subject");
 
-	    escape("unable to grant access to the subject");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
+      section.Leave();
 
       leave();
     }
@@ -207,27 +219,31 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the revoke automaton on the context.
 	if (automaton::Access::Revoke(*context,
 				      subject) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to revoke the subject's access permissions");
 
-	    escape("unable to revoke the subject's access permissions");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
+      section.Leave();
 
       leave();
     }

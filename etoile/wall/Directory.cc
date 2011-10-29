@@ -62,38 +62,42 @@ namespace etoile
       if (gear::Scope::Supply(scope) == elle::StatusError)
 	escape("unable to supply the scope");
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // allocate an actor.
-      actor = new gear::Actor(scope);
-
-      // return the identifier.
-      identifier = actor->identifier;
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
+	// allocate an actor.
+	actor = new gear::Actor(scope);
+
+	// return the identifier.
+	identifier = actor->identifier;
+
 	// apply the create automaton on the context.
 	if (automaton::Directory::Create(*context) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to create the directory");
 
-	    escape("unable to create the directory");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
+
+	// waive the actor.
+	waive(actor);
+
+	// waive the scope.
+	waive(scope);
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
-
-      // waive the actor.
-      waive(actor);
-
-      // waive the scope.
-      waive(scope);
+      section.Leave();
 
       leave();
     }
@@ -121,39 +125,43 @@ namespace etoile
       if (gear::Scope::Acquire(chemin, scope) == elle::StatusError)
 	escape("unable to acquire the scope");
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // allocate an actor.
-      actor = new gear::Actor(scope);
-
-      // return the identifier.
-      identifier = actor->identifier;
-
-      // locate the object based on the chemin.
-      if (chemin.Locate(context->location) == elle::StatusError)
-	escape("unable to locate the directory");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
+	// allocate an actor.
+	actor = new gear::Actor(scope);
+
+	// return the identifier.
+	identifier = actor->identifier;
+
+	// locate the object based on the chemin.
+	if (chemin.Locate(context->location) == elle::StatusError)
+	  escape("unable to locate the directory");
+
 	// apply the load automaton on the context.
 	if (automaton::Directory::Load(*context) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to load the directory");
 
-	    escape("unable to load the directory");
-	  }
+	// waive the actor.
+	waive(actor);
+
+	// waive the scope.
+	waive(scope);
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // waive the actor.
-      waive(actor);
-
-      // waive the scope.
-      waive(scope);
+      section.Leave();
 
       leave();
     }
@@ -236,28 +244,32 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(directory) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(directory) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the add automaton on the context.
 	if (automaton::Directory::Add(*directory,
 				      name,
 				      address) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to add the directory entry");
 
-	    escape("unable to add the directory entry");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
+      section.Leave();
 
       leave();
     }
@@ -288,25 +300,29 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeRead),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeRead));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeRead);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the lookup automaton on the context.
 	if (automaton::Directory::Lookup(*context,
 					 name,
 					 entry) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeRead);
-
-	    escape("unable to lookup the directory entry");
-	  }
+	  escape("unable to lookup the directory entry");
       }
-      scope->hurdle.Unlock(elle::ModeRead);
+      section.Leave();
 
       leave();
     }
@@ -338,26 +354,30 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeRead),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeRead));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeRead);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the consult automaton on the context.
 	if (automaton::Directory::Consult(*context,
 					  offset,
 					  size,
 					  range) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeRead);
-
-	    escape("unable to consult the directory entries");
-	  }
+	  escape("unable to consult the directory entries");
       }
-      scope->hurdle.Unlock(elle::ModeRead);
+      section.Leave();
 
       leave();
     }
@@ -387,60 +407,64 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the rename automaton on the context.
 	if (automaton::Directory::Rename(*context,
 					 from,
 					 to) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to rename the directory entry");
 
-	    escape("unable to rename the directory entry");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
+
+	//
+	// invalidate the _from_ route from the shrub.
+	//
+	{
+	  path::Route	route;
+
+	  // build the route associated with the previous version of
+	  // the renamed entry.
+	  if (route.Create(scope->chemin.route, from) == elle::StatusError)
+	    escape("unable to create the route");
+
+	  // evict the route from the shrub.
+	  if (shrub::Shrub::Evict(route) == elle::StatusError)
+	    escape("unable to evict the route from the shrub");
+	}
+
+	//
+	// invalidate the _to_ route from the shrub.
+	//
+	{
+	  path::Route	route;
+
+	  // build the route associated with the new version of
+	  // the renamed entry.
+	  if (route.Create(scope->chemin.route, to) == elle::StatusError)
+	    escape("unable to create the route");
+
+	  // evict the route from the shrub.
+	  if (shrub::Shrub::Evict(route) == elle::StatusError)
+	    escape("unable to evict the route from the shrub");
+	}
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
-
-      //
-      // invalidate the _from_ route from the shrub.
-      //
-      {
-	path::Route	route;
-
-	// build the route associated with the previous version of
-	// the renamed entry.
-	if (route.Create(scope->chemin.route, from) == elle::StatusError)
-	  escape("unable to create the route");
-
-	// evict the route from the shrub.
-	if (shrub::Shrub::Evict(route) == elle::StatusError)
-	  escape("unable to evict the route from the shrub");
-      }
-
-      //
-      // invalidate the _to_ route from the shrub.
-      //
-      {
-	path::Route	route;
-
-	// build the route associated with the new version of
-	// the renamed entry.
-	if (route.Create(scope->chemin.route, to) == elle::StatusError)
-	  escape("unable to create the route");
-
-	// evict the route from the shrub.
-	if (shrub::Shrub::Evict(route) == elle::StatusError)
-	  escape("unable to evict the route from the shrub");
-      }
+      section.Leave();
 
       leave();
     }
@@ -470,35 +494,39 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
 	// apply the remove automaton on the context.
 	if (automaton::Directory::Remove(*context,
 					 name) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to remove the directory entry");
 
-	    escape("unable to remove the directory entry");
-	  }
+	// set the actor's state.
+	actor->state = gear::Actor::StateUpdated;
+
+	// build the route associated with the removed entry.
+	if (route.Create(scope->chemin.route, name) == elle::StatusError)
+	  escape("unable to create the route");
+
+	// evict the route from the shrub.
+	if (shrub::Shrub::Evict(route) == elle::StatusError)
+	  escape("unable to evict the route from the shrub");
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
-
-      // set the actor's state.
-      actor->state = gear::Actor::StateUpdated;
-
-      // build the route associated with the removed entry.
-      if (route.Create(scope->chemin.route, name) == elle::StatusError)
-	escape("unable to create the route");
-
-      // evict the route from the shrub.
-      if (shrub::Shrub::Evict(route) == elle::StatusError)
-	escape("unable to evict the route from the shrub");
+      section.Leave();
 
       leave();
     }
@@ -533,41 +561,46 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // specify the closing operation performed by the actor.
-      if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
-	escape("this operation cannot be performed by this actor");
-
-      // delete the actor.
-      delete actor;
-
-      // waive actor.
-      waive(actor);
-
-      // specify the closing operation performed on the scope.
-      if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
-	escape("unable to specify the operation being performed on the scope");
-
-      // retrieve the shutdown callback.
-      if (scope->Shutdown(callback) == elle::StatusError)
-	escape("unable to retrieve the shutdown callback");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
+	// specify the closing operation performed by the actor.
+	if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
+	  escape("this operation cannot be performed by this actor");
+
+	// delete the actor.
+	delete actor;
+
+	// waive actor.
+	waive(actor);
+
+	// specify the closing operation performed on the scope.
+	if (scope->Operate(gear::OperationDiscard) == elle::StatusError)
+	  escape("unable to specify the operation being performed "
+		 "on the scope");
+
+	// retrieve the shutdown callback.
+	if (scope->Shutdown(callback) == elle::StatusError)
+	  escape("unable to retrieve the shutdown callback");
+
 	// trigger the closing callback.
 	if (callback.Call(*context) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
-
-	    escape("unable to perform the closing operation");
-	  }
+	  escape("unable to perform the closing operation");
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
+      section.Leave();
 
       // depending on the context's state.
       switch (context->state)
@@ -635,41 +668,46 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // specify the closing operation performed by the actor.
-      if (actor->Operate(gear::OperationStore) == elle::StatusError)
-	escape("this operation cannot be performed by this actor");
-
-      // delete the actor.
-      delete actor;
-
-      // waive actor.
-      waive(actor);
-
-      // specify the closing operation performed on the scope.
-      if (scope->Operate(gear::OperationStore) == elle::StatusError)
-	escape("unable to specify the operation being performed on the scope");
-
-      // retrieve the shutdown callback.
-      if (scope->Shutdown(callback) == elle::StatusError)
-	escape("unable to retrieve the shutdown callback");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
+	// specify the closing operation performed by the actor.
+	if (actor->Operate(gear::OperationStore) == elle::StatusError)
+	  escape("this operation cannot be performed by this actor");
+
+	// delete the actor.
+	delete actor;
+
+	// waive actor.
+	waive(actor);
+
+	// specify the closing operation performed on the scope.
+	if (scope->Operate(gear::OperationStore) == elle::StatusError)
+	  escape("unable to specify the operation being performed "
+		 "on the scope");
+
+	// retrieve the shutdown callback.
+	if (scope->Shutdown(callback) == elle::StatusError)
+	  escape("unable to retrieve the shutdown callback");
+
 	// trigger the closing callback.
 	if (callback.Call(*context) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
-
-	    escape("unable to perform the closing operation");
-	  }
+	  escape("unable to perform the closing operation");
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
+      section.Leave();
 
       // depending on the context's state.
       switch (context->state)
@@ -736,41 +774,46 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      // retrieve the context.
-      if (scope->Use(context) == elle::StatusError)
-	escape("unable to retrieve the context");
-
-      // specify the closing operation performed by the actor.
-      if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
-	escape("this operation cannot be performed by this actor");
-
-      // delete the actor.
-      delete actor;
-
-      // waive actor.
-      waive(actor);
-
-      // specify the closing operation performed on the scope.
-      if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
-	escape("unable to specify the operation being performed on the scope");
-
-      // retrieve the shutdown callback.
-      if (scope->Shutdown(callback) == elle::StatusError)
-	escape("unable to retrieve the shutdown callback");
+      // declare a critical section.
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
+	  elle::ModeWrite));
 
       // protect the access.
-      scope->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	// retrieve the context.
+	if (scope->Use(context) == elle::StatusError)
+	  escape("unable to retrieve the context");
+
+	// specify the closing operation performed by the actor.
+	if (actor->Operate(gear::OperationDestroy) == elle::StatusError)
+	  escape("this operation cannot be performed by this actor");
+
+	// delete the actor.
+	delete actor;
+
+	// waive actor.
+	waive(actor);
+
+	// specify the closing operation performed on the scope.
+	if (scope->Operate(gear::OperationDestroy) == elle::StatusError)
+	  escape("unable to specify the operation being performed "
+		 "on the scope");
+
+	// retrieve the shutdown callback.
+	if (scope->Shutdown(callback) == elle::StatusError)
+	  escape("unable to retrieve the shutdown callback");
+
 	// trigger the closing callback.
 	if (callback.Call(*context) == elle::StatusError)
-	  {
-	    // unlock.
-	    scope->hurdle.Unlock(elle::ModeWrite);
-
-	    escape("unable to perform the closing operation");
-	  }
+	  escape("unable to perform the closing operation");
       }
-      scope->hurdle.Unlock(elle::ModeWrite);
+      section.Leave();
 
       // depending on the context's state.
       switch (context->state)

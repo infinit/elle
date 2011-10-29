@@ -57,6 +57,12 @@ namespace etoile
       //
       typedef wall::Directory			W;
       typedef automaton::Directory		A;
+      typedef elle::Callback<
+	        elle::Status,
+	        elle::Parameters<
+		  Directory&
+		  >
+	        >				S;
 
       typedef nucleus::Catalog			C;
 

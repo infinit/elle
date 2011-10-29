@@ -62,6 +62,8 @@ namespace etoile
 	  StateStored,
 	  StateDestroyed,
 
+	  StateJournaled,
+
 	  StateCleaned
 	};
 

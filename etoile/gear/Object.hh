@@ -76,6 +76,12 @@ namespace etoile
       //
       typedef wall::Object			W;
       typedef automaton::Object			A;
+      typedef elle::Callback<
+	        elle::Status,
+	        elle::Parameters<
+		  Object&
+		  >
+	        >				S;
 
       //
       // constructors & destructors

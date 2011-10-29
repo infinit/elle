@@ -17,6 +17,8 @@
 
 #include <etoile/journal/Journal.hh>
 
+#include <Infinit.hh>
+
 namespace etoile
 {
   namespace gear
@@ -141,49 +143,84 @@ namespace etoile
     template <typename T>
     elle::Status	Scope::Refresh()
     {
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  T&
-	  >
-	>		callback;
-      T*		context;
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &this->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &this->hurdle),
+	  elle::ModeWrite));
 
-      enterx(instance(context));
+      enter();
 
-      // allocate a context.
-      context = new T;
-
-      // locate the context based on the current scope's chemin.
-      if (this->chemin.Locate(context->location) == elle::StatusError)
-	escape("unable to locate the scope");
+      // debug.
+      if (Infinit::Configuration.etoile.debug == true)
+	printf("[etoile] gear::Scope::Refresh()\n");
 
       // lock the current scope in order to make sure it does not get
       // relinquished or simply modified.
       //
       // this is especially required since Load()ing may block the current
       // fiber.
-      this->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	elle::Callback<
+	  elle::Status,
+	  elle::Parameters<
+	    T&
+	    >
+	  >		callback;
+	T*		context;
+
+	enterx(instance(context));
+
+	// allocate a context.
+	context = new T;
+
+	// locate the context based on the current scope's chemin.
+	if (this->chemin.Locate(context->location) == elle::StatusError)
+	  escape("unable to locate the scope");
+
 	// load the object.
 	if (T::A::Load(*context) == elle::StatusError)
+	  escape("unable to load the object");
+
+	// check if the loaded object is indeed newer.
+	if (context->object.version >
+	    static_cast<T*>(this->context)->object.version)
 	  {
-	    // unlock.
-	    this->hurdle.Unlock(elle::ModeWrite);
+	    //
+	    // in this case, a newer version exists which has been loaded.
+	    //
+	    // replace the current one with the new one.
+	    //
 
-	    escape("unable to load the object");
+	    // delete the existing context.
+	    delete this->context;
+
+	    // set the new context.
+	    this->context = context;
 	  }
+	else
+	  {
+	    //
+	    // otherwise, the loaded object is of the same version as the
+	    // current one.
+	    //
+	    // in this case, nothing is done.
+	    //
+
+	    // delete the retrieved context.
+	    delete context;
+	  }
+
+	// waive.
+	waive(context);
+
+	// release.
+	release();
       }
-      this->hurdle.Unlock(elle::ModeWrite);
-
-      // delete the existing context.
-      delete this->context;
-
-      // set the new context.
-      this->context = context;
-
-      // waive.
-      waive(context);
+      section.Leave();
 
       leave();
     }
@@ -202,92 +239,91 @@ namespace etoile
     template <typename T>
     elle::Status	Scope::Disclose()
     {
-      Scope*		scope;
-      T*		context;
-      Actor*		actor;
+      elle::Hurdle::S	section(
+	elle::Hurdle::L(
+	  elle::Hurdle::C(&elle::Hurdle::Lock, &this->hurdle),
+	  elle::ModeWrite),
+	elle::Hurdle::U(
+	  elle::Hurdle::C(&elle::Hurdle::Unlock, &this->hurdle),
+	  elle::ModeWrite));
 
-      enterx(instance(actor),
-	     slab(scope, gear::Scope::Annihilate));
+      enter();
 
-      //
-      // create a scope, very much as for wall::*::Create(), except
-      // that it works even for objects which cannot, obviously, be created.
-      //
-      {
-	// supply a scope i.e request a new anonymous scope.
-	if (gear::Scope::Supply(scope) == elle::StatusError)
-	  escape("unable to supply a scope");
-
-	// retrieve the context.
-	if (scope->Use(context) == elle::StatusError)
-	  escape("unable to retrieve the context");
-
-	// allocate an actor on the new scope, making the scope valid
-	// for triggering automata.
-	actor = new gear::Actor(scope);
-
-	// move the new context in a temporary variable.
-	context = static_cast<T*>(actor->scope->context);
-      }
-
-      //
-      // swap the contexts.
-      //
-      {
-	// transfer the current scope's context to the new scope.
-	actor->scope->context = this->context;
-
-	// set the current scope's context with the new one.
-	this->context = context;
-      }
+      // debug.
+      if (Infinit::Configuration.etoile.debug == true)
+	printf("[etoile] gear::Scope::Disclose()\n");
 
       // protect the access to the current scope.
-      this->hurdle.Lock(elle::ModeWrite);
+      section.Enter();
       {
+	Scope*		scope;
+	T*		context;
+	Actor*		actor;
+
+	enterx(instance(actor),
+	       slab(scope, gear::Scope::Annihilate));
+
+	//
+	// create a scope, very much as for wall::*::Create(), except
+	// that it works even for objects which cannot, obviously, be created.
+	//
+	{
+	  // supply a scope i.e request a new anonymous scope.
+	  if (gear::Scope::Supply(scope) == elle::StatusError)
+	    escape("unable to supply a scope");
+
+	  // retrieve the context.
+	  if (scope->Use(context) == elle::StatusError)
+	    escape("unable to retrieve the context");
+
+	  // allocate an actor on the new scope, making the scope valid
+	  // for triggering automata.
+	  actor = new gear::Actor(scope);
+	}
+
+	//
+	// swap the contexts.
+	//
+	{
+	  // transfer the current scope's context to the new scope.
+	  actor->scope->context = this->context;
+
+	  // set the current scope's context with the new one.
+	  this->context = context;
+	}
+
 	// store the object which now carries the modified context.
 	if (T::W::Store(actor->identifier) == elle::StatusError)
-	  {
-	    // unlock.
-	    this->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to store the object");
 
-	    escape("unable to store the object");
-	  }
-      }
-      this->hurdle.Unlock(elle::ModeWrite);
+	// waive the actor.
+	waive(actor);
 
-      // waive the actor.
-      waive(actor);
+	// waive the scope.
+	waive(scope);
 
-      // waive the scope.
-      waive(scope);
+	//
+	// at this point, a scope has been created, to which the modified
+	// context has been transferred. this scope has been stored, hence
+	// disclosing its modifications.
+	//
+	// finally, the current scope's context is allocated but initialized
+	// and must therefore be loaded with a fresh version of the object.
+	//
 
-      //
-      // at this point, a scope has been created, to which the modified
-      // context has been transferred. this scope has been stored, hence
-      // disclosing its modifications.
-      //
-      // finally, the current scope's context is allocated but initialized
-      // and must therefore be loaded with a fresh version of the object.
-      //
+	// locate the object based on the current scope's chemin.
+	if (this->chemin.Locate(context->location) == elle::StatusError)
+	  escape("unable to locate the file");
 
-      // locate the object based on the current scope's chemin.
-      if (this->chemin.Locate(context->location) == elle::StatusError)
-	escape("unable to locate the file");
-
-      // protect the access to the current scope.
-      this->hurdle.Lock(elle::ModeWrite);
-      {
 	// load a fresh version of the object which should happen to be
 	// the one stored above.
 	if (T::A::Load(*context) == elle::StatusError)
-	  {
-	    // unlock.
-	    this->hurdle.Unlock(elle::ModeWrite);
+	  escape("unable to load the object");
 
-	    escape("unable to load the object");
-	  }
+	// release.
+	release();
       }
-      this->hurdle.Unlock(elle::ModeWrite);
+      section.Leave();
 
       leave();
     }
