@@ -672,9 +672,6 @@ namespace hole
 	    }
 	  }
 
-	// XXX
-	block->Dump();
-
 	nucleus::Derivable<nucleus::Block>	derivable(address.component,
 							  *block);
 
