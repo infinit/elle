@@ -12,6 +12,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/system/Platform.hh>
+
 #include <elle/radix/Meta.hh>
 
 #include <elle/standalone/Report.hh>
@@ -23,6 +25,7 @@
 
 namespace elle
 {
+  using namespace system;
   using namespace core;
   using namespace standalone;
   using namespace io;
@@ -65,7 +68,7 @@ namespace elle
       // if the debug has been activated.
       if (Meta::Debug::Status == true)
 	{
-#if 0 // XXX TODO
+#if INFINIT_UNIX
 	  // initialize the traces.
 	  if (Trace::Initialize() == StatusError)
 	    escape("unable to initialize the trace system");
@@ -97,7 +100,7 @@ namespace elle
 	  if (Meta::Show() == StatusError)
 	    escape("unable to show the meta");
 
-#if 0 // XXX TODO
+#if INFINIT_UNIX
 	  // clean the traces.
 	  if (Trace::Clean() == StatusError)
 	    escape("unable to clean the trace system");
@@ -147,7 +150,7 @@ namespace elle
       // if traces exist, dump them.
       if (Meta::Debug::Status == true)
 	{
-#if 0 // XXX TODO
+#if INFINIT_UNIX
 	  // show the traces.
 	  if (Trace::Show(margin + 2) == elle::StatusError)
 	    escape("unable to show the traces");
@@ -189,8 +192,8 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
 	  (Meta::Debug::State == true))
 	{
+#if INFINIT_UNIX
 	  // store the trace.
-#if 0 // XXX TODO
 	  if (Trace::Store(address) == StatusError)
 	    {
 	      log("unable to store the trace for %p",
@@ -233,7 +236,7 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
 	  (Meta::Debug::State == true))
 	{
-#if 0 // XXX TODO
+#if INFINIT_UNIX
 	  // store the trace.
 	  if (Trace::Store(address) == StatusError)
 	    {
@@ -269,7 +272,7 @@ namespace elle
       if ((Meta::Debug::Status == true) &&
 	  (Meta::Debug::State == true))
 	{
-#if 0 // XXX TODO
+#if INFINIT_UNIX
 	  // erase the trace.
 	  if (Trace::Erase(address) == StatusError)
 	    {

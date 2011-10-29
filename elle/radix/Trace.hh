@@ -8,14 +8,14 @@
 // author        julien quintard   [mon apr 26 21:04:49 2010]
 //
 
-#if 0
-
 #ifndef ELLE_RADIX_TRACE_HH
 #define ELLE_RADIX_TRACE_HH
 
 //
 // ---------- includes --------------------------------------------------------
 //
+
+#include <elle/system/Platform.hh>
 
 #include <elle/core/Character.hh>
 #include <elle/core/Void.hh>
@@ -32,6 +32,7 @@
 
 namespace elle
 {
+  using namespace system;
   using namespace core;
   using namespace io;
 
@@ -42,6 +43,7 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
+#if INFINIT_UNIX
     ///
     /// this class represents a trace i.e a sequence of function calls
     /// performed within a stack.
@@ -105,9 +107,9 @@ namespace elle
 
       static Status	Show(const Natural32 = 0);
     };
+#endif
 
   }
 }
 
-#endif
 #endif

@@ -19,8 +19,11 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Object.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/concurrency/Mode.hh>
+#include <elle/concurrency/Closure.hh>
+#include <elle/concurrency/Section.hh>
 
 namespace elle
 {
@@ -50,9 +53,26 @@ namespace elle
     {
     public:
       //
-      // static methods
+      // types
       //
-      // XXX
+      typedef Section<
+        Parameters<const Mode>,
+        Parameters<const Mode>
+        >							S;
+      typedef Closure<
+	Void,
+	Parameters<const Mode>,
+	Parameters<>
+	>							L;
+      typedef Closure<
+	Void,
+	Parameters<const Mode>,
+	Parameters<>
+	>							U;
+      typedef Callback<
+	Void,
+	Parameters<const Mode>
+	>							C;
 
       //
       // constructors & destructors
@@ -71,7 +91,11 @@ namespace elle
       // interfaces
       //
 
-      // XXX object
+      // object
+      declare(Hurdle);
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes

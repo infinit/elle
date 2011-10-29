@@ -68,6 +68,7 @@ namespace elle
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Resource.hh>
 #include <elle/concurrency/Routine.hh>
+#include <elle/concurrency/Section.hh>
 #include <elle/concurrency/Semaphore.hh>
 #include <elle/concurrency/Signal.hh>
 #include <elle/concurrency/Thread.hh>
