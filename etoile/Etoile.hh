@@ -54,6 +54,7 @@ namespace etoile
 #include <etoile/miscellaneous/Miscellaneous.hh>
 #include <etoile/nest/Nest.hh>
 #include <etoile/path/Path.hh>
+#include <etoile/portal/Portal.hh>
 #include <etoile/shrub/Shrub.hh>
 #include <etoile/wall/Wall.hh>
 
@@ -69,6 +70,7 @@ namespace etoile
   using namespace miscellaneous;
   using namespace nest;
   using namespace path;
+  using namespace portal;
   using namespace shrub;
   using namespace wall;
 }
