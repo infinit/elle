@@ -1,3 +1,7 @@
+- coder portal pour access control
+
+- rajouter suppression blocks via authentication
+
 - changer les noms: Gate -> TCPSocket, bridge -> TCPServer etc.
 - enlever parameters etc. et utiliser boost ou equivalent
 - enlever enter/leave et utiliser des uniq_ptr etc.
