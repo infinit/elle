@@ -42,7 +42,7 @@ namespace nucleus
     const Role				RoleUnknown = 0x0;
     const Role				RoleOwner = 0x1;
     const Role				RoleLord = 0x2;
-    const Role				RoleVassal = 0x4;
+    const Role				RoleVassal = 0x3;
 
   }
 }

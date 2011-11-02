@@ -60,6 +60,10 @@ namespace nucleus
 			       Record*&);
       elle::Status	Lookup(const Subject&,
 			       Index&);
+      template <typename T>
+      elle::Status	Update(const Subject&,
+			       const Permissions&,
+			       const T&);
       elle::Status	Consult(const Index&,
 				const Size&,
 				Range<Record>&) const;
@@ -92,5 +96,11 @@ namespace nucleus
 
   }
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <nucleus/neutron/Access.hxx>
 
 #endif

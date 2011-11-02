@@ -47,7 +47,7 @@ namespace nucleus
       Range<T>::Scoutor		scoutor;
 
       enter();
- 
+
       // go through the container.
       for (scoutor = element.container.begin();
 	   scoutor != element.container.end();
