@@ -152,21 +152,6 @@ namespace application
     }
 
     //
-    // remove the phrase, if necessary.
-    //
-    {
-      lune::Phrase	phrase;
-
-      // if the phrase exists...
-      if (phrase.Exist(name) == elle::StatusTrue)
-	{
-	  // remove it.
-	  if (phrase.Erase(name) == elle::StatusError)
-	    escape("unable to erase the phrase");
-	}
-    }
-
-    //
     // remove the user directory.
     //
     {
