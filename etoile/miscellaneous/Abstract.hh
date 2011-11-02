@@ -8,8 +8,8 @@
 // author        julien quintard   [wed mar 31 16:05:57 2010]
 //
 
-#ifndef ETOILE_MISCELLANEOUS_INFORMATION_HH
-#define ETOILE_MISCELLANEOUS_INFORMATION_HH
+#ifndef ETOILE_MISCELLANEOUS_ABSTRACT_HH
+#define ETOILE_MISCELLANEOUS_ABSTRACT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -30,19 +30,19 @@ namespace etoile
     ///
     /// this class describes an object's meta data.
     ///
-    class Information:
+    class Abstract:
       public elle::Object
     {
     public:
       //
       // constants
       //
-      static const Information		Null;
+      static const Abstract		Null;
 
       //
       // constructors & destructors
       //
-      Information();
+      Abstract();
 
       //
       // method
@@ -54,8 +54,8 @@ namespace etoile
       //
 
       // object
-      declare(Information);
-      elle::Boolean	operator==(const Information&) const;
+      declare(Abstract);
+      elle::Boolean	operator==(const Abstract&) const;
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;

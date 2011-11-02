@@ -24,7 +24,7 @@
 
 #include <etoile/journal/Journal.hh>
 
-#include <etoile/miscellaneous/Information.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 
 #include <Infinit.hh>
 
@@ -140,12 +140,12 @@ namespace etoile
     }
 
     ///
-    /// this method returns general information regarding the identified
+    /// this method returns general abstract regarding the identified
     /// object.
     ///
     elle::Status	Object::Information(
 			  const gear::Identifier&		identifier,
-			  miscellaneous::Information&		information)
+			  miscellaneous::Abstract&		abstract)
     {
       gear::Actor*	actor;
       gear::Scope*	scope;
@@ -182,7 +182,7 @@ namespace etoile
 
 	// apply the information automaton on the context.
 	if (automaton::Object::Information(*context,
-					   information) == elle::StatusError)
+					   abstract) == elle::StatusError)
 	  escape("unable to retrieve general information on the object");
       }
       section.Leave();

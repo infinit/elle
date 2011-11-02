@@ -36,6 +36,10 @@ namespace etoile
     /// this method returns the caller the access record associated with
     /// the given subject.
     ///
+    /// note that this method should be used careful as a pointer to the
+    /// target record is returned. should this record be destroyed by another
+    /// actor's operation, accessing it could make the system crash.
+    /// 
     elle::Status	Access::Lookup(
 			  const gear::Identifier&		identifier,
 			  const nucleus::Subject&		subject,
@@ -88,6 +92,10 @@ namespace etoile
     ///
     /// this method returns a subset of the object's access access list.
     ///
+    /// note that this method should be used careful as a set of pointers to
+    /// the target records is returned. should one of the records be destroyed
+    /// by another actor's operation, accessing it could make the system crash.
+    /// 
     elle::Status	Access::Consult(
 			  const gear::Identifier&		identifier,
 			  const nucleus::Index&			index,

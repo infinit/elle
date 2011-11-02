@@ -13,6 +13,8 @@
 //
 
 #include <etoile/Etoile.hh>
+#include <agent/Agent.hh>
+#include <hole/Hole.hh>
 
 namespace etoile
 {
@@ -25,6 +27,12 @@ namespace etoile
   /// this value defines the component's name.
   ///
   const elle::Character		Component[] = "etoile";
+
+  ///
+  /// this variable contains the phrase associated with the Infinit's
+  /// current instance.
+  ///
+  lune::Phrase			Etoile::Phrase;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -53,6 +61,32 @@ namespace etoile
     if (shrub::Shrub::Initialize() == elle::StatusError)
       escape("unable to initialize the shrub");
 
+    // initialize the portal.
+    if (portal::Portal::Initialize() == elle::StatusError)
+      escape("unable to initialize the portal");
+
+    //
+    // generate a phrase randomly which will be used by applications to
+    // connect to Etoile and trigger specific actions.
+    //
+    {
+      elle::String		string;
+
+      // generate a random string.
+      if (elle::Random::Generate(string) == elle::StatusError)
+	escape("unable to generate a random string");
+
+      // create the phrase.
+      if (Etoile::Phrase.Create(string) == elle::StatusError)
+	escape("unable to create the phrase");
+
+      // store the phrase.
+      if (Etoile::Phrase.Store(
+	    agent::Agent::Identity.name,
+	    hole::Hole::Descriptor.name) == elle::StatusError)
+	escape("unable to store the phrase");
+    }
+
     leave();
   }
 
@@ -62,6 +96,10 @@ namespace etoile
   elle::Status		Etoile::Clean()
   {
     enter();
+
+    // clean the portal.
+    if (portal::Portal::Clean() == elle::StatusError)
+      escape("unable to clean the portal");
 
     // clean the shrub.
     if (shrub::Shrub::Clean() == elle::StatusError)

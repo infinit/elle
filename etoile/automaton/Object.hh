@@ -18,7 +18,7 @@
 #include <elle/Elle.hh>
 #include <nucleus/Nucleus.hh>
 
-#include <etoile/miscellaneous/Information.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 
 namespace etoile
 {
@@ -47,7 +47,7 @@ namespace etoile
     ///
     /// this class provides object-related automata.
     ///
-    /// these automata therefore operate on the general information such
+    /// these automata therefore operate on the general abstract such
     /// as the access block referenced by any object, the meta data and so
     /// on.
     ///
@@ -60,7 +60,7 @@ namespace etoile
       static elle::Status	Load(gear::Object&);
 
       static elle::Status	Information(gear::Object&,
-					    miscellaneous::Information&);
+					    miscellaneous::Abstract&);
 
       static elle::Status	Discard(gear::Object&);
       static elle::Status	Destroy(gear::Object&);

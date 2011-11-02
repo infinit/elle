@@ -21,7 +21,7 @@
 
 #include <etoile/gear/Identifier.hh>
 
-#include <etoile/miscellaneous/Information.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 
 namespace etoile
 {
@@ -50,7 +50,7 @@ namespace etoile
       static elle::Status	Lock(const gear::Identifier&);
       static elle::Status	Release(const gear::Identifier&);
       static elle::Status	Information(const gear::Identifier&,
-					    miscellaneous::Information&);
+					    miscellaneous::Abstract&);
 
       static elle::Status	Discard(const gear::Identifier&);
       static elle::Status	Store(const gear::Identifier&);

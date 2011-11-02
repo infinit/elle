@@ -58,18 +58,18 @@ namespace etoile
     }
 
     ///
-    /// this method generates an Information object which summarises the
+    /// this method generates an Abstract object which summarises the
     /// object's meta data.
     ///
     elle::Status	Object::Information(
 			  gear::Object&				context,
-			  miscellaneous::Information&		information)
+			  miscellaneous::Abstract&		abstract)
     {
       enter();
 
-      // generate the information based on the object.
-      if (information.Create(context.object) == elle::StatusError)
-	escape("unable to generate the information");
+      // generate the abstract based on the object.
+      if (abstract.Create(context.object) == elle::StatusError)
+	escape("unable to generate the abstract");
 
       leave();
     }

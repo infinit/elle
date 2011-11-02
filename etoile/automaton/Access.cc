@@ -248,18 +248,11 @@ namespace etoile
       if (index == 0)
 	{
 	  nucleus::Record*	record;
-	  nucleus::Subject	subject;
 
 	  enterx(instance(record));
 
-	  // create a subject for the owner.
-	  if (subject.Create(context.object.owner.K) == elle::StatusError)
-	    escape("unable to create the owner subject");
-
 	  // create the record.
-	  record = new nucleus::Record(subject,
-				       context.object.meta.owner.permissions,
-				       context.object.meta.owner.token);
+	  record = new nucleus::Record(context.object.meta.owner._record);
 
 	  // add the record to the range.
 	  if (range.Add(record) == elle::StatusError)

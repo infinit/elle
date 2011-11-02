@@ -91,6 +91,10 @@ namespace etoile
     /// this method returns the caller the trait associated with
     /// the given name.
     ///
+    /// note that this method should be used careful as a pointer to the
+    /// target trait is returned. should this trait be destroyed by another
+    /// actor's operation, accessing it could make the system crash.
+    /// 
     elle::Status	Attributes::Get(
 			  const gear::Identifier&		identifier,
 			  const elle::String&			name,
@@ -143,6 +147,10 @@ namespace etoile
     ///
     /// this method returns all the attributes.
     ///
+    /// note that this method should be used careful as a set of pointers to
+    /// the target traits is returned. should one of the traits be destroyed
+    /// by another actor's operation, accessing it could make the system crash.
+    /// 
     elle::Status	Attributes::Fetch(
 			  const gear::Identifier&		identifier,
 			  nucleus::Range<nucleus::Trait>&	range)

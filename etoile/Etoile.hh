@@ -40,6 +40,11 @@ namespace etoile
     //
     static elle::Status	Initialize();
     static elle::Status	Clean();
+
+    //
+    // static attributes
+    //
+    static lune::Phrase		Phrase;
   };
 
 }

@@ -278,6 +278,10 @@ namespace etoile
     /// this method returns the directory entry associated with the
     /// given name.
     ///
+    /// note that this method should be used careful as a pointer to the
+    /// target entry is returned. should this entry be destroyed by another
+    /// actor's operation, accessing it could make the system crash.
+    /// 
     elle::Status	Directory::Lookup(
 			  const gear::Identifier&		identifier,
 			  const path::Slab&			name,
@@ -331,6 +335,10 @@ namespace etoile
     /// this method returns a set [offset, offset + size[ of entries
     /// (name, address) from the directory identified by _identifier_.
     ///
+    /// note that this method should be used careful as a set of pointers to
+    /// the target entries is returned. should one of the entries be destroyed
+    /// by another actor's operation, accessing it could make the system crash.
+    /// 
     elle::Status	Directory::Consult(
 			  const gear::Identifier&		identifier,
 			  const nucleus::Offset&		offset,

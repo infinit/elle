@@ -25,6 +25,6 @@ namespace etoile
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/miscellaneous/Information.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 
 #endif

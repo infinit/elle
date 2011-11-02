@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <etoile/miscellaneous/Information.hh>
+#include <etoile/miscellaneous/Abstract.hh>
 
 namespace etoile
 {
@@ -24,9 +24,9 @@ namespace etoile
 //
 
     ///
-    /// this defines a empty, unused hence null information.
+    /// this defines a empty, unused hence null abstract.
     ///
-    const Information			Information::Null;
+    const Abstract			Abstract::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -35,7 +35,7 @@ namespace etoile
     ///
     /// default constructor.
     ///
-    Information::Information()
+    Abstract::Abstract()
     {
     }
 
@@ -44,9 +44,9 @@ namespace etoile
 //
 
     ///
-    /// this method generates the information according to the given object.
+    /// this method generates the abstract according to the given object.
     ///
-    elle::Status	Information::Create(const nucleus::Object& object)
+    elle::Status	Abstract::Create(const nucleus::Object&	object)
     {
       enter();
 
@@ -98,7 +98,7 @@ namespace etoile
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Information::operator==(const Information& element)
+    elle::Boolean	Abstract::operator==(const Abstract&	element)
       const
     {
       enter();
@@ -125,22 +125,22 @@ namespace etoile
     ///
     /// this macro-function call generates the object.
     ///
-    embed(Information, _());
+    embed(Abstract, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// this method dumps the information object.
+    /// this method dumps the abstract object.
     ///
-    elle::Status	Information::Dump(const elle::Natural32	margin) const
+    elle::Status	Abstract::Dump(const elle::Natural32	margin) const
     {
       elle::String	alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Information]" << std::endl;
+      std::cout << alignment << "[Abstract]" << std::endl;
 
       // dump the genre.
       std::cout << alignment << elle::Dumpable::Shift << "[Genre] "
@@ -237,9 +237,9 @@ namespace etoile
 //
 
     ///
-    /// this method serializes the information.
+    /// this method serializes the abstract.
     ///
-    elle::Status	Information::Serialize(elle::Archive&	archive) const
+    elle::Status	Abstract::Serialize(elle::Archive&	archive) const
     {
       enter();
 
@@ -259,9 +259,9 @@ namespace etoile
     }
 
     ///
-    /// this method extracts the information.
+    /// this method extracts the abstract.
     ///
-    elle::Status	Information::Extract(elle::Archive&	archive)
+    elle::Status	Abstract::Extract(elle::Archive&	archive)
     {
       enter();
 

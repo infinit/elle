@@ -39,7 +39,10 @@ ADD_LIBRARY(etoile
   wall/Object.cc
   wall/Path.cc
 
-  miscellaneous/Information.cc
+  portal/Application.cc
+  portal/Portal.cc
+
+  miscellaneous/Abstract.cc
 
   journal/Journal.cc
 
