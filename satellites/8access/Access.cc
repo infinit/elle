@@ -34,7 +34,49 @@ namespace application
   elle::Door			Access::Door;
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- static callbacks ------------------------------------------------
+//
+
+  ///
+  /// this callback is triggered whenver the socket gets disconnected.
+  ///
+  elle::Status		Access::Disconnected()
+  {
+    enter();
+
+    // report the problem.
+    report("the socket has been unexpectedly disconnected");
+
+    // expose the report.
+    expose();
+
+    // exit.
+    elle::Program::Exit();
+
+    leave();
+  }
+
+  ///
+  /// this callback is triggered whenever an error occurs on the socket.
+  ///
+  elle::Status		Access::Error(const elle::String&	error)
+  {
+    enter();
+
+    // report the given error.
+    report(error.c_str());
+
+    // expose the report.
+    expose();
+
+    // exit.
+    elle::Program::Exit();
+
+    leave();
+  }
+
+//
+// ---------- static methods --------------------------------------------------
 //
 
   ///
@@ -43,9 +85,17 @@ namespace application
   ///
   elle::Status		Access::Connect()
   {
+    elle::String	line;
     lune::Phrase	phrase;
 
     enter();
+
+    // build the line.
+    line =
+      "etoile-" +
+      agent::Agent::Identity.name +
+      ":" +
+      hole::Hole::Descriptor.name;
 
     //
     // load the phrase.
@@ -65,9 +115,21 @@ namespace application
       if (Access::Door.Create() == elle::StatusError)
 	escape("unable to create the door");
 
+      // subscribe to the signal.
+      if (Access::Door.signal.disconnected.Subscribe(
+	    elle::Callback<>::Infer(
+	      &Access::Disconnected)) == elle::StatusError)
+	escape("unable to subscribe to the signal");
+
+      // subscribe to the signal.
+      if (Access::Door.signal.error.Subscribe(
+	    elle::Callback<>::Infer(
+	      &Access::Error)) == elle::StatusError)
+	escape("unable to subscribe to the signal");
+
       // connect the door.
       if (Access::Door.Connect(
-	    etoile::portal::Portal::Line,
+	    line,
 	    elle::Channel::ModeSynchronous) == elle::StatusError)
 	escape("unable to connect to the lane");
     }
@@ -94,6 +156,7 @@ namespace application
   elle::Status		Access::Lookup(const etoile::path::Way&	way,
 				       const nucleus::Subject&	subject)
   {
+    etoile::path::Chemin	chemin;
     etoile::gear::Identifier	identifier;
     nucleus::Record		record;
 
@@ -103,14 +166,34 @@ namespace application
     if (Access::Connect() == elle::StatusError)
       goto _error;
 
-    // invoke the lookup functionality.
+    // resolve the path.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagPathResolve>(way),
+	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+	elle::StatusError)
+      goto _error;
+
+    // load the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+	elle::StatusError)
+      goto _error;
+
+    // lookup the access record.
     if (Access::Door.Call(
 	  elle::Inputs<etoile::portal::TagAccessLookup>(identifier, subject),
 	  elle::Outputs<etoile::portal::TagAccessRecord>(record)) ==
 	elle::StatusError)
       goto _error;
 
-    // XXX
+    // discard the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectDiscard>(identifier),
+	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
+      goto _error;
+
+    // dump the record.
     record.Dump();
 
   _error:
@@ -123,8 +206,7 @@ namespace application
     expose();
 
     // exit the program.
-    if (elle::Program::Exit() == elle::StatusError)
-      escape("unable to exit the program");
+    elle::Program::Exit();
 
     leave();
   }
@@ -134,11 +216,60 @@ namespace application
   ///
   elle::Status		Access::Consult(const etoile::path::Way& way)
   {
+    etoile::path::Chemin		chemin;
+    etoile::gear::Identifier		identifier;
+    nucleus::Range<nucleus::Record>	range;
+
     enter();
 
     // connect to Etoile.
     if (Access::Connect() == elle::StatusError)
-      escape("unable to connect to Etoile");
+      goto _error;
+
+    // resolve the path.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagPathResolve>(way),
+	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+	elle::StatusError)
+      goto _error;
+
+    // load the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+	elle::StatusError)
+      goto _error;
+
+    // consult the object access.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagAccessConsult>(
+	    identifier,
+	    elle::Type<nucleus::Index>::Minimum,
+	    elle::Type<nucleus::Size>::Maximum),
+	  elle::Outputs<etoile::portal::TagAccessRange>(range)) ==
+	elle::StatusError)
+      goto _error;
+
+    // discard the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectDiscard>(identifier),
+	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
+      goto _error;
+
+    // dump the range.
+    range.Dump();
+
+  _error:
+    // release the object.
+    Access::Door.Send(
+      elle::Inputs<etoile::portal::TagObjectDiscard>(
+	identifier));
+
+    // expose the potential errors.
+    expose();
+
+    // exit the program.
+    elle::Program::Exit();
 
     leave();
   }
@@ -151,9 +282,54 @@ namespace application
 				      const nucleus::Subject&	subject,
 				      const nucleus::Permissions permissions)
   {
+    etoile::path::Chemin	chemin;
+    etoile::gear::Identifier	identifier;
+
     enter();
 
-    // XXX
+    // connect to Etoile.
+    if (Access::Connect() == elle::StatusError)
+      goto _error;
+
+    // resolve the path.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagPathResolve>(way),
+	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+	elle::StatusError)
+      goto _error;
+
+    // load the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+	elle::StatusError)
+      goto _error;
+
+    // lookup the access record.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagAccessGrant>(identifier,
+						       subject,
+						       permissions),
+	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
+      goto _error;
+
+    // store the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectStore>(identifier),
+	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
+      goto _error;
+
+  _error:
+    // release the object.
+    Access::Door.Send(
+      elle::Inputs<etoile::portal::TagObjectDiscard>(
+	identifier));
+
+    // expose the potential errors.
+    expose();
+
+    // exit the program.
+    elle::Program::Exit();
 
     leave();
   }
@@ -164,9 +340,53 @@ namespace application
   elle::Status		Access::Revoke(const etoile::path::Way&	way,
 				       const nucleus::Subject&	subject)
   {
+    etoile::path::Chemin	chemin;
+    etoile::gear::Identifier	identifier;
+    nucleus::Record		record;
+
     enter();
 
-    // XXX
+    // connect to Etoile.
+    if (Access::Connect() == elle::StatusError)
+      goto _error;
+
+    // resolve the path.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagPathResolve>(way),
+	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
+	elle::StatusError)
+      goto _error;
+
+    // load the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
+	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
+	elle::StatusError)
+      goto _error;
+
+    // revoke the access for the given subject.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagAccessRevoke>(identifier, subject),
+	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
+      goto _error;
+
+    // store the object.
+    if (Access::Door.Call(
+	  elle::Inputs<etoile::portal::TagObjectStore>(identifier),
+	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
+      goto _error;
+
+  _error:
+    // release the object.
+    Access::Door.Send(
+      elle::Inputs<etoile::portal::TagObjectDiscard>(
+	identifier));
+
+    // expose the potential errors.
+    expose();
+
+    // exit the program.
+    elle::Program::Exit();
 
     leave();
   }
@@ -434,7 +654,6 @@ namespace application
 	      >
 	    >				closure(&Access::Lookup,
 						way, subject);
-
 	  elle::Entrance<
 	    elle::Status,
 	    elle::Parameters<
@@ -451,76 +670,209 @@ namespace application
 	}
       case Access::OperationConsult:
 	{
-	  /* XXX
-	  elle::String		path;
+	  elle::String			path;
 
 	  // retrieve the path.
 	  if (Infinit::Parser->Value("Path",
 				     path) == elle::StatusError)
 	    escape("unable to retrieve the path value");
 
-	  // consult the access records.
-	  if (Access::Consult(path) == elle::StatusError)
-	    escape("unable to consult the access records");
-	  */
+	  // declare additional local variables.
+	  etoile::path::Way		way(path);
+	  elle::Closure<
+	    elle::Status,
+	    elle::Parameters<
+	      const etoile::path::Way&
+	      >
+	    >				closure(&Access::Consult,
+						way);
+	  elle::Entrance<
+	    elle::Status,
+	    elle::Parameters<
+	      const etoile::path::Way&
+	      >
+	    >				entrance(closure);
+
+	  // launch the program.
+	  if (elle::Program::Launch() == elle::StatusError)
+	    escape("an error occured while processing events");
+
 	  break;
 	}
       case Access::OperationGrant:
 	{
-	  /* XXX
-	  elle::String		path;
-	  elle::String		identifier;
-	  nucleus::Permissions	permissions;
+	  elle::String			path;
+	  elle::String			string;
+	  nucleus::Subject::Type	type;
+	  nucleus::Subject		subject;
+	  nucleus::Permissions		permissions;
 
 	  // retrieve the path.
 	  if (Infinit::Parser->Value("Path",
 				     path) == elle::StatusError)
 	    escape("unable to retrieve the path value");
 
-	  // retrieve the identifier.
-	  if (Infinit::Parser->Value("Identifier",
-				     identifier) == elle::StatusError)
-	    escape("unable to retrieve the identifier value");
+	  // retrieve the type.
+	  if (Infinit::Parser->Value("Type",
+				     string) == elle::StatusError)
+	    escape("unable to retrieve the type value");
 
-	  // initialize the permissions.
+	  // convert the string into a subject type.
+	  if (nucleus::Subject::Convert(string, type) == elle::StatusError)
+	    escape("unable to convert the string '%s' into a "
+		   "valid subject type",
+		   string.c_str());
+
+	  // build a subject depending on the type.
+	  switch (type)
+	    {
+	    case nucleus::Subject::TypeUser:
+	      {
+		elle::PublicKey		K;
+
+		// retrieve the identifier which is supposed to
+		// represent a user identity i.e a public key.
+		if (Infinit::Parser->Value("Identifier",
+					   K) == elle::StatusError)
+		  escape("unable to retrieve the user's public key "
+			 "through the identifier");
+
+		// build the subject.
+		if (subject.Create(K) == elle::StatusError)
+		  escape("unable to create the subject");
+
+		break;
+	      }
+	    case nucleus::Subject::TypeGroup:
+	      {
+		// XXX
+		escape("not yet supported");
+
+		break;
+	      }
+	    default:
+	      {
+		escape("unsupported entity type '%u'",
+		       type);
+	      }
+	    }
+
+	  // initialize the permissions to none.
 	  permissions = nucleus::PermissionNone;
 
-	  // set the read permission, if requested.
+	  // grant the read permission, if requested.
 	  if (Infinit::Parser->Test("Read") == elle::StatusTrue)
 	    permissions |= nucleus::PermissionRead;
 
-	  // set the write permission, if requested.
+	  // grant the write permission, if requested.
 	  if (Infinit::Parser->Test("Write") == elle::StatusTrue)
 	    permissions |= nucleus::PermissionWrite;
 
-	  // grant the access.
-	  if (Access::Grant(path,
-			    identifier,
-			    permissions) == elle::StatusError)
-	    escape("unable to grant the access");
-	  */
+	  // declare additional local variables.
+	  etoile::path::Way		way(path);
+	  elle::Closure<
+	    elle::Status,
+	    elle::Parameters<
+	      const etoile::path::Way&,
+	      const nucleus::Subject&,
+	      const nucleus::Permissions
+	      >
+	    >				closure(&Access::Grant,
+						way, subject, permissions);
+	  elle::Entrance<
+	    elle::Status,
+	    elle::Parameters<
+	      const etoile::path::Way&,
+	      const nucleus::Subject&,
+	      const nucleus::Permissions
+	      >
+	    >				entrance(closure);
+
+	  // launch the program.
+	  if (elle::Program::Launch() == elle::StatusError)
+	    escape("an error occured while processing events");
+
 	  break;
 	}
       case Access::OperationRevoke:
 	{
-	  /* XXX
-	  elle::String		path;
-	  elle::String		identifier;
+	  elle::String			path;
+	  elle::String			string;
+	  nucleus::Subject::Type	type;
+	  nucleus::Subject		subject;
 
 	  // retrieve the path.
 	  if (Infinit::Parser->Value("Path",
 				     path) == elle::StatusError)
 	    escape("unable to retrieve the path value");
 
-	  // retrieve the identifier.
-	  if (Infinit::Parser->Value("Identifier",
-				     identifier) == elle::StatusError)
-	    escape("unable to retrieve the identifier value");
+	  // retrieve the type.
+	  if (Infinit::Parser->Value("Type",
+				     string) == elle::StatusError)
+	    escape("unable to retrieve the type value");
 
-	  // revoke the access.
-	  if (Access::Revoke(path, identifier) == elle::StatusError)
-	    escape("unable to revoke the access");
-	  */
+	  // convert the string into a subject type.
+	  if (nucleus::Subject::Convert(string, type) == elle::StatusError)
+	    escape("unable to convert the string '%s' into a "
+		   "valid subject type",
+		   string.c_str());
+
+	  // build a subject depending on the type.
+	  switch (type)
+	    {
+	    case nucleus::Subject::TypeUser:
+	      {
+		elle::PublicKey		K;
+
+		// retrieve the identifier which is supposed to
+		// represent a user identity i.e a public key.
+		if (Infinit::Parser->Value("Identifier",
+					   K) == elle::StatusError)
+		  escape("unable to retrieve the user's public key "
+			 "through the identifier");
+
+		// build the subject.
+		if (subject.Create(K) == elle::StatusError)
+		  escape("unable to create the subject");
+
+		break;
+	      }
+	    case nucleus::Subject::TypeGroup:
+	      {
+		// XXX
+		escape("not yet supported");
+
+		break;
+	      }
+	    default:
+	      {
+		escape("unsupported entity type '%u'",
+		       type);
+	      }
+	    }
+
+	  // declare additional local variables.
+	  etoile::path::Way		way(path);
+	  elle::Closure<
+	    elle::Status,
+	    elle::Parameters<
+	      const etoile::path::Way&,
+	      const nucleus::Subject&
+	      >
+	    >				closure(&Access::Revoke,
+						way, subject);
+	  elle::Entrance<
+	    elle::Status,
+	    elle::Parameters<
+	      const etoile::path::Way&,
+	      const nucleus::Subject&
+	      >
+	    >				entrance(closure);
+
+	  // launch the program.
+	  if (elle::Program::Launch() == elle::StatusError)
+	    escape("an error occured while processing events");
+
 	  break;
 	}
       case Access::OperationUnknown:

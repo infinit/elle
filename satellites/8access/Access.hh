@@ -48,6 +48,12 @@ namespace application
       };
 
     //
+    // static callbacks
+    //
+    static elle::Status		Disconnected();
+    static elle::Status		Error(const elle::String&);
+
+    //
     // static methods
     //
     static elle::Status		Connect();
