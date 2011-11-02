@@ -55,41 +55,42 @@ namespace elle
       ::srand(::time(NULL)); 
 
 #if INFINIT_UNIX
+      {
+	int		fd = -1;
 
-      int		fd = -1;
-
-      // get some random data.
-      if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
-	escape(::strerror(errno));
-
-      // read random data.
-      if (::read(fd, temporary, sizeof (temporary)) == -1)
-	{
-	  ::close(fd);
-
+	// get some random data.
+	if ((fd = ::open("/dev/random", O_RDONLY)) == -1)
 	  escape(::strerror(errno));
-	}
 
-      // close the file descriptor.
-      ::close(fd);
+	// read random data.
+	if (::read(fd, temporary, sizeof (temporary)) == -1)
+	  {
+	    ::close(fd);
 
+	    escape(::strerror(errno));
+	  }
+
+	// close the file descriptor.
+	::close(fd);
+      }
 #elif INFINIT_WIN32
+      {
+	HCRYPTPROV        h_provider = 0;
 
-      HCRYPTPROV        h_provider = 0;
+	if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
+				    CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
+	  escape("failed to acquire cryptographic context");
 
-      if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
-                                  CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
-        escape("failed to acquire cryptographic context");
+	if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
+	  {
+	    ::CryptReleaseContext(h_provider, 0);
 
-      if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
-        {
-          ::CryptReleaseContext(h_provider, 0);
-          escape("failed to generate the random seed");
-        }
+	    escape("failed to generate the random seed");
+	  }
 
-      if (!::CryptReleaseContext(h_provider, 0))
-        escape("failed to release cryptographic context");
-
+	if (!::CryptReleaseContext(h_provider, 0))
+	  escape("failed to release cryptographic context");
+      }
 #else
 # error "unsupported platform"
 #endif

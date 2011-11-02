@@ -129,27 +129,6 @@ namespace elle
       //
       ::QTcpSocket*	socket;
 
-      //
-      // signals
-      //
-      struct
-      {
-	Signal<
-	  Parameters<>
-	  >		connected;
-	Signal<
-	  Parameters<>
-	  >		disconnected;
-	Signal<
-	  Parameters<>
-	  >		ready;
-	Signal<
-	  Parameters<
-	    const String&
-	    >
-	  >		error;
-      }			signal;
-
     private slots:
       //
       // slots

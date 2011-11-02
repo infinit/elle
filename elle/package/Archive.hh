@@ -159,12 +159,6 @@ namespace elle
 		typename... TT>
       Status		Serialize(const T&,
 				  const TT&...);
-      template <typename T>
-      Status		Serialize(const T*);
-      template <typename T,
-		typename... TT>
-      Status		Serialize(const T*,
-				  const TT*...);
 
       Status		Extract();
       template <typename T>
@@ -173,12 +167,6 @@ namespace elle
 		typename... TT>
       Status		Extract(T&,
 				TT&...);
-      template <typename T>
-      Status		Extract(T*);
-      template <typename T,
-		typename... TT>
-      Status		Extract(T*,
-				TT*...);
 
       Status		Fetch(enum Type&);
 

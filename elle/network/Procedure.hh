@@ -90,10 +90,7 @@ namespace elle
               Trait::Constant<
 	        typename Message<I>::P
 	      >::Type,
-	    typename
-	      Trait::Bare<
-	        typename Message<O>::P
-	      >::Type
+            typename Message<O>::P
             >::Type				R;
 
       //

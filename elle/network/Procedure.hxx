@@ -118,7 +118,7 @@ namespace elle
       if (archive.offset != archive.size)
 	escape("the archive seems to contain additional information");
 
-      // at this locus, an Arguments is created which references both
+      // at this point, an Arguments is created which references both
       // the inputs and outputs. thus no copy is made while the
       // outputs can still be accessed through the _outputs_ variable.
       Arguments<
@@ -147,47 +147,28 @@ namespace elle
       //
       if (status == StatusError)
 	{
-	  // depending on the error tag.
-	  switch (E)
-	    {
-	    case TagError:
-	      {
-		//
-		// nothing to do in this case i.e just ignore the error
-		// though log it.
-		//
+	  //
+	  // serialize the report and send it to the caller.
+	  //
+	  Report*		report;
 
-		log("an error occured in this procedure");
+	  // check the socket.
+	  if (session->socket == NULL)
+	    escape("unable to reply with a null socket");
 
-		break;
-	      }
-	    default:
-	      {
-		//
-		// in the other cases, serialize the report and send it
-		// to the caller.
-		//
-		Report*		report;
+	  // retrieve the report.
+	  if (Report::Instance(report) == StatusFalse)
+	    escape("unable to retrieve the report");
 
-		// check the socket.
-		if (session->socket == NULL)
-		  escape("unable to reply with a null socket");
+	  // reply with the report.
+	  if (session->socket->Reply(
+		Inputs<E>(*report),
+		session) == StatusError)
+	    escape("unable to reply with the status");
 
-		// retrieve the report.
-		if (Report::Instance(report) == StatusFalse)
-		  escape("unable to retrieve the report");
-
-		// reply with the report.
-		if (session->socket->Reply(
-		      Inputs<E>(*report),
-		      session) == StatusError)
-		  escape("unable to reply with the status");
-
-		// flush the report since it has been sent
-		// to the sender.
-		report->Flush();
-	      }
-	    }
+	  // flush the report since it has been sent
+	  // to the sender.
+	  report->Flush();
 
 	  leave();
 	}
