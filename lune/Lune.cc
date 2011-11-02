@@ -78,8 +78,8 @@ namespace lune
   elle::Pattern			Lune::User::Dictionary;
 
   ///
-  /// this variable contains the pattern-based path to the user phrase
-  /// file.
+  /// this variable contains the pattern-based path to the user's
+  /// network-specific phrase file.
   ///
   elle::Pattern			Lune::User::Phrase;
 
@@ -251,11 +251,11 @@ namespace lune
       if (Lune::User::Phrase.Create(
 	    home +
 	    elle::System::Path::Separator +
-	    "users" +
-	    elle::System::Path::Separator +
 	    "%USER%" +
 	    elle::System::Path::Separator +
-	    "%USER%" +
+	    "phrases" +
+	    elle::System::Path::Separator +
+	    "%NETWORK%" +
 	    Phrase::Extension) == elle::StatusError)
 	escape("unable to create the pattern");
 

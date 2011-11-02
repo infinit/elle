@@ -29,6 +29,10 @@ namespace lune
   /// run by the user having launched the software to communicate with
   /// Infinit and thus trigger additional functionalities.
   ///
+  /// noteworthy is that a phrase is made specific to both a user and
+  /// a network so that a single user can launch Infini twice or more, even
+  /// with a different identity, without overwritting the phrase.
+  ///
   class Phrase:
     public elle::Object,
     public virtual elle::Fileable<elle::FormatCustom>
@@ -50,6 +54,7 @@ namespace lune
 
     // object
     declare(Phrase);
+    elle::Boolean	operator==(const Phrase&) const;
 
     // dumpable
     elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -59,10 +64,14 @@ namespace lune
     elle::Status	Extract(elle::Archive&);
 
     // fileable
-    elle::Status	Load(const elle::String&);
-    elle::Status	Store(const elle::String&) const;
-    elle::Status	Erase(const elle::String&) const;
-    elle::Status	Exist(const elle::String&) const;
+    elle::Status	Load(const elle::String&,
+			     const elle::String&);
+    elle::Status	Store(const elle::String&,
+			      const elle::String&) const;
+    elle::Status	Erase(const elle::String&,
+			      const elle::String&) const;
+    elle::Status	Exist(const elle::String&,
+			      const elle::String&) const;
 
     //
     // attributes

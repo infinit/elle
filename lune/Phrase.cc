@@ -49,6 +49,24 @@ namespace lune
 //
 
   ///
+  /// this operator compares two objects.
+  ///
+  elle::Boolean		Phrase::operator==(const Phrase&	element) const
+  {
+    enter();
+
+    // check the address as this may actually be the same object.
+    if (this == &element)
+      true();
+
+    // compare the strings.
+    if (this->string != element.string)
+      false();
+
+    true();
+  }
+
+  ///
   /// this macro-function call generates the object.
   ///
   embed(Phrase, _());
@@ -110,7 +128,8 @@ namespace lune
   ///
   /// this method loads the user's local map.
   ///
-  elle::Status		Phrase::Load(const elle::String&	user)
+  elle::Status		Phrase::Load(const elle::String&	user,
+				     const elle::String&	network)
   {
     elle::Path		path;
     elle::Region	region;
@@ -122,7 +141,8 @@ namespace lune
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", user)) == elle::StatusError)
+    if (path.Complete(elle::Piece("%USER%", user),
+		      elle::Piece("%NETWORK%", network)) == elle::StatusError)
       escape("unable to complete the path");
 
     // read the file's content.
@@ -142,7 +162,8 @@ namespace lune
   ///
   /// this method stores the user's local map.
   ///
-  elle::Status		Phrase::Store(const elle::String&	user) const
+  elle::Status		Phrase::Store(const elle::String&	user,
+				      const elle::String&	network) const
   {
     elle::Path		path;
     elle::Region	region;
@@ -155,7 +176,8 @@ namespace lune
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", user)) == elle::StatusError)
+    if (path.Complete(elle::Piece("%USER%", user),
+		      elle::Piece("%NETWORK%", network)) == elle::StatusError)
       escape("unable to complete the path");
 
     // encode in hexadecimal.
@@ -177,7 +199,8 @@ namespace lune
   ///
   /// this method erases the phrase.
   ///
-  elle::Status		Phrase::Erase(const elle::String&	user) const
+  elle::Status		Phrase::Erase(const elle::String&	user,
+				      const elle::String&	network) const
   {
     elle::Path		path;
 
@@ -188,7 +211,8 @@ namespace lune
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", user)) == elle::StatusError)
+    if (path.Complete(elle::Piece("%USER%", user),
+		      elle::Piece("%NETWORK%", network)) == elle::StatusError)
       escape("unable to complete the path");
 
     // erase the file.
@@ -201,7 +225,8 @@ namespace lune
   ///
   /// this method tests the phrase.
   ///
-  elle::Status		Phrase::Exist(const elle::String&	user) const
+  elle::Status		Phrase::Exist(const elle::String&	user,
+				      const elle::String&	network) const
   {
     elle::Path		path;
 
@@ -212,7 +237,8 @@ namespace lune
       escape("unable to create the path");
 
     // complete the path's pattern.
-    if (path.Complete(elle::Piece("%USER%", user)) == elle::StatusError)
+    if (path.Complete(elle::Piece("%USER%", user),
+		      elle::Piece("%NETWORK%", network)) == elle::StatusError)
       escape("unable to complete the path");
 
     // test the file.
