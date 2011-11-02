@@ -138,27 +138,6 @@ namespace elle
       ::QLocalSocket*	socket;
 
       //
-      // signals
-      //
-      struct
-      {
-	Signal<
-	  Parameters<>
-	  >		connected;
-	Signal<
-	  Parameters<>
-	  >		disconnected;
-	Signal<
-	  Parameters<>
-	  >		ready;
-	Signal<
-	  Parameters<
-	    const String&
-	    >
-	  >		error;
-      }			signal;
-
-      //
       // slots
       //
     private slots:

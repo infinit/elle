@@ -205,41 +205,6 @@ namespace elle
       leave();
     }
 
-    ///
-    /// this template serializes a single item.
-    ///
-    template <typename T>
-    Status		Archive::Serialize(const T*		element)
-    {
-      return
-	(Archive::Behaviour<T,
-	                    ArchiveType<T>::Value
-                              ==
-                            Archive::TypeUnknown>::Serialize(*this,
-							     *element));
-    }
-
-    ///
-    /// this method serializes a set of items.
-    ///
-    template <typename T,
-	      typename... TT>
-    Status		Archive::Serialize(const T*		parameter,
-					   const TT*...		parameters)
-    {
-      enter();
-
-      // serialize the first items.
-      if (this->Serialize(parameter) == StatusError)
-	escape("unable to serialize the first item");
-
-      // serialize the additional items.
-      if (this->Serialize(parameters...) == StatusError)
-	escape("unable to serialize the additional parameters");
-
-      leave();
-    }
-
 //
 // ---------- extract ---------------------------------------------------------
 //
@@ -265,41 +230,6 @@ namespace elle
 	      typename... TT>
     Status		Archive::Extract(T&			parameter,
 					 TT&...			parameters)
-    {
-      enter();
-
-      // extract the first item.
-      if (this->Extract(parameter) == StatusError)
-	escape("unable to extract the first item");
-
-      // extract the additional items.
-      if (this->Extract(parameters...) == StatusError)
-	escape("unable to extract the additional items");
-
-      leave();
-    }
-
-    ///
-    /// this template extracts a single item.
-    ///
-    template <typename T>
-    Status		Archive::Extract(T*			element)
-    {
-      return
-	(Archive::Behaviour<T,
-	                    ArchiveType<T>::Value
-                              ==
-                            Archive::TypeUnknown>::Extract(*this,
-							   *element));
-    }
-
-    ///
-    /// this method extracts a set of items.
-    ///
-    template <typename T,
-	      typename... TT>
-    Status		Archive::Extract(T*			parameter,
-					 TT*...			parameters)
     {
       enter();
 

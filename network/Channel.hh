@@ -123,6 +123,27 @@ namespace elle
       Status		Dump(const Natural32 = 0) const;
 
       //
+      // signals
+      //
+      struct
+      {
+	Signal<
+	  Parameters<>
+	  >		connected;
+	Signal<
+	  Parameters<>
+	  >		disconnected;
+	Signal<
+	  Parameters<>
+	  >		ready;
+	Signal<
+	  Parameters<
+	    const String&
+	    >
+	  >		error;
+      }			signal;
+
+      //
       // attributes
       //
       State		state;

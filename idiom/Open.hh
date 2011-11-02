@@ -185,18 +185,6 @@
 	}								\
     } while (false)
 
-
-///
-/// this macro helps you to log your current location
-///
-// XXX
-#define log_here                                                        \
-  do {                                                                  \
-    ::printf("[%d] %s:%d %s\n", __COUNTER__, __FILE__,                  \
-             __LINE__, __PRETTY_FUNCTION__);                            \
-    ::fflush(stdout);                                                   \
-  } while (0)
-
 //
 // ---------- report ----------------------------------------------------------
 //
@@ -208,7 +196,7 @@
 /// the macro functions below should be used: leave, escape, true
 /// etc.
 ///
-#define report(_format_, ...)				\
+#define report(_format_, ...)						\
   do									\
     {									\
       elle::standalone::Report*	_report_;				\
@@ -299,7 +287,7 @@
 /// this macro-function indicates that an error occured
 /// and returns StatusError.
 ///
-#define escape(_format_, ...)				\
+#define escape(_format_, ...)						\
   do									\
     {									\
       report(_format_, ##__VA_ARGS__);					\
@@ -313,7 +301,7 @@
 /// this macro-function logs the fact that an error occured
 /// and returns StatusFalse.
 ///
-#define flee(_format_, ...)					\
+#define flee(_format_, ...)						\
   do									\
     {									\
       log(_format_, ##__VA_ARGS__);					\
@@ -332,7 +320,7 @@
 /// note that no parentheses are put around _return_ in case it
 /// would be empty.
 ///
-#define yield(_return_, _format_, ...)			\
+#define yield(_return_, _format_, ...)					\
   do									\
     {									\
       log(_format_, ##__VA_ARGS__);					\
@@ -348,7 +336,7 @@
 ///
 /// this macro-function is especially useful in constructors.
 ///
-#define fail(_format_, ...)					\
+#define fail(_format_, ...)						\
   do									\
     {									\
       report(_format_, ##__VA_ARGS__);					\
@@ -578,7 +566,7 @@
 ///
 /// syntaxic sugar.
 ///
-#define parameters(...)					\
+#define parameters(...)							\
   __VA_ARGS__
 
 //
