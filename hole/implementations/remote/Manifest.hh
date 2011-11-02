@@ -19,7 +19,7 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
-#include <elle/Manifest.hh>
+#include <etoile/Manifest.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -56,7 +56,7 @@ namespace hole
 ///
 range(hole::implementations::remote::Component,
       hole::implementations::remote::Tags,
-      elle::Component);
+      etoile::Component);
 
 //
 // ---------- tags ------------------------------------------------------------

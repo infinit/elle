@@ -71,6 +71,7 @@ namespace hole
 
 #include <hole/Label.hh>
 #include <hole/Model.hh>
+#include <hole/Manifest.hh>
 
 #include <hole/implementations/Implementations.hh>
 
