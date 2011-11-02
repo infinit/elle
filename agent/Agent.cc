@@ -13,7 +13,7 @@
 //
 
 #include <agent/Agent.hh>
-
+#include <hole/Hole.hh>
 #include <Infinit.hh>
 
 namespace agent
