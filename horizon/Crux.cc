@@ -23,6 +23,10 @@
 namespace pig
 {
 
+//
+// ---------- macro-functions -------------------------------------------------
+//
+
   ///
   /// this macro-function makes it easier to return an error from an
   /// upcall, taking care to log the error but also to release the
@@ -116,7 +120,7 @@ namespace pig
 				       struct ::fuse_file_info*	info)
   {
     Handle*				handle;
-    etoile::miscellaneous::Information	information;
+    etoile::miscellaneous::Abstract	abstract;
     elle::String*			name;
 
     // debug.
@@ -133,7 +137,7 @@ namespace pig
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(handle->identifier,
-					  information) == elle::StatusError)
+					  abstract) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR);
 
@@ -141,7 +145,7 @@ namespace pig
     // found, the 'somebody' user is used instead, indicating that the
     // file belongs to someone, with the given permissions, but cannot
     // be mapped to a local user name.
-    if (PIG::Dictionary.users.Lookup(information.keys.owner,
+    if (PIG::Dictionary.users.Lookup(abstract.keys.owner,
 				     name) == elle::StatusTrue)
       {
 	//
@@ -176,22 +180,22 @@ namespace pig
     stat->st_gid = PIG::Somebody::GID;
 
     // set the size.
-    stat->st_size = static_cast<off_t>(information.size);
+    stat->st_size = static_cast<off_t>(abstract.size);
 
     // convert the times into time_t structures.
     stat->st_atime = time(NULL);
 
-    if (information.stamps.creation.Get(stat->st_ctime) == elle::StatusError)
+    if (abstract.stamps.creation.Get(stat->st_ctime) == elle::StatusError)
       error("unable to convert the time stamps",
 	    EINTR);
 
-    if (information.stamps.modification.Get(stat->st_mtime) ==
+    if (abstract.stamps.modification.Get(stat->st_mtime) ==
 	elle::StatusError)
       error("unable to convert the time stamps",
 	    EINTR);
 
     // set the mode and permissions.
-    switch (information.genre)
+    switch (abstract.genre)
       {
       case nucleus::GenreDirectory:
 	{
@@ -200,12 +204,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to access
 	  // and read the directory.
-	  if (information.permissions.owner & nucleus::PermissionRead)
+	  if (abstract.permissions.owner & nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the directory content.
-	  if (information.permissions.owner & nucleus::PermissionWrite)
+	  if (abstract.permissions.owner & nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
 
 	  break;
@@ -218,12 +222,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read
 	  // the file.
-	  if (information.permissions.owner & nucleus::PermissionRead)
+	  if (abstract.permissions.owner & nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the file content.
-	  if (information.permissions.owner & nucleus::PermissionWrite)
+	  if (abstract.permissions.owner & nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
 
 	  // retrieve the attribute.
@@ -249,12 +253,12 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read and
 	  // search the linked object.
-	  if (information.permissions.owner & nucleus::PermissionRead)
+	  if (abstract.permissions.owner & nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the link.
-	  if (information.permissions.owner & nucleus::PermissionWrite)
+	  if (abstract.permissions.owner & nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
  
 	  break;
@@ -622,7 +626,7 @@ namespace pig
 				     int			mask)
   {
     etoile::gear::Identifier		identifier;
-    etoile::miscellaneous::Information	information;
+    etoile::miscellaneous::Abstract	abstract;
     etoile::path::Way			way(path);
     etoile::path::Chemin		chemin;
     nucleus::Record*			record;
@@ -645,7 +649,7 @@ namespace pig
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
-					  information) == elle::StatusError)
+					  abstract) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR,
 	    identifier);
@@ -667,7 +671,7 @@ namespace pig
     // check if the permissions match the mask for execution.
     if (mask & X_OK)
       {
-	switch (information.genre)
+	switch (abstract.genre)
 	  {
 	  case nucleus::GenreDirectory:
 	    {
@@ -767,7 +771,7 @@ namespace pig
     etoile::gear::Identifier		identifier;
     etoile::path::Way			way(path);
     etoile::path::Chemin		chemin;
-    etoile::miscellaneous::Information	information;
+    etoile::miscellaneous::Abstract	abstract;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -823,7 +827,7 @@ namespace pig
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
-					  information) == elle::StatusError)
+					  abstract) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR,
 	    identifier);
@@ -833,7 +837,7 @@ namespace pig
       {
 	// set the perm::exec attribute if necessary i.e depending on the
 	// file genre.
-	switch (information.genre)
+	switch (abstract.genre)
 	  {
 	  case nucleus::GenreFile:
 	    {
@@ -1892,7 +1896,7 @@ namespace pig
     etoile::path::Chemin		chemin;
     etoile::gear::Identifier		directory;
     etoile::gear::Identifier		identifier;
-    etoile::miscellaneous::Information	information;
+    etoile::miscellaneous::Abstract	abstract;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1912,7 +1916,7 @@ namespace pig
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
-					  information) == elle::StatusError)
+					  abstract) == elle::StatusError)
       error("unable to retrieve information on the object",
 	    EINTR,
 	    identifier);
@@ -1933,7 +1937,7 @@ namespace pig
 	    ENOENT);
 
     // remove the object according to its type: file or link.
-    switch (information.genre)
+    switch (abstract.genre)
       {
       case nucleus::GenreFile:
 	{
