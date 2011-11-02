@@ -42,9 +42,34 @@ namespace nucleus
       enum Type
 	{
 	  TypeUnknown,
+
 	  TypeUser,
-	  TypeGroup
+	  TypeGroup,
+
+	  Types
 	};
+
+      //
+      // structures
+      //
+      struct Descriptor
+      {
+	Type		type;
+	elle::String	name;
+      };
+
+      //
+      // static methods
+      //
+      static elle::Status	Convert(const elle::String&,
+					Type&);
+      static elle::Status	Convert(const Type,
+					elle::String&);
+
+      //
+      // static attributes
+      //
+      static const Descriptor		Descriptors[Types];
 
       //
       // constructors & destructors

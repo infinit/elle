@@ -206,7 +206,7 @@ namespace nucleus
 
 		break;
 	      }
-	    case Subject::TypeUnknown:
+	    default:
 	      {
 		escape("the access block contains unknown entries");
 	      }

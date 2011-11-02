@@ -189,10 +189,10 @@ namespace nucleus
       // re-compute the owner's access record. just like this->owner.subject,
       // this attribute is not mandatory but has been introduced in order
       // to simplify access control management.
-      if (this->meta.owner._record.Update(this->owner._subject,
-					  this->meta.owner.permissions,
-					  this->meta.owner.token) ==
-	  elle::StatusError)
+      if (this->meta.owner._record.Update(
+	    this->owner._subject,
+	    this->meta.owner.permissions,
+	    this->meta.owner.token) == elle::StatusError)
 	escape("unable to create the owner access record");
 
       // set the the block as dirty.

@@ -20,6 +20,81 @@ namespace nucleus
   {
 
 //
+// ---------- definitions -----------------------------------------------------
+//
+
+    ///
+    /// this table maintains a mapping between subject types and their
+    /// respective human-readable representations.
+    ///
+    const Subject::Descriptor	Subject::Descriptors[Subject::Types] =
+      {
+	{ Subject::TypeUser, "user" },
+	{ Subject::TypeGroup, "group" },
+      };
+
+//
+// ---------- static methods --------------------------------------------------
+//
+
+    ///
+    /// this method returns the type associated with the given string.
+    ///
+    elle::Status	Subject::Convert(const elle::String&	name,
+					 Type&			type)
+    {
+      elle::String	string(name);
+      elle::Natural32	i;
+
+      enter();
+
+      // transform the given name in lowercase.
+      std::transform(string.begin(), string.end(),
+		     string.begin(), std::ptr_fun(::tolower));
+
+      // go through the descriptors.
+      for (i = 0; i < Subject::Types; i++)
+	{
+	  // is this the type we are looking for?
+	  if (Subject::Descriptors[i].name == string)
+	    {
+	      // set the type.
+	      type = Subject::Descriptors[i].type;
+
+	      leave();
+	    }
+	}
+
+      escape("unable to locate the given entity name");
+    }
+
+    ///
+    /// this method converts a type into its human-readable representation.
+    ///
+    elle::Status	Subject::Convert(const Type		type,
+					 elle::String&		name)
+    {
+      elle::Natural32	i;
+
+      enter();
+
+      // go through the descriptors.
+      for (i = 0; i < Subject::Types; i++)
+	{
+	  // is this the entity we are looking for?
+	  if (Subject::Descriptors[i].type == type)
+	    {
+	      // set the name.
+	      name = Subject::Descriptors[i].name;
+
+	      leave();
+	    }
+	}
+
+      escape("unable to locate the given type");
+    }
+
+//
 // ---------- constructors & destructors --------------------------------------
 //
 
@@ -156,7 +231,7 @@ namespace nucleus
 	  {
 	    return (*this->group == *element.group);
 	  }
-	case Subject::TypeUnknown:
+	default:
 	  {
 	    break;
 	  }
@@ -214,7 +289,7 @@ namespace nucleus
 
 	    break;
 	  }
-	case Subject::TypeUnknown:
+	default:
 	  {
 	    break;
 	  }
@@ -258,7 +333,7 @@ namespace nucleus
 
 	    break;
 	  }
-	case Subject::TypeUnknown:
+	default:
 	  {
 	    break;
 	  }
@@ -304,7 +379,7 @@ namespace nucleus
 
 	    break;
 	  }
-	case Subject::TypeUnknown:
+	default:
 	  {
 	    break;
 	  }
