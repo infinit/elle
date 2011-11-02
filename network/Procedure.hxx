@@ -184,25 +184,6 @@ namespace elle
 
 	    break;
 	  }
-	case TagOk:
-	  {
-	    //
-	    // in this case, a TagOk message is sent back in order to
-	    // acknowledge the success of the request.
-	    //
-
-	    // check the socket.
-	    if (session->socket == NULL)
-	      escape("unable to reply with a null socket");
-
-	    // reply with the report.
-	    if (session->socket->Reply(
-		  Inputs<TagOk>(),
-		  session) == StatusError)
-	      escape("unable to reply with the status");
-
-	    break;
-	  }
 	default:
 	  {
 	    //
