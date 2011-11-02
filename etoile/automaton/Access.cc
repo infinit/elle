@@ -113,15 +113,12 @@ namespace etoile
 	  // look in the access object.
 	  if (context.access->Exist(subject) == elle::StatusTrue)
 	    {
-	      // retrieve the record.
-	      if (context.access->Lookup(subject, record) == elle::StatusError)
-		escape("unable to retrieve the subject's record");
-
-	      // update the record with the new permissions.
-	      if (record->Update(subject,
-				 permissions,
-				 context.rights.key) == elle::StatusError)
-		escape("unable to update the record");
+	      // update the access.
+	      if (context.access->Update(
+		    subject,
+		    permissions,
+		    context.rights.key) == elle::StatusError)
+		escape("unable to update the access");
 	    }
 	  else
 	    {

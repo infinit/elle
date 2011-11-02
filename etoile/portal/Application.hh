@@ -27,7 +27,11 @@ namespace etoile
 //
 
     ///
-    /// XXX
+    /// this class represents an external client triggering operations
+    /// on Etoile.
+    ///
+    /// note that the client must authenticate to Etoile in order to
+    /// use the message interface.
     ///
     class Application:
       public elle::Entity

@@ -41,6 +41,7 @@ ADD_LIBRARY(etoile
 
   portal/Application.cc
   portal/Portal.cc
+  portal/Wrapper.cc
 
   miscellaneous/Abstract.cc
 

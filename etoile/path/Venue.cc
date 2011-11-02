@@ -157,5 +157,69 @@ namespace etoile
       leave();
     }
 
+//
+// ---------- archivable ------------------------------------------------------
+//
+
+    ///
+    /// this method serializes the object.
+    ///
+    elle::Status	Venue::Serialize(elle::Archive&		archive) const
+    {
+      Venue::Scoutor	scoutor;
+      elle::Natural32	size;
+
+      enter();
+
+      // retrieve the container size.
+      size = this->elements.size();
+
+      // serialize the size.
+      if (archive.Serialize(size) == elle::StatusError)
+	escape("unable to serialize the size");
+
+      // for every element.
+      for (scoutor = this->elements.begin();
+	   scoutor != this->elements.end();
+	   scoutor++)
+	{
+	  // serialize the location.
+	  if (archive.Serialize(*scoutor) == elle::StatusError)
+	    escape("unable to serialize the location");
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method extracts the object.
+    ///
+    elle::Status	Venue::Extract(elle::Archive&		archive)
+    {
+      elle::Natural32	size;
+      elle::Natural32	i;
+
+      enter();
+
+      // extract the size.
+      if (archive.Extract(size) == elle::StatusError)
+	escape("unable to extract the size");
+
+      // for every element.
+      for (i = 0; i < size; i++)
+	{
+	  nucleus::Location	location;
+
+	  // extract the location.
+	  if (archive.Extract(location) == elle::StatusError)
+	    escape("unable to extract the location");
+
+	  // store the location in the elements.
+	  this->elements.push_back(location);
+	}
+
+      leave();
+    }
+
   }
 }

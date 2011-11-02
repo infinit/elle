@@ -115,7 +115,7 @@ namespace etoile
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == NULL)
 	escape("the user does not seem to be able to operate on this "
-	       "directory");
+	       "file");
 
       // write the file.
       if (context.contents->content->Write(offset,
@@ -167,7 +167,7 @@ namespace etoile
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == NULL)
 	escape("the user does not seem to be able to operate on this "
-	       "directory");
+	       "file");
 
       // read the file.
       if (context.contents->content->Read(offset,
@@ -194,7 +194,7 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the adjust the file.
-      if (!(context.rights.permissions & nucleus::PermissionRead))
+      if (!(context.rights.permissions & nucleus::PermissionWrite))
 	escape("the user does not seem to have the permission to adjust "
 	       "this file");
 
@@ -206,7 +206,7 @@ namespace etoile
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == NULL)
 	escape("the user does not seem to be able to operate on this "
-	       "directory");
+	       "file");
 
       // adjust the data size.
       if (context.contents->content->Adjust(length) == elle::StatusError)

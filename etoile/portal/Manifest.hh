@@ -80,6 +80,10 @@ namespace etoile
 	TagAuthenticated,
 	TagIdentifier,
 
+	// path
+	TagPathResolve,
+	TagPathChemin,
+
 	// object
 	TagObjectLoad,
 	TagObjectInformation,
@@ -159,6 +163,12 @@ message(etoile::portal::TagAuthenticated,
 message(etoile::portal::TagIdentifier,
 	parameters(etoile::gear::Identifier&));
 
+// path
+message(etoile::portal::TagPathResolve,
+	parameters(etoile::path::Way&));
+message(etoile::portal::TagPathChemin,
+	parameters(etoile::path::Chemin&));
+
 // object
 message(etoile::portal::TagObjectLoad,
 	parameters(etoile::path::Chemin&));
@@ -211,7 +221,7 @@ message(etoile::portal::TagDirectoryLookup,
 	parameters(etoile::gear::Identifier&,
 		   etoile::path::Slab&));
 message(etoile::portal::TagDirectoryEntry,
-	parameters(nucleus::Entry*&));
+	parameters(nucleus::Entry&));
 message(etoile::portal::TagDirectoryConsult,
 	parameters(etoile::gear::Identifier&,
 		   nucleus::Index&,

@@ -113,7 +113,7 @@ namespace etoile
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == NULL)
 	escape("the user does not seem to be able to operate on this "
-	       "directory");
+	       "link");
 
       // bind the link.
       if (context.contents->content->Bind(way.path) == elle::StatusError)
@@ -162,7 +162,7 @@ namespace etoile
       // read permission between the previous check and the Contents::Open().
       if (context.contents->content == NULL)
 	escape("the user does not seem to be able to operate on this "
-	       "directory");
+	       "link");
 
       // resolve the link.
       if (context.contents->content->Resolve(way.path) == elle::StatusError)

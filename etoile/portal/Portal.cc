@@ -18,6 +18,8 @@
 
 #include <etoile/Etoile.hh>
 
+#include <agent/Agent.hh>
+#include <hole/Hole.hh>
 #include <Infinit.hh>
 
 namespace etoile
@@ -32,7 +34,7 @@ namespace etoile
     ///
     /// the line on which the portal listens for incoming connections.
     ///
-    elle::String		Portal::Line("etoile");
+    elle::String		Portal::Line;
 
     ///
     /// the container holding the connected applications.
@@ -50,6 +52,13 @@ namespace etoile
     {
       enter();
 
+      // build the line depending on both the user and network names.
+      Portal::Line =
+	"etoile-" +
+	agent::Agent::Identity.name +
+	":" +
+	hole::Hole::Descriptor.name;
+
       // register the messages.
       {
 	//
@@ -64,28 +73,344 @@ namespace etoile
 	  escape("unable to register the callback");
 
 	//
-	// access
+	// path
 	//
 
-	/* XXX
 	// register the message.
 	if (elle::Network::Register(
-	      elle::Procedure<TagAccessLookup,
-			      TagAccessRecord>(
+	      elle::Procedure<TagPathResolve,
+			      TagPathChemin>(
 	        elle::Callback<>::Infer(
-		  &wall::Access::Lookup))) == elle::StatusError)
+		  &wall::Path::Resolve))) == elle::StatusError)
 	  escape("unable to register the callback");
-	*/
-	// XXX
-	/*
+
+	//
+	// object
+	//
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagObjectLoad,
+			      TagIdentifier>(
+	        elle::Callback<>::Infer(
+		  &wall::Object::Load))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagObjectInformation,
+			      TagObjectAbstract>(
+	        elle::Callback<>::Infer(
+		  &wall::Object::Information))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagObjectDiscard,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Object::Discard))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagObjectStore,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Object::Store))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagObjectDestroy,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Object::Destroy))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	//
+	// file
+	//
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileCreate,
+			      TagIdentifier>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Create))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileLoad,
+			      TagIdentifier>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Load))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileWrite,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Write))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileRead,
+			      TagFileRegion>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Read))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileAdjust,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Adjust))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileDiscard,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Discard))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileStore,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Store))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagFileDestroy,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::File::Destroy))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	//
+	// directory
+	//
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryCreate,
+			      TagIdentifier>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Create))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryLoad,
+			      TagIdentifier>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Load))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryAdd,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Add))) == elle::StatusError)
+	  escape("unable to register the callback");
+
 	// register the message.
 	if (elle::Network::Register(
 	      elle::Procedure<TagDirectoryLookup,
 			      TagDirectoryEntry>(
 	        elle::Callback<>::Infer(
-		  &wall::Directory::Lookup))) == elle::StatusError)
+		  &Wrapper::Directory::Lookup))) == elle::StatusError)
 	  escape("unable to register the callback");
-	*/
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryConsult,
+			      TagDirectoryRange>(
+	        elle::Callback<>::Infer(
+		  &Wrapper::Directory::Consult))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryRename,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Rename))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryRemove,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Remove))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryDiscard,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Discard))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryStore,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Store))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagDirectoryDestroy,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Directory::Destroy))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	//
+	// link
+	//
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagLinkCreate,
+			      TagIdentifier>(
+	        elle::Callback<>::Infer(
+		  &wall::Link::Create))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagLinkLoad,
+			      TagIdentifier>(
+	        elle::Callback<>::Infer(
+		  &wall::Link::Load))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagLinkBind,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Link::Bind))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagLinkResolve,
+			      TagLinkWay>(
+	        elle::Callback<>::Infer(
+		  &wall::Link::Resolve))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagLinkDiscard,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Link::Discard))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagLinkStore,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Link::Store))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagLinkDestroy,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Link::Destroy))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	//
+	// access
+	//
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAccessLookup,
+			      TagAccessRecord>(
+	        elle::Callback<>::Infer(
+		  &Wrapper::Access::Lookup))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAccessConsult,
+			      TagAccessRange>(
+	        elle::Callback<>::Infer(
+		  &Wrapper::Access::Consult))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAccessGrant,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Access::Grant))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAccessRevoke,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Access::Revoke))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	//
+	// attributes
+	//
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAttributesSet,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Attributes::Set))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAttributesGet,
+			      TagAttributesTrait>(
+	        elle::Callback<>::Infer(
+		  &Wrapper::Attributes::Get))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAttributesFetch,
+			      TagAttributesRange>(
+	        elle::Callback<>::Infer(
+		  &Wrapper::Attributes::Fetch))) == elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagAttributesOmit,
+			      elle::TagOk>(
+	        elle::Callback<>::Infer(
+		  &wall::Attributes::Omit))) == elle::StatusError)
+	  escape("unable to register the callback");
       }
 
       // listen for incoming connection.
@@ -107,7 +432,8 @@ namespace etoile
 
       /// XXX \todo le faire proprement en quittant, tout nettoyer, notamment
       ///     en catchant les signaux (UNIX/QT) et via unlink.
-      ::unlink("/tmp/etoile");
+      elle::String	path = "/tmp/" + Portal::Line;
+      ::unlink(path.c_str());
 
       leave();
     }
@@ -199,7 +525,12 @@ namespace etoile
     }
 
     ///
-    /// XXX
+    /// this callback is triggered whenever the portal receives an
+    /// Authenticate message from an already connected application.
+    ///
+    /// this message comes with a phrase which is compared to the current
+    /// instance's. if the phrase is valid, the application is authorised
+    /// to trigger operation on behalf of the current user.
     ///
     elle::Status	Portal::Authenticate(const lune::Phrase& phrase)
     {

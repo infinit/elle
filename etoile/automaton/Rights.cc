@@ -13,6 +13,7 @@
 //
 
 #include <etoile/automaton/Rights.hh>
+#include <etoile/automaton/Access.hh>
 
 #include <agent/Agent.hh>
 
@@ -42,7 +43,7 @@ namespace etoile
 	leave();
 
       // determine the rights according to the subject.
-      if (agent::Agent::Identity.pair.K == context.object.owner.K)
+      if (agent::Agent::Subject == context.object.owner._subject)
 	{
 	  //
 	  // if the user is the object's owner, retrieve the user's
@@ -76,7 +77,57 @@ namespace etoile
 	  // associated with the subject.
 	  //
 
-	  // XXX to implement.
+	  // open the access.
+	  if (Access::Open(context) == elle::StatusError)
+	    escape("unable to open the access block");
+
+	  // check that the subject is referenced in the access block.
+	  if (context.access->Exist(agent::Agent::Subject) == elle::StatusTrue)
+	    {
+	      //
+	      // in this case, the subject is referenced in the ACL, hence
+	      // is considered a lord.
+	      //
+	      nucleus::Record*	record;
+
+	      // retrieve the record associated with this subject.
+	      if (context.access->Lookup(agent::Agent::Subject,
+					 record) == elle::StatusError)
+		escape("unable to retrieve the access record");
+
+	      // set the role.
+	      context.rights.role = nucleus::RoleLord;
+
+	      // set the permissions according to the access record.
+	      context.rights.permissions = record->permissions;
+
+	      // if a token is present, decrypt it.
+	      if (record->token != nucleus::Token::Null)
+		{
+		  // extract the secret key from the token.
+		  if (record->token.Extract(
+			agent::Agent::Identity.pair.k,
+			context.rights.key) == elle::StatusError)
+		    escape("unable to extract the secret key from the token");
+		}
+
+	      // finally, set the record for ease purpose.
+	      context.rights.record = *record;
+	    }
+	  else
+	    {
+	      //
+	      // the subject seems to be a vassal of some sort i.e either
+	      // referenced by a Group or referenced nowhere but possessing
+	      // a token.
+	      //
+
+	      // set the role.
+	      context.rights.role = nucleus::RoleVassal;
+
+	      // set the permissions.
+	      context.rights.permissions = nucleus::PermissionNone;
+	    }
 	}
 
       leave();
