@@ -1,3 +1,12 @@
+- fusionner Broker et WinEventBroker
+
+- faire une gestion des options hierarchique
+
+- plutot que de bufferiser si on arrive pas a extraire un message,
+  close la connection (Gate et Door)
+
+- ameliorer le systeme de reservation de tags
+
 - coder portal pour access control
 
 - rajouter suppression blocks via authentication
@@ -8,6 +17,8 @@
 - faire que les Network messages soit register sur une socket.
 - rendre les I/Os asynchrones via des wrappers qui mettront les fibres
   en attente.
+- faire en sorte de register sur le signal QT readyWrite pour rendre les
+  IO asynchrone (Gate/Door)
 
 - ameliorer le shutdown: si on ouvre directory, puis ouvre object puis
   ferme directory pour ferme object -> le shutdown lance sera celui de

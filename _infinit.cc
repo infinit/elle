@@ -63,10 +63,6 @@ elle::Status		Main(elle::Natural32			argc,
   if (Infinit::Initialize() == elle::StatusError)
     escape("unable to initialize Infinit");
 
-  // initialize the Etoile library.
-  if (etoile::Etoile::Initialize() == elle::StatusError)
-    escape("unable to initialize Etoile");
-
   // allocate a new parser.
   Infinit::Parser = new elle::Parser(argc, argv);
 
@@ -83,12 +79,12 @@ elle::Status		Main(elle::Natural32			argc,
         elle::Parser::KindNone) == elle::StatusError)
     escape("unable to register the option");
 
-  // set up the agent-specific options.
-  if (agent::Agent::Options() == elle::StatusError)
-    escape("unable to set up the options");
-
   // set up the hole-specific options.
   if (hole::Hole::Options() == elle::StatusError)
+    escape("unable to set up the options");
+
+  // set up the agent-specific options.
+  if (agent::Agent::Options() == elle::StatusError)
     escape("unable to set up the options");
 
 #if INFINIT_UNIX
@@ -115,13 +111,17 @@ elle::Status		Main(elle::Natural32			argc,
       leave();
     }
 
+  // initialize the Hole library.
+  if (hole::Hole::Initialize() == elle::StatusError)
+    escape("unable to initialize Hole");
+
   // initialize the Agent library.
   if (agent::Agent::Initialize() == elle::StatusError)
     escape("unable to initialize Agent");
 
-  // initialize the Hole library.
-  if (hole::Hole::Initialize() == elle::StatusError)
-    escape("unable to initialize Hole");
+  // initialize the Etoile library.
+  if (etoile::Etoile::Initialize() == elle::StatusError)
+    escape("unable to initialize Etoile");
 
 #if INFINIT_UNIX
   // initialize PIG.
@@ -153,17 +153,17 @@ elle::Status		Main(elle::Natural32			argc,
     escape("unable to clean IIG");
 #endif
 
-  // clean Hole.
-  if (hole::Hole::Clean() == elle::StatusError)
-    escape("unable to clean Hole");
+  // clean the Etoile library.
+  if (etoile::Etoile::Clean() == elle::StatusError)
+    escape("unable to clean Etoile");
 
   // clean the Agent library.
   if (agent::Agent::Clean() == elle::StatusError)
     escape("unable to clean Agent");
 
-  // clean the Etoile library.
-  if (etoile::Etoile::Clean() == elle::StatusError)
-    escape("unable to clean Etoile");
+  // clean Hole.
+  if (hole::Hole::Clean() == elle::StatusError)
+    escape("unable to clean Hole");
 
   // clean Infinit.
   if (Infinit::Clean() == elle::StatusError)
