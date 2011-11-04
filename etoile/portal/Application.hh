@@ -47,9 +47,15 @@ namespace etoile
       //
       enum State
 	{
-	  StateConnected,
+	  StateConnected = 1,
 	  StateAuthenticated,
 	  StateDisconnected
+	};
+
+      enum Processing
+	{
+	  ProcessingOff = 0,
+	  ProcessingOn
 	};
 
       //
@@ -71,11 +77,19 @@ namespace etoile
       elle::Status	Abort();
 
       //
+      // interfaces
+      //
+
+      // dumpable
+      elle::Status		Dump(const elle::Natural32 = 0) const;
+
+      //
       // attributes
       //
       State		state;
-      elle::Timer*	timer;
+      Processing	processing;
 
+      elle::Timer*	timer;
       elle::Door*	door;
     };
 

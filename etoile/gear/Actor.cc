@@ -243,10 +243,36 @@ namespace etoile
 	    // thus, the actor must never have performed a modification
 	    // on the context.
 	    //
+	    // note that there is a catch: if the actor has modified a
+	    // freshly created scope, it can actually be discarded. this
+	    // is made possible because (i) it is a common thing for
+	    // an application to create an object and finally realize it
+	    // does not have the permission to add it to a directory for
+	    // instance (ii) a created object cannot be accessed i.e loaded
+	    // by another actor since it is not referenced yet by a chemin.
 
-	    // check the state.
-	    if (this->state != Actor::StateClean)
-	      escape("unable to discard previously performed modifications");
+	    // check the scope's nature i.e does it have a chemin.
+	    if (this->scope->chemin != path::Chemin::Null)
+	      {
+		//
+		// the normal case: check that no modification has been
+		// performed.
+		//
+
+		// check the state.
+		if (this->state != Actor::StateClean)
+		  escape("unable to discard previously performed "
+			 "modifications");
+	      }
+	    else
+	      {
+		//
+		// the exceptional case: allow the actor to discard a
+		// created scope.
+		//
+
+		// do nothing.
+	      }
 
 	    break;
 	  }

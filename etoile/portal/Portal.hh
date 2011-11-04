@@ -64,7 +64,7 @@ namespace etoile
       static elle::Status	Add(Application*);
       static elle::Status	Retrieve(elle::Door*,
 					 Application*&);
-      static elle::Status	Remove(Application*);
+      static elle::Status	Remove(elle::Door*);
 
       static elle::Status	Show(const elle::Natural32 = 0);
 
@@ -73,6 +73,8 @@ namespace etoile
       //
       static elle::Status	Connection(elle::Door*);
       static elle::Status	Authenticate(const lune::Phrase&);
+      static elle::Status	Prolog();
+      static elle::Status	Epilog();
 
       //
       // static attributes

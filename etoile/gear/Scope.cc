@@ -747,7 +747,7 @@ namespace etoile
 
 	    break;
 	  }
-	case Context::StateInitialized:
+	case Context::StateLoaded:
 	case Context::StateDiscarded:
 	  {
 	    // set the state.
@@ -822,6 +822,7 @@ namespace etoile
 
 	    break;
 	  }
+	case Context::StateCreated:
 	case Context::StateModified:
 	case Context::StateStored:
 	case Context::StateDestroyed:

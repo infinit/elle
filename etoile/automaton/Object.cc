@@ -52,7 +52,7 @@ namespace etoile
 	escape("unable to compute the base");
 
       // set the context's state.
-      context.state = gear::Context::StateInitialized;
+      context.state = gear::Context::StateLoaded;
 
       leave();
     }

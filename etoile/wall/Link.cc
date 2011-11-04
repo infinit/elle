@@ -21,6 +21,7 @@
 #include <etoile/gear/Gear.hh>
 
 #include <etoile/automaton/Link.hh>
+#include <etoile/automaton/Rights.hh>
 
 #include <etoile/journal/Journal.hh>
 
@@ -349,6 +350,15 @@ namespace etoile
 	if (scope->Use(context) == elle::StatusError)
 	  escape("unable to retrieve the context");
 
+	// check the permissions before performing the operation in
+	// order not to alter the scope should the operation not be
+	// allowed.
+	if (automaton::Rights::Operate(
+	      *context,
+	      gear::OperationDiscard) == elle::StatusError)
+	  escape("the user does not seem to have the necessary permission for "
+		 "discarding this link");
+
 	// specify the closing operation performed by the actor.
 	if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
 	  escape("this operation cannot be performed by this actor");
@@ -456,6 +466,15 @@ namespace etoile
 	if (scope->Use(context) == elle::StatusError)
 	  escape("unable to retrieve the context");
 
+	// check the permissions before performing the operation in
+	// order not to alter the scope should the operation not be
+	// allowed.
+	if (automaton::Rights::Operate(
+	      *context,
+	      gear::OperationStore) == elle::StatusError)
+	  escape("the user does not seem to have the necessary permission for "
+		 "storing this link");
+
 	// specify the closing operation performed by the actor.
 	if (actor->Operate(gear::OperationStore) == elle::StatusError)
 	  escape("this operation cannot be performed by this actor");
@@ -561,6 +580,15 @@ namespace etoile
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
 	  escape("unable to retrieve the context");
+
+	// check the permissions before performing the operation in
+	// order not to alter the scope should the operation not be
+	// allowed.
+	if (automaton::Rights::Operate(
+	      *context,
+	      gear::OperationDestroy) == elle::StatusError)
+	  escape("the user does not seem to have the necessary permission for "
+		 "destroying this link");
 
 	// specify the closing operation performed by the actor.
 	if (actor->Operate(gear::OperationDestroy) == elle::StatusError)

@@ -53,7 +53,7 @@ namespace etoile
 	escape("unable to create the location");
 
       // set the context's state.
-      context.state = gear::Context::StateInitialized;
+      context.state = gear::Context::StateCreated;
 
       leave();
     }
@@ -80,7 +80,7 @@ namespace etoile
 	escape("this object does not seem to be a link");
 
       // set the context's state.
-      context.state = gear::Context::StateInitialized;
+      context.state = gear::Context::StateLoaded;
 
       leave();
     }
@@ -101,7 +101,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the bind the link.
-      if (!(context.rights.permissions & nucleus::PermissionWrite))
+      if ((context.rights.permissions & nucleus::PermissionWrite) !=
+	  nucleus::PermissionWrite)
 	escape("the user does not seem to have the permission to bind "
 	       "this link");
 
@@ -150,7 +151,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the resolve the link..
-      if (!(context.rights.permissions & nucleus::PermissionRead))
+      if ((context.rights.permissions & nucleus::PermissionRead) !=
+	  nucleus::PermissionRead)
 	escape("the user does not seem to have the permission to resolve "
 	       "this link");
 

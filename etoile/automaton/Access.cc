@@ -399,7 +399,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
-      if (context.rights.permissions & nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::PermissionRead) ==
+	  nucleus::PermissionRead)
 	{
 	  // recompute the rights with the new key.
 	  if (Rights::Recompute(context) == elle::StatusError)
@@ -439,7 +440,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // finally, if the user has the permission to read, update its rights.
-      if (context.rights.permissions & nucleus::PermissionRead)
+      if ((context.rights.permissions & nucleus::PermissionRead) ==
+	  nucleus::PermissionRead)
 	{
 	  // recompute the rights.
 	  if (Rights::Recompute(context) == elle::StatusError)

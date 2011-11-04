@@ -13,6 +13,7 @@
 //
 
 #include <etoile/portal/Application.hh>
+#include <etoile/portal/Portal.hh>
 
 #include <Infinit.hh>
 
@@ -40,6 +41,7 @@ namespace etoile
     ///
     Application::Application():
       state(StateDisconnected),
+      processing(ProcessingOff),
       timer(NULL),
       door(NULL)
     {
@@ -128,13 +130,16 @@ namespace etoile
       // set the application's state as disconnected.
       this->state = Application::StateDisconnected;
 
-      /* XXX
-      // emit the signal.
-      if (this->signal.dead.Emit(this) == elle::StatusError)
-      escape("unable to emit the signal");
-      */
-      // XXX il ne faut pas le supprimer tout de suite mais attendre
-      // que son processing soit termine.
+      // check if the application is currently processing.
+      if (this->processing == Application::ProcessingOff)
+	{
+	  // remove the application from the portal.
+	  if (Portal::Remove(this->door) == elle::StatusError)
+	    escape("unable to remove the application from the portal");
+
+	  // bury the application.
+	  bury(this);
+	}
 
       leave();
     }
@@ -152,7 +157,8 @@ namespace etoile
 	std::cout << "[etoile] portal::Application::Error()"
 		  << std::endl;
 
-      // disconnect the door, though that may be unecessary.
+      // disconnect the door, though that may be unecessary i.e do not
+      // check the return status.
       this->door->Disconnect();
 
       leave();
@@ -172,21 +178,74 @@ namespace etoile
 	std::cout << "[etoile] portal::Application::Abort()"
 		  << std::endl;
 
-      // delete the timer.
-      delete this->timer;
+      // bury the timer because we are in the timer to delete.
+      bury(this->timer);
 
       // reset the pointer.
       this->timer = NULL;
 
-      /* XXX
       // check if the application has been authenticated.
       if (this->state != Application::StateAuthenticated)
-      {
-      // emit the signal.
-      if (this->signal.dead.Emit(this) == elle::StatusError)
-      escape("unable to emit the signal");
-      }
-      */
+	{
+	  // disconnect the application.
+	  if (this->door->Disconnect() == elle::StatusError)
+	    escape("unable to disconnect the socket");
+	}
+
+      leave();
+    }
+
+//
+// ---------- dumpable --------------------------------------------------------
+//
+
+    ///
+    /// this function dumps an application.
+    ///
+    elle::Status	Application::Dump(elle::Natural32	margin) const
+    {
+      elle::String	alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Application]" << std::endl;
+
+      // dump the state.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[State] " << std::dec << this->state << std::endl;
+
+      // dump the processing.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Processing] " << std::dec
+		<< this->processing << std::endl;
+
+      // dump the timer, depending on its presence.
+      if (this->timer != NULL)
+	{
+	  // dump the timer.
+	  if (this->timer->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the timer");
+	}
+      else
+	{
+	  // dump a null timer.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Timer] " << elle::none << std::endl;
+	}
+
+      // dump the door, depending on its presence.
+      if (this->door != NULL)
+	{
+	  // dump the door.
+	  if (this->door->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the door");
+	}
+      else
+	{
+	  // dump a null door.
+	  std::cout << alignment << elle::Dumpable::Shift
+		    << "[Door] " << elle::none << std::endl;
+	}
 
       leave();
     }

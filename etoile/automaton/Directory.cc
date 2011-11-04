@@ -53,7 +53,7 @@ namespace etoile
 	escape("unable to create the location");
 
       // set the context's state.
-      context.state = gear::Context::StateInitialized;
+      context.state = gear::Context::StateCreated;
 
       leave();
     }
@@ -80,7 +80,7 @@ namespace etoile
 	escape("this object does not seem to be a directory");
 
       // set the context's state.
-      context.state = gear::Context::StateInitialized;
+      context.state = gear::Context::StateLoaded;
 
       leave();
     }
@@ -103,7 +103,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the write the catalog.
-      if (!(context.rights.permissions & nucleus::PermissionWrite))
+      if ((context.rights.permissions & nucleus::PermissionWrite) !=
+	  nucleus::PermissionWrite)
 	escape("the user does not seem to have the permission to write "
 	       "this directory");
 
@@ -160,7 +161,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context.rights.permissions & nucleus::PermissionRead))
+      if ((context.rights.permissions & nucleus::PermissionRead) !=
+	  nucleus::PermissionRead)
 	escape("the user does not seem to have the permission to read "
 	       "this directory");
 
@@ -200,7 +202,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context.rights.permissions & nucleus::PermissionRead))
+      if ((context.rights.permissions & nucleus::PermissionRead) !=
+	  nucleus::PermissionRead)
 	escape("the user does not seem to have the permission to read "
 	       "this directory");
 
@@ -240,7 +243,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context.rights.permissions & nucleus::PermissionWrite))
+      if ((context.rights.permissions & nucleus::PermissionWrite) !=
+	  nucleus::PermissionWrite)
 	escape("the user does not seem to have the permission to write "
 	       "this directory");
 
@@ -292,7 +296,8 @@ namespace etoile
 	escape("unable to determine the rights");
 
       // check if the current user has the right the read the catalog.
-      if (!(context.rights.permissions & nucleus::PermissionWrite))
+      if ((context.rights.permissions & nucleus::PermissionWrite) !=
+	  nucleus::PermissionWrite)
 	escape("the user does not seem to have the permission to write "
 	       "this directory");
 

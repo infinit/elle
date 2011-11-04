@@ -22,6 +22,7 @@
 #include <etoile/gear/Operation.hh>
 
 #include <etoile/automaton/Directory.hh>
+#include <etoile/automaton/Rights.hh>
 
 #include <etoile/journal/Journal.hh>
 
@@ -526,13 +527,18 @@ namespace etoile
 	// set the actor's state.
 	actor->state = gear::Actor::StateUpdated;
 
-	// build the route associated with the removed entry.
-	if (route.Create(scope->chemin.route, name) == elle::StatusError)
-	  escape("unable to create the route");
+	//
+	// invalidate the route in the shrub.
+	//
+	{
+	  // build the route associated with the removed entry.
+	  if (route.Create(scope->chemin.route, name) == elle::StatusError)
+	    escape("unable to create the route");
 
-	// evict the route from the shrub.
-	if (shrub::Shrub::Evict(route) == elle::StatusError)
-	  escape("unable to evict the route from the shrub");
+	  // evict the route from the shrub.
+	  if (shrub::Shrub::Evict(route) == elle::StatusError)
+	    escape("unable to evict the route from the shrub");
+	}
       }
       section.Leave();
 
@@ -584,6 +590,15 @@ namespace etoile
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
 	  escape("unable to retrieve the context");
+
+	// check the permissions before performing the operation in
+	// order not to alter the scope should the operation not be
+	// allowed.
+	if (automaton::Rights::Operate(
+	      *context,
+	      gear::OperationDiscard) == elle::StatusError)
+	  escape("the user does not seem to have the necessary permission for "
+		 "discarding this directory");
 
 	// specify the closing operation performed by the actor.
 	if (actor->Operate(gear::OperationDiscard) == elle::StatusError)
@@ -692,6 +707,15 @@ namespace etoile
 	if (scope->Use(context) == elle::StatusError)
 	  escape("unable to retrieve the context");
 
+	// check the permissions before performing the operation in
+	// order not to alter the scope should the operation not be
+	// allowed.
+	if (automaton::Rights::Operate(
+	      *context,
+	      gear::OperationStore) == elle::StatusError)
+	  escape("the user does not seem to have the necessary permission for "
+		 "storing this directory");
+
 	// specify the closing operation performed by the actor.
 	if (actor->Operate(gear::OperationStore) == elle::StatusError)
 	  escape("this operation cannot be performed by this actor");
@@ -797,6 +821,15 @@ namespace etoile
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
 	  escape("unable to retrieve the context");
+
+	// check the permissions before performing the operation in
+	// order not to alter the scope should the operation not be
+	// allowed.
+	if (automaton::Rights::Operate(
+	      *context,
+	      gear::OperationDestroy) == elle::StatusError)
+	  escape("the user does not seem to have the necessary permission for "
+		 "destroying this directory");
 
 	// specify the closing operation performed by the actor.
 	if (actor->Operate(gear::OperationDestroy) == elle::StatusError)

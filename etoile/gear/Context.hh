@@ -54,7 +54,8 @@ namespace etoile
 	{
 	  StateUnknown,
 
-	  StateInitialized,
+	  StateCreated,
+	  StateLoaded,
 
 	  StateModified,
 

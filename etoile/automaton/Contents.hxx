@@ -61,7 +61,8 @@ namespace etoile
 	    escape("unable to determine the user's rights");
 
 	  // if the user has the permission to read, decrypt the content.
-	  if (context.rights.permissions & nucleus::PermissionRead)
+	  if ((context.rights.permissions & nucleus::PermissionRead) ==
+	      nucleus::PermissionRead)
 	    {
 	      // decrypt the contents i.e the contents.
 	      if (context.contents->Decrypt(context.rights.key) ==
