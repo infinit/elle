@@ -204,12 +204,14 @@ namespace pig
 
 	  // if the user has the read permission, allow her to access
 	  // and read the directory.
-	  if (abstract.permissions.owner & nucleus::PermissionRead)
+	  if ((abstract.permissions.owner & nucleus::PermissionRead) ==
+	      nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the directory content.
-	  if (abstract.permissions.owner & nucleus::PermissionWrite)
+	  if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
+	      nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
 
 	  break;
@@ -222,12 +224,14 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read
 	  // the file.
-	  if (abstract.permissions.owner & nucleus::PermissionRead)
+	  if ((abstract.permissions.owner & nucleus::PermissionRead) ==
+	      nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the file content.
-	  if (abstract.permissions.owner & nucleus::PermissionWrite)
+	  if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
+	      nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
 
 	  // retrieve the attribute.
@@ -253,12 +257,14 @@ namespace pig
 
 	  // if the user has the read permission, allow her to read and
 	  // search the linked object.
-	  if (abstract.permissions.owner & nucleus::PermissionRead)
+	  if ((abstract.permissions.owner & nucleus::PermissionRead) ==
+	      nucleus::PermissionRead)
 	    stat->st_mode |= S_IRUSR | S_IXUSR;
 
 	  // if the user has the write permission, allow her to modify
 	  // the link.
-	  if (abstract.permissions.owner & nucleus::PermissionWrite)
+	  if ((abstract.permissions.owner & nucleus::PermissionWrite) ==
+	      nucleus::PermissionWrite)
 	    stat->st_mode |= S_IWUSR;
  
 	  break;
@@ -677,7 +683,8 @@ namespace pig
 	    {
 	      // check if the user has the read permission meaning the
 	      // exec bit
-	      if (!(record->permissions & nucleus::PermissionRead))
+	      if ((record->permissions & nucleus::PermissionRead) !=
+		  nucleus::PermissionRead)
 		error("the subject does not have the right to access",
 		      EACCES,
 		      identifier);
@@ -732,7 +739,8 @@ namespace pig
     // check if the permissions match the mask for reading.
     if (mask & R_OK)
       {
-	if (!(record->permissions & nucleus::PermissionRead))
+	if ((record->permissions & nucleus::PermissionRead) !=
+	    nucleus::PermissionRead)
 	  error("the subject does not have the right to read",
 		EACCES,
 		identifier);
@@ -741,7 +749,8 @@ namespace pig
     // check if the permissions match the mask for writing.
     if (mask & W_OK)
       {
-	if (!(record->permissions & nucleus::PermissionWrite))
+	if ((record->permissions & nucleus::PermissionWrite) !=
+	    nucleus::PermissionWrite)
 	  error("the subject does not have the right to write",
 		EACCES,
 		identifier);
@@ -1600,7 +1609,7 @@ namespace pig
     if (etoile::wall::File::Adjust(handle->identifier,
 				   size) == elle::StatusError)
       error("unable to adjust the size of the file",
-	    ENOENT);
+	    EACCES);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1668,7 +1677,7 @@ namespace pig
     // store the file.
     if (etoile::wall::File::Store(handle->identifier) == elle::StatusError)
       error("unable to store the file",
-	    ENOENT);
+	    EACCES);
 
     // delete the handle.
     delete handle;
