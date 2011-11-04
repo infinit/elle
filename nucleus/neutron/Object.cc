@@ -77,7 +77,7 @@ namespace nucleus
 	// set the initial owner permissions to all with an empty key.
 	if (this->Administrate(this->meta.attributes,
 			       proton::Address::Null,
-			       PermissionReadWrite,
+			       PermissionRead | PermissionWrite,
 			       this->meta.owner.token) == elle::StatusError)
 	  escape("unable to set the initial meta data");
       }
@@ -596,10 +596,10 @@ namespace nucleus
 	escape("unable to extract the data part");
 
       // compute the owner record.
-      if (this->meta.owner._record.Update(this->owner._subject,
-					  this->meta.owner.permissions,
-					  this->meta.owner.token) ==
-	  elle::StatusError)
+      if (this->meta.owner._record.Update(
+	    this->owner._subject,
+	    this->meta.owner.permissions,
+	    this->meta.owner.token) == elle::StatusError)
 	escape("unable to create the owner access record");
 
       leave();

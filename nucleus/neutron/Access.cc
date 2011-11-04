@@ -171,7 +171,7 @@ namespace nucleus
 	  Record*	record = *iterator;
 
 	  // check if the subject has the proper permissions.
-	  if (!(record->permissions & PermissionRead))
+	  if ((record->permissions & PermissionRead) != PermissionRead)
 	    continue;
 
 	  // depending on the subject's type.
@@ -236,7 +236,7 @@ namespace nucleus
 	  Record*	record = *iterator;
 
 	  // check if the subject has the proper permissions.
-	  if (!(record->permissions & PermissionRead))
+	  if ((record->permissions & PermissionRead) != PermissionRead)
 	    continue;
 
 	  // reset the token.

@@ -71,7 +71,7 @@ namespace nucleus
       this->permissions = permissions;
 
       // then, if the subject has the read permission, create a token.
-      if ((this->permissions & PermissionRead) != 0)
+      if ((this->permissions & PermissionRead) == PermissionRead)
 	{
 	  // create the token with the public key of the user or the
 	  // group owner, depending on the subject.
