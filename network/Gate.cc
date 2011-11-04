@@ -214,6 +214,10 @@ namespace elle
     {
       enter();
 
+      // check that the gate is connected.
+      if (this->state != Channel::StateConnected)
+	escape("the gate does not seem to have been connected");
+
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
@@ -238,6 +242,10 @@ namespace elle
     Status		Gate::Read()
     {
       enter();
+
+      // check that the gate is connected.
+      if (this->state != Channel::StateConnected)
+	escape("the gate does not seem to have been connected");
 
       //
       // read the pending datagrams in the buffer.
@@ -439,10 +447,9 @@ namespace elle
 
       enter();
 
-      // check the socket state.
+      // check that the gate is connected.
       if (this->state != Channel::StateConnected)
-	escape("unable to retrieve the target address of a non-connected "
-	       "gate");
+	escape("the gate does not seem to have been connected");
 
       // create the host.
       if (host.Create(this->socket->peerAddress().toString().toStdString()) ==

@@ -17,10 +17,14 @@
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
 
+#include <elle/standalone/Morgue.hh>
+
 #include <elle/Manifest.hh>
 
 namespace elle
 {
+  using namespace standalone;
+
   namespace network
   {
 
@@ -219,6 +223,10 @@ namespace elle
     {
       enter();
 
+      // check that the door is connected.
+      if (this->state != Channel::StateConnected)
+	escape("the door does not seem to have been connected");
+
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
       if (packet.size > Channel::Capacity)
@@ -243,6 +251,10 @@ namespace elle
     Status		Door::Read()
     {
       enter();
+
+      // check that the door is connected.
+      if (this->state != Channel::StateConnected)
+	escape("the door does not seem to have been connected");
 
       //
       // read the pending datagrams in the buffer.
@@ -436,10 +448,9 @@ namespace elle
     {
       enter();
 
-      // check the socket state.
+      // check that the door is connected.
       if (this->state != Channel::StateConnected)
-	escape("unable to retrieve the target address of a non-connected "
-	       "door");
+	escape("the door does not seem to have been connected");
 
       // retrieve the server name.
       name = this->socket->serverName().toStdString();
@@ -534,8 +545,8 @@ namespace elle
     {
       enter();
 
-      // delete the timer.
-      delete this->timer;
+      // bury the timer i.e the system is in the given timer.
+      bury(this->timer);
 
       // reset the locuser.
       this->timer = NULL;
