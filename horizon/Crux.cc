@@ -35,7 +35,8 @@ namespace pig
 #define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      log(_text_);							\
+      report(_text_);							\
+      show(); \
 									\
       Janitor::Clear(_identifiers_);					\
 									\
@@ -403,7 +404,7 @@ namespace pig
 	      Crux::Range,
 	      range) == elle::StatusError)
 	  error("unable to retrieve some directory entries",
-		EINTR);
+		EACCES);
 
 	// add the entries by using the filler() function.
 	for (scoutor = range.container.begin();
