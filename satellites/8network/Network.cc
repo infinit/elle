@@ -132,7 +132,8 @@ namespace application
 	escape("unable to create the object directory");
 
       // seal the directory.
-      if (directory.Seal(identity.pair.k) == elle::StatusError)
+      if (directory.Seal(identity.pair.k,
+			 nucleus::Access::Null) == elle::StatusError)
 	escape("unable to seal the object");
 
       // compute the directory's address.
