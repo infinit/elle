@@ -1,3 +1,5 @@
+- revoir les operations sur File, Directory etc. et clean le tout.
+
 - faire un rep scripts/ qui contiendra un 8chmod [perms] [user] qui lui
   meme appellera 8access.
 
