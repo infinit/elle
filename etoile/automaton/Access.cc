@@ -94,10 +94,8 @@ namespace etoile
 	  // update the permissions.
 	  if (context.object.Administrate(
                 context.object.meta.attributes,
-		context.object.meta.access,
-		permissions,
-		context.object.meta.owner.token) == elle::StatusError)
-	    escape("unable to update the object's meta section");
+		permissions) == elle::StatusError)
+	    escape("unable to administrate the object");
 	}
       else
 	{
@@ -113,12 +111,38 @@ namespace etoile
 	  // look in the access object.
 	  if (context.access->Exist(subject) == elle::StatusTrue)
 	    {
-	      // update the access.
-	      if (context.access->Update(
-		    subject,
-		    permissions,
-		    context.rights.key) == elle::StatusError)
-		escape("unable to update the access");
+	      // update the access block according to the given permissions.
+	      if (permissions == nucleus::PermissionNone)
+		{
+		  //
+		  // in this case, the subject is being removed all his
+		  // permissions.
+		  //
+		  // therefore, rather than keeping an access record with
+		  // no permission, the record is removed.
+		  //
+		  // this way, the access control list is simplified,
+		  // potentially reduced to an empty list in which case
+		  // the Access block would be removed.
+		  //
+
+		  // remove the record.
+		  if (context.access->Remove(subject) == elle::StatusError)
+		    escape("unable to remove the access record");
+		}
+	      else
+		{
+		  //
+		  // in this case, the access record can be updated.
+		  //
+
+		  // update the record.
+		  if (context.access->Update(
+			subject,
+			permissions,
+			context.rights.key) == elle::StatusError)
+		    escape("unable to update the access");
+		}
 	    }
 	  else
 	    {
@@ -143,7 +167,22 @@ namespace etoile
 	      // release.
 	      release();
 	    }
+
+	  // in any case, the object must be marked as administered i.e dirty
+	  // so that the meta signature gets re-computed i.e the access
+	  // fingerprint has probably changed.
+	  //
+	  // for more information, please refer to the Object class.
+	  if (context.object.Administrate(
+                context.object.meta.attributes,
+		context.object.meta.owner.permissions) == elle::StatusError)
+	    escape("unable to administrate the object");
 	}
+
+      // try to audit the object because the current author may have
+      // lost its write permission in the process.
+      if (Access::Audit(context, subject) == elle::StatusError)
+	escape("unable to audit the object");
 
       // is the target subject the user i.e the object owner in this case.
       if (agent::Agent::Subject == subject)
@@ -307,10 +346,8 @@ namespace etoile
 	  // update the permissions.
 	  if (context.object.Administrate(
                 context.object.meta.attributes,
-		context.object.meta.access,
-		nucleus::PermissionNone,
-		context.object.meta.owner.token) == elle::StatusError)
-	    escape("unable to update the object's meta section");
+		nucleus::PermissionNone) == elle::StatusError)
+	    escape("unable to administrate the object");
 	}
       else
 	{
@@ -325,7 +362,22 @@ namespace etoile
 	  // remove the record associated with the given subject.
 	  if (context.access->Remove(subject) == elle::StatusTrue)
 	    escape("unable to remove the subject's access record");
+
+	  // the object must be marked as administered i.e dirty so
+	  // that the meta signature gets re-computed i.e the access
+	  // fingerprint has probably changed.
+	  //
+	  // for more information, please refer to the Object class.
+	  if (context.object.Administrate(
+                context.object.meta.attributes,
+		context.object.meta.owner.permissions) == elle::StatusError)
+	    escape("unable to administrate the object");
 	}
+
+      // try to audit the object because the current author may have
+      // lost its write permission in the process.
+      if (Access::Audit(context, subject) == elle::StatusError)
+	escape("unable to audit the object");
 
       // is the target subject the user i.e the object owner in this case.
       if (agent::Agent::Subject == subject)
@@ -376,16 +428,18 @@ namespace etoile
       if (token.Update(key, context.object.owner.K) == elle::StatusError)
 	escape("unable to update the owner's token");
 
-      // update the object's meta section though everything remains
-      // the same, including the access address and owner permissions.
+      // update the object with the new owner token.
       //
-      // this is required to make sure the object is marked as dirty.
-      if (context.object.Administrate(
-	    context.object.meta.attributes,
-            context.object.meta.access,
-	    context.object.meta.owner.permissions,
-	    context.object.meta.owner.token) == elle::StatusError)
-	escape("unable to update the object's meta section");
+      // let us recall that the owner token is actually included in the
+      // object's data section in order for authors to be able to re-generate
+      // it.
+      if (context.object.Update(
+	    context.object.author,
+            context.object.data.contents,
+	    context.object.data.size,
+	    context.object.meta.access,
+	    token) == elle::StatusError)
+	escape("unable to update the object");
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
@@ -427,6 +481,15 @@ namespace etoile
       // downgrade the access block's records.
       if (context.access->Downgrade() == elle::StatusError)
 	escape("unable to downgrade the access records");
+
+      // also update the owner's token.
+      if (context.object.Update(
+	    context.object.author,
+            context.object.data.contents,
+	    context.object.data.size,
+	    context.object.meta.access,
+	    nucleus::Token::Null) == elle::StatusError)
+	escape("unable to update the object");
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::StatusError)
@@ -532,13 +595,14 @@ namespace etoile
 		escape("unable to destroy the access block");
 	    }
 
-	  // update the object's meta section with the null address.
-	  if (context.object.Administrate(
-	        context.object.meta.attributes,
+	  // update the object with the null access address.
+	  if (context.object.Update(
+	        context.object.author,
+		context.object.data.contents,
+		context.object.data.size,
 		nucleus::Address::Null,
-		context.object.meta.owner.permissions,
 		context.object.meta.owner.token) == elle::StatusError)
-	    escape("unable to update the object's meta section");
+	    escape("unable to update the object");
 	}
       else
 	{
@@ -569,19 +633,142 @@ namespace etoile
 	  // set the state as consistent.
 	  context.access->_state = nucleus::StateConsistent;
 
-	  // finally, update the object's meta section with the new address.
-	  if (context.object.Administrate(
-		context.object.meta.attributes,
-   	        address,
-		context.object.meta.owner.permissions,
+	  // finally, update the object with the new access address.
+	  if (context.object.Update(
+	        context.object.author,
+		context.object.data.contents,
+		context.object.data.size,
+		address,
 		context.object.meta.owner.token) == elle::StatusError)
-	    escape("unable to update the object's meta section");
+	    escape("unable to update the object");
 
 	  // mark the block as needing to be stored.
 	  if (context.transcript.Push(address,
 				      context.access) == elle::StatusError)
 	    escape("unable to record the object for storing");
 	}
+
+      leave();
+    }
+
+    ///
+    /// this method checks if the current object's author is a lord or vassal.
+    ///
+    /// should it be the case, the system would have to check that the author
+    /// did not lose his write permission during the last access control
+    /// operation.
+    ///
+    /// should this occur, the future object retrieval would inevitably
+    /// lead the client or server to detect the block as invalid since
+    /// the author seems not to have had the right to modify the object.
+    ///
+    /// note that the _subject_ argument indicates the subject which
+    /// access permissions have been altered, the system having to check
+    /// that the new subject's permissions do not render the object
+    /// inconsistent.
+    ///
+    elle::Status	Access::Audit(gear::Object&		context,
+				      const nucleus::Subject&	subject)
+    {
+      enter();
+
+      // depending on the current author's role.
+      switch (context.object.author.role)
+	{
+	case nucleus::RoleOwner:
+	  {
+	    //
+	    // nothing to do in this case: the owner is changing the
+	    // access control permissions but he is also the one having
+	    // performed the latest modification on the object i.e the
+	    // current author.
+	    //
+
+	    break;
+	  }
+	case nucleus::RoleLord:
+	  {
+	    //
+	    // in this case however, the author is a lord.
+	    //
+	    // therefore, the system must make sure the access control
+	    // operation being performed is not removing the author's right
+	    // to write the object.
+	    //
+	    // to do that, the system tries to locate the access record
+	    // associated with the subject and verifies that he still has
+	    // the write permission.
+
+	    // open the access block.
+	    if (Access::Open(context) == elle::StatusError)
+	      escape("unable to open the access block");
+
+	    // check whether a record exist for the subject as it
+	    // could very well have been removed.
+	    if (context.access->Exist(subject) == elle::StatusTrue)
+	      {
+		nucleus::Record*	record;
+
+		// retrieve the access record.
+		if (context.access->Lookup(subject,
+					   record) == elle::StatusError)
+		  escape("unable to lookup the access record");
+
+		// check that the subject, also author, still has the
+		// write permission.
+		//
+		// if he has, nothing has to be done.
+		if ((record->permissions & nucleus::PermissionWrite) ==
+		    nucleus::PermissionWrite)
+		  break;
+	      }
+
+	    // this point is reached if the subject no longer has the
+	    // write permission, in which case the object's access
+	    // control mechanism is regulated.
+	    if (Access::Regulate(context) == elle::StatusError)
+	      escape("unable to regulate the object");
+
+	    break;
+	  }
+	case nucleus::RoleVassal:
+	  {
+	    // XXX to implement.
+
+	    break;
+	  }
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method is called whenever the object needs to be regulated
+    /// i.e the current author has to be re-generated because the author
+    /// just lost the permission to write the object.
+    ///
+    /// should this occur, the object owner would re-sign the data to
+    /// make sure the object consistency is ensured.
+    ///
+    elle::Status	Access::Regulate(gear::Object&		context)
+    {
+      nucleus::Author	author;
+
+      enter();
+
+      // build a new author, representing the object's owner.
+      if (author.Create() == elle::StatusError)
+	escape("unable to create the author");
+
+      // update the object with a new author. since the object gets updated,
+      // it will be re-signed during the object's sealing process.
+      if (context.object.Update(
+	    author,
+	    context.object.data.contents,
+	    context.object.data.size,
+	    context.object.meta.access,
+	    context.object.meta.owner.token) == elle::StatusError)
+	escape("unable to update the object");
 
       leave();
     }

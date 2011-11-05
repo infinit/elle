@@ -61,6 +61,10 @@ namespace etoile
 
       static elle::Status	Destroy(gear::Object&);
       static elle::Status	Close(gear::Object&);
+
+      static elle::Status	Audit(gear::Object&,
+				      const nucleus::Subject&);
+      static elle::Status	Regulate(gear::Object&);
     };
 
   }

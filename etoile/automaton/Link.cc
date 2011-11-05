@@ -124,12 +124,14 @@ namespace etoile
       if (context.contents->content->Capacity(size) == elle::StatusError)
 	escape("unable to retrieve the contents's size");
 
-      // update the object data section.
+      // update the object.
       if (context.object.Update(
 	    context.object.author,
 	    context.object.data.contents,
-	    size) == elle::StatusError)
-	escape("unable to update the object data section");
+	    size,
+	    context.object.meta.access,
+	    context.object.meta.owner.token) == elle::StatusError)
+	escape("unable to update the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;

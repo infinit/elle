@@ -47,8 +47,9 @@ namespace etoile
       if (context.object.meta.attributes.Exist(name) == elle::StatusTrue)
 	{
 	  // update the trait, properly i.e by calling the Update() method.
-	  if (context.object.meta.attributes.Update(name, value) ==
-	      elle::StatusError)
+	  if (context.object.meta.attributes.Update(
+		name,
+		value) == elle::StatusError)
 	    escape("unable to update the trait");
 	}
       else
@@ -72,15 +73,11 @@ namespace etoile
 	  release();
 	}
 
-      printf("XXX Attr::Set\n");
-
-      // update the object since the attributes have changed.
+      // administrate the object.
       if (context.object.Administrate(
             context.object.meta.attributes,
-	    context.object.meta.access,
-	    context.object.meta.owner.permissions,
-	    context.object.meta.owner.token) == elle::StatusError)
-	escape("unable to update the object's meta section");
+	    context.object.meta.owner.permissions) == elle::StatusError)
+	escape("unable to administrate the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
@@ -148,15 +145,11 @@ namespace etoile
       if (context.object.meta.attributes.Remove(name) == elle::StatusTrue)
 	escape("unable to remove the trait");
 
-      printf("XXX Attr::Omit\n");
-
-      // update the object since the attributes have changed.
+      // administrate the object.
       if (context.object.Administrate(
             context.object.meta.attributes,
-	    context.object.meta.access,
-	    context.object.meta.owner.permissions,
-	    context.object.meta.owner.token) == elle::StatusError)
-	escape("unable to update the object's meta section");
+	    context.object.meta.owner.permissions) == elle::StatusError)
+	escape("unable to administrate the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;

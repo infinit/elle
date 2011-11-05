@@ -169,12 +169,14 @@ namespace etoile
 		escape("unable to destroy the contents block");
 	    }
 
-	  // update the object's data section with the null address.
+	  // update the object with the null contents address.
 	  if (context.object.Update(
 	        context.author,
 		nucleus::Address::Null,
-		size) == elle::StatusError)
-	    escape("unable to update the object's data section");
+		0,
+		context.object.meta.access,
+		context.object.meta.owner.token) == elle::StatusError)
+	    escape("unable to update the object");
 
 	  //
 	  // finally, since the data has changed (is now empty), the tokens
@@ -226,12 +228,14 @@ namespace etoile
 	  // set the content as consistent.
 	  context.contents->content->_state = nucleus::StateConsistent;
 
-	  // update the object data section.
+	  // update the object.
 	  if (context.object.Update(
 	        context.author,
 		address,
-		size) == elle::StatusError)
-	    escape("unable to update the object data section");
+		size,
+		context.object.meta.access,
+		context.object.meta.owner.token) == elle::StatusError)
+	    escape("unable to update the object");
 
 	  // mark the block as needing to be stored.
 	  if (context.transcript.Push(address,

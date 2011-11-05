@@ -718,11 +718,6 @@ namespace etoile
 
       enter();
 
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-	std::cout << "[etoile] portal::Portal::Prolog()"
-		  << std::endl;
-
       // retrieve the network session.
       if (elle::Session::Instance(session) == elle::StatusError)
 	escape("unable to retrieve the current session");
@@ -759,11 +754,6 @@ namespace etoile
       Application*	application;
 
       enter();
-
-      // debug.
-      if (Infinit::Configuration.etoile.debug == true)
-	std::cout << "[etoile] portal::Portal::Epilog()"
-		  << std::endl;
 
       // retrieve the network session.
       if (elle::Session::Instance(session) == elle::StatusError)

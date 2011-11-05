@@ -161,14 +161,6 @@ namespace etoile
 		    agent::Agent::Identity.pair.k,
 		    *context.access) == elle::StatusError)
 		escape("unable to seal the object");
-
-	      // XXX
-	      printf("--- SEALED\n");
-	      if (context.object.Validate(
-		    context.location.address,
-		    *context.access) == elle::StatusError)
-		escape("XXX");
-	      printf("--- VALIDATED\n");
 	    }
 	  else
 	    {
