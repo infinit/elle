@@ -1,3 +1,11 @@
+- changer le Validate dans les autres implem de get mutable
+
+- ca impactera les perfs mais appeller information pour checker les
+  permissions avant chaque operation: FUSE ne fait pas son boulot.
+  checker qu'on renvoie les bonnes perms a FUSE
+
+- gerer le cas ou le owner revoke l'access de l'auteur
+
 - bench: deux tests time en parallele pour voir l'impact des perfs
   -> normalement aucun impact
 
