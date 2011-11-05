@@ -35,8 +35,7 @@ namespace pig
 #define error(_text_, _errno_, _identifiers_...)			\
   do									\
     {									\
-      report(_text_);							\
-      show(); \
+      log(_text_);							\
 									\
       Janitor::Clear(_identifiers_);					\
 									\
@@ -705,8 +704,8 @@ namespace pig
 		      identifier);
 
 	      // check the trait.
-	      if ((trait != NULL) &&
-		  (trait->value != "true"))
+	      if (!((trait != NULL) &&
+		    (trait->value == "true")))
 		error("the subject does not have the right to execute",
 		      EACCES,
 		      identifier);
@@ -726,8 +725,8 @@ namespace pig
 		      identifier);
 
 	      // check the trait.
-	      if ((trait != NULL) &&
-		  (trait->value != "true"))
+	      if (!((trait != NULL) &&
+		    (trait->value == "true")))
 		error("the subject does not have the right to access",
 		      EACCES,
 		      identifier);
@@ -802,7 +801,7 @@ namespace pig
     // and the others.
     //
     // although this is, from our point of view, a very bad idea, it would
-    // be catastrophic to create such access entries in Infinit, especially
+    // be catastrophic to create such access records in Infinit, especially
     // because Infinit has been designed and optimised for objects
     // accessed by their sole owners.
     //
