@@ -81,11 +81,11 @@ namespace nucleus
 
       elle::Status	Update(const Author&,
 			       const proton::Address&,
-			       const Size&);
+			       const Size&,
+			       const proton::Address&,
+			       const Token&);
       elle::Status	Administrate(const Attributes&,
-				     const proton::Address&,
-				     const Permissions&,
-				     const Token&);
+				     const Permissions&);
 
       elle::Status	Seal(const elle::PrivateKey&,
 			     const Access&);

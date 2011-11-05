@@ -110,8 +110,6 @@ namespace nucleus
 
       enter();
 
-      log("IMPRINT VALIDATE");
-
       //
       // make sure the address has not be tampered and correspond to the
       // hash of the tuple (stamp, salt, owner public key).

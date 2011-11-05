@@ -126,7 +126,7 @@ namespace nucleus
 	  }
 	case RoleVassal:
 	  {
-	    // XXX
+	    // XXX to implement.
 
 	    break;
 	  }
@@ -193,7 +193,7 @@ namespace nucleus
 	  }
 	case RoleVassal:
 	  {
-	    // XXX
+	    // XXX to implement.
 
 	    break;
 	  }
@@ -247,7 +247,7 @@ namespace nucleus
 	  }
 	case RoleVassal:
 	  {
-	    // XXX
+	    // XXX to implement.
 
 	    break;
 	  }
@@ -297,7 +297,7 @@ namespace nucleus
 	  }
 	case RoleVassal:
 	  {
-	    // XXX
+	    // XXX to implement.
 
 	    break;
 	  }

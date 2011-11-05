@@ -75,10 +75,9 @@ namespace nucleus
 	this->meta.genre = genre;
 
 	// set the initial owner permissions to all with an empty key.
-	if (this->Administrate(this->meta.attributes,
-			       proton::Address::Null,
-			       PermissionRead | PermissionWrite,
-			       this->meta.owner.token) == elle::StatusError)
+	if (this->Administrate(
+	      this->meta.attributes,
+	      PermissionRead | PermissionWrite) == elle::StatusError)
 	  escape("unable to set the initial meta data");
       }
 
@@ -93,7 +92,9 @@ namespace nucleus
 	// set the initial data with no contents and the owner as the author.
 	if (this->Update(author,
 			 proton::Address::Null,
-			 0) == elle::StatusError)
+			 0,
+			 proton::Address::Null,
+			 this->meta.owner.token) == elle::StatusError)
 	  escape("unable to set the initial data");
       }
 
@@ -105,22 +106,42 @@ namespace nucleus
     ///
     elle::Status	Object::Update(const Author&		author,
 				       const proton::Address&	contents,
-				       const Size&		size)
+				       const Size&		size,
+				       const proton::Address&	access,
+				       const Token&		token)
+
     {
       enter();
-
-      // set the last update time.
-      if (this->data.stamp.Current() == elle::StatusError)
-	escape("unable to set the last update time");
 
       // set the author.
       this->author = author;
 
-      // set the address.
-      this->data.contents = contents;
+      //
+      // update the elements in the data section.
+      //
+      {
+	// set the last update time.
+	if (this->data.stamp.Current() == elle::StatusError)
+	  escape("unable to set the last update time");
 
-      // set the size.
-      this->data.size = size;
+	// set the address.
+	this->data.contents = contents;
+
+	// set the size.
+	this->data.size = size;
+      }
+
+      //
+      // update the elements in the meta section, though they are
+      // included in the data signature.
+      //
+      {
+	// set the address.
+	this->meta.access = access;
+
+	// set the owner token.
+	this->meta.owner.token = token;
+      }
 
       // mark the section as dirty.
       this->data._state = proton::StateDirty;
@@ -135,43 +156,9 @@ namespace nucleus
     /// this method updates the meta section.
     ///
     elle::Status	Object::Administrate(const Attributes&	attributes,
-					     const proton::Address& access,
-					     const Permissions&	permissions,
-					     const Token&	token)
+					     const Permissions&	permissions)
     {
       enter();
-
-      // check if the access block address of the owner's token have changed.
-      if ((this->meta.access != access) ||
-	  (this->meta.owner.token != token))
-	{
-	  //
-	  // in this case, the data section will have to be re-signed.
-	  //
-	  // indeed, the access address and owner token are actually
-	  // included in the data section.
-	  //
-	  // for more information, please refer to the research publications.
-	  //
-
-	  // set the address.
-	  this->meta.access = access;
-
-	  // set the owner token.
-	  this->meta.owner.token = token;
-
-	  // set the data section as dirty.
-	  this->data._state = proton::StateDirty;
-	}
-
-      //
-      // in any case, since the object has been administered, the management
-      // time is going to be re-calculated, hence the meta section will
-      // change, therefore it will need to be re-signed.
-      //
-      // the following simply assign the meta attributes and set the
-      // meta section as dirty.
-      //
 
       // set the last management time.
       if (this->meta.stamp.Current() == elle::StatusError)
@@ -208,9 +195,6 @@ namespace nucleus
 				     const Access&		access)
     {
       enter();
-
-      // XXX
-      printf("OBJECT::SEAL\n");
 
       // re-sign the data if required.
       if (this->data._state == proton::StateDirty)
@@ -340,9 +324,6 @@ namespace nucleus
 
       enter();
 
-      // XXX
-      printf("OBJECT::VALIDATE\n");
-
       // (i)
       {
 	// call the parent class.
@@ -401,14 +382,32 @@ namespace nucleus
 	      // copy the public key.
 	      author = this->owner.K;
 
+	      //
+	      // note that the owner's permission to write the object
+	      // is not checked because of the regulation mechanism.
+	      //
+	      // indeed, whenever the owner removes the write permission
+	      // from the object's current author, the object gets inconsistent
+	      // because anyone retrieving the object and verifying it would
+	      // conclude that the author does not have the write permission.
+	      //
+	      // to overcome this problem, the owner re-signs the data
+	      // in order to ensure consistency, no matter the owner's
+	      // permission on his own object.
+	      //
+	      // therefore, since one cannot distinguish both cases, the
+	      // owner's permissions are never checked through the validation
+	      // process. note however that by relying on the Infinit API,
+	      // the owner would not be able to modify his object without
+	      // the write permission, the software rejecting such an
+	      // operation.
+	      //
+
 	      break;
 	    }
 	  case RoleLord:
 	    {
 	      Record*		record;
-
-	      // XXX
-	      log("AUTHOR LORD");
 
 	      // check that an access block has been provided.
 	      if (access == Access::Null)
