@@ -1,13 +1,10 @@
-- changer le Validate dans les autres implem de get mutable
+- faire un rep scripts/ qui contiendra un 8chmod [perms] [user] qui lui
+  meme appellera 8access.
 
 - ca impactera les perfs mais appeller information pour checker les
   permissions avant chaque operation: FUSE ne fait pas son boulot.
-  checker qu'on renvoie les bonnes perms a FUSE
-
-- gerer le cas ou le owner revoke l'access de l'auteur
-
-- bench: deux tests time en parallele pour voir l'impact des perfs
-  -> normalement aucun impact
+  checker qu'on renvoie les bonnes perms a FUSE: tres peu d'impact (appel
+  de fonction)
 
 - revoir les error codes dans Crux pour etre sur que ca colle
   http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/errno.h.html
