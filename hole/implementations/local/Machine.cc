@@ -36,9 +36,9 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] %s(Immutable)\n",
-		 __FUNCTION__);
+	  printf("[hole] implementations::local::Put[Immutable]()\n");
 
 	// does the block already exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -61,9 +61,9 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] %s(Mutable)\n",
-		 __FUNCTION__);
+	  printf("[hole] implementations::local::Put[Mutable]()\n");
 
 	// validate the block, depending on its component.
 	//
@@ -169,9 +169,9 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] %s(Immutable)\n",
-		 __FUNCTION__);
+	  printf("[hole] implementations::local::Get[Immutable]()\n");
 
 	// does the block exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -199,9 +199,9 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] %s(Mutable)\n",
-		 __FUNCTION__);
+	  printf("[hole] implementations::local::Get[Mutable]()\n");
 
 	// does the block exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -278,9 +278,9 @@ namespace hole
 
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] %s()\n",
-		 __FUNCTION__);
+	  printf("[hole] implementations::local::Kill()\n");
 
 	// treat the request depending on the nature of the block which
 	// the addres indicates.

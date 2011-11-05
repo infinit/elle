@@ -122,8 +122,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Customer::Disconnected()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Customer::Disconnected()");
 
 	// set the customer's state as dead.
 	this->state = Customer::StateDead;
@@ -145,8 +144,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Customer::Error()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Customer::Error()");
 
 	// disconnect the gate, though that may be unecessary.
 	this->gate->Disconnect();
@@ -165,8 +163,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Customer::Abort()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Customer::Abort()");
 
 	// delete the timer.
 	delete this->timer;

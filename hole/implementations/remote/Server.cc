@@ -227,9 +227,9 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Put[Immutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Put[Immutable]()");
 
 	// does the block already exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -252,9 +252,62 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Put[Mutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Put[Mutable]()");
+
+	// validate the block, depending on its component.
+	//
+	// indeed, the Object component requires as additional block for
+	// being validated.
+	switch (address.component)
+	  {
+	  case nucleus::ComponentObject:
+	    {
+	      const nucleus::Object*	object =
+		static_cast<const nucleus::Object*>(&block);
+
+	      // validate the object according to the presence of
+	      // a referenced access block.
+	      if (object->meta.access != nucleus::Address::Null)
+		{
+		  nucleus::Access	access;
+
+		  // load the access block.
+		  if (Hole::Pull(object->meta.access,
+				 nucleus::Version::Last,
+				 access) == elle::StatusError)
+		    escape("unable to load the access block");
+
+		  // validate the object, providing the
+		  if (object->Validate(address, access) == elle::StatusError)
+		    escape("unable to validate the object");
+		}
+	      else
+		{
+		  // validate the object.
+		  if (object->Validate(
+			address,
+			nucleus::Access::Null) == elle::StatusError)
+		    escape("unable to validate the object");
+		}
+
+	      break;
+	    }
+	  default:
+	    {
+	      // validate the block through the common interface.
+	      if (block.Validate(address) == elle::StatusError)
+		escape("the block seems to be invalid");
+
+	      break;
+	    }
+	  case nucleus::ComponentUnknown:
+	    {
+	      escape("unknown component '%u'",
+		     address.component);
+	    }
+	  }
 
 	// does the block already exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -305,9 +358,9 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Get[Immutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Get[Immutable]()");
 
 	// does the block exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -335,9 +388,9 @@ namespace hole
       {
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Get[Mutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Get[Mutable]()");
 
 	// does the block exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -349,9 +402,58 @@ namespace hole
 		       address, version) == elle::StatusError)
 	  escape("unable to load the block");
 
-	// validate the block.
-	if (block.Validate(address) == elle::StatusError)
-	  escape("the block seems to be invalid");
+	// validate the block, depending on its component.
+	//
+	// indeed, the Object component requires as additional block for
+	// being validated.
+	switch (address.component)
+	  {
+	  case nucleus::ComponentObject:
+	    {
+	      const nucleus::Object*	object =
+		static_cast<const nucleus::Object*>(&block);
+
+	      // validate the object according to the presence of
+	      // a referenced access block.
+	      if (object->meta.access != nucleus::Address::Null)
+		{
+		  nucleus::Access	access;
+
+		  // load the access block.
+		  if (Hole::Pull(object->meta.access,
+				 nucleus::Version::Last,
+				 access) == elle::StatusError)
+		    escape("unable to load the access block");
+
+		  // validate the object, providing the
+		  if (object->Validate(address, access) == elle::StatusError)
+		    escape("unable to validate the object");
+		}
+	      else
+		{
+		  // validate the object.
+		  if (object->Validate(
+			address,
+			nucleus::Access::Null) == elle::StatusError)
+		    escape("unable to validate the object");
+		}
+
+	      break;
+	    }
+	  default:
+	    {
+	      // validate the block through the common interface.
+	      if (block.Validate(address) == elle::StatusError)
+		escape("the block seems to be invalid");
+
+	      break;
+	    }
+	  case nucleus::ComponentUnknown:
+	    {
+	      escape("unknown component '%u'",
+		     address.component);
+	    }
+	  }
 
 	leave();
       }
@@ -365,9 +467,9 @@ namespace hole
 
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Kill()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Kill()");
 
 	// treat the request depending on the nature of the block which
 	// the addres indicates.
@@ -419,9 +521,9 @@ namespace hole
 
 	enterx(instance(customer));
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Connection()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Connection()");
 
 	// allocate a customer.
 	customer = new Customer;
@@ -460,9 +562,9 @@ namespace hole
 
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Challenge()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Challenge()");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)
@@ -532,9 +634,9 @@ namespace hole
 
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Push()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Push()");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)
@@ -611,9 +713,9 @@ namespace hole
 
 	enterx(instance(block));
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Pull()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Pull()");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)
@@ -699,9 +801,9 @@ namespace hole
 
 	enter();
 
+	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Server::Wipe()"
-		    << std::endl;
+	  printf("[hole] implementations::remote::Server::Wipe()");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)
