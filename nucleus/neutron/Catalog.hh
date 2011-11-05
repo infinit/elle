@@ -65,9 +65,9 @@ namespace nucleus
       // methods
       //
       elle::Status	Add(Entry*);
-      elle::Status	Exist(const elle::String&);
+      elle::Status	Exist(const elle::String&) const;
       elle::Status	Lookup(const elle::String&,
-			       Entry*&);
+			       Entry*&) const;
       elle::Status	Consult(const Index&,
 				const Size&,
 				Range<Entry>&) const;

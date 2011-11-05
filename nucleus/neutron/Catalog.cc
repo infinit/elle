@@ -75,7 +75,7 @@ namespace nucleus
     ///
     /// this method tests if the given name exists.
     ///
-    elle::Status	Catalog::Exist(const elle::String&	name)
+    elle::Status	Catalog::Exist(const elle::String&	name) const
     {
       enter();
 
@@ -90,7 +90,7 @@ namespace nucleus
     /// this method returns the entry corresponding to the given name.
     ///
     elle::Status	Catalog::Lookup(const elle::String&	name,
-					Entry*&			entry)
+					Entry*&			entry) const
     {
       enter();
 
@@ -107,8 +107,7 @@ namespace nucleus
     ///
     elle::Status	Catalog::Consult(const Index&		index,
 					 const Size&		size,
-					 Range<Entry>&		range)
-      const
+					 Range<Entry>&		range) const
     {
       Range<Entry>::Scoutor	scoutor;
       Index			i;
@@ -185,7 +184,7 @@ namespace nucleus
 	escape("unable to rename to a non empty-named entry in the catalog");
 
       // check that an entry _to_ does not already exist.
-      if (this->range.Locate(to) == elle::StatusTrue)
+      if (this->range.Exist(to) == elle::StatusTrue)
 	escape("an entry already exists with the to-be-renamed name");
 
       // look in the range.

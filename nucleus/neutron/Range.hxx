@@ -118,7 +118,7 @@ namespace nucleus
       enter();
 
       // check if another item exists with this symbol.
-      if (this->Locate(item->Symbol()) == true)
+      if (this->Exist(item->Symbol()) == true)
 	escape("an item with this symbol already exist");
 
       // add the item to the container.
@@ -131,12 +131,14 @@ namespace nucleus
     /// this method returns true if an item for the given symbol exists.
     ///
     template <typename T>
-    elle::Status	Range<T>::Exist(const Range<T>::S&	symbol)
+    elle::Status	Range<T>::Exist(const Range<T>::S&	symbol) const
     {
+      Range<T>::Scoutor	scoutor;
+
       enter();
 
       // try to locate the entry.
-      if (this->Locate(symbol) != elle::StatusTrue)
+      if (this->Locate(symbol, scoutor) != elle::StatusTrue)
 	false();
 
       true();
@@ -149,9 +151,9 @@ namespace nucleus
     ///
     template <typename T>
     elle::Status	Range<T>::Lookup(const Range<T>::S&	symbol,
-					 T*&			item)
+					 T*&			item) const
     {
-      Range<T>::Iterator	iterator;
+      Range<T>::Scoutor	scoutor;
 
       enter();
 
@@ -159,11 +161,11 @@ namespace nucleus
       item = NULL;
 
       // try to locate the item.
-      if (this->Locate(symbol, &iterator) == false)
+      if (this->Locate(symbol, scoutor) == false)
 	false();
 
       // return the item.
-      item = *iterator;
+      item = *scoutor;
 
       true();
     }
@@ -179,7 +181,7 @@ namespace nucleus
       enter();
 
       // locate the item.
-      if (this->Locate(symbol, &iterator) == false)
+      if (this->Locate(symbol, iterator) == false)
 	escape("this symbol does not seem to be present in this range");
 
       // delete the item.
@@ -206,31 +208,61 @@ namespace nucleus
     }
 
     ///
+    /// this method returns a scoutor on the identified item.
+    ///
+    template <typename T>
+    elle::Status	Range<T>::Locate(const Range<T>::S&	symbol,
+					 Range<T>::Scoutor&	scoutor) const
+    {
+      Range<T>::Scoutor	s;
+
+      enter();
+
+      // go through the container.
+      for (s = this->container.begin();
+	   s != this->container.end();
+	   s++)
+	{
+	  T*			item = *s;
+
+	  // if found...
+	  if (item->Symbol() == symbol)
+	    {
+	      // return the scoutor.
+	      scoutor = s;
+
+	      true();
+	    }
+	}
+
+      false();
+    }
+
+    ///
     /// this method returns an iterator on the identified item.
     ///
     /// the method returns true if the item is found, false otherwise.
     ///
     template <typename T>
     elle::Status	Range<T>::Locate(const Range<T>::S&	symbol,
-					 Range<T>::Iterator*	i)
+					 Range<T>::Iterator&	iterator)
     {
-      Range<T>::Iterator	iterator;
+      Range<T>::Iterator	i;
 
       enter();
 
       // go through the container.
-      for (iterator = this->container.begin();
-	   iterator != this->container.end();
-	   iterator++)
+      for (i = this->container.begin();
+	   i != this->container.end();
+	   i++)
 	{
-	  T*			item = *iterator;
+	  T*			item = *i;
 
 	  // if found...
 	  if (item->Symbol() == symbol)
 	    {
-	      // return the iterator, if wanted.
-	      if (i != NULL)
-		*i = iterator;
+	      // return the iterator.
+	      iterator = i;
 
 	      true();
 	    }

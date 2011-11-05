@@ -74,7 +74,18 @@ namespace nucleus
       //
       Role		role;
 
-      // XXX to complete.
+      union
+      {
+	struct
+	{
+	  Index		index;
+	}		lord;
+
+	struct
+	{
+	  // XXX
+	}		vassal;
+      };
     };
 
   }

@@ -205,9 +205,12 @@ namespace nucleus
     /// this method seals the data and meta data by signing them.
     ///
     elle::Status	Object::Seal(const elle::PrivateKey&	k,
-				     const Access*		access)
+				     const Access&		access)
     {
       enter();
+
+      // XXX
+      printf("OBJECT::SEAL\n");
 
       // re-sign the data if required.
       if (this->data._state == proton::StateDirty)
@@ -253,13 +256,13 @@ namespace nucleus
 	      elle::Digest	fingerprint;
 
 	      // test if there is an access block.
-	      if (access == NULL)
+	      if (access == Access::Null)
 		escape("the Seal() method must take the object's "
 		       "access block");
 
 	      // compute the fingerprint of the access (subject, permissions)
 	      // tuples.
-	      if (access->Fingerprint(fingerprint) == elle::StatusError)
+	      if (access.Fingerprint(fingerprint) == elle::StatusError)
 		escape("unable to compute the access block fingerprint");
 
 	      // sign the meta data, making sure to include the access
@@ -307,6 +310,20 @@ namespace nucleus
     }
 
     ///
+    /// this method implements the Block's Validate() interface method.
+    ///
+    /// however, since the Object requires additional information in
+    /// order to be validated, this method must *never* be used and therefore
+    /// returns an error.
+    ///
+    elle::Status	Object::Validate(const proton::Address&) const
+    {
+      enter();
+
+      escape("this method should never have been called");
+    }
+
+    ///
     /// this method verifies that the object has been properly author 
     /// i.e that every signature has been produced by legitimate users.
     ///
@@ -316,12 +333,15 @@ namespace nucleus
     /// block's general version number matches the object's versions.
     ///
     elle::Status	Object::Validate(const proton::Address&	address,
-					 const Access*		access)
+					 const Access&		access)
       const
     {
-      const elle::PublicKey*	author;
+      elle::PublicKey	author;
 
       enter();
+
+      // XXX
+      printf("OBJECT::VALIDATE\n");
 
       // (i)
       {
@@ -337,13 +357,13 @@ namespace nucleus
 	    elle::Digest	fingerprint;
 
 	    // test if there is an access block.
-	    if (access == NULL)
+	    if (access == Access::Null)
 	      escape("the Validate() method must take the object's "
 		     "access block");
 
 	    // compute the fingerprint of the access (subject, permissions)
 	    // tuples.
-	    if (access->Fingerprint(fingerprint) == elle::StatusError)
+	    if (access.Fingerprint(fingerprint) == elle::StatusError)
 	      escape("unable to compute the access block fingerprint");
 
 	    // verify the meta part, including the access fingerprint.
@@ -378,13 +398,57 @@ namespace nucleus
 	  {
 	  case RoleOwner:
 	    {
-	      author = &this->owner.K;
+	      // copy the public key.
+	      author = this->owner.K;
+
+	      break;
+	    }
+	  case RoleLord:
+	    {
+	      Record*		record;
+
+	      // XXX
+	      log("AUTHOR LORD");
+
+	      // check that an access block has been provided.
+	      if (access == Access::Null)
+		escape("the Validate() method must take the object's "
+		       "access block");
+
+	      // retrieve the access record corresponding to the author's
+	      // index.
+	      if (access.Lookup(this->author.lord.index,
+				record) == elle::StatusError)
+		escape("unable to retrieve the access record");
+
+	      // check the access record permissions for the given author.
+	      if ((record->permissions & PermissionWrite) !=
+		  PermissionWrite)
+		escape("the object's author does not seem to have had "
+		       "the permission to modify this object");
+
+	      // check that the subject is indeed a user.
+	      if (record->subject.type != Subject::TypeUser)
+		escape("the author references an access record which is "
+		       "not related to a user");
+
+	      // finally, set the user's public key.
+	      //
+	      // note that a copy is made to avoid any complications.
+	      author = *record->subject.user;
+
+	      break;
+	    }
+	  case RoleVassal:
+	    {
+	      // XXX to implement.
 
 	      break;
 	    }
 	  default:
 	    {
-	      // XXX to implement.
+	      escape("unexpected author's role '%u'",
+		     this->author.role);
 	    }
 	  }
       }
@@ -392,15 +456,15 @@ namespace nucleus
       // (iv)
       {
 	// verify the signature.
-	if (author->Verify(this->data.signature,
+	if (author.Verify(this->data.signature,
 
-			   this->data.contents,
-			   this->data.size,
-			   this->data.stamp,
-			   this->data.version,
+			  this->data.contents,
+			  this->data.size,
+			  this->data.stamp,
+			  this->data.version,
 
-			   this->meta.owner.token,
-			   this->meta.access) == elle::StatusError)
+			  this->meta.owner.token,
+			  this->meta.access) == elle::StatusError)
 	  escape("unable to verify the data signature");
       }
 

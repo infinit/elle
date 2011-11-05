@@ -66,7 +66,7 @@ namespace nucleus
     ///
     /// this method tests if the given subject exists.
     ///
-    elle::Status	Access::Exist(const Subject&		subject)
+    elle::Status	Access::Exist(const Subject&		subject) const
     {
       enter();
 
@@ -81,7 +81,7 @@ namespace nucleus
     /// this method returns the record corresponding to the given subject.
     ///
     elle::Status	Access::Lookup(const Subject&		subject,
-				       Record*&			record)
+				       Record*&			record) const
     {
       enter();
 
@@ -96,13 +96,13 @@ namespace nucleus
     /// this method returns the index location of the given subject.
     ///
     elle::Status	Access::Lookup(const Subject&		subject,
-				       Index&			index)
+				       Index&			index) const
     {
       Range<Record>::Scoutor	scoutor;
 
       enter();
 
-      // go through the range and serialize every tuple (subject, permissions).
+      // go through the range.
       for (scoutor = this->range.container.begin(), index = 0;
 	   scoutor != this->range.container.end();
 	   scoutor++, index++)
@@ -111,10 +111,42 @@ namespace nucleus
 
 	  // if found, stop.
 	  if (record->subject == subject)
-	    break;
+	    leave();
 	}
 
-      leave();
+      escape("unable to locate the given subject");
+    }
+
+    ///
+    /// this method returns the access record located at the given index.
+    ///
+    elle::Status	Access::Lookup(const Index&		index,
+				       Record*&			record) const
+    {
+      Range<Record>::Scoutor	scoutor;
+      Index			i;
+
+      enter();
+
+      // set the record to null.
+      record = NULL;
+
+      // go through the range.
+      for (scoutor = this->range.container.begin(), i = 0;
+	   scoutor != this->range.container.end();
+	   scoutor++, i++)
+	{
+	  // if found, stop.
+	  if (i == index)
+	    {
+	      // return the record.
+	      record = *scoutor;
+
+	      leave();
+	    }
+	}
+
+      escape("unable to locate the record at the given index");
     }
 
     ///

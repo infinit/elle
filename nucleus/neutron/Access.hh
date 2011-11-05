@@ -55,11 +55,13 @@ namespace nucleus
       // methods
       //
       elle::Status	Add(Record*);
-      elle::Status	Exist(const Subject&);
+      elle::Status	Exist(const Subject&) const;
       elle::Status	Lookup(const Subject&,
-			       Record*&);
+			       Record*&) const;
       elle::Status	Lookup(const Subject&,
-			       Index&);
+			       Index&) const;
+      elle::Status	Lookup(const Index&,
+			       Record*&) const;
       template <typename T>
       elle::Status	Update(const Subject&,
 			       const Permissions&,

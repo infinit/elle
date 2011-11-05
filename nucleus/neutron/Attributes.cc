@@ -40,7 +40,7 @@ namespace nucleus
     ///
     /// this method tests if the given name exists.
     ///
-    elle::Status	Attributes::Exist(const elle::String&		name)
+    elle::Status	Attributes::Exist(const elle::String&	name) const
     {
       enter();
 
@@ -55,7 +55,7 @@ namespace nucleus
     /// this method returns the trait corresponding to the given name.
     ///
     elle::Status	Attributes::Lookup(const elle::String&	name,
-					   Trait*&		trait)
+					   Trait*&		trait) const
     {
       enter();
 
@@ -72,8 +72,7 @@ namespace nucleus
     ///
     elle::Status	Attributes::Consult(const Index&	index,
 					    const Size&		size,
-					    Range<Trait>&	range)
-      const
+					    Range<Trait>&	range) const
     {
       Range<Trait>::Scoutor	scoutor;
       Index			i;
@@ -114,7 +113,7 @@ namespace nucleus
       enter();
 
       // locate the trait.
-      if (this->range.Locate(name, &iterator) == false)
+      if (this->range.Locate(name, iterator) == false)
 	escape("unable to locate the named trait");
 
       // update the value.

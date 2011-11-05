@@ -83,13 +83,15 @@ namespace nucleus
       // methods
       //
       elle::Status	Add(T*);
-      elle::Status	Exist(const S&);
+      elle::Status	Exist(const S&) const;
       elle::Status	Lookup(const S&,
-			       T*& = Trash);
+			       T*& = Trash) const;
       elle::Status	Remove(const S&);
       elle::Status	Capacity(Size&) const;
       elle::Status	Locate(const S&,
-			       Iterator* = NULL);
+			       Scoutor&) const;
+      elle::Status	Locate(const S&,
+			       Iterator&);
 
       elle::Status	Detach();
 

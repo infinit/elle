@@ -88,10 +88,11 @@ namespace nucleus
 				     const Token&);
 
       elle::Status	Seal(const elle::PrivateKey&,
-			     const Access* = NULL);
+			     const Access&);
 
+      elle::Status	Validate(const proton::Address&) const;
       elle::Status	Validate(const proton::Address&,
-				 const Access* = NULL) const;
+				 const Access&) const;
 
       //
       // interfaces

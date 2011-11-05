@@ -69,14 +69,15 @@ namespace nucleus
     /// a user has been directly granted access to an object i.e is
     /// explicitely listed in the Access block.
     ///
-    elle::Status	Author::Create(const Index&)
+    elle::Status	Author::Create(const Index&		index)
     {
       enter();
 
       // set the role.
       this->role = RoleLord;
 
-      // XXX to complete.
+      // set the index.
+      this->lord.index = index;
 
       leave();
     }
@@ -96,7 +97,48 @@ namespace nucleus
       if (this == &element)
 	true();
 
-      // XXX to complete.
+      // compare the role.
+      if (this->role != element.role)
+	false();
+
+      // depending on the role.
+      switch (this->role)
+	{
+	case RoleOwner:
+	  {
+	    //
+	    // nothing more to compare.
+	    //
+
+	    break;
+	  }
+	case RoleLord:
+	  {
+	    //
+	    // compare the index to the entry in the Access block.
+	    //
+
+	    // compare the indexes.
+	    if (this->lord.index != element.lord.index)
+	      false();
+
+	    break;
+	  }
+	case RoleVassal:
+	  {
+	    // XXX
+
+	    break;
+	  }
+	default:
+	  {
+	    //
+	    // nothing more to compare.
+	    //
+
+	    break;
+	  }
+	}
 
       true();
     }
@@ -125,7 +167,42 @@ namespace nucleus
       std::cout << alignment << elle::Dumpable::Shift << "[Role] "
 		<< this->role << std::endl;
 
-      // XXX to complete.
+      // depending on the role.
+      switch (this->role)
+	{
+	case RoleOwner:
+	  {
+	    //
+	    // nothing more to dump.
+	    //
+
+	    break;
+	  }
+	case RoleLord:
+	  {
+	    //
+	    // dump the index to the entry in the Access block.
+	    //
+
+	    // dump the index.
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << "[Index] " << std::dec << this->lord.index
+		      << std::endl;
+
+	    break;
+	  }
+	case RoleVassal:
+	  {
+	    // XXX
+
+	    break;
+	  }
+	default:
+	  {
+	    escape("unknown role '%u'",
+		   this->role);
+	  }
+	}
 
       leave();
     }
@@ -145,7 +222,41 @@ namespace nucleus
       if (archive.Serialize(this->role) == elle::StatusError)
 	escape("unable to serialize the role");
 
-      // XXX to complete.
+      // depending on the role.
+      switch (this->role)
+	{
+	case RoleOwner:
+	  {
+	    //
+	    // nothing more to serialize.
+	    //
+
+	    break;
+	  }
+	case RoleLord:
+	  {
+	    //
+	    // serialize the index to the entry in the Access block.
+	    //
+
+	    // serialize the index.
+	    if (archive.Serialize(this->lord.index) == elle::StatusError)
+	      escape("unable to serialize the index");
+
+	    break;
+	  }
+	case RoleVassal:
+	  {
+	    // XXX
+
+	    break;
+	  }
+	default:
+	  {
+	    escape("unknown role '%u'",
+		   this->role);
+	  }
+	}
 
       leave();
     }
@@ -161,7 +272,41 @@ namespace nucleus
       if (archive.Extract(this->role) == elle::StatusError)
 	escape("unable to extract the role");
 
-      // XXX to complete.
+      // depending on the role.
+      switch (this->role)
+	{
+	case RoleOwner:
+	  {
+	    //
+	    // nothing more to extract.
+	    //
+
+	    break;
+	  }
+	case RoleLord:
+	  {
+	    //
+	    // extract the index to the entry in the Access block.
+	    //
+
+	    // extract the index.
+	    if (archive.Extract(this->lord.index) == elle::StatusError)
+	      escape("unable to extract the index");
+
+	    break;
+	  }
+	case RoleVassal:
+	  {
+	    // XXX
+
+	    break;
+	  }
+	default:
+	  {
+	    escape("unknown role '%u'",
+		   this->role);
+	  }
+	}
 
       leave();
     }
