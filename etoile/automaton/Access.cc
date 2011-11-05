@@ -355,6 +355,8 @@ namespace etoile
 			  gear::Object&				context,
 			  const elle::SecretKey&		key)
     {
+      nucleus::Token	token;
+
       enter();
 
       // open the access.
@@ -365,23 +367,14 @@ namespace etoile
       if (context.access->Upgrade(key) == elle::StatusError)
 	escape("unable to upgrade the access records");
 
-      // then, update the object's owner token.
+      // then, create a new object's owner token.
       //
       // noteworthy is that the owner's token is always computed even though
       // the owner may not have the permission to read. this is required if the
       // owner wants to grant herself back or anyone else the permission
       // to read.
-      if (context.object.meta.owner.token.Update(
-            key,
-	    context.object.owner.K) == elle::StatusError)
+      if (token.Update(key, context.object.owner.K) == elle::StatusError)
 	escape("unable to update the owner's token");
-
-      // recompute the owner record since the token has changed.
-      if (context.object.meta.owner._record.Update(
-	    context.object.owner._subject,
-	    context.object.meta.owner.permissions,
-	    context.object.meta.owner.token) == elle::StatusError)
-	escape("unable to create the owner access record");
 
       // update the object's meta section though everything remains
       // the same, including the access address and owner permissions.

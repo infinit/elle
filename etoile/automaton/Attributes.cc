@@ -72,6 +72,8 @@ namespace etoile
 	  release();
 	}
 
+      printf("XXX Attr::Set\n");
+
       // update the object since the attributes have changed.
       if (context.object.Administrate(
             context.object.meta.attributes,
@@ -145,6 +147,8 @@ namespace etoile
       // remove the trait associated with the given name.
       if (context.object.meta.attributes.Remove(name) == elle::StatusTrue)
 	escape("unable to remove the trait");
+
+      printf("XXX Attr::Omit\n");
 
       // update the object since the attributes have changed.
       if (context.object.Administrate(

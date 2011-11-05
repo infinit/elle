@@ -14,6 +14,9 @@
 
 #include <etoile/automaton/Author.hh>
 #include <etoile/automaton/Rights.hh>
+#include <etoile/automaton/Access.hh>
+
+#include <agent/Agent.hh>
 
 namespace etoile
 {
@@ -53,7 +56,21 @@ namespace etoile
 	  }
 	case nucleus::RoleLord:
 	  {
-	    // XXX to implement.
+	    nucleus::Index	index;
+
+	    // open the access.
+	    if (Access::Open(context) == elle::StatusError)
+	      escape("unable to open the access");
+
+	    // lookup the user's subject in the access records.
+	    if (context.access->Lookup(agent::Agent::Subject,
+				       index) == elle::StatusError)
+	      escape("unable to lookup the user's identity in the "
+		     "access block");
+
+	    // create a lord author.
+	    if (context.author.Create(index) == elle::StatusError)
+	      escape("unable to create the author");
 
 	    break;
 	  }

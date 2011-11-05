@@ -148,10 +148,36 @@ namespace etoile
       // if the object has been modified i.e is dirty.
       if (context.object._state == nucleus::StateDirty)
 	{
-	  // seal the object.
-	  if (context.object.Seal(agent::Agent::Identity.pair.k,
-				  context.access) == elle::StatusError)
-	    escape("unable to seal the object");
+	  // seal the object, depending on the presence of a referenced
+	  // access block.
+	  if (context.object.meta.access != nucleus::Address::Null)
+	    {
+	      // make sure the access block is loaded.
+	      if (Access::Open(context) == elle::StatusError)
+		escape("unable to open the access");
+
+	      // seal the object alone with the access block.
+	      if (context.object.Seal(
+		    agent::Agent::Identity.pair.k,
+		    *context.access) == elle::StatusError)
+		escape("unable to seal the object");
+
+	      // XXX
+	      printf("--- SEALED\n");
+	      if (context.object.Validate(
+		    context.location.address,
+		    *context.access) == elle::StatusError)
+		escape("XXX");
+	      printf("--- VALIDATED\n");
+	    }
+	  else
+	    {
+	      // seal the object alone i.e without passing an access block.
+	      if (context.object.Seal(
+		    agent::Agent::Identity.pair.k,
+		    nucleus::Access::Null) == elle::StatusError)
+		escape("unable to seal the object");
+	    }
 
 	  // mark the block as needing to be stored.
 	  if (context.transcript.Push(context.location.address,
