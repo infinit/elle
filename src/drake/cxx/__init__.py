@@ -189,6 +189,10 @@ class GccToolkit(Toolkit):
     def __init__(self, compiler = 'g++', compiler_c = 'gcc'):
 
         Toolkit.__init__(self)
+        try:
+            version = drake.cmd_output([compiler, '--version'])
+        except:
+            raise drake.Exception('Unable to find compiler: %s' % compiler)
         self.cxx = compiler
         self.c = compiler_c
 
