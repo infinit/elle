@@ -17,7 +17,7 @@ class Boost(drake.Configuration):
 
     """Configuration for the Boost C++ library collection"""
 
-    def __init__(self, cxx_toolkit = drake.cxx.Toolkit(), prefix = None, version = Version()):
+    def __init__(self, cxx_toolkit = None, prefix = None, version = Version()):
         """Find and create a configuration for Boost.
 
         prefix -- Where to find Boost, should contain
@@ -26,6 +26,8 @@ class Boost(drake.Configuration):
                   is rooted in the source tree.
         version -- Requested version.
         """
+        # Fix arguments
+        cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
         # Compute the search path.
         if prefix is None:
             test = [Path('/usr'), Path('/usr/local')]
