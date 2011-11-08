@@ -35,7 +35,7 @@ IF(${WIN32})
 ENDIF()
 
 ADD_SUBDIRECTORY(hole)
-ADD_SUBDIRECTORY(applications)
+# XXX ADD_SUBDIRECTORY(applications)
 
 # just to make files appears on qtcreator
 FILE(GLOB_RECURSE HEADERS *.hh *.hxx)
