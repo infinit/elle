@@ -20,8 +20,8 @@
 
 #include <lune/Lune.hh>
 
-#include <hole/implementations/remote/Manifest.hh>
 #include <hole/implementations/cirkle/Cluster.hh>
+#include <hole/implementations/slug/Manifest.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -57,7 +57,7 @@ namespace hole
 ///
 range(hole::implementations::cirkle::Component,
       hole::implementations::cirkle::Tags,
-      hole::implementations::remote::Component);
+      hole::implementations::slug::Component);
 
 //
 // ---------- tags ------------------------------------------------------------

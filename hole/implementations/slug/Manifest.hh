@@ -20,8 +20,8 @@
 
 #include <lune/Lune.hh>
 
-#include <hole/implementations/cirkle/Manifest.hh>
 #include <hole/implementations/slug/Cluster.hh>
+#include <hole/implementations/remote/Manifest.hh>
 
 //
 // ---------- constants -------------------------------------------------------
@@ -57,7 +57,7 @@ namespace hole
 ///
 range(hole::implementations::slug::Component,
       hole::implementations::slug::Tags,
-      hole::implementations::cirkle::Component);
+      hole::implementations::remote::Component);
 
 //
 // ---------- tags ------------------------------------------------------------
@@ -75,12 +75,8 @@ namespace hole
       //
       enum Tag
 	{
-	  TagChallenge = elle::Range<Component>::First + 1,
-	  TagPassport,
-	  TagPort,
+	  TagAuthenticate = elle::Range<Component>::First + 1,
 	  TagAuthenticated,
-
-	  TagUpdate,
 
 	  TagPush,
 	  TagPull,
@@ -100,16 +96,10 @@ namespace hole
 /// below are the definitions of the inward and outward messages.
 ///
 
-message(hole::implementations::slug::TagChallenge,
-	parameters())
-message(hole::implementations::slug::TagPassport,
-	parameters(lune::Passport&))
-message(hole::implementations::slug::TagPort,
-	parameters(elle::Port&))
+message(hole::implementations::slug::TagAuthenticate,
+	parameters(lune::Passport&,
+		   elle::Port&))
 message(hole::implementations::slug::TagAuthenticated,
-	parameters())
-
-message(hole::implementations::slug::TagUpdate,
 	parameters(hole::implementations::slug::Cluster&))
 
 message(hole::implementations::slug::TagPush,

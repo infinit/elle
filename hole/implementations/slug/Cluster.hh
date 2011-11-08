@@ -17,7 +17,8 @@
 
 #include <elle/Elle.hh>
 
-#include <hole/implementations/slug/RoutingTable.hh>
+#include <hole/implementations/slug/Host.hh>
+#include <hole/implementations/slug/Neighbourhood.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -56,7 +57,7 @@ namespace hole
 	//
 	// methods
 	//
-	elle::Status		Create(const RoutingTable&);
+	elle::Status		Create(const Neighbourhood&);
 
 	//
 	// interfaces

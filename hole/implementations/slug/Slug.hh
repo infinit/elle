@@ -55,11 +55,10 @@ namespace hole
 //
 
 #include <hole/implementations/slug/Cluster.hh>
+#include <hole/implementations/slug/Host.hh>
 #include <hole/implementations/slug/Implementation.hh>
 #include <hole/implementations/slug/Machine.hh>
 #include <hole/implementations/slug/Manifest.hh>
-#include <hole/implementations/slug/Neighbour.hh>
 #include <hole/implementations/slug/Neighbourhood.hh>
-#include <hole/implementations/slug/RoutingTable.hh>
 
 #endif

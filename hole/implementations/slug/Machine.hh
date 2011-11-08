@@ -19,8 +19,8 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
+#include <hole/implementations/slug/Guestlist.hh>
 #include <hole/implementations/slug/Neighbourhood.hh>
-#include <hole/implementations/slug/RoutingTable.hh>
 #include <hole/implementations/slug/Cluster.hh>
 
 namespace hole
@@ -49,21 +49,23 @@ namespace hole
 	  static const elle::Natural16		Port;
 	};
 
-	static const elle::Natural32		Frequency;
+	static const elle::Natural32		Timeout;
 
 	//
 	// enumerations
 	//
 	enum State
 	  {
-	    StateUnauthenticated,
-	    StateAuthenticated
+	    StateUnknown,
+	    StateAlone,
+	    StateAttached
 	  };
 
 	//
 	// constructors & destructors
 	//
 	Machine();
+	~Machine();
 
 	//
 	// methods
@@ -84,16 +86,13 @@ namespace hole
 	//
 	// callbacks
 	//
+	elle::Status		Alone();
+
 	elle::Status		Connection(elle::Gate*);
-
-	elle::Status		Challenge();
-	elle::Status		Passport(const lune::Passport&);
-	elle::Status		Port(const elle::Port&);
-	elle::Status		Authenticated();
-	elle::Status		Update(const Cluster&);
-
-	elle::Status		Gossip();
-
+	elle::Status		Authenticate(const lune::Passport&,
+					     const elle::Port&);
+	elle::Status		Authenticated(const Cluster&);
+	elle::Status		Sweep(Host*);
 	elle::Status		Push(const nucleus::Address&,
 				     const
 				       nucleus::Derivable<nucleus::Block>&);
@@ -112,13 +111,12 @@ namespace hole
 	// attributes
 	//
 	State			state;
-
-	Neighbourhood		neighbourhood;
-	RoutingTable		routingtable;
-
-	elle::Timer		timer;
-
 	elle::Port		port;
+
+	Guestlist		guestlist;
+	Neighbourhood		neighbourhood;
+
+	elle::Timer*		timer;
       };
 
     }

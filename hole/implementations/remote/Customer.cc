@@ -138,13 +138,16 @@ namespace hole
       /// this callback is triggered whenever an error occurs on the
       /// customer's socket.
       ///
-      elle::Status	Customer::Error(const elle::String&)
+      elle::Status	Customer::Error(const elle::String&	error)
       {
 	enter();
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] implementations::remote::Customer::Error()");
+
+	// log the error.
+	log(error.c_str());
 
 	// disconnect the gate, though that may be unecessary.
 	this->gate->Disconnect();

@@ -77,6 +77,10 @@ namespace hole
       {
 	enter();
 
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::remote::Server::Launch()\n");
+
 	//
 	// register the messages.
 	//

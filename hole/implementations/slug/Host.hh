@@ -8,8 +8,8 @@
 // author        julien quintard   [wed aug 24 10:33:01 2011]
 //
 
-#ifndef HOLE_IMPLEMENTATIONS_SLUG_NEIGHBOUR_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_NEIGHBOUR_HH
+#ifndef HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
+#define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -33,29 +33,31 @@ namespace hole
       ///
       /// XXX
       ///
-      class Neighbour:
+      class Host:
 	public elle::Entity
       {
       public:
+	//
+	// enumerations
+	//
+	enum State
+	  {
+	    StateUnknown,
+	    StateConnected,
+	    StateAuthenticated,
+	    StateDead
+	  };
+
 	//
 	// constants
 	//
 	static const elle::Natural32		Timeout;
 
 	//
-	// enumerations
-	//
-	enum State
-	  {
-	    StateUnauthenticated,
-	    StateAuthenticated
-	  };
-
-	//
 	// constructors & destructors
 	//
-	Neighbour();
-	~Neighbour();
+	Host();
+	~Host();
 
 	//
 	// methods
@@ -64,6 +66,9 @@ namespace hole
 	elle::Status	Create(elle::Gate*);
 
 	elle::Status	Connect();
+	elle::Status	Disconnect();
+
+	elle::Status	Authenticated();
 
 	//
 	// callbacks
@@ -71,9 +76,7 @@ namespace hole
         elle::Status    Connected();
         elle::Status    Disconnected();
         elle::Status    Error(const elle::String&);
-        elle::Status    Discard();
-
-        elle::Status    RegisterCallbacks();
+        elle::Status    Abort();
 
 	//
 	// interfaces
@@ -83,14 +86,23 @@ namespace hole
 	elle::Status	Dump(const elle::Natural32 = 0) const;
 
 	//
+	// signals
+	//
+	struct
+	{
+	  elle::Signal<
+	    elle::Parameters<
+  	      Host*
+	      >
+	    >			dead;
+	}			signal;
+
+	//
 	// attributes
 	//
 	State		state;
 
 	elle::Locus	locus;
-	Label		label;
-
-	elle::Port	port; ///< is it different from locus.port ?
 
 	elle::Gate*	gate;
 

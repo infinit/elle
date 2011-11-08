@@ -5,14 +5,14 @@
 //
 // license       infinit
 //
-// author        julien quintard   [thu aug 25 12:19:28 2011]
+// author        julien.quintard   [mon nov  7 12:39:09 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <hole/implementations/slug/Neighbourhood.hh>
+#include <hole/implementations/slug/Guestlist.hh>
 
 namespace hole
 {
@@ -28,16 +28,16 @@ namespace hole
       ///
       /// XXX
       ///
-      Neighbourhood::~Neighbourhood()
+      Guestlist::~Guestlist()
       {
-	Neighbourhood::Scoutor	scoutor;
+	Guestlist::Scoutor	scoutor;
 
 	// go through the entries.
 	for (scoutor = this->container.begin();
 	     scoutor != this->container.end();
 	     scoutor++)
 	  {
-	    // delete the host.
+	    // delete the neighbour.
 	    delete scoutor->second;
 	  }
 
@@ -52,15 +52,15 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Add(const elle::Locus&	locus,
-					   Host*		host)
+      elle::Status	Guestlist::Add(elle::Gate*		gate,
+				       Host*			host)
       {
-	std::pair<Neighbourhood::Iterator, elle::Boolean>	result;
+	std::pair<Guestlist::Iterator, elle::Boolean>	result;
 
 	enter();
 
 	// insert the host in the container.
-	result = this->container.insert(Neighbourhood::Value(locus, host));
+	result = this->container.insert(Guestlist::Value(gate, host));
 
 	// check if the insertion was successful.
 	if (result.second == false)
@@ -72,14 +72,14 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Exist(const elle::Locus& locus) const
+      elle::Status	Guestlist::Exist(elle::Gate*		gate) const
       {
-	Neighbourhood::Scoutor	scoutor;
+	Guestlist::Scoutor	scoutor;
 
 	enter();
 
-	// try to locate the locus.
-	if (this->Locate(locus, scoutor) == elle::StatusTrue)
+	// try to locate the gate.
+	if (this->Locate(gate, scoutor) == elle::StatusTrue)
 	  true();
 
 	false();
@@ -88,16 +88,17 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Retrieve(const elle::Locus& locus,
-						Host*&		host) const
+      elle::Status	Guestlist::Retrieve(elle::Gate*		gate,
+					    Host*&		host)
+	const
       {
-	Neighbourhood::Scoutor	scoutor;
+	Guestlist::Scoutor	scoutor;
 
 	enter();
 
-	// try to locate the locus.
-	if (this->Locate(locus, scoutor) == elle::StatusFalse)
-	  escape("unable to locate the given locus");
+	// try to locate the gate.
+	if (this->Locate(gate, scoutor) == elle::StatusFalse)
+	  escape("unable to locate the given gate");
 
 	// return the associated host.
 	host = scoutor->second;
@@ -108,15 +109,15 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Remove(const elle::Locus& locus)
+      elle::Status	Guestlist::Remove(elle::Gate*		gate)
       {
-	Neighbourhood::Iterator	iterator;
+	Guestlist::Iterator	iterator;
 
 	enter();
 
-	// try to locate the locus.
-	if (this->Locate(locus, iterator) == elle::StatusFalse)
-	  escape("unable to locate the given locus");
+	// try to locate the gate.
+	if (this->Locate(gate, iterator) == elle::StatusFalse)
+	  escape("unable to locate the given gate");
 
 	// erase the iterator.
 	this->container.erase(iterator);
@@ -127,15 +128,15 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Locate(const elle::Locus& locus,
-					      Scoutor&		scoutor) const
+      elle::Status	Guestlist::Locate(elle::Gate*		gate,
+					  Scoutor&		scoutor) const
       {
-	Neighbourhood::Scoutor	s;
+	Guestlist::Scoutor	s;
 
 	enter();
 
 	// try to locate the host.
-	if ((s = this->container.find(locus)) != this->container.end())
+	if ((s = this->container.find(gate)) != this->container.end())
 	  {
 	    // return the scoutor.
 	    scoutor = s;
@@ -149,15 +150,15 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Neighbourhood::Locate(const elle::Locus& locus,
-					      Iterator&		iterator)
+      elle::Status	Guestlist::Locate(elle::Gate*		gate,
+					  Iterator&		iterator)
       {
-	Neighbourhood::Iterator	i;
+	Guestlist::Iterator	i;
 
 	enter();
 
 	// try to locate the host.
-	if ((i = this->container.find(locus)) != this->container.end())
+	if ((i = this->container.find(gate)) != this->container.end())
 	  {
 	    // return the iterator.
 	    iterator = i;
@@ -175,15 +176,15 @@ namespace hole
       ///
       /// this function dumps a routing table object.
       ///
-      elle::Status	Neighbourhood::Dump(elle::Natural32	margin) const
+      elle::Status	Guestlist::Dump(elle::Natural32		margin) const
       {
 	elle::String		alignment(margin, ' ');
-	Neighbourhood::Scoutor	scoutor;
+	Guestlist::Scoutor	scoutor;
 
 	enter();
 
 	// display the name.
-	std::cout << alignment << "[Neighbourhood]" << std::endl;
+	std::cout << alignment << "[Guestlist]" << std::endl;
 
 	// go through the entries.
 	for (scoutor = this->container.begin();
@@ -193,9 +194,10 @@ namespace hole
 	    std::cout << alignment << elle::Dumpable::Shift
 		      << "[Element]" << std::endl;
 
-	    // dump the locus.
-	    if (scoutor->first.Dump(margin + 4) == elle::StatusError)
-	      escape("unable to dump the locus");
+	    // dump the gate's address.
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << elle::Dumpable::Shift
+		      << "[Gate] " << scoutor->first << std::endl;
 
 	    // dump the host.
 	    if (scoutor->second->Dump(margin + 4) == elle::StatusError)

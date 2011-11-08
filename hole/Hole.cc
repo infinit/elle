@@ -135,6 +135,14 @@ namespace hole
 
 	  break;
 	}
+      case Model::TypeSlug:
+        {
+	  // allocate the instance.
+          Hole::Implementation =
+            new implementations::slug::Implementation(network);
+
+          break;
+        }
       case Model::TypeCirkle:
 	{
 	  /* XXX
@@ -145,12 +153,6 @@ namespace hole
 
 	  break;
 	}
-      case Model::TypeSlug:
-        {
-          Hole::Implementation =
-            new implementations::slug::Implementation(network);
-          break;
-        }
       default:
 	escape("unknown or not-yet-supported model '%u'",
 	       Hole::Descriptor.model.type);

@@ -5,11 +5,11 @@
 //
 // license       infinit
 //
-// author        julien quintard   [fri aug 12 15:56:25 2011]
+// author        julien.quintard   [mon nov  7 12:36:26 2011]
 //
 
-#ifndef HOLE_IMPLEMENTATIONS_SLUG_ROUTINGTABLE_HH
-#define HOLE_IMPLEMENTATIONS_SLUG_ROUTINGTABLE_HH
+#ifndef HOLE_IMPLEMENTATIONS_SLUG_GUESTLIST_HH
+#define HOLE_IMPLEMENTATIONS_SLUG_GUESTLIST_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,8 +17,7 @@
 
 #include <elle/Elle.hh>
 
-#include <hole/Label.hh>
-#include <hole/implementations/slug/Neighbour.hh>
+#include <hole/implementations/slug/Host.hh>
 
 namespace hole
 {
@@ -34,33 +33,36 @@ namespace hole
       ///
       /// XXX
       ///
-      class RoutingTable:
+      class Guestlist:
 	public elle::Entity
       {
       public:
 	//
 	// types
 	//
-	typedef std::map<const Label, Neighbour*>	Container;
+	typedef std::pair<elle::Gate*, Host*>		Value;
+	typedef std::map<elle::Gate*, Host*>		Container;
 	typedef typename Container::iterator		Iterator;
 	typedef typename Container::const_iterator	Scoutor;
 
 	//
 	// constructors & destructors
 	//
-	~RoutingTable();
+	~Guestlist();
 
 	//
 	// methods
 	//
-	elle::Status		Add(const Label&,
-				    Neighbour*);
-	elle::Status		Exist(const Label&);
-	elle::Status		Retrieve(const Label&,
-					 Neighbour*&);
-	elle::Status		Remove(const Label&);
-	elle::Status		Locate(const Label&,
-				       Iterator* = NULL);
+	elle::Status		Add(elle::Gate*,
+				    Host*);
+	elle::Status		Exist(elle::Gate*) const;
+	elle::Status		Retrieve(elle::Gate*,
+					 Host*&) const;
+	elle::Status		Remove(elle::Gate*);
+	elle::Status		Locate(elle::Gate*,
+				       Scoutor&) const;
+	elle::Status		Locate(elle::Gate*,
+				       Iterator&);
 
 	//
 	// interfaces

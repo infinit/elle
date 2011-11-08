@@ -18,8 +18,8 @@ namespace hole
   ///
   /// tag order:
   /// - Remote
-  /// - Cirkle
   /// - Slug
+  /// - Cirkle
   ///
   namespace implementations
   {
@@ -33,12 +33,12 @@ namespace hole
 // ---------- includes --------------------------------------------------------
 //
 
-#if 0 // XXX
-# include <hole/implementations/cirkle/Cirkle.hh>
-#endif
-
 #include <hole/implementations/local/Local.hh>
 #include <hole/implementations/remote/Remote.hh>
 #include <hole/implementations/slug/Slug.hh>
+
+#if 0 // XXX
+# include <hole/implementations/cirkle/Cirkle.hh>
+#endif
 
 #endif

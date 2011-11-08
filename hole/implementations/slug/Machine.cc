@@ -32,15 +32,14 @@ namespace hole
       ///
       /// XXX
       ///
-      /// XXX corresponds to 'c' i.e 3, 'i' i.e 9 and 'r' i.e 18 in the
-      /// alphabet
+      /// XXX corresponds to 's' i.e 19 and 'l' i.e 12 in the alphabet.
       ///
-      const elle::Natural16		Machine::Default::Port = 3918;
+      const elle::Natural16		Machine::Default::Port = 1912;
 
       ///
-      /// XXX 5 minutes: 300000
+      /// XXX 6 seconds
       ///
-      const elle::Natural32		Machine::Frequency = 10000;
+      const elle::Natural32		Machine::Timeout = 2000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -50,8 +49,20 @@ namespace hole
       /// XXX
       ///
       Machine::Machine():
-	state(Machine::StateUnauthenticated)
+	state(StateUnknown),
+	port(0),
+	timer(NULL)
       {
+      }
+
+      ///
+      /// XXX
+      ///
+      Machine::~Machine()
+      {
+	// delete the timer, if present.
+	if (this->timer != NULL)
+	  delete this->timer;
       }
 
 //
@@ -67,29 +78,19 @@ namespace hole
 
 	enter();
 
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Launch()\n");
+
 	//
 	// register the messages.
 	//
 	{
 	  // register the message.
 	  if (elle::Network::Register(
-	        elle::Procedure<TagChallenge>(
+	        elle::Procedure<TagAuthenticate>(
 		  elle::Callback<>::Infer(
-		    &Machine::Challenge, this))) == elle::StatusError)
-	    escape("unable to register the callback");
-
-	  // register the message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagPassport>(
-		  elle::Callback<>::Infer(
-		    &Machine::Passport, this))) == elle::StatusError)
-	    escape("unable to register the callback");
-
-	  // register the message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagPort>(
-		  elle::Callback<>::Infer(
-		    &Machine::Port, this))) == elle::StatusError)
+		    &Machine::Authenticate, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 
 	  // register the message.
@@ -97,13 +98,6 @@ namespace hole
 	        elle::Procedure<TagAuthenticated>(
 		  elle::Callback<>::Infer(
 		    &Machine::Authenticated, this))) == elle::StatusError)
-	    escape("unable to register the callback");
-
-	  // register the message.
-	  if (elle::Network::Register(
-	        elle::Procedure<TagUpdate>(
-		  elle::Callback<>::Infer(
-		    &Machine::Update, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -115,8 +109,8 @@ namespace hole
 
 	  // XXX improve this with getting a list of hosts.
 
-	  // retrieve the neighbours' loci.
-	  if (Hole::Descriptor.Get("slug", "neighbours",
+	  // retrieve the hosts' loci.
+	  if (Hole::Descriptor.Get("slug", "hosts",
 				   string) == elle::StatusError)
 	    escape("unable to retrieve the slug's host address from the "
 		   "network descriptor");
@@ -126,56 +120,82 @@ namespace hole
 	    escape("unable to create the host locus");
 
 	  // retrieve the machine's listening port.
-	  if (Hole::Descriptor.Get("slug", "port",
-				   this->port,
-				   Machine::Default::Port) ==
-	      elle::StatusError)
+	  if (Hole::Descriptor.Get(
+		"slug", "port",
+		this->port,
+		Machine::Default::Port) == elle::StatusError)
 	    escape("unable to retrieve the slug's local port from the "
 		   "network descriptor");
 	}
 
 	//
-	// create the neighbour.
+	// create the host.
 	//
 	{
-	  Neighbour*	neighbour;
+	  Host*		host;
 
 	  // XXX improve this with getting a list of hosts.
 
-	  enterx(instance(neighbour));
+	  enterx(instance(host));
 
-	  // allocate the neighbour.
-	  neighbour = new Neighbour;
+	  // allocate the host.
+	  host = new Host;
 
-	  // create the neighbour.
-	  if (neighbour->Create(locus) == elle::StatusError)
-	    escape("unable to create the neighbour");
+	  // create the host.
+	  if (host->Create(locus) == elle::StatusError)
+	    escape("unable to create the host");
 
-	  // add the neighbour to the neighbourhood.
-	  if (this->neighbourhood.Add(neighbour->locus,
-				      neighbour) == elle::StatusError)
-	    escape("unable to add the neighbour to the neighbourhood");
+	  // subscribe to the signal.
+	  if (host->signal.dead.Subscribe(
+		elle::Callback<>::Infer(&Machine::Sweep,
+					this)) == elle::StatusError)
+	    escape("unable to subscribe to the signal");
 
-	  // connect the neighbour.
-	  if (neighbour->Connect() == elle::StatusError)
-	    escape("unable to connect the neighbour");
+	  // connect the host.
+	  if (host->Connect() == elle::StatusError)
+	    escape("unable to connect the host");
 
-	  // sleep for some time.
-	  // XXX check if connected -> if not, automatically authed
+	  // add the host to the guestlist.
+	  if (this->guestlist.Add(host->gate, host) == elle::StatusError)
+	    escape("unable to add the host to the guestlist");
 
 	  // waive.
-	  waive(neighbour);
+	  waive(host);
 
 	  // release.
 	  release();
 	}
 
 	//
-	// listen for incoming connections
+	// set up the timeout after which the machine will be considered
+	// alone in the network, in other words, the very first node.
 	//
 	{
-	  elle::Locus			locus;
-	  elle::Host			host;
+	  // allocate a timer.
+	  this->timer = new elle::Timer;
+
+	  // create the timer.
+	  if (this->timer->Create(
+		elle::Timer::ModeSingle) == elle::StatusError)
+	    escape("unable to create the timer");
+
+	  // subscribe to the timer's signal.
+	  if (this->timer->signal.timeout.Subscribe(
+		elle::Callback<>::Infer(&Machine::Alone,
+					this)) == elle::StatusError)
+	    escape("unable to subscribe to the signal");
+
+	  // start the timer.
+	  if (this->timer->Start(Machine::Timeout) == elle::StatusError)
+	    escape("unable to start the timer");
+	}
+
+	//
+	// finally, listen for incoming connections.
+	//
+	{
+	  elle::Locus	locus;
+	  elle::Host	host;
 
 	  // create a host.
 	  if (host.Create(elle::Host::TypeAny) == elle::StatusError)
@@ -186,31 +206,11 @@ namespace hole
 	    escape("unable to create the locus");
 
 	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(locus,
-				   elle::Callback<>::Infer(
-				     &Machine::Connection, this)) ==
-	      elle::StatusError)
+	  if (elle::Bridge::Listen(
+		locus,
+		elle::Callback<>::Infer(
+		  &Machine::Connection, this)) == elle::StatusError)
 	    escape("unable to listen for bridge connections");
-	}
-
-	//
-	// set up the gossip timer.
-	//
-	{
-	  // create the timer.
-	  if (this->timer.Create(elle::Timer::ModeRepetition) ==
-	      elle::StatusError)
-	    escape("unable to create the timer");
-
-	  // subscribe to the timer's signal.
-	  if (this->timer.signal.timeout.Subscribe(
-	        elle::Callback<>::Infer(&Machine::Gossip,
-					this)) == elle::StatusError)
-	    escape("unable to subscribe to the signal");
-
-	  // start the timer.
-	  if (this->timer.Start(Machine::Frequency) == elle::StatusError)
-	    escape("unable to start the timer");
 	}
 
 	leave();
@@ -229,12 +229,33 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Put[Immutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::slug::Machine::Put[Immutable]()\n");
 
-	// check that the machine is authenticated.
-	if (this->state != Machine::StateAuthenticated)
-	  escape("the machine does not seem to have been authenticated");
+	// depending on the machine's state.
+	switch (this->state)
+	  {
+	  case Machine::StateAlone:
+	    {
+	      //
+	      // in this case, the current machine seems to have been
+	      // unable to connect to other hosts.
+	      //
+	      // therefore, the operation is carried out locally.
+	      //
+
+	      // XXX local
+	    }
+	  case Machine::StateAttached:
+	    {
+	      //
+	      // in this case, the current machine is connected and has
+	      // been authenticated as a valid node of the network.
+	      //
+	      // therefore, the operation is carried out both locally but
+	      // also sent to every node in the network.
+	      //
+
+	      // XXX local + remote
 
 	/* XXX
 	// transfer to the remote.
@@ -244,6 +265,17 @@ namespace hole
 	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
 	*/
+
+	      break;
+	    }
+	  default:
+	    {
+	      escape("the machine's state '%u' does not allow one to request "
+		     "operations on the storage layer",
+		     this->state);
+	    }
+	  }
+
 	leave();
       }
 
@@ -260,14 +292,35 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Put[Mutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::slug::Machine::Put[Mutable]()\n");
 
-	// check that the machine is authenticated.
-	if (this->state != Machine::StateAuthenticated)
-	  escape("the machine does not seem to have been authenticated");
+	// depending on the machine's state.
+	switch (this->state)
+	  {
+	  case Machine::StateAlone:
+	    {
+	      //
+	      // in this case, the current machine seems to have been
+	      // unable to connect to other hosts.
+	      //
+	      // therefore, the operation is carried out locally.
+	      //
 
-	/*
+	      // XXX local
+	    }
+	  case Machine::StateAttached:
+	    {
+	      //
+	      // in this case, the current machine is connected and has
+	      // been authenticated as a valid node of the network.
+	      //
+	      // therefore, the operation is carried out both locally but
+	      // also sent to every node in the network.
+	      //
+
+	      // XXX local + remote
+
+	/* XXX
 	// transfer to the remote.
 	if (this->gate->Call(
 	      elle::Inputs<TagPush>(address,
@@ -275,6 +328,17 @@ namespace hole
 	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
 	*/
+
+	      break;
+	    }
+	  default:
+	    {
+	      escape("the machine's state '%u' does not allow one to request "
+		     "operations on the storage layer",
+		     this->state);
+	    }
+	  }
+
 	leave();
       }
 
@@ -290,14 +354,35 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Get[Immutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::slug::Machine::Get[Immutable]()\n");
 
-	// check that the machine is authenticated.
-	if (this->state != Machine::StateAuthenticated)
-	  escape("the machine does not seem to have been authenticated");
+	// depending on the machine's state.
+	switch (this->state)
+	  {
+	  case Machine::StateAlone:
+	    {
+	      //
+	      // in this case, the current machine seems to have been
+	      // unable to connect to other hosts.
+	      //
+	      // therefore, the operation is carried out locally.
+	      //
 
-	/*
+	      // XXX local
+	    }
+	  case Machine::StateAttached:
+	    {
+	      //
+	      // in this case, the current machine is connected and has
+	      // been authenticated as a valid node of the network.
+	      //
+	      // therefore, the operation is carried out both locally but
+	      // also sent to every node in the network.
+	      //
+
+	      // XXX local + remote
+
+	/* XXX
 	// transfer to the remote.
 	if (this->gate->Call(
 	      elle::Inputs<TagPull>(address,
@@ -305,6 +390,17 @@ namespace hole
 	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
 	  escape("unable to transfer the request");
 	*/
+
+	      break;
+	    }
+	  default:
+	    {
+	      escape("the machine's state '%u' does not allow one to request "
+		     "operations on the storage layer",
+		     this->state);
+	    }
+	  }
+
 	leave();
       }
 
@@ -321,14 +417,35 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Get[Mutable]()"
-		    << std::endl;
+	  printf("[hole] implementations::slug::Machine::Get[Mutable]()\n");
 
-	// check that the machine is authenticated.
-	if (this->state != Machine::StateAuthenticated)
-	  escape("the machine does not seem to have been authenticated");
+	// depending on the machine's state.
+	switch (this->state)
+	  {
+	  case Machine::StateAlone:
+	    {
+	      //
+	      // in this case, the current machine seems to have been
+	      // unable to connect to other hosts.
+	      //
+	      // therefore, the operation is carried out locally.
+	      //
 
-	/*
+	      // XXX local
+	    }
+	  case Machine::StateAttached:
+	    {
+	      //
+	      // in this case, the current machine is connected and has
+	      // been authenticated as a valid node of the network.
+	      //
+	      // therefore, the operation is carried out both locally but
+	      // also sent to every node in the network.
+	      //
+
+	      // XXX local + remote
+
+	/* XXX
 	// transfer to the remote.
 	if (this->gate->Call(
 	      elle::Inputs<TagPull>(address,
@@ -336,6 +453,17 @@ namespace hole
 	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
 	  escape("unable to transfer the request");
 	*/
+
+	      break;
+	    }
+	  default:
+	    {
+	      escape("the machine's state '%u' does not allow one to request "
+		     "operations on the storage layer",
+		     this->state);
+	    }
+	  }
+
 	leave();
       }
 
@@ -348,20 +476,52 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Kill()"
-		    << std::endl;
+	  printf("[hole] implementations::slug::Machine::Kill()\n");
 
-	// check that the machine is authenticated.
-	if (this->state != Machine::StateAuthenticated)
-	  escape("the machine does not seem to have been authenticated");
+	// depending on the machine's state.
+	switch (this->state)
+	  {
+	  case Machine::StateAlone:
+	    {
+	      //
+	      // in this case, the current machine seems to have been
+	      // unable to connect to other hosts.
+	      //
+	      // therefore, the operation is carried out locally.
+	      //
 
-	/*
+	      // XXX local
+	    }
+	  case Machine::StateAttached:
+	    {
+	      //
+	      // in this case, the current machine is connected and has
+	      // been authenticated as a valid node of the network.
+	      //
+	      // therefore, the operation is carried out both locally but
+	      // also sent to every node in the network.
+	      //
+
+	      // XXX local + remote
+
+	/* XXX
 	// transfer to the remote.
 	if (this->gate->Call(
 	      elle::Inputs<TagWipe>(address),
 	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
 	*/
+
+	      break;
+	    }
+	  default:
+	    {
+	      escape("the machine's state '%u' does not allow one to request "
+		     "operations on the storage layer",
+		     this->state);
+	    }
+	  }
+
 	leave();
       }
 
@@ -370,79 +530,267 @@ namespace hole
 //
 
       ///
+      /// XXX
+      ///
+      elle::Status	Machine::Alone()
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Alone()\n");
+
+	// first, delete the timer.
+	bury(timer);
+
+	// reset the pointer.
+	this->timer = NULL;
+
+	// if the machine has been neither connected nor authenticated
+	// to existing nodes...
+	if (this->state == Machine::StateUnknown)
+	  {
+	    // then, suppose that the current machine as the only one in
+	    // the network.
+	    //
+	    // thus, it can be implicitly considered as authenticated
+	    // in a network composed of itself alone.
+	    this->state = Machine::StateAlone;
+	  }
+
+	leave();
+      }
+
+      ///
       /// this method handles new connections.
       ///
       elle::Status	Machine::Connection(elle::Gate*			gate)
       {
-	Neighbour*	neighbour;
-
-	enterx(instance(neighbour));
+	enter();
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Connection()"
-		    << std::endl;
+	  printf("[hole] implementations::slug::Machine::Connection()\n");
 
-	// allocate the neighbour.
-	neighbour = new Neighbour;
+	// depending on the machine's state.
+	switch (this->state)
+	  {
+	  case Machine::StateAlone:
+	  case Machine::StateAttached:
+	    {
+	      Host*		host;
 
-	// create the neighbour.
-	if (neighbour->Create(gate) == elle::StatusError)
-	  escape("unable to create the neighbour");
+	      enterx(instance(host));
 
-	// add the neighbour to the neigbourhood until it gets authenticated.
+	      // allocate the host.
+	      host = new Host;
+
+	      // create the host.
+	      if (host->Create(gate) == elle::StatusError)
+		escape("unable to create the host");
+
+	      // subscribe to the signal.
+	      if (host->signal.dead.Subscribe(
+		    elle::Callback<>::Infer(&Machine::Sweep,
+					    this)) == elle::StatusError)
+		escape("unable to subscribe to the signal");
+
+	      // add the host to the guestlist for now until it
+	      // gets authenticated.
+	      if (this->guestlist.Add(host->gate, host) == elle::StatusError)
+		escape("unable to add the host to the neigbourhood");
+
+	      // also authenticate to this host.
+	      if (host->gate->Send(
+		    elle::Inputs<TagAuthenticate>(
+		      Hole::Passport,
+		      this->port)) == elle::StatusError)
+		escape("unable to send a message");
+
+	      // waive.
+	      waive(host);
+
+	      // release.
+	      release();
+
+	      break;
+	    }
+	  default:
+	    {
+	      //
+	      // if the machine is not authenticated, reject the
+	      // incoming connection right away.
+	      //
+
+	      // delete the gate.
+	      delete gate;
+
+	      break;
+	    }
+	  }
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Machine::Authenticate(const lune::Passport& passport,
+					      const elle::Port&	port)
+      {
+	Host*		host;
+	elle::Session*	session;
+
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Authenticate()\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// if the host exists in the guestlist, handle its authentication.
+	if (this->guestlist.Exist(
+	      static_cast<elle::Gate*>(session->socket)) == elle::StatusTrue)
+	  {
+	    Cluster	cluster;
+
+	    // retrieve the host from the guestlist.
+	    if (this->guestlist.Retrieve(
+		  static_cast<elle::Gate*>(session->socket),
+		  host) == elle::StatusError)
+	      escape("unable to retrieve the host");
+
+	    // create the cluster based on the current neighbourhood.
+	    if (cluster.Create(this->neighbourhood) == elle::StatusError)
+	      escape("unable to create the cluster");
+
+	    // validate the passport.
+	    if (passport.Validate(Infinit::Authority) == elle::StatusError)
+	      escape("unable to validate the passport");
+
+	    // create the host's locus according to the given port.
+	    if (host->locus.Create(session->locus.host,
+				   port) == elle::StatusError)
+	      escape("unable to create the locus");
+
+	    // remove the host from the guestlist.
+	    if (this->guestlist.Remove(host->gate) == elle::StatusError)
+	      escape("unable to remove the host from the guestlist");
+
+	    // add the host to the neighbourhood now that it has been
+	    // authenticated.
+	    if (this->neighbourhood.Add(host->locus,
+					host) == elle::StatusError)
+	      escape("unable to add the host to the neighbourhood");
+
+	    // set the host as having been authenticated.
+	    if (host->Authenticated() == elle::StatusError)
+	      escape("unable to set the host as authenticated");
+
+	    // reply.
+	    if (host->gate->Reply(
+		  elle::Inputs<TagAuthenticated>(
+		    cluster)) == elle::StatusError)
+	      escape("unable to reply to the caller");
+
+	    // also authenticate to this host.
+	    if (host->gate->Send(
+		  elle::Inputs<TagAuthenticate>(
+		    Hole::Passport,
+		    this->port)) == elle::StatusError)
+	      escape("unable to send a message");
+
+	    // XXX
+	    this->Dump();
+	  }
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Machine::Authenticated(const Cluster&	cluster)
+      {
+	Host*		host;
+	elle::Session*	session;
+
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Authenticated()\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// set the machine as being authenticated and is therefore now
+	// considered attached to the network.
+	this->state = Machine::StateAttached;
+
+	// stop the timer, if present.
+	if (this->timer != NULL)
+	  {
+	    // first, delete the timer.
+	    delete timer;
+
+	    // reset the pointer.
+	    this->timer = NULL;
+	  }
+
 	//
-	// note that the locus here is for sure not the one corresponding
-	// to the listening port. this will do it until the neighbour
-	// provides us the right port to gossip.
-	if (this->neighbourhood.Add(neighbour->locus,
-				    neighbour) == elle::StatusError)
-	  escape("unable to add the neighbour to the neigbourhood");
+	// use the given cluster to extend the network by connecting to
+	// every other host.
+	//
+	{
+	  Cluster::Scoutor	scoutor;
 
-	// challenge the neighbour.
-	if (neighbour->gate->Send(
-	      elle::Inputs<TagChallenge>()) == elle::StatusError)
-	  escape("unable to send the challenge");
+	  // go through the cluster.
+	  for (scoutor = cluster.container.begin();
+	       scoutor != cluster.container.end();
+	       scoutor++)
+	    {
+	      elle::Locus	locus = *scoutor;
+	      Host*		host;
 
-	// waive.
-	waive(neighbour);
+	      enterx(instance(host));
 
-	leave();
-      }
+	      // check if this locus is already registered.
+	      if (this->neighbourhood.Exist(locus) == elle::StatusTrue)
+		continue;
 
-      ///
-      /// XXX
-      ///
-      elle::Status	Machine::Challenge()
-      {
-	Neighbour*	neighbour;
-	elle::Session*	session;
+	      // allocate the host.
+	      host = new Host;
 
-	enter();
+	      // create the host.
+	      if (host->Create(locus) == elle::StatusError)
+		escape("unable to create the host");
 
-	// debug.
-	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Challenge()"
-		    << std::endl;
+	      // subscribe to the signal.
+	      if (host->signal.dead.Subscribe(
+		    elle::Callback<>::Infer(&Machine::Sweep,
+					    this)) == elle::StatusError)
+		escape("unable to subscribe to the signal");
 
-	// retrieve the network session.
-	if (elle::Session::Instance(session) == elle::StatusError)
-	  escape("unable to retrieve the current session");
+	      // connect the host.
+	      if (host->Connect() == elle::StatusError)
+		escape("unable to connect the host");
 
-	// retrieve the neighbour from the neigbourhood.
-	if (this->neighbourhood.Retrieve(session->locus,
-					 neighbour) == elle::StatusError)
-	  escape("unable to retrieve the neighbour");
+	      // add the host to the guestlist.
+	      if (this->guestlist.Add(host->gate, host) == elle::StatusError)
+		escape("unable to add the host to the guestlist");
 
-	// send the passport.
-	if (neighbour->gate->Send(
-	      elle::Inputs<TagPassport>(Hole::Passport)) == elle::StatusError)
-	  escape("unable to send the passport");
+	      // waive.
+	      waive(host);
 
-	// also indicate the listening port.
-	if (neighbour->gate->Send(
-	      elle::Inputs<TagPort>(this->port)) == elle::StatusError)
-	  escape("unable to send the passport");
+	      // release.
+	      release();
+	    }
+	}
 
 	leave();
       }
@@ -450,284 +798,41 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Machine::Passport(const lune::Passport&	passport)
+      elle::Status	Machine::Sweep(Host*			host)
       {
-	Neighbour*	neighbour;
-	elle::Session*	session;
-
 	enter();
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Passport()"
-		    << std::endl;
+	  printf("[hole] implementations::slug::Machine::Sweep()\n");
 
-	// retrieve the network session.
-	if (elle::Session::Instance(session) == elle::StatusError)
-	  escape("unable to retrieve the current session");
-
-	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->locus,
-					 neighbour) == elle::StatusError)
-	  escape("unable to retrieve the neighbour");
-
-	// check the neighbour's state, ignore 
-	if (neighbour->state == Neighbour::StateAuthenticated)
-	  leave();
-
-	// validate the passport.
-	if (passport.Validate(Infinit::Authority) == elle::StatusError)
-	  escape("unable to validate the passport");
-
-	// set the neighbour's label.
-	neighbour->label = passport.label;
-
-	// set the neighbour as authenticated if both the label and the
-	// port have been provided.
-	if ((neighbour->label != Label::Null) &&
-	    (neighbour->port != 0))
+	// depending on the host's state.
+	switch (host->state)
 	  {
-	    // set the state to authenticated.
-	    neighbour->state = Neighbour::StateAuthenticated;
+	  case Host::StateAuthenticated:
+	    {
+	      // remove the host from the neighbourhood.
+	      if (this->neighbourhood.Remove(host->locus) == elle::StatusError)
+		escape("unable to remove the host from the neighbourhood");
 
-	    // check that the neighbour does not already exist in the
-	    // routing table i.e with this label.
-	    if (this->routingtable.Exist(neighbour->label) == elle::StatusTrue)
-	      {
-		//
-		// this case is possible because a neighbour may have
-		// been connecting to us, followed by us connecting to it.
-		//
-		// thus, the machine would reference two instances of the
-		// same neighbour.
-		//
-		// this check make sure to remove the redundant one.
-		//
+	      break;
+	    }
+	  default:
+	    {
+	      // does the host exist in the guestlist.
+	      if (this->guestlist.Exist(host->gate) == elle::StatusTrue)
+		{
+		  // remove the host from the guestlist.
+		  if (this->guestlist.Remove(host->gate) == elle::StatusError)
+		    escape("unable to remove the host from the neighbourhood");
+		}
 
-		// remote this neighbour from the neighbourhood.
-		if (this->neighbourhood.Remove(
-		      neighbour->locus) == elle::StatusError)
-		  escape("unable to remove the neighbour");
-
-		// delete it.
-		delete neighbour;
-
-		leave();
-	      }
-
-	    // register the neighbour in the routing table.
-	    if (this->routingtable.Add(neighbour->label,
-				       neighbour) == elle::StatusError)
-	      escape("unable to add the neighbour to the routing table");
-
-	    // acknowledge the authentication.
-	    if (neighbour->gate->Reply(
-		  elle::Inputs<TagAuthenticated>()) == elle::StatusError)
-	      escape("unable to acknowledge the authentication");
-
-	    // XXX
-	    this->Dump();
+	      break;
+	    }
 	  }
 
-	leave();
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status	Machine::Port(const elle::Port&		port)
-      {
-	Neighbour*	neighbour;
-	elle::Session*	session;
-
-	enter();
-
-	// debug.
-	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Port()"
-		    << std::endl;
-
-	// retrieve the network session.
-	if (elle::Session::Instance(session) == elle::StatusError)
-	  escape("unable to retrieve the current session");
-
-	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->locus,
-					 neighbour) == elle::StatusError)
-	  escape("unable to retrieve the neighbour");
-
-	// check the neighbour's state, ignore 
-	if (neighbour->state == Neighbour::StateAuthenticated)
-	  leave();
-
-	// set the neighbour's port.
-	neighbour->port = port;
-
-	// set the neighbour as authenticated if both the label and the
-	// port have been provided.
-	if ((neighbour->label != Label::Null) &&
-	    (neighbour->port != 0))
-	  {
-	    // set the state to authenticated.
-	    neighbour->state = Neighbour::StateAuthenticated;
-
-	    // register the neighbour in the routing table.
-	    if (this->routingtable.Add(neighbour->label,
-				       neighbour) == elle::StatusError)
-	      escape("unable to add the neighbour to the routing table");
-
-	    // acknowledge the authentication.
-	    if (neighbour->gate->Reply(
-		  elle::Inputs<TagAuthenticated>()) == elle::StatusError)
-	      escape("unable to acknowledge the authentication");
-
-	    // XXX
-	    this->Dump();
-	  }
-
-	leave();
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status	Machine::Authenticated()
-      {
-	Neighbour*	neighbour;
-	elle::Session*	session;
-
-	enter();
-
-	// debug.
-	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Authenticated()"
-		    << std::endl;
-
-	// retrieve the network session.
-	if (elle::Session::Instance(session) == elle::StatusError)
-	  escape("unable to retrieve the current session");
-
-	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->locus,
-					 neighbour) == elle::StatusError)
-	  escape("unable to retrieve the neighbour");
-
-	// set the machine as being authenticated.
-	this->state = Machine::StateAuthenticated;
-
-	leave();
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status	Machine::Update(const Cluster&		cluster)
-      {
-	Neighbour*		neighbour;
-	elle::Session*		session;
-	Cluster::Scoutor	scoutor;
-
-	enter();
-
-	// debug.
-	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Update()"
-		    << std::endl;
-
-	// retrieve the network session.
-	if (elle::Session::Instance(session) == elle::StatusError)
-	  escape("unable to retrieve the current session");
-
-	// retrieve the neighbour from the neighbourhood.
-	if (this->neighbourhood.Retrieve(session->locus,
-					 neighbour) == elle::StatusError)
-	  escape("unable to retrieve the neighbour");
-
-	// check that the machine has been authenticated.
-	if (this->state != Machine::StateAuthenticated)
-	  escape("the machine has not been authenticated yet");
-
-	// check that the neighbour has been authenticated.
-	if (neighbour->state != Neighbour::StateAuthenticated)
-	  escape("unable to process gossip from unauthenticated neighbours");
-
-	// go through the cluster.
-	for (scoutor = cluster.container.begin();
-	     scoutor != cluster.container.end();
-	     scoutor++)
-	  {
-	    elle::Locus		locus = *scoutor;
-	    Neighbour*		neighbour;
-
-	    enterx(instance(neighbour));
-
-	    // check if this locus is already registered.
-	    if (this->neighbourhood.Exist(locus) == elle::StatusTrue)
-	      continue;
-
-	    // allocate the neighbour.
-	    neighbour = new Neighbour;
-
-	    // create the neighbour.
-	    if (neighbour->Create(locus) == elle::StatusError)
-	      escape("unable to create the neighbour");
-
-	    // add the neighbour to the neighbourhood.
-	    if (this->neighbourhood.Add(neighbour->locus,
-					neighbour) == elle::StatusError)
-	      escape("unable to add the neighbour to the neighbourhood");
-
-	    // connect the neighbour.
-	    if (neighbour->Connect() == elle::StatusError)
-	      escape("unable to connect the neighbour");
-
-	    // waive.
-	    waive(neighbour);
-
-	    // release.
-	    release();
-	  }
-
-	leave();
-      }
-
-      ///
-      /// XXX
-      ///
-      elle::Status	Machine::Gossip()
-      {
-	Cluster			cluster;
-	RoutingTable::Scoutor	scoutor;
-
-	enter();
-
-	// debug.
-	if (Infinit::Configuration.hole.debug == true)
-	  std::cout << "[hole] Machine::Gossip()"
-		    << std::endl;
-
-	// check that the machine has been authenticated.
-	if (this->state != Machine::StateAuthenticated)
-	  escape("the machine has not been authenticated yet");
-
-	// create the cluster related to the current routing table.
-	if (cluster.Create(this->routingtable) == elle::StatusError)
-	  escape("unable to create the cluster");
-
-	// go through the routing table entries.
-	for (scoutor = this->routingtable.container.begin();
-	     scoutor != this->routingtable.container.end();
-	     scoutor++)
-	  {
-	    Neighbour*		neighbour = scoutor->second;
-
-	    // send the cluster to the neighbour.
-	    if (neighbour->gate->Send(
-		  elle::Inputs<TagUpdate>(cluster)) == elle::StatusError)
-	      escape("unable to send the cluster");
-	  }
-
-	leave();
+	// delete the host.
+	bury(host);
       }
 
 //
@@ -749,21 +854,17 @@ namespace hole
 	std::cout << alignment << elle::Dumpable::Shift
 		  << "[State] " << this->state << std::endl;
 
-	// dump the neighbourhood.
-	if (this->neighbourhood.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the neighbourhood");
-
-	// dump the routing table.
-	if (this->routingtable.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the routing table");
-
-	// dump the timer.
-	if (this->timer.Dump(margin + 2) == elle::StatusError)
-	  escape("unable to dump the timer");
-
 	// dump the port.
 	std::cout << alignment << elle::Dumpable::Shift
 		  << "[Port] " << std::dec << this->port << std::endl;
+
+	// dump the guestlist.
+	if (this->guestlist.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the guestlist");
+
+	// dump the neighbourhood.
+	if (this->neighbourhood.Dump(margin + 2) == elle::StatusError)
+	  escape("unable to dump the neighbourhood");
 
 	leave();
       }

@@ -18,7 +18,7 @@
 #include <elle/Elle.hh>
 
 #include <hole/Label.hh>
-#include <hole/implementations/slug/Neighbour.hh>
+#include <hole/implementations/slug/Host.hh>
 
 namespace hole
 {
@@ -41,7 +41,8 @@ namespace hole
 	//
 	// types
 	//
-	typedef std::map<const elle::Locus, Neighbour*>	Container;
+	typedef std::pair<const elle::Locus, Host*>	Value;
+	typedef std::map<const elle::Locus, Host*>	Container;
 	typedef typename Container::iterator		Iterator;
 	typedef typename Container::const_iterator	Scoutor;
 
@@ -54,13 +55,15 @@ namespace hole
 	// methods
 	//
 	elle::Status		Add(const elle::Locus&,
-				    Neighbour*);
-	elle::Status		Exist(const elle::Locus&);
+				    Host*);
+	elle::Status		Exist(const elle::Locus&) const;
 	elle::Status		Retrieve(const elle::Locus&,
-					 Neighbour*&);
+					 Host*&) const;
 	elle::Status		Remove(const elle::Locus&);
 	elle::Status		Locate(const elle::Locus&,
-				       Iterator* = NULL);
+				       Scoutor&) const;
+	elle::Status		Locate(const elle::Locus&,
+				       Iterator&);
 
 	//
 	// interfaces

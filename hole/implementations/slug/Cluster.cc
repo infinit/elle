@@ -13,7 +13,6 @@
 //
 
 #include <hole/implementations/slug/Cluster.hh>
-#include <hole/implementations/slug/Neighbour.hh>
 
 namespace hole
 {
@@ -42,28 +41,21 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Cluster::Create(const RoutingTable&	routingtable)
+      elle::Status	Cluster::Create(const Neighbourhood&	neighbourhood)
       {
-	RoutingTable::Scoutor	scoutor;
+	Neighbourhood::Scoutor	scoutor;
 
 	enter();
 
 	// go through the entries.
-	for (scoutor = routingtable.container.begin();
-	     scoutor != routingtable.container.end();
+	for (scoutor = neighbourhood.container.begin();
+	     scoutor != neighbourhood.container.end();
 	     scoutor++)
 	  {
-	    Neighbour*		neighbour = scoutor->second;
-	    elle::Locus		locus;
+	    Host*		host = scoutor->second;
 
-	    // create a locus with the port on which the peer is listening
-	    // for incoming connections.
-	    if (locus.Create(neighbour->locus.host,
-			     neighbour->port) == elle::StatusError)
-	      escape("unable to create the locus");
-
-	    // add the neighbour's locus.
-	    this->container.push_back(locus);
+	    // add the host's locus.
+	    this->container.push_back(host->locus);
 	  }
 
 	leave();

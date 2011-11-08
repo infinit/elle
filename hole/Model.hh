@@ -40,8 +40,8 @@ namespace hole
 
 	TypeLocal,
 	TypeRemote,
-	TypeCirkle,
 	TypeSlug,
+	TypeCirkle,
 	TypeKool,
 
 	Types = TypeKool,

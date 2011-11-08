@@ -79,14 +79,6 @@ namespace hole
 	elle::Status		Dump(const elle::Natural32 = 0) const;
 
 	//
-	// attributes
-	//
-	State			state;
-
-	elle::Gate*		gate;
-	elle::Timer*		timer;
-
-	//
 	// signals
 	//
 	struct
@@ -97,6 +89,14 @@ namespace hole
 	      >
 	    >			dead;
 	}			signal;
+
+	//
+	// attributes
+	//
+	State			state;
+
+	elle::Gate*		gate;
+	elle::Timer*		timer;
       };
 
     }
