@@ -192,7 +192,7 @@ namespace hole
 	     scoutor++)
 	  {
 	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Element]" << std::endl;
+		      << "[Guest]" << std::endl;
 
 	    // dump the gate's address.
 	    std::cout << alignment << elle::Dumpable::Shift

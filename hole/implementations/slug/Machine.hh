@@ -56,8 +56,7 @@ namespace hole
 	//
 	enum State
 	  {
-	    StateUnknown,
-	    StateAlone,
+	    StateDetached,
 	    StateAttached
 	  };
 

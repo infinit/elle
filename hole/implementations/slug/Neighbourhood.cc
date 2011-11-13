@@ -191,7 +191,7 @@ namespace hole
 	     scoutor++)
 	  {
 	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Element]" << std::endl;
+		      << "[Neighbour]" << std::endl;
 
 	    // dump the locus.
 	    if (scoutor->first.Dump(margin + 4) == elle::StatusError)

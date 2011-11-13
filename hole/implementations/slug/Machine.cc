@@ -41,6 +41,18 @@ namespace hole
       ///
       const elle::Natural32		Machine::Timeout = 2000;
 
+      // XXX
+      elle::Timer	XXX;
+      elle::Status	BANDE()
+      {
+	enter();
+
+	Slug::Computer->Dump();
+
+	leave();
+      }
+      // XXX
+
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -49,7 +61,7 @@ namespace hole
       /// XXX
       ///
       Machine::Machine():
-	state(StateUnknown),
+	state(StateDetached),
 	port(0),
 	timer(NULL)
       {
@@ -213,6 +225,14 @@ namespace hole
 	    escape("unable to listen for bridge connections");
 	}
 
+	// XXX
+	{
+	  XXX.Create(elle::Timer::ModeRepetition);
+	  XXX.signal.timeout.Subscribe(
+	    elle::Callback<>::Infer(&BANDE));
+	  XXX.Start(5000);
+	}
+
 	leave();
       }
 
@@ -234,17 +254,6 @@ namespace hole
 	// depending on the machine's state.
 	switch (this->state)
 	  {
-	  case Machine::StateAlone:
-	    {
-	      //
-	      // in this case, the current machine seems to have been
-	      // unable to connect to other hosts.
-	      //
-	      // therefore, the operation is carried out locally.
-	      //
-
-	      // XXX local
-	    }
 	  case Machine::StateAttached:
 	    {
 	      //
@@ -297,17 +306,6 @@ namespace hole
 	// depending on the machine's state.
 	switch (this->state)
 	  {
-	  case Machine::StateAlone:
-	    {
-	      //
-	      // in this case, the current machine seems to have been
-	      // unable to connect to other hosts.
-	      //
-	      // therefore, the operation is carried out locally.
-	      //
-
-	      // XXX local
-	    }
 	  case Machine::StateAttached:
 	    {
 	      //
@@ -359,17 +357,6 @@ namespace hole
 	// depending on the machine's state.
 	switch (this->state)
 	  {
-	  case Machine::StateAlone:
-	    {
-	      //
-	      // in this case, the current machine seems to have been
-	      // unable to connect to other hosts.
-	      //
-	      // therefore, the operation is carried out locally.
-	      //
-
-	      // XXX local
-	    }
 	  case Machine::StateAttached:
 	    {
 	      //
@@ -380,16 +367,63 @@ namespace hole
 	      // also sent to every node in the network.
 	      //
 
-	      // XXX local + remote
+	      // does the block exist.
+	      if (block.Exist(Hole::Implementation->network,
+			      address) == elle::StatusTrue)
+		{
+		  // does the block exist.
+		  if (block.Exist(Hole::Implementation->network,
+				  address) == elle::StatusFalse)
+		    escape("the block does not seem to exist");
 
-	/* XXX
-	// transfer to the remote.
-	if (this->gate->Call(
-	      elle::Inputs<TagPull>(address,
-				    nucleus::Version::Any),
-	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
-	  escape("unable to transfer the request");
-	*/
+		  // load the block.
+		  if (block.Load(Hole::Implementation->network,
+				 address) == elle::StatusError)
+		    escape("unable to load the block");
+
+		  // validate the block.
+		  if (block.Validate(address) == elle::StatusError)
+		    escape("the block seems to be invalid");
+		}
+	      else
+		{
+		  //
+		  // otherwise, go through the neighbours and retrieve
+		  // the block from them.
+		  //
+		  Neighbourhood::Scoutor	scoutor;
+
+		  // for every scoutor.
+		  for (scoutor = this->neighbourhood.container.begin();
+		       scoutor != this->neighbourhood.container.end();
+		       scoutor++)
+		    {
+		      Host*		host = scoutor->second;
+
+		      // request the host.
+		      if (host->gate->Call(
+			    elle::Inputs<TagPull>(address,
+						  nucleus::Version::Any),
+			    elle::Outputs<TagBlock>(derivable)) ==
+			  elle::StatusOk)
+			break; // XXX the block is not validated
+
+		      // ignore the error messages and continue with the
+		      // next neighbour.
+		      purge();
+		    }
+
+		  // check if none if the neighbour has the block.
+		  if (scoutor == this->neighbourhood.container.end())
+		    escape("unable to locate the block associated with "
+			   "the given address");
+
+		  // finally, since the block has been retrieved,
+		  // store it locally.
+		  if (block.Store(Hole::Implementation->network,
+				  address) == elle::StatusError)
+		    escape("unable to store the block");
+		}
 
 	      break;
 	    }
@@ -422,17 +456,6 @@ namespace hole
 	// depending on the machine's state.
 	switch (this->state)
 	  {
-	  case Machine::StateAlone:
-	    {
-	      //
-	      // in this case, the current machine seems to have been
-	      // unable to connect to other hosts.
-	      //
-	      // therefore, the operation is carried out locally.
-	      //
-
-	      // XXX local
-	    }
 	  case Machine::StateAttached:
 	    {
 	      //
@@ -443,16 +466,113 @@ namespace hole
 	      // also sent to every node in the network.
 	      //
 
-	      // XXX local + remote
+	      // does the block exist.
+	      if (block.Exist(Hole::Implementation->network,
+			      address, version) == elle::StatusTrue)
+		{
+		  // does the block exist.
+		  if (block.Exist(Hole::Implementation->network,
+				  address, version) == elle::StatusFalse)
+		    escape("the block does not seem to exist");
 
-	/* XXX
-	// transfer to the remote.
-	if (this->gate->Call(
-	      elle::Inputs<TagPull>(address,
-				    version),
-	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
-	  escape("unable to transfer the request");
-	*/
+		  // load the block.
+		  if (block.Load(Hole::Implementation->network,
+				 address, version) == elle::StatusError)
+		    escape("unable to load the block");
+
+		  // validate the block, depending on its component.
+		  //
+		  // indeed, the Object component requires as additional
+		  // block for being validated.
+		  switch (address.component)
+		    {
+		    case nucleus::ComponentObject:
+		      {
+			const nucleus::Object*	object =
+			  static_cast<const nucleus::Object*>(&block);
+
+			// validate the object according to the presence of
+			// a referenced access block.
+			if (object->meta.access != nucleus::Address::Null)
+			  {
+			    nucleus::Access	access;
+
+			    // load the access block.
+			    if (Hole::Pull(object->meta.access,
+					   nucleus::Version::Last,
+					   access) == elle::StatusError)
+			      escape("unable to load the access block");
+
+			    // validate the object, providing the
+			    if (object->Validate(address,
+						 access) == elle::StatusError)
+			      escape("unable to validate the object");
+			  }
+			else
+			  {
+			    // validate the object.
+			    if (object->Validate(
+				  address,
+				  nucleus::Access::Null) == elle::StatusError)
+			      escape("unable to validate the object");
+			  }
+
+			break;
+		      }
+		    default:
+		      {
+			// validate the block through the common interface.
+			if (block.Validate(address) == elle::StatusError)
+			  escape("the block seems to be invalid");
+
+			break;
+		      }
+		    case nucleus::ComponentUnknown:
+		      {
+			escape("unknown component '%u'",
+			       address.component);
+		      }
+		    }
+		}
+	      else
+		{
+		  //
+		  // otherwise, go through the neighbours and retrieve
+		  // the block from them.
+		  //
+		  Neighbourhood::Scoutor	scoutor;
+
+		  // for every scoutor.
+		  for (scoutor = this->neighbourhood.container.begin();
+		       scoutor != this->neighbourhood.container.end();
+		       scoutor++)
+		    {
+		      Host*		host = scoutor->second;
+
+		      // request the host.
+		      if (host->gate->Call(
+			    elle::Inputs<TagPull>(address,
+						  version),
+			    elle::Outputs<TagBlock>(derivable)) ==
+			  elle::StatusOk)
+			break; // XXX the block is not validated
+
+		      // ignore the error messages and continue with the
+		      // next neighbour.
+		      purge();
+		    }
+
+		  // check if none if the neighbour has the block.
+		  if (scoutor == this->neighbourhood.container.end())
+		    escape("unable to locate the block associated with "
+			   "the given address");
+
+		  // finally, since the block has been retrieved,
+		  // store it locally.
+		  if (block.Store(Hole::Implementation->network,
+				  address) == elle::StatusError)
+		    escape("unable to store the block");
+		}
 
 	      break;
 	    }
@@ -481,17 +601,6 @@ namespace hole
 	// depending on the machine's state.
 	switch (this->state)
 	  {
-	  case Machine::StateAlone:
-	    {
-	      //
-	      // in this case, the current machine seems to have been
-	      // unable to connect to other hosts.
-	      //
-	      // therefore, the operation is carried out locally.
-	      //
-
-	      // XXX local
-	    }
 	  case Machine::StateAttached:
 	    {
 	      //
@@ -548,14 +657,14 @@ namespace hole
 
 	// if the machine has been neither connected nor authenticated
 	// to existing nodes...
-	if (this->state == Machine::StateUnknown)
+	if (this->state == Machine::StateDetached)
 	  {
 	    // then, suppose that the current machine as the only one in
 	    // the network.
 	    //
 	    // thus, it can be implicitly considered as authenticated
 	    // in a network composed of itself alone.
-	    this->state = Machine::StateAlone;
+	    this->state = Machine::StateAttached;
 	  }
 
 	leave();
@@ -575,7 +684,6 @@ namespace hole
 	// depending on the machine's state.
 	switch (this->state)
 	  {
-	  case Machine::StateAlone:
 	  case Machine::StateAttached:
 	    {
 	      Host*		host;
@@ -702,9 +810,6 @@ namespace hole
 		    Hole::Passport,
 		    this->port)) == elle::StatusError)
 	      escape("unable to send a message");
-
-	    // XXX
-	    this->Dump();
 	  }
 
 	leave();

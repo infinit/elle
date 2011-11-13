@@ -46,7 +46,6 @@ namespace hole
     static elle::Status		Options();
 
     static elle::Status		Origin(nucleus::Address&);
-
     static elle::Status		Push(const nucleus::Address&,
 				     const nucleus::Block&);
     static elle::Status		Pull(const nucleus::Address&,
