@@ -113,8 +113,8 @@ else
 fi
 
 if [[ $DEBUG -eq 0 ]]; then
-    CFLAGS="$CFLAGS -DNDEBUG -Os"
-    CXXFLAGS="$CXXFLAGS -DNDEBUG -Os"
+    CFLAGS="$CFLAGS -DNDEBUG -Os -s"
+    CXXFLAGS="$CXXFLAGS -DNDEBUG -Os -s"
     echo "---[ settings release flags"
 else
     CFLAGS="$CFLAGS -g"
