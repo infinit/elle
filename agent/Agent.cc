@@ -57,13 +57,45 @@ namespace agent
     // handle the parser.
     //
     {
-      // retrieve the user name.
-      if (Infinit::Parser->Value("User", name) == elle::StatusError)
+      // XXX everything must change!
+      if (Infinit::Parser->Test("User") == elle::StatusFalse)
 	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+	  // XXX name = "XXX{_USER_}XXX";
+	  name = "testdedingue";
 
-	  escape("unable to retrieve the user name");
+	  // retrieve the identity.
+	  {
+	    char	idy[256];
+	    char	command[256];
+
+	    sprintf(command,
+		    "mkdir -p %s/.infinit/users/%s",
+		    elle::System::Path::Home.c_str(),
+		    name.c_str());
+	    system(command);
+
+	    sprintf(idy, "%s/.infinit/users/%s/%s.idy",
+		    elle::System::Path::Home.c_str(),
+		    name.c_str(),
+		    name.c_str());
+	    sprintf(command,
+		    "wget http://www.infinit.li/infinit/identities/%s.idy "
+		    "-O %s >/dev/null 2>&1",
+		    name.c_str(),
+		    idy);
+	    system(command);
+	  }
+	}
+      else
+	{
+	  // retrieve the user name.
+	  if (Infinit::Parser->Value("User", name) == elle::StatusError)
+	    {
+	      // display the usage.
+	      Infinit::Parser->Usage();
+
+	      escape("unable to retrieve the user name");
+	    }
 	}
     }
 
@@ -79,14 +111,24 @@ namespace agent
       if (Agent::Identity.Exist(name) == elle::StatusFalse)
 	escape("the user identity does not seem to exist");
 
-      // prompt the user for the passphrase.
-      prompt = "Enter passphrase for keypair '" + name + "': ";
+      // XXX everything must change!
+      if (Infinit::Parser->Test("User") == elle::StatusFalse)
+	{
+	  // XXX
+	  // XXX pass = "XXX{_PASSWORD_}XXX";
+	  pass = "994061d81241aef531c04953b712df423d99f933";
+	}
+      else
+	{
+	  // prompt the user for the passphrase.
+	  prompt = "Enter passphrase for keypair '" + name + "': ";
 
-      if (elle::Console::Input(
-            pass,
-	    prompt,
-	    elle::Console::OptionPassword) == elle::StatusError)
-	escape("unable to read the input");
+	  if (elle::Console::Input(
+		pass,
+		prompt,
+		elle::Console::OptionPassword) == elle::StatusError)
+	    escape("unable to read the input");
+	}
 
       // load the identity.
       if (Agent::Identity.Load(name) == elle::StatusError)
