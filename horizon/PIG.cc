@@ -77,10 +77,15 @@ namespace pig
     // user/group identifiers into local identifiers.
     //
     {
-      // load the dictionary file.
-      if (PIG::Dictionary.Load(agent::Agent::Identity.name) ==
-	  elle::StatusError)
-	escape("unable to load the dictionary");
+      // if the dictionary exist.
+      if (PIG::Dictionary.Exist(agent::Agent::Identity.name) ==
+	  elle::StatusTrue)
+	{
+	  // load the dictionary file.
+	  if (PIG::Dictionary.Load(agent::Agent::Identity.name) ==
+	      elle::StatusError)
+	    escape("unable to load the dictionary");
+	}
     }
 
     //
@@ -95,14 +100,29 @@ namespace pig
     // set up FUSE.
     //
     {
-      // retrieve the mount point.
-      if (Infinit::Parser->Value("Mountpoint",
-				 mountpoint) == elle::StatusError)
+      // XXX everything must change!
+      if (Infinit::Parser->Test("Mountpoint") == elle::StatusFalse)
 	{
-	  // display the usage.
-	  Infinit::Parser->Usage();
+	  char		command[256];
 
-	  escape("unable to retrieve the mount point");
+	  // XXX mountpoint = "XXX{_MOUNTPOINT_}XXX";
+	  mountpoint = elle::System::Path::Home + "/INFINIT";
+
+	  sprintf(command, "mkdir -p %s",
+		  mountpoint.c_str());
+	  system(command);
+	}
+      else
+	{
+	  // retrieve the mount point.
+	  if (Infinit::Parser->Value("Mountpoint",
+				     mountpoint) == elle::StatusError)
+	    {
+	      // display the usage.
+	      Infinit::Parser->Usage();
+
+	      escape("unable to retrieve the mount point");
+	    }
 	}
 
       if (FUSE::Setup(mountpoint) == elle::StatusError)
