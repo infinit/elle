@@ -57,13 +57,103 @@ namespace hole
 
     enter();
 
-    // retrieve the network name.
-    if (Infinit::Parser->Value("Network", name) == elle::StatusError)
+    // XXX everything must change!
+    if (Infinit::Parser->Test("Network") == elle::StatusFalse)
       {
-	// display the usage.
-	Infinit::Parser->Usage();
+	// XXX name = "XXX{_NETWORK_}XXX";
+	name = "testdedingue";
 
-	escape("unable to retrieve the network name");
+	// retrieve the descriptor.
+	{
+	  char		dsc[256];
+	  char		command[256];
+
+	  sprintf(command,
+		  "mkdir -p %s/.infinit/networks/%s",
+		  elle::System::Path::Home.c_str(),
+		  name.c_str());
+	  system(command);
+
+	  sprintf(dsc, "%s/.infinit/networks/%s/%s.dsc",
+		  elle::System::Path::Home.c_str(),
+		  name.c_str(),
+		  name.c_str());
+	  sprintf(command,
+		  "wget http://www.infinit.li/infinit/descriptors/%s.dsc "
+		  "-O %s >/dev/null 2>&1",
+		  name.c_str(),
+		  dsc);
+	  system(command);
+	}
+
+	// retrieve the passport.
+	{
+	  char		ppt[256];
+	  char		command[256];
+
+	  sprintf(ppt, "%s/.infinit/infinit.ppt",
+		  elle::System::Path::Home.c_str());
+	  sprintf(command,
+		  "wget http://www.infinit.li/infinit/passports/infinit.ppt "
+		  "-O %s >/dev/null 2>&1",
+		  ppt);
+	  system(command);
+	}
+
+	elle::Path	path;
+
+	// create the path.
+	if (path.Create(lune::Lune::Network::Shelter::Root) ==
+	    elle::StatusError)
+	  escape("unable to create the path");
+
+	// complete the path's pattern.
+	if (path.Complete(elle::Piece("%NETWORK%", name)) == elle::StatusError)
+	  escape("unable to complete the path");
+
+	// retrieve the shelter, if necessary.
+	if (elle::Directory::Exist(path) == elle::StatusFalse)
+	  {
+	    char	sht[256];
+	    char	net[256];
+	    char	command[256];
+
+	    sprintf(sht, "%s/.infinit/networks/%s/shelter.tar.bz2",
+		    elle::System::Path::Home.c_str(),
+		    name.c_str());
+	    sprintf(net, "%s/.infinit/networks/%s",
+		    elle::System::Path::Home.c_str(),
+		    name.c_str());
+
+	    sprintf(command,
+		    "wget http://www.infinit.li/infinit/shelters/%s.tar.bz2 "
+		    "-O %s >/dev/null 2>&1",
+		    name.c_str(),
+		    sht);
+	    system(command);
+
+	    sprintf(command,
+		    "tar xjvf %s -C %s >/dev/null 2>&1",
+		    sht,
+		    net);
+	    system(command);
+
+	    sprintf(command,
+		    "rm -f %s >/dev/null 2>&1",
+		    sht);
+	    system(command);
+	  }
+      }
+    else
+      {
+	// retrieve the network name.
+	if (Infinit::Parser->Value("Network", name) == elle::StatusError)
+	  {
+	    // display the usage.
+	    Infinit::Parser->Usage();
+
+	    escape("unable to retrieve the network name");
+	  }
       }
 
     // disable the meta logging.

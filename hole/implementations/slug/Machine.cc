@@ -126,19 +126,9 @@ namespace hole
 	// retrieve information from the descriptor.
 	//
 	{
-	  elle::String	string;
-
-	  // XXX improve this with getting a list of hosts.
-
-	  // retrieve the hosts' loci.
-	  if (Hole::Descriptor.Get("slug", "hosts",
-				   string) == elle::StatusError)
-	    escape("unable to retrieve the slug's host address from the "
-		   "network descriptor");
-
-	  // build the host locus.
-	  if (locus.Create(string) == elle::StatusError)
-	    escape("unable to create the host locus");
+	  elle::String		string;
+	  std::istringstream	stream;
+	  elle::String		element;
 
 	  // retrieve the machine's listening port.
 	  if (Hole::Descriptor.Get(
@@ -147,44 +137,54 @@ namespace hole
 		Machine::Default::Port) == elle::StatusError)
 	    escape("unable to retrieve the slug's local port from the "
 		   "network descriptor");
-	}
 
-	//
-	// create the host.
-	//
-	{
-	  Host*		host;
+	  // retrieve the hosts' loci.
+	  if (Hole::Descriptor.Get("slug", "hosts",
+				   string) == elle::StatusError)
+	    escape("unable to retrieve the slug's host address from the "
+		   "network descriptor");
 
-	  // XXX improve this with getting a list of hosts.
+	  // set up the stream.
+	  stream.str(string);
 
-	  enterx(instance(host));
+	  // for every locus in the list.
+	  while (std::getline(stream, element, ' '))
+	    {
+	      Host*		host;
 
-	  // allocate the host.
-	  host = new Host;
+	      // build the host locus.
+	      if (locus.Create(element) == elle::StatusError)
+		escape("unable to create the host locus");
 
-	  // create the host.
-	  if (host->Create(locus) == elle::StatusError)
-	    escape("unable to create the host");
+	      enterx(instance(host));
 
-	  // subscribe to the signal.
-	  if (host->signal.dead.Subscribe(
-		elle::Callback<>::Infer(&Machine::Sweep,
-					this)) == elle::StatusError)
-	    escape("unable to subscribe to the signal");
+	      // allocate the host.
+	      host = new Host;
 
-	  // connect the host.
-	  if (host->Connect() == elle::StatusError)
-	    escape("unable to connect the host");
+	      // create the host.
+	      if (host->Create(locus) == elle::StatusError)
+		escape("unable to create the host");
 
-	  // add the host to the guestlist.
-	  if (this->guestlist.Add(host->gate, host) == elle::StatusError)
-	    escape("unable to add the host to the guestlist");
+	      // subscribe to the signal.
+	      if (host->signal.dead.Subscribe(
+		    elle::Callback<>::Infer(&Machine::Sweep,
+					    this)) == elle::StatusError)
+		escape("unable to subscribe to the signal");
 
-	  // waive.
-	  waive(host);
+	      // connect the host.
+	      if (host->Connect() == elle::StatusError)
+		escape("unable to connect the host");
 
-	  // release.
-	  release();
+	      // add the host to the guestlist.
+	      if (this->guestlist.Add(host->gate, host) == elle::StatusError)
+		escape("unable to add the host to the guestlist");
+
+	      // waive.
+	      waive(host);
+
+	      // release.
+	      release();
+	    }
 	}
 
 	//
