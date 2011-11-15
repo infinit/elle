@@ -366,10 +366,6 @@ namespace application
     if (Infinit::Initialize() == elle::StatusError)
       escape("unable to initialize Infinit");
 
-    // initialize the Etoile library.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
-      escape("unable to initialize Etoile");
-
     // initialize the operation.
     operation = Network::OperationUnknown;
 
@@ -565,10 +561,6 @@ namespace application
 
     // waive.
     waive(Infinit::Parser);
-
-    // clean the Etoile.
-    if (etoile::Etoile::Clean() == elle::StatusError)
-      escape("unable to clean Etoile");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::StatusError)
