@@ -41,18 +41,6 @@ namespace hole
       ///
       const elle::Natural32		Machine::Timeout = 2000;
 
-      // XXX
-      elle::Timer	XXX;
-      elle::Status	BANDE()
-      {
-	enter();
-
-	Slug::Computer->Dump();
-
-	leave();
-      }
-      // XXX
-
 //
 // ---------- constructors & destructors --------------------------------------
 //
@@ -110,6 +98,27 @@ namespace hole
 	        elle::Procedure<TagAuthenticated>(
 		  elle::Callback<>::Infer(
 		    &Machine::Authenticated, this))) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagPush>(
+		  elle::Callback<>::Infer(
+		    &Machine::Push, this))) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagPull>(
+		  elle::Callback<>::Infer(
+		    &Machine::Pull, this))) == elle::StatusError)
+	    escape("unable to register the callback");
+
+	  // register the message.
+	  if (elle::Network::Register(
+	        elle::Procedure<TagWipe>(
+		  elle::Callback<>::Infer(
+		    &Machine::Wipe, this))) == elle::StatusError)
 	    escape("unable to register the callback");
 	}
 
@@ -225,14 +234,6 @@ namespace hole
 	    escape("unable to listen for bridge connections");
 	}
 
-	// XXX
-	{
-	  XXX.Create(elle::Timer::ModeRepetition);
-	  XXX.signal.timeout.Subscribe(
-	    elle::Callback<>::Infer(&BANDE));
-	  XXX.Start(5000);
-	}
-
 	leave();
       }
 
@@ -264,16 +265,44 @@ namespace hole
 	      // also sent to every node in the network.
 	      //
 
-	      // XXX local + remote
+	      //
+	      // first, store the block locally.
+	      //
+	      {
+		// does the block already exist.
+		if (block.Exist(Hole::Implementation->network,
+				address) == elle::StatusTrue)
+		  escape("this immutable block seems to already exist");
 
-	/* XXX
-	// transfer to the remote.
-	if (this->gate->Call(
-	      elle::Inputs<TagPush>(address,
-				    derivable),
-	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
-	  escape("unable to transfer the request");
-	*/
+		// store the block.
+		if (block.Store(Hole::Implementation->network,
+				address) == elle::StatusError)
+		  escape("unable to store the block");
+	      }
+
+	      //
+	      // then, publish it onto the network.
+	      //
+	      {
+		Neighbourhood::Scoutor	scoutor;
+
+		// for every scoutor.
+		for (scoutor = this->neighbourhood.container.begin();
+		     scoutor != this->neighbourhood.container.end();
+		     scoutor++)
+		  {
+		    Host*		host = scoutor->second;
+
+		    // send the block to the host.
+		    // XXX do not check the success!
+		    host->gate->Send(
+		      elle::Inputs<TagPush>(address, derivable));
+
+		    // ignore the error messages and continue with the
+		    // next neighbour.
+		    purge();
+		  }
+	      }
 
 	      break;
 	    }
@@ -316,16 +345,130 @@ namespace hole
 	      // also sent to every node in the network.
 	      //
 
-	      // XXX local + remote
+	      //
+	      // first, store the block locally.
+	      //
+	      {
+		// validate the block, depending on its component.
+		//
+		// indeed, the Object component requires as additional
+		// block for being validated.
+		switch (address.component)
+		  {
+		  case nucleus::ComponentObject:
+		    {
+		      const nucleus::Object*	object =
+			static_cast<const nucleus::Object*>(&block);
 
-	/* XXX
-	// transfer to the remote.
-	if (this->gate->Call(
-	      elle::Inputs<TagPush>(address,
-				    derivable),
-	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
-	  escape("unable to transfer the request");
-	*/
+		      // validate the object according to the presence of
+		      // a referenced access block.
+		      if (object->meta.access != nucleus::Address::Null)
+			{
+			  nucleus::Access	access;
+
+			  // load the access block.
+			  if (Hole::Pull(object->meta.access,
+					 nucleus::Version::Last,
+					 access) == elle::StatusError)
+			    escape("unable to load the access block");
+
+			  // validate the object, providing the
+			  if (object->Validate(address,
+					       access) == elle::StatusError)
+			    escape("unable to validate the object");
+			}
+		      else
+			{
+			  // validate the object.
+			  if (object->Validate(
+				address,
+				nucleus::Access::Null) == elle::StatusError)
+			    escape("unable to validate the object");
+			}
+
+		      break;
+		    }
+		  default:
+		    {
+		      // validate the block through the common interface.
+		      if (block.Validate(address) == elle::StatusError)
+			escape("the block seems to be invalid");
+
+		      break;
+		    }
+		  case nucleus::ComponentUnknown:
+		    {
+		      escape("unknown component '%u'",
+			     address.component);
+		    }
+		  }
+
+		// does the block already exist.
+		if (block.Exist(Hole::Implementation->network,
+				address,
+				nucleus::Version::Last) == elle::StatusTrue)
+		  {
+		    nucleus::MutableBlock*	current;
+
+		    enterx(instance(current));
+
+		    // build a block according to the component.
+		    if (nucleus::Nucleus::Factory.Build(address.component,
+							current) ==
+			elle::StatusError)
+		      escape("unable to build the block");
+
+		    // load the latest version.
+		    if (current->Load(Hole::Implementation->network,
+				      address,
+				      nucleus::Version::Last) ==
+			elle::StatusError)
+		      escape("unable to load the current version");
+
+		    // does the given block derive the current version.
+		    if (!(block.version > current->version))
+		      escape("the block to store does not seem to derive "
+			     "the current version");
+
+		    // delete the current instance.
+		    delete current;
+
+		    // waive.
+		    waive(current);
+
+		    // release.
+		    release();
+		  }
+
+		// store the block.
+		if (block.Store(Hole::Implementation->network,
+				address) == elle::StatusError)
+		  escape("unable to store the block");
+	      }
+
+	      //
+	      // then, publish it onto the network.
+	      //
+	      {
+		Neighbourhood::Scoutor	scoutor;
+
+		// for every scoutor.
+		for (scoutor = this->neighbourhood.container.begin();
+		     scoutor != this->neighbourhood.container.end();
+		     scoutor++)
+		  {
+		    Host*		host = scoutor->second;
+
+		    // send the block to the host.
+		    // XXX do not check the success!
+		    host->gate->Send(
+		      elle::Inputs<TagPush>(address, derivable));
+
+		    // ignore the error messages and continue with the
+		    // next neighbour.
+		    purge();
+		  }
+	      }
 
 	      break;
 	    }
@@ -406,7 +549,10 @@ namespace hole
 						  nucleus::Version::Any),
 			    elle::Outputs<TagBlock>(derivable)) ==
 			  elle::StatusOk)
-			break; // XXX the block is not validated
+			{
+			  // XXX do not verify the block's validity.
+			  break;
+			}
 
 		      // ignore the error messages and continue with the
 		      // next neighbour.
@@ -470,11 +616,6 @@ namespace hole
 	      if (block.Exist(Hole::Implementation->network,
 			      address, version) == elle::StatusTrue)
 		{
-		  // does the block exist.
-		  if (block.Exist(Hole::Implementation->network,
-				  address, version) == elle::StatusFalse)
-		    escape("the block does not seem to exist");
-
 		  // load the block.
 		  if (block.Load(Hole::Implementation->network,
 				 address, version) == elle::StatusError)
@@ -555,7 +696,10 @@ namespace hole
 						  version),
 			    elle::Outputs<TagBlock>(derivable)) ==
 			  elle::StatusOk)
-			break; // XXX the block is not validated
+			{
+			  // XXX do not verify the block's validity.
+			  break;
+			}
 
 		      // ignore the error messages and continue with the
 		      // next neighbour.
@@ -611,22 +755,75 @@ namespace hole
 	      // also sent to every node in the network.
 	      //
 
-	      // XXX local + remote
+	      //
+	      // remove the block locally.
+	      //
+	      {
+		// treat the request depending on the nature of the block which
+		// the addres indicates.
+		switch (address.family)
+		  {
+		  case nucleus::FamilyContentHashBlock:
+		    {
+		      nucleus::ImmutableBlock	ib;
 
-	/* XXX
-	// transfer to the remote.
-	if (this->gate->Call(
-	      elle::Inputs<TagWipe>(address),
-	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
-	  escape("unable to transfer the request");
-	*/
+		      // erase the immutable block.
+		      if (ib.Erase(Hole::Implementation->network,
+				   address) == elle::StatusError)
+			escape("unable to erase the block");
+
+		      break;
+		    }
+		  case nucleus::FamilyPublicKeyBlock:
+		  case nucleus::FamilyOwnerKeyBlock:
+		  case nucleus::FamilyImprintBlock:
+		    {
+		      nucleus::MutableBlock	mb;
+
+		      // retrieve the mutable block.
+		      if (mb.Erase(Hole::Implementation->network,
+				   address) == elle::StatusError)
+			escape("unable to erase the block");
+
+		      break;
+		    }
+		  default:
+		    {
+		      escape("unknown block family");
+		    }
+		  }
+	      }
+
+	      //
+	      // then, notify the other hosts of the removal.
+	      //
+	      {
+		Neighbourhood::Scoutor	scoutor;
+
+		// for every scoutor.
+		for (scoutor = this->neighbourhood.container.begin();
+		     scoutor != this->neighbourhood.container.end();
+		     scoutor++)
+		  {
+		    Host*		host = scoutor->second;
+
+		    // send the request to the host.
+		    // XXX do not check the success!
+		    host->gate->Send(
+		      elle::Inputs<TagWipe>(address));
+
+		    // ignore the error messages and continue with the
+		    // next neighbour.
+		    purge();
+		  }
+	      }
 
 	      break;
 	    }
 	  default:
 	    {
-	      escape("the machine's state '%u' does not allow one to request "
-		     "operations on the storage layer",
+	      escape("the machine's state '%u' does not allow one to "
+		     "request operations on the storage layer",
 		     this->state);
 	    }
 	  }
@@ -784,10 +981,6 @@ namespace hole
 				   port) == elle::StatusError)
 	      escape("unable to create the locus");
 
-	    // remove the host from the guestlist.
-	    if (this->guestlist.Remove(host->gate) == elle::StatusError)
-	      escape("unable to remove the host from the guestlist");
-
 	    // add the host to the neighbourhood now that it has been
 	    // authenticated.
 	    if (this->neighbourhood.Add(host->locus,
@@ -820,7 +1013,6 @@ namespace hole
       ///
       elle::Status	Machine::Authenticated(const Cluster&	cluster)
       {
-	Host*		host;
 	elle::Session*	session;
 
 	enter();
@@ -916,6 +1108,10 @@ namespace hole
 	  {
 	  case Host::StateAuthenticated:
 	    {
+	      // remove the host from the guestlist.
+	      if (this->guestlist.Remove(host->gate) == elle::StatusError)
+		escape("unable to remove the host from the guestlist");
+
 	      // remove the host from the neighbourhood.
 	      if (this->neighbourhood.Remove(host->locus) == elle::StatusError)
 		escape("unable to remove the host from the neighbourhood");
@@ -938,6 +1134,427 @@ namespace hole
 
 	// delete the host.
 	bury(host);
+
+	leave();
+      }
+
+      ///
+      /// this method stores the given block.
+      ///
+      elle::Status	Machine::Push(const nucleus::Address&	address,
+				      const
+				        nucleus::Derivable
+				          <nucleus::Block>&	derivable)
+      {
+	Host*		host;
+	elle::Session*	session;
+	nucleus::Block*	object;
+
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Push()\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the host from the guestlist.
+	if (this->guestlist.Retrieve(
+	      static_cast<elle::Gate*>(session->socket),
+	      host) == elle::StatusError)
+	  escape("unable to retrieve the host");
+
+	// check the host's state.
+	if (host->state != Host::StateAuthenticated)
+	  escape("unable to process a request from an unauthenticated host");
+
+	// infer the block from the derivable.
+	if (derivable.Infer(object) == elle::StatusError)
+	  escape("unable to infer the block from the derivable");
+
+	// forward the request depending on the nature of the block which
+	// the address indicates.
+	switch (address.family)
+	  {
+	  case nucleus::FamilyContentHashBlock:
+	    {
+	      nucleus::ImmutableBlock*	ib;
+
+	      // cast to an immutable block.
+	      ib = static_cast<nucleus::ImmutableBlock*>(object);
+
+	      //
+	      // first, store the block locally.
+	      //
+	      {
+		// does the block already exist.
+		if (ib->Exist(Hole::Implementation->network,
+			      address) == elle::StatusTrue)
+		  escape("this immutable block seems to already exist");
+
+		// store the block.
+		if (ib->Store(Hole::Implementation->network,
+			      address) == elle::StatusError)
+		  escape("unable to store the block");
+	      }
+
+	      break;
+	    }
+	  case nucleus::FamilyPublicKeyBlock:
+	  case nucleus::FamilyOwnerKeyBlock:
+	  case nucleus::FamilyImprintBlock:
+	    {
+	      nucleus::MutableBlock*	mb;
+
+	      // cast to a mutable block.
+	      mb = static_cast<nucleus::MutableBlock*>(object);
+
+	      //
+	      // first, store the block locally.
+	      //
+	      {
+		// validate the block, depending on its component.
+		//
+		// indeed, the Object component requires as additional
+		// block for being validated.
+		switch (address.component)
+		  {
+		  case nucleus::ComponentObject:
+		    {
+		      const nucleus::Object*	object =
+			static_cast<const nucleus::Object*>(mb);
+
+		      // validate the object according to the presence of
+		      // a referenced access block.
+		      if (object->meta.access != nucleus::Address::Null)
+			{
+			  nucleus::Access	access;
+
+			  // load the access block.
+			  if (Hole::Pull(object->meta.access,
+					 nucleus::Version::Last,
+					 access) == elle::StatusError)
+			    escape("unable to load the access block");
+
+			  // validate the object, providing the
+			  if (object->Validate(address,
+					       access) == elle::StatusError)
+			    escape("unable to validate the object");
+			}
+		      else
+			{
+			  // validate the object.
+			  if (object->Validate(
+				address,
+				nucleus::Access::Null) == elle::StatusError)
+			    escape("unable to validate the object");
+			}
+
+		      break;
+		    }
+		  default:
+		    {
+		      // validate the block through the common interface.
+		      if (mb->Validate(address) == elle::StatusError)
+			escape("the block seems to be invalid");
+
+		      break;
+		    }
+		  case nucleus::ComponentUnknown:
+		    {
+		      escape("unknown component '%u'",
+			     address.component);
+		    }
+		  }
+
+		// does the block already exist.
+		if (mb->Exist(Hole::Implementation->network,
+			      address,
+			      nucleus::Version::Last) == elle::StatusTrue)
+		  {
+		    nucleus::MutableBlock*	current;
+
+		    enterx(instance(current));
+
+		    // build a block according to the component.
+		    if (nucleus::Nucleus::Factory.Build(address.component,
+							current) ==
+			elle::StatusError)
+		      escape("unable to build the block");
+
+		    // load the latest version.
+		    if (current->Load(Hole::Implementation->network,
+				      address,
+				      nucleus::Version::Last) ==
+			elle::StatusError)
+		      escape("unable to load the current version");
+
+		    // does the given block derive the current version.
+		    if (!(mb->version > current->version))
+		      escape("the block to store does not seem to derive "
+			     "the current version");
+
+		    // delete the current instance.
+		    delete current;
+
+		    // waive.
+		    waive(current);
+
+		    // release.
+		    release();
+		  }
+
+		// store the block.
+		if (mb->Store(Hole::Implementation->network,
+			      address) == elle::StatusError)
+		  escape("unable to store the block");
+	      }
+
+	      break;
+	    }
+	  default:
+	    {
+	      escape("unknown block family");
+	    }
+	  }
+
+	// XXX do not even bother returning TagOk
+
+	leave();
+      }
+
+      ///
+      /// this method returns the block associated with the given address.
+      ///
+      elle::Status	Machine::Pull(const nucleus::Address&	address,
+				      const nucleus::Version&	version)
+      {
+	Host*		host;
+	elle::Session*	session;
+	nucleus::Block*	block;
+
+	enterx(instance(block));
+
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Pull()\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the host from the guestlist.
+	if (this->guestlist.Retrieve(
+	      static_cast<elle::Gate*>(session->socket),
+	      host) == elle::StatusError)
+	  escape("unable to retrieve the host");
+
+	// check the host's state.
+	if (host->state != Host::StateAuthenticated)
+	  escape("unable to process a request from an unauthenticated host");
+
+	// build the block according to the component.
+	if (nucleus::Nucleus::Factory.Build(address.component,
+					    block) == elle::StatusError)
+	  escape("unable to build the block");
+
+	// forward the request depending on the nature of the block which
+	// the addres indicates.
+	switch (address.family)
+	  {
+	  case nucleus::FamilyContentHashBlock:
+	    {
+	      nucleus::ImmutableBlock*	ib;
+
+	      // cast to an immutable block.
+	      ib = static_cast<nucleus::ImmutableBlock*>(block);
+
+	      // does the block exist.
+	      if (ib->Exist(Hole::Implementation->network,
+			    address) == elle::StatusFalse)
+		escape("the block does not seem to exist");
+
+	      // load the block.
+	      if (ib->Load(Hole::Implementation->network,
+			   address) == elle::StatusError)
+		escape("unable to load the block");
+
+	      // validate the block.
+	      if (ib->Validate(address) == elle::StatusError)
+		escape("the block seems to be invalid");
+
+	      break;
+	    }
+	  case nucleus::FamilyPublicKeyBlock:
+	  case nucleus::FamilyOwnerKeyBlock:
+	  case nucleus::FamilyImprintBlock:
+	    {
+	      nucleus::MutableBlock*	mb;
+
+	      // cast to a mutable block.
+	      mb = static_cast<nucleus::MutableBlock*>(block);
+
+	      // does the block exist.
+	      if (mb->Exist(Hole::Implementation->network,
+			    address, version) == elle::StatusTrue)
+		{
+		  // load the block.
+		  if (mb->Load(Hole::Implementation->network,
+			       address, version) == elle::StatusError)
+		    escape("unable to load the block");
+
+		  // validate the block, depending on its component.
+		  //
+		  // indeed, the Object component requires as additional
+		  // block for being validated.
+		  switch (address.component)
+		    {
+		    case nucleus::ComponentObject:
+		      {
+			const nucleus::Object*	object =
+			  static_cast<const nucleus::Object*>(mb);
+
+			// validate the object according to the presence of
+			// a referenced access block.
+			if (object->meta.access != nucleus::Address::Null)
+			  {
+			    nucleus::Access	access;
+
+			    // load the access block.
+			    if (Hole::Pull(object->meta.access,
+					   nucleus::Version::Last,
+					   access) == elle::StatusError)
+			      escape("unable to load the access block");
+
+			    // validate the object, providing the
+			    if (object->Validate(address,
+						 access) == elle::StatusError)
+			      escape("unable to validate the object");
+			  }
+			else
+			  {
+			    // validate the object.
+			    if (object->Validate(
+				  address,
+				  nucleus::Access::Null) == elle::StatusError)
+			      escape("unable to validate the object");
+			  }
+
+			break;
+		      }
+		    default:
+		      {
+			// validate the block through the common interface.
+			if (mb->Validate(address) == elle::StatusError)
+			  escape("the block seems to be invalid");
+
+			break;
+		      }
+		    case nucleus::ComponentUnknown:
+		      {
+			escape("unknown component '%u'",
+			       address.component);
+		      }
+		    }
+		}
+
+	      break;
+	    }
+	  default:
+	    {
+	      escape("unknown block family");
+	    }
+	  }
+
+	nucleus::Derivable<nucleus::Block>	derivable(address.component,
+							  *block);
+
+	// return the block.
+	if (host->gate->Reply(
+	      elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
+	  escape("unable to return the block");
+
+	// delete the block.
+	delete block;
+
+	// waive.
+	waive(block);
+
+	leave();
+      }
+
+      ///
+      /// this method removes the block associated with the given address.
+      ///
+      elle::Status	Machine::Wipe(const nucleus::Address&	address)
+      {
+	Host*		host;
+	elle::Session*	session;
+
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Wipe()\n");
+
+	// retrieve the network session.
+	if (elle::Session::Instance(session) == elle::StatusError)
+	  escape("unable to retrieve the current session");
+
+	// retrieve the host from the guestlist.
+	if (this->guestlist.Retrieve(
+	      static_cast<elle::Gate*>(session->socket),
+	      host) == elle::StatusError)
+	  escape("unable to retrieve the host");
+
+	// check the host's state.
+	if (host->state != Host::StateAuthenticated)
+	  escape("unable to process a request from an unauthenticated host");
+
+	//
+	// remove the block locally.
+	//
+	{
+	  // treat the request depending on the nature of the block which
+	  // the addres indicates.
+	  switch (address.family)
+	    {
+	    case nucleus::FamilyContentHashBlock:
+	      {
+		nucleus::ImmutableBlock	ib;
+
+		// erase the immutable block.
+		if (ib.Erase(Hole::Implementation->network,
+			     address) == elle::StatusError)
+		  escape("unable to erase the block");
+
+		break;
+	      }
+	    case nucleus::FamilyPublicKeyBlock:
+	    case nucleus::FamilyOwnerKeyBlock:
+	    case nucleus::FamilyImprintBlock:
+	      {
+		nucleus::MutableBlock	mb;
+
+		// retrieve the mutable block.
+		if (mb.Erase(Hole::Implementation->network,
+			     address) == elle::StatusError)
+		  escape("unable to erase the block");
+
+		break;
+	      }
+	    default:
+	      {
+		escape("unknown block family");
+	      }
+	    }
+	}
+
+	// XXX do not even bother returning TagOk
+
+	leave();
       }
 
 //

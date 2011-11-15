@@ -30,17 +30,6 @@ namespace hole
       ///
       Neighbourhood::~Neighbourhood()
       {
-	Neighbourhood::Scoutor	scoutor;
-
-	// go through the entries.
-	for (scoutor = this->container.begin();
-	     scoutor != this->container.end();
-	     scoutor++)
-	  {
-	    // delete the host.
-	    delete scoutor->second;
-	  }
-
 	// clear the container.
 	this->container.clear();
       }

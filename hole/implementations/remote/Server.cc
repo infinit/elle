@@ -233,7 +233,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Put[Immutable]()");
+	  printf("[hole] implementations::remote::Server::Put[Immutable]()\n");
 
 	// does the block already exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -258,7 +258,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Put[Mutable]()");
+	  printf("[hole] implementations::remote::Server::Put[Mutable]()\n");
 
 	// validate the block, depending on its component.
 	//
@@ -364,7 +364,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Get[Immutable]()");
+	  printf("[hole] implementations::remote::Server::Get[Immutable]()\n");
 
 	// does the block exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -394,7 +394,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Get[Mutable]()");
+	  printf("[hole] implementations::remote::Server::Get[Mutable]()\n");
 
 	// does the block exist.
 	if (block.Exist(Hole::Implementation->network,
@@ -473,7 +473,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Kill()");
+	  printf("[hole] implementations::remote::Server::Kill()\n");
 
 	// treat the request depending on the nature of the block which
 	// the addres indicates.
@@ -527,7 +527,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Connection()");
+	  printf("[hole] implementations::remote::Server::Connection()\n");
 
 	// allocate a customer.
 	customer = new Customer;
@@ -568,7 +568,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Challenge()");
+	  printf("[hole] implementations::remote::Server::Challenge()\n");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)
@@ -640,7 +640,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Push()");
+	  printf("[hole] implementations::remote::Server::Push()\n");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)
@@ -719,7 +719,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Pull()");
+	  printf("[hole] implementations::remote::Server::Pull()\n");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)
@@ -807,7 +807,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Server::Wipe()");
+	  printf("[hole] implementations::remote::Server::Wipe()\n");
 
 	// retrieve the network session.
 	if (elle::Session::Instance(session) == elle::StatusError)

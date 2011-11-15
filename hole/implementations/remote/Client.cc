@@ -147,7 +147,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Put[Immutable]()");
+	  printf("[hole] implementations::remote::Client::Put[Immutable]()\n");
 
 	// check that the client is connected.
 	if (this->gate == NULL)
@@ -176,7 +176,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Put[Mutable]()");
+	  printf("[hole] implementations::remote::Client::Put[Mutable]()\n");
 
 	// check that the client is connected.
 	if (this->gate == NULL)
@@ -204,7 +204,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Get[Immutable]()");
+	  printf("[hole] implementations::remote::Client::Get[Immutable]()\n");
 
 	// check that the client is connected.
 	if (this->gate == NULL)
@@ -233,7 +233,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Get[Mutable]()");
+	  printf("[hole] implementations::remote::Client::Get[Mutable]()\n");
 
 	// check that the client is connected.
 	if (this->gate == NULL)
@@ -258,7 +258,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Kill()");
+	  printf("[hole] implementations::remote::Client::Kill()\n");
 
 	// check that the client is connected.
 	if (this->gate == NULL)
@@ -287,7 +287,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Connected()");
+	  printf("[hole] implementations::remote::Client::Connected()\n");
 
 	// set the client as connected.
 	this->state = Client::StateConnected;
@@ -305,7 +305,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Disconnected()");
+	  printf("[hole] implementations::remote::Client::Disconnected()\n");
 
 	// exit if the connection was shut down.
 	if ((this->state == Client::StateConnected) ||
@@ -334,7 +334,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Error()");
+	  printf("[hole] implementations::remote::Client::Error()\n");
 
 	// disconnect the gate, though that may be unecessary.
 	this->gate->Disconnect();
@@ -352,7 +352,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Authenticated()");
+	  printf("[hole] implementations::remote::Client::Authenticated()\n");
 
 	// this client has succesfully been authenticated, set its state
 	// accordingly.
@@ -372,7 +372,7 @@ namespace hole
 
 	// debug.
 	if (Infinit::Configuration.hole.debug == true)
-	  printf("[hole] implementations::remote::Client::Exception()");
+	  printf("[hole] implementations::remote::Client::Exception()\n");
 
 	// transpose the given report.
 	transpose(report);
