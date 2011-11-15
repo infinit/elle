@@ -239,8 +239,15 @@ namespace elle
     {
       enter();
 
-      // store the nil type.
-      ::msgpack::pack(this->buffer, ::msgpack::type::nil());
+      try
+	{
+	  // store the nil type.
+	  ::msgpack::pack(this->buffer, ::msgpack::type::nil());
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -252,8 +259,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -275,8 +289,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -288,8 +309,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -301,8 +329,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -314,8 +349,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -327,8 +369,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -340,8 +389,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -353,8 +409,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -366,8 +429,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -379,8 +449,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -419,8 +496,15 @@ namespace elle
     {
       enter();
 
-      // pack the element.
-      ::msgpack::pack(this->buffer, element);
+      try
+	{
+	  // pack the element.
+	  ::msgpack::pack(this->buffer, element);
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -432,11 +516,18 @@ namespace elle
     {
       enter();
 
-      // store the region as a raw.
-      msgpack::pack(this->buffer,
-		    msgpack::type::raw_ref(
-		      reinterpret_cast<const char*>(element.contents),
-		      element.size));
+      try
+	{
+	  // store the region as a raw.
+	  msgpack::pack(this->buffer,
+			msgpack::type::raw_ref(
+			  reinterpret_cast<const char*>(element.contents),
+			  element.size));
+	}
+      catch (...)
+	{
+	  escape("an error occured during the serialization process");
+	}
 
       leave();
     }
@@ -476,18 +567,25 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-                        reinterpret_cast<const char*>(this->contents),
-			this->size,
-                        &this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if (object.type != ::msgpack::type::NIL)
-	escape("the next element does not seem to be a nil type");
+	  // check the object's type.
+	  if (object.type != ::msgpack::type::NIL)
+	    escape("the next element does not seem to be a nil type");
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -502,21 +600,28 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-                        reinterpret_cast<const char*>(this->contents),
-			this->size,
-                        &this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if (object.type != ::msgpack::type::BOOLEAN)
-	escape("the next element does not seem to be a boolean type");
+	  // check the object's type.
+	  if (object.type != ::msgpack::type::BOOLEAN)
+	    escape("the next element does not seem to be a boolean type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -554,21 +659,28 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-                        reinterpret_cast<const char*>(this->contents),
-			this->size,
-                        &this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if (object.type != ::msgpack::type::DOUBLE)
-	escape("the next element does not seem to be a double type");
+	  // check the object's type.
+	  if (object.type != ::msgpack::type::DOUBLE)
+	    escape("the next element does not seem to be a double type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -583,22 +695,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -613,22 +732,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -643,22 +769,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -673,22 +806,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -703,22 +843,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -733,22 +880,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -763,22 +917,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -793,22 +954,29 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-			reinterpret_cast<const char*>(this->contents),
-			this->size,
-			&this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
-	  (object.type != ::msgpack::type::NEGATIVE_INTEGER))
-	escape("the next element does not seem to be a numeric type");
+	  // check the object's type.
+	  if ((object.type != ::msgpack::type::POSITIVE_INTEGER) &&
+	      (object.type != ::msgpack::type::NEGATIVE_INTEGER))
+	    escape("the next element does not seem to be a numeric type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -845,21 +1013,28 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-                        reinterpret_cast<const char*>(this->contents),
-			this->size,
-                        &this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if (object.type != ::msgpack::type::RAW)
-	escape("the next element does not seem to be a raw type");
+	  // check the object's type.
+	  if (object.type != ::msgpack::type::RAW)
+	    escape("the next element does not seem to be a raw type");
 
-      // extract the element.
-      object >> element;
+	  // extract the element.
+	  object >> element;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       leave();
     }
@@ -875,21 +1050,28 @@ namespace elle
 
       enter();
 
-      // extract the unpacked message.
-      ::msgpack::unpack(&message,
-                        reinterpret_cast<const char*>(this->contents),
-			this->size,
-                        &this->offset);
+      try
+	{
+	  // extract the unpacked message.
+	  ::msgpack::unpack(&message,
+			    reinterpret_cast<const char*>(this->contents),
+			    this->size,
+			    &this->offset);
 
-      // retrieve the object.
-      object = message.get();
+	  // retrieve the object.
+	  object = message.get();
 
-      // check the object's type.
-      if (object.type != ::msgpack::type::RAW)
-	escape("the next element does not seem to be a raw type");
+	  // check the object's type.
+	  if (object.type != ::msgpack::type::RAW)
+	    escape("the next element does not seem to be a raw type");
 
-      // extract the element.
-      object >> ref;
+	  // extract the element.
+	  object >> ref;
+	}
+      catch (...)
+	{
+	  escape("an error occured during the deserialization process");
+	}
 
       // assign the data.
       if (element.Duplicate(reinterpret_cast<const Byte*>(ref.ptr),
