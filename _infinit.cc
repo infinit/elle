@@ -184,24 +184,6 @@ elle::Status		Main(elle::Natural32			argc,
   leave();
 }
 
-// XXX
-static void terminate_handler()
-{
-  std::cerr << "uncaught excpection";
-  try {
-    throw;
-  }
-  catch (std::exception & e) {
-    std::cerr << ": `" << e.what() << "'" << std::endl;
-  }
-  catch (...) {
-    std::cerr << std::endl;
-  }
-
-  // XXX print the back trace
-  _exit(1);
-}
-
 //
 // ---------- main ------------------------------------------------------------
 //
@@ -209,8 +191,6 @@ static void terminate_handler()
 int			main(int				argc,
                              char*				argv[])
 {
-  std::set_terminate(terminate_handler);
-
   try
     {
       if (Main(argc, argv) == elle::StatusError)
@@ -220,10 +200,10 @@ int			main(int				argc,
 	  return (1);
 	}
     }
-  catch (std::exception& e)
+  catch (...)
     {
       std::cout << "The program has been terminated following "
-                << "a fatal error (" << e.what() << ")." << std::endl;
+                << "a fatal error" << std::endl;
 
       return (1);
     }
