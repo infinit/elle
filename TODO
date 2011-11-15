@@ -1,3 +1,7 @@
+- faire une methode dans wall::Path qui prend un chemin local (String)
+  et retourne true si elle fait partie du repertoire de montage
+- et en fait une autre qui retourne le chemin relatif a ce point de montage
+
 - factoriser le code qui verifie un block (soit Object soit autre)
 - pour rendre le reseau propre, creer une instance de Request,
   la remplir avec les infos (neighbourhood, address, request type[read] etc.)
