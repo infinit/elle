@@ -181,6 +181,29 @@ namespace elle
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the library");
 
+      // XXX
+      {
+	String response;
+	Natural32 code;
+
+	HTTP::DELETE("localhost:12345/user/john",
+		     response,
+		     code);
+
+	std::cout << response << std::endl;
+	std::cout << code << std::endl;
+
+	JSON::Document	doc;
+
+	doc.Load(response);
+	doc.Dump();
+
+	expose();
+
+	exit(1);
+      }
+      // XXX
+
       // setup the program.
       if (Program::Setup() == StatusError)
 	escape("unable to set up the program");

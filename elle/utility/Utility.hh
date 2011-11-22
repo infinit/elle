@@ -33,6 +33,7 @@ namespace elle
 #include <elle/utility/Duration.hh>
 #include <elle/utility/Factory.hh>
 #include <elle/utility/Hexadecimal.hh>
+#include <elle/utility/JSON.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/utility/Product.hh>
 #include <elle/utility/Settings.hh>
