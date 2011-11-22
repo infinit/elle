@@ -1,3 +1,10 @@
+- optimiser HTTP pour prendre en compte le fait que les fibres devraient
+  bloquer. peut etre reecrire le tout a la main?
+
+- peut etre bouger etoile/miscellaneous/Abstract autre part (gear/wall/etc.)
+- peut etre using namespace automatiquement pour wall/path/etc. dans etoile
+  mais pas automaton qui n'est jamais accede directement.
+
 - faire une methode dans wall::Path qui prend un chemin local (String)
   et retourne true si elle fait partie du repertoire de montage
 - et en fait une autre qui retourne le chemin relatif a ce point de montage

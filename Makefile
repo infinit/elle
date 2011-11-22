@@ -39,7 +39,8 @@ COMPONENTS	:=		elle					\
 				applications				\
 				lune					\
 				hole					\
-				iig					
+				iig					\
+				oracle					
 
 #
 # ---------- includes ---------------------------------------------------------
