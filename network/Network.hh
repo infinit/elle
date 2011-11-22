@@ -178,9 +178,11 @@ namespace elle
 #include <elle/network/Procedure.hh>
 #include <elle/network/Range.hh>
 #include <elle/network/Raw.hh>
+#include <elle/network/HTTP.hh>
 #include <elle/network/Session.hh>
 #include <elle/network/Slot.hh>
 #include <elle/network/Socket.hh>
 #include <elle/network/Tag.hh>
+#include <elle/network/URI.hh>
 
 #endif
