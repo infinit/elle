@@ -183,20 +183,27 @@ namespace elle
 
       // XXX
       {
-	String response;
-	Natural32 code;
+	JSON::Document	doc;
+	HTTP::Code code;
 
-	HTTP::DELETE("localhost:12345/user/john",
-		     response,
+	REST::DELETE("localhost:12345/user/john",
+		     doc,
 		     code);
 
-	std::cout << response << std::endl;
-	std::cout << code << std::endl;
-
-	JSON::Document	doc;
-
-	doc.Load(response);
 	doc.Dump();
+
+	String name;
+	doc.Get("firstName", name);
+	std::cout << name << std::endl;
+
+	Integer32 age;
+	doc.Get("age", age);
+	std::cout << age << std::endl;
+
+	String number;
+	doc.Get("phoneNumber", 1, "number",
+		number);
+	std::cout << number << std::endl;
 
 	expose();
 

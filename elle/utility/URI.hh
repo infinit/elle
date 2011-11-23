@@ -8,8 +8,8 @@
 // author        julien.quintard   [tue nov 22 09:09:01 2011]
 //
 
-#ifndef ELLE_NETWORK_URI_HH
-#define ELLE_NETWORK_URI_HH
+#ifndef ELLE_UTILITY_URI_HH
+#define ELLE_UTILITY_URI_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,7 +21,7 @@ namespace elle
 {
   using namespace core;
 
-  namespace network
+  namespace utility
   {
 
 //

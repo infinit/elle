@@ -104,7 +104,6 @@ ADD_LIBRARY(elle
   network/Network.cc
   network/Parcel.cc
   network/Locus.cc
-  network/HTTP.cc
   network/Session.cc
   network/Slot.cc
   network/Socket.cc
@@ -113,8 +112,10 @@ ADD_LIBRARY(elle
   utility/Duration.cc
   utility/Factory.cc
   utility/Hexadecimal.cc
+  utility/HTTP.cc
   utility/JSON.cc
   utility/Parser.cc
+  utility/REST.cc
   utility/Settings.cc
   utility/Time.cc
   utility/Unicode.cc

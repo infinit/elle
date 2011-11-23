@@ -28,7 +28,7 @@ namespace std
 {
 
   ///
-  /// this method displays a Large number in its hexadecimal form.
+  /// this method streams a Large number in its hexadecimal form.
   ///
   ostream&		operator<<(ostream&		stream,
 				   const elle::core::Large&	element)
