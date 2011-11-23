@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/HTTP.hh>
+#include <elle/utility/HTTP.hh>
 
 #include <elle/core/Byte.hh>
 
@@ -24,7 +24,7 @@ namespace elle
 {
   using namespace standalone;
 
-  namespace network
+  namespace utility
   {
 
 //
@@ -40,13 +40,13 @@ namespace elle
     /// this default response string is used whenever the caller is not
     /// interested in the response.
     ///
-    String			HTTP::Response;
+    String			HTTP::Trash::_Content;
 
     ///
     /// this default code is used whenever the caller is not interested
     /// in the returned code.
     ///
-    Natural32			HTTP::Code;
+    HTTP::Code			HTTP::Trash::_Code;
 
     ///
     /// this buffer is used by curl to specify errors.
@@ -61,8 +61,8 @@ namespace elle
     /// this method performs a GET request on the resource given by _uri_.
     ///
     Status		HTTP::GET(const URI&			uri,
-				  String&			response,
-				  Natural32&			code)
+				  Content&			response,
+				  Code&				code)
     {
       Region		output;
       ::CURL*		curl;
@@ -113,7 +113,7 @@ namespace elle
 	goto _error;
 
       // retrieve the HTTP code.
-      code = static_cast<Natural32>(r);
+      code = static_cast<HTTP::Code>(r);
 
       // clean up the session.
       ::curl_easy_cleanup(curl);
@@ -132,9 +132,9 @@ namespace elle
     ///
     Status		HTTP::POST(const URI&			uri,
 				   const String&		type,
-				   const String&		request,
-				   String&			response,
-				   Natural32&			code)
+				   const Content&		request,
+				   Content&			response,
+				   Code&			code)
     {
       Region		input(reinterpret_cast<const Byte*>(request.c_str()),
 			      request.length());
@@ -229,7 +229,7 @@ namespace elle
 	goto _error;
 
       // retrieve the HTTP code.
-      code = static_cast<Natural32>(r);
+      code = static_cast<HTTP::Code>(r);
 
       // clean up the session.
       ::curl_easy_cleanup(curl);
@@ -248,9 +248,9 @@ namespace elle
     ///
     Status		HTTP::PUT(const URI&			uri,
 				  const String&			type,
-				  const String&			request,
-				  String&			response,
-				  Natural32&			code)
+				  const Content&		request,
+				  Content&			response,
+				  Code&				code)
     {
       Region		input(reinterpret_cast<const Byte*>(request.c_str()),
 			      request.length());
@@ -323,7 +323,7 @@ namespace elle
 	  goto _error;
       }
 
-      // XXX move this up!
+      // XXX move this up! would be better with after CURLOPT_UPLOAD
       // set the upload size.
       if (::curl_easy_setopt(curl,
 			     ::CURLOPT_INFILESIZE,
@@ -363,7 +363,7 @@ namespace elle
 	goto _error;
 
       // retrieve the HTTP code.
-      code = static_cast<Natural32>(r);
+      code = static_cast<HTTP::Code>(r);
 
       // clean up the session.
       ::curl_easy_cleanup(curl);
@@ -381,8 +381,8 @@ namespace elle
     /// this method performs a DELETE request on the resource given by _uri_
     ///
     Status		HTTP::DELETE(const URI&			uri,
-				     String&			response,
-				     Natural32&			code)
+				     Content&			response,
+				     Code&			code)
     {
       Region		output;
       ::CURL*		curl;
@@ -444,7 +444,7 @@ namespace elle
 	goto _error;
 
       // retrieve the HTTP code.
-      code = static_cast<Natural32>(r);
+      code = static_cast<HTTP::Code>(r);
 
       // clean up the session.
       ::curl_easy_cleanup(curl);

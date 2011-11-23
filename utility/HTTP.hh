@@ -8,8 +8,8 @@
 // author        julien.quintard   [tue nov 22 09:06:08 2011]
 //
 
-#ifndef ELLE_NETWORK_HTTP_HH
-#define ELLE_NETWORK_HTTP_HH
+#ifndef ELLE_UTILITY_HTTP_HH
+#define ELLE_UTILITY_HTTP_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -21,7 +21,7 @@
 
 #include <elle/radix/Status.hh>
 
-#include <elle/network/URI.hh>
+#include <elle/utility/URI.hh>
 
 #include <elle/idiom/Close.hh>
 # include <curl/curl.h>
@@ -32,7 +32,7 @@ namespace elle
   using namespace core;
   using namespace radix;
 
-  namespace network
+  namespace utility
   {
 
 //
@@ -40,19 +40,41 @@ namespace elle
 //
 
     ///
-    /// this class provides easy-to-use HTTP-specific GET/POST/PUT/DELETE
-    /// methods.
+    /// this class provides easy-to-use methods for sending and receiving
+    /// HTTP requests/responses.
     ///
     class HTTP
     {
     public:
       //
+      // enumerations
+      //
+      enum Code
+	{
+	  CodeOk = 200,
+
+	  CodeUnauthorized = 401,
+	  CodeForbidden = 403,
+	  CodeNotFound = 404,
+
+	  CodeInternalServerError = 500
+	};
+
+      //
+      // types
+      //
+      typedef String			Content;
+
+      //
       // constants
       //
       static const String		Agent;
 
-      static String			Response;
-      static Natural32			Code;
+      struct				Trash
+      {
+	static Content			_Content;
+	static Code			_Code;
+      };
 
       static Character			Error[CURL_ERROR_SIZE];
 
@@ -60,21 +82,21 @@ namespace elle
       // static methods
       //
       static Status	GET(const URI&,
-			    String& = Response,
-			    Natural32& = Code);
+			    String& = Trash::_Content,
+			    Code& = Trash::_Code);
       static Status	POST(const URI&,
 			     const String&,
 			     const String&,
-			     String& = Response,
-			     Natural32& = Code);
+			     String& = Trash::_Content,
+			     Code& = Trash::_Code);
       static Status	PUT(const URI&,
 			    const String&,
 			    const String&,
-			    String& = Response,
-			    Natural32& = Code);
+			    String& = Trash::_Content,
+			    Code& = Trash::_Code);
       static Status	DELETE(const URI&,
-			       String& = Response,
-			       Natural32& = Code);
+			       String& = Trash::_Content,
+			       Code& = Trash::_Code);
 
     private:
       //
