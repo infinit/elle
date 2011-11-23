@@ -2218,6 +2218,15 @@ class Range:
             return val.inf() in self
         return val >= self.__inf and (self.__sup is None or val <= self.__sup)
 
+    def __eq__(self, rhs):
+        return self.__inf == rhs.__inf and self.__sup == rhs.__sup
+
+    def __ge__(self, rhs):
+        return self.__inf >= rhs.__sup
+
+    def __gt__(self, rhs):
+        return self.__inf > rhs.__sup
+
     def __str__(self):
         """A visual representation of the range.
 
@@ -2290,3 +2299,33 @@ class Version:
                     if other.__subminor is None or not other.__subminor in self.__subminor:
                         return False
         return True
+
+    def __ge__(self, rhs):
+        """Whether a version is greater than another.
+
+        >>> Version(1, 2, 3) >= Version(1, 2, 3)
+        True
+        >>> Version(1, 2, 4) >= Version(1, 2, 3)
+        True
+        >>> Version(1, 3, 2) >= Version(1, 2, 3)
+        True
+        >>> Version(2, 0, 0) >= Version(1, 10, 23)
+        True
+        >>> Version(1, 2, 3) >= Version(1, 2, 4)
+        False
+        >>> Version(1, 2, 3) >= Version(1, 3, 2)
+        False
+        """
+        assert self.__major is not None and rhs.__major is not None
+        if self.__major == rhs.__major:
+            minor = self.__minor or 0
+            rhs_minor = rhs.__minor or 0
+            if minor == rhs_minor:
+                subminor = self.__subminor or 0
+                rhs_subminor = rhs.__subminor or 0
+                return subminor >= rhs_subminor
+            else:
+                return minor > rhs_minor
+        else:
+            return self.__major > rhs.__major
+
