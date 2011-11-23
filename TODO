@@ -1,4 +1,4 @@
-- JSON: mode ecriture a faire egalement
+- ajouter Erase a JSON
 
 - passer les serveurs python en production (optimisations web.py, caching,
   replication mongodb si necessaire, -debug mode etc.)
