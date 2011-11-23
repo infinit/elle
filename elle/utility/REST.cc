@@ -49,9 +49,9 @@ namespace elle
 		    content, code) == StatusError)
 	escape("unable to GET the given URI");
 
-      // create the JSON document based on the given content.
-      if (response.Load(content) == StatusError)
-	escape("unable to create the document");
+      // decode the JSON document based on the given content.
+      if (JSON::Decode(content, response) == StatusError)
+	escape("unable to decode the response");
 
       leave();
     }
@@ -65,22 +65,23 @@ namespace elle
 				   HTTP::Code&			code)
     {
       HTTP::Content	content;
-      std::stringstream	stream;
+      String		string;
 
       enter();
 
-      // transform the request into a string.
-      stream << request;
+      // encode the request into a string.
+      if (JSON::Encode(request, string) == StatusError)
+	escape("unable to encore the request");
 
       // request the HTTP POST method.
       if (HTTP::POST(uri,
-		     JSON::Document::Type, stream.str(),
+		     JSON::Document::Type, string,
 		     content, code) == StatusError)
 	escape("unable to POST the given URI");
 
-      // create the JSON document based on the given content.
-      if (response.Load(content) == StatusError)
-	escape("unable to create the document");
+      // decode the JSON document based on the given content.
+      if (JSON::Decode(content, response) == StatusError)
+	escape("unable to decode the response");
 
       leave();
     }
@@ -94,22 +95,23 @@ namespace elle
 				  HTTP::Code&			code)
     {
       HTTP::Content	content;
-      std::stringstream	stream;
+      String		string;
 
       enter();
 
-      // transform the request into a string.
-      stream << request;
+      // encode the request into a string.
+      if (JSON::Encode(request, string) == StatusError)
+	escape("unable to encore the request");
 
       // request the HTTP PUT method.
       if (HTTP::PUT(uri,
-		    JSON::Document::Type, stream.str(),
+		    JSON::Document::Type, string,
 		    content, code) == StatusError)
 	escape("unable to PUT the given URI");
 
-      // create the JSON document based on the given content.
-      if (response.Load(content) == StatusError)
-	escape("unable to create the document");
+      // decode the JSON document based on the given content.
+      if (JSON::Decode(content, response) == StatusError)
+	escape("unable to decode the response");
 
       leave();
     }
@@ -130,9 +132,9 @@ namespace elle
 		       content, code) == StatusError)
 	escape("unable to DELETE the given URI");
 
-      // create the JSON document based on the given content.
-      if (response.Load(content) == StatusError)
-	escape("unable to create the document");
+      // decode the JSON document based on the given content.
+      if (JSON::Decode(content, response) == StatusError)
+	escape("unable to decode the response");
 
       leave();
     }
