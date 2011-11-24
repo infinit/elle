@@ -60,8 +60,11 @@ namespace agent
       // XXX everything must change!
       if (Infinit::Parser->Test("User") == elle::StatusFalse)
 	{
-	  // XXX name = "XXX{_USER_}XXX";
-	  name = "testdedingue";
+	  name = "_______________PROTOTYPE_USER_______________";
+	  // XXX name = "testdedingue";
+
+	  // trim string
+	  name = name.substr(0, name.find_first_of(' '));
 
 	  // retrieve the identity.
 	  {
@@ -115,8 +118,11 @@ namespace agent
       if (Infinit::Parser->Test("User") == elle::StatusFalse)
 	{
 	  // XXX
-	  // XXX pass = "XXX{_PASSWORD_}XXX";
-	  pass = "994061d81241aef531c04953b712df423d99f933";
+	  pass = "_______________PROTOTYPE_PASSWORD_______________";
+	  // XXX pass = "994061d81241aef531c04953b712df423d99f933";
+
+	  // trim string
+	  pass = pass.substr(0, pass.find_first_of(' '));
 	}
       else
 	{
