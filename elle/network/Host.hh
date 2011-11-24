@@ -66,6 +66,18 @@ namespace elle
 	};
 
       //
+      // types
+      //
+      typedef std::vector<Host>				Container;
+      typedef typename Container::iterator		Iterator;
+      typedef typename Container::const_iterator	Scoutor;
+
+      //
+      // static methods
+      //
+      static Status	Hosts(Container&);
+
+      //
       // constructors & destructors
       //
       Host();

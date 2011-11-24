@@ -29,6 +29,7 @@
 #include <elle/io/Format.hh>
 
 #include <elle/idiom/Close.hh>
+# include <vector>
 # include <jsoncpp/json.h>
 #include <elle/idiom/Open.hh>
 
@@ -53,8 +54,83 @@ namespace elle
     {
     public:
       //
+      // forward declarations
+      //
+      class Node;
+
+      //
       // classes
       //
+
+      ///
+      /// this class aims at gathering together nodes which must be
+      /// treated handled through a single operation.
+      ///
+      class Bulk:
+	public Object
+      {
+      public:
+	//
+	// types
+	//
+	typedef std::vector<Node>			Container;
+	typedef typename Container::iterator		Iterator;
+	typedef typename Container::const_iterator	Scoutor;
+
+	//
+	// constructors & destructors
+	//
+	Bulk(const Node&);
+	Bulk(const Node&,
+	     const Node&);
+	Bulk(const Node&,
+	     const Node&,
+	     const Node&);
+	Bulk(const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&);
+	Bulk(const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&);
+	Bulk(const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&);
+	Bulk(const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&);
+	Bulk(const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&);
+	Bulk(const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&,
+	     const Node&);
+
+	//
+	// attributes
+	//
+	Container	container;
+      };
 
       ///
       /// this class represents a document node.
@@ -148,51 +224,13 @@ namespace elle
 	template <const Format F>
 	Status		Set(const Uniquable<F>&);
 
-	Status		Append(const Node&);
-	Status		Append(const Node&,
-			       const Node&);
-	Status		Append(const Node&,
-			       const Node&,
-			       const Node&);
-	Status		Append(const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&);
-	Status		Append(const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&);
-	Status		Append(const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&);
-	Status		Append(const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&);
-	Status		Append(const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&);
-	Status		Append(const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&,
-			       const Node&);
+	Status		Append(const Bulk&);
+
+	Status		Erase(const String&);
+
+	Status		Clear();
+
+	Status		Size(Natural32&);
 
 	Status		Exist(const Natural32&);
 	Status		Exist(const String&);
@@ -568,6 +606,391 @@ namespace elle
 			    const T8&,
 			    const T9&,
 			    Node&);
+
+	Status		Append(const Bulk&);
+	template <typename T1>
+	Status		Append(const T1&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2>
+	Status		Append(const T1&,
+			       const T2&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2,
+		  typename T3>
+	Status		Append(const T1&,
+			       const T2&,
+			       const T3&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4>
+	Status		Append(const T1&,
+			       const T2&,
+			       const T3&,
+			       const T4&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5>
+	Status		Append(const T1&,
+			       const T2&,
+			       const T3&,
+			       const T4&,
+			       const T5&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6>
+	Status		Append(const T1&,
+			       const T2&,
+			       const T3&,
+			       const T4&,
+			       const T5&,
+			       const T6&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7>
+	Status		Append(const T1&,
+			       const T2&,
+			       const T3&,
+			       const T4&,
+			       const T5&,
+			       const T6&,
+			       const T7&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8>
+	Status		Append(const T1&,
+			       const T2&,
+			       const T3&,
+			       const T4&,
+			       const T5&,
+			       const T6&,
+			       const T7&,
+			       const T8&,
+			       const Bulk&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8,
+		  typename T9>
+	Status		Append(const T1&,
+			       const T2&,
+			       const T3&,
+			       const T4&,
+			       const T5&,
+			       const T6&,
+			       const T7&,
+			       const T8&,
+			       const T9&,
+			       const Bulk&);
+
+	template <typename T1>
+	Status		Erase(const T1&);
+	template <typename T1,
+		  typename T2>
+	Status		Erase(const T1&,
+			      const T2&);
+	template <typename T1,
+		  typename T2,
+		  typename T3>
+	Status		Erase(const T1&,
+			      const T2&,
+			      const T3&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4>
+	Status		Erase(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5>
+	Status		Erase(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6>
+	Status		Erase(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7>
+	Status		Erase(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&,
+			      const T7&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8>
+	Status		Erase(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&,
+			      const T7&,
+			      const T8&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8,
+		  typename T9>
+	Status		Erase(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&,
+			      const T7&,
+			      const T8&,
+			      const T9&);
+
+	Status		Clear();
+	template <typename T1>
+	Status		Clear(const T1&);
+	template <typename T1,
+		  typename T2>
+	Status		Clear(const T1&,
+			      const T2&);
+	template <typename T1,
+		  typename T2,
+		  typename T3>
+	Status		Clear(const T1&,
+			      const T2&,
+			      const T3&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4>
+	Status		Clear(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5>
+	Status		Clear(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6>
+	Status		Clear(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7>
+	Status		Clear(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&,
+			      const T7&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8>
+	Status		Clear(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&,
+			      const T7&,
+			      const T8&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8,
+		  typename T9>
+	Status		Clear(const T1&,
+			      const T2&,
+			      const T3&,
+			      const T4&,
+			      const T5&,
+			      const T6&,
+			      const T7&,
+			      const T8&,
+			      const T9&);
+
+	Status		Size(Natural32&);
+	template <typename T1>
+	Status		Size(const T1&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2>
+	Status		Size(const T1&,
+			     const T2&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2,
+		  typename T3>
+	Status		Size(const T1&,
+			     const T2&,
+			     const T3&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4>
+	Status		Size(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5>
+	Status		Size(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6>
+	Status		Size(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7>
+	Status		Size(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8>
+	Status		Size(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     const T8&,
+			     Natural32&);
+	template <typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5,
+		  typename T6,
+		  typename T7,
+		  typename T8,
+		  typename T9>
+	Status		Size(const T1&,
+			     const T2&,
+			     const T3&,
+			     const T4&,
+			     const T5&,
+			     const T6&,
+			     const T7&,
+			     const T8&,
+			     const T9&,
+			     Natural32&);
       };
 
       //

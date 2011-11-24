@@ -129,6 +129,8 @@ namespace elle
 			    const String&);
 	Status		Lookup(const String&,
 			       String&);
+	Status		Update(const String&,
+			       const String&);
 	Status		Remove(const String&);
 	Status		Locate(const String&,
 			       Iterator* = NULL);
