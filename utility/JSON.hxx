@@ -97,8 +97,11 @@ namespace elle
     /// these methods provide an easy way for getting and setting values
     /// from/to the document, given a path, hence anywhere in the document.
     ///
-    /// inn addition, the Dig() methods pave the way to the given target,
+    /// in addition, the Dig() methods pave the way to the given target,
     /// creating the node in the document if necessary.
+    ///
+    /// finally, the Append() methods append a bulk of nodes to the path-ed
+    /// element while Erase() erases a path-ed element.
     ///
 
     template <typename X>
@@ -1016,6 +1019,981 @@ namespace elle
       // return the target node.
       if (base.Get(id9, node) == StatusError)
 	escape("unable to retrieve the target node");
+
+      leave();
+    }
+
+    template <typename T1>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const T3&	id3,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2, id3,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const T3&	id3,
+					       const T4&	id4,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2, id3, id4,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const T3&	id3,
+					       const T4&	id4,
+					       const T5&	id5,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2, id3, id4, id5,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const T3&	id3,
+					       const T4&	id4,
+					       const T5&	id5,
+					       const T6&	id6,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2, id3, id4, id5, id6,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const T3&	id3,
+					       const T4&	id4,
+					       const T5&	id5,
+					       const T6&	id6,
+					       const T7&	id7,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2, id3, id4, id5, id6, id7,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const T3&	id3,
+					       const T4&	id4,
+					       const T5&	id5,
+					       const T6&	id6,
+					       const T7&	id7,
+					       const T8&	id8,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8,
+	      typename T9>
+    Status		JSON::Document::Append(const T1&	id1,
+					       const T2&	id2,
+					       const T3&	id3,
+					       const T4&	id4,
+					       const T5&	id5,
+					       const T6&	id6,
+					       const T7&	id7,
+					       const T8&	id8,
+					       const T9&	id9,
+					       const Bulk&	bulk)
+    {
+      Node		node;
+
+      enter();
+
+      // dig the way to the target.
+      if (this->Dig(id1, id2, id3, id4, id5, id6, id7, id8, id9,
+		    node) == StatusError)
+	escape("unable to dig the way to the target");
+
+      // append the bulk to the node.
+      if (node.Append(bulk) == StatusError)
+	escape("unable to append the node");
+
+      leave();
+    }
+
+    template <typename T1>
+    Status		JSON::Document::Erase(const T1&		id1)
+    {
+      Node		node;
+
+      enter();
+
+      // erase the identified member from the root node.
+      if (this->root.Erase(id1) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id2) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id3) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id4) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id5) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id6) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6,
+					      const T7&		id7)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id7) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6,
+					      const T7&		id7,
+					      const T8&		id8)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6, id7,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id8) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8,
+	      typename T9>
+    Status		JSON::Document::Erase(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6,
+					      const T7&		id7,
+					      const T8&		id8,
+					      const T9&		id9)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // erase the identified member.
+      if (node.Erase(id9) == StatusError)
+	escape("unable to erase the member");
+
+      leave();
+    }
+
+    template <typename T1>
+    Status		JSON::Document::Clear(const T1&		id1)
+    {
+      Node		node;
+
+      enter();
+
+      // clear the identified member from the root node.
+      if (this->root.Clear(id1) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id2) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id3) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id4) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id5) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id6) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6,
+					      const T7&		id7)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id7) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6,
+					      const T7&		id7,
+					      const T8&		id8)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6, id7,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id8) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8,
+	      typename T9>
+    Status		JSON::Document::Clear(const T1&		id1,
+					      const T2&		id2,
+					      const T3&		id3,
+					      const T4&		id4,
+					      const T5&		id5,
+					      const T6&		id6,
+					      const T7&		id7,
+					      const T8&		id8,
+					      const T9&		id9)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // clear the identified member.
+      if (node.Clear(id9) == StatusError)
+	escape("unable to clear the member");
+
+      leave();
+    }
+
+    template <typename T1>
+    Status		JSON::Document::Size(const T1&		id1,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // size the identified member from the root node.
+      if (this->root.Size(id1) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id2) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     const T3&		id3,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id3) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     const T3&		id3,
+					     const T4&		id4,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id4) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     const T3&		id3,
+					     const T4&		id4,
+					     const T5&		id5,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id5) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     const T3&		id3,
+					     const T4&		id4,
+					     const T5&		id5,
+					     const T6&		id6,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id6) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     const T3&		id3,
+					     const T4&		id4,
+					     const T5&		id5,
+					     const T6&		id6,
+					     const T7&		id7,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id7) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     const T3&		id3,
+					     const T4&		id4,
+					     const T5&		id5,
+					     const T6&		id6,
+					     const T7&		id7,
+					     const T8&		id8,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6, id7,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id8) == StatusError)
+	escape("unable to size the member");
+
+      leave();
+    }
+
+    template <typename T1,
+	      typename T2,
+	      typename T3,
+	      typename T4,
+	      typename T5,
+	      typename T6,
+	      typename T7,
+	      typename T8,
+	      typename T9>
+    Status		JSON::Document::Size(const T1&		id1,
+					     const T2&		id2,
+					     const T3&		id3,
+					     const T4&		id4,
+					     const T5&		id5,
+					     const T6&		id6,
+					     const T7&		id7,
+					     const T8&		id8,
+					     const T9&		id9,
+					     Natural32&		size)
+    {
+      Node		node;
+
+      enter();
+
+      // retrieve the node given the identifiers.
+      if (this->Get(id1, id2, id3, id4, id5, id6, id7, id8,
+		    node) == StatusError)
+	escape("unable to retrieve the node");
+
+      // size the identified member.
+      if (node.Size(id9) == StatusError)
+	escape("unable to size the member");
 
       leave();
     }

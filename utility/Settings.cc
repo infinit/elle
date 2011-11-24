@@ -124,6 +124,21 @@ namespace elle
 //
 
     ///
+    /// this method returns true if the given assignment exists within
+    /// the section.
+    ///
+    Status		Settings::Section::Exist(const String&	name)
+    {
+      enter();
+
+      // locate the assignment.
+      if (this->Locate(name) != StatusTrue)
+	false();
+
+      true();
+    }
+
+    ///
     /// this method adds a assignment to the section.
     ///
     Status		Settings::Section::Add(const String&	name,
@@ -170,6 +185,30 @@ namespace elle
 
       // return the value.
       value = assignment->value;
+
+      leave();
+    }
+
+    ///
+    /// this method updates an assignment in the section.
+    ///
+    Status		Settings::Section::Update(const String&	name,
+						  const String&	value)
+    {
+      Settings::Section::Iterator	iterator;
+      Settings::Assignment*		assignment;
+
+      enter();
+
+      // retrieve the assignment.
+      if (this->Locate(name, &iterator) != StatusTrue)
+	escape("this assignment does not seem to exist");
+
+      // retrieve the assignment.
+      assignment = *iterator;
+
+      // update the assignment.
+      assignment->value = value;
 
       leave();
     }
@@ -383,9 +422,19 @@ namespace elle
       if (this->Lookup(identifier, section) == StatusError)
 	escape("unable to retrieve the section");
 
-      // add the assignment to the section.
-      if (section->Add(name, value) == StatusError)
-	escape("unable to add the assignment");
+      // check if the assignment exists.
+      if (section->Exist(name) != StatusTrue)
+	{
+	  // add the assignment to the section.
+	  if (section->Add(name, value) == StatusError)
+	    escape("unable to add the assignment");
+	}
+      else
+	{
+	  // otherwise, update the assignment.
+	  if (section->Update(name, value) == StatusError)
+	    escape("unable to update the assignment");
+	}
 
       leave();
     }

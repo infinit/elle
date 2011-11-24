@@ -40,45 +40,138 @@ namespace elle
     const String		JSON::Document::Type = "application/json";
 
 //
-// ---------- json ------------------------------------------------------------
+// ---------- bulk ------------------------------------------------------------
 //
 
     ///
-    /// this method takes a valid JSON document and turns it into a
-    /// string representation.
+    /// these constructors take any number of nodes so as to be treated
+    /// as a whole.
     ///
-    Status		JSON::Encode(const Document&		document,
-				     String&			string)
+
+    JSON::Bulk::Bulk(const Node&				node)
     {
-      std::stringstream	stream;
-
-      enter();
-
-      // transform the request into a string.
-      stream << document;
-
-      // return the string-based JSON document.
-      string = stream.str();
-
-      leave();
+      // record the node.
+      this->container.push_back(node);
     }
 
-    ///
-    /// this method decodes a string-based JSON representation into a
-    /// valid document.
-    ///
-    Status		JSON::Decode(const String&		string,
-				     Document&			document)
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2)
     {
-      ::Json::Reader	reader;
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+    }
 
-      enter();
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2,
+		     const Node&				node3)
+    {
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+      this->container.push_back(node3);
+    }
 
-      // parse the content.
-      if (reader.parse(string, *document.root.value) == false)
-	escape(reader.getFormatedErrorMessages().c_str());
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2,
+		     const Node&				node3,
+		     const Node&				node4)
+    {
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+      this->container.push_back(node3);
+      this->container.push_back(node4);
+    }
 
-      leave();
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2,
+		     const Node&				node3,
+		     const Node&				node4,
+		     const Node&				node5)
+    {
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+      this->container.push_back(node3);
+      this->container.push_back(node4);
+      this->container.push_back(node5);
+    }
+
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2,
+		     const Node&				node3,
+		     const Node&				node4,
+		     const Node&				node5,
+		     const Node&				node6)
+    {
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+      this->container.push_back(node3);
+      this->container.push_back(node4);
+      this->container.push_back(node5);
+      this->container.push_back(node6);
+    }
+
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2,
+		     const Node&				node3,
+		     const Node&				node4,
+		     const Node&				node5,
+		     const Node&				node6,
+		     const Node&				node7)
+    {
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+      this->container.push_back(node3);
+      this->container.push_back(node4);
+      this->container.push_back(node5);
+      this->container.push_back(node6);
+      this->container.push_back(node7);
+    }
+
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2,
+		     const Node&				node3,
+		     const Node&				node4,
+		     const Node&				node5,
+		     const Node&				node6,
+		     const Node&				node7,
+		     const Node&				node8)
+    {
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+      this->container.push_back(node3);
+      this->container.push_back(node4);
+      this->container.push_back(node5);
+      this->container.push_back(node6);
+      this->container.push_back(node7);
+      this->container.push_back(node8);
+    }
+
+    JSON::Bulk::Bulk(const Node&				node1,
+		     const Node&				node2,
+		     const Node&				node3,
+		     const Node&				node4,
+		     const Node&				node5,
+		     const Node&				node6,
+		     const Node&				node7,
+		     const Node&				node8,
+		     const Node&				node9)
+    {
+      // record the nodes.
+      this->container.push_back(node1);
+      this->container.push_back(node2);
+      this->container.push_back(node3);
+      this->container.push_back(node4);
+      this->container.push_back(node5);
+      this->container.push_back(node6);
+      this->container.push_back(node7);
+      this->container.push_back(node8);
+      this->container.push_back(node9);
     }
 
 //
@@ -676,205 +769,79 @@ namespace elle
     }
 
     ///
-    /// this method appends a node to the array.
+    /// this method appends a bulk of nodes to the array.
     ///
-    Status		JSON::Node::Append(const Node&		node)
+    Status		JSON::Node::Append(const Bulk&		bulk)
+    {
+      JSON::Bulk::Scoutor	scoutor;
+
+      enter();
+
+      // check the type.
+      if ((this->value->type() != ::Json::arrayValue) &&
+	  (this->value->type() != ::Json::nullValue))
+	escape("unable to append to a non-array or non-null node");
+
+      // go through the bulk.
+      for (scoutor = bulk.container.begin();
+	   scoutor != bulk.container.end();
+	   scoutor++)
+	{
+	  // append the node's value.
+	  this->value->append(*(*scoutor).value);
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method erases the named member from the object.
+    ///
+    Status		JSON::Node::Erase(const String&		key)
+    {
+      enter();
+
+      // check the type.
+      if (this->value->type() != ::Json::objectValue)
+	escape("unable to erase from a non-object node");
+
+      // erase the member.
+      this->value->removeMember(key);
+
+      leave();
+    }
+
+    ///
+    /// this method clears the array or object from all their elements.
+    ///
+    Status		JSON::Node::Clear()
+    {
+      enter();
+
+      // check the type.
+      if ((this->value->type() != ::Json::arrayValue) &&
+	  (this->value->type() != ::Json::objectValue))
+	escape("unable to clear from a non-array or non-object node");
+
+      // clear the elements.
+      this->value->clear();
+
+      leave();
+    }
+
+    ///
+    /// this method returns the number of elements in the node's array.
+    ///
+    Status		JSON::Node::Size(Natural32&		size)
     {
       enter();
 
       // check the type.
       if (this->value->type() != ::Json::arrayValue)
-	{
-	  // reset the value.
-	  *this->value = ::Json::Value(::Json::nullValue);
-	}
+	escape("unable to size from a non-array node");
 
-      // append the node's value.
-      this->value->append(*node.value);
-
-      leave();
-    }
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node2) == StatusError)
-	escape("unable to append the nodes");
-
-      leave();
-    }
-
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2,
-					   const Node&		node3)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1, node2) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node3) == StatusError)
-	escape("unable to append the nodes");
-
-      leave();
-    }
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2,
-					   const Node&		node3,
-					   const Node&		node4)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1, node2, node3) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node4) == StatusError)
-	escape("unable to append the nodes");
-
-      leave();
-    }
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2,
-					   const Node&		node3,
-					   const Node&		node4,
-					   const Node&		node5)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1, node2, node3, node4) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node5) == StatusError)
-	escape("unable to append the nodes");
-
-      leave();
-    }
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2,
-					   const Node&		node3,
-					   const Node&		node4,
-					   const Node&		node5,
-					   const Node&		node6)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1, node2, node3, node4, node5) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node6) == StatusError)
-	escape("unable to append the nodes");
-
-      leave();
-    }
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2,
-					   const Node&		node3,
-					   const Node&		node4,
-					   const Node&		node5,
-					   const Node&		node6,
-					   const Node&		node7)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1, node2, node3, node4, node5,
-		       node6) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node7) == StatusError)
-	escape("unable to append the nodes");
-
-      leave();
-    }
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2,
-					   const Node&		node3,
-					   const Node&		node4,
-					   const Node&		node5,
-					   const Node&		node6,
-					   const Node&		node7,
-					   const Node&		node8)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1, node2, node3, node4, node5,
-		       node6, node7) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node8) == StatusError)
-	escape("unable to append the nodes");
-
-      leave();
-    }
-
-    ///
-    /// this method appends nodes to the array.
-    ///
-    Status		JSON::Node::Append(const Node&		node1,
-					   const Node&		node2,
-					   const Node&		node3,
-					   const Node&		node4,
-					   const Node&		node5,
-					   const Node&		node6,
-					   const Node&		node7,
-					   const Node&		node8,
-					   const Node&		node9)
-    {
-      enter();
-
-      // append the nodes.
-      if (this->Append(node1, node2, node3, node4, node5,
-		       node6, node7, node8) == StatusError)
-	escape("unable to append the nodes");
-
-      // append the final node.
-      if (this->Append(node9) == StatusError)
-	escape("unable to append the nodes");
+      // return the number of elements.
+      size = this->value->size();
 
       leave();
     }
@@ -1054,6 +1021,48 @@ namespace elle
 //
 
     ///
+    /// this method appends a bulk of nodes to the root node.
+    ///
+    Status		JSON::Document::Append(const Bulk&	bulk)
+    {
+      enter();
+
+      // append the bulk to the root node.
+      if (this->root.Append(bulk) == StatusError)
+	escape("unable to append the root node");
+
+      leave();
+    }
+
+    ///
+    /// this method clears the elements from root node.
+    ///
+    Status		JSON::Document::Clear()
+    {
+      enter();
+
+      // clear the root node.
+      if (this->root.Clear() == StatusError)
+	escape("unable to clear the root node");
+
+      leave();
+    }
+
+    ///
+    /// this method returns the number of elements in the root array.
+    ///
+    Status		JSON::Document::Size(Natural32&		size)
+    {
+      enter();
+
+      // size the root node.
+      if (this->root.Size(size) == StatusError)
+	escape("unable to size the root node");
+
+      leave();
+    }
+
+    ///
     /// this operator compares two objects.
     ///
     Boolean		JSON::Document::operator==(
@@ -1087,6 +1096,48 @@ namespace elle
       // dump the root node.
       if (this->root.Dump(margin + 2) == StatusError)
 	escape("unable to dump the root node");
+
+      leave();
+    }
+
+//
+// ---------- json ------------------------------------------------------------
+//
+
+    ///
+    /// this method takes a valid JSON document and turns it into a
+    /// string representation.
+    ///
+    Status		JSON::Encode(const Document&		document,
+				     String&			string)
+    {
+      std::stringstream	stream;
+
+      enter();
+
+      // transform the request into a string.
+      stream << document;
+
+      // return the string-based JSON document.
+      string = stream.str();
+
+      leave();
+    }
+
+    ///
+    /// this method decodes a string-based JSON representation into a
+    /// valid document.
+    ///
+    Status		JSON::Decode(const String&		string,
+				     Document&			document)
+    {
+      ::Json::Reader	reader;
+
+      enter();
+
+      // parse the content.
+      if (reader.parse(string, *document.root.value) == false)
+	escape(reader.getFormatedErrorMessages().c_str());
 
       leave();
     }
