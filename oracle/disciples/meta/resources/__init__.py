@@ -3,9 +3,10 @@
 #
 
 import user
+import prototype
 
 #
 # ---------- globals ----------------------------------------------------------
 #
 
-__all__ = [ "user" ]
+__all__ = [ "user", "prototype" ]

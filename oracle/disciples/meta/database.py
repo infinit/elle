@@ -16,5 +16,5 @@ db = connection.meta
 
 # collections
 users = db['users']
-networks = db['networks']
+
 devices = db['devices']

@@ -12,7 +12,8 @@ import resources
 #
 
 URLs = (
-  '/user/(.+)', 'resources.user.User'
+  '/user/(.+)', 'resources.user.User',
+  '/prototype/(.+)', 'resources.prototype.Prototype'
 )
 
 application = web.application(URLs, globals(), 12345)
