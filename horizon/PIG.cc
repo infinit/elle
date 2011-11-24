@@ -105,8 +105,11 @@ namespace pig
 	{
 	  char		command[256];
 
-	  // XXX mountpoint = "XXX{_MOUNTPOINT_}XXX";
-	  mountpoint = elle::System::Path::Home + "/INFINIT";
+	  mountpoint =
+	    elle::System::Path::Home + "/local/mnt/infinit/personal";
+
+	  printf("Infinit is about to be mounted at '%s'\n",
+		 mountpoint.c_str());
 
 	  sprintf(command, "mkdir -p %s",
 		  mountpoint.c_str());
