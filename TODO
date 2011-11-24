@@ -1,10 +1,15 @@
-- ajouter Erase a JSON
+- generer des binaires statiques
+
+- checker les licences!
 
 - passer les serveurs python en production (optimisations web.py, caching,
   replication mongodb si necessaire, -debug mode etc.)
 
 - optimiser HTTP pour prendre en compte le fait que les fibres devraient
   bloquer. peut etre reecrire le tout a la main?
+- et rajouter des timeouts
+
+- utiliser redis pour les petites DB qui doivent aller vite.
 
 - peut etre bouger etoile/miscellaneous/Abstract autre part (gear/wall/etc.)
 - peut etre using namespace automatiquement pour wall/path/etc. dans etoile
