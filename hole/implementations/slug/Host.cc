@@ -260,6 +260,19 @@ namespace hole
 	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] implementations::slug::Host::Disconnected()\n");
 
+	// if a timer is still present.
+	if (this->timer != NULL)
+	  {
+	    // stop the timer.
+	    this->timer->Stop();
+
+	    // delete the timer.
+	    bury(this->timer);
+
+	    // reset the pointer.
+	    this->timer = NULL;
+	  }
+
 	// emit the signal.
 	if (this->signal.dead.Emit(this) == elle::StatusError)
 	  escape("unable to emit the signal");

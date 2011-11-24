@@ -608,9 +608,46 @@ namespace hole
 	      // in this case, the current machine is connected and has
 	      // been authenticated as a valid node of the network.
 	      //
-	      // therefore, the operation is carried out both locally but
-	      // also sent to every node in the network.
+
 	      //
+	      // first, do something special: all the hosts are contacted
+	      // in order to retrieve the latest version of the block, if
+	      // the latest version is requested.
+	      //
+	      // this is required since no synchronisation mechanism is
+	      // present yet so the current machine may have missed some
+	      // versions when disconnected.
+	      ///
+	      if (version == nucleus::Version::Last)
+		{
+ 		  Neighbourhood::Scoutor	scoutor;
+
+		  // for every scoutor.
+		  for (scoutor = this->neighbourhood.container.begin();
+		       scoutor != this->neighbourhood.container.end();
+		       scoutor++)
+		    {
+		      Host*		host = scoutor->second;
+
+		      // request the host.
+		      if (host->gate->Call(
+			    elle::Inputs<TagPull>(address,
+						  version),
+			    elle::Outputs<TagBlock>(derivable)) ==
+			  elle::StatusOk)
+			{
+			  // finally, since the block has been retrieved,
+			  // store it locally.
+			  if (block.Store(Hole::Implementation->network,
+					  address) == elle::StatusError)
+			    escape("unable to store the block");
+			}
+
+		      // ignore the error messages and continue with the
+		      // next neighbour.
+		      purge();
+		    }
+		}
 
 	      // does the block exist.
 	      if (block.Exist(Hole::Implementation->network,
