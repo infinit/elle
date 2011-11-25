@@ -87,7 +87,7 @@ namespace hole
 	//
 	elle::Status		Alone();
 
-	elle::Status		Connection(elle::Gate*);
+	elle::Status		Connection(elle::TCPSocket*);
 	elle::Status		Authenticate(const lune::Passport&,
 					     const elle::Port&);
 	elle::Status		Authenticated(const Cluster&);

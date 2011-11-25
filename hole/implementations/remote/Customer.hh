@@ -61,7 +61,7 @@ namespace hole
 	//
 	// methods
 	//
-	elle::Status		Create(elle::Gate*);
+	elle::Status		Create(elle::TCPSocket*);
 
 	//
 	// callbacks
@@ -95,7 +95,7 @@ namespace hole
 	//
 	State			state;
 
-	elle::Gate*		gate;
+	elle::TCPSocket*	socket;
 	elle::Timer*		timer;
       };
 

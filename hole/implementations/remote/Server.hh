@@ -46,7 +46,7 @@ namespace hole
 	//
 	// types
 	//
-	typedef std::map<elle::Gate*, Customer*>	Container;
+	typedef std::map<elle::TCPSocket*, Customer*>	Container;
 	typedef typename Container::iterator		Iterator;
 	typedef typename Container::const_iterator	Scoutor;
 
@@ -61,12 +61,12 @@ namespace hole
 	//
 	elle::Status		Launch();
 
-	elle::Status		Add(elle::Gate*,
+	elle::Status		Add(elle::TCPSocket*,
 				    Customer*);
-	elle::Status		Remove(elle::Gate*);
-	elle::Status		Retrieve(elle::Gate*,
+	elle::Status		Remove(elle::TCPSocket*);
+	elle::Status		Retrieve(elle::TCPSocket*,
 					 Customer*&);
-	elle::Status		Locate(elle::Gate*,
+	elle::Status		Locate(elle::TCPSocket*,
 				       Iterator* = NULL);
 
 	elle::Status		Put(const nucleus::Address&,
@@ -83,7 +83,7 @@ namespace hole
 	//
 	// callbacks
 	//
-	elle::Status		Connection(elle::Gate*);
+	elle::Status		Connection(elle::TCPSocket*);
 
 	elle::Status		Challenge(const lune::Passport&);
 

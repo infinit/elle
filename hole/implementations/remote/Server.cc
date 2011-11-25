@@ -127,11 +127,11 @@ namespace hole
 	//
 	{
 	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(
+	  if (elle::TCPServer::Listen(
 		this->locus,
 	        elle::Callback<>::Infer(
 		  &Server::Connection, this)) == elle::StatusError)
-	    escape("unable to listen for bridge connections");
+	    escape("unable to listen for TCP connections");
 	}
 
 	leave();
@@ -140,7 +140,7 @@ namespace hole
       ///
       /// this method adds the given customer to the set of customers.
       ///
-      elle::Status	Server::Add(elle::Gate*			gate,
+      elle::Status	Server::Add(elle::TCPSocket*		socket,
 				    Customer*			customer)
       {
 	std::pair<Server::Iterator, elle::Boolean>	result;
@@ -148,12 +148,12 @@ namespace hole
 	enter();
 
 	// check if this customer already exists.
-	if (this->Locate(gate) == elle::StatusTrue)
-	  escape("this gate has already been registered");
+	if (this->Locate(socket) == elle::StatusTrue)
+	  escape("this socket has already been registered");
 
 	// insert the customer in the container.
 	result = this->container.insert(
-		   std::pair<elle::Gate*, Customer*>(gate, customer));
+		   std::pair<elle::TCPSocket*, Customer*>(socket, customer));
 
 	// check if the insertion was successful.
 	if (result.second == false)
@@ -165,14 +165,14 @@ namespace hole
       ///
       /// this method removes a customer from the set.
       ///
-      elle::Status	Server::Remove(elle::Gate*		gate)
+      elle::Status	Server::Remove(elle::TCPSocket*		socket)
       {
 	Server::Iterator	iterator;
 
 	enter();
 
 	// locate the customer.
-	if (this->Locate(gate, &iterator) == elle::StatusFalse)
+	if (this->Locate(socket, &iterator) == elle::StatusFalse)
 	  escape("unable to locate the given customer");
 
 	// remove the entry from the container.
@@ -184,7 +184,7 @@ namespace hole
       ///
       /// this method returns the customer associated with the given socket.
       ///
-      elle::Status	Server::Retrieve(elle::Gate*		gate,
+      elle::Status	Server::Retrieve(elle::TCPSocket*	socket,
 					 Customer*&		customer)
       {
 	Server::Iterator	iterator;
@@ -192,7 +192,7 @@ namespace hole
 	enter();
 
 	// locate the customer.
-	if (this->Locate(gate, &iterator) == elle::StatusFalse)
+	if (this->Locate(socket, &iterator) == elle::StatusFalse)
 	  escape("unable to locate the given customer");
 
 	// retrieve the customer.
@@ -204,7 +204,7 @@ namespace hole
       ///
       /// this method locates the customer associated with the given socket.
       ///
-      elle::Status	Server::Locate(elle::Gate*		gate,
+      elle::Status	Server::Locate(elle::TCPSocket*		socket,
 				       Iterator*		iterator)
       {
 	Server::Iterator	i;
@@ -212,7 +212,7 @@ namespace hole
 	enter();
 
 	// try to locate the customer.
-	if ((i = this->container.find(gate)) != this->container.end())
+	if ((i = this->container.find(socket)) != this->container.end())
 	  {
 	    if (iterator != NULL)
 	      *iterator = i;
@@ -519,7 +519,7 @@ namespace hole
       ///
       /// this callback handles new connections.
       ///
-      elle::Status	Server::Connection(elle::Gate*		gate)
+      elle::Status	Server::Connection(elle::TCPSocket*	socket)
       {
 	Customer*	customer;
 
@@ -533,7 +533,7 @@ namespace hole
 	customer = new Customer;
 
 	// create the customer.
-	if (customer->Create(gate) == elle::StatusError)
+	if (customer->Create(socket) == elle::StatusError)
 	  escape("unable to create the customer");
 
 	// set the state.
@@ -546,7 +546,7 @@ namespace hole
 	  escape("unable to subscribe to the signal");
 
 	// add the customer.
-	if (this->Add(customer->gate, customer) == elle::StatusError)
+	if (this->Add(customer->socket, customer) == elle::StatusError)
 	  escape("unable to add the customer");
 
 	// waive.
@@ -575,7 +575,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the customer.
-	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+	if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
 			   customer) == elle::StatusError)
 	  escape("unable to retrieve the customer");
 
@@ -583,11 +583,11 @@ namespace hole
 	if (passport.Validate(Infinit::Authority) == elle::StatusError)
 	  {
 	    // remove the customer.
-	    if (this->Remove(customer->gate) == elle::StatusError)
+	    if (this->Remove(customer->socket) == elle::StatusError)
 	      escape("unable to remove the customer");
 
 	    // disconnect the customer.
-	    if (customer->gate->Disconnect() == elle::StatusError)
+	    if (customer->socket->Disconnect() == elle::StatusError)
 	      escape("unable to disconnect the customer");
 
 	    // bury the customer: the socket is still in use.
@@ -599,7 +599,7 @@ namespace hole
 	    customer->state = Customer::StateAuthenticated;
 
 	    // reply with the authenticated message.
-	    if (customer->gate->Reply(
+	    if (customer->socket->Reply(
 	          elle::Inputs<TagAuthenticated>()) == elle::StatusError)
 	      escape("unable to reply to the client");
 	  }
@@ -615,7 +615,7 @@ namespace hole
 	enter();
 
 	// remove the customer.
-	if (this->Remove(customer->gate) == elle::StatusError)
+	if (this->Remove(customer->socket) == elle::StatusError)
 	  escape("unable to remove the customer");
 
 	// bury it.
@@ -647,7 +647,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the customer.
-	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+	if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
 			   customer) == elle::StatusError)
 	  escape("unable to retrieve the customer");
 
@@ -698,7 +698,7 @@ namespace hole
 	  }
 
 	// acknowledge.
-	if (customer->gate->Reply(
+	if (customer->socket->Reply(
 	      elle::Inputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to acknowledge");
 
@@ -726,7 +726,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the customer.
-	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+	if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
 			   customer) == elle::StatusError)
 	  escape("unable to retrieve the customer");
 
@@ -782,7 +782,7 @@ namespace hole
 							  *block);
 
 	// return the block.
-	if (customer->gate->Reply(
+	if (customer->socket->Reply(
 	      elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
 	  escape("unable to return the block");
 
@@ -814,7 +814,7 @@ namespace hole
 	  escape("unable to retrieve the current session");
 
 	// retrieve the customer.
-	if (this->Retrieve(dynamic_cast<elle::Gate*>(session->socket),
+	if (this->Retrieve(dynamic_cast<elle::TCPSocket*>(session->socket),
 			   customer) == elle::StatusError)
 	  escape("unable to retrieve the customer");
 
@@ -827,7 +827,7 @@ namespace hole
 	  escape("unable to erase the block");
 
 	// acknowledge.
-	if (customer->gate->Reply(
+	if (customer->socket->Reply(
 	      elle::Inputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to acknowledge");
 

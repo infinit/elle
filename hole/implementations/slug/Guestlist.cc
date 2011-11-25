@@ -52,7 +52,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Guestlist::Add(elle::Gate*		gate,
+      elle::Status	Guestlist::Add(elle::TCPSocket*		socket,
 				       Host*			host)
       {
 	std::pair<Guestlist::Iterator, elle::Boolean>	result;
@@ -60,7 +60,7 @@ namespace hole
 	enter();
 
 	// insert the host in the container.
-	result = this->container.insert(Guestlist::Value(gate, host));
+	result = this->container.insert(Guestlist::Value(socket, host));
 
 	// check if the insertion was successful.
 	if (result.second == false)
@@ -72,14 +72,14 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Guestlist::Exist(elle::Gate*		gate) const
+      elle::Status	Guestlist::Exist(elle::TCPSocket*	socket) const
       {
 	Guestlist::Scoutor	scoutor;
 
 	enter();
 
-	// try to locate the gate.
-	if (this->Locate(gate, scoutor) == elle::StatusTrue)
+	// try to locate the socket.
+	if (this->Locate(socket, scoutor) == elle::StatusTrue)
 	  true();
 
 	false();
@@ -88,7 +88,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Guestlist::Retrieve(elle::Gate*		gate,
+      elle::Status	Guestlist::Retrieve(elle::TCPSocket*	socket,
 					    Host*&		host)
 	const
       {
@@ -96,9 +96,9 @@ namespace hole
 
 	enter();
 
-	// try to locate the gate.
-	if (this->Locate(gate, scoutor) == elle::StatusFalse)
-	  escape("unable to locate the given gate");
+	// try to locate the socket.
+	if (this->Locate(socket, scoutor) == elle::StatusFalse)
+	  escape("unable to locate the given socket");
 
 	// return the associated host.
 	host = scoutor->second;
@@ -109,15 +109,15 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Guestlist::Remove(elle::Gate*		gate)
+      elle::Status	Guestlist::Remove(elle::TCPSocket*	socket)
       {
 	Guestlist::Iterator	iterator;
 
 	enter();
 
-	// try to locate the gate.
-	if (this->Locate(gate, iterator) == elle::StatusFalse)
-	  escape("unable to locate the given gate");
+	// try to locate the socket.
+	if (this->Locate(socket, iterator) == elle::StatusFalse)
+	  escape("unable to locate the given socket");
 
 	// erase the iterator.
 	this->container.erase(iterator);
@@ -128,7 +128,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Guestlist::Locate(elle::Gate*		gate,
+      elle::Status	Guestlist::Locate(elle::TCPSocket*	socket,
 					  Scoutor&		scoutor) const
       {
 	Guestlist::Scoutor	s;
@@ -136,7 +136,7 @@ namespace hole
 	enter();
 
 	// try to locate the host.
-	if ((s = this->container.find(gate)) != this->container.end())
+	if ((s = this->container.find(socket)) != this->container.end())
 	  {
 	    // return the scoutor.
 	    scoutor = s;
@@ -150,7 +150,7 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Guestlist::Locate(elle::Gate*		gate,
+      elle::Status	Guestlist::Locate(elle::TCPSocket*	socket,
 					  Iterator&		iterator)
       {
 	Guestlist::Iterator	i;
@@ -158,7 +158,7 @@ namespace hole
 	enter();
 
 	// try to locate the host.
-	if ((i = this->container.find(gate)) != this->container.end())
+	if ((i = this->container.find(socket)) != this->container.end())
 	  {
 	    // return the iterator.
 	    iterator = i;
@@ -194,10 +194,10 @@ namespace hole
 	    std::cout << alignment << elle::Dumpable::Shift
 		      << "[Guest]" << std::endl;
 
-	    // dump the gate's address.
+	    // dump the socket's address.
 	    std::cout << alignment << elle::Dumpable::Shift
 		      << elle::Dumpable::Shift
-		      << "[Gate] " << scoutor->first << std::endl;
+		      << "[TCPSocket] " << scoutor->first << std::endl;
 
 	    // dump the host.
 	    if (scoutor->second->Dump(margin + 4) == elle::StatusError)

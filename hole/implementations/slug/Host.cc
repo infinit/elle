@@ -44,7 +44,7 @@ namespace hole
       ///
       Host::Host():
 	state(StateUnknown),
-	gate(NULL),
+	socket(NULL),
 	timer(NULL)
       {
       }
@@ -54,9 +54,9 @@ namespace hole
       ///
       Host::~Host()
       {
-	// delete the gate, if present.
-	if (this->gate != NULL)
-	  delete this->gate;
+	// delete the socket, if present.
+	if (this->socket != NULL)
+	  delete this->socket;
 
 	// delete the timer, if present.
 	if (this->timer != NULL)
@@ -77,12 +77,12 @@ namespace hole
 	// set the locus.
 	this->locus = locus;
 
-	// allocate a gate.
-	this->gate = new elle::Gate;
+	// allocate a socket.
+	this->socket = new elle::TCPSocket;
 
-	// create the gate.
-	if (this->gate->Create() == elle::StatusError)
-	  escape("unable to create the gate");
+	// create the socket.
+	if (this->socket->Create() == elle::StatusError)
+	  escape("unable to create the socket");
 
 	// allocate the timer.
 	this->timer = new elle::Timer;
@@ -107,24 +107,24 @@ namespace hole
       ///
       /// XXX
       ///
-      elle::Status	Host::Create(elle::Gate*		gate)
+      elle::Status	Host::Create(elle::TCPSocket*		socket)
       {
 	enter();
 
-	// set the gate.
-	this->gate = gate;
+	// set the socket.
+	this->socket = socket;
 
 	// set the state.
 	this->state = Host::StateConnected;
 
 	// subscribe to the signal.
-        if (this->gate->signal.disconnected.Subscribe(
+        if (this->socket->signal.disconnected.Subscribe(
               elle::Callback<>::Infer(&Host::Disconnected,
                                       this)) == elle::StatusError)
           escape("unable to subscribe the signal");
 
 	// subscribe to the signal.
-        if (this->gate->signal.error.Subscribe(
+        if (this->socket->signal.error.Subscribe(
               elle::Callback<>::Infer(&Host::Error,
                                       this)) == elle::StatusError)
           escape("unable to subscribe the signal");
@@ -140,25 +140,25 @@ namespace hole
 	enter();
 
 	// subscribe to the signal.
-        if (this->gate->signal.connected.Subscribe(
+        if (this->socket->signal.connected.Subscribe(
               elle::Callback<>::Infer(&Host::Connected,
                                       this)) == elle::StatusError)
           escape("unable to subscribe the signal");
 
 	// subscribe to the signal.
-        if (this->gate->signal.disconnected.Subscribe(
+        if (this->socket->signal.disconnected.Subscribe(
               elle::Callback<>::Infer(&Host::Disconnected,
                                       this)) == elle::StatusError)
           escape("unable to subscribe the signal");
 
 	// subscribe to the signal.
-        if (this->gate->signal.error.Subscribe(
+        if (this->socket->signal.error.Subscribe(
               elle::Callback<>::Infer(&Host::Error,
                                       this)) == elle::StatusError)
           escape("unable to subscribe the signal");
 
-	// connect the gate.
-	if (this->gate->Connect(this->locus) == elle::StatusError)
+	// connect the socket.
+	if (this->socket->Connect(this->locus) == elle::StatusError)
 	  escape("unable to connect to the peer");
 
 	leave();
@@ -171,8 +171,8 @@ namespace hole
       {
 	enter();
 
-	// disconnect the gate.
-	if (this->gate->Disconnect() == elle::StatusError)
+	// disconnect the socket.
+	if (this->socket->Disconnect() == elle::StatusError)
 	  escape("unable to disconnect the socket");
 
 	leave();
@@ -326,16 +326,16 @@ namespace hole
 	if (this->locus.Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the locus");
 
-	// dump the gate, if present.
-	if (this->gate != NULL)
+	// dump the socket, if present.
+	if (this->socket != NULL)
 	  {
-	    if (this->gate->Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the gate");
+	    if (this->socket->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the socket");
 	  }
 	else
 	  {
 	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Gate] " << elle::none << std::endl;
+		      << "[TCPSocket] " << elle::none << std::endl;
 	  }
 
 	// dump the timer, if present.

@@ -176,7 +176,7 @@ namespace hole
 		escape("unable to connect the host");
 
 	      // add the host to the guestlist.
-	      if (this->guestlist.Add(host->gate, host) == elle::StatusError)
+	      if (this->guestlist.Add(host->socket, host) == elle::StatusError)
 		escape("unable to add the host to the guestlist");
 
 	      // waive.
@@ -227,11 +227,11 @@ namespace hole
 	    escape("unable to create the locus");
 
 	  // listen for incoming connections.
-	  if (elle::Bridge::Listen(
+	  if (elle::TCPServer::Listen(
 		locus,
 		elle::Callback<>::Infer(
 		  &Machine::Connection, this)) == elle::StatusError)
-	    escape("unable to listen for bridge connections");
+	    escape("unable to listen for TCP connections");
 	}
 
 	leave();
@@ -295,7 +295,7 @@ namespace hole
 
 		    // send the block to the host.
 		    // XXX do not check the success!
-		    host->gate->Send(
+		    host->socket->Send(
 		      elle::Inputs<TagPush>(address, derivable));
 
 		    // ignore the error messages and continue with the
@@ -461,7 +461,7 @@ namespace hole
 
 		    // send the block to the host.
 		    // XXX do not check the success!
-		    host->gate->Send(
+		    host->socket->Send(
 		      elle::Inputs<TagPush>(address, derivable));
 
 		    // ignore the error messages and continue with the
@@ -544,7 +544,7 @@ namespace hole
 		      Host*		host = scoutor->second;
 
 		      // request the host.
-		      if (host->gate->Call(
+		      if (host->socket->Call(
 			    elle::Inputs<TagPull>(address,
 						  nucleus::Version::Any),
 			    elle::Outputs<TagBlock>(derivable)) ==
@@ -630,7 +630,7 @@ namespace hole
 		      Host*		host = scoutor->second;
 
 		      // request the host.
-		      if (host->gate->Call(
+		      if (host->socket->Call(
 			    elle::Inputs<TagPull>(address,
 						  version),
 			    elle::Outputs<TagBlock>(derivable)) ==
@@ -728,7 +728,7 @@ namespace hole
 		      Host*		host = scoutor->second;
 
 		      // request the host.
-		      if (host->gate->Call(
+		      if (host->socket->Call(
 			    elle::Inputs<TagPull>(address,
 						  version),
 			    elle::Outputs<TagBlock>(derivable)) ==
@@ -846,7 +846,7 @@ namespace hole
 
 		    // send the request to the host.
 		    // XXX do not check the success!
-		    host->gate->Send(
+		    host->socket->Send(
 		      elle::Inputs<TagWipe>(address));
 
 		    // ignore the error messages and continue with the
@@ -907,7 +907,7 @@ namespace hole
       ///
       /// this method handles new connections.
       ///
-      elle::Status	Machine::Connection(elle::Gate*			gate)
+      elle::Status	Machine::Connection(elle::TCPSocket*	socket)
       {
 	enter();
 
@@ -928,7 +928,7 @@ namespace hole
 	      host = new Host;
 
 	      // create the host.
-	      if (host->Create(gate) == elle::StatusError)
+	      if (host->Create(socket) == elle::StatusError)
 		escape("unable to create the host");
 
 	      // subscribe to the signal.
@@ -939,11 +939,11 @@ namespace hole
 
 	      // add the host to the guestlist for now until it
 	      // gets authenticated.
-	      if (this->guestlist.Add(host->gate, host) == elle::StatusError)
+	      if (this->guestlist.Add(host->socket, host) == elle::StatusError)
 		escape("unable to add the host to the neigbourhood");
 
 	      // also authenticate to this host.
-	      if (host->gate->Send(
+	      if (host->socket->Send(
 		    elle::Inputs<TagAuthenticate>(
 		      Hole::Passport,
 		      this->port)) == elle::StatusError)
@@ -964,8 +964,8 @@ namespace hole
 	      // incoming connection right away.
 	      //
 
-	      // delete the gate.
-	      delete gate;
+	      // delete the socket.
+	      delete socket;
 
 	      break;
 	    }
@@ -995,13 +995,14 @@ namespace hole
 
 	// if the host exists in the guestlist, handle its authentication.
 	if (this->guestlist.Exist(
-	      static_cast<elle::Gate*>(session->socket)) == elle::StatusTrue)
+	      static_cast<elle::TCPSocket*>(session->socket)) ==
+	    elle::StatusTrue)
 	  {
 	    Cluster	cluster;
 
 	    // retrieve the host from the guestlist.
 	    if (this->guestlist.Retrieve(
-		  static_cast<elle::Gate*>(session->socket),
+		  static_cast<elle::TCPSocket*>(session->socket),
 		  host) == elle::StatusError)
 	      escape("unable to retrieve the host");
 
@@ -1029,13 +1030,13 @@ namespace hole
 	      escape("unable to set the host as authenticated");
 
 	    // reply.
-	    if (host->gate->Reply(
+	    if (host->socket->Reply(
 		  elle::Inputs<TagAuthenticated>(
 		    cluster)) == elle::StatusError)
 	      escape("unable to reply to the caller");
 
 	    // also authenticate to this host.
-	    if (host->gate->Send(
+	    if (host->socket->Send(
 		  elle::Inputs<TagAuthenticate>(
 		    Hole::Passport,
 		    this->port)) == elle::StatusError)
@@ -1115,7 +1116,7 @@ namespace hole
 		escape("unable to connect the host");
 
 	      // add the host to the guestlist.
-	      if (this->guestlist.Add(host->gate, host) == elle::StatusError)
+	      if (this->guestlist.Add(host->socket, host) == elle::StatusError)
 		escape("unable to add the host to the guestlist");
 
 	      // waive.
@@ -1146,7 +1147,7 @@ namespace hole
 	  case Host::StateAuthenticated:
 	    {
 	      // remove the host from the guestlist.
-	      if (this->guestlist.Remove(host->gate) == elle::StatusError)
+	      if (this->guestlist.Remove(host->socket) == elle::StatusError)
 		escape("unable to remove the host from the guestlist");
 
 	      // remove the host from the neighbourhood.
@@ -1158,10 +1159,10 @@ namespace hole
 	  default:
 	    {
 	      // does the host exist in the guestlist.
-	      if (this->guestlist.Exist(host->gate) == elle::StatusTrue)
+	      if (this->guestlist.Exist(host->socket) == elle::StatusTrue)
 		{
 		  // remove the host from the guestlist.
-		  if (this->guestlist.Remove(host->gate) == elle::StatusError)
+		  if (this->guestlist.Remove(host->socket) == elle::StatusError)
 		    escape("unable to remove the host from the neighbourhood");
 		}
 
@@ -1199,7 +1200,7 @@ namespace hole
 
 	// retrieve the host from the guestlist.
 	if (this->guestlist.Retrieve(
-	      static_cast<elle::Gate*>(session->socket),
+	      static_cast<elle::TCPSocket*>(session->socket),
 	      host) == elle::StatusError)
 	  escape("unable to retrieve the host");
 
@@ -1384,7 +1385,7 @@ namespace hole
 
 	// retrieve the host from the guestlist.
 	if (this->guestlist.Retrieve(
-	      static_cast<elle::Gate*>(session->socket),
+	      static_cast<elle::TCPSocket*>(session->socket),
 	      host) == elle::StatusError)
 	  escape("unable to retrieve the host");
 
@@ -1509,7 +1510,7 @@ namespace hole
 							  *block);
 
 	// return the block.
-	if (host->gate->Reply(
+	if (host->socket->Reply(
 	      elle::Inputs<TagBlock>(derivable)) == elle::StatusError)
 	  escape("unable to return the block");
 
@@ -1542,7 +1543,7 @@ namespace hole
 
 	// retrieve the host from the guestlist.
 	if (this->guestlist.Retrieve(
-	      static_cast<elle::Gate*>(session->socket),
+	      static_cast<elle::TCPSocket*>(session->socket),
 	      host) == elle::StatusError)
 	  escape("unable to retrieve the host");
 

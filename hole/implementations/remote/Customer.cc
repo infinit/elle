@@ -43,7 +43,7 @@ namespace hole
       ///
       Customer::Customer():
 	state(Customer::StateUnknown),
-	gate(NULL),
+	socket(NULL),
 	timer(NULL)
       {
       }
@@ -53,9 +53,9 @@ namespace hole
       ///
       Customer::~Customer()
       {
-	// delete the gate.
-	if (this->gate != NULL)
-	  delete this->gate;
+	// delete the socket.
+	if (this->socket != NULL)
+	  delete this->socket;
 
 	// delete the timer.
 	if (this->timer != NULL)
@@ -69,21 +69,21 @@ namespace hole
       ///
       /// this method creates a customer from the given socket.
       ///
-      elle::Status	Customer::Create(elle::Gate*		gate)
+      elle::Status	Customer::Create(elle::TCPSocket*	socket)
       {
 	enter();
 
 	// register the client.
-	this->gate = gate;
+	this->socket = socket;
 
 	// subscribe to the signal.
-	if (this->gate->signal.disconnected.Subscribe(
+	if (this->socket->signal.disconnected.Subscribe(
 	      elle::Callback<>::Infer(&Customer::Disconnected,
 				      this)) == elle::StatusError)
 	  escape("unable to subscribe to the signal");
 
 	// subscribe to the signal.
-	if (this->gate->signal.error.Subscribe(
+	if (this->socket->signal.error.Subscribe(
 	      elle::Callback<>::Infer(&Customer::Error,
 				      this)) == elle::StatusError)
 	  escape("unable to subscribe to the signal");
@@ -149,8 +149,8 @@ namespace hole
 	// log the error.
 	log(error.c_str());
 
-	// disconnect the gate, though that may be unecessary.
-	this->gate->Disconnect();
+	// disconnect the socket, though that may be unecessary.
+	this->socket->Disconnect();
 
 	leave();
       }
@@ -204,16 +204,16 @@ namespace hole
 	std::cout << alignment << elle::Dumpable::Shift
 		  << "[State] " << this->state << std::endl;
 
-	// dump the gate.
-	if (this->gate != NULL)
+	// dump the socket.
+	if (this->socket != NULL)
 	  {
-	    if (this->gate->Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the gate");
+	    if (this->socket->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the socket");
 	  }
 	else
 	  {
 	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Gate] " << elle::none << std::endl;
+		      << "[TCPSocket] " << elle::none << std::endl;
 	  }
 
 	// dump the timer.

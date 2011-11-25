@@ -36,7 +36,7 @@ namespace hole
       Client::Client(const elle::Locus&				locus):
 	state(Client::StateUnknown),
 	locus(locus),
-	gate(NULL)
+	socket(NULL)
       {
       }
 
@@ -45,9 +45,9 @@ namespace hole
       ///
       Client::~Client()
       {
-	// delete the gate.
-	if (this->gate != NULL)
-	  delete this->gate;
+	// delete the socket.
+	if (this->socket != NULL)
+	  delete this->socket;
       }
 
 //
@@ -88,34 +88,34 @@ namespace hole
 	// connect to the server.
 	//
 	{
-	  // allocate the gate.
-	  this->gate = new elle::Gate;
+	  // allocate the socket.
+	  this->socket = new elle::TCPSocket;
 
-	  // create the gate.
-	  if (this->gate->Create() == elle::StatusError)
-	    escape("unable to create the gate");
+	  // create the socket.
+	  if (this->socket->Create() == elle::StatusError)
+	    escape("unable to create the socket");
 
 	  // subscribe to the signal.
-	  if (this->gate->signal.connected.Subscribe(
+	  if (this->socket->signal.connected.Subscribe(
 	        elle::Callback<>::Infer(&Client::Connected,
 					this)) == elle::StatusError)
 	    escape("unable to subscribe to the signal");
 
 	  // subscribe to the signal.
-	  if (this->gate->signal.disconnected.Subscribe(
+	  if (this->socket->signal.disconnected.Subscribe(
 	        elle::Callback<>::Infer(&Client::Disconnected,
 					this)) == elle::StatusError)
 	    escape("unable to subscribe to the signal");
 
 	  // subscribe to the signal.
-	  if (this->gate->signal.error.Subscribe(
+	  if (this->socket->signal.error.Subscribe(
 	        elle::Callback<>::Infer(&Client::Error,
 					this)) == elle::StatusError)
 	    escape("unable to subscribe to the signal");
 
-	  // connect the gate.
-	  if (this->gate->Connect(this->locus,
-				  elle::Channel::ModeSynchronous) ==
+	  // connect the socket.
+	  if (this->socket->Connect(this->locus,
+				    elle::StreamSocket::ModeSynchronous) ==
 	      elle::StatusError)
 	    escape("unable to connect to the bridge");
 	}
@@ -125,7 +125,7 @@ namespace hole
 	//
 	{
 	  // send the passport.
-	  if (this->gate->Send(
+	  if (this->socket->Send(
 	        elle::Inputs<TagChallenge>(Hole::Passport)) ==
 	      elle::StatusError)
 	    escape("unable to send the challenge");
@@ -150,11 +150,11 @@ namespace hole
 	  printf("[hole] implementations::remote::Client::Put[Immutable]()\n");
 
 	// check that the client is connected.
-	if (this->gate == NULL)
+	if (this->socket == NULL)
 	  escape("the client seems to have been disconnected");
 
 	// transfer to the remote.
-	if (this->gate->Call(
+	if (this->socket->Call(
 	      elle::Inputs<TagPush>(address,
 				    derivable),
 	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
@@ -179,11 +179,11 @@ namespace hole
 	  printf("[hole] implementations::remote::Client::Put[Mutable]()\n");
 
 	// check that the client is connected.
-	if (this->gate == NULL)
+	if (this->socket == NULL)
 	  escape("the client seems to have been disconnected");
 
 	// transfer to the remote.
-	if (this->gate->Call(
+	if (this->socket->Call(
 	      elle::Inputs<TagPush>(address,
 				    derivable),
 	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
@@ -207,11 +207,11 @@ namespace hole
 	  printf("[hole] implementations::remote::Client::Get[Immutable]()\n");
 
 	// check that the client is connected.
-	if (this->gate == NULL)
+	if (this->socket == NULL)
 	  escape("the client seems to have been disconnected");
 
 	// transfer to the remote.
-	if (this->gate->Call(
+	if (this->socket->Call(
 	      elle::Inputs<TagPull>(address,
 				    nucleus::Version::Any),
 	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
@@ -236,11 +236,11 @@ namespace hole
 	  printf("[hole] implementations::remote::Client::Get[Mutable]()\n");
 
 	// check that the client is connected.
-	if (this->gate == NULL)
+	if (this->socket == NULL)
 	  escape("the client seems to have been disconnected");
 
 	// transfer to the remote.
-	if (this->gate->Call(
+	if (this->socket->Call(
 	      elle::Inputs<TagPull>(address,
 				    version),
 	      elle::Outputs<TagBlock>(derivable)) == elle::StatusError)
@@ -261,11 +261,11 @@ namespace hole
 	  printf("[hole] implementations::remote::Client::Kill()\n");
 
 	// check that the client is connected.
-	if (this->gate == NULL)
+	if (this->socket == NULL)
 	  escape("the client seems to have been disconnected");
 
 	// transfer to the remote.
-	if (this->gate->Call(
+	if (this->socket->Call(
 	      elle::Inputs<TagWipe>(address),
 	      elle::Outputs<elle::TagOk>()) == elle::StatusError)
 	  escape("unable to transfer the request");
@@ -336,8 +336,8 @@ namespace hole
 	if (Infinit::Configuration.hole.debug == true)
 	  printf("[hole] implementations::remote::Client::Error()\n");
 
-	// disconnect the gate, though that may be unecessary.
-	this->gate->Disconnect();
+	// disconnect the socket, though that may be unecessary.
+	this->socket->Disconnect();
 
 	leave();
       }
@@ -402,16 +402,16 @@ namespace hole
 	if (this->locus.Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the locus");
 
-	// dump the gate.
-	if (this->gate != NULL)
+	// dump the socket.
+	if (this->socket != NULL)
 	  {
-	    if (this->gate->Dump(margin + 2) == elle::StatusError)
-	      escape("unable to dump the gate");
+	    if (this->socket->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the socket");
 	  }
 	else
 	  {
 	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Gate] " << elle::none << std::endl;
+		      << "[TCPSocket] " << elle::none << std::endl;
 	  }
 
 	leave();

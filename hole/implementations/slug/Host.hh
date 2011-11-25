@@ -63,7 +63,7 @@ namespace hole
 	// methods
 	//
 	elle::Status	Create(const elle::Locus&);
-	elle::Status	Create(elle::Gate*);
+	elle::Status	Create(elle::TCPSocket*);
 
 	elle::Status	Connect();
 	elle::Status	Disconnect();
@@ -100,13 +100,13 @@ namespace hole
 	//
 	// attributes
 	//
-	State		state;
+	State			state;
 
-	elle::Locus	locus;
+	elle::Locus		locus;
 
-	elle::Gate*	gate;
+	elle::TCPSocket*	socket;
 
-	elle::Timer*	timer;
+	elle::Timer*		timer;
       };
 
     }
