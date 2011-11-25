@@ -46,8 +46,8 @@ namespace etoile
 
       // return the context by dynamically casting it.
       if ((context = dynamic_cast<T*>(this->context)) == NULL)
-	escape("invalid context nature: scope's(%s) target(%s)",
-	       NatureName(this->context->nature), NatureName(T::N));
+	escape("invalid context nature: scope's(%u) target(%u)",
+	       this->context->nature, T::N);
 
       leave();
     }

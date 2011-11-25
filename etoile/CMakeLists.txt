@@ -17,7 +17,6 @@ ADD_LIBRARY(etoile
   gear/Gear.cc
   gear/Identifier.cc
   gear/Link.cc
-  gear/Nature.cc
   gear/Object.cc
   gear/Scope.cc
   gear/Transcript.cc

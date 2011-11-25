@@ -33,8 +33,6 @@ namespace etoile
 	NatureLink
       };
 
-    const char * NatureName(Nature nature);
-
   }
 }
 

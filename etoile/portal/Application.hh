@@ -67,7 +67,7 @@ namespace etoile
       //
       // methods
       //
-      elle::Status	Create(elle::Door*);
+      elle::Status	Create(elle::LocalSocket*);
 
       //
       // callbacks
@@ -81,16 +81,16 @@ namespace etoile
       //
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status	Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
       //
-      State		state;
-      Processing	processing;
+      State			state;
+      Processing		processing;
 
-      elle::Timer*	timer;
-      elle::Door*	door;
+      elle::Timer*		timer;
+      elle::LocalSocket*	socket;
     };
 
   }

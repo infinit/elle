@@ -43,7 +43,7 @@ namespace etoile
       state(StateDisconnected),
       processing(ProcessingOff),
       timer(NULL),
-      door(NULL)
+      socket(NULL)
     {
     }
 
@@ -56,9 +56,9 @@ namespace etoile
       if (this->timer != NULL)
 	delete this->timer;
 
-      // delete the door, if present.
-      if (this->door != NULL)
-	delete this->door;
+      // delete the socket, if present.
+      if (this->socket != NULL)
+	delete this->socket;
     }
 
 //
@@ -66,26 +66,26 @@ namespace etoile
 //
 
     ///
-    /// this method creates the application given its door.
+    /// this method creates the application given its socket.
     ///
-    elle::Status	Application::Create(elle::Door*		door)
+    elle::Status	Application::Create(elle::LocalSocket*	socket)
     {
       enter();
 
-      // set the door.
-      this->door = door;
+      // set the socket.
+      this->socket = socket;
 
       // set the state.
       this->state = Application::StateConnected;
 
       // subscribe to the signal.
-      if (this->door->signal.disconnected.Subscribe(
+      if (this->socket->signal.disconnected.Subscribe(
 	    elle::Callback<>::Infer(&Application::Disconnected,
 				    this)) == elle::StatusError)
 	escape("unable to subscribe to the signal");
 
       // subscribe to the signal.
-      if (this->door->signal.error.Subscribe(
+      if (this->socket->signal.error.Subscribe(
 	    elle::Callback<>::Infer(&Application::Error,
 				    this)) == elle::StatusError)
 	escape("unable to subscribe to the signal");
@@ -134,7 +134,7 @@ namespace etoile
       if (this->processing == Application::ProcessingOff)
 	{
 	  // remove the application from the portal.
-	  if (Portal::Remove(this->door) == elle::StatusError)
+	  if (Portal::Remove(this->socket) == elle::StatusError)
 	    escape("unable to remove the application from the portal");
 
 	  // bury the application.
@@ -157,9 +157,9 @@ namespace etoile
 	std::cout << "[etoile] portal::Application::Error()"
 		  << std::endl;
 
-      // disconnect the door, though that may be unecessary i.e do not
+      // disconnect the socket, though that may be unecessary i.e do not
       // check the return status.
-      this->door->Disconnect();
+      this->socket->Disconnect();
 
       leave();
     }
@@ -188,7 +188,7 @@ namespace etoile
       if (this->state != Application::StateAuthenticated)
 	{
 	  // disconnect the application.
-	  if (this->door->Disconnect() == elle::StatusError)
+	  if (this->socket->Disconnect() == elle::StatusError)
 	    escape("unable to disconnect the socket");
 	}
 
@@ -233,18 +233,18 @@ namespace etoile
 		    << "[Timer] " << elle::none << std::endl;
 	}
 
-      // dump the door, depending on its presence.
-      if (this->door != NULL)
+      // dump the socket, depending on its presence.
+      if (this->socket != NULL)
 	{
-	  // dump the door.
-	  if (this->door->Dump(margin + 2) == elle::StatusError)
-	    escape("unable to dump the door");
+	  // dump the socket.
+	  if (this->socket->Dump(margin + 2) == elle::StatusError)
+	    escape("unable to dump the socket");
 	}
       else
 	{
-	  // dump a null door.
+	  // dump a null socket.
 	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Door] " << elle::none << std::endl;
+		    << "[LocalSocket] " << elle::none << std::endl;
 	}
 
       leave();

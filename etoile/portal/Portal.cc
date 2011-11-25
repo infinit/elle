@@ -497,11 +497,11 @@ namespace etoile
       }
 
       // listen for incoming connection.
-      if (elle::Lane::Listen(
+      if (elle::LocalServer::Listen(
 	    Portal::Line,
 	    elle::Callback<>::Infer(
 	      &Portal::Connection)) == elle::StatusError)
-        escape("unable to listen for lane connections");
+        escape("unable to listen for local connections");
 
       leave();
     }
@@ -532,14 +532,14 @@ namespace etoile
       enter();
 
       // check if this application has already been registered.
-      if (Portal::Applications.find(application->door) !=
+      if (Portal::Applications.find(application->socket) !=
 	  Portal::Applications.end())
         escape("this application seems to have already been registered");
 
       // insert the application in the container.
       result =
 	Portal::Applications.insert(
-	  Portal::Value(application->door, application));
+	  Portal::Value(application->socket, application));
 
       // check if the insertion was successful.
       if (result.second == false)
@@ -549,9 +549,9 @@ namespace etoile
     }
 
     ///
-    /// this method returns the application associated with the given door.
+    /// this method returns the application associated with the given socket.
     ///
-    elle::Status	Portal::Retrieve(elle::Door*		door,
+    elle::Status	Portal::Retrieve(elle::LocalSocket*	socket,
 					 Application*&		application)
     {
       Portal::Iterator	iterator;
@@ -560,8 +560,8 @@ namespace etoile
 
       // locate the entry.
       if ((iterator =
-	   Portal::Applications.find(door)) == Portal::Applications.end())
-	escape("unable to locate the given door");
+	   Portal::Applications.find(socket)) == Portal::Applications.end())
+	escape("unable to locate the given socket");
 
       // return the application.
       application = iterator->second;
@@ -572,7 +572,7 @@ namespace etoile
     ///
     /// this method removes an application from the container.
     ///
-    elle::Status	Portal::Remove(elle::Door*		door)
+    elle::Status	Portal::Remove(elle::LocalSocket*	socket)
     {
       Portal::Iterator	iterator;
 
@@ -580,8 +580,8 @@ namespace etoile
 
       // locate the entry.
       if ((iterator =
-	   Portal::Applications.find(door)) == Portal::Applications.end())
-	escape("unable to locate the given door");
+	   Portal::Applications.find(socket)) == Portal::Applications.end())
+	escape("unable to locate the given socket");
 
       // erase the entry.
       Portal::Applications.erase(iterator);
@@ -632,7 +632,7 @@ namespace etoile
     /// this callback is triggered whenever a connection is made to etoile
     /// through the wall.
     ///
-    elle::Status	Portal::Connection(elle::Door*		door)
+    elle::Status	Portal::Connection(elle::LocalSocket*	socket)
     {
       Application*	application;
 
@@ -647,7 +647,7 @@ namespace etoile
       application = new Application;
 
       // create the application.
-      if (application->Create(door) == elle::StatusError)
+      if (application->Create(socket) == elle::StatusError)
         escape("unable to create the application");
 
       // record the application.
@@ -685,7 +685,7 @@ namespace etoile
 	escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::Door*>(session->socket),
+      if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
 			   application) == elle::StatusError)
 	escape("unable to retrieve the application");
 
@@ -697,7 +697,7 @@ namespace etoile
       application->state = Application::StateAuthenticated;
 
       // reply with the Authenticated message.
-      if (application->door->Reply(
+      if (application->socket->Reply(
 	    elle::Inputs<TagAuthenticated>()) == elle::StatusError)
 	escape("unable to reply to the application");
 
@@ -723,7 +723,7 @@ namespace etoile
 	escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::Door*>(session->socket),
+      if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
 			   application) == elle::StatusError)
 	escape("unable to retrieve the application");
 
@@ -760,7 +760,7 @@ namespace etoile
 	escape("unable to retrieve the current session");
 
       // retrieve the application associated with the current socket.
-      if (Portal::Retrieve(dynamic_cast<elle::Door*>(session->socket),
+      if (Portal::Retrieve(dynamic_cast<elle::LocalSocket*>(session->socket),
 			   application) == elle::StatusError)
 	escape("unable to retrieve the application");
 
@@ -771,7 +771,7 @@ namespace etoile
       if (application->state == Application::StateDisconnected)
 	{
       	  // remove the application from the portal.
-	  if (Portal::Remove(application->door) == elle::StatusError)
+	  if (Portal::Remove(application->socket) == elle::StatusError)
 	    escape("unable to remove the application from the portal");
 
 	  // bury the application.
