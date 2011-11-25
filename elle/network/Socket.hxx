@@ -15,8 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Channel.hh>
-#include <elle/network/Slot.hh>
+#include <elle/network/StreamSocket.hh>
+#include <elle/network/UDPSocket.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -42,16 +42,16 @@ namespace elle
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
-	case Socket::TypeGate:
+	case Socket::TypeLocal:
+	case Socket::TypeTCP:
 	  {
-	    Channel*	socket = static_cast<Channel*>(this);
+	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
 
 	    return (socket->Send(inputs, event));
 	  }
-	case Socket::TypeSlot:
+	case Socket::TypeUDP:
 	  {
-	    Slot*	socket = static_cast<Slot*>(this);
+	    UDPSocket*		socket = static_cast<UDPSocket*>(this);
 
 	    return (socket->Send(locus, inputs, event));
 	  }
@@ -76,16 +76,16 @@ namespace elle
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
-	case Socket::TypeGate:
+	case Socket::TypeLocal:
+	case Socket::TypeTCP:
 	  {
-	    Channel*	socket = static_cast<Channel*>(this);
+	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
 
 	    return (socket->Receive(event, outputs));
 	  }
-	case Socket::TypeSlot:
+	case Socket::TypeUDP:
 	  {
-	    Slot*	socket = static_cast<Slot*>(this);
+	    UDPSocket*		socket = static_cast<UDPSocket*>(this);
 
 	    return (socket->Receive(event, outputs));
 	  }
@@ -113,16 +113,16 @@ namespace elle
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
-	case Socket::TypeGate:
+	case Socket::TypeLocal:
+	case Socket::TypeTCP:
 	  {
-	    Channel*	socket = static_cast<Channel*>(this);
+	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
 
 	    return (socket->Call(inputs, outputs));
 	  }
-	case Socket::TypeSlot:
+	case Socket::TypeUDP:
 	  {
-	    Slot*	socket = static_cast<Slot*>(this);
+	    UDPSocket*		socket = static_cast<UDPSocket*>(this);
 
 	    return (socket->Call(locus, inputs, outputs));
 	  }
@@ -147,16 +147,16 @@ namespace elle
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
-	case Socket::TypeGate:
+	case Socket::TypeLocal:
+	case Socket::TypeTCP:
 	  {
-	    Channel*	socket = static_cast<Channel*>(this);
+	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
 
 	    return (socket->Reply(inputs, session));
 	  }
-	case Socket::TypeSlot:
+	case Socket::TypeUDP:
 	  {
-	    Slot*	socket = static_cast<Slot*>(this);
+	    UDPSocket*		socket = static_cast<UDPSocket*>(this);
 
 	    return (socket->Reply(inputs, session));
 	  }

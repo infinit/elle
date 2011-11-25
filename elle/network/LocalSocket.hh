@@ -9,18 +9,21 @@
 //
 
 ///
-/// this very special include is required as Channel needs to know Door/Gate
-/// while Door/Gate inherit Channel. including Channel.hh normally makes moc,
-/// the QT meta object compiler, unable to detect the QObject classes.
+/// this very special include is required as StreamSocket needs to know
+/// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit StreamSocket.
 ///
-/// therefore, Channel.hh is not included when moc processes a header file.
+/// including StreamSocket.hh normally makes QT's MOC - Meta Object
+/// Compiler unable to detect the QObject classes.
+///
+/// therefore, StreamSocket.hh is not included when MOC processes a
+/// header file.
 ///
 #ifndef Q_MOC_RUN
-# include <elle/network/Channel.hh>
+# include <elle/network/StreamSocket.hh>
 #endif
 
-#ifndef ELLE_NETWORK_DOOR_HH
-#define ELLE_NETWORK_DOOR_HH
+#ifndef ELLE_NETWORK_LOCALSOCKET_HH
+#define ELLE_NETWORK_LOCALSOCKET_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -36,7 +39,6 @@
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Signal.hh>
 
-#include <elle/network/Channel.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Parcel.hh>
 #include <elle/network/Session.hh>
@@ -61,16 +63,15 @@ namespace elle
 //
 
     ///
-    /// this class represents a socket locally connected to another door
-    /// through a lane.
+    /// this class represents a local socket.
     ///
-    /// such doors are often implemented on the system through pipes
+    /// such sockets are often implemented on the system through pipes
     /// or local domain sockets.
     ///
-    class Door:
+    class LocalSocket:
       public ::QObject,
 
-      public Channel
+      public StreamSocket
     {
       Q_OBJECT;
 
@@ -83,8 +84,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      Door();
-      ~Door();
+      LocalSocket();
+      ~LocalSocket();
 
       //
       // methods
@@ -93,7 +94,8 @@ namespace elle
       Status		Create(::QLocalSocket*);
 
       Status		Connect(const String&,
-				Channel::Mode = Channel::ModeAsynchronous);
+				Socket::Mode =
+				  Socket::ModeAsynchronous);
       Status		Disconnect();
 
       Status		Write(const Packet&);
@@ -154,6 +156,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/network/Door.hxx>
+#include <elle/network/LocalSocket.hxx>
 
 #endif

@@ -9,18 +9,21 @@
 //
 
 ///
-/// this very special include is required as Channel needs to know Door/Gate
-/// while Door/Gate inherit Channel. including Channel.hh normally makes moc,
-/// the QT meta object compiler, unable to detect the QObject classes.
+/// this very special include is required as StreamSocket needs to know
+/// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit StreamSocket.
 ///
-/// therefore, Channel.hh is not included when moc processes a header file.
+/// including StreamSocket.hh normally makes QT's MOC - Meta Object
+/// Compiler unable to detect the QObject classes.
+///
+/// therefore, StreamSocket.hh is not included when MOC processes a
+/// header file.
 ///
 #ifndef Q_MOC_RUN
-# include <elle/network/Channel.hh>
+# include <elle/network/StreamSocket.hh>
 #endif
 
-#ifndef ELLE_NETWORK_GATE_HH
-#define ELLE_NETWORK_GATE_HH
+#ifndef ELLE_NETWORK_TCPSOCKET_HH
+#define ELLE_NETWORK_TCPSOCKET_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -36,7 +39,6 @@
 #include <elle/concurrency/Event.hh>
 #include <elle/concurrency/Signal.hh>
 
-#include <elle/network/Socket.hh>
 #include <elle/network/Parcel.hh>
 #include <elle/network/Port.hh>
 #include <elle/network/Session.hh>
@@ -57,14 +59,13 @@ namespace elle
   {
 
     ///
-    /// this class represents a socket reliably connected through a bridge.
+    /// this class represents a TCP socket which provides a reliable
+    /// communication channel, contrary to UDPSocket.
     ///
-    /// note that gates are often implemented through TCP sockets.
-    ///
-    class Gate:
+    class TCPSocket:
       public ::QObject,
 
-      public Channel
+      public StreamSocket
     {
       Q_OBJECT;
 
@@ -77,8 +78,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      Gate();
-      ~Gate();
+      TCPSocket();
+      ~TCPSocket();
 
       //
       // methods
@@ -87,7 +88,8 @@ namespace elle
       Status		Create(::QTcpSocket*);
 
       Status		Connect(const Locus&,
-				Channel::Mode = Channel::ModeAsynchronous);
+				Socket::Mode =
+				  Socket::ModeAsynchronous);
       Status		Disconnect();
 
       Status		Write(const Packet&);
@@ -146,6 +148,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/network/Gate.hxx>
+#include <elle/network/TCPSocket.hxx>
 
 #endif

@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Bridge.hh>
+#include <elle/network/TCPServer.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -29,7 +29,7 @@ namespace elle
     ///
     /// definition of the container.
     ///
-    Bridge::Container		Bridge::Porters;
+    TCPServer::Container		TCPServer::Porters;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -38,10 +38,11 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    BridgePorter::BridgePorter(const
-			         Callback<
-				   Status,
-				   Parameters<Gate*> >&		callback):
+    TCPServerPorter::TCPServerPorter(const
+				       Callback<
+					 Status,
+					 Parameters<TCPSocket*>
+					 >&			callback):
       server(NULL),
       callback(callback)
     {
@@ -50,7 +51,7 @@ namespace elle
     ///
     /// the destructor.
     ///
-    BridgePorter::~BridgePorter()
+    TCPServerPorter::~TCPServerPorter()
     {
       // stop listening.
       this->server->close();
@@ -71,7 +72,7 @@ namespace elle
     ///
     /// this method creates and starts the porter.
     ///
-    Status		BridgePorter::Create(const Locus&	locus)
+    Status		TCPServerPorter::Create(const Locus&	locus)
     {
       enter();
 
@@ -95,13 +96,13 @@ namespace elle
     }
 
     //
-    // bridge
+    // server
     //
 
     ///
-    /// this method initializes the bridge.
+    /// this method initializes the server.
     ///
-    Status		Bridge::Initialize()
+    Status		TCPServer::Initialize()
     {
       enter();
 
@@ -111,27 +112,27 @@ namespace elle
     }
 
     ///
-    /// this method cleans the bridge.
+    /// this method cleans the server.
     ///
-    Status		Bridge::Clean()
+    Status		TCPServer::Clean()
     {
-      Bridge::Scoutor	scoutor;
+      TCPServer::Scoutor	scoutor;
 
       enter();
 
       // go through the porters.
-      for (scoutor = Bridge::Porters.begin();
-	   scoutor != Bridge::Porters.end();
+      for (scoutor = TCPServer::Porters.begin();
+	   scoutor != TCPServer::Porters.end();
 	   scoutor++)
 	{
-	  BridgePorter*	porter = scoutor->second;
+	  TCPServerPorter*	porter = scoutor->second;
 
 	  // delete the porter.
 	  delete porter;
 	}
 
       // clear the container.
-      Bridge::Porters.clear();
+      TCPServer::Porters.clear();
 
       leave();
     }
@@ -139,38 +140,39 @@ namespace elle
     ///
     /// this method starts a server and waits for new connection. for
     /// every new connection, the Accept signal is generated which, in turn,
-    /// creates a new gate.
+    /// creates a new TCP socket.
     ///
     /// note that callbacks are used because only a specific handler must
     /// be called. by relying on QT signals/slots (though it is not possible
-    /// since the Bridge class is static), all the slots registered on the
+    /// since the TCPServer class is static), all the slots registered on the
     /// signal would be triggered which is not want we want.
     ///
-    Status		Bridge::Listen(const Locus&		locus,
-				       const
-				         Callback<
-					   Status,
-					   Parameters<Gate*> >&	callback)
+    Status		TCPServer::Listen(const Locus&		locus,
+					  const
+					    Callback<
+					      Status,
+					      Parameters<TCPSocket*>
+					      >&		callback)
     {
-      std::pair<Bridge::Iterator, Boolean>	result;
-      BridgePorter*				porter;
+      std::pair<TCPServer::Iterator, Boolean>	result;
+      TCPServerPorter*				porter;
 
       enterx(instance(porter));
 
       // check if this locus is not already listened on.
-      if (Bridge::Locate(locus) == StatusTrue)
+      if (TCPServer::Locate(locus) == StatusTrue)
 	escape("this locus seems to have already been registered");
 
       // allocate a new porter.
-      porter = new BridgePorter(callback);
+      porter = new TCPServerPorter(callback);
 
       // create the porter.
       if (porter->Create(locus) == StatusError)
 	escape("unable to create the porter");
 
       // insert the porter in the container.
-      result = Bridge::Porters.insert(
-	         std::pair<const Locus, BridgePorter*>(locus, porter));
+      result = TCPServer::Porters.insert(
+	         std::pair<const Locus, TCPServerPorter*>(locus, porter));
 
       // check if the insertion was successful.
       if (result.second == false)
@@ -186,15 +188,15 @@ namespace elle
     /// this method blocks the given locus by deleting the associated
     /// porter.
     ///
-    Status		Bridge::Block(const Locus&		locus)
+    Status		TCPServer::Block(const Locus&		locus)
     {
-      Bridge::Iterator	iterator;
-      BridgePorter*	porter;
+      TCPServer::Iterator	iterator;
+      TCPServerPorter*		porter;
 
       enter();
 
       // locate the porter.
-      if (Bridge::Locate(locus, &iterator) == StatusFalse)
+      if (TCPServer::Locate(locus, &iterator) == StatusFalse)
 	escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -204,7 +206,7 @@ namespace elle
       delete porter;
 
       // remove the entry from the container.
-      Bridge::Porters.erase(iterator);
+      TCPServer::Porters.erase(iterator);
 
       leave();
     }
@@ -212,15 +214,15 @@ namespace elle
     ///
     /// this method returns the porter associated with the given locus.
     ///
-    Status		Bridge::Retrieve(const Locus&		locus,
-					 BridgePorter*&		porter)
+    Status		TCPServer::Retrieve(const Locus&	locus,
+					    TCPServerPorter*&	porter)
     {
-      Bridge::Iterator	iterator;
+      TCPServer::Iterator	iterator;
 
       enter();
 
       // locate the porter.
-      if (Bridge::Locate(locus, &iterator) == StatusFalse)
+      if (TCPServer::Locate(locus, &iterator) == StatusFalse)
 	escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -233,15 +235,15 @@ namespace elle
     /// this method tries to locate the porter associated with the given
     /// locus and returns true if so.
     ///
-    Status		Bridge::Locate(const Locus&		locus,
-				       Iterator*		iterator)
+    Status		TCPServer::Locate(const Locus&		locus,
+					  Iterator*		iterator)
     {
-      Bridge::Iterator	i;
+      TCPServer::Iterator	i;
 
       enter();
 
       // try to locate the porter.
-      if ((i = Bridge::Porters.find(locus)) != Bridge::Porters.end())
+      if ((i = TCPServer::Porters.find(locus)) != TCPServer::Porters.end())
 	{
 	  if (iterator != NULL)
 	    *iterator = i;
@@ -263,7 +265,7 @@ namespace elle
     ///
     /// this method dumps the internals of a porter.
     ///
-    Status		BridgePorter::Dump(const Natural32	margin) const
+    Status		TCPServerPorter::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
 
@@ -287,27 +289,27 @@ namespace elle
     }
 
     //
-    // bridge
+    // server
     //
 
     ///
     /// this method dumps the table of porters.
     ///
-    Status		Bridge::Show(const Natural32		margin)
+    Status		TCPServer::Show(const Natural32		margin)
     {
-      String		alignment(margin, ' ');
-      Bridge::Scoutor	scoutor;
+      String			alignment(margin, ' ');
+      TCPServer::Scoutor	scoutor;
 
       enter();
 
-      std::cout << alignment << "[Bridge]" << std::endl;
+      std::cout << alignment << "[TCPServer]" << std::endl;
 
       // dump the porters table.
-      for (scoutor = Bridge::Porters.begin();
-	   scoutor != Bridge::Porters.end();
+      for (scoutor = TCPServer::Porters.begin();
+	   scoutor != TCPServer::Porters.end();
 	   scoutor++)
 	{
-	  BridgePorter*	porter = scoutor->second;
+	  TCPServerPorter*	porter = scoutor->second;
 
 	  // dump the porter.
 	  if (porter->Dump(margin + 2) == StatusError)
@@ -324,30 +326,30 @@ namespace elle
     ///
     /// this callback is triggered whenever a new conncetion is made.
     ///
-    Status		BridgePorter::Accept()
+    Status		TCPServerPorter::Accept()
     {
-      ::QTcpSocket*	socket;
-      Gate*		gate;
+      ::QTcpSocket*	connection;
+      TCPSocket*	socket;
 
-      enterx(instance(gate));
+      enterx(instance(socket));
 
-      // retrieve the socket from the server.
-      if ((socket = this->server->nextPendingConnection()) == NULL)
+      // retrieve the connection from the server.
+      if ((connection = this->server->nextPendingConnection()) == NULL)
 	escape(this->server->errorString().toStdString().c_str());
 
-      // allocate a new gate to this bridge.
-      gate = new Gate;
+      // allocate a new socket to this server.
+      socket = new TCPSocket;
 
-      // create a gate with the specific socket.
-      if (gate->Create(socket) == StatusError)
-	escape("unable to create the gate");
+      // create a socket with the specific connection.
+      if (socket->Create(connection) == StatusError)
+	escape("unable to create the socket");
 
       // call the callback.
-      if (this->callback.Call(gate) == StatusError)
+      if (this->callback.Call(socket) == StatusError)
 	escape("an error occured in the callback");
 
-      // stop tracking gate as it has been handed to the callback.
-      waive(gate);
+      // stop tracking socket as it has been handed to the callback.
+      waive(socket);
 
       leave();
     }
@@ -360,11 +362,13 @@ namespace elle
     /// this slot is triggered whenever a connection is being made on the
     /// porter's locus.
     ///
-    void		BridgePorter::_accept()
+    void		TCPServerPorter::_accept()
     {
-      Closure< Status,
-	       Parameters<> >	closure(Callback<>::Infer(
-					  &BridgePorter::Accept, this));
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(
+				  &TCPServerPorter::Accept, this));
 
       enter();
 

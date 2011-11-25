@@ -161,14 +161,12 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Bridge.hh>
 #include <elle/network/Data.hh>
-#include <elle/network/Door.hh>
-#include <elle/network/Gate.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Host.hh>
 #include <elle/network/Inputs.hh>
-#include <elle/network/Lane.hh>
+#include <elle/network/LocalServer.hh>
+#include <elle/network/LocalSocket.hh>
 #include <elle/network/Locus.hh>
 #include <elle/network/Message.hh>
 #include <elle/network/Outputs.hh>
@@ -179,8 +177,11 @@ namespace elle
 #include <elle/network/Range.hh>
 #include <elle/network/Raw.hh>
 #include <elle/network/Session.hh>
-#include <elle/network/Slot.hh>
 #include <elle/network/Socket.hh>
+#include <elle/network/StreamSocket.hh>
 #include <elle/network/Tag.hh>
+#include <elle/network/TCPServer.hh>
+#include <elle/network/TCPSocket.hh>
+#include <elle/network/UDPSocket.hh>
 
 #endif

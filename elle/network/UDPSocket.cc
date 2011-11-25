@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Slot.hh>
+#include <elle/network/UDPSocket.hh>
 #include <elle/network/Raw.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
@@ -29,8 +29,8 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Slot::Slot():
-      Socket::Socket(Socket::TypeSlot),
+    UDPSocket::UDPSocket():
+      Socket::Socket(Socket::TypeUDP),
 
       port(0),
       socket(NULL)
@@ -40,7 +40,7 @@ namespace elle
     ///
     /// the destructor releases the associated resources.
     ///
-    Slot::~Slot()
+    UDPSocket::~UDPSocket()
     {
       // release the socket.
       if (this->socket != NULL)
@@ -52,9 +52,9 @@ namespace elle
 //
 
     ///
-    /// this method creates a slot and connects the default signals.
+    /// this method creates a socket and connects the default signals.
     ///
-    Status		Slot::Create()
+    Status		UDPSocket::Create()
     {
       enter();
 
@@ -70,7 +70,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&Slot::Dispatch, this)) == StatusError)
+	    Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
 	escape("unable to subscribe to the signal");
 
       // connect the QT signals, depending on the mode.
@@ -89,9 +89,9 @@ namespace elle
     }
 
     ///
-    /// this method creates a slot with a specific port.
+    /// this method creates a socket with a specific port.
     ///
-    Status		Slot::Create(const Port			port)
+    Status		UDPSocket::Create(const Port		port)
     {
       enter();
 
@@ -107,7 +107,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&Slot::Dispatch, this)) == StatusError)
+	    Callback<>::Infer(&UDPSocket::Dispatch, this)) == StatusError)
 	escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -129,14 +129,14 @@ namespace elle
     /// this method writes a packet on the socket so that it gets sent
     /// to the given locus.
     ///
-    Status		Slot::Write(const Locus&		locus,
-				    const Packet&		packet)
+    Status		UDPSocket::Write(const Locus&		locus,
+					 const Packet&		packet)
     {
       enter();
 
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
-      if (packet.size > Channel::Capacity)
+      if (packet.size > StreamSocket::Capacity)
 	escape("the packet seems to be too large: %qu bytes",
 	       static_cast<Natural64>(packet.size));
 
@@ -166,8 +166,8 @@ namespace elle
     ///
     /// the method returns a raw with the read data.
     ///
-    Status		Slot::Read(Locus&			locus,
-				   Raw&				raw)
+    Status		UDPSocket::Read(Locus&			locus,
+					Raw&			raw)
     {
       Natural32		size;
 
@@ -207,15 +207,15 @@ namespace elle
 //
 
     ///
-    /// this method dumps the slot's state.
+    /// this method dumps the socket's state.
     ///
-    Status		Slot::Dump(const Natural32		margin) const
+    Status		UDPSocket::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
 
       enter();
 
-      std::cout << alignment << "[Slot]" << std::endl;
+      std::cout << alignment << "[UDPSocket]" << std::endl;
 
       // dump the socket.
       if (Socket::Dump(margin + 2) == StatusError)
@@ -231,7 +231,7 @@ namespace elle
     ///
     /// this callback fetches parcels and dispatches them.
     ///
-    Status		Slot::Dispatch()
+    Status		UDPSocket::Dispatch()
     {
       Locus		locus;
       Natural32		offset;
@@ -318,11 +318,12 @@ namespace elle
     ///
     /// this slot is triggered when data is ready on the socket.
     ///
-    void		Slot::_ready()
+    void		UDPSocket::_ready()
     {
-      Closure< Status,
-	       Parameters<>
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<>
 						    >::Emit,
 						  &this->signal.ready));
@@ -343,14 +344,16 @@ namespace elle
     /// written completely ::QLocalSocket::LocalSocketError because the
     /// QT parser is incapable of recognising the type.
     ///
-    void		Slot::_error(const QAbstractSocket::SocketError)
+    void		UDPSocket::_error(
+                          const QAbstractSocket::SocketError)
     {
       String		cause(this->socket->errorString().toStdString());
-      Closure< Status,
-	       Parameters<
-		 const String&
-		 >
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<
+	  const String&
+	  >
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<
 						      const String&
 						      >

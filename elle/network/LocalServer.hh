@@ -5,22 +5,25 @@
 //
 // license       infinit
 //
-// author        julien quintard   [wed may 25 15:53:18 2011]
+// author        julien quintard   [thu feb  4 14:39:34 2010]
 //
 
 ///
-/// this very special include is required as Channel needs to know Door/Gate
-/// while Door/Gate inherit Channel. including Channel.hh normally makes moc,
-/// the QT meta object compiler, unable to detect the QObject classes.
+/// this very special include is required as StreamSocket needs to know
+/// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit StreamSocket.
 ///
-/// therefore, Channel.hh is not included when moc processes a header file.
+/// including StreamSocket.hh normally makes QT's MOC - Meta Object
+/// Compiler unable to detect the QObject classes.
+///
+/// therefore, StreamSocket.hh is not included when MOC processes a
+/// header file.
 ///
 #ifndef Q_MOC_RUN
-# include <elle/network/Channel.hh>
+# include <elle/network/StreamSocket.hh>
 #endif
 
-#ifndef ELLE_NETWORK_BRIDGE_HH
-#define ELLE_NETWORK_BRIDGE_HH
+#ifndef ELLE_NETWORK_LOCALSERVER_HH
+#define ELLE_NETWORK_LOCALSERVER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -31,16 +34,15 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
-#include <elle/radix/Parameters.hh>
 
 #include <elle/concurrency/Callback.hh>
 
-#include <elle/network/Gate.hh>
+#include <elle/network/LocalSocket.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
 # include <QObject>
-# include <QTcpServer>
+# include <QLocalServer>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -57,9 +59,10 @@ namespace elle
 //
 
     ///
-    /// the Gate class needs to be forward declared to prevent conflicts.
+    /// the LocalSocket class needs to be forward declared to prevent
+    /// conflicts.
     ///
-    class Gate;
+    class LocalSocket;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -69,10 +72,10 @@ namespace elle
     /// this class represents a server waiting for connections.
     ///
     /// \todo XXX note that this class should be put as a nested class of
-    ///           Bridge but QT (as of version 4.5) does not support that
-    ///           feature.
+    ///           LocalServer but QT (as of version 4.5) does not support
+    ///           that feature.
     ///
-    class BridgePorter:
+    class LocalServerPorter:
       ::QObject,
 
       public Entity
@@ -83,14 +86,16 @@ namespace elle
       //
       // constructors & destructors
       //
-      BridgePorter(const Callback< Status,
-				   Parameters<Gate*> >&);
-      ~BridgePorter();
+      LocalServerPorter(const Callback<
+			  Status,
+			  Parameters<LocalSocket*>
+			  >&);
+      ~LocalServerPorter();
 
       //
       // methods
       //
-      Status		Create(const Locus&);
+      Status		Create(const String&);
 
       //
       // callbacks
@@ -107,11 +112,11 @@ namespace elle
       //
       // attributes
       //
-      Locus			locus;
-      ::QTcpServer*		server;
+      String			name;
+      ::QLocalServer*		server;
       Callback<
 	Status,
-	Parameters<Gate*>
+	Parameters<LocalSocket*>
 	>			callback;
 
       //
@@ -122,15 +127,17 @@ namespace elle
     };
 
     ///
-    /// this class enables the caller to listen for incoming Gate connections.
+    /// this class enables the caller to listen for incoming
+    /// LocalSocket connections.
     ///
-    class Bridge
+    class LocalServer
     {
     public:
       //
       // types
       //
-      typedef std::map<const Locus, BridgePorter*>	Container;
+      typedef std::map<const String,
+		       LocalServerPorter*>		Container;
       typedef Container::iterator			Iterator;
       typedef Container::const_iterator			Scoutor;
 
@@ -140,13 +147,13 @@ namespace elle
       static Status	Initialize();
       static Status	Clean();
 
-      static Status	Listen(const Locus&,
+      static Status	Listen(const String&,
 			       const Callback< Status,
-					       Parameters<Gate*> >&);
-      static Status	Block(const Locus&);
-      static Status	Retrieve(const Locus&,
-				 BridgePorter*&);
-      static Status	Locate(const Locus&,
+					       Parameters<LocalSocket*> >&);
+      static Status	Block(const String&);
+      static Status	Retrieve(const String&,
+				 LocalServerPorter*&);
+      static Status	Locate(const String&,
 			       Iterator* = NULL);
 
       static Status	Show(const Natural32 = 0);

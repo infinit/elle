@@ -64,12 +64,18 @@ namespace elle
 	{
 	  TypeUnknown,
 
-	  TypeChannel = 0x1,
+	  TypeStream = 0x1,
 
-	  TypeDoor = TypeChannel | 0x0,
-	  TypeGate = TypeChannel | 0x2,
+	  TypeLocal = TypeStream | 0x0,
+	  TypeTCP = TypeStream | 0x2,
 
-	  TypeSlot = 0x4
+	  TypeUDP = 0x4
+	};
+
+      enum Mode
+	{
+	  ModeAsynchronous,
+	  ModeSynchronous
 	};
 
       //

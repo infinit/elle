@@ -9,18 +9,20 @@
 //
 
 ///
-/// this very special include is required as Socket needs to know Channel
-/// while Channel inherits Socket. including Socket.hh normally makes moc,
-/// the QT meta object compiler, unable to detect the QObject classes.
+/// this very special include is required as Socket needs to know StreamSocket
+/// while StreamSocket inherits Socket.
 ///
-/// therefore, Socket.hh is not included when moc processes a header file.
+/// including Socket.hh normally makes QT's MOC - Meta Object Compiler unable
+/// to detect the QObject classes.
+///
+/// therefore, Socket.hh is not included when MOC processes a header file.
 ///
 #ifndef Q_MOC_RUN
 # include <elle/network/Socket.hh>
 #endif
 
-#ifndef ELLE_NETWORK_CHANNEL_HH
-#define ELLE_NETWORK_CHANNEL_HH
+#ifndef ELLE_NETWORK_STREAMSOCKET_HH
+#define ELLE_NETWORK_STREAMSOCKET_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -59,19 +61,13 @@ namespace elle
     /// this class abstracts connection-based sockets such as doors and
     /// gates.
     ///
-    class Channel:
+    class StreamSocket:
       public Socket
     {
     public:
       //
       // enumerations
       //
-      enum Mode
-	{
-	  ModeAsynchronous,
-	  ModeSynchronous
-	};
-
       enum State
 	{
 	  StateUnconnected,
@@ -95,8 +91,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      Channel(Socket::Type);
-      ~Channel();
+      StreamSocket(Socket::Type);
+      ~StreamSocket();
 
       //
       // methods
@@ -163,6 +159,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/network/Channel.hxx>
+#include <elle/network/StreamSocket.hxx>
 
 #endif

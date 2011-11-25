@@ -8,15 +8,15 @@
 // author        julien quintard   [thu mar 18 21:23:33 2010]
 //
 
-#ifndef ELLE_NETWORK_CHANNEL_HXX
-#define ELLE_NETWORK_CHANNEL_HXX
+#ifndef ELLE_NETWORK_STREAMSOCKET_HXX
+#define ELLE_NETWORK_STREAMSOCKET_HXX
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Door.hh>
-#include <elle/network/Gate.hh>
+#include <elle/network/LocalSocket.hh>
+#include <elle/network/TCPSocket.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -34,24 +34,24 @@ namespace elle
     /// this method sends a packet in an asynchronous manner.
     ///
     template <typename I>
-    Status		Channel::Send(const I			inputs,
-				      const Event&		event)
+    Status		StreamSocket::Send(const I		inputs,
+					   const Event&		event)
     {
       enter();
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
+	case Socket::TypeLocal:
 	  {
-	    Door*	channel = static_cast<Door*>(this);
+	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
 
-	    return (channel->Send(inputs, event));
+	    return (socket->Send(inputs, event));
 	  }
-	case Socket::TypeGate:
+	case Socket::TypeTCP:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
 
-	    return (channel->Send(inputs, event));
+	    return (socket->Send(inputs, event));
 	  }
 	default:
 	  {
@@ -67,24 +67,24 @@ namespace elle
     /// this method receives a packet by blocking.
     ///
     template <typename O>
-    Status		Channel::Receive(const Event&		event,
-					 O			outputs)
+    Status		StreamSocket::Receive(const Event&	event,
+					      O			outputs)
     {
       enter();
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
+	case Socket::TypeLocal:
 	  {
-	    Door*	channel = static_cast<Door*>(this);
+	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
 
-	    return (channel->Receive(event, outputs));
+	    return (socket->Receive(event, outputs));
 	  }
-	case Socket::TypeGate:
+	case Socket::TypeTCP:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
 
-	    return (channel->Receive(event, outputs));
+	    return (socket->Receive(event, outputs));
 	  }
 	default:
 	  {
@@ -102,24 +102,24 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		Channel::Call(const I			inputs,
-				      O				outputs)
+    Status		StreamSocket::Call(const I		inputs,
+					   O			outputs)
     {
       enter();
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
+	case Socket::TypeLocal:
 	  {
-	    Door*	channel = static_cast<Door*>(this);
+	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
 
-	    return (channel->Call(inputs, outputs));
+	    return (socket->Call(inputs, outputs));
 	  }
-	case Socket::TypeGate:
+	case Socket::TypeTCP:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
 
-	    return (channel->Call(inputs, outputs));
+	    return (socket->Call(inputs, outputs));
 	  }
 	default:
 	  {
@@ -135,24 +135,24 @@ namespace elle
     /// this method replies to the freshly received call.
     ///
     template <typename I>
-    Status		Channel::Reply(const I			inputs,
-				       Session*			session)
+    Status		StreamSocket::Reply(const I		inputs,
+					    Session*		session)
     {
       enter();
 
       switch (this->type)
 	{
-	case Socket::TypeDoor:
+	case Socket::TypeLocal:
 	  {
-	    Door*	channel = static_cast<Door*>(this);
+	    LocalSocket*	socket = static_cast<LocalSocket*>(this);
 
-	    return (channel->Reply(inputs, session));
+	    return (socket->Reply(inputs, session));
 	  }
-	case Socket::TypeGate:
+	case Socket::TypeTCP:
 	  {
-	    Gate*	channel = static_cast<Gate*>(this);
+	    TCPSocket*		socket = static_cast<TCPSocket*>(this);
 
-	    return (channel->Reply(inputs, session));
+	    return (socket->Reply(inputs, session));
 	  }
 	default:
 	  {

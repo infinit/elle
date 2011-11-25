@@ -5,11 +5,11 @@
 //
 // license       infinit
 //
-// author        julien quintard   [wed may 25 14:20:06 2011]
+// author        julien quintard   [tue feb 23 13:44:55 2010]
 //
 
-#ifndef ELLE_NETWORK_GATE_HXX
-#define ELLE_NETWORK_GATE_HXX
+#ifndef ELLE_NETWORK_LOCALSOCKET_HXX
+#define ELLE_NETWORK_LOCALSOCKET_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -38,8 +38,8 @@ namespace elle
     /// this method sends a packet.
     ///
     template <typename I>
-    Status		Gate::Send(const I			inputs,
-				   const Event&			event)
+    Status		LocalSocket::Send(const I		inputs,
+					  const Event&		event)
     {
       Packet		packet;
       Data		data;
@@ -71,17 +71,17 @@ namespace elle
 
       // write the socket.
       if (this->Write(packet) == StatusError)
-	escape("unable to write the socket");
+	escape("unable to write the packet");
 
       leave();
     }
 
     ///
-    /// this method receives a packet by blocking.
+    /// this method receives a packet through blocking.
     ///
     template <typename O>
-    Status		Gate::Receive(const Event&		event,
-				      O				outputs)
+    Status		LocalSocket::Receive(const Event&	event,
+					     O			outputs)
     {
       Parcel*		parcel;
 
@@ -144,12 +144,12 @@ namespace elle
     }
 
     ///
-    /// this method sends and waits for an appropriate response.
+    /// this method sends a message and waits for a response.
     ///
     template <typename I,
 	      typename O>
-    Status		Gate::Call(const I			inputs,
-				   O				outputs)
+    Status		LocalSocket::Call(const I		inputs,
+					  O			outputs)
     {
       Event		event;
 
@@ -175,8 +175,8 @@ namespace elle
     /// whose tag is specified in the current session.
     ///
     template <typename I>
-    Status		Gate::Reply(const I			inputs,
-				    Session*			session)
+    Status		LocalSocket::Reply(const I		inputs,
+					   Session*		session)
     {
       enter();
 

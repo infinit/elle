@@ -404,6 +404,11 @@
 ///
 /// this macro function can be used to delay the deletion of an instance.
 ///
+/// this is useful for instance for deleting a timer if we are in
+/// a callback which has been triggered by it. deleting the timer right
+/// away could lead to crashes since, following the deletion, the code
+/// executed would still belong to the timer.
+///
 #define bury(_instance_)						\
   do									\
     {									\

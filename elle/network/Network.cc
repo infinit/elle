@@ -39,13 +39,13 @@ namespace elle
     {
       enter();
 
-      // initialize the lane.
-      if (Lane::Initialize() == StatusError)
-	escape("unable to initialize the lane");
+      // initialize the local server.
+      if (LocalServer::Initialize() == StatusError)
+	escape("unable to initialize the local server");
 
-      // initialize the bridge.
-      if (Bridge::Initialize() == StatusError)
-	escape("unable to initialize the bridge");
+      // initialize the TCP server.
+      if (TCPServer::Initialize() == StatusError)
+	escape("unable to initialize the TCP server");
 
       // initialize the session.
       if (Session::Initialize() == StatusError)
@@ -65,13 +65,13 @@ namespace elle
       if (Session::Clean() == StatusError)
 	escape("unable to clean the session");
 
-      // clean the bridge.
-      if (Bridge::Clean() == StatusError)
-	escape("unable to clean the bridge");
+      // clean the TCP server.
+      if (TCPServer::Clean() == StatusError)
+	escape("unable to clean the TCP server");
 
-      // clean the lane
-      if (Lane::Clean() == StatusError)
-	escape("unable to clean the lane");
+      // clean the local server.
+      if (LocalServer::Clean() == StatusError)
+	escape("unable to clean the local server");
 
       //
       // clear the container.

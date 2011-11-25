@@ -44,6 +44,32 @@ namespace elle
     /// the first set is used to build the closure representing the locking
     /// functionality while the other one representing the unlocking.
     ///
+    /// the following illustrates a critical section based on a hurdle i.e
+    /// a read/write lock. first two closures are given to the Section
+    /// in order for the class to know how to enter and leave the critical
+    /// section. then, should an error occured within the section---i.e the
+    /// section is not left properly---the system takes care of it
+    /// automatically.
+    ///
+    /// note that Hurdle::S designates the Hurdle-specific Section class,
+    /// while Hurdle::L and Hurdle::U provide the closure types for the
+    /// lock and unlock methods. finally, Hurdle::C provides a shortcut for
+    /// Hurdle-specific callbacks.
+    ///
+    ///   Hurdle	hurdle;
+    ///
+    ///   Hurdle::S	section(
+    ///     Hurdle::L(Hurdle::C(&Hurdle::Lock, &hurdle)),
+    ///     Hurdle::U(Hurdle::C(&Hurdle::Unlock, &hurdle)));
+    ///
+    ///   section.Enter();
+    ///   {
+    ///     /* critical section entered */
+    ///
+    ///     escape("this action will automatically trigger section.Leave()");
+    ///   }
+    ///   section.Leave();
+    ///
     template <typename... L,
 	      typename... U>
     class Section< Parameters<L...>,

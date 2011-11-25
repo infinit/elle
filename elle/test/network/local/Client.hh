@@ -8,8 +8,8 @@
 // author        julien quintard   [fri nov 27 22:03:15 2009]
 //
 
-#ifndef ELLE_TEST_NETWORK_DOOR_CLIENT_HH
-#define ELLE_TEST_NETWORK_DOOR_CLIENT_HH
+#ifndef ELLE_TEST_NETWORK_LOCAL_CLIENT_HH
+#define ELLE_TEST_NETWORK_LOCAL_CLIENT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,7 +17,7 @@
 
 #include <elle/Elle.hh>
 
-#include <elle/test/network/door/Manifest.hh>
+#include <elle/test/network/local/Manifest.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -50,7 +50,7 @@ namespace elle
       // attributes
       //
       String		line;
-      Door		door;
+      LocalSocket	socket;
     };
 
   }
