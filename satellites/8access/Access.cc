@@ -31,7 +31,7 @@ namespace application
   ///
   /// the socket used for communicating with Etoile.
   ///
-  elle::Door			Access::Door;
+  elle::LocalSocket			Access::Socket;
 
 //
 // ---------- static callbacks ------------------------------------------------
@@ -111,26 +111,26 @@ namespace application
     // connect to the server.
     //
     {
-      // create the door.
-      if (Access::Door.Create() == elle::StatusError)
-	escape("unable to create the door");
+      // create the socket.
+      if (Access::Socket.Create() == elle::StatusError)
+	escape("unable to create the socket");
 
       // subscribe to the signal.
-      if (Access::Door.signal.disconnected.Subscribe(
+      if (Access::Socket.signal.disconnected.Subscribe(
 	    elle::Callback<>::Infer(
 	      &Access::Disconnected)) == elle::StatusError)
 	escape("unable to subscribe to the signal");
 
       // subscribe to the signal.
-      if (Access::Door.signal.error.Subscribe(
+      if (Access::Socket.signal.error.Subscribe(
 	    elle::Callback<>::Infer(
 	      &Access::Error)) == elle::StatusError)
 	escape("unable to subscribe to the signal");
 
-      // connect the door.
-      if (Access::Door.Connect(
+      // connect the socket.
+      if (Access::Socket.Connect(
 	    line,
-	    elle::Channel::ModeSynchronous) == elle::StatusError)
+	    elle::Socket::ModeSynchronous) == elle::StatusError)
 	escape("unable to connect to the lane");
     }
 
@@ -139,7 +139,7 @@ namespace application
     //
     {
       // send the user's network-specific phrase.
-      if (Access::Door.Call(
+      if (Access::Socket.Call(
 	    elle::Inputs<etoile::portal::TagAuthenticate>(phrase),
 	    elle::Outputs<etoile::portal::TagAuthenticated>()) ==
 	  elle::StatusError)
@@ -167,28 +167,28 @@ namespace application
       goto _error;
 
     // resolve the path.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagPathResolve>(way),
 	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
 	elle::StatusError)
       goto _error;
 
     // load the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
 	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
 	elle::StatusError)
       goto _error;
 
     // lookup the access record.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagAccessLookup>(identifier, subject),
 	  elle::Outputs<etoile::portal::TagAccessRecord>(record)) ==
 	elle::StatusError)
       goto _error;
 
     // discard the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectDiscard>(identifier),
 	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
       goto _error;
@@ -198,7 +198,7 @@ namespace application
 
   _error:
     // release the object.
-    Access::Door.Send(
+    Access::Socket.Send(
       elle::Inputs<etoile::portal::TagObjectDiscard>(
 	identifier));
 
@@ -227,21 +227,21 @@ namespace application
       goto _error;
 
     // resolve the path.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagPathResolve>(way),
 	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
 	elle::StatusError)
       goto _error;
 
     // load the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
 	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
 	elle::StatusError)
       goto _error;
 
     // consult the object access.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagAccessConsult>(
 	    identifier,
 	    elle::Type<nucleus::Index>::Minimum,
@@ -251,7 +251,7 @@ namespace application
       goto _error;
 
     // discard the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectDiscard>(identifier),
 	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
       goto _error;
@@ -261,7 +261,7 @@ namespace application
 
   _error:
     // release the object.
-    Access::Door.Send(
+    Access::Socket.Send(
       elle::Inputs<etoile::portal::TagObjectDiscard>(
 	identifier));
 
@@ -292,21 +292,21 @@ namespace application
       goto _error;
 
     // resolve the path.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagPathResolve>(way),
 	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
 	elle::StatusError)
       goto _error;
 
     // load the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
 	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
 	elle::StatusError)
       goto _error;
 
     // lookup the access record.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagAccessGrant>(identifier,
 						       subject,
 						       permissions),
@@ -314,14 +314,14 @@ namespace application
       goto _error;
 
     // store the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectStore>(identifier),
 	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
       goto _error;
 
   _error:
     // release the object.
-    Access::Door.Send(
+    Access::Socket.Send(
       elle::Inputs<etoile::portal::TagObjectDiscard>(
 	identifier));
 
@@ -351,34 +351,34 @@ namespace application
       goto _error;
 
     // resolve the path.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagPathResolve>(way),
 	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
 	elle::StatusError)
       goto _error;
 
     // load the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectLoad>(chemin),
 	  elle::Outputs<etoile::portal::TagIdentifier>(identifier)) ==
 	elle::StatusError)
       goto _error;
 
     // revoke the access for the given subject.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagAccessRevoke>(identifier, subject),
 	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
       goto _error;
 
     // store the object.
-    if (Access::Door.Call(
+    if (Access::Socket.Call(
 	  elle::Inputs<etoile::portal::TagObjectStore>(identifier),
 	  elle::Outputs<elle::TagOk>()) == elle::StatusError)
       goto _error;
 
   _error:
     // release the object.
-    Access::Door.Send(
+    Access::Socket.Send(
       elle::Inputs<etoile::portal::TagObjectDiscard>(
 	identifier));
 

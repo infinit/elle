@@ -70,7 +70,7 @@ namespace application
     //
     // static attributes
     //
-    static elle::Door		Door;
+    static elle::LocalSocket	Socket;
   };
 
 }
