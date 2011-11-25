@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Channel.hh>
+#include <elle/network/StreamSocket.hh>
 
 namespace elle
 {
@@ -28,7 +28,7 @@ namespace elle
     ///
     /// \todo XXX to change to something around 10MB
     ///
-    const Natural32		Channel::Capacity = 52428800;
+    const Natural32		StreamSocket::Capacity = 52428800;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -37,7 +37,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Channel::Channel(Socket::Type				type):
+    StreamSocket::StreamSocket(Socket::Type			type):
       Socket(type),
 
       state(StateUnconnected),
@@ -50,9 +50,9 @@ namespace elle
     ///
     /// destructor.
     ///
-    Channel::~Channel()
+    StreamSocket::~StreamSocket()
     {
-      Channel::Iterator	iterator;
+      StreamSocket::Iterator	iterator;
 
       // delete the buffer.
       if (this->buffer != NULL)
@@ -84,14 +84,14 @@ namespace elle
     ///
     /// this method dumps the channel-related attributes.
     ///
-    Status		Channel::Dump(const Natural32		margin) const
+    Status		StreamSocket::Dump(const Natural32	margin) const
     {
-      String		alignment(margin, ' ');
-      Channel::Scoutor	scoutor;
+      String			alignment(margin, ' ');
+      StreamSocket::Scoutor	scoutor;
 
       enter();
 
-      std::cout << alignment << "[Channel]" << std::endl;
+      std::cout << alignment << "[StreamSocket]" << std::endl;
 
       // dump the socket.
       if (Socket::Dump(margin + 2) == StatusError)

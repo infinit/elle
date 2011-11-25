@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/door/Server.hh>
+#include <elle/test/network/local/Server.hh>
 
 namespace elle
 {
@@ -43,13 +43,13 @@ namespace elle
     {
       enter();
 
-      std::cout << "[lane] " << line << std::endl;
+      std::cout << "[line] " << line << std::endl;
 
       // listen for incoming connections.
-      if (Lane::Listen(this->line,
-		       Callback<>::Infer(&Server::Connection,
-					 this)) == StatusError)
-	escape("unable to listen for lane connections");
+      if (LocalServer::Listen(this->line,
+			      Callback<>::Infer(&Server::Connection,
+						this)) == StatusError)
+	escape("unable to listen for local connections");
 
       leave();
     }
@@ -61,21 +61,21 @@ namespace elle
     ///
     /// this method handles new connections.
     ///
-    Status		Server::Connection(Door*		door)
+    Status		Server::Connection(LocalSocket*		socket)
     {
       String		challenge("CHALLENGE");
       String		response;
 
       enter();
 
-      // push the door in the container in order not to lose the object.
-      this->doors.push_front(door);
+      // push the socket in the container in order not to lose the object.
+      this->sockets.push_front(socket);
 
       std::cout << "[challenging...] " << std::endl;
 
       // call the challenge.
-      if (door->Call(Inputs<TagChallenge>(challenge),
-		     Outputs<TagResponse>(response)) == StatusError)
+      if (socket->Call(Inputs<TagChallenge>(challenge),
+		       Outputs<TagResponse>(response)) == StatusError)
 	escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;

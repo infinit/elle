@@ -11,11 +11,11 @@ ENDIF()
 
 
 QT4_WRAP_CPP(elle_MOCS
-  network/Bridge.hh
-  network/Door.hh
-  network/Gate.hh
-  network/Lane.hh
-  network/Slot.hh
+  network/LocalServer.hh
+  network/LocalSocket.hh
+  network/TCPServer.hh
+  network/TCPSocket.hh
+  network/UDPSocket.hh
 
   concurrency/Timer.hh
   concurrency/Broker.hh
@@ -94,19 +94,19 @@ ADD_LIBRARY(elle
   cryptography/Seed.cc
   cryptography/Signature.cc
 
-  network/Bridge.cc
-  network/Channel.cc
-  network/Door.cc
-  network/Gate.cc
   network/Header.cc
   network/Host.cc
-  network/Lane.cc
+  network/LocalServer.cc
+  network/LocalSocket.cc
   network/Network.cc
   network/Parcel.cc
   network/Locus.cc
   network/Session.cc
-  network/Slot.cc
   network/Socket.cc
+  network/StreamSocket.cc
+  network/TCPServer.cc
+  network/TCPSocket.cc
+  network/UDPSocket.cc
 
   utility/Base64.cc
   utility/Duration.cc

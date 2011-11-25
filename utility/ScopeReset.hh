@@ -8,8 +8,6 @@
 // author        Alexandre Bique   [tue oct 11 13:09:13 2011]
 //
 
-#include <elle/utility/NonCopyable.hh>
-
 #ifndef ELLE_UTILITY_SCOPERESET_HH
 # define ELLE_UTILITY_SCOPERESET_HH
 
@@ -31,7 +29,7 @@ namespace elle
     /// @endcode
     ///
     template <typename T>
-    class ScopeReset : private NonCopyable
+    class ScopeReset
     {
     public:
 

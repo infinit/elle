@@ -5,20 +5,26 @@
 //
 // license       infinit
 //
-// author        julien quintard   [wed may 25 11:01:56 2011]
+// author        julien quintard   [sat feb  6 04:30:24 2010]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Gate.hh>
+#include <elle/network/LocalSocket.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
 
+#include <elle/standalone/Morgue.hh>
+
+#include <elle/Manifest.hh>
+
 namespace elle
 {
+  using namespace standalone;
+
   namespace network
   {
 
@@ -27,12 +33,12 @@ namespace elle
 //
 
     ///
-    /// this value defines the time to wait for a gate to connect to
-    /// a bridge after which the connection is assumed to have failed.
+    /// this value defines the time to wait for a socket to connect to
+    /// a local server after which the connection is assumed to have failed.
     ///
-    /// this value is set by default to 5 seconds.
+    /// this value is set by default to 1 second.
     ///
-    const Natural32		Gate::Timeout = 5000;
+    const Natural32		LocalSocket::Timeout = 1000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -41,8 +47,8 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    Gate::Gate():
-      Channel::Channel(Socket::TypeGate),
+    LocalSocket::LocalSocket():
+      StreamSocket::StreamSocket(Socket::TypeLocal),
 
       socket(NULL)
     {
@@ -51,7 +57,7 @@ namespace elle
     ///
     /// the destructor releases the socket.
     ///
-    Gate::~Gate()
+    LocalSocket::~LocalSocket()
     {
       // check the socket presence.
       if (this->socket != NULL)
@@ -63,21 +69,21 @@ namespace elle
 //
 
     ///
-    /// this method creates a new gate by allocating and setting up a new
+    /// this method creates a new socket by allocating and setting up a new
     /// socket.
     ///
-    /// note that at this stage, the gate is not attached to a bridge.
+    /// note that this socket is not attached to any local server.
     ///
-    Status		Gate::Create()
+    Status		LocalSocket::Create()
     {
       enter();
 
       // allocate a new socket.
-      this->socket = new ::QTcpSocket;
+      this->socket = new ::QLocalSocket;
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&Gate::Dispatch, this)) == StatusError)
+	    Callback<>::Infer(&LocalSocket::Dispatch, this)) == StatusError)
 	escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -95,18 +101,18 @@ namespace elle
 
       if (this->connect(
 	    this->socket,
-	    SIGNAL(error(const QAbstractSocket::SocketError)),
+	    SIGNAL(error(const QLocalSocket::LocalSocketError)),
 	    this,
-	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
+	    SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
 	escape("unable to connect to signal");
 
       leave();
     }
 
     ///
-    /// this method creates a gate based on the given socket.
+    /// this method creates a socket based on the given socket.
     ///
-    Status		Gate::Create(::QTcpSocket*		socket)
+    Status		LocalSocket::Create(::QLocalSocket*	socket)
     {
       enter();
 
@@ -115,7 +121,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&Gate::Dispatch, this)) == StatusError)
+	    Callback<>::Infer(&LocalSocket::Dispatch, this)) == StatusError)
 	escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -133,35 +139,37 @@ namespace elle
 
       if (this->connect(
 	    this->socket,
-	    SIGNAL(error(const QAbstractSocket::SocketError)),
+	    SIGNAL(error(const QLocalSocket::LocalSocketError)),
 	    this,
-	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
+	    SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
 	escape("unable to connect to signal");
 
-      // set the gate as being connected.
-      this->state = Channel::StateConnected;
+      // update the state.
+      this->state = StreamSocket::StateConnected;
 
       leave();
     }
 
     ///
-    /// this method connects the gate.
+    /// this method connects the socket i.e attaches the socket to a specific
+    /// local server.
     ///
-    Status		Gate::Connect(const Locus&		locus,
-				      const Channel::Mode	mode)
+    Status		LocalSocket::Connect(
+                          const String&				name,
+			  Socket::Mode				mode)
     {
       enter();
 
-      // update the state.
-      this->state = Channel::StateConnecting;
+      // set the state.
+      this->state = StreamSocket::StateConnecting;
 
       // connect the socket to the server.
-      this->socket->connectToHost(locus.host.location, locus.port);
+      this->socket->connectToServer(name.c_str());
 
       // depending on the mode.
       switch (mode)
 	{
-	case Channel::ModeAsynchronous:
+	case Socket::ModeAsynchronous:
 	  {
 	    // allocate a timer.
 	    this->timer = new Timer;
@@ -172,19 +180,19 @@ namespace elle
 
 	    // subscribe to the timer's signal.
 	    if (this->timer->signal.timeout.Subscribe(
-		  Callback<>::Infer(&Gate::Abort, this)) == StatusError)
+		  Callback<>::Infer(&LocalSocket::Abort, this)) == StatusError)
 	      escape("unable to subscribe to the signal");
 
 	    // start the timer.
-	    if (this->timer->Start(Gate::Timeout) == StatusError)
+	    if (this->timer->Start(LocalSocket::Timeout) == StatusError)
 	      escape("unable to start the timer");
 
 	    break;
 	  }
-	case Channel::ModeSynchronous:
+	case Socket::ModeSynchronous:
 	  {
 	    // deliberately wait for the connection to terminate.
-	    if (this->socket->waitForConnected(Gate::Timeout) == false)
+	    if (this->socket->waitForConnected(LocalSocket::Timeout) == false)
 	      escape(this->socket->errorString().toStdString().c_str());
 
 	    break;
@@ -197,31 +205,31 @@ namespace elle
     ///
     /// this method disconnects the socket.
     ///
-    Status		Gate::Disconnect()
+    Status		LocalSocket::Disconnect()
     {
       enter();
 
       // disconnect the socket from the server.
-      this->socket->disconnectFromHost();
+      this->socket->disconnectFromServer();
 
       leave();
     }
 
     ///
-    /// this method writes the given packet to the socket.
+    /// this method writes a packet to the socket.
     ///
-    Status		Gate::Write(const Packet&		packet)
+    Status		LocalSocket::Write(const Packet&	packet)
     {
       enter();
 
-      // check that the gate is connected.
-      if (this->state != Channel::StateConnected)
-	escape("the gate does not seem to have been connected");
+      // check that the socket is connected.
+      if (this->state != StreamSocket::StateConnected)
+	escape("the socket does not seem to have been connected");
 
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
-      if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large: %qu bytes",
+      if (packet.size > StreamSocket::Capacity)
+	escape("the packet seems to be too large %qu bytes",
 	       static_cast<Natural64>(packet.size));
 
       // push the packet to the socket.
@@ -239,13 +247,13 @@ namespace elle
     ///
     /// this method reads data from the socket and places it in a buffer.
     ///
-    Status		Gate::Read()
+    Status		LocalSocket::Read()
     {
       enter();
 
-      // check that the gate is connected.
-      if (this->state != Channel::StateConnected)
-	escape("the gate does not seem to have been connected");
+      // check that the socket is connected.
+      if (this->state != StreamSocket::StateConnected)
+	escape("the socket does not seem to have been connected");
 
       //
       // read the pending datagrams in the buffer.
@@ -295,7 +303,7 @@ namespace elle
     /// this method extracts as much parcels as possible from the
     /// buffer.
     ///
-    Status		Gate::Fetch()
+    Status		LocalSocket::Fetch()
     {
       enter();
 
@@ -338,7 +346,8 @@ namespace elle
 	      // test if we exceeded the buffer capacity meaning that the
 	      // waiting packet will probably never come. therefore just
 	      // discard everything!
-	      if ((this->buffer->size - this->offset) > Channel::Capacity)
+	      if ((this->buffer->size - this->offset) >
+		  StreamSocket::Capacity)
 		{
 		  // delete the buffer.
 		  delete this->buffer;
@@ -367,20 +376,15 @@ namespace elle
 	      // otherwise, there is enough data in the buffer to extract
 	      // the parcel.
 	      //
-	      Locus		locus;
 
 	      // extract the data.
 	      if (packet.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the data");
 
-	      // retrieve the gate's target.
-	      if (this->Target(locus) == StatusError)
-		escape("unable to retrieve the source locus");
-
 	      // create the session.
 	      if (parcel->session->Create(
 		    this,
-		    locus,
+		    Locus::Null,
 		    parcel->header->event) == StatusError)
 		escape("unable to create the session");
 
@@ -419,7 +423,7 @@ namespace elle
 
 	// if the offset is too far, move the existing data to the
 	// beginning of the buffer.
-	if (this->offset >= Channel::Capacity)
+	if (this->offset >= StreamSocket::Capacity)
 	  {
 	    // move the data.
 	    ::memmove(this->buffer->contents,
@@ -438,30 +442,18 @@ namespace elle
     }
 
     ///
-    /// this method returns the locus the gate is connected to.
+    /// this method returns the name the socket is connected to.
     ///
-    Status		Gate::Target(Locus&			locus) const
+    Status		LocalSocket::Target(String&		name) const
     {
-      Host		host;
-      Port		port;
-
       enter();
 
-      // check that the gate is connected.
-      if (this->state != Channel::StateConnected)
-	escape("the gate does not seem to have been connected");
+      // check that the socket is connected.
+      if (this->state != StreamSocket::StateConnected)
+	escape("the socket does not seem to have been connected");
 
-      // create the host.
-      if (host.Create(this->socket->peerAddress().toString().toStdString()) ==
-	  StatusError)
-	escape("unable to create the host");
-
-      // create the port.
-      port = this->socket->peerPort();
-
-      // create the locus.
-      if (locus.Create(host, port) == StatusError)
-	escape("unable to create the locus");
+      // retrieve the server name.
+      name = this->socket->serverName().toStdString();
 
       leave();
     }
@@ -471,28 +463,31 @@ namespace elle
 //
 
     ///
-    /// this method dumps the gate state.
+    /// this method dumps the socket state.
     ///
-    Status		Gate::Dump(const Natural32		margin) const
+    Status		LocalSocket::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
-      Locus		locus;
 
       enter();
 
-      std::cout << alignment << "[Gate]" << std::endl;
+      std::cout << alignment << "[LocalSocket]" << std::endl;
 
       // dump the channel.
-      if (Channel::Dump(margin + 2) == StatusError)
+      if (StreamSocket::Dump(margin + 2) == StatusError)
 	escape("unable to dump the channel");
 
-      // retrieve the target.
-      if (this->Target(locus) == StatusError)
-	escape("unable to retrieve the target");
+      // dump the state.
+      std::cout << alignment << Dumpable::Shift << "[Valid] "
+		<< this->socket->isValid() << std::endl;
 
-      // dump the locus.
-      if (locus.Dump(margin + 2) == StatusError)
-	escape("unable to dump the locus");
+      // dump the full socket path name.
+      std::cout << alignment << Dumpable::Shift << "[Path] "
+		<< this->socket->fullServerName().toStdString() << std::endl;
+
+      // dump the peer name.
+      std::cout << alignment << Dumpable::Shift << "[Peer] "
+		<< this->socket->serverName().toStdString() << std::endl;
 
       leave();
     }
@@ -504,7 +499,7 @@ namespace elle
     ///
     /// this callback fetches parcels and dispatches them.
     ///
-    Status		Gate::Dispatch()
+    Status		LocalSocket::Dispatch()
     {
       enter();
 
@@ -533,8 +528,7 @@ namespace elle
 	  if (Socket::Ship(parcel) == StatusError)
 	    log("an error occured while shipping the parcel");
 
-	  // stop tracking the parcel since Ship() will have taken
-	  // care of it.
+	  // stop tracking the parcel.
 	  waive(parcel);
 
 	  release();
@@ -547,18 +541,18 @@ namespace elle
     /// this callback is triggered when the channel's timer timeouts i.e
     /// the socket failed to connect within a timeframe.
     ///
-    Status		Gate::Abort()
+    Status		LocalSocket::Abort()
     {
       enter();
 
-      // delete the timer.
-      delete this->timer;
+      // bury the timer i.e the system is in the given timer.
+      bury(this->timer);
 
       // reset the locuser.
       this->timer = NULL;
 
       // if the socket has not been connected yet, abort the process.
-      if (this->state != Channel::StateConnected)
+      if (this->state != StreamSocket::StateConnected)
 	{
 	  // disconnect the socket.
 	  if (this->Disconnect() == StatusError)
@@ -575,11 +569,12 @@ namespace elle
     ///
     /// this slot is triggered when the socket is considered connected.
     ///
-    void		Gate::_connected()
+    void		LocalSocket::_connected()
     {
-      Closure< Status,
-	       Parameters<>
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<>
 						    >::Emit,
 						  &this->signal.connected));
@@ -587,7 +582,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = Channel::StateConnected;
+      this->state = StreamSocket::StateConnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
@@ -597,13 +592,14 @@ namespace elle
     }
 
     ///
-    /// this slot is triggered when the socket is considered disconnected.
+    /// this slot is triggered when the socket is considered disconnected
     ///
-    void		Gate::_disconnected()
+    void		LocalSocket::_disconnected()
     {
-      Closure< Status,
-	       Parameters<>
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<>
 						    >::Emit,
 						  &this->signal.disconnected));
@@ -611,7 +607,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = Channel::StateDisconnected;
+      this->state = StreamSocket::StateDisconnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
@@ -623,11 +619,12 @@ namespace elle
     ///
     /// this slot is triggered when data is ready on the socket.
     ///
-    void		Gate::_ready()
+    void		LocalSocket::_ready()
     {
-      Closure< Status,
-	       Parameters<>
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<>
 						    >::Emit,
 						  &this->signal.ready));
@@ -644,18 +641,20 @@ namespace elle
     ///
     /// this slot is triggered whenever an error occurs.
     ///
-    /// note here that the type QAbstractSocket::SocketError cannot be
-    /// written completely ::QAbstractSocket::SocketError because the
+    /// note here that the type QLocalSocket::LocalSocketError cannot be
+    /// written completely ::QLocalSocket::LocalSocketError because the
     /// QT parser is incapable of recognising the type.
     ///
-    void		Gate::_error(const QAbstractSocket::SocketError)
+    void		LocalSocket::_error(
+                          const QLocalSocket::LocalSocketError)
     {
       String		cause(this->socket->errorString().toStdString());
-      Closure< Status,
-	       Parameters<
-		 const String&
-		 >
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<
+	  const String&
+	  >
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<
 						      const String&
 						      >

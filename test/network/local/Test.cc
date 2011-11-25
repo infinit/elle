@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/door/Test.hh>
+#include <elle/test/network/local/Test.hh>
 
 namespace elle
 {

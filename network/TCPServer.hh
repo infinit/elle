@@ -5,22 +5,25 @@
 //
 // license       infinit
 //
-// author        julien quintard   [thu feb  4 14:39:34 2010]
+// author        julien quintard   [wed may 25 15:53:18 2011]
 //
 
 ///
-/// this very special include is required as Channel needs to know Door/Gate
-/// while Door/Gate inherit Channel. including Channel.hh normally makes moc,
-/// the QT meta object compiler, unable to detect the QObject classes.
+/// this very special include is required as StreamSocket needs to know
+/// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit StreamSocket.
 ///
-/// therefore, Channel.hh is not included when moc processes a header file.
+/// including StreamSocket.hh normally makes QT's MOC - Meta Object
+/// Compiler unable to detect the QObject classes.
+///
+/// therefore, StreamSocket.hh is not included when MOC processes a
+/// header file.
 ///
 #ifndef Q_MOC_RUN
-# include <elle/network/Channel.hh>
+# include <elle/network/StreamSocket.hh>
 #endif
 
-#ifndef ELLE_NETWORK_LANE_HH
-#define ELLE_NETWORK_LANE_HH
+#ifndef ELLE_NETWORK_TCPSERVER_HH
+#define ELLE_NETWORK_TCPSERVER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -31,15 +34,16 @@
 
 #include <elle/radix/Status.hh>
 #include <elle/radix/Entity.hh>
+#include <elle/radix/Parameters.hh>
 
 #include <elle/concurrency/Callback.hh>
 
-#include <elle/network/Door.hh>
+#include <elle/network/TCPSocket.hh>
 
 #include <elle/idiom/Close.hh>
 # include <map>
 # include <QObject>
-# include <QLocalServer>
+# include <QTcpServer>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -56,21 +60,22 @@ namespace elle
 //
 
     ///
-    /// the Door class needs to be forward declared to prevent conflicts.
+    /// the TCPSocket class needs to be forward declared to prevent conflicts.
     ///
-    class Door;
+    class TCPSocket;
 
 //
 // ---------- classes ---------------------------------------------------------
 //
 
     ///
-    /// this class represents a server waiting for connections.
+    /// this class represents a server waiting for TCP connections.
     ///
-    /// \todo XXX note that this class should be put as a nested class of Lane
-    ///           but QT (as of version 4.5) does not support that feature.
+    /// \todo XXX note that this class should be put as a nested class of
+    ///           TCPServer but QT (as of version 4.5) does not support that
+    ///           feature.
     ///
-    class LanePorter:
+    class TCPServerPorter:
       ::QObject,
 
       public Entity
@@ -81,14 +86,16 @@ namespace elle
       //
       // constructors & destructors
       //
-      LanePorter(const Callback< Status,
-				 Parameters<Door*> >&);
-      ~LanePorter();
+      TCPServerPorter(const Callback<
+			Status,
+			Parameters<TCPSocket*>
+			>&);
+      ~TCPServerPorter();
 
       //
       // methods
       //
-      Status		Create(const String&);
+      Status		Create(const Locus&);
 
       //
       // callbacks
@@ -105,11 +112,11 @@ namespace elle
       //
       // attributes
       //
-      String			name;
-      ::QLocalServer*		server;
+      Locus			locus;
+      ::QTcpServer*		server;
       Callback<
 	Status,
-	Parameters<Door*>
+	Parameters<TCPSocket*>
 	>			callback;
 
       //
@@ -120,15 +127,15 @@ namespace elle
     };
 
     ///
-    /// this class enables the caller to listen for incoming Door connections.
+    /// this class enables the caller to listen for incoming TCP connections.
     ///
-    class Lane
+    class TCPServer
     {
     public:
       //
       // types
       //
-      typedef std::map<const String, LanePorter*>	Container;
+      typedef std::map<const Locus, TCPServerPorter*>	Container;
       typedef Container::iterator			Iterator;
       typedef Container::const_iterator			Scoutor;
 
@@ -138,13 +145,13 @@ namespace elle
       static Status	Initialize();
       static Status	Clean();
 
-      static Status	Listen(const String&,
+      static Status	Listen(const Locus&,
 			       const Callback< Status,
-					       Parameters<Door*> >&);
-      static Status	Block(const String&);
-      static Status	Retrieve(const String&,
-				 LanePorter*&);
-      static Status	Locate(const String&,
+					       Parameters<TCPSocket*> >&);
+      static Status	Block(const Locus&);
+      static Status	Retrieve(const Locus&,
+				 TCPServerPorter*&);
+      static Status	Locate(const Locus&,
 			       Iterator* = NULL);
 
       static Status	Show(const Natural32 = 0);

@@ -5,26 +5,20 @@
 //
 // license       infinit
 //
-// author        julien quintard   [sat feb  6 04:30:24 2010]
+// author        julien quintard   [wed may 25 11:01:56 2011]
 //
 
 //
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Door.hh>
+#include <elle/network/TCPSocket.hh>
 #include <elle/network/Packet.hh>
 #include <elle/network/Inputs.hh>
 #include <elle/network/Network.hh>
 
-#include <elle/standalone/Morgue.hh>
-
-#include <elle/Manifest.hh>
-
 namespace elle
 {
-  using namespace standalone;
-
   namespace network
   {
 
@@ -33,12 +27,12 @@ namespace elle
 //
 
     ///
-    /// this value defines the time to wait for a door to connect to
-    /// a lane after which the connection is assumed to have failed.
+    /// this value defines the time to wait for a TCP socket to connect to
+    /// a TCP server after which the connection is assumed to have failed.
     ///
-    /// this value is set by default to 1 second.
+    /// this value is set by default to 5 seconds.
     ///
-    const Natural32		Door::Timeout = 1000;
+    const Natural32		TCPSocket::Timeout = 5000;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -47,8 +41,8 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    Door::Door():
-      Channel::Channel(Socket::TypeDoor),
+    TCPSocket::TCPSocket():
+      StreamSocket::StreamSocket(Socket::TypeTCP),
 
       socket(NULL)
     {
@@ -57,7 +51,7 @@ namespace elle
     ///
     /// the destructor releases the socket.
     ///
-    Door::~Door()
+    TCPSocket::~TCPSocket()
     {
       // check the socket presence.
       if (this->socket != NULL)
@@ -69,21 +63,22 @@ namespace elle
 //
 
     ///
-    /// this method creates a new door by allocating and setting up a new
+    /// this method creates a new TCP socket by allocating and setting up a new
     /// socket.
     ///
-    /// note that this door is not attached to any lane.
+    /// note that at this stage, the TCP socket is not attached to a
+    /// TCP server.
     ///
-    Status		Door::Create()
+    Status		TCPSocket::Create()
     {
       enter();
 
       // allocate a new socket.
-      this->socket = new ::QLocalSocket;
+      this->socket = new ::QTcpSocket;
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&Door::Dispatch, this)) == StatusError)
+	    Callback<>::Infer(&TCPSocket::Dispatch, this)) == StatusError)
 	escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -101,18 +96,18 @@ namespace elle
 
       if (this->connect(
 	    this->socket,
-	    SIGNAL(error(const QLocalSocket::LocalSocketError)),
+	    SIGNAL(error(const QAbstractSocket::SocketError)),
 	    this,
-	    SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
+	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
 	escape("unable to connect to signal");
 
       leave();
     }
 
     ///
-    /// this method creates a door based on the given socket.
+    /// this method creates a TCP socket based on the given QT socket.
     ///
-    Status		Door::Create(::QLocalSocket*		socket)
+    Status		TCPSocket::Create(::QTcpSocket*		socket)
     {
       enter();
 
@@ -121,7 +116,7 @@ namespace elle
 
       // subscribe to the signal.
       if (this->signal.ready.Subscribe(
-	    Callback<>::Infer(&Door::Dispatch, this)) == StatusError)
+	    Callback<>::Infer(&TCPSocket::Dispatch, this)) == StatusError)
 	escape("unable to subscribe to the signal");
 
       // connect the QT signals.
@@ -139,38 +134,36 @@ namespace elle
 
       if (this->connect(
 	    this->socket,
-	    SIGNAL(error(const QLocalSocket::LocalSocketError)),
+	    SIGNAL(error(const QAbstractSocket::SocketError)),
 	    this,
-	    SLOT(_error(const QLocalSocket::LocalSocketError))) == false)
+	    SLOT(_error(const QAbstractSocket::SocketError))) == false)
 	escape("unable to connect to signal");
 
-      // update the state.
-      this->state = Channel::StateConnected;
+      // set the socket as being connected.
+      this->state = StreamSocket::StateConnected;
 
       leave();
     }
 
     ///
-    /// this method connects the door i.e attaches the socket to a specific
-    /// lane.
+    /// this method connects the socket.
     ///
-    Status		Door::Connect(const String&		name,
-				      Channel::Mode		mode)
+    Status		TCPSocket::Connect(
+                          const Locus&				locus,
+			  const Socket::Mode			mode)
     {
       enter();
 
-      /// XXX \todo ca segfault si le client est lance sans serveur...???
-
-      // set the state.
-      this->state = Channel::StateConnecting;
+      // update the state.
+      this->state = StreamSocket::StateConnecting;
 
       // connect the socket to the server.
-      this->socket->connectToServer(name.c_str());
+      this->socket->connectToHost(locus.host.location, locus.port);
 
       // depending on the mode.
       switch (mode)
 	{
-	case Channel::ModeAsynchronous:
+	case Socket::ModeAsynchronous:
 	  {
 	    // allocate a timer.
 	    this->timer = new Timer;
@@ -181,19 +174,19 @@ namespace elle
 
 	    // subscribe to the timer's signal.
 	    if (this->timer->signal.timeout.Subscribe(
-		  Callback<>::Infer(&Door::Abort, this)) == StatusError)
+		  Callback<>::Infer(&TCPSocket::Abort, this)) == StatusError)
 	      escape("unable to subscribe to the signal");
 
 	    // start the timer.
-	    if (this->timer->Start(Door::Timeout) == StatusError)
+	    if (this->timer->Start(TCPSocket::Timeout) == StatusError)
 	      escape("unable to start the timer");
 
 	    break;
 	  }
-	case Channel::ModeSynchronous:
+	case Socket::ModeSynchronous:
 	  {
 	    // deliberately wait for the connection to terminate.
-	    if (this->socket->waitForConnected(Door::Timeout) == false)
+	    if (this->socket->waitForConnected(TCPSocket::Timeout) == false)
 	      escape(this->socket->errorString().toStdString().c_str());
 
 	    break;
@@ -206,31 +199,31 @@ namespace elle
     ///
     /// this method disconnects the socket.
     ///
-    Status		Door::Disconnect()
+    Status		TCPSocket::Disconnect()
     {
       enter();
 
       // disconnect the socket from the server.
-      this->socket->disconnectFromServer();
+      this->socket->disconnectFromHost();
 
       leave();
     }
 
     ///
-    /// this method writes a packet to the socket.
+    /// this method writes the given packet to the socket.
     ///
-    Status		Door::Write(const Packet&		packet)
+    Status		TCPSocket::Write(const Packet&		packet)
     {
       enter();
 
-      // check that the door is connected.
-      if (this->state != Channel::StateConnected)
-	escape("the door does not seem to have been connected");
+      // check that the socket is connected.
+      if (this->state != StreamSocket::StateConnected)
+	escape("the socket does not seem to have been connected");
 
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
-      if (packet.size > Channel::Capacity)
-	escape("the packet seems to be too large %qu bytes",
+      if (packet.size > StreamSocket::Capacity)
+	escape("the packet seems to be too large: %qu bytes",
 	       static_cast<Natural64>(packet.size));
 
       // push the packet to the socket.
@@ -248,13 +241,13 @@ namespace elle
     ///
     /// this method reads data from the socket and places it in a buffer.
     ///
-    Status		Door::Read()
+    Status		TCPSocket::Read()
     {
       enter();
 
-      // check that the door is connected.
-      if (this->state != Channel::StateConnected)
-	escape("the door does not seem to have been connected");
+      // check that the socket is connected.
+      if (this->state != StreamSocket::StateConnected)
+	escape("the socket does not seem to have been connected");
 
       //
       // read the pending datagrams in the buffer.
@@ -304,7 +297,7 @@ namespace elle
     /// this method extracts as much parcels as possible from the
     /// buffer.
     ///
-    Status		Door::Fetch()
+    Status		TCPSocket::Fetch()
     {
       enter();
 
@@ -347,7 +340,8 @@ namespace elle
 	      // test if we exceeded the buffer capacity meaning that the
 	      // waiting packet will probably never come. therefore just
 	      // discard everything!
-	      if ((this->buffer->size - this->offset) > Channel::Capacity)
+	      if ((this->buffer->size - this->offset) >
+		  StreamSocket::Capacity)
 		{
 		  // delete the buffer.
 		  delete this->buffer;
@@ -376,15 +370,20 @@ namespace elle
 	      // otherwise, there is enough data in the buffer to extract
 	      // the parcel.
 	      //
+	      Locus		locus;
 
 	      // extract the data.
 	      if (packet.Extract(*parcel->data) == StatusError)
 		escape("unable to extract the data");
 
+	      // retrieve the socket's target.
+	      if (this->Target(locus) == StatusError)
+		escape("unable to retrieve the source locus");
+
 	      // create the session.
 	      if (parcel->session->Create(
 		    this,
-		    Locus::Null,
+		    locus,
 		    parcel->header->event) == StatusError)
 		escape("unable to create the session");
 
@@ -423,7 +422,7 @@ namespace elle
 
 	// if the offset is too far, move the existing data to the
 	// beginning of the buffer.
-	if (this->offset >= Channel::Capacity)
+	if (this->offset >= StreamSocket::Capacity)
 	  {
 	    // move the data.
 	    ::memmove(this->buffer->contents,
@@ -442,18 +441,30 @@ namespace elle
     }
 
     ///
-    /// this method returns the name the door is connected to.
+    /// this method returns the locus the socket is connected to.
     ///
-    Status		Door::Target(String&			name) const
+    Status		TCPSocket::Target(Locus&		locus) const
     {
+      Host		host;
+      Port		port;
+
       enter();
 
-      // check that the door is connected.
-      if (this->state != Channel::StateConnected)
-	escape("the door does not seem to have been connected");
+      // check that the socket is connected.
+      if (this->state != StreamSocket::StateConnected)
+	escape("the socket does not seem to have been connected");
 
-      // retrieve the server name.
-      name = this->socket->serverName().toStdString();
+      // create the host.
+      if (host.Create(this->socket->peerAddress().toString().toStdString()) ==
+	  StatusError)
+	escape("unable to create the host");
+
+      // create the port.
+      port = this->socket->peerPort();
+
+      // create the locus.
+      if (locus.Create(host, port) == StatusError)
+	escape("unable to create the locus");
 
       leave();
     }
@@ -463,31 +474,28 @@ namespace elle
 //
 
     ///
-    /// this method dumps the door state.
+    /// this method dumps the socket state.
     ///
-    Status		Door::Dump(const Natural32		margin) const
+    Status		TCPSocket::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
+      Locus		locus;
 
       enter();
 
-      std::cout << alignment << "[Door]" << std::endl;
+      std::cout << alignment << "[TCPSocket]" << std::endl;
 
       // dump the channel.
-      if (Channel::Dump(margin + 2) == StatusError)
+      if (StreamSocket::Dump(margin + 2) == StatusError)
 	escape("unable to dump the channel");
 
-      // dump the state.
-      std::cout << alignment << Dumpable::Shift << "[Valid] "
-		<< this->socket->isValid() << std::endl;
+      // retrieve the target.
+      if (this->Target(locus) == StatusError)
+	escape("unable to retrieve the target");
 
-      // dump the full socket path name.
-      std::cout << alignment << Dumpable::Shift << "[Path] "
-		<< this->socket->fullServerName().toStdString() << std::endl;
-
-      // dump the peer name.
-      std::cout << alignment << Dumpable::Shift << "[Peer] "
-		<< this->socket->serverName().toStdString() << std::endl;
+      // dump the locus.
+      if (locus.Dump(margin + 2) == StatusError)
+	escape("unable to dump the locus");
 
       leave();
     }
@@ -499,7 +507,7 @@ namespace elle
     ///
     /// this callback fetches parcels and dispatches them.
     ///
-    Status		Door::Dispatch()
+    Status		TCPSocket::Dispatch()
     {
       enter();
 
@@ -528,7 +536,8 @@ namespace elle
 	  if (Socket::Ship(parcel) == StatusError)
 	    log("an error occured while shipping the parcel");
 
-	  // stop tracking the parcel.
+	  // stop tracking the parcel since Ship() will have taken
+	  // care of it.
 	  waive(parcel);
 
 	  release();
@@ -541,18 +550,18 @@ namespace elle
     /// this callback is triggered when the channel's timer timeouts i.e
     /// the socket failed to connect within a timeframe.
     ///
-    Status		Door::Abort()
+    Status		TCPSocket::Abort()
     {
       enter();
 
-      // bury the timer i.e the system is in the given timer.
-      bury(this->timer);
+      // delete the timer.
+      delete this->timer;
 
       // reset the locuser.
       this->timer = NULL;
 
       // if the socket has not been connected yet, abort the process.
-      if (this->state != Channel::StateConnected)
+      if (this->state != StreamSocket::StateConnected)
 	{
 	  // disconnect the socket.
 	  if (this->Disconnect() == StatusError)
@@ -569,11 +578,12 @@ namespace elle
     ///
     /// this slot is triggered when the socket is considered connected.
     ///
-    void		Door::_connected()
+    void		TCPSocket::_connected()
     {
-      Closure< Status,
-	       Parameters<>
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<>
 						    >::Emit,
 						  &this->signal.connected));
@@ -581,7 +591,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = Channel::StateConnected;
+      this->state = StreamSocket::StateConnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
@@ -591,13 +601,14 @@ namespace elle
     }
 
     ///
-    /// this slot is triggered when the socket is considered disconnected
+    /// this slot is triggered when the socket is considered disconnected.
     ///
-    void		Door::_disconnected()
+    void		TCPSocket::_disconnected()
     {
-      Closure< Status,
-	       Parameters<>
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<>
 						    >::Emit,
 						  &this->signal.disconnected));
@@ -605,7 +616,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = Channel::StateDisconnected;
+      this->state = StreamSocket::StateDisconnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
@@ -617,11 +628,12 @@ namespace elle
     ///
     /// this slot is triggered when data is ready on the socket.
     ///
-    void		Door::_ready()
+    void		TCPSocket::_ready()
     {
-      Closure< Status,
-	       Parameters<>
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<>
 						    >::Emit,
 						  &this->signal.ready));
@@ -638,18 +650,20 @@ namespace elle
     ///
     /// this slot is triggered whenever an error occurs.
     ///
-    /// note here that the type QLocalSocket::LocalSocketError cannot be
-    /// written completely ::QLocalSocket::LocalSocketError because the
+    /// note here that the type QAbstractSocket::SocketError cannot be
+    /// written completely ::QAbstractSocket::SocketError because the
     /// QT parser is incapable of recognising the type.
     ///
-    void		Door::_error(const QLocalSocket::LocalSocketError)
+    void		TCPSocket::_error(
+                          const QAbstractSocket::SocketError)
     {
       String		cause(this->socket->errorString().toStdString());
-      Closure< Status,
-	       Parameters<
-		 const String&
-		 >
-	       >	closure(Callback<>::Infer(&Signal<
+      Closure<
+	Status,
+	Parameters<
+	  const String&
+	  >
+	>		closure(Callback<>::Infer(&Signal<
 						    Parameters<
 						      const String&
 						      >

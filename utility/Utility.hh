@@ -44,7 +44,6 @@ namespace elle
 #include <elle/utility/URI.hh>
 
 // XXX
-#include <elle/utility/NonCopyable.hh>
 #include <elle/utility/ScopeReset.hh>
 
 #endif

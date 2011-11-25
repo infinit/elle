@@ -50,6 +50,29 @@ namespace elle
     /// this class contains everything related to the JSON - JavaScript
     /// Object Notation format.
     ///
+    /// below is an example of how to use the JSON-related classes.
+    ///
+    ///   JSON::Document	document;
+    ///   String		string;
+    ///
+    ///   document.Set("some", "string");
+    ///   document.Set("somewhere", "array",
+    ///                JSON::Bulk(JSON::Node(42),
+    ///                           JSON::Node(21.84),
+    ///                           JSON::Node("bande")));
+    ///   document.Append("somewhere", "array",
+    ///                   JSON::Bulk(JSON::Node("test")));
+    ///
+    ///   JSON::Encode(document, string);
+    ///
+    ///   std::cout << string << std::endl;
+    ///
+    ///   JSON::Decode(string, document);
+    ///
+    ///   document.Dump();
+    ///
+    ///   std::cout << document.Get("somewhere", "array", 2) << std::endl;
+    ///
     class JSON
     {
     public:

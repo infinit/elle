@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/door/Client.hh>
+#include <elle/test/network/local/Client.hh>
 
 namespace elle
 {
@@ -51,12 +51,12 @@ namespace elle
 	      Callback<>::Infer(&Client::Challenge, this))) == StatusError)
 	escape("unable to register the challenge message");
 
-      // create the door.
-      if (this->door.Create() == StatusError)
+      // create the socket.
+      if (this->socket.Create() == StatusError)
 	escape("unable to create the slot");
 
-      // connect the door.
-      if (this->door.Connect(this->line) == StatusError)
+      // connect the socket.
+      if (this->socket.Connect(this->line) == StatusError)
 	escape("unable to connect to the line");
 
       leave();
@@ -79,7 +79,7 @@ namespace elle
       std::cout << "[Challenge] " << text << std::endl;
 
       // reply.
-      if (this->door.Reply(
+      if (this->socket.Reply(
 	    Inputs<TagResponse>(response)) == StatusError)
 	escape("unable to return the response");
 

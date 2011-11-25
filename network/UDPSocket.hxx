@@ -5,11 +5,11 @@
 //
 // license       infinit
 //
-// author        julien quintard   [tue feb 23 13:44:55 2010]
+// author        julien quintard   [sat feb 20 18:28:29 2010]
 //
 
-#ifndef ELLE_NETWORK_DOOR_HXX
-#define ELLE_NETWORK_DOOR_HXX
+#ifndef ELLE_NETWORK_UDPSOCKET_HXX
+#define ELLE_NETWORK_UDPSOCKET_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -31,15 +31,18 @@ namespace elle
   {
 
 //
-// ---------- methods ---------------------------------------------------------
+// ---------- templates -------------------------------------------------------
 //
 
     ///
-    /// this method sends a packet.
+    /// this method converts a set of values into a UDP packet and sends it
+    /// to the given locus in an asynchronous way meaning that the sender
+    /// does not wait for an acknowledgment for continuing.
     ///
     template <typename I>
-    Status		Door::Send(const I			inputs,
-				   const Event&			event)
+    Status		UDPSocket::Send(const Locus&		locus,
+					const I			inputs,
+					const Event&		event)
     {
       Packet		packet;
       Data		data;
@@ -69,8 +72,8 @@ namespace elle
       if (packet.Serialize(header, data) == StatusError)
 	escape("unable to serialize the header and data");
 
-      // write the socket.
-      if (this->Write(packet) == StatusError)
+      // write the datagram to the socket.
+      if (this->Write(locus, packet) == StatusError)
 	escape("unable to write the packet");
 
       leave();
@@ -80,8 +83,8 @@ namespace elle
     /// this method receives a packet through blocking.
     ///
     template <typename O>
-    Status		Door::Receive(const Event&		event,
-				      O				outputs)
+    Status		UDPSocket::Receive(const Event&		event,
+					   O			outputs)
     {
       Parcel*		parcel;
 
@@ -148,8 +151,9 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		Door::Call(const I			inputs,
-				   O				outputs)
+    Status		UDPSocket::Call(const Locus&		locus,
+					const I			inputs,
+					O			outputs)
     {
       Event		event;
 
@@ -160,7 +164,7 @@ namespace elle
 	escape("unable to generate the event");
 
       // send the inputs.
-      if (this->Send(inputs, event) == StatusError)
+      if (this->Send(locus, inputs, event) == StatusError)
 	escape("unable to send the inputs");
 
       // wait for the reply.
@@ -175,8 +179,8 @@ namespace elle
     /// whose tag is specified in the current session.
     ///
     template <typename I>
-    Status		Door::Reply(const I			inputs,
-				    Session*			session)
+    Status		UDPSocket::Reply(const I		inputs,
+					 Session*		session)
     {
       enter();
 
@@ -189,7 +193,7 @@ namespace elle
 
       // send a message as a response by using the event of
       // the received message i.e the current session.
-      if (this->Send(inputs, session->event) == StatusError)
+      if (this->Send(session->locus, inputs, session->event) == StatusError)
 	escape("unable to send the reply");
 
       leave();

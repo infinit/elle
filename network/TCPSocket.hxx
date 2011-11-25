@@ -5,11 +5,11 @@
 //
 // license       infinit
 //
-// author        julien quintard   [sat feb 20 18:28:29 2010]
+// author        julien quintard   [wed may 25 14:20:06 2011]
 //
 
-#ifndef ELLE_NETWORK_SLOT_HXX
-#define ELLE_NETWORK_SLOT_HXX
+#ifndef ELLE_NETWORK_TCPSOCKET_HXX
+#define ELLE_NETWORK_TCPSOCKET_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -31,18 +31,15 @@ namespace elle
   {
 
 //
-// ---------- templates -------------------------------------------------------
+// ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method converts a set of values into a UDP packet and sends it
-    /// to the given locus in an asynchronous way meaning that the sender
-    /// does not wait for an acknowledgment for continuing.
+    /// this method sends a packet.
     ///
     template <typename I>
-    Status		Slot::Send(const Locus&			locus,
-				   const I			inputs,
-				   const Event&			event)
+    Status		TCPSocket::Send(const I			inputs,
+					const Event&		event)
     {
       Packet		packet;
       Data		data;
@@ -72,19 +69,19 @@ namespace elle
       if (packet.Serialize(header, data) == StatusError)
 	escape("unable to serialize the header and data");
 
-      // write the datagram to the socket.
-      if (this->Write(locus, packet) == StatusError)
-	escape("unable to write the packet");
+      // write the socket.
+      if (this->Write(packet) == StatusError)
+	escape("unable to write the socket");
 
       leave();
     }
 
     ///
-    /// this method receives a packet through blocking.
+    /// this method receives a packet by blocking.
     ///
     template <typename O>
-    Status		Slot::Receive(const Event&		event,
-				      O				outputs)
+    Status		TCPSocket::Receive(const Event&		event,
+					   O			outputs)
     {
       Parcel*		parcel;
 
@@ -147,13 +144,12 @@ namespace elle
     }
 
     ///
-    /// this method sends a message and waits for a response.
+    /// this method sends and waits for an appropriate response.
     ///
     template <typename I,
 	      typename O>
-    Status		Slot::Call(const Locus&			locus,
-				   const I			inputs,
-				   O				outputs)
+    Status		TCPSocket::Call(const I			inputs,
+					O			outputs)
     {
       Event		event;
 
@@ -164,7 +160,7 @@ namespace elle
 	escape("unable to generate the event");
 
       // send the inputs.
-      if (this->Send(locus, inputs, event) == StatusError)
+      if (this->Send(inputs, event) == StatusError)
 	escape("unable to send the inputs");
 
       // wait for the reply.
@@ -179,8 +175,8 @@ namespace elle
     /// whose tag is specified in the current session.
     ///
     template <typename I>
-    Status		Slot::Reply(const I			inputs,
-				    Session*			session)
+    Status		TCPSocket::Reply(const I		inputs,
+					 Session*		session)
     {
       enter();
 
@@ -193,7 +189,7 @@ namespace elle
 
       // send a message as a response by using the event of
       // the received message i.e the current session.
-      if (this->Send(session->locus, inputs, session->event) == StatusError)
+      if (this->Send(inputs, session->event) == StatusError)
 	escape("unable to send the reply");
 
       leave();

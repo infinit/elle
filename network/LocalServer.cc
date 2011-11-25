@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/Lane.hh>
+#include <elle/network/LocalServer.hh>
 
 #include <elle/standalone/Maid.hh>
 #include <elle/standalone/Report.hh>
@@ -29,7 +29,7 @@ namespace elle
     ///
     /// definition of the container.
     ///
-    Lane::Container		Lane::Porters;
+    LocalServer::Container		LocalServer::Porters;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -38,8 +38,11 @@ namespace elle
     ///
     /// the default constructor.
     ///
-    LanePorter::LanePorter(const Callback< Status,
-					   Parameters<Door*> >&	callback):
+    LocalServerPorter::LocalServerPorter(const
+					   Callback<
+					     Status,
+					     Parameters<LocalSocket*>
+					     >&			callback):
       server(NULL),
       callback(callback)
     {
@@ -48,7 +51,7 @@ namespace elle
     ///
     /// the destructor.
     ///
-    LanePorter::~LanePorter()
+    LocalServerPorter::~LocalServerPorter()
     {
       // if there is a server, release it.
       if (this->server != NULL)
@@ -66,7 +69,7 @@ namespace elle
     ///
     /// this method starts listening on the given name.
     ///
-    Status		LanePorter::Create(const String&		name)
+    Status		LocalServerPorter::Create(const String&	name)
     {
       enter();
 
@@ -89,13 +92,13 @@ namespace elle
     }
 
     //
-    // lane
+    // server
     //
 
     ///
-    /// this method initializes the lane.
+    /// this method initializes the server.
     ///
-    Status		Lane::Initialize()
+    Status		LocalServer::Initialize()
     {
       enter();
 
@@ -105,20 +108,20 @@ namespace elle
     }
 
     ///
-    /// this method cleans the lane.
+    /// this method cleans the server.
     ///
-    Status		Lane::Clean()
+    Status		LocalServer::Clean()
     {
-      Lane::Scoutor	scoutor;
+      LocalServer::Scoutor	scoutor;
 
       enter();
 
       // go through the porters.
-      for (scoutor = Lane::Porters.begin();
-	   scoutor != Lane::Porters.end();
+      for (scoutor = LocalServer::Porters.begin();
+	   scoutor != LocalServer::Porters.end();
 	   scoutor++)
 	{
-	  LanePorter*	porter = scoutor->second;
+	  LocalServerPorter*	porter = scoutor->second;
 
 	  // delete the porter.
 	  delete porter;
@@ -130,38 +133,39 @@ namespace elle
     ///
     /// this method starts a server and waits for new connection. for
     /// every new connection, the Accept signal is generated which, in turn,
-    /// creates a new door.
+    /// creates a new socket.
     ///
     /// note that callbacks are used because only a specific handler must
     /// be called. by relying on QT signals/slots (though it is not possible
-    /// since the Lane class is static), all the slots registered on the
+    /// since the LocalServer class is static), all the slots registered on the
     /// signal would be triggered which is not want we want.
     ///
-    Status		Lane::Listen(const String&		name,
-				     const
-				       Callback<
-					 Status,
-					 Parameters<Door*> >&	callback)
+    Status		LocalServer::Listen(const String&	name,
+					    const
+					      Callback<
+						Status,
+						Parameters<LocalSocket*>
+						>&		callback)
     {
-      std::pair<Lane::Iterator, Boolean>	result;
-      LanePorter*				porter;
+      std::pair<LocalServer::Iterator, Boolean>	result;
+      LocalServerPorter*			porter;
 
       enterx(instance(porter));
 
       // check if this name is not already listened on.
-      if (Lane::Locate(name) == StatusTrue)
+      if (LocalServer::Locate(name) == StatusTrue)
 	escape("this name seems to have already been registered");
 
       // allocate a new porter.
-      porter = new LanePorter(callback);
+      porter = new LocalServerPorter(callback);
 
       // create the porter.
       if (porter->Create(name) == StatusError)
 	escape("unable to create the porter");
 
       // insert the porter in the container.
-      result = Lane::Porters.insert(
-	         std::pair<const String, LanePorter*>(name, porter));
+      result = LocalServer::Porters.insert(
+	         std::pair<const String, LocalServerPorter*>(name, porter));
 
       // check if the insertion was successful.
       if (result.second == false)
@@ -177,15 +181,15 @@ namespace elle
     /// this method blocks the given name by deleting the associated
     /// porter.
     ///
-    Status		Lane::Block(const String&		name)
+    Status		LocalServer::Block(const String&	name)
     {
-      Lane::Iterator	iterator;
-      LanePorter*	porter;
+      LocalServer::Iterator	iterator;
+      LocalServerPorter*	porter;
 
       enter();
 
       // locate the porter.
-      if (Lane::Locate(name, &iterator) == StatusFalse)
+      if (LocalServer::Locate(name, &iterator) == StatusFalse)
 	escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -195,7 +199,7 @@ namespace elle
       delete porter;
 
       // remove the entry from the container.
-      Lane::Porters.erase(iterator);
+      LocalServer::Porters.erase(iterator);
 
       leave();
     }
@@ -203,15 +207,15 @@ namespace elle
     ///
     /// this method returns the porter associated with the given name.
     ///
-    Status		Lane::Retrieve(const String&		name,
-				       LanePorter*&		porter)
+    Status		LocalServer::Retrieve(const String&	name,
+					      LocalServerPorter*& porter)
     {
-      Lane::Iterator	iterator;
+      LocalServer::Iterator	iterator;
 
       enter();
 
       // locate the porter.
-      if (Lane::Locate(name, &iterator) == StatusFalse)
+      if (LocalServer::Locate(name, &iterator) == StatusFalse)
 	escape("unable to locate the given porter");
 
       // retrieve the porter.
@@ -224,15 +228,15 @@ namespace elle
     /// this method tries to locate the porter associated with the given
     /// name and returns true if found.
     ///
-    Status		Lane::Locate(const String&		name,
-				     Iterator*			iterator)
+    Status		LocalServer::Locate(const String&	name,
+					    Iterator*		iterator)
     {
-      Lane::Iterator	i;
+      LocalServer::Iterator	i;
 
       enter();
 
       // try to locate the porter.
-      if ((i = Lane::Porters.find(name)) != Lane::Porters.end())
+      if ((i = LocalServer::Porters.find(name)) != LocalServer::Porters.end())
 	{
 	  if (iterator != NULL)
 	    *iterator = i;
@@ -254,7 +258,7 @@ namespace elle
     ///
     /// this method dumps the internals of a porter.
     ///
-    Status		LanePorter::Dump(const Natural32	margin) const
+    Status		LocalServerPorter::Dump(const Natural32	margin) const
     {
       String		alignment(margin, ' ');
 
@@ -278,27 +282,27 @@ namespace elle
     }
 
     //
-    // lane
+    // server
     //
 
     ///
     /// this method dumps the table of porters.
     ///
-    Status		Lane::Show(const Natural32		margin)
+    Status		LocalServer::Show(const Natural32	margin)
     {
       String		alignment(margin, ' ');
-      Lane::Scoutor	scoutor;
+      LocalServer::Scoutor	scoutor;
 
       enter();
 
-      std::cout << alignment << "[Lane]" << std::endl;
+      std::cout << alignment << "[LocalServer]" << std::endl;
 
       // dump the porters table.
-      for (scoutor = Lane::Porters.begin();
-	   scoutor != Lane::Porters.end();
+      for (scoutor = LocalServer::Porters.begin();
+	   scoutor != LocalServer::Porters.end();
 	   scoutor++)
 	{
-	  LanePorter*	porter = scoutor->second;
+	  LocalServerPorter*	porter = scoutor->second;
 
 	  // dump the porter.
 	  if (porter->Dump(margin + 2) == StatusError)
@@ -315,30 +319,30 @@ namespace elle
     ///
     /// this callback is triggered whenever a new conncetion is made.
     ///
-    Status		LanePorter::Accept()
+    Status		LocalServerPorter::Accept()
     {
-      ::QLocalSocket*	socket;
-      Door*		door;
+      ::QLocalSocket*	connection;
+      LocalSocket*	socket;
 
-      enterx(instance(door));
+      enterx(instance(socket));
 
-      // retrieve the socket from the server.
-      if ((socket = this->server->nextPendingConnection()) == NULL)
+      // retrieve the connection from the server.
+      if ((connection = this->server->nextPendingConnection()) == NULL)
 	escape(this->server->errorString().toStdString().c_str());
 
-      // allocate a new door to this lane.
-      door = new Door;
+      // allocate a new socket to this server.
+      socket = new LocalSocket;
 
-      // create a door with the specific socket.
-      if (door->Create(socket) == StatusError)
-	escape("unable to create the door");
+      // create a socket with the specific connection.
+      if (socket->Create(connection) == StatusError)
+	escape("unable to create the socket");
 
       // call the callback.
-      if (this->callback.Call(door) == StatusError)
+      if (this->callback.Call(socket) == StatusError)
 	escape("an error occured in the callback");
 
-      // stop tracking door as it has been handed to the callback.
-      waive(door);
+      // stop tracking socket as it has been handed to the callback.
+      waive(socket);
 
       leave();
     }
@@ -351,11 +355,13 @@ namespace elle
     /// this slot is triggered whenever a connection is being made on the
     /// porter's locus.
     ///
-    void		LanePorter::_accept()
+    void		LocalServerPorter::_accept()
     {
-      Closure< Status,
-	       Parameters<> >	closure(Callback<>::Infer(
-					  &LanePorter::Accept, this));
+      Closure<
+	Status,
+	Parameters<>
+	>		closure(Callback<>::Infer(
+				  &LocalServerPorter::Accept, this));
 
       enter();
 

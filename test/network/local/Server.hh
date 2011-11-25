@@ -8,8 +8,8 @@
 // author        julien quintard   [fri nov 27 22:03:15 2009]
 //
 
-#ifndef ELLE_TEST_NETWORK_DOOR_SERVER_HH
-#define ELLE_TEST_NETWORK_DOOR_SERVER_HH
+#ifndef ELLE_TEST_NETWORK_LOCAL_SERVER_HH
+#define ELLE_TEST_NETWORK_LOCAL_SERVER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,7 +17,7 @@
 
 #include <elle/Elle.hh>
 
-#include <elle/test/network/door/Manifest.hh>
+#include <elle/test/network/local/Manifest.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -44,13 +44,13 @@ namespace elle
       //
       // callbacks
       //
-      Status		Connection(Door*);
+      Status		Connection(LocalSocket*);
 
       //
       // attributes
       //
-      String		line;
-      std::list<Door*>	doors;
+      String			line;
+      std::list<LocalSocket*>	sockets;
     };
 
   }

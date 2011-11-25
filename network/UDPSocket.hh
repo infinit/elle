@@ -9,18 +9,20 @@
 //
 
 ///
-/// this very special include is required as Socket needs to know Slot
-/// while Slot inherits Socket. including Socket.hh normally makes moc,
-/// the QT meta object compiler, unable to detect the QObject classes.
+/// this very special include is required as Socket needs to know UDPSocket
+/// while UDPSocket inherits Socket.
 ///
-/// therefore, Socket.hh is not included when moc processes a header file.
+/// including Socket.hh normally makes QT's MOC - Meta Object Compiler unable
+/// to detect the QObject classes.
+///
+/// therefore, Socket.hh is not included when MOC processes a header file.
 ///
 #ifndef Q_MOC_RUN
 # include <elle/network/Socket.hh>
 #endif
 
-#ifndef ELLE_NETWORK_SLOT_HH
-#define ELLE_NETWORK_SLOT_HH
+#ifndef ELLE_NETWORK_UDPSOCKET_HH
+#define ELLE_NETWORK_UDPSOCKET_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -62,10 +64,9 @@ namespace elle
 //
 
     ///
-    /// a slot represents a non-connected socket, typically implemented
-    /// through the UDP protocol.
+    /// a slot represents a non-connected UDP socket.
     ///
-    class Slot:
+    class UDPSocket:
       public ::QObject,
 
       public Socket
@@ -76,8 +77,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      Slot();
-      ~Slot();
+      UDPSocket();
+      ~UDPSocket();
 
       //
       // methods
@@ -155,6 +156,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/network/Slot.hxx>
+#include <elle/network/UDPSocket.hxx>
 
 #endif
