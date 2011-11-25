@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/slot/Neighbour.hh>
+#include <elle/test/network/udp/Neighbour.hh>
 
 namespace elle
 {

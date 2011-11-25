@@ -8,8 +8,8 @@
 // author        julien quintard   [wed mar 17 13:07:53 2010]
 //
 
-#ifndef ELLE_TEST_NETWORK_SLOT_TABLE_HH
-#define ELLE_TEST_NETWORK_SLOT_TABLE_HH
+#ifndef ELLE_TEST_NETWORK_UDP_TABLE_HH
+#define ELLE_TEST_NETWORK_UDP_TABLE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -95,7 +95,7 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/slot/Node.hh>
-#include <elle/test/network/slot/Neighbour.hh>
+#include <elle/test/network/udp/Node.hh>
+#include <elle/test/network/udp/Neighbour.hh>
 
 #endif

@@ -8,8 +8,8 @@
 // author        julien quintard   [fri nov 27 22:03:15 2009]
 //
 
-#ifndef ELLE_TEST_NETWORK_GATE_SERVER_HH
-#define ELLE_TEST_NETWORK_GATE_SERVER_HH
+#ifndef ELLE_TEST_NETWORK_TCP_SERVER_HH
+#define ELLE_TEST_NETWORK_TCP_SERVER_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,7 +17,7 @@
 
 #include <elle/Elle.hh>
 
-#include <elle/test/network/gate/Manifest.hh>
+#include <elle/test/network/tcp/Manifest.hh>
 
 namespace elle
 {
@@ -46,13 +46,13 @@ namespace elle
       //
       // callbacks
       //
-      Status		Connection(Gate*);
+      Status		Connection(TCPSocket*);
 
       //
       // attributes
       //
       Locus		locus;
-      Gate*		gate;
+      TCPSocket*	socket;
     };
 
   }

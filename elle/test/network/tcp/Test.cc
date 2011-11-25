@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/gate/Test.hh>
+#include <elle/test/network/tcp/Test.hh>
 
 namespace elle
 {

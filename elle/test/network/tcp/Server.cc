@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/gate/Server.hh>
+#include <elle/test/network/tcp/Server.hh>
 
 namespace elle
 {
@@ -27,7 +27,7 @@ namespace elle
     /// default constructor.
     ///
     Server::Server():
-      gate(NULL)
+      socket(NULL)
     {
     }
 
@@ -36,9 +36,9 @@ namespace elle
     ///
     Server::~Server()
     {
-      // if present, delete the gate.
-      if (this->gate != NULL)
-	delete this->gate;
+      // if present, delete the socket.
+      if (this->socket != NULL)
+	delete this->socket;
     }
 
 //
@@ -70,10 +70,10 @@ namespace elle
       locus.Dump();
 
       // listen for incoming connections.
-      if (Bridge::Listen(locus,
-			 Callback<>::Infer(&Server::Connection,
-					   this)) == StatusError)
-	escape("unable to listen for bridge connections");
+      if (TCPServer::Listen(locus,
+			    Callback<>::Infer(&Server::Connection,
+					      this)) == StatusError)
+	escape("unable to listen for TCP connections");
 
       leave();
     }
@@ -85,7 +85,7 @@ namespace elle
     ///
     /// this method handles new connections.
     ///
-    Status		Server::Connection(Gate*		gate)
+    Status		Server::Connection(TCPSocket*		socket)
     {
       String		challenge("CHALLENGE");
       String		response;
@@ -93,17 +93,17 @@ namespace elle
       enter();
 
       // if there is already a client, exit.
-      if (this->gate != NULL)
+      if (this->socket != NULL)
 	escape("there is already a client connected");
 
-      // add the gate.
-      this->gate = gate;
+      // add the socket.
+      this->socket = socket;
 
       std::cout << "[challenging...] " << std::endl;
 
       // call the challenge.
-      if (gate->Call(Inputs<TagChallenge>(challenge),
-		     Outputs<TagResponse>(response)) == StatusError)
+      if (socket->Call(Inputs<TagChallenge>(challenge),
+		       Outputs<TagResponse>(response)) == StatusError)
 	escape("unable to call the challenge");
 
       std::cout << "[response] " << response << std::endl;

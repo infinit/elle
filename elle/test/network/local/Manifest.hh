@@ -8,8 +8,8 @@
 // author        julien quintard   [tue feb 23 21:40:13 2010]
 //
 
-#ifndef ELLE_TEST_NETWORK_DOOR_MANIFEST_HH
-#define ELLE_TEST_NETWORK_DOOR_MANIFEST_HH
+#ifndef ELLE_TEST_NETWORK_LOCAL_MANIFEST_HH
+#define ELLE_TEST_NETWORK_LOCAL_MANIFEST_HH
 
 //
 // ---------- includes --------------------------------------------------------

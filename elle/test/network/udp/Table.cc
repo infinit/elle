@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/slot/Table.hh>
+#include <elle/test/network/udp/Table.hh>
 
 namespace elle
 {
@@ -296,10 +296,10 @@ namespace elle
 	   scoutor++)
 	{
 	  // send a probe message.
-	  if (this->node->slot.Send((*scoutor)->locus,
-				    Inputs<TagProbe>(this->node->name,
-						     this->node->table)) ==
-	      StatusError)
+	  if (this->node->socket.Send(
+		(*scoutor)->locus,
+		Inputs<TagProbe>(this->node->name,
+				 this->node->table)) == StatusError)
 	      escape("unable to send a probe");
 	}
 

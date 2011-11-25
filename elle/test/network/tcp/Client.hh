@@ -8,8 +8,8 @@
 // author        julien quintard   [fri nov 27 22:03:15 2009]
 //
 
-#ifndef ELLE_TEST_NETWORK_GATE_CLIENT_HH
-#define ELLE_TEST_NETWORK_GATE_CLIENT_HH
+#ifndef ELLE_TEST_NETWORK_TCP_CLIENT_HH
+#define ELLE_TEST_NETWORK_TCP_CLIENT_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,7 +17,7 @@
 
 #include <elle/Elle.hh>
 
-#include <elle/test/network/gate/Manifest.hh>
+#include <elle/test/network/tcp/Manifest.hh>
 
 #include <elle/idiom/Close.hh>
 # include <list>
@@ -50,7 +50,7 @@ namespace elle
       // attributes
       //
       Locus		locus;
-      Gate		gate;
+      TCPSocket		socket;
     };
 
   }
