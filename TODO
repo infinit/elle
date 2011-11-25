@@ -1,3 +1,17 @@
+- vector clocks pour les conflits
+
+- changer taille buf reseau quand gros fichiers ok
+- disconnect si mauvais flux
+
+- \todo ca segfault si le client est lance sans serveur...??? (LocalSocket)
+
+- bouger etoile/test, elle/test et elle/benchmark quelque part!
+
+- revoir Unicode, ScopeReset etc.
+
+- rendre JSON comme package/Footprint.hh pour qu'on puisse serializer
+  tout object en JSON
+
 - generer des binaires statiques
 
 - checker les licences!
@@ -65,6 +79,7 @@
 
 - changer les noms: Gate -> TCPSocket, bridge -> TCPServer etc.
 - enlever parameters etc. et utiliser boost ou equivalent
+- meme chose pour callback, closure etc. -> function in C++11
 - enlever enter/leave et utiliser des uniq_ptr etc.
 - faire que les Network messages soit register sur une socket.
 - rendre les I/Os asynchrones via des wrappers qui mettront les fibres
