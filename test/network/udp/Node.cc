@@ -12,7 +12,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/test/network/slot/Node.hh>
+#include <elle/test/network/udp/Node.hh>
 
 namespace elle
 {
@@ -45,8 +45,8 @@ namespace elle
     ///
     Status		Node::Run()
     {
-      Host				local;
-      Locus				remote;
+      Host		local;
+      Locus		remote;
 
       enter();
 
@@ -54,11 +54,11 @@ namespace elle
       if (local.Create(this->host) == StatusError)
 	escape("unable to create an host");
 
-      // create the slot.
-      if (this->slot.Create() == StatusError)
-	escape("unable to create the slot");
+      // create the socket.
+      if (this->socket.Create() == StatusError)
+	escape("unable to create the socket");
 
-      std::cout << "[port] " << this->slot.port << std::endl;
+      std::cout << "[port] " << this->socket.port << std::endl;
 
       // register the probe message.
       if (Network::Register(
@@ -75,9 +75,9 @@ namespace elle
 	escape("unable to create a location");
 
       // probe the first peer.
-      if (this->slot.Send(remote,
-			  Inputs<TagProbe>(this->name,
-					   this->table)) == StatusError)
+      if (this->socket.Send(remote,
+			    Inputs<TagProbe>(this->name,
+					     this->table)) == StatusError)
 	escape("unable to send the probe");
 
       leave();

@@ -8,8 +8,8 @@
 // author        julien quintard   [fri nov 27 22:03:15 2009]
 //
 
-#ifndef ELLE_TEST_NETWORK_SLOT_NODE_HH
-#define ELLE_TEST_NETWORK_SLOT_NODE_HH
+#ifndef ELLE_TEST_NETWORK_UDP_NODE_HH
+#define ELLE_TEST_NETWORK_UDP_NODE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,8 +17,8 @@
 
 #include <elle/Elle.hh>
 
-#include <elle/test/network/slot/Table.hh>
-#include <elle/test/network/slot/Manifest.hh>
+#include <elle/test/network/udp/Table.hh>
+#include <elle/test/network/udp/Manifest.hh>
 
 namespace elle
 {
@@ -52,7 +52,7 @@ namespace elle
       String		host;
       Port		port;
 
-      Slot		slot;
+      UDPSocket		socket;
 
       String		name;
       Table		table;
