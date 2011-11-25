@@ -55,8 +55,7 @@ namespace nucleus
 // ---------- includes --------------------------------------------------------
 //
 
-#include <nucleus/Derivable.hh>
-
+#include <nucleus/miscellaneous/Miscellaneous.hh>
 #include <nucleus/neutron/Neutron.hh>
 #include <nucleus/proton/Proton.hh>
 
@@ -66,6 +65,7 @@ namespace nucleus
 
 namespace nucleus
 {
+  using namespace miscellaneous;
   using namespace neutron;
   using namespace proton;
 }

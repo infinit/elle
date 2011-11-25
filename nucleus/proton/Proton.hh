@@ -19,7 +19,6 @@
 
 namespace nucleus
 {
-
   ///
   /// this namespace contains the physical elements of the file system
   /// logic.
@@ -41,7 +40,6 @@ namespace nucleus
     };
 
   }
-
 }
 
 //
