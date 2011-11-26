@@ -77,8 +77,10 @@ ADD_LIBRARY(elle
   concurrency/Fiber.cc
   concurrency/Frame.cc
   concurrency/Hurdle.cc
+  concurrency/Mutex.cc
   concurrency/Program.cc
   concurrency/Routine.cc
+  concurrency/Semaphore.cc
   concurrency/Timer.cc
 
   cryptography/Cipher.cc

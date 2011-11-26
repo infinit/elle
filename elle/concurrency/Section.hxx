@@ -84,6 +84,9 @@ namespace elle
       // if the section has been locked...
       if (this->state == Section::StateLocked)
 	{
+	  // XXX
+	  printf("SECTION UNLOCKED AUTOMATICALLY\n");
+
 	  // release the lock by triggering the unlock closure.
 	  this->unlock.Call();
 	}

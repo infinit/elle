@@ -70,6 +70,10 @@ namespace elle
     ///   }
     ///   section.Leave();
     ///
+    /// note however that concurrency control object generally provide
+    /// classes for easing such behaviours. for instance, the Hurdle class
+    /// provides a Locker helper class.
+    ///
     template <typename... L,
 	      typename... U>
     class Section< Parameters<L...>,

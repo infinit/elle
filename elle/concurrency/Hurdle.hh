@@ -48,6 +48,22 @@ namespace elle
     /// note that this concurrency mechanism has been designed for
     /// fibers exclusively and would therefore not work with threads.
     ///
+    /// besides, an helper class Zone is provided which combines the
+    /// Hurdle with a Section in order to make sure the hurdle is always
+    /// unlocked when leaving the scope. this class can be used as follows:
+    ///
+    ///   Hurdle		hurdle;
+    ///   Hurdle::Zone		zone(hurdle, ModeWrite);
+    ///
+    ///   zone.Lock();
+    ///
+    ///   [do something]
+    ///
+    ///   if ([something else])
+    ///     escape("in this case, the hurdle will be automatically unlocked");
+    ///
+    ///   zone.Unlock();
+    ///
     class Hurdle:
       public Object
     {
@@ -73,6 +89,46 @@ namespace elle
 	Void,
 	Parameters<const Mode>
 	>							C;
+
+      //
+      // classes
+      //
+
+      ///
+      /// this class makes it easy to make sure a hurdle is always unlocked
+      /// when leaving a scope.
+      ///
+      class Zone:
+	public Entity
+      {
+      public:
+	//
+	// constructors & destructors
+	//
+	Zone(Hurdle&,
+	     const Mode);
+
+	//
+	// methods
+	//
+	Void		Lock();
+	Void		Unlock();
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
+
+	//
+	// attributes
+	//
+	Hurdle&		hurdle;
+	Mode		mode;
+
+	S		section;
+      };
 
       //
       // constructors & destructors
