@@ -18,11 +18,11 @@
 #include <elle/core/Natural.hh>
 
 #include <elle/radix/Status.hh>
-#include <elle/radix/Entity.hh>
+#include <elle/radix/Object.hh>
+#include <elle/radix/Parameters.hh>
 
-#include <elle/idiom/Close.hh>
-# include <QSemaphore>
-#include <elle/idiom/Open.hh>
+#include <elle/concurrency/Closure.hh>
+#include <elle/concurrency/Section.hh>
 
 namespace elle
 {
@@ -37,30 +37,124 @@ namespace elle
 //
 
     ///
-    /// this class provides a semaphore functionality.
+    /// this class represents a semaphore from which resources can be
+    /// acquired or released.
     ///
-    /// XXX to rework.
+    /// note that this concurrency mechanism has been designed for
+    /// fibers exclusively and would therefore not work with threads.
+    ///
+    /// besides, an helper class Zone is provided which combines the
+    /// Semaphore with a Section in order to make sure the semaphore is always
+    /// unlocked when leaving the scope. this class can be used as follows:
+    ///
+    ///   Semaphore		semaphore;
+    ///   Semaphore::Zone	zone(semaphore);
+    ///
+    ///   zone.Lock();
+    ///
+    ///   [do something]
+    ///
+    ///   if ([something else])
+    ///     escape("in this case, the semaphore will be automatically "
+    ///            "unlocked");
+    ///
+    ///   zone.Unlock();
     ///
     class Semaphore:
-      public Entity
+      public Object
     {
     public:
+    public:
       //
-      // constants
+      // types
       //
-      static const Natural32		Timeout = 0;
+      typedef Section<
+        Parameters<const Natural32>,
+        Parameters<const Natural32>
+        >							S;
+      typedef Closure<
+	Void,
+	Parameters<const Natural32>,
+	Parameters<>
+	>							A;
+      typedef Closure<
+	Void,
+	Parameters<const Natural32>,
+	Parameters<>
+	>							R;
+      typedef Callback<
+	Void,
+	Parameters<const Natural32>
+	>							C;
+
+      //
+      // classes
+      //
+
+      ///
+      /// this class makes it easy to make sure resources always get released
+      /// from the semaphore when leaving a scope.
+      ///
+      class Zone:
+	public Entity
+      {
+      public:
+	//
+	// constructors & destructors
+	//
+	Zone(Semaphore&,
+	     const Natural32);
+
+	//
+	// methods
+	//
+	Void		Acquire();
+	Void		Release();
+
+	//
+	// interfaces
+	//
+
+	// dumpable
+	Status		Dump(const Natural32 = 0) const;
+
+	//
+	// attributes
+	//
+	Semaphore&	semaphore;
+	Natural32	n;
+
+	S		section;
+      };
+
+      //
+      // constructors & destructors
+      //
+      Semaphore(const Natural32 = 0);
 
       //
       // methods
       //
-      Status		Acquire(const Natural32 = 1,
-				const Natural32 = Timeout);
-      Status		Release(const Natural32 = 1);
+      Void		Acquire(const Natural32);
+      Void		Release(const Natural32);
+
+      Status		Try(const Natural32);
+
+      //
+      // interfaces
+      //
+
+      // object
+      declare(Semaphore);
+
+      // dumpable
+      Status		Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      ::QSemaphore	semaphore;
+      Natural32		acquired;
+      Natural32		available;
     };
 
   }

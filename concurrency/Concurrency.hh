@@ -54,7 +54,6 @@ namespace elle
 #include <elle/concurrency/Broker.hh>
 #include <elle/concurrency/Callback.hh>
 #include <elle/concurrency/Closure.hh>
-#include <elle/concurrency/Condition.hh>
 #include <elle/concurrency/Entrance.hh>
 #include <elle/concurrency/Environment.hh>
 #include <elle/concurrency/Event.hh>

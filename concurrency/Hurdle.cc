@@ -21,7 +21,64 @@ namespace elle
   {
 
 //
-// ---------- constructors & destructors --------------------------------------
+// ---------- zone ------------------------------------------------------------
+//
+
+    ///
+    /// default constructor.
+    ///
+    Hurdle::Zone::Zone(Hurdle&					hurdle,
+		       const Mode				mode):
+      hurdle(hurdle),
+      mode(mode),
+
+      section(L(C(&Hurdle::Lock, &this->hurdle), this->mode),
+	      U(C(&Hurdle::Unlock, &this->hurdle), this->mode))
+    {
+    }
+
+    ///
+    /// this method locks the hurdle according to the zone's mode.
+    ///
+    Void		Hurdle::Zone::Lock()
+    {
+      // call the section's Enter() method.
+      this->section.Enter();
+    }
+
+    ///
+    /// this method unlocks the hurdle according to the zone's mode.
+    ///
+    Void		Hurdle::Zone::Unlock()
+    {
+      // call the section's Leave() method.
+      this->section.Leave();
+    }
+
+    ///
+    /// this method dumps the hurdle.
+    ///
+    Status		Hurdle::Zone::Dump(const Natural32	margin) const
+    {
+      String		alignment(margin, ' ');
+
+      enter();
+
+      std::cout << alignment << "[Zone]" << std::endl;
+
+      // dump the hurdle.
+      if (this->hurdle.Dump(margin + 2) == StatusError)
+	escape("unable to dump the hurdle");
+
+      // dump the section.
+      if (this->section.Dump(margin + 2) == StatusError)
+	escape("unable to dump the section");
+
+      leave();
+    }
+
+//
+// ---------- hurdle ----------------------------------------------------------
 //
 
     ///
@@ -32,10 +89,6 @@ namespace elle
       readers(0)
     {
     }
-
-//
-// ---------- methods ---------------------------------------------------------
-//
 
     ///
     /// this method locks the hurdle, if possible, or blocks the fiber
@@ -101,6 +154,11 @@ namespace elle
 
 	    break;
 	  }
+	default:
+	  {
+	    yield(_(), "unknown mode '%u'",
+		  mode);
+	  }
 	}
 
       release();
@@ -130,11 +188,16 @@ namespace elle
 
 	    break;
 	  }
+	default:
+	  {
+	    yield(_(), "unknown mode '%u'",
+		  mode);
+	  }
 	}
 
       // and finally, awaken the fibers potentially blocked on the
       // hurdle.
-      if (Fiber::Awaken(this) == elle::StatusError)
+      if (Fiber::Awaken(this) == StatusError)
 	yield(_(), "unable to awaken the fibers");
 
       release();
@@ -176,23 +239,20 @@ namespace elle
 
 	    break;
 	  }
+	default:
+	  {
+	    escape("unknown mode '%u'",
+		  mode);
+	  }
 	}
 
       true();
     }
 
-//
-// ---------- object ----------------------------------------------------------
-//
-
     ///
     /// this macro-function call generates the object.
     ///
     embed(Hurdle, _());
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
 
     ///
     /// this method dumps the hurdle.
