@@ -4,6 +4,10 @@ cd build/
 cmake ../
 make
 
+OR
+
+./configure --linux32 (for linux 32-bit platforms of course)
+
 ### win32 target on archlinux
 
 install with pacman:
@@ -14,12 +18,12 @@ community/mingw32-binutils
 community/mingw32-pthreads
 
 install with AUR:
-mingw32-zlib
-mingw32-openssl
-mingw32-qt
 mingw32-msgpack
 mingw32-pdcurses
 mingw32-readline
+mingw32-qt
+mingw32-openssl
+mingw32-libiconv [!buildflags required]
 
 rm -rf build-win32 &&
 mkdir build-win32 &&
@@ -36,6 +40,9 @@ QMAKESPEC=/usr/share/qt/mkspecs/win32-x-g++/ cmake \
 -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
 ..
 
+OR
+
+./configure --win32
 
 ### Writing portable code and getting the list of predefined gcc macro:
 
@@ -87,8 +94,3 @@ Then in elle/system/Platform.hh is defined:
   #define INFINIT_WIN32 1/0
   #define INFINIT_UNIX 1/0
 depending on your current build.
-
-### how to use infinit
-8setup -i
-8authority -c
-
