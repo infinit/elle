@@ -58,16 +58,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -82,7 +76,7 @@ namespace etoile
 	// set the actor's state.
 	actor->state = gear::Actor::StateUpdated;
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -118,16 +112,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeRead),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeRead));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeRead);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -139,7 +127,7 @@ namespace etoile
 				       trait) == elle::StatusError)
 	  escape("unable to get the attribute");
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -173,16 +161,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeRead),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeRead));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeRead);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -193,7 +175,7 @@ namespace etoile
 					 range) == elle::StatusError)
 	  escape("unable to fetch the attribute");
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -223,16 +205,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -246,7 +222,7 @@ namespace etoile
 	// set the actor's state.
 	actor->state = gear::Actor::StateUpdated;
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }

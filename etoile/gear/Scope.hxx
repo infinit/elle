@@ -143,13 +143,7 @@ namespace etoile
     template <typename T>
     elle::Status	Scope::Refresh()
     {
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &this->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &this->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(this->hurdle, elle::ModeWrite);
 
       enter();
 
@@ -162,7 +156,7 @@ namespace etoile
       //
       // this is especially required since Load()ing may block the current
       // fiber.
-      section.Enter();
+      zone.Lock();
       {
 	elle::Callback<
 	  elle::Status,
@@ -220,7 +214,7 @@ namespace etoile
 	// release.
 	release();
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -239,13 +233,7 @@ namespace etoile
     template <typename T>
     elle::Status	Scope::Disclose()
     {
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &this->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &this->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(this->hurdle, elle::ModeWrite);
 
       enter();
 
@@ -254,7 +242,7 @@ namespace etoile
 	printf("[etoile] gear::Scope::Disclose()\n");
 
       // protect the access to the current scope.
-      section.Enter();
+      zone.Lock();
       {
 	Scope*		scope;
 	T*		context;
@@ -323,7 +311,7 @@ namespace etoile
 	// release.
 	release();
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }

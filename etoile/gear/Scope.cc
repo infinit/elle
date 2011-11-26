@@ -721,6 +721,8 @@ namespace etoile
       if (Infinit::Configuration.etoile.debug == true)
 	printf("[etoile] gear::Scope::Supervisor()\n");
 
+      leave();
+
       // if the scope is already being taking care of, ignore this
       // supervision.
       if (this->state != Scope::StateNone)

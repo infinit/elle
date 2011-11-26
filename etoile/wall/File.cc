@@ -61,16 +61,10 @@ namespace etoile
 	escape("unable to supply the scope");
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -95,7 +89,7 @@ namespace etoile
 	// waive the scope.
 	waive(scope);
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -124,16 +118,10 @@ namespace etoile
 	escape("unable to acquire the scope");
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -159,7 +147,7 @@ namespace etoile
 	// waive the scope.
 	waive(scope);
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -227,16 +215,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -251,7 +233,7 @@ namespace etoile
 	// set the actor's state.
 	actor->state = gear::Actor::StateUpdated;
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -283,16 +265,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeRead),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeRead));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeRead);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -305,7 +281,7 @@ namespace etoile
 				  region) == elle::StatusError)
 	  escape("unable to read the file");
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -335,16 +311,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -358,7 +328,7 @@ namespace etoile
 	// set the actor's state.
 	actor->state = gear::Actor::StateUpdated;
       }
-      section.Leave();
+      zone.Unlock();
 
       leave();
     }
@@ -394,16 +364,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -441,7 +405,7 @@ namespace etoile
 	if (callback.Call(*context) == elle::StatusError)
 	  escape("unable to perform the closing operation");
       }
-      section.Leave();
+      zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
@@ -510,16 +474,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -557,7 +515,7 @@ namespace etoile
 	if (callback.Call(*context) == elle::StatusError)
 	  escape("unable to perform the closing operation");
       }
-      section.Leave();
+      zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
@@ -625,16 +583,10 @@ namespace etoile
       scope = actor->scope;
 
       // declare a critical section.
-      elle::Hurdle::S	section(
-	elle::Hurdle::L(
-	  elle::Hurdle::C(&elle::Hurdle::Lock, &scope->hurdle),
-	  elle::ModeWrite),
-	elle::Hurdle::U(
-	  elle::Hurdle::C(&elle::Hurdle::Unlock, &scope->hurdle),
-	  elle::ModeWrite));
+      elle::Hurdle::Zone	zone(scope->hurdle, elle::ModeWrite);
 
       // protect the access.
-      section.Enter();
+      zone.Lock();
       {
 	// retrieve the context.
 	if (scope->Use(context) == elle::StatusError)
@@ -672,7 +624,7 @@ namespace etoile
 	if (callback.Call(*context) == elle::StatusError)
 	  escape("unable to perform the closing operation");
       }
-      section.Leave();
+      zone.Unlock();
 
       // depending on the context's state.
       switch (context->state)
