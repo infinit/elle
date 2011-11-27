@@ -2,36 +2,10 @@
 - peut etre using namespace automatiquement pour wall/path/etc. dans etoile
   mais pas automaton qui n'est jamais accede directement.
 
-- faire une methode dans wall::Path qui prend un chemin local (String)
-  et retourne true si elle fait partie du repertoire de montage
-- et en fait une autre qui retourne le chemin relatif a ce point de montage
-
-- factoriser le code qui verifie un block (soit Object soit autre)
-- pour rendre le reseau propre, creer une instance de Request,
-  la remplir avec les infos (neighbourhood, address, request type[read] etc.)
-  puis la lancer et bloquer la fibre dessus. pour chaque reponse block recue,
-  on recupere la Request correspondante, on inscrit un resultat provenant
-  d'un node et on attend tant que pas une majorite ou tant que pas une reponse
-  correcte. quand on est satisfiat, on debloque la fibre avec le resultat.
-
- ===> creer un algorithms/quorum/Read, donner les parametres et hop il s'en
-      charge + verifier les blocs
-
-- revoir les operations sur File, Directory etc. et clean le tout.
-
-- faire un rep scripts/ qui contiendra un 8chmod [perms] [user] qui lui
-  meme appellera 8access.
-
-- ca impactera les perfs mais appeller information pour checker les
-  permissions avant chaque operation: FUSE ne fait pas son boulot.
-  checker qu'on renvoie les bonnes perms a FUSE: tres peu d'impact (appel
-  de fonction)
-
-- revoir les error codes dans Crux pour etre sur que ca colle
-  http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/errno.h.html
-
 - peut etre utiliser setfacl/getfacl pour recup les attributs
   essaye avec le +x
+
+- callback dans scope fonction de l'ouverture
 
 - implem verif lord dans nucleus::Object
 
