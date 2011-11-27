@@ -179,11 +179,11 @@ namespace hole
 		escape("unable to append to the document");
 	    }
 
-	  if (elle::REST::PUT("infinit.li:12345/prototype/" + name,
+	  if (elle::REST::Put("infinit.li:12345/prototype/" + name,
 			      doc) == elle::StatusError)
 	    escape("unable to PUT the host's addresses");
 
-	  if (elle::REST::GET("infinit.li:12345/prototype/" + name,
+	  if (elle::REST::Get("infinit.li:12345/prototype/" + name,
 			      doc) == elle::StatusError)
 	    escape("unable to PUT the host's addresses");
 

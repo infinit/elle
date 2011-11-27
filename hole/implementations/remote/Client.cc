@@ -115,7 +115,7 @@ namespace hole
 
 	  // connect the socket.
 	  if (this->socket->Connect(this->locus,
-				    elle::StreamSocket::ModeSynchronous) ==
+				    elle::AbstractSocket::ModeSynchronous) ==
 	      elle::StatusError)
 	    escape("unable to connect to the bridge");
 	}
