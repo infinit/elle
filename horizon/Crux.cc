@@ -39,7 +39,7 @@ namespace pig
 									\
       Janitor::Clear(_identifiers_);					\
 									\
-      return (-(_errno_));						\
+      return ((_errno_));						\
     } while (false)
 
 //
@@ -77,12 +77,18 @@ namespace pig
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
-      return (-ENOENT);
+      {
+	// purge the error messages since it may be normal not to be able
+	// to resolve the given way.
+	purge();
+
+	return (-ENOENT);
+      }
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
 
     // create a local handle.
     Handle			handle(Handle::OperationGetattr,
@@ -95,12 +101,15 @@ namespace pig
     info.fh = reinterpret_cast<uint64_t>(&handle);
 
     // call the Fgetattr() method.
-    result = Crux::Fgetattr(path, stat, &info);
+    if ((result = Crux::Fgetattr(path, stat, &info)) < 0)
+      error("unable to get information on the given file descriptor",
+	    result,
+	    identifier);
 
     // discard the object.
     if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
       error("unable to discard the object",
-	    EINTR);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -108,7 +117,7 @@ namespace pig
 	     __FUNCTION__,
 	     path, stat);
 
-    return (result);
+    return (0);
   }
 
   ///
@@ -139,7 +148,7 @@ namespace pig
     if (etoile::wall::Object::Information(handle->identifier,
 					  abstract) == elle::StatusError)
       error("unable to retrieve information on the object",
-	    EINTR);
+	    -EPERM);
 
     // set the uid by first looking into the users map. if no local user is
     // found, the 'somebody' user is used instead, indicating that the
@@ -187,12 +196,11 @@ namespace pig
 
     if (abstract.stamps.creation.Get(stat->st_ctime) == elle::StatusError)
       error("unable to convert the time stamps",
-	    EINTR);
+	    -EPERM);
 
-    if (abstract.stamps.modification.Get(stat->st_mtime) ==
-	elle::StatusError)
+    if (abstract.stamps.modification.Get(stat->st_mtime) == elle::StatusError)
       error("unable to convert the time stamps",
-	    EINTR);
+	    -EPERM);
 
     // set the mode and permissions.
     switch (abstract.genre)
@@ -239,7 +247,7 @@ namespace pig
 					    "perm::exec",
 					    trait) == elle::StatusError)
 	    error("unable to retrieve an attribute",
-		  ENOENT);
+		  -EPERM);
 
 	  // check the trait.
 	  if ((trait != NULL) &&
@@ -272,7 +280,7 @@ namespace pig
       default:
 	{
 	  error("unknown genre",
-		EINTR);
+		-EPERM);
 	}
       }
 
@@ -329,12 +337,12 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the directory.
     if (etoile::wall::Directory::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the directory",
-	    ENOENT);
+	    -ENOENT);
 
     // duplicate the identifier and save it in the info structure's file
     // handle.
@@ -360,9 +368,9 @@ namespace pig
 				      off_t			offset,
 				      struct ::fuse_file_info*	info)
   {
-    etoile::path::Way	way(path);
     Handle*		handle;
     off_t		next;
+    nucleus::Record*	record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -373,6 +381,21 @@ namespace pig
     // set the handle pointer to the file handle that has been filled by
     // Opendir().
     handle = reinterpret_cast<Handle*>(info->fh);
+
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(handle->identifier,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionRead) ==
+	   nucleus::PermissionRead)))
+      error("the subject does not have the right to read the "
+	    "directory entries",
+	    -EACCES);
 
     // fill the . and .. entries.
     if (offset == 0)
@@ -387,7 +410,7 @@ namespace pig
       next = offset + 1;
 
     // adjust the offset since Etoile starts with zero while in POSIX
-    // terms, zero and one are used for . and ..
+    // terms, zero and one are used for '.' and '..'.
     if (offset > 2)
       offset -= 2;
 
@@ -403,7 +426,7 @@ namespace pig
 	      Crux::Range,
 	      range) == elle::StatusError)
 	  error("unable to retrieve some directory entries",
-		EACCES);
+		-EPERM);
 
 	// add the entries by using the filler() function.
 	for (scoutor = range.container.begin();
@@ -465,7 +488,7 @@ namespace pig
     if (etoile::wall::Directory::Discard(
 	  handle->identifier) == elle::StatusError)
       error("unable to discard the directory",
-	    EINTR);
+	    -EPERM);
 
     // reset the file handle, just to make sure it is not used anymore.
     info->fh = 0;
@@ -491,6 +514,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	subdirectory;
+    nucleus::Record*		record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -501,17 +525,34 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the directory.
     if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(directory,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM,
+	    directory);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionWrite) ==
+	   nucleus::PermissionWrite)))
+      error("the subject does not have the right to create a "
+	    "subdirectory in this directory",
+	    -EACCES,
+	    directory);
 
     // create the subdirectory.
     if (etoile::wall::Directory::Create(subdirectory) == elle::StatusError)
       error("unable to create the directory",
-	    EINTR,
+	    -EPERM,
 	    directory);
 
     // compute the permissions.
@@ -526,7 +567,7 @@ namespace pig
 				    agent::Agent::Subject,
 				    permissions) == elle::StatusError)
       error("unable to update the access record",
-	    EINTR,
+	    -EPERM,
 	    subdirectory, directory);
 
     // add the subdirectory.
@@ -534,19 +575,19 @@ namespace pig
 				     name,
 				     subdirectory) == elle::StatusError)
       error("unable to add an entry to the parent directory",
-	    EINTR,
+	    -EPERM,
 	    subdirectory, directory);
 
     // store the subdirectory.
     if (etoile::wall::Directory::Store(subdirectory) == elle::StatusError)
       error("unable to store the directory",
-	    EINTR,
+	    -EPERM,
 	    directory);
 
     // store the directory.
     if (etoile::wall::Directory::Store(directory) == elle::StatusError)
       error("unable to store the directory",
-	    EINTR);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -562,12 +603,15 @@ namespace pig
   ///
   int			Crux::Rmdir(const char*			path)
   {
-    etoile::path::Slab		name;
-    etoile::path::Way		child(path);
-    etoile::path::Way		parent(child, name);
-    etoile::path::Chemin	chemin;
-    etoile::gear::Identifier	directory;
-    etoile::gear::Identifier	subdirectory;
+    etoile::path::Slab			name;
+    etoile::path::Way			child(path);
+    etoile::path::Way			parent(child, name);
+    etoile::path::Chemin		chemin;
+    etoile::gear::Identifier		directory;
+    etoile::gear::Identifier		subdirectory;
+    etoile::miscellaneous::Abstract	abstract;
+    nucleus::Record*			record;
+    nucleus::Subject			subject;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -578,42 +622,79 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the directory.
     if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(directory,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM,
+	    directory);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionWrite) ==
+	   nucleus::PermissionWrite)))
+      error("the subject does not have the right to remove "
+	    "a subdirectory from this directory",
+	    -EACCES,
+	    directory);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT,
+	    -ENOENT,
 	    directory);
 
     // load the subdirectory.
     if (etoile::wall::Directory::Load(chemin,
 				      subdirectory) == elle::StatusError)
       error("unable to load the directory",
-	    ENOENT,
+	    -ENOENT,
 	    directory);
+
+    // retrieve information on the object.
+    if (etoile::wall::Object::Information(subdirectory,
+					  abstract) == elle::StatusError)
+      error("unable to retrieve information on the object",
+	    -EPERM,
+	    subdirectory, directory);
+
+    // create a temporary subject based on the object owner's key.
+    if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      error("unable to create a temporary subject",
+	    -EPERM,
+	    subdirectory, directory);
+
+    // check that the subject is the owner of the object.
+    if (agent::Agent::Subject != subject)
+      error("the subject does not have the right to destroy "
+	    "this directory",
+	    -EACCES,
+	    subdirectory, directory);
 
     // remove the entry.
     if (etoile::wall::Directory::Remove(directory, name) == elle::StatusError)
       error("unable to remove a directory entry",
-	    EACCES,
+	    -EPERM,
 	    subdirectory, directory);
 
     // store the directory.
     if (etoile::wall::Directory::Store(directory) == elle::StatusError)
       error("unable to store the directory",
-	    EINTR,
+	    -EPERM,
 	    subdirectory);
 
     // destroy the subdirectory.
     if (etoile::wall::Directory::Destroy(subdirectory) == elle::StatusError)
       error("unable to destroy the directory",
-	    EINTR);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -646,18 +727,18 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
 					  abstract) == elle::StatusError)
       error("unable to retrieve information on the object",
-	    EINTR,
+	    -EPERM,
 	    identifier);
 
     // retrieve the user's permissions on the object.
@@ -665,14 +746,12 @@ namespace pig
 				     agent::Agent::Subject,
 				     record) == elle::StatusError)
       error("unable to retrieve the access record",
-	    ENOENT,
+	    -EPERM,
 	    identifier);
 
     // check the record.
     if (record == NULL)
-      error("the subject does not seem to have been granted access",
-	    EACCES,
-	    identifier);
+      goto _access;
 
     // check if the permissions match the mask for execution.
     if (mask & X_OK)
@@ -685,9 +764,7 @@ namespace pig
 	      // exec bit
 	      if ((record->permissions & nucleus::PermissionRead) !=
 		  nucleus::PermissionRead)
-		error("the subject does not have the right to access",
-		      EACCES,
-		      identifier);
+		goto _access;
 
 	      break;
 	    }
@@ -700,15 +777,13 @@ namespace pig
 						"perm::exec",
 						trait) == elle::StatusError)
 		error("unable to retrieve the attribute",
-		      ENOENT,
+		      -EPERM,
 		      identifier);
 
 	      // check the trait.
 	      if (!((trait != NULL) &&
 		    (trait->value == "true")))
-		error("the subject does not have the right to execute",
-		      EACCES,
-		      identifier);
+		goto _access;
 
 	      break;
 	    }
@@ -721,15 +796,13 @@ namespace pig
 						"perm::exec",
 						trait) == elle::StatusError)
 		error("unable ti retrive the attribute",
-		      ENOENT,
+		      -EPERM,
 		      identifier);
 
 	      // check the trait.
 	      if (!((trait != NULL) &&
 		    (trait->value == "true")))
-		error("the subject does not have the right to access",
-		      EACCES,
-		      identifier);
+		goto _access;
 
 	      break;
 	    }
@@ -741,9 +814,7 @@ namespace pig
       {
 	if ((record->permissions & nucleus::PermissionRead) !=
 	    nucleus::PermissionRead)
-	  error("the subject does not have the right to read",
-		EACCES,
-		identifier);
+	  goto _access;
       }
 
     // check if the permissions match the mask for writing.
@@ -751,15 +822,13 @@ namespace pig
       {
 	if ((record->permissions & nucleus::PermissionWrite) !=
 	    nucleus::PermissionWrite)
-	  error("the subject does not have the right to write",
-		EACCES,
-		identifier);
+	  goto _access;
       }
 
     // discard the object.
     if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
       error("unable to discard the object",
-	    ENOENT);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -768,6 +837,23 @@ namespace pig
 	     path, mask);
 
     return (0);
+
+  _access:
+    //
+    // at this point, the access has been refused.
+    //
+    // therefore, the identifier must be discarded while EACCES must
+    // be returned.
+    //
+
+    // discard the identifier.
+    etoile::wall::Object::Discard(identifier);
+
+    // purge the errors.
+    purge();
+
+    // return EACCES.
+    return (-EACCES);
   }
 
   ///
@@ -781,6 +867,7 @@ namespace pig
     etoile::path::Way			way(path);
     etoile::path::Chemin		chemin;
     etoile::miscellaneous::Abstract	abstract;
+    nucleus::Subject			subject;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -816,12 +903,32 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
    // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve information on the object.
+    if (etoile::wall::Object::Information(identifier,
+					  abstract) == elle::StatusError)
+      error("unable to retrieve information on the object",
+	    -EPERM,
+	    identifier);
+
+    // create a temporary subject based on the object owner's key.
+    if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      error("unable to create a temporary subject",
+	    -EPERM,
+	    identifier);
+
+    // check that the subject is the owner of the object.
+    if (agent::Agent::Subject != subject)
+      error("the subject does not have the right to modify the "
+	    "access permissions on this object",
+	    -EACCES,
+	    identifier);
 
     // update the accesses.
     //
@@ -831,14 +938,7 @@ namespace pig
 				    agent::Agent::Subject,
 				    permissions) == elle::StatusError)
       error("unable to update the access records",
-	    ENOENT,
-	    identifier);
-
-    // retrieve information on the object.
-    if (etoile::wall::Object::Information(identifier,
-					  abstract) == elle::StatusError)
-      error("unable to retrieve information on the object",
-	    EINTR,
+	    -EPERM,
 	    identifier);
 
     // if the execution bit is to be set...
@@ -855,7 +955,7 @@ namespace pig
 						"perm::exec",
 						"true") == elle::StatusError)
 		error("unable to set the attribute",
-		      EACCES,
+		      -EPERM,
 		      identifier);
 
 	      break;
@@ -864,6 +964,7 @@ namespace pig
 	  case nucleus::GenreLink:
 	    {
 	      // nothing to do for the other genres.
+
 	      break;
 	    }
 	  }
@@ -872,7 +973,7 @@ namespace pig
     // store the object.
     if (etoile::wall::Object::Store(identifier) == elle::StatusError)
       error("unable to store the object",
-	    ENOENT);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -919,9 +1020,11 @@ namespace pig
 				       size_t			size,
 				       int			flags)
   {
-    etoile::gear::Identifier	identifier;
-    etoile::path::Way		way(path);
-    etoile::path::Chemin	chemin;
+    etoile::gear::Identifier		identifier;
+    etoile::path::Way			way(path);
+    etoile::path::Chemin		chemin;
+    etoile::miscellaneous::Abstract	abstract;
+    nucleus::Subject			subject;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -932,12 +1035,32 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve information on the object.
+    if (etoile::wall::Object::Information(identifier,
+					  abstract) == elle::StatusError)
+      error("unable to retrieve information on the object",
+	    -EPERM,
+	    identifier);
+
+    // create a temporary subject based on the object owner's key.
+    if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      error("unable to create a temporary subject",
+	    -EPERM,
+	    identifier);
+
+    // check that the subject is the owner of the object.
+    if (agent::Agent::Subject != subject)
+      error("the subject does not have the right to modify the attributes "
+	    "associated with this object",
+	    -EACCES,
+	    identifier);
 
     // set the attribute.
     if (etoile::wall::Attributes::Set(identifier,
@@ -945,13 +1068,13 @@ namespace pig
 				      elle::String(value, size)) == 
 	elle::StatusError)
       error("unable to set the attribute",
-	    ENOENT,
+	    -EPERM,
 	    identifier);
 
     // store the object.
     if (etoile::wall::Object::Store(identifier) == elle::StatusError)
       error("unable to store the object",
-	    ENOENT);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -984,30 +1107,30 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
 
     // get the attribute.
     if (etoile::wall::Attributes::Get(identifier,
 				      elle::String(name),
 				      trait) == elle::StatusError)
       error("unable to retrieve an attribute",
-	    ENOENT,
+	    -EPERM,
 	    identifier);
 
     // discard the object.
     if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
       error("unable to discard the object",
-	    ENOENT);
+	    -EPERM);
 
     // test if a trait has been found.
     if (trait == NULL)
       error("unable to locate this attribute",
-	    ENOATTR);
+	    -ENOATTR);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1054,24 +1177,24 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
 
     // fetch the attributes.
     if (etoile::wall::Attributes::Fetch(identifier,
 					range) == elle::StatusError)
       error("unable to fetch the attributes",
-	    ENOENT,
+	    -EPERM,
 	    identifier);
 
     // discard the object.
     if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
       error("unable to discard the object",
-	    ENOENT);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1122,9 +1245,11 @@ namespace pig
   int			Crux::Removexattr(const char*		path,
 					  const char*		name)
   {
-    etoile::gear::Identifier	identifier;
-    etoile::path::Way		way(path);
-    etoile::path::Chemin	chemin;
+    etoile::gear::Identifier		identifier;
+    etoile::path::Way			way(path);
+    etoile::path::Chemin		chemin;
+    etoile::miscellaneous::Abstract	abstract;
+    nucleus::Subject			subject;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1135,25 +1260,45 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve information on the object.
+    if (etoile::wall::Object::Information(identifier,
+					  abstract) == elle::StatusError)
+      error("unable to retrieve information on the object",
+	    -EPERM,
+	    identifier);
+
+    // create a temporary subject based on the object owner's key.
+    if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      error("unable to create a temporary subject",
+	    -EPERM,
+	    identifier);
+
+    // check that the subject is the owner of the object.
+    if (agent::Agent::Subject != subject)
+      error("the subject does not have the right to modify the attributes "
+	    "associated with this object",
+	    -EACCES,
+	    identifier);
 
     // omit the attribute.
     if (etoile::wall::Attributes::Omit(identifier,
 				       elle::String(name)) ==
 	elle::StatusError)
       error("unable to omit the attributes",
-	    ENOENT,
+	    -EPERM,
 	    identifier);
 
     // store the object.
     if (etoile::wall::Object::Store(identifier) == elle::StatusError)
       error("unable to store the object",
-	    ENOENT);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1177,6 +1322,7 @@ namespace pig
     etoile::path::Way		from(etoile::path::Way(source), name);
     etoile::path::Way		to(target);
     etoile::path::Chemin	chemin;
+    nucleus::Record*		record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1187,23 +1333,40 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the directory.
     if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(directory,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM,
+	    directory);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionWrite) ==
+	   nucleus::PermissionWrite)))
+      error("the subject does not have the right to create a link in "
+	    "this directory",
+	    -EACCES,
+	    directory);
 
     // create a link
     if (etoile::wall::Link::Create(link) == elle::StatusError)
       error("unable to create a link",
-	    ENOENT,
+	    -EPERM,
 	    directory);
 
     // bind the link.
     if (etoile::wall::Link::Bind(link, to) == elle::StatusError)
       error("unable to bind the link",
-	    ENOENT,
+	    -EPERM,
 	    link, directory);
 
     // add an entry for the link.
@@ -1211,19 +1374,19 @@ namespace pig
 				     name,
 				     link) == elle::StatusError)
       error("unable to add an entry to the directory",
-	    ENOENT,
+	    -EPERM,
 	    link, directory);
 
     // store the link.
     if (etoile::wall::Link::Store(link) == elle::StatusError)
       error("unable to store the link",
-	    ENOENT,
+	    -EPERM,
 	    directory);
 
     // store the modified directory.
     if (etoile::wall::Directory::Store(directory) == elle::StatusError)
       error("unable to store the directory",
-	    ENOENT);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1245,6 +1408,7 @@ namespace pig
     etoile::path::Way		way(path);
     etoile::path::Chemin	chemin;
     etoile::path::Way		target;
+    nucleus::Record*		record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1255,23 +1419,39 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the link.
     if (etoile::wall::Link::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the link",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(identifier,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM,
+	    identifier);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionRead) ==
+	   nucleus::PermissionRead)))
+      error("the subject does not have the right to read this link",
+	    -EACCES,
+	    identifier);
 
     // resolve the link.
     if (etoile::wall::Link::Resolve(identifier, target) == elle::StatusError)
       error("unable to resolve the link",
-	    ENOENT,
+	    -EPERM,
 	    identifier);
 
     // discard the link.
     if (etoile::wall::Link::Discard(identifier) == elle::StatusError)
       error("unable to discard the link",
-	    ENOENT);
+	    -EPERM);
 
     // copy as much as possible of the target into the output buffer.
     ::strncpy(buffer,
@@ -1302,6 +1482,7 @@ namespace pig
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	directory;
     etoile::gear::Identifier	file;
+    nucleus::Record*		record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1312,17 +1493,34 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the directory.
     if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(directory,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM,
+	    directory);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionWrite) ==
+	   nucleus::PermissionWrite)))
+      error("the subject does not have the right to create a file in "
+	    "this directory",
+	    -EACCES,
+	    directory);
 
     // create the file.
     if (etoile::wall::File::Create(file) == elle::StatusError)
       error("unable to create a file",
-	    EINTR,
+	    -EPERM,
 	    directory);
 
     // set default permissions: read and write.
@@ -1333,7 +1531,7 @@ namespace pig
 				    agent::Agent::Subject,
 				    permissions) == elle::StatusError)
       error("unable to update the access records",
-	    EINTR,
+	    -EPERM,
 	    file, directory);
 
     // if the file has the exec bit, add the perm::exec attribute.
@@ -1344,7 +1542,7 @@ namespace pig
 					  "perm::exec",
 					  "true") == elle::StatusError)
 	  error("unable to set the attributes",
-		EACCES,
+		-EPERM,
 		file, directory);
       }
 
@@ -1353,7 +1551,7 @@ namespace pig
 				     name,
 				     file) == elle::StatusError)
       error("unable to add an entry to the directory",
-	    EINTR,
+	    -EPERM,
 	    file, directory);
 
     // store the file, ensuring the file system consistency.
@@ -1365,23 +1563,24 @@ namespace pig
     // to do things right, at least for now.
     if (etoile::wall::File::Store(file) == elle::StatusError)
       error("unable to store the file",
-	    EINTR, directory);
+	    -EPERM,
+	    directory);
 
     // store the directory.
     if (etoile::wall::Directory::Store(directory) == elle::StatusError)
       error("unable to store the directory",
-	    EINTR);
+	    -EPERM);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(etoile::path::Way(path),
 				    chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // finally, the file is reopened.
     if (etoile::wall::File::Load(chemin, file) == elle::StatusError)
       error("unable to load the file",
-	    ENOENT);
+	    -ENOENT);
 
     // compute the future permissions as the current ones are temporary.
     permissions = nucleus::PermissionNone;
@@ -1426,12 +1625,12 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the file.
     if (etoile::wall::File::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the file",
-	    ENOENT);
+	    -ENOENT);
 
     // store the identifier in the file handle.
     info->fh =
@@ -1458,6 +1657,7 @@ namespace pig
   {
     Handle*		handle;
     elle::Region	region;
+    nucleus::Record*	record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1469,18 +1669,32 @@ namespace pig
     // retrieve the handle;
     handle = reinterpret_cast<Handle*>(info->fh);
 
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(handle->identifier,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionWrite) ==
+	   nucleus::PermissionWrite)))
+      error("the subject does not have the right to update this file",
+	    -EACCES);
+
     // wrap the buffer.
     if (region.Wrap(reinterpret_cast<const elle::Byte*>(buffer),
 		    size) == elle::StatusError)
       error("unable to wrap the buffer",
-	    EINTR);
+	    -EPERM);
 
     // write the file.
     if (etoile::wall::File::Write(handle->identifier,
 				  static_cast<nucleus::Offset>(offset),
 				  region) == elle::StatusError)
       error("unable to write the file",
-	    EACCES);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1503,6 +1717,7 @@ namespace pig
   {
     Handle*		handle;
     elle::Region	region;
+    nucleus::Record*	record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1514,13 +1729,27 @@ namespace pig
     // retrieve the handle.
     handle = reinterpret_cast<Handle*>(info->fh);
 
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(handle->identifier,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionRead) ==
+	   nucleus::PermissionRead)))
+      error("the subject does not have the right to read this file",
+	    -EACCES);
+
     // read the file.
     if (etoile::wall::File::Read(handle->identifier,
 				 static_cast<nucleus::Offset>(offset),
 				 static_cast<nucleus::Size>(size),
 				 region) == elle::StatusError)
       error("unable to read the file",
-	    EACCES);
+	    -EPERM);
 
     // copy the data to the output buffer.
     ::memcpy(buffer, region.contents, region.size);
@@ -1556,12 +1785,12 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the file.
     if (etoile::wall::File::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the file",
-	    ENOENT);
+	    -ENOENT);
 
     // create a local handle.
     Handle			handle(Handle::OperationTruncate,
@@ -1571,12 +1800,15 @@ namespace pig
     info.fh = reinterpret_cast<uint64_t>(&handle);
 
     // call the Ftruncate() method.
-    result = Crux::Ftruncate(path, size, &info);
+    if ((result = Crux::Ftruncate(path, size, &info)) < 0)
+      error("unable to truncate the given file descriptpr",
+	    result,
+	    identifier);
 
     // store the file.
     if (etoile::wall::File::Store(identifier) == elle::StatusError)
       error("unable to store the file",
-	    EINTR);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1595,6 +1827,7 @@ namespace pig
 					struct ::fuse_file_info* info)
   {
     Handle*		handle;
+    nucleus::Record*	record;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1605,11 +1838,26 @@ namespace pig
     // retrieve the handle.
     handle = reinterpret_cast<Handle*>(info->fh);
 
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(handle->identifier,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionWrite) ==
+	   nucleus::PermissionWrite)))
+      error("the subject does not have the right to modify the size of "
+	    "this file",
+	    -EACCES);
+
     // adjust the file's size.
     if (etoile::wall::File::Adjust(handle->identifier,
 				   size) == elle::StatusError)
       error("unable to adjust the size of the file",
-	    EACCES);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1659,7 +1907,7 @@ namespace pig
 		agent::Agent::Subject,
 		handle->permissions) == elle::StatusError)
 	    error("unable to update the access records",
-		  EINTR,
+		  -EPERM,
 		  handle->identifier);
 
 	  break;
@@ -1677,7 +1925,7 @@ namespace pig
     // store the file.
     if (etoile::wall::File::Store(handle->identifier) == elle::StatusError)
       error("unable to store the file",
-	    EACCES);
+	    -EPERM);
 
     // delete the handle.
     delete handle;
@@ -1722,24 +1970,42 @@ namespace pig
 	etoile::path::Chemin		chemin;
 	etoile::gear::Identifier	directory;
 	nucleus::Entry*			entry;
+	nucleus::Record*		record;
 
 	// resolve the path.
 	if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
 	  error("unable to resolve the path",
-		ENOENT);
+		-ENOENT);
 
 	// load the directory.
 	if (etoile::wall::Directory::Load(chemin,
 					  directory) == elle::StatusError)
 	  error("unable to load the directory",
-		ENOENT);
+		-ENOENT);
+
+	// retrieve the subject's permissions on the object.
+	if (etoile::wall::Access::Lookup(directory,
+					 agent::Agent::Subject,
+					 record) == elle::StatusError)
+	  error("unable to retrieve the access record",
+		-EPERM,
+		directory);
+
+	// check the record.
+	if (!((record != NULL) &&
+	      ((record->permissions & nucleus::PermissionWrite) ==
+	       nucleus::PermissionWrite)))
+	  error("the subject does not have the right to rename this "
+		"directory entry",
+		-EACCES,
+		directory);
 
 	// lookup for the target name.
 	if (etoile::wall::Directory::Lookup(directory,
 					    t,
 					    entry) == elle::StatusError)
 	  error("unable to lookup the target name",
-		ENOENT,
+		-EPERM,
 		directory);
 
 	// check if an entry actually exist for the target name meaning
@@ -1749,15 +2015,16 @@ namespace pig
 	    //
 	    // in this case, the target object must be destroyed.
 	    //
+	    int		result;
 
 	    // unlink the object, assuming it is either a file or a link.
 	    //
 	    // note that the Crux's method is called in order not to have
 	    // to deal with the target's genre.
-	    if (Crux::Unlink(target) != 0)
+	    if ((result = Crux::Unlink(target)) < 0)
 	      error("unable to unlink the target object which is "
 		    "about to get overwritte",
-		    ENOENT,
+		    result,
 		    directory);
 	  }
 
@@ -1766,13 +2033,13 @@ namespace pig
 					    f,
 					    t) == elle::StatusError)
 	  error("unable to rename a directory entry",
-		ENOENT,
+		-EPERM,
 		directory);
 
 	// store the directory.
 	if (etoile::wall::Directory::Store(directory) == elle::StatusError)
 	  error("unable to store the directory",
-		ENOENT);
+		-EPERM);
       }
     else
       {
@@ -1785,41 +2052,96 @@ namespace pig
 	//
 	etoile::path::Way		way(source);
 	etoile::path::Chemin		chemin;
-	etoile::gear::Identifier	object;
-	etoile::gear::Identifier	directory;
+	struct
+	{
+	  etoile::gear::Identifier	object;
+	  etoile::gear::Identifier	from;
+	  etoile::gear::Identifier	to;
+	}				identifier;
         nucleus::Entry*			entry;
+	nucleus::Record*		record;
 
 	// resolve the path.
 	if (etoile::wall::Path::Resolve(way, chemin) == elle::StatusError)
 	  error("unable to resolve the path",
-		ENOENT);
+		-ENOENT);
 
 	// load the object even though we don't know its genre as we
 	// do not need to know to perform this operation.
-	if (etoile::wall::Object::Load(chemin, object) == elle::StatusError)
+	if (etoile::wall::Object::Load(chemin,
+				       identifier.object) == elle::StatusError)
 	  error("unable to load the object",
-		ENOENT);
+		-ENOENT);
 
 	// resolve the path.
 	if (etoile::wall::Path::Resolve(to, chemin) == elle::StatusError)
 	  error("unable to resolve the path",
-		ENOENT,
-		object);
+		-ENOENT,
+		identifier.object);
 
 	// load the _to_ directory.
-	if (etoile::wall::Directory::Load(chemin,
-					  directory) == elle::StatusError)
+	if (etoile::wall::Directory::Load(
+	      chemin,
+	      identifier.to) == elle::StatusError)
 	  error("unable to load the directory",
-		ENOENT,
-		object);
+		-ENOENT,
+		identifier.object);
+
+	// retrieve the subject's permissions on the object.
+	if (etoile::wall::Access::Lookup(identifier.to,
+					 agent::Agent::Subject,
+					 record) == elle::StatusError)
+	  error("unable to retrieve the access record",
+		-EPERM,
+		identifier.object, identifier.to);
+
+	// check the record.
+	if (!((record != NULL) &&
+	      ((record->permissions & nucleus::PermissionWrite) ==
+	       nucleus::PermissionWrite)))
+	  error("the subject does not have the right to rename this "
+		"directory entry",
+		-EACCES,
+		identifier.object, identifier.to);
+
+	// resolve the path.
+	if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
+	  error("unable to resolve the path",
+		-ENOENT,
+		identifier.object, identifier.to);
+
+	// load the _from_ directory.
+	if (etoile::wall::Directory::Load(
+	      chemin,
+	      identifier.from) == elle::StatusError)
+	  error("unable to load the directory",
+		-ENOENT,
+		identifier.object, identifier.to);
+
+	// retrieve the subject's permissions on the object.
+	if (etoile::wall::Access::Lookup(identifier.from,
+					 agent::Agent::Subject,
+					 record) == elle::StatusError)
+	  error("unable to retrieve the access record",
+		-EPERM,
+		identifier.object, identifier.to, identifier.from);
+
+	// check the record.
+	if (!((record != NULL) &&
+	      ((record->permissions & nucleus::PermissionWrite) ==
+	       nucleus::PermissionWrite)))
+	  error("the subject does not have the right to rename this "
+		"directory entry",
+		-EACCES,
+		identifier.object, identifier.to, identifier.from);
 
         // lookup for the target name.
-	if (etoile::wall::Directory::Lookup(directory,
+	if (etoile::wall::Directory::Lookup(identifier.to,
 					    t,
 					    entry) == elle::StatusError)
 	  error("unable to lookup the target name",
-		ENOENT,
-		directory);
+		-EPERM,
+		identifier.object, identifier.to, identifier.from);
 
 	// check if an entry actually exist for the target name meaning
 	// that an object is about to get overwritten.
@@ -1828,61 +2150,55 @@ namespace pig
 	    //
 	    // in this case, the target object must be destroyed.
 	    //
+	    int		result;
 
 	    // unlink the object, assuming it is either a file or a link.
 	    //
 	    // note that the Crux's method is called in order not to have
 	    // to deal with the target's genre.
-	    if (Crux::Unlink(target) != 0)
+	    if ((result = Crux::Unlink(target)) < 0)
 	      error("unable to unlink the target object which is "
 		    "about to get overwritte",
-		    ENOENT,
-		    directory);
+		    result,
+		    identifier.object, identifier.to, identifier.from);
 	  }
 
 	// add an entry.
-	if (etoile::wall::Directory::Add(directory,
-					 t,
-					 object) == elle::StatusError)
+	if (etoile::wall::Directory::Add(
+	      identifier.to,
+	      t,
+	      identifier.object) == elle::StatusError)
 	  error("unable to add an entry to the directory",
-		EACCES,
-		directory, object);
-
-	// store the _to_ directory.
-	if (etoile::wall::Directory::Store(directory) == elle::StatusError)
-	  error("unable to store the directory",
-		ENOENT,
-		object);
-
-	// resolve the path.
-	if (etoile::wall::Path::Resolve(from, chemin) == elle::StatusError)
-	  error("unable to resolve the path",
-		ENOENT,
-		object);
-
-	// load the _from_ directory.
-	if (etoile::wall::Directory::Load(chemin,
-					  directory) == elle::StatusError)
-	  error("unable to load the directory",
-		ENOENT,
-		object);
+		-EPERM,
+		identifier.object, identifier.to, identifier.from);
 
 	// remove the entry.
-	if (etoile::wall::Directory::Remove(directory, f) == elle::StatusError)
+	if (etoile::wall::Directory::Remove(
+	      identifier.from,
+	      f) == elle::StatusError)
 	  error("unable to remove a directory entry",
-		EACCES,
-		directory, object);
+		-EPERM,
+		identifier.object, identifier.to, identifier.from);
+
+	// store the _to_ directory.
+	if (etoile::wall::Directory::Store(
+	      identifier.to) == elle::StatusError)
+	  error("unable to store the directory",
+		-EPERM,
+		identifier.object, identifier.from);
 
 	// store the _from_ directory.
-	if (etoile::wall::Directory::Store(directory) == elle::StatusError)
+	if (etoile::wall::Directory::Store(
+	      identifier.from) == elle::StatusError)
 	  error("unable to store the directory",
-		ENOENT,
-		object);
+		-EPERM,
+		identifier.object);
 
 	// store the object.
-	if (etoile::wall::Object::Store(object) == elle::StatusError)
+	if (etoile::wall::Object::Store(
+	      identifier.object) == elle::StatusError)
 	  error("unable to store the object",
-		ENOENT);
+		-EPERM);
       }
 
     // debug.
@@ -1906,6 +2222,8 @@ namespace pig
     etoile::gear::Identifier		directory;
     etoile::gear::Identifier		identifier;
     etoile::miscellaneous::Abstract	abstract;
+    nucleus::Record*			record;
+    nucleus::Subject			subject;
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
@@ -1916,34 +2234,63 @@ namespace pig
     // resolve the path.
     if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the object.
     if (etoile::wall::Object::Load(chemin, identifier) == elle::StatusError)
       error("unable to load the object",
-	    ENOENT);
+	    -ENOENT);
 
     // retrieve information on the object.
     if (etoile::wall::Object::Information(identifier,
 					  abstract) == elle::StatusError)
       error("unable to retrieve information on the object",
-	    EINTR,
+	    -EPERM,
+	    identifier);
+
+    // create a temporary subject based on the object owner's key.
+    if (subject.Create(abstract.keys.owner) == elle::StatusError)
+      error("unable to create a temporary subject",
+	    -EPERM,
+	    identifier);
+
+    // check that the subject is the owner of the object.
+    if (agent::Agent::Subject != subject)
+      error("the subject does not have the right to destroy this object",
+	    -EACCES,
 	    identifier);
 
     // discard the object, as no longer needed.
     if (etoile::wall::Object::Discard(identifier) == elle::StatusError)
       error("unable to discard the object",
-	    ENOENT);
+	    -EPERM);
 
     // resolve the path.
     if (etoile::wall::Path::Resolve(parent, chemin) == elle::StatusError)
       error("unable to resolve the path",
-	    ENOENT);
+	    -ENOENT);
 
     // load the directory.
     if (etoile::wall::Directory::Load(chemin, directory) == elle::StatusError)
       error("unable to load the directory",
-	    ENOENT);
+	    -ENOENT);
+
+    // retrieve the subject's permissions on the object.
+    if (etoile::wall::Access::Lookup(directory,
+				     agent::Agent::Subject,
+				     record) == elle::StatusError)
+      error("unable to retrieve the access record",
+	    -EPERM,
+	    directory);
+
+    // check the record.
+    if (!((record != NULL) &&
+	  ((record->permissions & nucleus::PermissionWrite) ==
+	   nucleus::PermissionWrite)))
+      error("the subject does not have the right to remove an entry from "
+	    "this directory",
+	    -EACCES,
+	    directory);
 
     // remove the object according to its type: file or link.
     switch (abstract.genre)
@@ -1953,20 +2300,20 @@ namespace pig
 	  // resolve the path.
 	  if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
 	    error("unable to resolve the path",
-		  ENOENT,
+		  -ENOENT,
 		  directory);
 
 	  // load the object.
 	  if (etoile::wall::File::Load(chemin,
 				       identifier) == elle::StatusError)
 	    error("unable to load the file",
-		  ENOENT,
+		  -ENOENT,
 		  directory);
 
 	  // destroy the file.
 	  if (etoile::wall::File::Destroy(identifier) == elle::StatusError)
 	    error("unable to destroy the file",
-		  EINTR,
+		  -EPERM,
 		  directory);
 
 	  break;
@@ -1976,41 +2323,41 @@ namespace pig
 	  // resolve the path.
 	  if (etoile::wall::Path::Resolve(child, chemin) == elle::StatusError)
 	    error("unable to resolve the path",
-		  ENOENT,
+		  -ENOENT,
 		  directory);
 
 	  // load the link
 	  if (etoile::wall::Link::Load(chemin,
 				       identifier) == elle::StatusError)
 	    error("unable to load the link",
-		  ENOENT,
+		  -ENOENT,
 		  directory);
 
 	  // destroy the link.
 	  if (etoile::wall::Link::Destroy(identifier) == elle::StatusError)
 	    error("unable to destroy the link",
-		  EINTR,
+		  -EPERM,
 		  directory);
 
 	  break;
 	}
       case nucleus::GenreDirectory:
 	{
-	  error("meaningless operation",
-		EINTR);
+	  error("meaningless operation: unlink on a directory object",
+		-EPERM);
 	}
       };
 
     // remove the entry.
     if (etoile::wall::Directory::Remove(directory, name) == elle::StatusError)
       error("unable to remove a directory entry",
-	    EACCES,
+	    -EPERM,
 	    directory);
 
     // store the directory.
     if (etoile::wall::Directory::Store(directory) == elle::StatusError)
       error("unable to store the directory",
-	    EINTR);
+	    -EPERM);
 
     // debug.
     if (Infinit::Configuration.pig.debug == true)
