@@ -24,6 +24,8 @@ mingw32-readline
 mingw32-qt
 mingw32-openssl
 mingw32-libiconv [!buildflags required]
+mingw32-curl
+mingw32-jsoncpp
 
 rm -rf build-win32 &&
 mkdir build-win32 &&

@@ -21,9 +21,9 @@
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
 # include <pig/PIG.hh>
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
 # include <iig/IIG.hh>
 #endif
 
@@ -87,11 +87,11 @@ elle::Status		Main(elle::Natural32			argc,
   if (agent::Agent::Options() == elle::StatusError)
     escape("unable to set up the options");
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
   // set up the pig-specific options.
   if (pig::PIG::Options() == elle::StatusError)
     escape("unable to set up the options");
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
   // set up the iig-specifi options.
   if (iig::IIG::Options() == elle::StatusError)
     escape("unable to set up iig options");
@@ -123,11 +123,11 @@ elle::Status		Main(elle::Natural32			argc,
   if (etoile::Etoile::Initialize() == elle::StatusError)
     escape("unable to initialize Etoile");
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
   // initialize PIG.
   if (pig::PIG::Initialize() == elle::StatusError)
     escape("unable to initialize PIG");
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
   // initialize IIG.
   if (iig::IIG::Initialize() == elle::StatusError)
     escape("unable to initialize IIG");
@@ -143,11 +143,11 @@ elle::Status		Main(elle::Natural32			argc,
   // waive.
   waive(Infinit::Parser);
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
   // clean PIG.
   if (pig::PIG::Clean() == elle::StatusError)
     escape("unable to clean PIG");
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
   // clean IIG.
   if (iig::IIG::Clean() == elle::StatusError)
     escape("unable to clean IIG");
