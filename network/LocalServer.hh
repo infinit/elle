@@ -9,17 +9,17 @@
 //
 
 ///
-/// this very special include is required as StreamSocket needs to know
-/// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit StreamSocket.
+/// this very special include is required as AbstractSocket needs to know
+/// LocalSocket/TCPSocket while LocalSocket/TCPSocket inherit AbstractSocket.
 ///
-/// including StreamSocket.hh normally makes QT's MOC - Meta Object
+/// including AbstractSocket.hh normally makes QT's MOC - Meta Object
 /// Compiler unable to detect the QObject classes.
 ///
-/// therefore, StreamSocket.hh is not included when MOC processes a
+/// therefore, AbstractSocket.hh is not included when MOC processes a
 /// header file.
 ///
 #ifndef Q_MOC_RUN
-# include <elle/network/StreamSocket.hh>
+# include <elle/network/AbstractSocket.hh>
 #endif
 
 #ifndef ELLE_NETWORK_LOCALSERVER_HH

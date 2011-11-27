@@ -109,7 +109,7 @@ namespace elle
       leave();
     }
 
-#if INFINIT_WIN32
+#if defined(INFINIT_WIN32)
     ///
     /// This method converts a FILETIME into a Time object.
     ///

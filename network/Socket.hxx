@@ -15,7 +15,7 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <elle/network/StreamSocket.hh>
+#include <elle/network/AbstractSocket.hh>
 #include <elle/network/UDPSocket.hh>
 
 #include <elle/standalone/Maid.hh>
@@ -45,7 +45,7 @@ namespace elle
 	case Socket::TypeLocal:
 	case Socket::TypeTCP:
 	  {
-	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
+	    AbstractSocket*	socket = static_cast<AbstractSocket*>(this);
 
 	    return (socket->Send(inputs, event));
 	  }
@@ -79,7 +79,7 @@ namespace elle
 	case Socket::TypeLocal:
 	case Socket::TypeTCP:
 	  {
-	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
+	    AbstractSocket*	socket = static_cast<AbstractSocket*>(this);
 
 	    return (socket->Receive(event, outputs));
 	  }
@@ -116,7 +116,7 @@ namespace elle
 	case Socket::TypeLocal:
 	case Socket::TypeTCP:
 	  {
-	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
+	    AbstractSocket*	socket = static_cast<AbstractSocket*>(this);
 
 	    return (socket->Call(inputs, outputs));
 	  }
@@ -150,7 +150,7 @@ namespace elle
 	case Socket::TypeLocal:
 	case Socket::TypeTCP:
 	  {
-	    StreamSocket*	socket = static_cast<StreamSocket*>(this);
+	    AbstractSocket*	socket = static_cast<AbstractSocket*>(this);
 
 	    return (socket->Reply(inputs, session));
 	  }

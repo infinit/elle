@@ -35,9 +35,9 @@
 
 #include <elle/idiom/Close.hh>
 # include <list>
-# if INFINIT_UNIX
+# if defined(INFINIT_UNIX)
 #  include <ucontext.h>
-# elif INFINIT_WIN32
+# elif defined(INFINIT_WIN32)
 #  include <elle/thirdparty/ucontext-win32.hh>
 # else
 #  error "No makecontext support on this plateform."

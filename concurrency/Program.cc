@@ -81,13 +81,13 @@ namespace elle
       // allocate the QT program.
       program->core = new ::QCoreApplication(n, NULL);
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
       // set the signal handlers.
       ::signal(SIGINT, &Program::Exception);
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
       // XXX to implement
 #else
 # error "unsupported platform"
@@ -135,7 +135,7 @@ namespace elle
       // stop the program depending on the signal.
       switch (signal)
 	{
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
 	case SIGQUIT:
 #endif
 	case SIGINT:
@@ -150,6 +150,9 @@ namespace elle
 	}
     }
 
+#if defined(INFINIT_WIN32)
+    // nothing
+#else
     ///
     /// this method attaches a broker to the program's event loop.
     ///
@@ -160,10 +163,8 @@ namespace elle
       enter();
 
 #include <elle/idiom/Close.hh>
-
       // retrieve the event dispatcher instance.
       dispatcher = ::QAbstractEventDispatcher::instance();
-
 #include <elle/idiom/Open.hh>
 
       // register the socket notifier.
@@ -182,10 +183,8 @@ namespace elle
       enter();
 
 #include <elle/idiom/Close.hh>
-
       // retrieve the event dispatcher instance.
       dispatcher = ::QAbstractEventDispatcher::instance();
-
 #include <elle/idiom/Open.hh>
 
       // unregister the socket notifier.
@@ -193,6 +192,7 @@ namespace elle
 
       leave();
     }
+#endif
 
 //
 // ---------- constructors & destructors --------------------------------------

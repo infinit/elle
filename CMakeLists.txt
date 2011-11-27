@@ -1,15 +1,5 @@
 PROJECT(Elle CXX)
 
-IF(${WIN32})
-  SET(elle_MOCS_WIN32
-    concurrency/WinEventBroker.hh)
-
-  SET(elle_WIN32
-    thirdparty/ucontext-win32.cc
-    concurrency/WinEventBroker.cc)
-ENDIF()
-
-
 QT4_WRAP_CPP(elle_MOCS
   network/LocalServer.hh
   network/LocalSocket.hh
@@ -26,7 +16,6 @@ QT4_WRAP_CPP(elle_MOCS
 IF(${WIN32})
   SET(elle_WIN32
     thirdparty/ucontext-win32.cc
-    concurrency/WinEventBroker.cc
     utility/Unicode-win32.cc)
 ENDIF()
 
@@ -105,7 +94,7 @@ ADD_LIBRARY(elle
   network/Locus.cc
   network/Session.cc
   network/Socket.cc
-  network/StreamSocket.cc
+  network/AbstractSocket.cc
   network/TCPServer.cc
   network/TCPSocket.cc
   network/UDPSocket.cc
@@ -120,7 +109,6 @@ ADD_LIBRARY(elle
   utility/REST.cc
   utility/Settings.cc
   utility/Time.cc
-  utility/Unicode.cc
 
   Elle.cc
 

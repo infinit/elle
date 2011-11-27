@@ -36,7 +36,7 @@ namespace elle
     ///
     /// this method performs a GET request on the resource given by _uri_.
     ///
-    Status		REST::GET(const URI&			uri,
+    Status		REST::Get(const URI&			uri,
 				  JSON::Document&		response,
 				  HTTP::Code&			code)
     {
@@ -45,7 +45,7 @@ namespace elle
       enter();
 
       // request the HTTP GET method.
-      if (HTTP::GET(uri,
+      if (HTTP::Get(uri,
 		    content, code) == StatusError)
 	escape("unable to GET the given URI");
 
@@ -59,7 +59,7 @@ namespace elle
     ///
     /// this method performs a POST request on the resource given by _uri_.
     ///
-    Status		REST::POST(const URI&			uri,
+    Status		REST::Post(const URI&			uri,
 				   const JSON::Document&	request,
 				   JSON::Document&		response,
 				   HTTP::Code&			code)
@@ -74,7 +74,7 @@ namespace elle
 	escape("unable to encore the request");
 
       // request the HTTP POST method.
-      if (HTTP::POST(uri,
+      if (HTTP::Post(uri,
 		     JSON::Document::Type, string,
 		     content, code) == StatusError)
 	escape("unable to POST the given URI");
@@ -89,7 +89,7 @@ namespace elle
     ///
     /// this method performs a PUT request on the resource given by _uri_
     ///
-    Status		REST::PUT(const URI&			uri,
+    Status		REST::Put(const URI&			uri,
 				  const JSON::Document&		request,
 				  JSON::Document&		response,
 				  HTTP::Code&			code)
@@ -104,7 +104,7 @@ namespace elle
 	escape("unable to encore the request");
 
       // request the HTTP PUT method.
-      if (HTTP::PUT(uri,
+      if (HTTP::Put(uri,
 		    JSON::Document::Type, string,
 		    content, code) == StatusError)
 	escape("unable to PUT the given URI");
@@ -119,7 +119,7 @@ namespace elle
     ///
     /// this method performs a DELETE request on the resource given by _uri_
     ///
-    Status		REST::DELETE(const URI&			uri,
+    Status		REST::Delete(const URI&			uri,
 				     JSON::Document&		response,
 				     HTTP::Code&		code)
     {
@@ -128,7 +128,7 @@ namespace elle
       enter();
 
       // request the HTTP DELETE method.
-      if (HTTP::DELETE(uri,
+      if (HTTP::Delete(uri,
 		       content, code) == StatusError)
 	escape("unable to DELETE the given URI");
 

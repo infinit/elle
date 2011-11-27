@@ -48,7 +48,7 @@ namespace elle
     /// the default constructor.
     ///
     LocalSocket::LocalSocket():
-      StreamSocket::StreamSocket(Socket::TypeLocal),
+      AbstractSocket::AbstractSocket(Socket::TypeLocal),
 
       socket(NULL)
     {
@@ -145,7 +145,7 @@ namespace elle
 	escape("unable to connect to signal");
 
       // update the state.
-      this->state = StreamSocket::StateConnected;
+      this->state = AbstractSocket::StateConnected;
 
       leave();
     }
@@ -161,7 +161,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = StreamSocket::StateConnecting;
+      this->state = AbstractSocket::StateConnecting;
 
       // connect the socket to the server.
       this->socket->connectToServer(name.c_str());
@@ -223,12 +223,12 @@ namespace elle
       enter();
 
       // check that the socket is connected.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	escape("the socket does not seem to have been connected");
 
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
-      if (packet.size > StreamSocket::Capacity)
+      if (packet.size > AbstractSocket::Capacity)
 	escape("the packet seems to be too large %qu bytes",
 	       static_cast<Natural64>(packet.size));
 
@@ -252,7 +252,7 @@ namespace elle
       enter();
 
       // check that the socket is connected.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	escape("the socket does not seem to have been connected");
 
       //
@@ -347,19 +347,8 @@ namespace elle
 	      // waiting packet will probably never come. therefore just
 	      // discard everything!
 	      if ((this->buffer->size - this->offset) >
-		  StreamSocket::Capacity)
-		{
-		  // delete the buffer.
-		  delete this->buffer;
-
-		  // re-set it to NULL.
-		  this->buffer = NULL;
-		  this->offset = 0;
-
-		  // log the event.
-		  log("exceeded the buffer capacity without making sense "
-		      "out of the fetched data");
-		}
+		  AbstractSocket::Capacity)
+		goto _disconnect;
 
 	      // since the parcel will not be built, delete the instance.
 	      delete parcel;
@@ -416,14 +405,14 @@ namespace elle
 	    // delete the buffer.
 	    delete this->buffer;
 
-	    // reinitialize the locuser to NULL.
+	    // reinitialize the buffer to NULL.
 	    this->buffer = NULL;
 	    this->offset = 0;
 	  }
 
 	// if the offset is too far, move the existing data to the
 	// beginning of the buffer.
-	if (this->offset >= StreamSocket::Capacity)
+	if (this->offset >= AbstractSocket::Capacity)
 	  {
 	    // move the data.
 	    ::memmove(this->buffer->contents,
@@ -439,6 +428,15 @@ namespace elle
       }
 
       leave();
+
+    _disconnect:
+      // purge the errors message.
+      purge();
+
+      // disconnect the socket.
+      this->Disconnect();
+
+      leave();
     }
 
     ///
@@ -449,7 +447,7 @@ namespace elle
       enter();
 
       // check that the socket is connected.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	escape("the socket does not seem to have been connected");
 
       // retrieve the server name.
@@ -474,7 +472,7 @@ namespace elle
       std::cout << alignment << "[LocalSocket]" << std::endl;
 
       // dump the channel.
-      if (StreamSocket::Dump(margin + 2) == StatusError)
+      if (AbstractSocket::Dump(margin + 2) == StatusError)
 	escape("unable to dump the channel");
 
       // dump the state.
@@ -548,11 +546,11 @@ namespace elle
       // bury the timer i.e the system is in the given timer.
       bury(this->timer);
 
-      // reset the locuser.
+      // reset the timer.
       this->timer = NULL;
 
       // if the socket has not been connected yet, abort the process.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	{
 	  // disconnect the socket.
 	  if (this->Disconnect() == StatusError)
@@ -582,7 +580,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = StreamSocket::StateConnected;
+      this->state = AbstractSocket::StateConnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
@@ -607,7 +605,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = StreamSocket::StateDisconnected;
+      this->state = AbstractSocket::StateDisconnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)

@@ -8,6 +8,7 @@
 // author        julien quintard   [mon apr 26 21:25:23 2010]
 //
 
+#if defined(INFINIT_UNIX)
 //
 // ---------- includes --------------------------------------------------------
 //
@@ -40,7 +41,6 @@ namespace elle
   namespace radix
   {
 
-#if INFINIT_UNIX
 //
 // ---------- definitions -----------------------------------------------------
 //
@@ -470,7 +470,8 @@ namespace elle
 
       leave();
     }
-#endif
 
   }
 }
+
+#endif

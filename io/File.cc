@@ -31,7 +31,7 @@
 # include <fcntl.h>
 # include <libgen.h>
 
-# if INFINIT_WIN32
+# if defined(INFINIT_WIN32)
 #  include <windows.h>
 # endif
 
@@ -48,7 +48,7 @@ namespace elle
 // ---------- static methods --------------------------------------------------
 //
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
     ///
     /// this method reads the given file's content.
     ///
@@ -159,7 +159,7 @@ namespace elle
     }
 #endif
 
-#if INFINIT_WIN32
+#if defined(INFINIT_WIN32)
     ///
     /// this method reads the given file's content.
     ///

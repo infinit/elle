@@ -70,12 +70,13 @@ namespace elle
 	escape("unable to dig the chain of directories");
 
       // create the directory.
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
       if (::mkdir(path.string.c_str(), 0700) != 0)
         escape(::strerror(errno));
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
       if (::mkdir(path.string.c_str()) != 0)
-	escape("unable to create %s: %s", path.string.c_str(), ::strerror(errno));
+	escape("unable to create %s: %s",
+	       path.string.c_str(), ::strerror(errno));
 #else
 # error "mkdir not supported"
 #endif
@@ -208,9 +209,9 @@ namespace elle
 	    escape("unable to create the target path");
 
 	  // stat the entry as entry->d_type is not standard
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
           if (::lstat(target.string.c_str(), &stat) == -1)
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
           if (::stat(target.string.c_str(), &stat) == -1)
 #else
 # error "unsupported platform"
@@ -237,7 +238,7 @@ namespace elle
               if (File::Erase(target) == StatusError)
                 escape("unable to remove the file");
             }
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
           else if (S_ISLNK(stat.st_mode))
             {
               // remove the link.

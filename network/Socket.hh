@@ -64,10 +64,10 @@ namespace elle
 	{
 	  TypeUnknown,
 
-	  TypeStream = 0x1,
+	  TypeAbstract = 0x1,
 
-	  TypeLocal = TypeStream | 0x0,
-	  TypeTCP = TypeStream | 0x2,
+	  TypeLocal = TypeAbstract | 0x0,
+	  TypeTCP = TypeAbstract | 0x2,
 
 	  TypeUDP = 0x4
 	};

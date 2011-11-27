@@ -8,8 +8,8 @@
 // author        julien quintard   [thu mar 18 21:23:33 2010]
 //
 
-#ifndef ELLE_NETWORK_STREAMSOCKET_HXX
-#define ELLE_NETWORK_STREAMSOCKET_HXX
+#ifndef ELLE_NETWORK_ABSTRACTSOCKET_HXX
+#define ELLE_NETWORK_ABSTRACTSOCKET_HXX
 
 //
 // ---------- includes --------------------------------------------------------
@@ -34,8 +34,8 @@ namespace elle
     /// this method sends a packet in an asynchronous manner.
     ///
     template <typename I>
-    Status		StreamSocket::Send(const I		inputs,
-					   const Event&		event)
+    Status		AbstractSocket::Send(const I		inputs,
+					     const Event&	event)
     {
       enter();
 
@@ -67,8 +67,8 @@ namespace elle
     /// this method receives a packet by blocking.
     ///
     template <typename O>
-    Status		StreamSocket::Receive(const Event&	event,
-					      O			outputs)
+    Status		AbstractSocket::Receive(const Event&	event,
+						O		outputs)
     {
       enter();
 
@@ -102,8 +102,8 @@ namespace elle
     ///
     template <typename I,
 	      typename O>
-    Status		StreamSocket::Call(const I		inputs,
-					   O			outputs)
+    Status		AbstractSocket::Call(const I		inputs,
+					     O			outputs)
     {
       enter();
 
@@ -135,8 +135,8 @@ namespace elle
     /// this method replies to the freshly received call.
     ///
     template <typename I>
-    Status		StreamSocket::Reply(const I		inputs,
-					    Session*		session)
+    Status		AbstractSocket::Reply(const I		inputs,
+					      Session*		session)
     {
       enter();
 

@@ -134,12 +134,6 @@ namespace elle
     {
       enter();
 
-      // check the size of the packet to make sure the receiver will
-      // have a buffer large enough to read it.
-      if (packet.size > StreamSocket::Capacity)
-	escape("the packet seems to be too large: %qu bytes",
-	       static_cast<Natural64>(packet.size));
-
       // push the datagram into the socket.
       if (this->socket->writeDatagram(
 	    reinterpret_cast<const char*>(packet.contents),

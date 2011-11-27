@@ -60,7 +60,6 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
-// first to get defines INFINIT_UNIX, INFINIT_WIN32 asap
 #include <elle/system/Platform.hh>
 
 #include <elle/core/Core.hh>
