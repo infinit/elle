@@ -26,7 +26,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
-# if INFINIT_WIN32
+# if defined(INFINIT_WIN32)
 #  include <process.h>
 #  include <windows.h>
 #  include <wincrypt.h>
@@ -54,7 +54,7 @@ namespace elle
       // initialise the random generator.
       ::srand(::time(NULL)); 
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
       {
 	int		fd = -1;
 
@@ -73,7 +73,7 @@ namespace elle
 	// close the file descriptor.
 	::close(fd);
       }
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
       {
 	HCRYPTPROV        h_provider = 0;
 
