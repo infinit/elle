@@ -9,8 +9,8 @@
 //
 
 ///
-/// this very special include is required as Socket needs to know StreamSocket
-/// while StreamSocket inherits Socket.
+/// this very special include is required as Socket needs to know
+/// AbstractSocket while AbstractSocket inherits Socket.
 ///
 /// including Socket.hh normally makes QT's MOC - Meta Object Compiler unable
 /// to detect the QObject classes.
@@ -21,8 +21,8 @@
 # include <elle/network/Socket.hh>
 #endif
 
-#ifndef ELLE_NETWORK_STREAMSOCKET_HH
-#define ELLE_NETWORK_STREAMSOCKET_HH
+#ifndef ELLE_NETWORK_ABSTRACTSOCKET_HH
+#define ELLE_NETWORK_ABSTRACTSOCKET_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -61,7 +61,7 @@ namespace elle
     /// this class abstracts connection-based sockets such as doors and
     /// gates.
     ///
-    class StreamSocket:
+    class AbstractSocket:
       public Socket
     {
     public:
@@ -91,8 +91,8 @@ namespace elle
       //
       // constructors & destructors
       //
-      StreamSocket(Socket::Type);
-      ~StreamSocket();
+      AbstractSocket(Socket::Type);
+      ~AbstractSocket();
 
       //
       // methods
@@ -159,6 +159,6 @@ namespace elle
 // ---------- templates -------------------------------------------------------
 //
 
-#include <elle/network/StreamSocket.hxx>
+#include <elle/network/AbstractSocket.hxx>
 
 #endif

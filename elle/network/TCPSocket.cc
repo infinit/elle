@@ -42,7 +42,7 @@ namespace elle
     /// the default constructor.
     ///
     TCPSocket::TCPSocket():
-      StreamSocket::StreamSocket(Socket::TypeTCP),
+      AbstractSocket::AbstractSocket(Socket::TypeTCP),
 
       socket(NULL)
     {
@@ -140,7 +140,7 @@ namespace elle
 	escape("unable to connect to signal");
 
       // set the socket as being connected.
-      this->state = StreamSocket::StateConnected;
+      this->state = AbstractSocket::StateConnected;
 
       leave();
     }
@@ -155,7 +155,7 @@ namespace elle
       enter();
 
       // update the state.
-      this->state = StreamSocket::StateConnecting;
+      this->state = AbstractSocket::StateConnecting;
 
       // connect the socket to the server.
       this->socket->connectToHost(locus.host.location, locus.port);
@@ -217,12 +217,12 @@ namespace elle
       enter();
 
       // check that the socket is connected.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	escape("the socket does not seem to have been connected");
 
       // check the size of the packet to make sure the receiver will
       // have a buffer large enough to read it.
-      if (packet.size > StreamSocket::Capacity)
+      if (packet.size > AbstractSocket::Capacity)
 	escape("the packet seems to be too large: %qu bytes",
 	       static_cast<Natural64>(packet.size));
 
@@ -246,7 +246,7 @@ namespace elle
       enter();
 
       // check that the socket is connected.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	escape("the socket does not seem to have been connected");
 
       //
@@ -338,22 +338,13 @@ namespace elle
 	      //
 
 	      // test if we exceeded the buffer capacity meaning that the
-	      // waiting packet will probably never come. therefore just
-	      // discard everything!
+	      // waiting packet will probably never come.
+	      //
+	      // in this case, the socket is disconnected as the client
+	      // is probably not acting honestly.
 	      if ((this->buffer->size - this->offset) >
-		  StreamSocket::Capacity)
-		{
-		  // delete the buffer.
-		  delete this->buffer;
-
-		  // re-set it to NULL.
-		  this->buffer = NULL;
-		  this->offset = 0;
-
-		  // log the event.
-		  log("exceeded the buffer capacity without making sense "
-		      "out of the fetched data");
-		}
+		  AbstractSocket::Capacity)
+		goto _disconnect;
 
 	      // since the parcel will not be built, delete the instance.
 	      delete parcel;
@@ -415,14 +406,14 @@ namespace elle
 	    // delete the buffer.
 	    delete this->buffer;
 
-	    // reinitialize the locuser to NULL.
+	    // reinitialize the buffer to NULL.
 	    this->buffer = NULL;
 	    this->offset = 0;
 	  }
 
 	// if the offset is too far, move the existing data to the
 	// beginning of the buffer.
-	if (this->offset >= StreamSocket::Capacity)
+	if (this->offset >= AbstractSocket::Capacity)
 	  {
 	    // move the data.
 	    ::memmove(this->buffer->contents,
@@ -438,6 +429,15 @@ namespace elle
       }
 
       leave();
+
+    _disconnect:
+      // purge the errors message.
+      purge();
+
+      // disconnect the socket.
+      this->Disconnect();
+
+      leave();
     }
 
     ///
@@ -451,7 +451,7 @@ namespace elle
       enter();
 
       // check that the socket is connected.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	escape("the socket does not seem to have been connected");
 
       // create the host.
@@ -486,7 +486,7 @@ namespace elle
       std::cout << alignment << "[TCPSocket]" << std::endl;
 
       // dump the channel.
-      if (StreamSocket::Dump(margin + 2) == StatusError)
+      if (AbstractSocket::Dump(margin + 2) == StatusError)
 	escape("unable to dump the channel");
 
       // retrieve the target.
@@ -557,11 +557,11 @@ namespace elle
       // delete the timer.
       delete this->timer;
 
-      // reset the locuser.
+      // reset the timer.
       this->timer = NULL;
 
       // if the socket has not been connected yet, abort the process.
-      if (this->state != StreamSocket::StateConnected)
+      if (this->state != AbstractSocket::StateConnected)
 	{
 	  // disconnect the socket.
 	  if (this->Disconnect() == StatusError)
@@ -591,7 +591,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = StreamSocket::StateConnected;
+      this->state = AbstractSocket::StateConnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)
@@ -601,7 +601,7 @@ namespace elle
     }
 
     ///
-    /// this slot is triggered when the socket is considered disconnected.
+    /// this slot is triggered when the socket is considered disconnected
     ///
     void		TCPSocket::_disconnected()
     {
@@ -616,7 +616,7 @@ namespace elle
       enter();
 
       // set the state.
-      this->state = StreamSocket::StateDisconnected;
+      this->state = AbstractSocket::StateDisconnected;
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)

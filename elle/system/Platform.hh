@@ -20,16 +20,12 @@ namespace elle
 // ---------- macros ----------------------------------------------------------
 //
 
-# ifdef __WIN32__
-#  define INFINIT_WIN32 1
-# else
-#  define INFINIT_WIN32 0
+# if defined(__WIN32__)
+#  define INFINIT_WIN32
 # endif
 
-# ifdef __unix__
-#  define INFINIT_UNIX 1
-# else
-#  define INFINIT_UNIX 0
+# if defined(__unix__)
+#  define INFINIT_UNIX
 # endif
 
   }

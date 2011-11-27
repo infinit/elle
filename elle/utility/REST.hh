@@ -59,18 +59,18 @@ namespace elle
       //
       // static methods
       //
-      static Status	GET(const URI&,
+      static Status	Get(const URI&,
 			    JSON::Document&,
 			    HTTP::Code& = HTTP::Trash::_Code);
-      static Status	POST(const URI&,
+      static Status	Post(const URI&,
 			     const JSON::Document&,
 			     JSON::Document& = Trash::_Document,
 			     HTTP::Code& = HTTP::Trash::_Code);
-      static Status	PUT(const URI&,
+      static Status	Put(const URI&,
 			    const JSON::Document&,
 			    JSON::Document& = Trash::_Document,
 			    HTTP::Code& = HTTP::Trash::_Code);
-      static Status	DELETE(const URI&,
+      static Status	Delete(const URI&,
 			       JSON::Document& = Trash::_Document,
 			       HTTP::Code& = HTTP::Trash::_Code);
     };

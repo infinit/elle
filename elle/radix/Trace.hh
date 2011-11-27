@@ -11,6 +11,7 @@
 #ifndef ELLE_RADIX_TRACE_HH
 #define ELLE_RADIX_TRACE_HH
 
+#if defined(INFINIT_UNIX)
 //
 // ---------- includes --------------------------------------------------------
 //
@@ -43,7 +44,6 @@ namespace elle
 // ---------- classes ---------------------------------------------------------
 //
 
-#if INFINIT_UNIX
     ///
     /// this class represents a trace i.e a sequence of function calls
     /// performed within a stack.
@@ -107,9 +107,10 @@ namespace elle
 
       static Status	Show(const Natural32 = 0);
     };
-#endif
 
   }
 }
+
+#endif
 
 #endif

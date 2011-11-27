@@ -60,7 +60,7 @@ namespace elle
     ///
     /// this method performs a GET request on the resource given by _uri_.
     ///
-    Status		HTTP::GET(const URI&			uri,
+    Status		HTTP::Get(const URI&			uri,
 				  Content&			response,
 				  Code&				code)
     {
@@ -130,7 +130,7 @@ namespace elle
     ///
     /// this method performs a POST request on the resource given by _uri_.
     ///
-    Status		HTTP::POST(const URI&			uri,
+    Status		HTTP::Post(const URI&			uri,
 				   const String&		type,
 				   const Content&		request,
 				   Content&			response,
@@ -246,7 +246,7 @@ namespace elle
     ///
     /// this method performs a PUT request on the resource given by _uri_
     ///
-    Status		HTTP::PUT(const URI&			uri,
+    Status		HTTP::Put(const URI&			uri,
 				  const String&			type,
 				  const Content&		request,
 				  Content&			response,
@@ -380,7 +380,7 @@ namespace elle
     ///
     /// this method performs a DELETE request on the resource given by _uri_
     ///
-    Status		HTTP::DELETE(const URI&			uri,
+    Status		HTTP::Delete(const URI&			uri,
 				     Content&			response,
 				     Code&			code)
     {

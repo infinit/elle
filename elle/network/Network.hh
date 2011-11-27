@@ -161,6 +161,7 @@ namespace elle
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/network/AbstractSocket.hh>
 #include <elle/network/Data.hh>
 #include <elle/network/Header.hh>
 #include <elle/network/Host.hh>
@@ -178,7 +179,6 @@ namespace elle
 #include <elle/network/Raw.hh>
 #include <elle/network/Session.hh>
 #include <elle/network/Socket.hh>
-#include <elle/network/StreamSocket.hh>
 #include <elle/network/Tag.hh>
 #include <elle/network/TCPServer.hh>
 #include <elle/network/TCPSocket.hh>

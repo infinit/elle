@@ -68,8 +68,12 @@ namespace elle
       static Void		Exception(int);
       static Status		Exit();
 
+#if defined(INFINIT_WIN32)
+      // nothing
+#else
       static Status		Attach(Broker&);
       static Status		Detach(Broker&);
+#endif
 
       //
       // constructors & destructors

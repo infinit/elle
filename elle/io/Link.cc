@@ -31,9 +31,8 @@
 # include <fcntl.h>
 # include <libgen.h>
 # include <string.h>
-# if INFINIT_WIN32
+# if defined(INFINIT_WIN32)
 #  include <windows.h>
-// For QFile::link()
 #  include <QFile>
 # endif
 #include <elle/idiom/Open.hh>
@@ -67,11 +66,11 @@ namespace elle
 	escape("the target does not seem to exist");
 
       // create the link.
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
       if (::symlink(target.string.c_str(), link.string.c_str()))
         escape("symlink failed: %s -> %s: %s", link.string.c_str(),
                target.string.c_str(), ::strerror(errno));
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
       if (!QFile::link(QString::fromStdString(link.string),
                        QString::fromStdString(target.string)))
         escape("symlink failed: %s -> %s", link.string.c_str(),
@@ -109,7 +108,7 @@ namespace elle
 
       enter();
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
       // does the path points to something.
       if (::lstat(path.string.c_str(), &stat) != 0)
 	false();
@@ -117,7 +116,7 @@ namespace elle
       // does the path points to a regular file.
       if (!S_ISLNK(stat.st_mode))
 	false();
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
       // does the path points to something.
       if (::stat(path.string.c_str(), &stat) != 0)
 	false();

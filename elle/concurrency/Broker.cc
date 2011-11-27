@@ -27,6 +27,7 @@ namespace elle
 // ---------- constructors & destructors --------------------------------------
 //
 
+#if defined(INFINIT_UNIX)
     ///
     /// default constructor.
     ///
@@ -35,6 +36,15 @@ namespace elle
       notifier(descriptor, ::QSocketNotifier::Read)
     {
     }
+#elif defined(INFINIT_WIN32)
+    ///
+    /// default constructor.
+    ///
+    Broker::Broker(HANDLE					hEvent):
+      notifier(hEvent)
+    {
+    }
+#endif
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -47,9 +57,17 @@ namespace elle
     {
       enter();
 
+#if defined(INFINIT_UNIX)
+      // connect the QT signals.
       if (this->connect(&this->notifier, SIGNAL(activated(int)),
 			this, SLOT(_trigger())) == false)
 	escape("unable to connect the signal");
+#elif defined(INFINIT_WIN32)
+      // connect the QT signals.
+      if (this->connect(&this->notifier, SIGNAL(activated(HANDLE)),
+			this, SLOT(_trigger())) == false)
+	escape("unable to connect the signal");
+#endif
 
       leave();
     }
@@ -61,9 +79,17 @@ namespace elle
     {
       enter();
 
+#if defined(INFINIT_UNIX)
+      // disconnect the QT signals.
       if (this->disconnect(&this->notifier, SIGNAL(activated(int)),
 			   this, SLOT(_trigger())) == false)
 	escape("unable to disconnect from the signal");
+#elif defined(INFINIT_WIN32)
+      // disconnect the QT signals.
+      if (this->disconnect(&this->notifier, SIGNAL(activated(HANDLE)),
+			   this, SLOT(_trigger())) == false)
+	escape("unable to disconnect from the signal");
+#endif
 
       leave();
     }
@@ -80,9 +106,15 @@ namespace elle
     {
       enter();
 
+#if defined(INFINIT_UNIX)
       // emit the signal.
       if (this->signal.ready.Emit(this->descriptor) == StatusError)
 	escape("unable to emit the signal");
+#elif defined(INFINIT_WIN32)
+      // emit the signal.
+      if (this->signal.ready.Emit(this->notifier.handle()) == StatusError)
+	escape("unable to emit the signal");
+#endif
 
       leave();
     }
@@ -104,6 +136,7 @@ namespace elle
 
       enter();
 
+#if defined(INFINIT_UNIX)
       //
       // the following part should not be necessary but it turns out
       // that QT triggers this event even though there is nothing to
@@ -123,6 +156,7 @@ namespace elle
 	if (::select(FD_SETSIZE, &set, NULL, NULL, &timeout) == 0)
 	  return;
       }
+#endif
 
       // spawn a fiber.
       if (Fiber::Spawn(closure) == StatusError)

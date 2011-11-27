@@ -56,7 +56,8 @@ namespace elle
 	escape("unable to create the slot");
 
       // connect the socket.
-      if (this->socket.Connect(this->line) == StatusError)
+      if (this->socket.Connect(this->line,
+			       StreamSocket::ModeSynchronous) == StatusError)
 	escape("unable to connect to the line");
 
       leave();

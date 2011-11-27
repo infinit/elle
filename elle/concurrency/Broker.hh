@@ -15,6 +15,8 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/system/Platform.hh>
+
 #include <elle/core/Natural.hh>
 
 #include <elle/radix/Status.hh>
@@ -25,7 +27,11 @@
 
 #include <elle/idiom/Close.hh>
 # include <QObject>
-# include <QSocketNotifier>
+# if defined(INFINIT_UNIX)
+#  include <QSocketNotifier>
+# elif defined(INFINIT_WIN32)
+#  include <private/qwineventnotifier_p.h>
+# endif
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -56,7 +62,11 @@ namespace elle
       //
       // constructors & destructors
       //
+#if defined(INFINIT_UNIX)
       Broker(const Natural16);
+#elif defined(INFINIT_WIN32)
+      Broker(HANDLE);
+#endif
 
       //
       // methods
@@ -72,9 +82,12 @@ namespace elle
       //
       // attributes
       //
+#if defined(INFINIT_UNIX)
       Natural16			descriptor;
-
       ::QSocketNotifier		notifier;
+#elif defined(INFINIT_WIN32)
+      ::QWinEventNotifier	notifier;
+#endif
 
       //
       // signals
@@ -83,7 +96,11 @@ namespace elle
       {
 	Signal<
 	  Parameters<
+#if defined(INFINIT_UNIX)
 	    Natural16
+#elif defined(INFINIT_WIN32)
+	    HANDLE
+#endif
 	    >
 	  >			ready;
       }				signal;

@@ -74,8 +74,4 @@ namespace elle
 #include <elle/concurrency/Thread.hh>
 #include <elle/concurrency/Timer.hh>
 
-#if INFINIT_WIN32
-# include <elle/concurrency/WinEventBroker.hh>
-#endif
-
 #endif
