@@ -16,7 +16,7 @@
 
 #include <lune/Lune.hh>
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
 # include <pig/PIG.hh>
 #endif
 
@@ -69,7 +69,7 @@ namespace lune
   const elle::Boolean
   Configuration::Default::Hole::Debug = false;
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
   ///
   /// pig-specific configuration values.
   ///
@@ -79,7 +79,7 @@ namespace lune
   const elle::Natural32
   Configuration::Default::PIG::FUker =
     static_cast<elle::Natural32>(pig::FUker::TypeSequential);
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
   ///
   /// iig-specific configuration values.
   ///
@@ -169,7 +169,7 @@ namespace lune
 	escape("unable to update the parameter");
     }
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
     //
     // pig
     //
@@ -184,9 +184,7 @@ namespace lune
 	    this->pig.fuker) == elle::StatusError)
 	escape("unable to update the parameter");
     }
-#endif
-
-#if INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
     //
     // iig
     //
@@ -301,7 +299,7 @@ namespace lune
 	escape("unable to retrieve the parameter");
     }
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
     //
     // pig
     //
@@ -319,7 +317,7 @@ namespace lune
 	    Configuration::Default::PIG::FUker) == elle::StatusError)
 	escape("unable to update the parameter");
     }
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
     //
     // iig
     //

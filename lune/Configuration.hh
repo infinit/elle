@@ -78,14 +78,14 @@ namespace lune
 	static const elle::Boolean		Debug;
       };
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
       struct					PIG
       {
 	static const elle::Boolean		Debug;
 
 	static const elle::Natural32		FUker;
       };
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
       struct					IIG
       {
         static const elle::Boolean		Debug;
@@ -157,14 +157,14 @@ namespace lune
       elle::Boolean		debug;
     }				hole;
 
-#if INFINIT_UNIX
+#if defined(INFINIT_UNIX)
     struct
     {
       elle::Boolean		debug;
 
       elle::Natural32		fuker;
     }				pig;
-#elif INFINIT_WIN32
+#elif defined(INFINIT_WIN32)
     struct
     {
       elle::Boolean             debug;
