@@ -1,79 +1,13 @@
-- peut etre bouger etoile/miscellaneous/Abstract autre part (gear/wall/etc.)
-- peut etre using namespace automatiquement pour wall/path/etc. dans etoile
-  mais pas automaton qui n'est jamais accede directement.
+- linux ne compile pas correctement: A REVOIR!
 
-- peut etre utiliser setfacl/getfacl pour recup les attributs
-  essaye avec le +x
-
-- callback dans scope fonction de l'ouverture
-
-- implem verif lord dans nucleus::Object
-
-- scenar bug: User1 donne access a un rep en lecture a User2. ce dernier
-  cree un fichier (ca marche ca devrait pas) mais meme, le User2 essaie de
-  supprimer un fichier cree par User1 -> ca fout la merde dans le FS
-
-- fusionner Broker et WinEventBroker
-
-- faire une gestion des options hierarchique: Parser
-
-- plutot que de bufferiser si on arrive pas a extraire un message,
-  close la connection (Gate et Door)
-
-- ameliorer le systeme de reservation de tags
-
-- rajouter suppression blocks via authentication
-
-- changer les noms: Gate -> TCPSocket, bridge -> TCPServer etc.
-- enlever parameters etc. et utiliser boost ou equivalent
-- meme chose pour callback, closure etc. -> function in C++11
-- enlever enter/leave et utiliser des uniq_ptr etc.
-- faire que les Network messages soit register sur une socket.
-- rendre les I/Os asynchrones via des wrappers qui mettront les fibres
-  en attente.
-- faire en sorte de register sur le signal QT readyWrite pour rendre les
-  IO asynchrone (Gate/Door)
-
-- ameliorer le shutdown: si on ouvre directory, puis ouvre object puis
-  ferme directory pour ferme object -> le shutdown lance sera celui de
-  object: pas normal.
 - utiliser gear::Directory::S dans wall::* et gear::Scope
+ -> les types existent mais dans Scope et wall* on ne les utilise pas: a faire!
 
-- par defaut: ne montrer que les elements auxquels le user a access
-- par defaut: creer un mapping user cree <-> local user?
-
-- invite 10 users and create a network => 1TB free
-
-- refaire serialization system (boost?) mais il faut que ca marche avec PHP
-
-- mauvais utilisateur => segfault client
-
-- si noeud de stockage recoit un block mutable avec une version > 0 et que
-  aucune autre version n'existe -> discard. ca resoud un probleme genre
-  open dir, add, close dir mais entre temps le dir a ete destroyed.
-- dans Journal, stocker tous les immutable en parallele, puis stocker les
-  mutable car les storage nodes vont recuper certain immutable (genre Access)
-  pour verifier la validiter de Object par exemple.
-
-- setter un bit a un dans MutableBlock si history est active pour ce
-  block.
+#
+# ---------- porcupine --------------------------------------------------------
+#
 
 - dans le nest: discard (si plus de place) les blocs non modifies
-
-- mettre dans la conf du reseau le Byzantine tolerance fonction du type
-  de block physique.
-
-- faire en sorte que meme lorsque nos serveurs ne fonctionnent pas, les
-  donnees restent accessibles (important). par contre il faut que lorsqu'un
-  user est supprime, il ne puisse plus du tout acceder (invalidate)
-- la self-encryption (qui fait gagner masse de place) devrait etre activee
-  par defaut. et si le mec ne veut pas, il change! cela dit si chaque
-  bloc de donnees contient l'owner ou bien un lien vers l'object, alors
-  ca ne sert a rien car on ne gagnera jamais de place.
-
-- contacter UPMC/Central
-
-- du -sh dans Infinit ne marche pas
 
 - ajouter first/next/previous/last etc.
 
@@ -136,22 +70,12 @@
  -> si l'instance est modifie, on ivnalide le footprint. et quand on appelle
     Footprint(), c'est recompute que si necessaire.
 
-- attentiion les attributs dans Object ne peuvent pas etre infinis -> ou
-  a mettre dans un CHB
 - make Catalog, Data, Link and Access derive CHB
 
-- idee: par defaut, taux de repli = nb de hosts
- -> ainsi les donnees sont tjs accessibles
- -> puis quand un certain seuil est atteint on propose a l'admin de changer
-- faire un test avec gros fichiers sans Porcupine -> mettre dans Wiki
 - coder Porcupine dans elle/
   - virer les Null sur les callbacks
   - eventuellement: changer les vecteurs en map dans quill/seam
 - resoudre probleme avec les size_t sur 64-bit -> warnings
-
-#
-# ---------- porcupine --------------------------------------------------------
-#
 
 - Contents<T> contient un Porcupine dependant de T
 - chaque Contents<T> a un comportement specifique
@@ -227,8 +151,6 @@
   - Resolve
   - Capacity
 - Contents contient une Reference
-
-
 
 !WARNING!: il faut essayer de garantir une taille mini des blocs, sauf dans le
   cas d'un unique block avec peu de donnees: cela dit ca c'est complique puisque
