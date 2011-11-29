@@ -537,10 +537,13 @@ class Compiler(Builder):
     def hash(self):
         flags = self.config.flags
         flags.sort()
-        defines = sorted(self.config.defines().items())
+        cppflags = self.toolkit.cppflags(self.config)
+        cppflags.sort()
+        cflags = self.toolkit.cflags(self.config)
+        cflags.sort()
         include_local = list(map(str, self.config.local_include_path()))
         include_system = list(map(str, self.config.system_include_path()))
-        res = '%s\n%s\n%s\n%s\n' % (defines, flags, include_local, include_system)
+        res = '%s\n%s\n%s\n%s\n%s\n' % (cppflags, cflags, flags, include_local, include_system)
         return res
 
     def mkdeps(self):
