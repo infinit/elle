@@ -1,8 +1,5 @@
 - linux ne compile pas correctement: A REVOIR!
 
-- utiliser gear::Directory::S dans wall::* et gear::Scope
- -> les types existent mais dans Scope et wall* on ne les utilise pas: a faire!
-
 #
 # ---------- porcupine --------------------------------------------------------
 #
