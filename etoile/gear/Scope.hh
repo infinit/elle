@@ -137,13 +137,8 @@ namespace etoile
       elle::Status	Use(T*&);
 
       elle::Status	Operate(const Operation);
-      template <typename T>
-      elle::Status	Shutdown(elle::Callback<
-				  elle::Status,
-				  elle::Parameters<
-				    T&
-				    >
-				  >&);
+
+      elle::Status	Shutdown();
 
       template <typename T>
       elle::Status	Refresh();

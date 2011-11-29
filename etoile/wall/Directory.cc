@@ -510,12 +510,6 @@ namespace etoile
     elle::Status	Directory::Discard(
 			  const gear::Identifier&		identifier)
     {
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  gear::Directory&
-	  >
-	>		callback;
       gear::Actor*	actor;
       gear::Scope*	scope;
       gear::Directory*	context;
@@ -567,13 +561,9 @@ namespace etoile
 	  escape("unable to specify the operation being performed "
 		 "on the scope");
 
-	// retrieve the shutdown callback.
-	if (scope->Shutdown(callback) == elle::StatusError)
-	  escape("unable to retrieve the shutdown callback");
-
-	// trigger the closing callback.
-	if (callback.Call(*context) == elle::StatusError)
-	  escape("unable to perform the closing operation");
+	// trigger the shutdown.
+	if (scope->Shutdown() == elle::StatusError)
+	  escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 
@@ -620,12 +610,6 @@ namespace etoile
     elle::Status	Directory::Store(
 			  const gear::Identifier&		identifier)
     {
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  gear::Directory&
-	  >
-	>		callback;
       gear::Actor*	actor;
       gear::Scope*	scope;
       gear::Directory*	context;
@@ -677,13 +661,9 @@ namespace etoile
 	  escape("unable to specify the operation being performed "
 		 "on the scope");
 
-	// retrieve the shutdown callback.
-	if (scope->Shutdown(callback) == elle::StatusError)
-	  escape("unable to retrieve the shutdown callback");
-
-	// trigger the closing callback.
-	if (callback.Call(*context) == elle::StatusError)
-	  escape("unable to perform the closing operation");
+	// trigger the shutdown.
+	if (scope->Shutdown() == elle::StatusError)
+	  escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 
@@ -729,15 +709,9 @@ namespace etoile
     elle::Status	Directory::Destroy(
 			  const gear::Identifier&		identifier)
     {
-      elle::Callback<
-	elle::Status,
-	elle::Parameters<
-	  gear::Directory&
-	  >
-	>		callback;
-      gear::Actor*	actor;
-      gear::Scope*	scope;
-      gear::Directory*	context;
+      gear::Actor*		actor;
+      gear::Scope*		scope;
+      gear::Directory*		context;
 
       enterx(instance(actor));
 
@@ -786,13 +760,9 @@ namespace etoile
 	  escape("unable to specify the operation being performed "
 		 "on the scope");
 
-	// retrieve the shutdown callback.
-	if (scope->Shutdown(callback) == elle::StatusError)
-	  escape("unable to retrieve the shutdown callback");
-
-	// trigger the closing callback.
-	if (callback.Call(*context) == elle::StatusError)
-	  escape("unable to perform the closing operation");
+	// trigger the shutdown.
+	if (scope->Shutdown() == elle::StatusError)
+	  escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 

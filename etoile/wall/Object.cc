@@ -186,7 +186,6 @@ namespace etoile
     elle::Status	Object::Discard(
 			  const gear::Identifier&		identifier)
     {
-      gear::Object::S	callback;
       gear::Actor*	actor;
       gear::Scope*	scope;
       gear::Object*	context;
@@ -238,13 +237,9 @@ namespace etoile
 	  escape("unable to specify the operation being performed "
 		 "on the scope");
 
-	// retrieve the shutdown callback.
-	if (scope->Shutdown(callback) == elle::StatusError)
-	  escape("unable to retrieve the shutdown callback");
-
-	// trigger the closing callback.
-	if (callback.Call(*context) == elle::StatusError)
-	  escape("unable to perform the closing operation");
+	// trigger the shutdown.
+	if (scope->Shutdown() == elle::StatusError)
+	  escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 
@@ -291,7 +286,6 @@ namespace etoile
     elle::Status	Object::Store(
 			  const gear::Identifier&		identifier)
     {
-      gear::Object::S	callback;
       gear::Actor*	actor;
       gear::Scope*	scope;
       gear::Object*	context;
@@ -343,13 +337,9 @@ namespace etoile
 	  escape("unable to specify the operation being performed "
 		 "on the scope");
 
-	// retrieve the shutdown callback.
-	if (scope->Shutdown(callback) == elle::StatusError)
-	  escape("unable to retrieve the shutdown callback");
-
-	// trigger the closing callback.
-	if (callback.Call(*context) == elle::StatusError)
-	  escape("unable to perform the closing operation");
+	// trigger the shutdown.
+	if (scope->Shutdown() == elle::StatusError)
+	  escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 
@@ -399,7 +389,6 @@ namespace etoile
     elle::Status	Object::Destroy(
 			  const gear::Identifier&		identifier)
     {
-      gear::Object::S	callback;
       gear::Actor*	actor;
       gear::Scope*	scope;
       gear::Object*	context;
@@ -451,13 +440,9 @@ namespace etoile
 	  escape("unable to specify the operation being performed "
 		 "on the scope");
 
-	// retrieve the shutdown callback.
-	if (scope->Shutdown(callback) == elle::StatusError)
-	  escape("unable to retrieve the shutdown callback");
-
-	// trigger the closing callback.
-	if (callback.Call(*context) == elle::StatusError)
-	  escape("unable to perform the closing operation");
+	// trigger the shutdown.
+	if (scope->Shutdown() == elle::StatusError)
+	  escape("unable to trigger the shutdown");
       }
       zone.Unlock();
 

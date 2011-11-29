@@ -693,6 +693,419 @@ namespace etoile
       leave();
     }
 
+    ///
+    /// this method triggers the shutdown method whose role is to close
+    /// a context it order for it to be recorded in the journal.
+    ///
+    /// note however that if actors are still working on the scope, this
+    /// method does nothing as one the last actor triggers the actual
+    /// closing operation.
+    ///
+    elle::Status	Scope::Shutdown()
+    {
+      enter();
+
+      // if actors remain, do nothing.
+      //
+      // indeed, only the final actor will trigger the shutdown operation. this
+      // way, potential conflicts are prevented while expensive cryptographic
+      // operations are performed only once.
+      if (this->actors.empty() == false)
+	{
+	  // nothing to do.
+	}
+      else
+	{
+	  //
+	  // otherwise, the current actor is the last one and is responsible
+	  // for triggering the shutdown operation.
+	  //
+	  // therefore, the appropriate closing operation is triggered
+	  // according to the nature of the scope's context. indeed, noteworthy
+	  // is that the actor calling this Shutdown() method may be
+	  // operating on, say an Object, although the original scope was
+	  // created by loading a File. these behaviours are perfectly
+	  // valid because File contexts derive Objects'. this method
+	  // must however trigger the closing operation on the original
+	  // context's type i.e File in this example.
+	  //
+
+	  // depending on the context's nature.
+	  switch (this->context->nature)
+	    {
+	    case NatureObject:
+	      {
+		gear::Object*		context =
+		  static_cast<gear::Object*>(this->context);
+
+		// depending on the closing operation...
+		switch (this->context->operation)
+		  {
+		  case OperationDiscard:
+		    {
+		      // call the shutdown method.
+		      if (gear::Object::A::Discard(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationStore:
+		    {
+		      // call the shutdown method.
+		      if (gear::Object::A::Store(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationDestroy:
+		    {
+		      // call the shutdown method.
+		      if (gear::Object::A::Destroy(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationUnknown:
+		    {
+		      escape("unknown operation '%u'\n",
+			     this->context->operation);
+		    }
+		  }
+
+		break;
+	      }
+	    case NatureFile:
+	      {
+		gear::File*		context =
+		  static_cast<gear::File*>(this->context);
+
+		// depending on the closing operation...
+		switch (this->context->operation)
+		  {
+		  case OperationDiscard:
+		    {
+		      // call the shutdown method.
+		      if (gear::File::A::Discard(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationStore:
+		    {
+		      // call the shutdown method.
+		      if (gear::File::A::Store(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationDestroy:
+		    {
+		      // call the shutdown method.
+		      if (gear::File::A::Destroy(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationUnknown:
+		    {
+		      escape("unknown operation '%u'\n",
+			     this->context->operation);
+		    }
+		  }
+
+		break;
+	      }
+	    case NatureDirectory:
+	      {
+		gear::Directory*	context =
+		  static_cast<gear::Directory*>(this->context);
+
+		// depending on the closing operation...
+		switch (this->context->operation)
+		  {
+		  case OperationDiscard:
+		    {
+		      // call the shutdown method.
+		      if (gear::Directory::A::Discard(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationStore:
+		    {
+		      // call the shutdown method.
+		      if (gear::Directory::A::Store(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationDestroy:
+		    {
+		      // call the shutdown method.
+		      if (gear::Directory::A::Destroy(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationUnknown:
+		    {
+		      escape("unknown operation '%u'\n",
+			     this->context->operation);
+		    }
+		  }
+
+		break;
+	      }
+	    case NatureLink:
+	      {
+		gear::Link*		context =
+		  static_cast<gear::Link*>(this->context);
+
+		// depending on the closing operation...
+		switch (this->context->operation)
+		  {
+		  case OperationDiscard:
+		    {
+		      // call the shutdown method.
+		      if (gear::Link::A::Discard(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationStore:
+		    {
+		      // call the shutdown method.
+		      if (gear::Link::A::Store(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationDestroy:
+		    {
+		      // call the shutdown method.
+		      if (gear::Link::A::Destroy(
+			    *context) == elle::StatusError)
+			escape("an error occured in the shutdown method");
+
+		      break;
+		    }
+		  case OperationUnknown:
+		    {
+		      escape("unknown operation '%u'\n",
+			     this->context->operation);
+		    }
+		  }
+
+		break;
+	      }
+	    case NatureUnknown:
+	    default:
+	      {
+		escape("unknown context nature '%u'",
+		       this->context->nature);
+	      }
+	    }
+	}
+
+      leave();
+    }
+
+    ///
+    /// this method is called whenever the scope needs to be refreshed i.e
+    /// has lived long enough in main memory so that the risk of it having
+    /// been updated on another computer is quite high.
+    ///
+    /// therefore, this refreshing process is triggered on a regular basis
+    /// in order to make sure scopes which are always opened pick get
+    /// updated.
+    ///
+    template <typename T>
+    elle::Status	Scope::Refresh()
+    {
+      elle::Hurdle::Zone	zone(this->hurdle, elle::ModeWrite);
+
+      enter();
+
+      // debug.
+      if (Infinit::Configuration.etoile.debug == true)
+	printf("[etoile] gear::Scope::Refresh()\n");
+
+      // lock the current scope in order to make sure it does not get
+      // relinquished or simply modified.
+      //
+      // this is especially required since Load()ing may block the current
+      // fiber.
+      zone.Lock();
+      {
+	elle::Callback<
+	  elle::Status,
+	  elle::Parameters<
+	    T&
+	    >
+	  >		callback;
+	T*		context;
+
+	enterx(instance(context));
+
+	// allocate a context.
+	context = new T;
+
+	// locate the context based on the current scope's chemin.
+	if (this->chemin.Locate(context->location) == elle::StatusError)
+	  escape("unable to locate the scope");
+
+	// load the object.
+	if (T::A::Load(*context) == elle::StatusError)
+	  escape("unable to load the object");
+
+	// check if the loaded object is indeed newer.
+	if (context->object.version >
+	    static_cast<T*>(this->context)->object.version)
+	  {
+	    //
+	    // in this case, a newer version exists which has been loaded.
+	    //
+	    // replace the current one with the new one.
+	    //
+
+	    // delete the existing context.
+	    delete this->context;
+
+	    // set the new context.
+	    this->context = context;
+	  }
+	else
+	  {
+	    //
+	    // otherwise, the loaded object is of the same version as the
+	    // current one.
+	    //
+	    // in this case, nothing is done.
+	    //
+
+	    // delete the retrieved context.
+	    delete context;
+	  }
+
+	// waive.
+	waive(context);
+
+	// release.
+	release();
+      }
+      zone.Unlock();
+
+      leave();
+    }
+
+    ///
+    /// this method does the opposite of the Refresh() method by disclosing,
+    /// i.e storing, the modifications even though the scope has not been
+    /// closed yet.
+    ///
+    /// such a process gets handy when scopes are opened and never closed
+    /// by still modified. thanks to the regular disclosing mechanism, the
+    /// modifications of scopes having lives for too much time in main
+    /// memory are published by force in order to make sure other computers
+    /// take notice of those.
+    ///
+    template <typename T>
+    elle::Status	Scope::Disclose()
+    {
+      elle::Hurdle::Zone	zone(this->hurdle, elle::ModeWrite);
+
+      enter();
+
+      // debug.
+      if (Infinit::Configuration.etoile.debug == true)
+	printf("[etoile] gear::Scope::Disclose()\n");
+
+      // protect the access to the current scope.
+      zone.Lock();
+      {
+	Scope*		scope;
+	T*		context;
+	Actor*		actor;
+
+	enterx(instance(actor),
+	       slab(scope, gear::Scope::Annihilate));
+
+	//
+	// create a scope, very much as for wall::*::Create(), except
+	// that it works even for objects which cannot, obviously, be created.
+	//
+	{
+	  // supply a scope i.e request a new anonymous scope.
+	  if (gear::Scope::Supply(scope) == elle::StatusError)
+	    escape("unable to supply a scope");
+
+	  // retrieve the context.
+	  if (scope->Use(context) == elle::StatusError)
+	    escape("unable to retrieve the context");
+
+	  // allocate an actor on the new scope, making the scope valid
+	  // for triggering automata.
+	  actor = new gear::Actor(scope);
+	}
+
+	//
+	// swap the contexts.
+	//
+	{
+	  // transfer the current scope's context to the new scope.
+	  actor->scope->context = this->context;
+
+	  // set the current scope's context with the new one.
+	  this->context = context;
+	}
+
+	// store the object which now carries the modified context.
+	if (T::W::Store(actor->identifier) == elle::StatusError)
+	  escape("unable to store the object");
+
+	// waive the actor.
+	waive(actor);
+
+	// waive the scope.
+	waive(scope);
+
+	//
+	// at this point, a scope has been created, to which the modified
+	// context has been transferred. this scope has been stored, hence
+	// disclosing its modifications.
+	//
+	// finally, the current scope's context is allocated but initialized
+	// and must therefore be loaded with a fresh version of the object.
+	//
+
+	// locate the object based on the current scope's chemin.
+	if (this->chemin.Locate(context->location) == elle::StatusError)
+	  escape("unable to locate the file");
+
+	// load a fresh version of the object which should happen to be
+	// the one stored above.
+	if (T::A::Load(*context) == elle::StatusError)
+	  escape("unable to load the object");
+
+	// release.
+	release();
+      }
+      zone.Unlock();
+
+      leave();
+    }
+
 //
 // ---------- callbacks -------------------------------------------------------
 //
