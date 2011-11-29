@@ -21,10 +21,12 @@ from copy import deepcopy
 class Config:
 
     def __init__(self, model = None):
-
         if model is None:
+            self.__optimize = False
+            self.__debug = False
             self._includes = {}
             self._local_includes = {}
+            self.__optimization = 1
             self._system_includes = {}
             self.lib_paths = {}
             self.libs = {}
@@ -33,8 +35,10 @@ class Config:
             self._framework = {}
             self._defines = {}
         else:
+            self.__debug = model.__debug
             self._includes = deepcopy(model._includes)
             self._local_includes = deepcopy(model._local_includes)
+            self.__optimization = model.__optimization
             self._system_includes = deepcopy(model._system_includes)
             self.lib_paths = deepcopy(model.lib_paths)
             self.libs = deepcopy(model.libs)
@@ -42,6 +46,17 @@ class Config:
             self.ldflags = deepcopy(model.ldflags)
             self._framework = deepcopy(model._framework)
             self._defines = deepcopy(model._defines)
+
+    def enable_debug_symbols(self, val = True):
+        self.__debug = val
+
+    def enable_optimization(self, val = True):
+        if val is True:
+            self.__optimization = 1
+        elif val is False:
+            self.__optimization = 0
+        else:
+            self.__optimization = val
 
     def define(self, name, value = None):
 
@@ -231,8 +246,17 @@ class GccToolkit(Toolkit):
             res.append(utils.shell_escape(include))
         return res
 
+    def cflags(self, cfg):
+        res = []
+        if cfg._Config__optimization:
+            res.append('-O2')
+        if cfg._Config__debug:
+            res.append('-g')
+        return res
+
     def compile(self, cfg, src, obj, c = False):
-        return ' '.join([c and self.c or self.cxx] + cfg.flags + self.cppflags(cfg) + ['-c', str(src), '-o', str(obj)])
+        return ' '.join([c and self.c or self.cxx] + cfg.flags + self.cppflags(cfg) + self.cflags(cfg)
+                        + ['-c', str(src), '-o', str(obj)])
 
 
     def archive(self, cfg, objs, lib):
