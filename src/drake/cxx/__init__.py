@@ -29,7 +29,7 @@ class Config:
             self.__optimization = 1
             self._system_includes = {}
             self.lib_paths = {}
-            self.libs = {}
+            self.libs = []
             self.flags = []
             self.ldflags = []
             self._framework = {}
@@ -128,7 +128,7 @@ class Config:
 
     def lib(self, lib):
 
-        self.libs[lib] = None
+        self.libs.append(lib)
 
 
     def __add__(self, rhs):
@@ -140,7 +140,7 @@ class Config:
         res._includes.update(rhs._includes)
         res._framework.update(rhs._framework)
         res.lib_paths.update(rhs.lib_paths)
-        res.libs.update(rhs.libs)
+        res.libs += rhs.libs
         res.flags += rhs.flags
         res.ldflags += rhs.ldflags
         return res
@@ -615,7 +615,7 @@ class DynLibLinker(Builder):
         frameworks.sort()
         lib_paths = list(self.config.lib_paths.keys())
         lib_paths.sort()
-        libs = list(self.config.libs.keys())
+        libs = self.config.libs
         libs.sort()
         return '%s\n%s\n%s\n%s\n' % (flags, frameworks, lib_paths, libs)
 
