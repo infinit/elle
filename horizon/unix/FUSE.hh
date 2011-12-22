@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -36,6 +36,7 @@
 
 namespace facade
 {
+#undef unix
   namespace unix
   {
 
@@ -76,7 +77,7 @@ namespace facade
 /// this structure is theoretically kept internally within the FUSE source
 /// code.
 ///
-/// unfortunately, since PIG is using FUSE's low-level functions, this
+/// unfortunately, since facade is using FUSE's low-level functions, this
 /// structure is needed to access the session (->se) field.
 ///
 /// therefore this definition gives us just enough information in order

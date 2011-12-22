@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -12,14 +12,16 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <facade/unix/PIG.hh>
+#include <facade/unix/UNIX.hh>
 #include <facade/unix/Crux.hh>
+#include <facade/Facade.hh>
 
 #include <elle/Elle.hh>
 #include <agent/Agent.hh>
 
 namespace facade
 {
+#undef unix
   namespace unix
   {
 
@@ -32,30 +34,28 @@ namespace facade
     /// is used whenever the system cannot map the Infinit user on a local
     /// user.
     ///
-    uid_t				PIG::Somebody::UID;
+    uid_t				UNIX::Somebody::UID;
 
     ///
     /// this variable contains the GID of the 'somebody' group.
     ///
-    gid_t				PIG::Somebody::GID;
+    gid_t				UNIX::Somebody::GID;
 
     ///
     /// this varaible contains the mappings between local user/group
     /// identities and Infinit identities.
     ///
-    lune::Dictionary			PIG::Dictionary;
+    lune::Dictionary			UNIX::Dictionary;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// this method initializes PIG.
+    /// this method initializes UNIX.
     ///
-    elle::Status	PIG::Initialize()
+    elle::Status	UNIX::Initialize()
     {
-      elle::String	mountpoint;
-
       enter();
 
       //
@@ -71,8 +71,8 @@ namespace facade
 	  escape("it seems that the user 'somebody' does not exist");
 
 	// set the uid and gid.
-	PIG::Somebody::UID = passwd->pw_uid;
-	PIG::Somebody::GID = passwd->pw_gid;
+	UNIX::Somebody::UID = passwd->pw_uid;
+	UNIX::Somebody::GID = passwd->pw_gid;
       }
 
       //
@@ -81,11 +81,11 @@ namespace facade
       //
       {
 	// if the dictionary exist.
-	if (PIG::Dictionary.Exist(agent::Agent::Identity.name) ==
+	if (UNIX::Dictionary.Exist(agent::Agent::Identity.name) ==
 	    elle::StatusTrue)
 	  {
 	    // load the dictionary file.
-	    if (PIG::Dictionary.Load(agent::Agent::Identity.name) ==
+	    if (UNIX::Dictionary.Load(agent::Agent::Identity.name) ==
 		elle::StatusError)
 	      escape("unable to load the dictionary");
 	  }
@@ -149,35 +149,8 @@ namespace facade
       // set up FUSE.
       //
       {
-	// XXX everything must change!
-	if (Infinit::Parser->Test("Mountpoint") == elle::StatusFalse)
-	  {
-	    char		command[256];
-
-	    mountpoint =
-	      elle::System::Path::Home + "/local/mnt/infinit/personal";
-
-	    printf("Infinit is about to be mounted at '%s'\n",
-		   mountpoint.c_str());
-
-	    sprintf(command, "mkdir -p %s",
-		    mountpoint.c_str());
-	    system(command);
-	  }
-	else
-	  {
-	    // retrieve the mount point.
-	    if (Infinit::Parser->Value("Mountpoint",
-				       mountpoint) == elle::StatusError)
-	      {
-		// display the usage.
-		Infinit::Parser->Usage();
-
-		escape("unable to retrieve the mount point");
-	      }
-	  }
-
-	if (FUSE::Setup(mountpoint) == elle::StatusError)
+	// set up FUSE.
+	if (FUSE::Setup(Facade::Mountpoint) == elle::StatusError)
 	  escape("unable to set up FUSE");
       }
 
@@ -185,34 +158,15 @@ namespace facade
     }
 
     ///
-    /// this method cleans PIG.
+    /// this method cleans UNIX.
     ///
-    elle::Status	PIG::Clean()
+    elle::Status	UNIX::Clean()
     {
       enter();
 
       // clean FUSE.
       if (FUSE::Clean() == elle::StatusError)
 	escape("unable to clean FUSE");
-
-      leave();
-    }
-
-    ///
-    /// this method sets up the pig-specific options.
-    ///
-    elle::Status	PIG::Options()
-    {
-      enter();
-
-      // register the option.
-      if (Infinit::Parser->Register(
-	    "Mountpoint",
-	    'm',
-	    "mountpoint",
-	    "specifies the mount point",
-	    elle::Parser::KindRequired) == elle::StatusError)
-	escape("unable to register the option");
 
       leave();
     }

@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -19,6 +19,7 @@
 
 namespace facade
 {
+#undef unix
   namespace unix
   {
 
@@ -120,7 +121,7 @@ namespace facade
 				"'");
       const char*		arguments[] =
 	{
-	  "PIG",
+	  "facade",
 
 	  "-s",
 	  "-f",

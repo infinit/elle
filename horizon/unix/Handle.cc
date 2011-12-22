@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -12,10 +12,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/Handle.hh>
+#include <facade/unix/Handle.hh>
 
 namespace facade
 {
+#undef unix
   namespace unix
   {
 

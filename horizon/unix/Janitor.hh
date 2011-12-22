@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -20,6 +20,7 @@
 
 namespace facade
 {
+#undef unix
   namespace unix
   {
 

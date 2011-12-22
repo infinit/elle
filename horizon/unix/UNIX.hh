@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -31,6 +31,10 @@
 ///
 namespace facade
 {
+#undef unix
+  ///
+  /// XXX
+  ///
   namespace unix
   {
 
@@ -39,7 +43,8 @@ namespace facade
 //
 
     ///
-    /// this class contains the general-purpose information related to PIG.
+    /// this class contains the general-purpose information related to the
+    /// UNIX facade.
     ///
     class UNIX
     {
@@ -49,8 +54,6 @@ namespace facade
       //
       static elle::Status	Initialize();
       static elle::Status	Clean();
-
-      static elle::Status	Options();
 
       //
       // static attributes

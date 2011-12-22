@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -22,6 +22,7 @@
 
 namespace facade
 {
+#undef unix
   namespace unix
   {
 
@@ -65,7 +66,7 @@ namespace facade
       //
       {
 	// according to the configuration...
-	switch (Infinit::Configuration.pig.fuker)
+	switch (Infinit::Configuration.facade.fuker)
 	  {
 	  case FUker::TypeSequential:
 	    {
@@ -91,7 +92,7 @@ namespace facade
 	  default:
 	    {
 	      escape("unknown fuker '%u'",
-		     Infinit::Configuration.pig.fuker);
+		     Infinit::Configuration.facade.fuker);
 	    }
 	  }
       }

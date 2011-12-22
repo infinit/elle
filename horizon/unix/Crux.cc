@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -13,7 +13,7 @@
 //
 
 #include <facade/unix/Crux.hh>
-#include <facade/unix/PIG.hh>
+#include <facade/unix/UNIX.hh>
 #include <facade/unix/Janitor.hh>
 #include <facade/unix/Handle.hh>
 
@@ -22,6 +22,7 @@
 
 namespace facade
 {
+#undef unix
   namespace unix
   {
 
@@ -72,8 +73,8 @@ namespace facade
       int			result;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, stat);
 
@@ -114,8 +115,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, stat);
 
@@ -135,8 +136,8 @@ namespace facade
       elle::String*			name;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, stat);
 
@@ -156,7 +157,7 @@ namespace facade
       // found, the 'somebody' user is used instead, indicating that the
       // file belongs to someone, with the given permissions, but cannot
       // be mapped to a local user name.
-      if (PIG::Dictionary.users.Lookup(abstract.keys.owner,
+      if (UNIX::Dictionary.users.Lookup(abstract.keys.owner,
 				       name) == elle::StatusTrue)
 	{
 	  //
@@ -173,7 +174,7 @@ namespace facade
 	  else
 	    {
 	      // if an error occured, set the user to 'somebody'.
-	      stat->st_uid = PIG::Somebody::UID;
+	      stat->st_uid = UNIX::Somebody::UID;
 	    }
 	}
       else
@@ -183,12 +184,12 @@ namespace facade
 	  // system that this object belongs to the 'somebody' user.
 	  //
 
-	  stat->st_uid = PIG::Somebody::UID;
+	  stat->st_uid = UNIX::Somebody::UID;
 	}
 
       // since Infinit does not have the concept of current group, the
       // group of this object is set to 'somebody'.
-      stat->st_gid = PIG::Somebody::GID;
+      stat->st_gid = UNIX::Somebody::GID;
 
       // set the size.
       stat->st_size = static_cast<off_t>(abstract.size);
@@ -289,8 +290,8 @@ namespace facade
 	}
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, stat);
 
@@ -304,8 +305,8 @@ namespace facade
 				      const struct timespec[2])
     {
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, ...)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, ...)\n",
 	       __FUNCTION__,
 	       path);
 
@@ -314,8 +315,8 @@ namespace facade
       //
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, ...)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, ...)\n",
 	       __FUNCTION__,
 	       path);
 
@@ -333,8 +334,8 @@ namespace facade
       etoile::path::Chemin	chemin;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -356,8 +357,8 @@ namespace facade
 					      identifier));
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -378,8 +379,8 @@ namespace facade
       nucleus::Record*	record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p, %p, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p, %p, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, buffer, filler,
 	       static_cast<elle::Natural64>(offset), info);
@@ -445,8 +446,8 @@ namespace facade
 	      if (filler(buffer, entry->name.c_str(), NULL, next) == 1)
 		{
 		  // debug.
-		  if (Infinit::Configuration.pig.debug == true)
-		    printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
+		  if (Infinit::Configuration.facade.debug == true)
+		    printf("[facade] /%s(%s, %p, %p, %qu, %p)\n",
 			   __FUNCTION__,
 			   path, buffer, filler,
 			   static_cast<elle::Natural64>(offset), info);
@@ -466,8 +467,8 @@ namespace facade
 	}
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p, %p, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p, %p, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, buffer, filler,
 	       static_cast<elle::Natural64>(offset), info);
@@ -482,8 +483,8 @@ namespace facade
 					 struct ::fuse_file_info* info)
     {
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -501,8 +502,8 @@ namespace facade
       info->fh = 0;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -524,8 +525,8 @@ namespace facade
       nucleus::Record*		record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, 0%o)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, 0%o)\n",
 	       __FUNCTION__,
 	       path, mode);
 
@@ -598,8 +599,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, 0%o)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, 0%o)\n",
 	       __FUNCTION__,
 	       path, mode);
 
@@ -622,8 +623,8 @@ namespace facade
       nucleus::Subject			subject;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s)\n",
 	       __FUNCTION__,
 	       path);
 
@@ -707,8 +708,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s)\n",
 	       __FUNCTION__,
 	       path);
 
@@ -729,8 +730,8 @@ namespace facade
       nucleus::Record*			record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, 0%o)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, 0%o)\n",
 	       __FUNCTION__,
 	       path, mask);
 
@@ -841,8 +842,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, 0%o)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, 0%o)\n",
 	       __FUNCTION__,
 	       path, mask);
 
@@ -880,8 +881,8 @@ namespace facade
       nucleus::Subject			subject;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, 0%o)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, 0%o)\n",
 	       __FUNCTION__,
 	       path, mode);
 
@@ -986,8 +987,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, 0%o)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, 0%o)\n",
 	       __FUNCTION__,
 	       path, mode);
 
@@ -1002,16 +1003,16 @@ namespace facade
 				    gid_t			gid)
     {
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %u, %u)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %u, %u)\n",
 	       __FUNCTION__,
 	       path, uid, gid);
 
       // XXX to implement.
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %u, %u)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %u, %u)\n",
 	       __FUNCTION__,
 	       path, uid, gid);
 
@@ -1037,8 +1038,8 @@ namespace facade
       nucleus::Subject			subject;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %s, %p, %u, 0x%x)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %s, %p, %u, 0x%x)\n",
 	       __FUNCTION__,
 	       path, name, value, size, flags);
 
@@ -1087,8 +1088,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %s, %p, %u, 0x%x)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %s, %p, %u, 0x%x)\n",
 	       __FUNCTION__,
 	       path, name, value, size, flags);
 
@@ -1109,8 +1110,8 @@ namespace facade
       nucleus::Trait*		trait;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %s, %p, %u)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %s, %p, %u)\n",
 	       __FUNCTION__,
 	       path, name, value, size);
 
@@ -1143,8 +1144,8 @@ namespace facade
 	      -ENOATTR);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %s, %p, %u)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %s, %p, %u)\n",
 	       __FUNCTION__,
 	       path, name, value, size);
 
@@ -1179,8 +1180,8 @@ namespace facade
       size_t					offset;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p, %u)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p, %u)\n",
 	       __FUNCTION__,
 	       path, list, size);
 
@@ -1207,8 +1208,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p, %u)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p, %u)\n",
 	       __FUNCTION__,
 	       path, list, size);
 
@@ -1262,8 +1263,8 @@ namespace facade
       nucleus::Subject			subject;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %s)\n",
 	       __FUNCTION__,
 	       path, name);
 
@@ -1311,8 +1312,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %s)\n",
 	       __FUNCTION__,
 	       path, name);
 
@@ -1335,8 +1336,8 @@ namespace facade
       nucleus::Record*		record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %s)\n",
 	       __FUNCTION__,
 	       target, source);
 
@@ -1400,8 +1401,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %s)\n",
 	       __FUNCTION__,
 	       target, source);
 
@@ -1422,8 +1423,8 @@ namespace facade
       nucleus::Record*		record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p, %qu)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p, %qu)\n",
 	       __FUNCTION__,
 	       path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1472,8 +1473,8 @@ namespace facade
 	        size);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p, %qu)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p, %qu)\n",
 	       __FUNCTION__,
 	       path, buffer, static_cast<elle::Natural64>(size));
 
@@ -1496,8 +1497,8 @@ namespace facade
       nucleus::Record*		record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, 0%o, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, 0%o, %p)\n",
 	       __FUNCTION__,
 	       path, mode, info);
 
@@ -1610,8 +1611,8 @@ namespace facade
 					      permissions));
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, 0%o, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, 0%o, %p)\n",
 	       __FUNCTION__,
 	       path, mode, info);
 
@@ -1629,8 +1630,8 @@ namespace facade
       etoile::gear::Identifier	identifier;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -1650,8 +1651,8 @@ namespace facade
 					      identifier));
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -1672,8 +1673,8 @@ namespace facade
       nucleus::Record*	record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p, %qu, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, buffer, static_cast<elle::Natural64>(size),
 	       static_cast<elle::Natural64>(offset), info);
@@ -1709,8 +1710,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p, %qu, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, buffer, static_cast<elle::Natural64>(size),
 	       static_cast<elle::Natural64>(offset), info);
@@ -1732,8 +1733,8 @@ namespace facade
       nucleus::Record*	record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p, %qu, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, buffer, static_cast<elle::Natural64>(size),
 	       static_cast<elle::Natural64>(offset), info);
@@ -1767,8 +1768,8 @@ namespace facade
       ::memcpy(buffer, region.contents, region.size);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p, %qu, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p, %qu, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, buffer, static_cast<elle::Natural64>(size),
 	       static_cast<elle::Natural64>(offset), info);
@@ -1789,8 +1790,8 @@ namespace facade
       int			result;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %qu)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %qu)\n",
 	       __FUNCTION__,
 	       path, static_cast<elle::Natural64>(size));
 
@@ -1823,8 +1824,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %qu)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %qu)\n",
 	       __FUNCTION__,
 	       path, static_cast<elle::Natural64>(size));
 
@@ -1842,8 +1843,8 @@ namespace facade
       nucleus::Record*	record;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, static_cast<elle::Natural64>(size), info);
 
@@ -1872,8 +1873,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %qu, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %qu, %p)\n",
 	       __FUNCTION__,
 	       path, static_cast<elle::Natural64>(size), info);
 
@@ -1890,8 +1891,8 @@ namespace facade
       Handle*		handle;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -1946,8 +1947,8 @@ namespace facade
       info->fh = 0;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %p)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %p)\n",
 	       __FUNCTION__,
 	       path, info);
 
@@ -1967,8 +1968,8 @@ namespace facade
       etoile::gear::Identifier	object;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s, %s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s, %s)\n",
 	       __FUNCTION__,
 	       source, target);
 
@@ -2215,8 +2216,8 @@ namespace facade
 	}
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s, %s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s, %s)\n",
 	       __FUNCTION__,
 	       source, target);
 
@@ -2239,8 +2240,8 @@ namespace facade
       nucleus::Subject			subject;
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] %s(%s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] %s(%s)\n",
 	       __FUNCTION__,
 	       path);
 
@@ -2377,8 +2378,8 @@ namespace facade
 	      -EPERM);
 
       // debug.
-      if (Infinit::Configuration.pig.debug == true)
-	printf("[pig] /%s(%s)\n",
+      if (Infinit::Configuration.facade.debug == true)
+	printf("[facade] /%s(%s)\n",
 	       __FUNCTION__,
 	       path);
 

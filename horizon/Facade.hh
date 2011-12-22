@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       facade
 //
 // license       infinit
 //
@@ -17,13 +17,39 @@
 
 #include <elle/system/Platform.hh>
 
+#include <elle/Elle.hh>
+
 ///
-/// XXX
+/// this namespace contains several implementations related to the
+/// operating system as the system call interface changes.
 ///
 namespace facade
 {
 
-  // nothing
+//
+// ---------- classes ---------------------------------------------------------
+//
+
+  ///
+  /// this class contains general-purpose methods for initializing and
+  /// cleaning the facade component.
+  ///
+  class Facade
+  {
+  public:
+    //
+    // static methods
+    //
+    static elle::Status		Initialize();
+    static elle::Status		Clean();
+
+    static elle::Status		Options();
+
+    //
+    // static attributes
+    //
+    static elle::String		Mountpoint;
+  };
 
 }
 
@@ -32,9 +58,10 @@ namespace facade
 //
 
 #if defined(INFINIT_UNIX)
+# undef unix
 # include <facade/unix/UNIX.hh>
 #elif defined(INFINIT_WIN32)
-// XXX
+// XXX todo: windows
 #endif
 
 #endif
