@@ -194,6 +194,7 @@ namespace elle
 			       T* = static_cast<T*>(NULL));
 
       static Status	Sleep(const Natural32);
+      static Status	Yield();
 
       static Status	Register(const
 				   Callback<

@@ -78,7 +78,7 @@ namespace elle
 	escape("unable to create %s: %s",
 	       path.string.c_str(), ::strerror(errno));
 #else
-# error "mkdir not supported"
+# error "unsupported platform"
 #endif
 
       leave();

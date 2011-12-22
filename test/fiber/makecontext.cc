@@ -11,6 +11,8 @@
 // http://www.codeproject.com/KB/threads/ucontext.aspx
 /* testcontext.c : demo of ucontex_t operations */
 
+// XXX test to remove or better integrate!
+
 #include <stdio.h>
 
 #include <stdlib.h>

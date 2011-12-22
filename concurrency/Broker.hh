@@ -66,6 +66,8 @@ namespace elle
       Broker(const Natural16);
 #elif defined(INFINIT_WIN32)
       Broker(HANDLE);
+#else
+# error "unsupported platform"
 #endif
 
       //
@@ -87,6 +89,8 @@ namespace elle
       ::QSocketNotifier		notifier;
 #elif defined(INFINIT_WIN32)
       ::QWinEventNotifier	notifier;
+#else
+# error "unsupported platform"
 #endif
 
       //
@@ -100,6 +104,8 @@ namespace elle
 	    Natural16
 #elif defined(INFINIT_WIN32)
 	    HANDLE
+#else
+# error "unsupported platform"
 #endif
 	    >
 	  >			ready;

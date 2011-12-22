@@ -44,6 +44,8 @@ namespace elle
       notifier(hEvent)
     {
     }
+#else
+# error "unsupported platform"
 #endif
 
 //
@@ -67,6 +69,8 @@ namespace elle
       if (this->connect(&this->notifier, SIGNAL(activated(HANDLE)),
 			this, SLOT(_trigger())) == false)
 	escape("unable to connect the signal");
+#else
+# error "unsupported platform"
 #endif
 
       leave();
@@ -89,6 +93,8 @@ namespace elle
       if (this->disconnect(&this->notifier, SIGNAL(activated(HANDLE)),
 			   this, SLOT(_trigger())) == false)
 	escape("unable to disconnect from the signal");
+#else
+# error "unsupported platform"
 #endif
 
       leave();
@@ -114,6 +120,8 @@ namespace elle
       // emit the signal.
       if (this->signal.ready.Emit(this->notifier.handle()) == StatusError)
 	escape("unable to emit the signal");
+#else
+# error "unsupported platform"
 #endif
 
       leave();

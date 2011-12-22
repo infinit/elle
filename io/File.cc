@@ -81,7 +81,9 @@ namespace elle
       // read the file's content.
       while (roffset < data.capacity)
         {
-          int rbytes = ::read(fd, data.contents + roffset, data.capacity - roffset);
+          int rbytes = ::read(fd,
+			      data.contents + roffset,
+			      data.capacity - roffset);
 
           if (rbytes == 0)
             break;
@@ -157,9 +159,7 @@ namespace elle
 
       leave();
     }
-#endif
-
-#if defined(INFINIT_WIN32)
+#elif defined(INFINIT_WIN32)
     ///
     /// this method reads the given file's content.
     ///
@@ -198,8 +198,11 @@ namespace elle
         {
           DWORD rbytes;
 
-          BOOL succeed = ::ReadFile(fd, data.contents + roffset, data.capacity - roffset,
-                                    &rbytes, NULL);
+          BOOL succeed = ::ReadFile(fd,
+				    data.contents + roffset,
+				    data.capacity - roffset,
+                                    &rbytes,
+				    NULL);
 
           if (!succeed)
             {
@@ -272,6 +275,8 @@ namespace elle
 
       leave();
     }
+#else
+# error "unsupported platform"
 #endif
 
     ///
