@@ -20,23 +20,14 @@
 #include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 #include <hole/Hole.hh>
-
-#if defined(INFINIT_UNIX)
-# include <pig/PIG.hh>
-#elif defined(INFINIT_WIN32)
-# include <iig/IIG.hh>
-#endif
-
-#include <elle/idiom/Close.hh>
-# include <exception>
-#include <elle/idiom/Open.hh>
+#include <facade/Facade.hh>
 
 //
 // ---------- functions -------------------------------------------------------
 //
 
 ///
-/// this is the entry point of pig.
+/// this is the entry point of infinit.
 ///
 elle::Status		Main(elle::Natural32			argc,
                              elle::Character*			argv[])
@@ -88,13 +79,13 @@ elle::Status		Main(elle::Natural32			argc,
     escape("unable to set up the options");
 
 #if defined(INFINIT_UNIX)
-  // set up the pig-specific options.
-  if (pig::PIG::Options() == elle::StatusError)
-    escape("unable to set up the options");
+  // set up the facade options.
+  if (facade::Facade::Options() == elle::StatusError)
+    escape("unable to set up the facade options");
 #elif defined(INFINIT_WIN32)
-  // set up the iig-specifi options.
-  if (iig::IIG::Options() == elle::StatusError)
-    escape("unable to set up iig options");
+  // XXX todo: windows
+#else
+# error "unsupported platform"
 #endif
 
   // parse.
@@ -124,13 +115,13 @@ elle::Status		Main(elle::Natural32			argc,
     escape("unable to initialize Etoile");
 
 #if defined(INFINIT_UNIX)
-  // initialize PIG.
-  if (pig::PIG::Initialize() == elle::StatusError)
-    escape("unable to initialize PIG");
+  // initialize the facade.
+  if (facade::Facade::Initialize() == elle::StatusError)
+    escape("unable to initialize the facade");
 #elif defined(INFINIT_WIN32)
-  // initialize IIG.
-  if (iig::IIG::Initialize() == elle::StatusError)
-    escape("unable to initialize IIG");
+  // XXX todo: windows
+#else
+# error "unsupported platform"
 #endif
 
   // launch the program.
@@ -144,13 +135,13 @@ elle::Status		Main(elle::Natural32			argc,
   waive(Infinit::Parser);
 
 #if defined(INFINIT_UNIX)
-  // clean PIG.
-  if (pig::PIG::Clean() == elle::StatusError)
-    escape("unable to clean PIG");
+  // clean the facade.
+  if (facade::Facade::Clean() == elle::StatusError)
+    escape("unable to clean the facade");
 #elif defined(INFINIT_WIN32)
-  // clean IIG.
-  if (iig::IIG::Clean() == elle::StatusError)
-    escape("unable to clean IIG");
+  // XXX todo: windows
+#else
+# error "unsupported platform"
 #endif
 
   // clean the Etoile library.

@@ -25,14 +25,7 @@ ADD_SUBDIRECTORY(nucleus)
 ADD_SUBDIRECTORY(etoile)
 ADD_SUBDIRECTORY(agent)
 ADD_SUBDIRECTORY(lune)
-
-IF(${UNIX})
-  ADD_SUBDIRECTORY(pig)
-ENDIF()
-
-IF(${WIN32})
-  ADD_SUBDIRECTORY(iig)
-ENDIF()
+ADD_SUBDIRECTORY(facade)
 
 ADD_SUBDIRECTORY(hole)
 ADD_SUBDIRECTORY(applications)
@@ -49,15 +42,7 @@ ADD_EXECUTABLE(Infinit
   _infinit.cc
 )
 
-TARGET_LINK_LIBRARIES(Infinit infinit etoile nucleus lune agent hole)
-
-IF(${UNIX})
-  TARGET_LINK_LIBRARIES(Infinit pig)
-ENDIF()
-
-IF(${WIN32})
-  TARGET_LINK_LIBRARIES(Infinit iig)
-ENDIF()
+TARGET_LINK_LIBRARIES(Infinit infinit etoile nucleus lune agent hole facade)
 
 TARGET_LINK_LIBRARIES(Infinit ${QT_QTNETWORK_LIBRARIES}
                               ${QT_QTCORE_LIBRARIES})

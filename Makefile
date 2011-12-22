@@ -35,11 +35,10 @@ COMPONENTS	:=		elle					\
 				nucleus					\
 				etoile					\
 				agent					\
-				pig					\
+				facade					\
 				applications				\
 				lune					\
 				hole					\
-				iig					\
 				oracle					
 
 #
