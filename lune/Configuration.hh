@@ -78,19 +78,18 @@ namespace lune
 	static const elle::Boolean		Debug;
       };
 
-#if defined(INFINIT_UNIX)
-      struct					PIG
+      struct					Facade
       {
 	static const elle::Boolean		Debug;
 
+#if defined(INFINIT_UNIX)
 	static const elle::Natural32		FUker;
-      };
 #elif defined(INFINIT_WIN32)
-      struct					IIG
-      {
-        static const elle::Boolean		Debug;
-      };
+	// XXX
+#else
+# error "unsupported platform"
 #endif
+      };
     };
 
     //
@@ -157,19 +156,18 @@ namespace lune
       elle::Boolean		debug;
     }				hole;
 
-#if defined(INFINIT_UNIX)
     struct
     {
       elle::Boolean		debug;
 
+#if defined(INFINIT_UNIX)
       elle::Natural32		fuker;
-    }				pig;
 #elif defined(INFINIT_WIN32)
-    struct
-    {
-      elle::Boolean             debug;
-    }				iig;
+      // XXX
+#else
+# error "unsupported platform"
 #endif
+    }				facade;
   };
 
 }

@@ -251,6 +251,8 @@ namespace lune
       if (Lune::User::Phrase.Create(
 	    home +
 	    elle::System::Path::Separator +
+	    "users" +
+	    elle::System::Path::Separator +
 	    "%USER%" +
 	    elle::System::Path::Separator +
 	    "phrases" +

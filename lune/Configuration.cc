@@ -15,10 +15,7 @@
 #include <lune/Configuration.hh>
 
 #include <lune/Lune.hh>
-
-#if defined(INFINIT_UNIX)
-# include <pig/PIG.hh>
-#endif
+#include <facade/Facade.hh>
 
 namespace lune
 {
@@ -69,22 +66,20 @@ namespace lune
   const elle::Boolean
   Configuration::Default::Hole::Debug = false;
 
-#if defined(INFINIT_UNIX)
   ///
-  /// pig-specific configuration values.
+  /// facade-specific configuration values.
   ///
   const elle::Boolean
-  Configuration::Default::PIG::Debug = false;
+  Configuration::Default::Facade::Debug = false;
 
+#if defined(INFINIT_UNIX)
   const elle::Natural32
-  Configuration::Default::PIG::FUker =
-    static_cast<elle::Natural32>(pig::FUker::TypeSequential);
+  Configuration::Default::Facade::FUker =
+    static_cast<elle::Natural32>(facade::unix::FUker::TypeSequential);
 #elif defined(INFINIT_WIN32)
-  ///
-  /// iig-specific configuration values.
-  ///
-  const elle::Boolean
-  Configuration::Default::IIG::Debug = false;
+  // XXX
+#else
+# error "unsupported platform"
 #endif
 
 //
@@ -169,32 +164,26 @@ namespace lune
 	escape("unable to update the parameter");
     }
 
-#if defined(INFINIT_UNIX)
     //
-    // pig
+    // facade
     //
     {
       if (elle::Settings::Set(
-	    "pig", "debug",
-	    this->pig.debug) == elle::StatusError)
+	    "facade", "debug",
+	    this->facade.debug) == elle::StatusError)
 	escape("unable to update the parameter");
 
+#if defined(INFINIT_UNIX)
       if (elle::Settings::Set(
-	    "pig", "fuker",
-	    this->pig.fuker) == elle::StatusError)
+	    "facade", "fuker",
+	    this->facade.fuker) == elle::StatusError)
 	escape("unable to update the parameter");
-    }
 #elif defined(INFINIT_WIN32)
-    //
-    // iig
-    //
-    {
-      if (elle::Settings::Set(
-	    "iig", "debug",
-	    this->iig.debug) == elle::StatusError)
-	escape("unable to update the parameter");
-    }
+      // XXX
+#else
+# error "unsupported platform"
 #endif
+    }
 
     leave();
   }
@@ -299,36 +288,29 @@ namespace lune
 	escape("unable to retrieve the parameter");
     }
 
-#if defined(INFINIT_UNIX)
     //
-    // pig
+    // facade
     //
     {
       if (elle::Settings::Get(
-	    "pig", "debug",
-	    this->pig.debug,
-	    Configuration::Default::PIG::Debug) ==
+	    "facade", "debug",
+	    this->facade.debug,
+	    Configuration::Default::Facade::Debug) ==
 	  elle::StatusError)
 	escape("unable to retrieve the parameter");
 
+#if defined(INFINIT_UNIX)
       if (elle::Settings::Get(
-	    "pig", "fuker",
-	    this->pig.fuker,
-	    Configuration::Default::PIG::FUker) == elle::StatusError)
+	    "facade", "fuker",
+	    this->facade.fuker,
+	    Configuration::Default::Facade::FUker) == elle::StatusError)
 	escape("unable to update the parameter");
-    }
 #elif defined(INFINIT_WIN32)
-    //
-    // iig
-    //
-    {
-      if (elle::Settings::Get(
-	    "iig", "debug",
-	    this->iig.debug,
-	    Configuration::Default::IIG::Debug) == elle::StatusError)
-	escape("unable to retrieve the parameter");
-    }
+      // XXX
+#else
+# error "unsupported platform"
 #endif
+    }
 
     leave();
   }

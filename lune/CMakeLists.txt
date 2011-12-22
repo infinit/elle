@@ -12,8 +12,4 @@ ADD_LIBRARY(lune
   Phrase.cc
 )
 
-TARGET_LINK_LIBRARIES(lune nucleus hole)
-
-IF(${UNIX})
-  TARGET_LINK_LIBRARIES(lune pig)
-ENDIF()
+TARGET_LINK_LIBRARIES(lune nucleus hole facade)
