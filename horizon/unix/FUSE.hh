@@ -8,8 +8,8 @@
 // author        julien quintard   [fri jul 31 22:11:24 2009]
 //
 
-#ifndef PIG_FUSE_HH
-#define PIG_FUSE_HH
+#ifndef FACADE_UNIX_FUSE_HH
+#define FACADE_UNIX_FUSE_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -28,41 +28,44 @@
 #include <nucleus/Nucleus.hh>
 #include <lune/Lune.hh>
 
-#include <pig/FUker.hh>
+#include <facade/unix/FUker.hh>
 
 #include <elle/idiom/Close.hh>
 # include <fuse/fuse.h>
 #include <elle/idiom/Open.hh>
 
-namespace pig
+namespace facade
 {
+  namespace unix
+  {
 
 //
 // ---------- classes ---------------------------------------------------------
 //
 
-  ///
-  /// this class contains everything related to FUSE.
-  ///
-  class FUSE
-  {
-  public:
-    //
-    // static methods
-    //
-    static elle::Status		Initialize();
-    static elle::Status		Setup(const elle::String&);
-    static elle::Status		Clean();
+    ///
+    /// this class contains everything related to FUSE.
+    ///
+    class FUSE
+    {
+    public:
+      //
+      // static methods
+      //
+      static elle::Status	Initialize(const struct ::fuse_operations&);
+      static elle::Status	Setup(const elle::String&);
+      static elle::Status	Clean();
 
-    //
-    // static attributes
-    //
-    static elle::String			Mountpoint;
-    static FUker*			Fuker;
+      //
+      // static attributes
+      //
+      static elle::String		Mountpoint;
+      static FUker*			Fuker;
 
-    static struct ::fuse_operations	Operations;
-  };
+      static struct ::fuse_operations	Operations;
+    };
 
+  }
 }
 
 //

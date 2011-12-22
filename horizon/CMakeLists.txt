@@ -1,16 +1,7 @@
-PROJECT(PIG CXX)
+IF(${UNIX})
+  ADD_SUBDIRECTORY(unix)
+ENDIF()
 
-ADD_DEFINITIONS(-D_FILE_OFFSET_BITS=64)
-
-ADD_LIBRARY(pig
-  Crux.cc
-  FUSE.cc
-  Handle.cc
-  InterlacedFUker.cc
-  Janitor.cc
-  ParallelFUker.cc
-  PIG.cc
-  SequentialFUker.cc
-)
-
-TARGET_LINK_LIBRARIES(pig etoile fuse)
+IF(${WIN32})
+  ADD_SUBDIRECTORY(windows)
+ENDIF()

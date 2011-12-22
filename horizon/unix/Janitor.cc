@@ -12,21 +12,24 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/Janitor.hh>
+#include <facade/unix/Janitor.hh>
 
-namespace pig
+namespace facade
 {
+  namespace unix
+  {
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
-  ///
-  /// this method clears no identifier.
-  ///
-  elle::Void		Janitor::Clear()
-  {
-    // nothing to do
-  }
+    ///
+    /// this method clears no identifier.
+    ///
+    elle::Void		Janitor::Clear()
+    {
+      // nothing to do
+    }
 
+  }
 }

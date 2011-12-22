@@ -8,8 +8,8 @@
 // author        julien quintard   [tue jul 26 15:33:15 2011]
 //
 
-#ifndef PIG_PARALLELFUKER_HH
-#define PIG_PARALLELFUKER_HH
+#ifndef FACADE_UNIX_PARALLELFUKER_HH
+#define FACADE_UNIX_PARALLELFUKER_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -25,41 +25,44 @@
 
 #include <elle/Elle.hh>
 
-#include <pig/FUker.hh>
+#include <facade/unix/FUker.hh>
 
-namespace pig
+namespace facade
 {
+  namespace unix
+  {
 
 //
 // ---------- classes ---------------------------------------------------------
 //
 
-  ///
-  /// XXX to implement.
-  ///
-  class ParallelFUker:
-    public FUker
-  {
-  public:
-    //
-    // constructors & destructors
-    //
-    ParallelFUker();
-    ~ParallelFUker();
+    ///
+    /// XXX to implement.
+    ///
+    class ParallelFUker:
+      public FUker
+    {
+    public:
+      //
+      // constructors & destructors
+      //
+      ParallelFUker();
+      ~ParallelFUker();
 
-    //
-    // interfaces
-    //
+      //
+      // interfaces
+      //
 
-    // fuker
-    elle::Status	Setup();
+      // fuker
+      elle::Status	Setup();
 
-    //
-    // callbacks
-    //
-    elle::Status	Event(const elle::Natural16&);
-  };
+      //
+      // callbacks
+      //
+      elle::Status	Event(const elle::Natural16&);
+    };
 
+  }
 }
 
 #endif
