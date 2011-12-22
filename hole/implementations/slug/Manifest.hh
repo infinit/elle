@@ -21,6 +21,7 @@
 #include <lune/Lune.hh>
 
 #include <hole/implementations/slug/Cluster.hh>
+#include <hole/implementations/slug/Bank.hh>
 #include <hole/implementations/remote/Manifest.hh>
 
 //
@@ -78,6 +79,9 @@ namespace hole
 	  TagAuthenticate = elle::Range<Component>::First + 1,
 	  TagAuthenticated,
 
+	  TagSynchronise,
+	  TagBank,
+
 	  TagPush,
 	  TagPull,
 	  TagBlock,
@@ -101,6 +105,11 @@ message(hole::implementations::slug::TagAuthenticate,
 		   elle::Port&))
 message(hole::implementations::slug::TagAuthenticated,
 	parameters(hole::implementations::slug::Cluster&))
+
+message(hole::implementations::slug::TagSynchronise,
+	parameters())
+message(hole::implementations::slug::TagBank,
+	parameters(hole::implementations::slug::Bank&))
 
 message(hole::implementations::slug::TagPush,
 	parameters(nucleus::Address&,

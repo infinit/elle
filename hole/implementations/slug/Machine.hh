@@ -22,6 +22,7 @@
 #include <hole/implementations/slug/Guestlist.hh>
 #include <hole/implementations/slug/Neighbourhood.hh>
 #include <hole/implementations/slug/Cluster.hh>
+#include <hole/implementations/slug/Synchroniser.hh>
 
 namespace hole
 {
@@ -91,7 +92,10 @@ namespace hole
 	elle::Status		Authenticate(const lune::Passport&,
 					     const elle::Port&);
 	elle::Status		Authenticated(const Cluster&);
+
 	elle::Status		Sweep(Host*);
+	elle::Status		Synchronised();
+
 	elle::Status		Push(const nucleus::Address&,
 				     const
 				       nucleus::Derivable<nucleus::Block>&);
@@ -116,6 +120,8 @@ namespace hole
 	Neighbourhood		neighbourhood;
 
 	elle::Timer*		timer;
+
+	Synchroniser*		synchroniser;
       };
 
     }

@@ -51,7 +51,8 @@ namespace hole
       Machine::Machine():
 	state(StateDetached),
 	port(0),
-	timer(NULL)
+	timer(NULL),
+	synchroniser(NULL)
       {
       }
 
@@ -63,6 +64,10 @@ namespace hole
 	// delete the timer, if present.
 	if (this->timer != NULL)
 	  delete this->timer;
+
+	// delete the synchroniser, if present.
+	if (this->synchroniser != NULL)
+	  delete this->synchroniser;
       }
 
 //
@@ -140,7 +145,8 @@ namespace hole
 
 	  // retrieve the hosts' loci.
 	  if (Hole::Descriptor.Get("slug", "hosts",
-				   string) == elle::StatusError)
+				   string,
+				   elle::String("")) == elle::StatusError)
 	    escape("unable to retrieve the slug's host address from the "
 		   "network descriptor");
 
@@ -1127,6 +1133,24 @@ namespace hole
 	    }
 	}
 
+	//
+	// prepare the synchroniser.
+	//
+	{
+	  // allocate the synchroniser.
+	  this->synchroniser = new Synchroniser;
+
+	  // subscribe to the signal.
+	  if (this->synchroniser->signal.synchronised.Subscribe(
+		elle::Callback<>::Infer(&Machine::Synchronised,
+					this)) == elle::StatusError)
+	    escape("unable to subscribe to the signal");
+
+	  // start the synchroniser.
+	  if (this->synchroniser->Start() == elle::StatusError)
+	    escape("unable to start the synchroniser");
+	}
+
 	leave();
       }
 
@@ -1162,7 +1186,8 @@ namespace hole
 	      if (this->guestlist.Exist(host->socket) == elle::StatusTrue)
 		{
 		  // remove the host from the guestlist.
-		  if (this->guestlist.Remove(host->socket) == elle::StatusError)
+		  if (this->guestlist.Remove(host->socket) ==
+		      elle::StatusError)
 		    escape("unable to remove the host from the neighbourhood");
 		}
 
@@ -1172,6 +1197,26 @@ namespace hole
 
 	// delete the host.
 	bury(host);
+
+	leave();
+      }
+
+      ///
+      /// XXX
+      ///
+      elle::Status	Machine::Synchronised()
+      {
+	enter();
+
+	// debug.
+	if (Infinit::Configuration.hole.debug == true)
+	  printf("[hole] implementations::slug::Machine::Push()\n");
+
+	// bury the synchroniser.
+	bury(this->synchroniser);
+
+	// reset its pointer.
+	this->synchroniser = NULL;
 
 	leave();
       }
@@ -1625,6 +1670,30 @@ namespace hole
 	// dump the neighbourhood.
 	if (this->neighbourhood.Dump(margin + 2) == elle::StatusError)
 	  escape("unable to dump the neighbourhood");
+
+	// dump the timer, if present.
+	if (this->timer != NULL)
+	  {
+	    if (this->timer->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the timer");
+	  }
+	else
+	  {
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << "[Timer] " << elle::none << std::endl;
+	  }
+
+	// dump the synchroniser, if present.
+	if (this->synchroniser != NULL)
+	  {
+	    if (this->synchroniser->Dump(margin + 2) == elle::StatusError)
+	      escape("unable to dump the synchroniser");
+	  }
+	else
+	  {
+	    std::cout << alignment << elle::Dumpable::Shift
+		      << "[Synchroniser] " << elle::none << std::endl;
+	  }
 
 	leave();
       }

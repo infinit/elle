@@ -10,6 +10,7 @@ ADD_LIBRARY(hole
   implementations/remote/Remote.cc
   implementations/remote/Server.cc
 
+  implementations/slug/Bank.cc
   implementations/slug/Cluster.cc
   implementations/slug/Guestlist.cc
   implementations/slug/Host.cc
@@ -17,7 +18,8 @@ ADD_LIBRARY(hole
   implementations/slug/Machine.cc
   implementations/slug/Neighbourhood.cc
   implementations/slug/Slug.cc
- 
+  implementations/slug/Synchroniser.cc
+
 # XXX
 #  implementations/cirkle/Cirkle.cc
 #  implementations/cirkle/Cluster.cc
