@@ -13,9 +13,6 @@
 //
 
 #include <applications/8diary/Diary.hh>
-#include <applications/8diary/Crux.hh>
-
-#include <pig/PIG.hh>
 
 namespace application
 {
@@ -62,10 +59,6 @@ namespace application
     // initialize Infinit.
     if (Infinit::Initialize() == elle::StatusError)
       escape("unable to initialize Infinit");
-
-    // initialize the Etoile library.
-    if (etoile::Etoile::Initialize() == elle::StatusError)
-      escape("unable to initialize Etoile");
 
     // initialize the operation.
     operation = Diary::OperationUnknown;
@@ -157,6 +150,20 @@ namespace application
 	leave();
       }
 
+    /* XXX
+    // initialize the Hole library.
+    if (hole::Hole::Initialize() == elle::StatusError)
+      escape("unable to initialize Hole");
+
+    // initialize the Agent library.
+    if (agent::Agent::Initialize() == elle::StatusError)
+      escape("unable to initialize Agent");
+    */
+
+    // initialize the Etoile library.
+    if (etoile::Etoile::Initialize() == elle::StatusError)
+      escape("unable to initialize Etoile");
+
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Record") == elle::StatusTrue) &&
 	(Infinit::Parser->Test("Replay") == elle::StatusTrue))
@@ -182,7 +189,6 @@ namespace application
 	{
 	  elle::String		mountpoint;
 	  elle::String		mirror;
-	  pig::Diary		diary;
 	  elle::String		string;
 	  elle::Path		path;
 
@@ -205,21 +211,33 @@ namespace application
 				     mirror) == elle::StatusError)
 	    escape("unable to retrieve the mirror value");
 
-	  // set up the crux.
-	  if (Crux::Setup(mirror) == elle::StatusError)
-	    escape("unable to set up the crux");
+#if defined(INFINIT_UNIX)
+	  {
+	    unix::Memoirs	memoirs;
 
-	  // set up the diary.
-	  if (diary.Setup(Crux::Operations) == elle::StatusError)
-	    escape("unable to set up the diary");
+	    // initialize the memoirs.
+	    if (memoirs.Initialize(mountpoint, mirror) == elle::StatusError)
+	      escape("unable to initialize the memoirs");
 
-	  // record the diary.
-	  if (diary.Record(mountpoint) == elle::StatusError)
-	    escape("unable to record the diary");
+	    // launch the program.
+	    if (elle::Program::Launch() == elle::StatusError)
+	      escape("an error occured while processing events");
 
-	  // store the diary.
-	  if (diary.Store(path) == elle::StatusError)
-	    escape("unable to store the diary");
+	    // clean the memoirs.
+	    if (memoirs.Clean() == elle::StatusError)
+	      escape("unable to clean the memoirs");
+
+	    // store the memoirs.
+	    if (memoirs.Store(path) == elle::StatusError)
+	      escape("unable to store the memoirs");
+	  }
+#elif defined(INFINIT_WIN32)
+	  {
+	    // XXX to do!
+	  }
+#else
+# error "unsupported platform"
+#endif
 
 	  // display a message.
 	  std::cout << "The sequence of file system operations have been "
@@ -231,7 +249,6 @@ namespace application
       case Diary::OperationReplay:
 	{
 	  elle::String		mirror;
-	  pig::Diary		diary;
 	  elle::String		string;
 	  elle::Path		path;
 	  elle::Natural32	from;
@@ -251,18 +268,6 @@ namespace application
 				     mirror) == elle::StatusError)
 	    escape("unable to retrieve the mirror value");
 
-	  // set up the crux.
-	  if (Crux::Setup(mirror) == elle::StatusError)
-	    escape("unable to set up the crux");
-
-	  // load the diary.
-	  if (diary.Load(path) == elle::StatusError)
-	    escape("unable to load the diary");
-
-	  // set up the diary.
-	  if (diary.Setup(Crux::Operations) == elle::StatusError)
-	    escape("unable to set up the diary");
-
 	  // initialize the indexes.
 	  from = 0;
 	  to = elle::Variable::Maximum(to);
@@ -281,9 +286,33 @@ namespace application
 		 to) == elle::StatusError))
 	    escape("unable to retrieve the to value");
 
-	  // replay the diary.
-	  if (diary.Replay(from, to) == elle::StatusError)
-	    escape("unable to replay the diary");
+#if defined(INFINIT_UNIX)
+	  {
+	    unix::Memoirs	memoirs;
+
+	    // load the memoirs.
+	    if (memoirs.Load(path) == elle::StatusError)
+	      escape("unable to load the memoirs");
+
+	    // initialize the memoirs.
+	    if (memoirs.Initialize(mirror, from, to) == elle::StatusError)
+	      escape("unable to initialize the memoirs");
+
+	    // launch the program.
+	    if (elle::Program::Launch() == elle::StatusError)
+	      escape("an error occured while processing events");
+
+	    // clean the memoirs.
+	    if (memoirs.Clean() == elle::StatusError)
+	      escape("unable to clean the memoirs");
+	  }
+#elif defined(INFINIT_WIN32)
+	  {
+	    // XXX to do!
+	  }
+#else
+# error "unsupported platform"
+#endif
 
 	  // display a message.
 	  std::cout << "The sequence of file system operations have been "

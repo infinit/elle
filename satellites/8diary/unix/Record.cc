@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
@@ -12,12 +12,15 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/diary/Record.hh>
-#include <pig/diary/Upcall.hh>
+#include <applications/8diary/unix/Record.hh>
+#include <applications/8diary/unix/Upcall.hh>
 
-namespace pig
+#include <facade/unix/FUSE.hh>
+
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //
@@ -31,18 +34,19 @@ namespace pig
     struct ::fuse_operations		Record::Operations;
 
     ///
-    /// this variable contains the address of the diary which is
+    /// this variable contains the address of the memoirs which is
     /// being recorded.
     ///
-    Diary*				Record::Reference = NULL;
+    Memoirs*				Record::Reference = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// XXX general description
     ///
+
     int			Record::Getattr(const char*		path,
 					struct ::stat*		stbuf)
     {
@@ -76,9 +80,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Fgetattr(const char*		path,
 					 struct ::stat*		stbuf,
 					 struct ::fuse_file_info* fi)
@@ -117,9 +118,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Utimens(const char*		path,
 					const struct ::timespec	ts[2])
     {
@@ -150,9 +148,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Opendir(const char*		path,
 					struct ::fuse_file_info* fi)
     {
@@ -186,9 +181,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Readdir(const char*		path,
 					void*			buf,
 					::fuse_fill_dir_t	filler,
@@ -226,9 +218,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Releasedir(const char*		path,
 					   struct ::fuse_file_info* fi)
     {
@@ -262,9 +251,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Mkdir(const char*		path,
 				      mode_t			mode)
     {
@@ -294,9 +280,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Rmdir(const char*		path)
     {
       Upcall		upcall;
@@ -324,9 +307,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Access(const char*		path,
 				       int			mask)
     {
@@ -356,9 +336,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Chmod(const char*		path,
 				      mode_t			mode)
     {
@@ -388,9 +365,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Chown(const char*		path,
 				      uid_t			uid,
 				      gid_t			gid)
@@ -424,9 +398,6 @@ namespace pig
 
 #ifdef HAVE_SETXATTR
 
-    ///
-    /// XXX
-    ///
     int			Record::Setxattr(const char*		path,
 					 const char*		name,
 					 const char*		value,
@@ -462,9 +433,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Getxattr(const char*		path,
 					 const char*		name,
 					 char*			value,
@@ -500,9 +468,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Listxattr(const char*		path,
 					  char*			list,
 					  size_t		size)
@@ -536,9 +501,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Removexattr(const char*		path,
 					    const char*		name)
     {
@@ -570,9 +532,6 @@ namespace pig
 
 #endif
 
-    ///
-    /// XXX
-    ///
     int			Record::Symlink(const char*		to,
 					const char*		from)
     {
@@ -602,9 +561,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Readlink(const char*		path,
 					 char*			buf,
 					 size_t			size)
@@ -638,9 +594,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Create(const char*		path,
 				       mode_t			mode,
 				       struct ::fuse_file_info*	fi)
@@ -676,9 +629,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Open(const char*		path,
 				     struct ::fuse_file_info*	fi)
     {
@@ -712,9 +662,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Write(const char*		path,
 				      const char*		buf,
 				      size_t			size,
@@ -755,9 +702,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Read(const char*		path,
 				     char*			buf,
 				     size_t			size,
@@ -798,9 +742,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Truncate(const char*		path,
 					 off_t			size)
     {
@@ -830,9 +771,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Ftruncate(const char*		path,
 					  off_t			size,
 					  struct ::fuse_file_info* fi)
@@ -865,9 +803,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Release(const char*		path,
 					struct ::fuse_file_info* fi)
     {
@@ -903,9 +838,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Rename(const char*		from,
 				       const char*		to)
     {
@@ -935,9 +867,6 @@ namespace pig
       return res;
     }
 
-    ///
-    /// XXX
-    ///
     int			Record::Unlink(const char*		path)
     {
       Upcall		upcall;
@@ -968,12 +897,13 @@ namespace pig
     ///
     /// this method initializes FUSE.
     ///
-    elle::Status	Record::Initialize(Diary*		diary)
+    elle::Status	Record::Initialize(Memoirs*		memoirs,
+					   const elle::String&	mountpoint)
     {
       enter();
 
-      // set the diary pointer.
-      Record::Reference = diary;
+      // set the memoirs pointer.
+      Record::Reference = memoirs;
 
       //
       // initialize the FUSE operations.
@@ -1024,44 +954,14 @@ namespace pig
 	Record::Operations.flag_nullpath_ok = 0;
       }
 
-      leave();
-    }
+      // initialize FUSE.
+      if (facade::unix::FUSE::Initialize(Record::Operations) ==
+	  elle::StatusError)
+	escape("unable to initialize FUSE");
 
-    ///
-    /// this method launches the recording.
-    ///
-    elle::Status	Record::Launch(const elle::String&	mountpoint)
-    {
-      //
-      // build the arguments.
-      //
-      // note that the -h option can be passed in order to display all
-      // the available options including the threaded, debug, file system
-      // name, file system type etc.
-      //
-      // for example the -d option could be used instead of -f in order
-      // to activate the debug mode.
-      //
-      elle::String	ofsname("-ofsname='diary'");
-      const char*	arguments[] =
-	{
-	  "record",
-
-	  "-s",
-	  "-f", // XXX "-d",
-	  "-osubtype='infinit'",
-	  ofsname.c_str(),
-	  mountpoint.c_str()
-	};
-
-      enter();
-
-      // enter the FUSE loop.
-      if (::fuse_main(sizeof(arguments) / sizeof(elle::Character*),
-		      const_cast<char**>(arguments),
-		      &Record::Operations,
-		      NULL) != 0)
-	escape("an error occured in FUSE");
+      // set up FUSE.
+      if (facade::unix::FUSE::Setup(mountpoint) == elle::StatusError)
+	escape("unable to set up FUSE");
 
       leave();
     }
@@ -1073,7 +973,7 @@ namespace pig
     {
       enter();
 
-      // reset the diary pointer.
+      // reset the memoirs pointer.
       Record::Reference = NULL;
 
       leave();

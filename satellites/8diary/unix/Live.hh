@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
 // author        julien quintard   [fri jul  1 11:39:35 2011]
 //
 
-#ifndef PIG_DIARY_LIVE_HH
-#define PIG_DIARY_LIVE_HH
+#ifndef DIARY_UNIX_LIVE_HH
+#define DIARY_UNIX_LIVE_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,9 +17,10 @@
 
 #include <elle/Elle.hh>
 
-namespace pig
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //

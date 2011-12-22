@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
@@ -12,11 +12,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/diary/Upcall.hh>
+#include <applications/8diary/unix/Upcall.hh>
 
-namespace pig
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //
@@ -88,9 +89,9 @@ namespace pig
 
       // display the outputs.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Inputs]" << std::endl;
+		<< "[Outputs]" << std::endl;
 
-      if (this->inputs.Dump(margin + 4) == elle::StatusError)
+      if (this->outputs.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the archive");
 
       // display the result.
@@ -126,14 +127,19 @@ namespace pig
     ///
     elle::Status	Upcall::Extract(elle::Archive&		archive)
     {
+      elle::Natural32	operation;
+
       enter();
 
       // extract the attributes.
-      if (archive.Extract(reinterpret_cast<elle::Natural32&>(this->operation),
+      if (archive.Extract(operation,
 			  this->inputs,
 			  this->outputs,
 			  this->result) == elle::StatusError)
 	escape("unable to extract the attributes");
+
+      // set the operation.
+      this->operation = static_cast<Upcall::Operation>(operation);
 
       leave();
     }

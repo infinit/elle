@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
@@ -12,11 +12,12 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/diary/Live.hh>
+#include <applications/8diary/unix/Live.hh>
 
-namespace pig
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //

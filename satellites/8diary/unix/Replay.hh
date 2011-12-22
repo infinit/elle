@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
 // author        julien quintard   [thu jun 30 09:19:53 2011]
 //
 
-#ifndef PIG_DIARY_REPLAY_HH
-#define PIG_DIARY_REPLAY_HH
+#ifndef DIARY_UNIX_REPLAY_HH
+#define DIARY_UNIX_REPLAY_HH
 
 //
 // ---------- definitions -----------------------------------------------------
@@ -25,7 +25,7 @@
 
 #include <elle/Elle.hh>
 
-#include <pig/diary/Upcall.hh>
+#include <applications/8diary/unix/Upcall.hh>
 
 #include <elle/idiom/Close.hh>
 # include <fuse.h>
@@ -44,9 +44,10 @@
 # endif
 #include <elle/idiom/Open.hh>
 
-namespace pig
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //
@@ -56,7 +57,7 @@ namespace pig
     ///
     /// XXX
     ///
-    class Diary;
+    class Memoirs;
 
 //
 // ---------- classes ---------------------------------------------------------
@@ -98,7 +99,7 @@ namespace pig
       static elle::Status	Rename(Upcall&);
       static elle::Status	Unlink(Upcall&);
 
-      static elle::Status	Initialize(Diary*);
+      static elle::Status	Initialize(Memoirs*);
       static elle::Status	Launch(const elle::Natural32,
 				       const elle::Natural32);
       static elle::Status	Process();
@@ -107,7 +108,7 @@ namespace pig
       //
       // static attributes
       //
-      static Diary*		Reference;
+      static Memoirs*		Reference;
 
       static elle::Natural32	From;
       static elle::Natural32	To;
@@ -122,6 +123,6 @@ namespace pig
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/diary/Diary.hh>
+#include <applications/8diary/unix/Memoirs.hh>
 
 #endif

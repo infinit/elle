@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
@@ -12,13 +12,16 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/diary/Diary.hh>
-#include <pig/diary/Record.hh>
-#include <pig/diary/Replay.hh>
+#include <applications/8diary/unix/Memoirs.hh>
 
-namespace pig
+#include <applications/8diary/unix/Crux.hh>
+#include <applications/8diary/unix/Record.hh>
+#include <applications/8diary/unix/Replay.hh>
+
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //
@@ -28,38 +31,17 @@ namespace pig
     ///
     /// default constructor.
     ///
-    Diary::Diary():
-      mode(Diary::ModeUnknown)
+    Memoirs::Memoirs():
+      mode(Memoirs::ModeUnknown)
     {
     }
 
     ///
-    /// the destructor.
+    /// destructor.
     ///
-    Diary::~Diary()
+    Memoirs::~Memoirs()
     {
-      // depending on the mode.
-      switch (this->mode)
-	{
-	case Diary::ModeRecord:
-	  {
-	    // clean the record.
-	    Record::Clean();
-
-	    break;
-	  }
-	case Diary::ModeReplay:
-	  {
-	    // clean the replay.
-	    Replay::Clean();
-
-	    break;
-	  }
-	case Diary::ModeUnknown:
-	  {
-	    break;
-	  }
-	}
+      // nothing to do.
     }
 
 //
@@ -67,96 +49,115 @@ namespace pig
 //
 
     ///
-    /// this method sets up the diary with the FUSE operations to
-    /// which the upcalls must be forwarded through the diary.
+    /// this method sets up the memoirs with the FUSE operations to
+    /// which the upcalls must be forwarded through the memoirs.
     ///
-    elle::Status	Diary::Setup(const ::fuse_operations&	fuse)
+    /// besides, this method initializes the recording session.
+    ///
+    elle::Status	Memoirs::Initialize(const elle::String&	mountpoint,
+					    const elle::String& mirror)
     {
       enter();
 
-      // set the attributes.
-      this->fuse = fuse;
-
-      leave();
-    }
-
-    ///
-    /// this method starts the recording.
-    ///
-    elle::Status	Diary::Record(elle::String&		mountpoint)
-    {
-      enter();
-
-      // check the mode.
-      if (this->mode != Diary::ModeUnknown)
-	escape("unable to start recording an already running diary");
+      // set up the crux.
+      if (Crux::Setup(mirror) == elle::StatusError)
+	escape("unable to set up the crux");
 
       // set the mode.
-      this->mode = Diary::ModeRecord;
+      this->mode = Memoirs::ModeRecord;
+
+      // set the attributes.
+      this->fuse = Crux::Operations;
 
       // create the archive.
       if (this->archive.Create() == elle::StatusError)
 	escape("unable to create the archive");
 
       // initialize the record.
-      if (Record::Initialize(this) == elle::StatusError)
+      if (Record::Initialize(this, mountpoint) == elle::StatusError)
 	escape("unable to initialize the record");
-
-      // launch the record.
-      if (Record::Launch(mountpoint) == elle::StatusError)
-	escape("unable to launch the record");
-
-      /* XXX
-      // clean the record.
-      if (Record::Clean() == elle::StatusError)
-	escape("unable to clean the record");
-      */
 
       leave();
     }
 
     ///
-    /// this method starts the replaying.
+    /// this method sets up the memoirs with the FUSE operations to
+    /// which the upcalls must be forwarded through the memoirs.
     ///
-    elle::Status	Diary::Replay(const elle::Natural32	from,
-				      const elle::Natural32	to)
+    /// besides, this method initializes the replaying session.
+    ///
+    elle::Status	Memoirs::Initialize(const elle::String&	mountpoint,
+					    const elle::Natural32 from,
+					    const elle::Natural32 to)
     {
       enter();
 
-      // check the mode.
-      if (this->mode != Diary::ModeUnknown)
-	escape("unable to start replaying an already running diary");
+      // set up the crux.
+      if (Crux::Setup(mountpoint) == elle::StatusError)
+	escape("unable to set up the crux");
 
       // set the mode.
-      this->mode = Diary::ModeReplay;
+      this->mode = Memoirs::ModeReplay;
+
+      // set the attributes.
+      this->fuse = fuse; // XXX
+
+      // set the offsets.
+      this->offsets.from = from;
+      this->offsets.to = to;
 
       // initialize the replay.
       if (Replay::Initialize(this) == elle::StatusError)
 	escape("unable to initialize the replay");
 
-      // launch the replay.
-      if (Replay::Launch(from, to) == elle::StatusError)
-	escape("unable to launch the replay");
+      leave();
+    }
 
-      /* XXX bordel: le replay revient, appelle clean -> ca se lance pas
-      // clean the replay.
-      if (Replay::Clean() == elle::StatusError)
-	escape("unable to clean the replay");
-      */
+    ///
+    /// this method cleans the memoirs.
+    ///
+    elle::Status	Memoirs::Clean()
+    {
+      enter();
+
+      // depending on the mode.
+      switch (this->mode)
+	{
+	case Memoirs::ModeRecord:
+	  {
+	    // clean the record.
+	    if (Record::Clean() == elle::StatusError)
+	      escape("unable to clean the recording session");
+
+	    break;
+	  }
+	case Memoirs::ModeReplay:
+	  {
+	    // clean the replay.
+	    if (Replay::Clean() == elle::StatusError)
+	      escape("unable to clean the replaying session");
+
+	    break;
+	  }
+	case Memoirs::ModeUnknown:
+	  {
+	    break;
+	  }
+	}
 
       leave();
     }
 
     ///
-    /// this method writes an upcall in the diary.
+    /// this method writes an upcall in the memoirs.
     ///
-    elle::Status	Diary::Write(const Upcall&		upcall)
+    elle::Status	Memoirs::Write(const Upcall&		upcall)
     {
       enter();
 
-      // check the diary mode.
-      if (this->mode != Diary::ModeRecord)
-	escape("unable to write an upcall in a non-recording diary");
+      // check the memoirs mode.
+      if (this->mode != Memoirs::ModeRecord)
+	escape("unable to write an upcall in a non-recording memoirs");
 
       // serialize the upcall.
       if (this->archive.Serialize(upcall) == elle::StatusError)
@@ -166,15 +167,15 @@ namespace pig
     }
 
     ///
-    /// this method reads an upcall from the diary.
+    /// this method reads an upcall from the memoirs.
     ///
-    elle::Status	Diary::Read(Upcall&			upcall)
+    elle::Status	Memoirs::Read(Upcall&			upcall)
     {
       enter();
 
-      // check the diary mode.
-      if (this->mode != Diary::ModeReplay)
-	escape("unable to read an upcall from a non-replaying diary");
+      // check the memoirs mode.
+      if (this->mode != Memoirs::ModeReplay)
+	escape("unable to read an upcall from a non-replaying memoirs");
 
       // extract the upcall.
       if (this->archive.Extract(upcall) == elle::StatusError)
@@ -184,9 +185,9 @@ namespace pig
     }
 
     ///
-    /// this method returns true if the end of the diary has been reached.
+    /// this method returns true if the end of the memoirs has been reached.
     ///
-    elle::Status	Diary::End() const
+    elle::Status	Memoirs::End() const
     {
       enter();
 
@@ -198,29 +199,20 @@ namespace pig
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Diary, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
     ///
-    /// this function dumps an diary object.
+    /// this function dumps an memoirs object.
     ///
-    elle::Status	Diary::Dump(elle::Natural32		margin) const
+    elle::Status	Memoirs::Dump(elle::Natural32		margin) const
     {
       elle::String	alignment(margin, ' ');
 
       enter();
 
       // display the name.
-      std::cout << alignment << "[Diary]" << std::endl;
+      std::cout << alignment << "[Memoirs]" << std::endl;
 
       // display the name.
       std::cout << alignment << elle::Dumpable::Shift
@@ -230,6 +222,8 @@ namespace pig
       if (this->archive.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the archive");
 
+      // XXX
+
       leave();
     }
 
@@ -238,9 +232,9 @@ namespace pig
 //
 
     ///
-    /// this method serializes the diary object.
+    /// this method serializes the memoirs object.
     ///
-    elle::Status	Diary::Serialize(elle::Archive&	archive) const
+    elle::Status	Memoirs::Serialize(elle::Archive&	archive) const
     {
       enter();
 
@@ -252,9 +246,9 @@ namespace pig
     }
 
     ///
-    /// this method extracts the diary object.
+    /// this method extracts the memoirs object.
     ///
-    elle::Status	Diary::Extract(elle::Archive&		archive)
+    elle::Status	Memoirs::Extract(elle::Archive&		archive)
     {
       enter();
 
@@ -270,13 +264,13 @@ namespace pig
 //
 
     ///
-    /// this method loads the diary.
+    /// this method loads the memoirs.
     ///
     /// note that since diaries can be very large---several gigabytes---the
     /// method handles the archive specifically, making sure that no
     /// copy is performed.
     ///
-    elle::Status	Diary::Load(const elle::Path&		path)
+    elle::Status	Memoirs::Load(const elle::Path&		path)
     {
       elle::Region	region;
 
@@ -298,13 +292,13 @@ namespace pig
     }
 
     ///
-    /// this method stores the diary in its file format.
+    /// this method stores the memoirs in its file format.
     ///
     /// note that since diaries can be very large---several gigabytes---the
     /// method handles the archive specifically, making sure that no
     /// copy is performed.
     ///
-    elle::Status	Diary::Store(const elle::Path&		path)
+    elle::Status	Memoirs::Store(const elle::Path&	path)
       const
     {
       enter();

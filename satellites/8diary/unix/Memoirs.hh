@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
 // author        julien quintard   [sun jun 26 22:32:34 2011]
 //
 
-#ifndef PIG_DIARY_DIARY_HH
-#define PIG_DIARY_DIARY_HH
+#ifndef DIARY_UNIX_MEMOIRS_HH
+#define DIARY_UNIX_MEMOIRS_HH
 
 //
 // ---------- macros ----------------------------------------------------------
@@ -25,18 +25,16 @@
 
 #include <elle/Elle.hh>
 
-#include <pig/diary/Upcall.hh>
+#include <applications/8diary/unix/Upcall.hh>
 
 #include <elle/idiom/Close.hh>
 # include <fuse/fuse.h>
 #include <elle/idiom/Open.hh>
 
-namespace pig
+namespace application
 {
-  ///
-  /// XXX
-  ///
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //
@@ -46,7 +44,7 @@ namespace pig
     ///
     /// XXX
     ///
-    class Diary:
+    class Memoirs:
       public elle::Object,
       public virtual elle::Fileable<elle::FormatRaw>
     {
@@ -64,17 +62,18 @@ namespace pig
       //
       // constructors & destructors
       //
-      Diary();
-      ~Diary();
+      Memoirs();
+      ~Memoirs();
 
       //
       // methods
       //
-      elle::Status	Setup(const ::fuse_operations&);
-
-      elle::Status	Record(elle::String&);
-      elle::Status	Replay(const elle::Natural32,
-			       const elle::Natural32);
+      elle::Status	Initialize(const elle::String&,
+				   const elle::String&);
+      elle::Status	Initialize(const elle::String&,
+				   const elle::Natural32,
+				   const elle::Natural32);
+      elle::Status	Clean();
 
       elle::Status	Write(const Upcall&);
       elle::Status	Read(Upcall&);
@@ -84,9 +83,6 @@ namespace pig
       //
       // interfaces
       //
-
-      // object
-      declare(Diary);
 
       // dumpable
       elle::Status	Dump(const elle::Natural32 = 0) const;
@@ -102,11 +98,20 @@ namespace pig
       //
       // attributes
       //
-      Mode		mode;
+      Mode			mode;
 
-      ::fuse_operations	fuse;
+      ::fuse_operations		fuse;
 
-      elle::Archive	archive;
+      elle::Archive		archive;
+
+      // XXX
+      elle::String		mountpoint;
+
+      struct
+      {
+	elle::Natural32		from;
+	elle::Natural32		to;
+      }				offsets;
     };
 
   }
@@ -116,9 +121,9 @@ namespace pig
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/diary/Live.hh>
-#include <pig/diary/Record.hh>
-#include <pig/diary/Replay.hh>
-#include <pig/diary/Upcall.hh>
+#include <applications/8diary/unix/Live.hh>
+#include <applications/8diary/unix/Record.hh>
+#include <applications/8diary/unix/Replay.hh>
+#include <applications/8diary/unix/Upcall.hh>
 
 #endif

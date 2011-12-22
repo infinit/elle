@@ -18,6 +18,8 @@
 #include <Infinit.hh>
 #include <elle/Elle.hh>
 #include <lune/Lune.hh>
+#include <hole/Hole.hh>
+#include <agent/Agent.hh>
 #include <etoile/Etoile.hh>
 
 namespace application
@@ -46,5 +48,17 @@ namespace application
   };
 
 }
+
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#if defined(INFINIT_UNIX)
+# include <applications/8diary/unix/UNIX.hh>
+#elif defined(INFINIT_WIN32)
+// XXX to do!
+#else
+# error "unsupported platform"
+#endif
 
 #endif

@@ -1,15 +1,15 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
 // author        julien quintard   [tue jun 28 14:58:51 2011]
 //
-
-#ifndef PIG_DIARY_UPCALL_HH
-#define PIG_DIARY_UPCALL_HH
+ 
+#ifndef DIARY_UNIX_UPCALL_HH
+#define DIARY_UNIX_UPCALL_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -17,9 +17,10 @@
 
 #include <elle/Elle.hh>
 
-namespace pig
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //
@@ -107,6 +108,6 @@ namespace pig
 // ---------- templates -------------------------------------------------------
 //
 
-#include <pig/diary/Upcall.hxx>
+#include <applications/8diary/unix/Upcall.hxx>
 
 #endif

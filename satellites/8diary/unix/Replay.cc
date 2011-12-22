@@ -1,7 +1,7 @@
 //
 // ---------- header ----------------------------------------------------------
 //
-// project       pig
+// project       8diary
 //
 // license       infinit
 //
@@ -12,12 +12,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
-#include <pig/diary/Replay.hh>
-#include <pig/diary/Live.hh>
+#include <applications/8diary/unix/Replay.hh>
+#include <applications/8diary/unix/Live.hh>
 
-namespace pig
+namespace application
 {
-  namespace diary
+#undef unix
+  namespace unix
   {
 
 //
@@ -25,10 +26,10 @@ namespace pig
 //
 
     ///
-    /// this variable contains the address of the diary which is
+    /// this variable contains the address of the memoirs which is
     /// being replayed.
     ///
-    Diary*				Replay::Reference = NULL;
+    Memoirs*				Replay::Reference = NULL;
 
     ///
     /// this variable contains the starting index.
@@ -1214,12 +1215,12 @@ namespace pig
     ///
     /// this method initializes FUSE.
     ///
-    elle::Status	Replay::Initialize(Diary*		diary)
+    elle::Status	Replay::Initialize(Memoirs*		memoirs)
     {
       enter();
 
-      // set the diary pointer.
-      Replay::Reference = diary;
+      // set the memoirs pointer.
+      Replay::Reference = memoirs;
 
       // initialize the live system.
       if (Live::Initialize() == elle::StatusError)
@@ -1541,7 +1542,7 @@ namespace pig
       if (Replay::Timer != NULL)
 	delete Replay::Timer;
 
-      // reset the diary pointer.
+      // reset the memoirs pointer.
       Replay::Reference = NULL;
 
       // clean the live system.
