@@ -230,6 +230,28 @@ namespace elle
     }
 
     ///
+    /// this method gives up the execution in order to let potential
+    /// other fibers which have been awaken to get scheduled.
+    ///
+    /// the current fiber is however put back in the queue right away
+    /// so as to get scheduled as soon as the other unblocked fibers
+    /// are done.
+    ///
+    Status		Fiber::Yield()
+    {
+      enter();
+
+      // make the fiber sleep.
+      //
+      // although the duration is set to zero milliseconds, the system
+      // will stop executing the fiber and put it right back in the queue.
+      if (Fiber::Sleep(0) == StatusError)
+	escape("an error occured while sleeping");
+
+      leave();
+    }
+
+    ///
     /// this method registers a callback to be trigger should a fiber
     /// need to be saved or restored, depending on the given phase.
     ///

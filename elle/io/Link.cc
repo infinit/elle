@@ -76,7 +76,7 @@ namespace elle
         escape("symlink failed: %s -> %s", link.string.c_str(),
                target.string.c_str());
 #else
-# error "symlink not supported on your platform"
+# error "unsupported platform"
 #endif
 
       leave();
@@ -121,7 +121,7 @@ namespace elle
       if (::stat(path.string.c_str(), &stat) != 0)
 	false();
 #else
-# error "unsuported platform."
+# error "unsupported platform"
 #endif
 
       true();

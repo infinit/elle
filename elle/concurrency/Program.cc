@@ -150,9 +150,7 @@ namespace elle
 	}
     }
 
-#if defined(INFINIT_WIN32)
-    // nothing
-#else
+#if defined(INFINIT_UNIX)
     ///
     /// this method attaches a broker to the program's event loop.
     ///
@@ -192,6 +190,10 @@ namespace elle
 
       leave();
     }
+#elif defined(INFINIT_WIN32)
+    // nothing
+#else
+# error "unsupported platform"
 #endif
 
 //
