@@ -25,15 +25,11 @@
 # include <pwd.h>
 #include <elle/idiom/Open.hh>
 
-///
-/// this namespace contains all the elements related to the UNIX facade i.e
-/// interface between the kernel and Infinit.
-///
 namespace facade
 {
-#undef unix
   ///
-  /// XXX
+  /// this namespace contains all the elements related to the UNIX facade i.e
+  /// interface between the kernel and Infinit.
   ///
   namespace unix
   {
@@ -53,6 +49,7 @@ namespace facade
       // static methods
       //
       static elle::Status	Initialize();
+      static elle::Status	Setup();
       static elle::Status	Clean();
 
       //

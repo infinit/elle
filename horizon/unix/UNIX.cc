@@ -18,10 +18,10 @@
 
 #include <elle/Elle.hh>
 #include <agent/Agent.hh>
+#include <Infinit.hh>
 
 namespace facade
 {
-#undef unix
   namespace unix
   {
 
@@ -145,14 +145,19 @@ namespace facade
 	  escape("unable to initialize FUSE");
       }
 
-      //
+      leave();
+    }
+
+    ///
+    /// this method sets up the UNIX implementation.
+    ///
+    elle::Status	UNIX::Setup()
+    {
+      enter();
+
       // set up FUSE.
-      //
-      {
-	// set up FUSE.
-	if (FUSE::Setup(Facade::Mountpoint) == elle::StatusError)
-	  escape("unable to set up FUSE");
-      }
+      if (FUSE::Setup(Infinit::Mountpoint) == elle::StatusError)
+	escape("unable to set up FUSE");
 
       leave();
     }

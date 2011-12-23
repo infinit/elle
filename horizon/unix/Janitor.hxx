@@ -15,11 +15,11 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <elle/Elle.hh>
 #include <etoile/Etoile.hh>
 
 namespace facade
 {
-#undef unix
   namespace unix
   {
 

@@ -42,13 +42,6 @@ namespace facade
     //
     static elle::Status		Initialize();
     static elle::Status		Clean();
-
-    static elle::Status		Options();
-
-    //
-    // static attributes
-    //
-    static elle::String		Mountpoint;
   };
 
 }
@@ -58,7 +51,6 @@ namespace facade
 //
 
 #if defined(INFINIT_UNIX)
-# undef unix
 # include <facade/unix/UNIX.hh>
 #elif defined(INFINIT_WIN32)
 // XXX todo: windows

@@ -19,7 +19,6 @@
 
 namespace facade
 {
-#undef unix
   namespace unix
   {
 

@@ -18,15 +18,6 @@ namespace facade
 {
 
 //
-// ---------- definitions -----------------------------------------------------
-//
-
-  ///
-  /// this variable holds the mountpoint on which the facade is operating.
-  ///
-  elle::String			Facade::Mountpoint;
-
-//
 // ---------- static methods --------------------------------------------------
 //
 
@@ -37,40 +28,16 @@ namespace facade
   {
     enter();
 
-    // XXX everything must change!
-    if (Infinit::Parser->Test("Mountpoint") == elle::StatusFalse)
-      {
-	char		command[256];
-
-	Facade::Mountpoint =
-	  elle::System::Path::Home + "/local/mnt/infinit/personal";
-
-	printf("Infinit is about to be mounted at '%s'\n",
-	       Facade::Mountpoint.c_str());
-
-	sprintf(command, "mkdir -p %s",
-		Facade::Mountpoint.c_str());
-	system(command);
-      }
-    else
-      {
-	// retrieve the mount point.
-	if (Infinit::Parser->Value("Mountpoint",
-				   Facade::Mountpoint) == elle::StatusError)
-	  {
-	    // display the usage.
-	    Infinit::Parser->Usage();
-
-	    escape("unable to retrieve the mount point");
-	  }
-      }
-
 #if defined(INFINIT_UNIX)
     // initialize the UNIX implementation.
     if (unix::UNIX::Initialize() == elle::StatusError)
       escape("unable to initialize the UNIX implementation");
+
+    // set up the UNIX implementation.
+    if (unix::UNIX::Setup() == elle::StatusError)
+      escape("unable to set up the UNIX implementation");
 #elif defined(INFINIT_WIN32)
-    // XXX to do!
+    // XXX todo: windows
 #endif
 
     leave();
@@ -88,27 +55,8 @@ namespace facade
     if (unix::UNIX::Clean() == elle::StatusError)
       escape("unable to clean the UNIX implementation");
 #elif defined(INFINIT_WIN32)
-    // XXX todo: windows!
+    // XXX todo: windows
 #endif
-
-    leave();
-  }
-
-  ///
-  /// this method sets up the facade-specific options.
-  ///
-  elle::Status		Facade::Options()
-  {
-    enter();
-
-    // register the option.
-    if (Infinit::Parser->Register(
-	  "Mountpoint",
-	  'm',
-	  "mountpoint",
-	  "specifies the mount point",
-	  elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
 
     leave();
   }
