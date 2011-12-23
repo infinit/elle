@@ -189,6 +189,19 @@ namespace elle
     }
 
     ///
+    /// this method adds an example to the parser.
+    ///
+    Status		Parser::Example(const String&		example)
+    {
+      enter();
+
+      // add the example.
+      this->examples.push_back(example);
+
+      leave();
+    }
+
+    ///
     /// this method returns true and sets the pointer if the given
     /// named option has been located.
     ///
@@ -472,10 +485,6 @@ namespace elle
     {
       Natural32		i;
 
-      // display the program description.
-      if (this->description.empty() == false)
-	std::cerr << this->description << std::endl;
-
       // display the general usage.
       std::cerr << "[Usage] " << this->argv[0] << " {options...}"
 		<< std::endl
@@ -557,7 +566,22 @@ namespace elle
 	    }
 	}
 
-      std::cerr << std::endl;
+      // display the examples, if present.
+      if (this->examples.size() > 0)
+	{
+	  std::cerr << std::endl
+		    << "[Examples]"
+		    << std::endl;
+
+	  // go through the examples.
+	  for (i = 0; i < this->examples.size(); i++)
+	    std::cerr << "  $> " << this->argv[0]
+		      << " " << this->examples[i] << std::endl;
+	}
+
+      // display the program description.
+      if (this->description.empty() == false)
+	std::cerr << std::endl << this->description << std::endl;
     }
 
 //
@@ -570,7 +594,7 @@ namespace elle
     Status		Parser::Dump(const Natural32		margin) const
     {
       String		alignment(margin, ' ');
-      Parser::Scoutor	scoutor;
+      Natural32		i;
 
       enter();
 
@@ -597,15 +621,25 @@ namespace elle
 		<< "[Long] " << std::hex << this->longs << std::endl;
 
       // dump the options.
-      for (scoutor = this->options.begin();
-	   scoutor != this->options.end();
-	   scoutor++)
-	{
-	  Parser::Option*	option = *scoutor;
+      std::cout << alignment << Dumpable::Shift
+		<< "[Options]" << std::endl;
 
+      for (i = 0; i < this->options.size(); i++)
+	{
 	  // dump the option.
-	  if (option->Dump(margin + 2) == StatusError)
+	  if (this->options[i]->Dump(margin + 4) == StatusError)
 	    escape("unable to dump the option");
+	}
+
+      // dump the examples.
+      std::cout << alignment << Dumpable::Shift
+		<< "[Examples]" << std::endl;
+
+      for (i = 0; i < this->examples.size(); i++)
+	{
+	  // dump the example.
+	  std::cout << alignment << Dumpable::Shift << Dumpable::Shift
+		    << this->examples[i] << std::endl;
 	}
 
       leave();

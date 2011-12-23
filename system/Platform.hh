@@ -20,11 +20,20 @@ namespace elle
 // ---------- macros ----------------------------------------------------------
 //
 
+///
+/// windows-specific
+///
 # if defined(__WIN32__)
 #  define INFINIT_WIN32
 # endif
 
+///
+/// unix-specific
+///
+/// note that the _unix_ macro is undefined since generating conflicts.
+///
 # if defined(__unix__)
+#  undef unix
 #  define INFINIT_UNIX
 # endif
 
