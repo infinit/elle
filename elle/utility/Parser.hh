@@ -136,9 +136,19 @@ namespace elle
       //
       // types
       //
-      typedef std::vector<Option*>		Container;
-      typedef Container::iterator		Iterator;
-      typedef Container::const_iterator		Scoutor;
+      struct O
+      {
+	typedef std::vector<Option*>		Container;
+	typedef Container::iterator		Iterator;
+	typedef Container::const_iterator	Scoutor;
+      };
+
+      struct E
+      {
+	typedef std::vector<elle::String>	Container;
+	typedef Container::iterator		Iterator;
+	typedef Container::const_iterator	Scoutor;
+      };
 
       //
       // constructors & destructors
@@ -157,6 +167,8 @@ namespace elle
 				 const String&,
 				 const String&,
 				 const Kind);
+
+      Status		Example(const String&);
 
       Status		Locate(const String&,
 			       Option*&);
@@ -222,7 +234,8 @@ namespace elle
 
       String		description;
 
-      Container		options;
+      O::Container	options;
+      E::Container	examples;
 
       String		shorts;
       struct ::option*	longs;
