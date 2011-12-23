@@ -49,58 +49,8 @@ namespace agent
   {
     elle::String	prompt;
     elle::String	pass;
-    elle::String	name;
 
     enter();
-
-    //
-    // handle the parser.
-    //
-    {
-      // XXX everything must change!
-      if (Infinit::Parser->Test("User") == elle::StatusFalse)
-	{
-	  name = "_______________PROTOTYPE_USER_______________";
-	  // XXX name = "testdedingue";
-
-	  // trim string
-	  name = name.substr(0, name.find_first_of(' '));
-
-	  // retrieve the identity.
-	  {
-	    char	idy[256];
-	    char	command[256];
-
-	    sprintf(command,
-		    "mkdir -p %s/.infinit/users/%s",
-		    elle::System::Path::Home.c_str(),
-		    name.c_str());
-	    system(command);
-
-	    sprintf(idy, "%s/.infinit/users/%s/%s.idy",
-		    elle::System::Path::Home.c_str(),
-		    name.c_str(),
-		    name.c_str());
-	    sprintf(command,
-		    "wget http://www.infinit.li/infinit/identities/%s.idy "
-		    "-O %s >/dev/null 2>&1",
-		    name.c_str(),
-		    idy);
-	    system(command);
-	  }
-	}
-      else
-	{
-	  // retrieve the user name.
-	  if (Infinit::Parser->Value("User", name) == elle::StatusError)
-	    {
-	      // display the usage.
-	      Infinit::Parser->Usage();
-
-	      escape("unable to retrieve the user name");
-	    }
-	}
-    }
 
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
@@ -111,33 +61,20 @@ namespace agent
     //
     {
       // does the identity exist.
-      if (Agent::Identity.Exist(name) == elle::StatusFalse)
+      if (Agent::Identity.Exist(Infinit::User) == elle::StatusFalse)
 	escape("the user identity does not seem to exist");
 
-      // XXX everything must change!
-      if (Infinit::Parser->Test("User") == elle::StatusFalse)
-	{
-	  // XXX
-	  pass = "_______________PROTOTYPE_PASSWORD_______________";
-	  // XXX pass = "994061d81241aef531c04953b712df423d99f933";
+      // prompt the user for the passphrase.
+      prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
 
-	  // trim string
-	  pass = pass.substr(0, pass.find_first_of(' '));
-	}
-      else
-	{
-	  // prompt the user for the passphrase.
-	  prompt = "Enter passphrase for keypair '" + name + "': ";
-
-	  if (elle::Console::Input(
-		pass,
-		prompt,
-		elle::Console::OptionPassword) == elle::StatusError)
-	    escape("unable to read the input");
-	}
+      if (elle::Console::Input(
+	    pass,
+	    prompt,
+	    elle::Console::OptionPassword) == elle::StatusError)
+	escape("unable to read the input");
 
       // load the identity.
-      if (Agent::Identity.Load(name) == elle::StatusError)
+      if (Agent::Identity.Load(Infinit::User) == elle::StatusError)
 	escape("unable to load the identity");
 
       // verify the identity.
@@ -176,25 +113,6 @@ namespace agent
     enter();
 
     // nothing to do.
-
-    leave();
-  }
-
-  ///
-  /// this method sets up the agent-specific options.
-  ///
-  elle::Status		Agent::Options()
-  {
-    enter();
-
-    // register the option.
-    if (Infinit::Parser->Register(
-	  "User",
-	  'u',
-	  "user",
-	  "specifies the name of the user",
-	  elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
 
     leave();
   }

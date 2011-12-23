@@ -48,8 +48,6 @@ namespace agent
     static elle::Status		Initialize();
     static elle::Status		Clean();
 
-    static elle::Status		Options();
-
     //
     // static attributes
     //
