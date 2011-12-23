@@ -53,189 +53,8 @@ namespace hole
   elle::Status		Hole::Initialize()
   {
     nucleus::Network	network;
-    elle::String	name;
 
     enter();
-
-    // XXX everything must change!
-    if (Infinit::Parser->Test("Network") == elle::StatusFalse)
-      {
-	name = "_______________PROTOTYPE_NETWORK_______________";
-	// XXX name = "testdedingue";
-
-	// trim string.
-	name = name.substr(0, name.find_first_of(' '));
-
-	// retrieve the descriptor.
-	{
-	  char		dsc[256];
-	  char		command[256];
-
-	  sprintf(command,
-		  "mkdir -p %s/.infinit/networks/%s",
-		  elle::System::Path::Home.c_str(),
-		  name.c_str());
-	  system(command);
-
-	  sprintf(dsc, "%s/.infinit/networks/%s/%s.dsc",
-		  elle::System::Path::Home.c_str(),
-		  name.c_str(),
-		  name.c_str());
-	  sprintf(command,
-		  "wget http://www.infinit.li/infinit/descriptors/%s.dsc "
-		  "-O %s >/dev/null 2>&1",
-		  name.c_str(),
-		  dsc);
-	  system(command);
-	}
-
-	// retrieve the passport.
-	{
-	  char		ppt[256];
-	  char		command[256];
-
-	  sprintf(ppt, "%s/.infinit/infinit.ppt",
-		  elle::System::Path::Home.c_str());
-	  sprintf(command,
-		  "wget http://www.infinit.li/infinit/passports/infinit.ppt "
-		  "-O %s >/dev/null 2>&1",
-		  ppt);
-	  system(command);
-	}
-
-	// retrieve the original network content.
-	{
-	  elle::Path	path;
-
-	  // create the path.
-	  if (path.Create(lune::Lune::Network::Shelter::Root) ==
-	      elle::StatusError)
-	    escape("unable to create the path");
-
-	  // complete the path's pattern.
-	  if (path.Complete(elle::Piece("%NETWORK%", name)) ==
-	      elle::StatusError)
-	    escape("unable to complete the path");
-
-	  // retrieve the shelter, if necessary.
-	  if (elle::Directory::Exist(path) == elle::StatusFalse)
-	    {
-	      char	sht[256];
-	      char	net[256];
-	      char	command[256];
-
-	      sprintf(sht, "%s/.infinit/networks/%s/shelter.tar.bz2",
-		      elle::System::Path::Home.c_str(),
-		      name.c_str());
-	      sprintf(net, "%s/.infinit/networks/%s",
-		      elle::System::Path::Home.c_str(),
-		      name.c_str());
-
-	      sprintf(command,
-		      "wget http://www.infinit.li/infinit/shelters/%s.tar.bz2 "
-		      "-O %s >/dev/null 2>&1",
-		      name.c_str(),
-		      sht);
-	      system(command);
-
-	      sprintf(command,
-		      "tar xjvf %s -C %s >/dev/null 2>&1",
-		      sht,
-		      net);
-	      system(command);
-
-	      sprintf(command,
-		      "rm -f %s >/dev/null 2>&1",
-		      sht);
-	      system(command);
-	    }
-	}
-
-	// retrieve the list of hosts.
-	{
-	  elle::Host::Container	hosts;
-	  elle::JSON::Document	doc;
-	  elle::String		port;
-
-	  if (elle::Variable::Convert(
-		implementations::slug::Machine::Default::Port,
-		port) == elle::StatusError)
-	    escape("unable to convert the port");
-
-	  if (elle::Host::Hosts(hosts) == elle::StatusError)
-	    escape("unable to retrieve the list of host addresses");
-
-	  for (auto s = hosts.begin(); s != hosts.end(); s++)
-	    {
-	      if ((*s).location.protocol() == ::QAbstractSocket::IPv6Protocol)
-		continue;
-
-	      if (doc.Append(
-		    "loci",
-		    elle::JSON::Bulk(
-		      (*s).location.toString().toStdString() +
-		      ":" +
-		      port)) == elle::StatusError)
-		escape("unable to append to the document");
-	    }
-
-	  if (elle::REST::Put("infinit.li:12345/prototype/" + name,
-			      doc) == elle::StatusError)
-	    escape("unable to PUT the host's addresses");
-
-	  if (elle::REST::Get("infinit.li:12345/prototype/" + name,
-			      doc) == elle::StatusError)
-	    escape("unable to PUT the host's addresses");
-
-	  elle::Natural32	size;
-	  elle::Natural32	i;
-	  std::stringstream	ss;
-
-	  if (doc.Size(size) == elle::StatusError)
-	    escape("unable to retrieve the number of elements");
-
-	  for (i = 0; i < size; i++)
-	    {
-	      elle::String	locus;
-
-	      doc.Get(i, locus);
-
-	      ss << locus;
-
-	      if ((i + 1) < size)
-		ss << " ";
-	    }
-
-	  lune::Descriptor	descriptor;
-
-	  if (descriptor.Load(name) == elle::StatusError)
-	    escape("unable to load the descriptor");
-
-	  if (descriptor.Pull() == elle::StatusError)
-	    escape("unable to pull the descriptor's attributes");
-
-	  if (descriptor.Set("slug", "hosts",
-			     ss.str()) == elle::StatusError)
-	    escape("unable to set the hosts list");
-
-	  if (descriptor.Push() == elle::StatusError)
-	    escape("unable to push the descriptor");
-
-	  if (descriptor.Store(name) == elle::StatusError)
-	    escape("unable to store the descriptor");
-	}
-      }
-    else
-      {
-	// retrieve the network name.
-	if (Infinit::Parser->Value("Network", name) == elle::StatusError)
-	  {
-	    // display the usage.
-	    Infinit::Parser->Usage();
-
-	    escape("unable to retrieve the network name");
-	  }
-      }
 
     // disable the meta logging.
     if (elle::Meta::Disable() == elle::StatusError)
@@ -246,11 +65,11 @@ namespace hole
     //
     {
       // does the network exist.
-      if (Hole::Descriptor.Exist(name) == elle::StatusFalse)
+      if (Hole::Descriptor.Exist(Infinit::Network) == elle::StatusFalse)
 	escape("this network does not seem to exist");
 
       // load the descriptor.
-      if (Hole::Descriptor.Load(name) == elle::StatusError)
+      if (Hole::Descriptor.Load(Infinit::Network) == elle::StatusError)
 	escape("unable to load the descriptor");
 
       // pull the attributes.
@@ -284,7 +103,7 @@ namespace hole
       escape("unable to enable the meta logging");
 
     // create the network instance.
-    if (network.Create(name) == elle::StatusError)
+    if (network.Create(Infinit::Network) == elle::StatusError)
       escape("unable to create the network instance");
 
     // create the holeable depending on the model.
@@ -352,25 +171,6 @@ namespace hole
 
     // delete the implementation.
     delete Hole::Implementation;
-
-    leave();
-  }
-
-  ///
-  /// this method sets up the hole-specific options.
-  ///
-  elle::Status		Hole::Options()
-  {
-    enter();
-
-    // register the option.
-    if (Infinit::Parser->Register(
-	  "Network",
-	  'n',
-	  "network",
-	  "specifies the name of the network",
-	  elle::Parser::KindRequired) == elle::StatusError)
-      escape("unable to register the option");
 
     leave();
   }

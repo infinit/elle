@@ -73,9 +73,14 @@ namespace hole
 	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
-    // set up the hole-specific options.
-    if (hole::Hole::Options() == elle::StatusError)
-      escape("unable to set up the options");
+    // register the option.
+    if (Infinit::Parser->Register(
+	  "Network",
+	  'n',
+	  "network",
+	  "specifies the name of the network",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::StatusError)
@@ -89,6 +94,16 @@ namespace hole
 
 	// quit.
 	leave();
+      }
+
+    // retrieve the network name.
+    if (Infinit::Parser->Value("Network",
+			       Infinit::Network) == elle::StatusError)
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("unable to retrieve the network name");
       }
 
     // initialize the Hole library.
