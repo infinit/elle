@@ -40,6 +40,10 @@ public:
 
   static elle::Parser*			Parser;
 
+  static elle::String			User;
+  static elle::String			Network;
+  static elle::String			Mountpoint;
+
   //
   // methods
   //

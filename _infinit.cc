@@ -70,23 +70,32 @@ elle::Status		Main(elle::Natural32			argc,
         elle::Parser::KindNone) == elle::StatusError)
     escape("unable to register the option");
 
-  // set up the hole-specific options.
-  if (hole::Hole::Options() == elle::StatusError)
-    escape("unable to set up the options");
+  // register the option.
+  if (Infinit::Parser->Register(
+	"User",
+	'u',
+	"user",
+	"specifies the name of the user",
+	elle::Parser::KindRequired) == elle::StatusError)
+    escape("unable to register the option");
 
-  // set up the agent-specific options.
-  if (agent::Agent::Options() == elle::StatusError)
-    escape("unable to set up the options");
+  // register the option.
+  if (Infinit::Parser->Register(
+	"Network",
+	'n',
+	"network",
+	"specifies the name of the network",
+	elle::Parser::KindRequired) == elle::StatusError)
+    escape("unable to register the option");
 
-#if defined(INFINIT_UNIX)
-  // set up the facade options.
-  if (facade::Facade::Options() == elle::StatusError)
-    escape("unable to set up the facade options");
-#elif defined(INFINIT_WIN32)
-  // XXX todo: windows
-#else
-# error "unsupported platform"
-#endif
+  // register the option.
+  if (Infinit::Parser->Register(
+	"Mountpoint",
+	'm',
+	"mountpoint",
+	"specifies the mount point",
+	elle::Parser::KindRequired) == elle::StatusError)
+    escape("unable to register the option");
 
   // parse.
   if (Infinit::Parser->Parse() == elle::StatusError)
@@ -100,6 +109,36 @@ elle::Status		Main(elle::Natural32			argc,
 
       // quit.
       leave();
+    }
+
+  // retrieve the user name.
+  if (Infinit::Parser->Value("User",
+			     Infinit::User) == elle::StatusError)
+    {
+      // display the usage.
+      Infinit::Parser->Usage();
+
+      escape("unable to retrieve the user name");
+    }
+
+  // retrieve the network name.
+  if (Infinit::Parser->Value("Network",
+			     Infinit::Network) == elle::StatusError)
+    {
+      // display the usage.
+      Infinit::Parser->Usage();
+
+      escape("unable to retrieve the network name");
+    }
+
+  // retrieve the mount point.
+  if (Infinit::Parser->Value("Mountpoint",
+			     Infinit::Mountpoint) == elle::StatusError)
+    {
+      // display the usage.
+      Infinit::Parser->Usage();
+
+      escape("unable to retrieve the mount point");
     }
 
   // initialize the Hole library.

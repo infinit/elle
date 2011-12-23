@@ -27,7 +27,6 @@ int main(int argc, char** argv)
   nucleus::Nucleus::Initialize();
   lune::Lune::Initialize();
   Infinit::Initialize();
-  hole::Hole::Options();
 
   Infinit::Parser->Parse();
 

@@ -28,7 +28,7 @@ const elle::String		Infinit::Key("DdoCALF1pjOayQtUIHujHB5z7lNUBKIhhalQ893t48U5A6
 ///
 /// this constant contains the version string.
 ///
-const elle::String		Infinit::Version("Infinit[alpha]");
+const elle::String		Infinit::Version("Infinit-alpha");
 
 ///
 /// this constant contains the copyright string.
@@ -37,7 +37,7 @@ const elle::String		Infinit::Copyright(
 				  Infinit::Version +
 				  " " +
 				  "Copyright (c) 2007, ..., 2012 "
-				  "Julien Quintard, All rights reserved.\n");
+				  "Julien Quintard, All rights reserved.");
 
 ///
 /// this variable contains the authority.
@@ -53,6 +53,21 @@ lune::Configuration		Infinit::Configuration;
 /// this variable contains the program's parser.
 ///
 elle::Parser*			Infinit::Parser;
+
+///
+/// this variable holds the user name.
+///
+elle::String			Infinit::User;
+
+///
+/// this variable holds the network name.
+///
+elle::String			Infinit::Network;
+
+///
+/// this variable holds the mountpoint.
+///
+elle::String			Infinit::Mountpoint;
 
 //
 // ---------- methods ---------------------------------------------------------
