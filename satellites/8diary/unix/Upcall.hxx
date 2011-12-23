@@ -13,7 +13,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 

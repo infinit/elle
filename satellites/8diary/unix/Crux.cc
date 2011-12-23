@@ -16,7 +16,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -49,15 +48,8 @@ namespace application
     {
       elle::String	way(Crux::Mirror + path);
 
-      printf("HERE %s\n", way.c_str());
-
       if (::lstat(way.c_str(), stbuf) == -1)
-	{
-	  printf("ERROR\n");
 	return -errno;
-	}
-
-      printf("/HERE\n");
 
       return 0;
     }
@@ -495,66 +487,3 @@ namespace application
 
   }
 }
-
-  /* XXX[are these necessary? we will find out]
-
-static int xmp_link(const char *from, const char *to)
-{
-	int res;
-
-	res = link(from, to);
-	if (res == -1)
-		return -errno;
-
-	return 0;
-}
-
-
-static int xmp_statfs(const char *path, struct statvfs *stbuf)
-{
-	int res;
-
-	res = statvfs(path, stbuf);
-	if (res == -1)
-		return -errno;
-
-	return 0;
-}
-
-static int xmp_flush(const char *path, struct fuse_file_info *fi)
-{
-	int res;
-
-	(void) path;
-	// This is called from every close on an open file, so call the
-	// close on the underlying filesystem.	But since flush may be
-	// called multiple times for an open file, this must not really
-	// close the file.  This is important if used on a network
-	// filesystem like NFS which flush the data/metadata on close()
-	res = close(dup(fi->fh));
-	if (res == -1)
-		return -errno;
-
-	return 0;
-}
-
-static int xmp_fsync(const char *path, int isdatasync,
-		     struct fuse_file_info *fi)
-{
-	int res;
-	(void) path;
-
-#ifndef HAVE_FDATASYNC
-	(void) isdatasync;
-#else
-	if (isdatasync)
-		res = fdatasync(fi->fh);
-	else
-#endif
-		res = fsync(fi->fh);
-	if (res == -1)
-		return -errno;
-
-	return 0;
-}
-  */

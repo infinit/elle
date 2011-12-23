@@ -46,7 +46,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -55,7 +54,7 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// this class must be forward-declared.
     ///
     class Memoirs;
 
@@ -64,7 +63,7 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// this class represents the replaying session.
     ///
     class Replay
     {
@@ -100,20 +99,18 @@ namespace application
       static elle::Status	Unlink(Upcall&);
 
       static elle::Status	Initialize(Memoirs*);
-      static elle::Status	Launch(const elle::Natural32,
-				       const elle::Natural32);
-      static elle::Status	Process();
       static elle::Status	Clean();
+
+      static elle::Status	Process();
 
       //
       // static attributes
       //
       static Memoirs*		Reference;
-
-      static elle::Natural32	From;
-      static elle::Natural32	To;
-
-      static elle::Timer*	Timer;
+      static elle::Entrance<
+	elle::Status,
+	elle::Parameters<>
+	>*			Entrance;
     };
 
   }

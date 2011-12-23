@@ -444,13 +444,23 @@ namespace application
 	  elle::Parser::KindNone) == elle::StatusError)
       escape("unable to register the option");
 
-    // set up the hole-specific options.
-    if (hole::Hole::Options() == elle::StatusError)
-      escape("unable to set up the options");
+    // register the option.
+    if (Infinit::Parser->Register(
+	  "User",
+	  'u',
+	  "user",
+	  "specifies the name of the user",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
 
-    // set up the agent-specific options.
-    if (agent::Agent::Options() == elle::StatusError)
-      escape("unable to set up the options");
+    // register the option.
+    if (Infinit::Parser->Register(
+	  "Network",
+	  'n',
+	  "network",
+	  "specifies the name of the network",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -545,6 +555,26 @@ namespace application
 
 	// quit.
 	leave();
+      }
+
+    // retrieve the user name.
+    if (Infinit::Parser->Value("User",
+			       Infinit::User) == elle::StatusError)
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("unable to retrieve the user name");
+      }
+
+    // retrieve the network name.
+    if (Infinit::Parser->Value("Network",
+			       Infinit::Network) == elle::StatusError)
+      {
+	// display the usage.
+	Infinit::Parser->Usage();
+
+	escape("unable to retrieve the network name");
       }
 
     // initialize the Hole library.

@@ -2,6 +2,7 @@ PROJECT(8diary CXX)
 
 ADD_EXECUTABLE(8diary
   Diary.cc
+  Memoirs.cc
 
   unix/Crux.cc
   unix/Live.cc

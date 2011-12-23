@@ -19,7 +19,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -44,7 +43,9 @@ namespace application
 //
 
     ///
-    /// XXX general description
+    /// the methods below wrap the FUSE mirror implementation by recorded
+    /// every upcall including the operation code, inputs, outputs and
+    /// returned value.
     ///
 
     int			Record::Getattr(const char*		path,
@@ -972,6 +973,10 @@ namespace application
     elle::Status	Record::Clean()
     {
       enter();
+
+      // clean FUSE.
+      if (facade::unix::FUSE::Clean() == elle::StatusError)
+	escape("unable to clean FUSE");
 
       // reset the memoirs pointer.
       Record::Reference = NULL;

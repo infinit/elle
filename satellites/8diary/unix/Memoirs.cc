@@ -18,9 +18,10 @@
 #include <applications/8diary/unix/Record.hh>
 #include <applications/8diary/unix/Replay.hh>
 
+#include <facade/unix/UNIX.hh>
+
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -66,9 +67,6 @@ namespace application
       // set the mode.
       this->mode = Memoirs::ModeRecord;
 
-      // set the attributes.
-      this->fuse = Crux::Operations;
-
       // create the archive.
       if (this->archive.Create() == elle::StatusError)
 	escape("unable to create the archive");
@@ -76,6 +74,9 @@ namespace application
       // initialize the record.
       if (Record::Initialize(this, mountpoint) == elle::StatusError)
 	escape("unable to initialize the record");
+
+      // set the attributes.
+      this->fuse = Crux::Operations;
 
       leave();
     }
@@ -86,21 +87,13 @@ namespace application
     ///
     /// besides, this method initializes the replaying session.
     ///
-    elle::Status	Memoirs::Initialize(const elle::String&	mountpoint,
-					    const elle::Natural32 from,
+    elle::Status	Memoirs::Initialize(const elle::Natural32 from,
 					    const elle::Natural32 to)
     {
       enter();
 
-      // set up the crux.
-      if (Crux::Setup(mountpoint) == elle::StatusError)
-	escape("unable to set up the crux");
-
       // set the mode.
       this->mode = Memoirs::ModeReplay;
-
-      // set the attributes.
-      this->fuse = fuse; // XXX
 
       // set the offsets.
       this->offsets.from = from;
@@ -109,6 +102,9 @@ namespace application
       // initialize the replay.
       if (Replay::Initialize(this) == elle::StatusError)
 	escape("unable to initialize the replay");
+
+      // set the attributes.
+      this->fuse = facade::unix::FUSE::Operations;
 
       leave();
     }
@@ -214,102 +210,20 @@ namespace application
       // display the name.
       std::cout << alignment << "[Memoirs]" << std::endl;
 
+      // dump the parent class.
+      if (application::Memoirs::Dump(margin + 2) == elle::StatusError)
+	escape("unable to dump the parent class");
+
       // display the name.
       std::cout << alignment << elle::Dumpable::Shift
 		<< "[Mode] " << this->mode << std::endl;
 
-      // dump the archive.
-      if (this->archive.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the archive");
-
-      // XXX
-
-      leave();
-    }
-
-//
-// ---------- archivable ------------------------------------------------------
-//
-
-    ///
-    /// this method serializes the memoirs object.
-    ///
-    elle::Status	Memoirs::Serialize(elle::Archive&	archive) const
-    {
-      enter();
-
-      // serialize the attributes.
-      if (archive.Serialize(this->archive) == elle::StatusError)
-	escape("unable to serialize the attributes");
-
-      leave();
-    }
-
-    ///
-    /// this method extracts the memoirs object.
-    ///
-    elle::Status	Memoirs::Extract(elle::Archive&		archive)
-    {
-      enter();
-
-      // extract the attributes.
-      if (archive.Extract(this->archive) == elle::StatusError)
-	escape("unable to extract the attributes");
-
-      leave();
-    }
-
-//
-// ---------- fileable --------------------------------------------------------
-//
-
-    ///
-    /// this method loads the memoirs.
-    ///
-    /// note that since diaries can be very large---several gigabytes---the
-    /// method handles the archive specifically, making sure that no
-    /// copy is performed.
-    ///
-    elle::Status	Memoirs::Load(const elle::Path&		path)
-    {
-      elle::Region	region;
-
-      enter();
-
-      // read the file's content.
-      if (elle::File::Read(path, region) == elle::StatusError)
-	escape("unable to read the file's content");
-
-      // prepare the archive.
-      if (this->archive.Acquire(region) == elle::StatusError)
-	escape("unable to prepare the archive");
-
-      // detach the data from the region.
-      if (region.Detach() == elle::StatusError)
-	escape("unable to detach the data");
-
-      leave();
-    }
-
-    ///
-    /// this method stores the memoirs in its file format.
-    ///
-    /// note that since diaries can be very large---several gigabytes---the
-    /// method handles the archive specifically, making sure that no
-    /// copy is performed.
-    ///
-    elle::Status	Memoirs::Store(const elle::Path&	path)
-      const
-    {
-      enter();
-
-      // write the file's content.
-      if (elle::File::Write(
-	    path,
-	    elle::Region(
-	      this->archive.contents,
-	      this->archive.size)) == elle::StatusError)
-	escape("unable to write the file's content");
+      // display the name.
+      std::cout << alignment << elle::Dumpable::Shift
+		<< "[Offsets] "
+		<< this->offsets.from
+		<< ", "
+		<< this->offsets.to << std::endl;
 
       leave();
     }

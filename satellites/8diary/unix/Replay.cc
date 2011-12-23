@@ -15,9 +15,10 @@
 #include <applications/8diary/unix/Replay.hh>
 #include <applications/8diary/unix/Live.hh>
 
+#include <facade/unix/UNIX.hh>
+
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -32,31 +33,23 @@ namespace application
     Memoirs*				Replay::Reference = NULL;
 
     ///
-    /// this variable contains the starting index.
+    /// this variable contains the entrance which triggers the replay.
     ///
-    elle::Natural32			Replay::From = 0;
-
-    ///
-    /// this variable contains the ending index.
-    ///
-    elle::Natural32			Replay::To =
-      elle::Type<elle::Natural32>::Maximum;
-
-    ///
-    /// this variable contains the timer which triggers the replay.
-    ///
-    /// this timer is required in order to wait for program's loop to
-    /// start.
-    ///
-    elle::Timer*			Replay::Timer = NULL;
+    elle::Entrance<
+      elle::Status,
+      elle::Parameters<>
+      >*				Replay::Entrance = NULL;
 
 //
 // ---------- methods ---------------------------------------------------------
 //
 
     ///
-    /// XXX
+    /// the method below replay an upcall by forwarding the call to
+    /// the Infinit Crux while making sure that the ouptuts and returned
+    /// value match the recorded one.
     ///
+
     elle::Status	Replay::Getattr(Upcall&			upcall)
     {
       struct
@@ -94,10 +87,10 @@ namespace application
       struct ::stat*	_stbuf =
 	reinterpret_cast<struct ::stat*>(outputs.stbuf.contents);
 
+      /* XXX to check
       if (stbuf->st_uid != _stbuf->st_uid)
 	escape("invalid UID: got(%u) expected(%u)",
 	       stbuf->st_uid, _stbuf->st_uid);
-      /*
       if (stbuf->st_gid != _stbuf->st_gid)
 	escape("invalid GID");
 
@@ -107,12 +100,10 @@ namespace application
       if (stbuf->st_size != _stbuf->st_size)
 	escape("invalid size");
       */
+
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Fgetattr(Upcall&		upcall)
     {
       struct
@@ -168,10 +159,11 @@ namespace application
       struct ::stat*	_stbuf =
 	reinterpret_cast<struct ::stat*>(outputs.stbuf.contents);
 
+      /* XXX to check
       if (stbuf->st_uid != _stbuf->st_uid)
 	escape("invalid UID: got(%u) expected(%u)",
 	       stbuf->st_uid, _stbuf->st_uid);
-      /* XXX
+
       if (stbuf->st_gid != _stbuf->st_gid)
 	escape("invalid GID");
 
@@ -185,9 +177,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Utimens(Upcall&			upcall)
     {
       struct
@@ -216,9 +205,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Opendir(Upcall&			upcall)
     {
       struct
@@ -266,9 +252,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Readdir(Upcall&			upcall)
     {
       struct
@@ -318,14 +301,9 @@ namespace application
       if (upcall.outputs.Extract(outputs.fi) == elle::StatusError)
 	escape("unable to extract the region");
 
-      // XXX
-
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Releasedir(Upcall&		upcall)
     {
       struct
@@ -373,9 +351,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Mkdir(Upcall&			upcall)
     {
       struct
@@ -404,9 +379,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Rmdir(Upcall&			upcall)
     {
       struct
@@ -430,9 +402,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Access(Upcall&			upcall)
     {
       struct
@@ -461,9 +430,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Chmod(Upcall&			upcall)
     {
       struct
@@ -492,9 +458,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Chown(Upcall&			upcall)
     {
       struct
@@ -528,9 +491,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Setxattr(Upcall&		upcall)
     {
       struct
@@ -574,9 +534,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Getxattr(Upcall&		upcall)
     {
       struct
@@ -628,9 +585,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Listxattr(Upcall&		upcall)
     {
       struct
@@ -677,9 +631,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Removexattr(Upcall&		upcall)
     {
       struct
@@ -708,9 +659,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Symlink(Upcall&			upcall)
     {
       struct
@@ -739,9 +687,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Readlink(Upcall&		upcall)
     {
       struct
@@ -788,9 +733,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Create(Upcall&			upcall)
     {
       struct
@@ -843,9 +785,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Open(Upcall&			upcall)
     {
       struct
@@ -893,9 +832,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Write(Upcall&			upcall)
     {
       struct
@@ -955,9 +891,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Read(Upcall&			upcall)
     {
       struct
@@ -1020,9 +953,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Truncate(Upcall&		upcall)
     {
       struct
@@ -1051,9 +981,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Ftruncate(Upcall&		upcall)
     {
       struct
@@ -1103,9 +1030,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Release(Upcall&			upcall)
     {
       struct
@@ -1155,9 +1079,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Rename(Upcall&			upcall)
     {
       struct
@@ -1186,9 +1107,6 @@ namespace application
       leave();
     }
 
-    ///
-    /// XXX
-    ///
     elle::Status	Replay::Unlink(Upcall&			upcall)
     {
       struct
@@ -1213,7 +1131,7 @@ namespace application
     }
 
     ///
-    /// this method initializes FUSE.
+    /// this method initializes the replaying process.
     ///
     elle::Status	Replay::Initialize(Memoirs*		memoirs)
     {
@@ -1226,39 +1144,22 @@ namespace application
       if (Live::Initialize() == elle::StatusError)
 	escape("unable to initialize the live system");
 
-      leave();
-    }
+      // allocate the entrance.
+      Replay::Entrance =
+	new elle::Entrance<
+	  elle::Status,
+	  elle::Parameters<>
+	  >(elle::Closure<
+	      elle::Status,
+	      elle::Parameters<>
+	      >(elle::Callback<>::Infer(&Replay::Process)));
 
-    ///
-    /// this method launches the replaying.
-    ///
-    elle::Status	Replay::Launch(const elle::Natural32	from,
-				       const elle::Natural32	to)
-    {
-      enter();
-
-      // set the boundaries.
-      Replay::From = from;
-      Replay::To = to;
-
-      // allocate the timer.
-      Replay::Timer = new elle::Timer;
-
-      // create the timer which will start the replaying process.
-      if (Replay::Timer->Create(elle::Timer::ModeSingle) == elle::StatusError)
-	escape("unable to create the timer");
-
-      // subscribe to the timer's signal.
-      if (Replay::Timer->signal.timeout.Subscribe(
-	    elle::Callback<>::Infer(&Replay::Process)) == elle::StatusError)
-	escape("unable to subscribe to the signal");
-
-      // start the timer.
+      // initialize the facade's UNIX complete implementation.
       //
-      // note that the timer is started immediately so that as soon as
-      // the program enters its event loop, the timer is launched.
-      if (Replay::Timer->Start(0) == elle::StatusError)
-	escape("unable to start the timer");
+      // note that the UNIX is not set up i.e not mounted as this is
+      // not required to replay a diary.
+      if (facade::unix::UNIX::Initialize() == elle::StatusError)
+	escape("unable to initialize the facade");
 
       leave();
     }
@@ -1274,7 +1175,7 @@ namespace application
 
       // first, go through the upcalls that must be ignored.
       for (i = 0;
-	   (i < Replay::From) &&
+	   (i < Replay::Reference->offsets.from) &&
 	     (Replay::Reference->End() == elle::StatusFalse);
 	   i++)
 	{
@@ -1287,7 +1188,7 @@ namespace application
 
       // then go through the remaining upcalls up to 'to'.
       for (;
-	   (i < Replay::To) &&
+	   (i < Replay::Reference->offsets.to) &&
 	     (Replay::Reference->End() == elle::StatusFalse);
 	    i++)
 	{
@@ -1524,7 +1425,24 @@ namespace application
 	    }
 	}
 
+      // display a message.
+      std::cout << "The sequence of file system operations have been "
+		<< "successfully replayed"
+		<< std::endl;
+
+      // exit the program.
+      elle::Program::Exit();
+
+      leave();
+
     _error:
+      // log the errors.
+      log("an error occured while replaying the diary");
+
+      // display a message.
+      std::cout << "An error occured: feel free to take a look at the logs"
+		<< std::endl;
+
       // exit the program.
       elle::Program::Exit();
 
@@ -1532,15 +1450,19 @@ namespace application
     }
 
     ///
-    /// this method cleans FUSE.
+    /// this method cleans the replaying process.
     ///
     elle::Status	Replay::Clean()
     {
       enter();
 
-      // delete the timer.
-      if (Replay::Timer != NULL)
-	delete Replay::Timer;
+      // clean the facade.
+      if (facade::unix::UNIX::Clean() == elle::StatusError)
+	escape("unable to clean the facade");
+
+      // delete the entrance.
+      if (Replay::Entrance != NULL)
+	delete Replay::Entrance;
 
       // reset the memoirs pointer.
       Replay::Reference = NULL;

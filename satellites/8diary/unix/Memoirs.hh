@@ -25,6 +25,7 @@
 
 #include <elle/Elle.hh>
 
+#include <applications/8diary/Memoirs.hh>
 #include <applications/8diary/unix/Upcall.hh>
 
 #include <elle/idiom/Close.hh>
@@ -33,7 +34,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -42,11 +42,10 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// this class represents the UNIX implementation of the memoirs.
     ///
     class Memoirs:
-      public elle::Object,
-      public virtual elle::Fileable<elle::FormatRaw>
+      public application::Memoirs
     {
     public:
       //
@@ -68,32 +67,23 @@ namespace application
       //
       // methods
       //
-      elle::Status	Initialize(const elle::String&,
-				   const elle::String&);
-      elle::Status	Initialize(const elle::String&,
-				   const elle::Natural32,
-				   const elle::Natural32);
-      elle::Status	Clean();
+      elle::Status		Initialize(const elle::String&,
+					   const elle::String&);
+      elle::Status		Initialize(const elle::Natural32,
+					   const elle::Natural32);
+      elle::Status		Clean();
 
-      elle::Status	Write(const Upcall&);
-      elle::Status	Read(Upcall&);
+      elle::Status		Write(const Upcall&);
+      elle::Status		Read(Upcall&);
 
-      elle::Status	End() const;
+      elle::Status		End() const;
 
       //
       // interfaces
       //
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
-
-      // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
-
-      // fileable
-      elle::Status	Load(const elle::Path&);
-      elle::Status	Store(const elle::Path&) const;
+      elle::Status		Dump(const elle::Natural32 = 0) const;
 
       //
       // attributes
@@ -101,11 +91,6 @@ namespace application
       Mode			mode;
 
       ::fuse_operations		fuse;
-
-      elle::Archive		archive;
-
-      // XXX
-      elle::String		mountpoint;
 
       struct
       {

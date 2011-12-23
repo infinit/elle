@@ -16,7 +16,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -25,7 +24,7 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// the list of mappings.
     ///
     Live::Container			Live::Items;
 
@@ -34,7 +33,8 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// default constructor making the mapping between a recorded _passive_
+    /// _fh_ and the _active_ one.
     ///
     Live::Item::Item(const elle::Natural64			passive,
 		     const elle::Natural64			active):
@@ -48,7 +48,7 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// this method initializes the live system.
     ///
     elle::Status	Live::Initialize()
     {
@@ -60,7 +60,7 @@ namespace application
     }
 
     ///
-    /// XXX
+    /// this method cleans the live system.
     ///
     elle::Status	Live::Clean()
     {
@@ -86,7 +86,7 @@ namespace application
     }
 
     ///
-    /// XXX
+    /// this method records an item.
     ///
     elle::Status	Live::Add(const elle::Natural64		passive,
 				  const elle::Natural64		active)
@@ -108,7 +108,9 @@ namespace application
     }
 
     ///
-    /// XXX
+    /// this method returns the active _fh_ given the passive one.
+    ///
+    /// in other words, this method performs the transcoding.
     ///
     elle::Status	Live::Retrieve(const elle::Natural64	passive,
 				       elle::Natural64&		active)
@@ -137,7 +139,7 @@ namespace application
     }
 
     ///
-    /// XXX
+    /// this method removes an item.
     ///
     elle::Status	Live::Remove(const elle::Natural64	passive)
     {
@@ -169,7 +171,7 @@ namespace application
     }
 
     ///
-    /// XXX
+    /// this method shows all the recorded items.
     ///
     elle::Status	Live::Show(const elle::Natural32	margin)
     {

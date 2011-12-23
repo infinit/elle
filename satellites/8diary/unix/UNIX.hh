@@ -11,11 +11,17 @@
 #ifndef DIARY_UNIX_UNIX_HH
 #define DIARY_UNIX_UNIX_HH
 
+//
+// ---------- includes --------------------------------------------------------
+//
+
+#include <elle/Elle.hh>
+
 namespace application
 {
-#undef unix
   ///
-  /// XXX
+  /// this namespace contains the UNIX-related stuff for enabling the diary.
+  /// recording/replaying.
   ///
   namespace unix
   {

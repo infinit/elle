@@ -19,7 +19,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -28,7 +27,8 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// this class represents a FUSE upcall which contains the operation
+    /// code, the inputs and outputs arguments along with the returned value.
     ///
     class Upcall:
       public elle::Object

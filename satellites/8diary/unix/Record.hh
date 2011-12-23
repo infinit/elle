@@ -44,7 +44,6 @@
 
 namespace application
 {
-#undef unix
   namespace unix
   {
 
@@ -53,7 +52,7 @@ namespace application
 //
 
     ///
-    /// XXX
+    /// this class needs to be forward-declared.
     ///
     class Memoirs;
 
@@ -62,7 +61,7 @@ namespace application
 //
 
     ///
-    /// this class contains the implementation of the FUSE upcalls.
+    /// this class represents the recording session.
     ///
     class Record
     {

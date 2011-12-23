@@ -99,6 +99,15 @@ namespace application
 
     // register the options.
     if (Infinit::Parser->Register(
+          "Dump",
+	  'd',
+	  "dump",
+	  "activate the dumping of the given diary",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the options.
+    if (Infinit::Parser->Register(
           "Mountpoint",
 	  'm',
 	  "mounpoint",
@@ -126,6 +135,24 @@ namespace application
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
+    // register the option.
+    if (Infinit::Parser->Register(
+	  "User",
+	  'u',
+	  "user",
+	  "specifies the name of the user",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
+
+    // register the option.
+    if (Infinit::Parser->Register(
+	  "Network",
+	  'n',
+	  "network",
+	  "specifies the name of the network",
+	  elle::Parser::KindRequired) == elle::StatusError)
+      escape("unable to register the option");
+
     // register the options.
     if (Infinit::Parser->Register(
           "To",
@@ -135,6 +162,18 @@ namespace application
 	  "the diary",
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
+
+    // add an example.
+    if (Infinit::Parser->Example(
+	  "-c test.dia -m ~/local/mnt/test/ -i /tmp/test") ==
+	elle::StatusError)
+      escape("unable to set an example");
+
+    // add an example.
+    if (Infinit::Parser->Example(
+	  "-y test.dia -u myuser -n mynetwork") ==
+	elle::StatusError)
+      escape("unable to set an example");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::StatusError)
@@ -150,29 +189,15 @@ namespace application
 	leave();
       }
 
-    /* XXX
-    // initialize the Hole library.
-    if (hole::Hole::Initialize() == elle::StatusError)
-      escape("unable to initialize Hole");
-
-    // initialize the Agent library.
-    if (agent::Agent::Initialize() == elle::StatusError)
-      escape("unable to initialize Agent");
-    */
-
     // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == elle::StatusError)
       escape("unable to initialize Etoile");
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("Record") == elle::StatusTrue) &&
-	(Infinit::Parser->Test("Replay") == elle::StatusTrue))
-      {
-	// display the usage.
-	Infinit::Parser->Usage();
-
-	escape("the record and replay options are mutually exclusive");
-      }
+	(Infinit::Parser->Test("Replay") == elle::StatusTrue) &&
+	(Infinit::Parser->Test("Dump") == elle::StatusTrue))
+      escape("the record and replay options are mutually exclusive");
 
     // test the option.
     if (Infinit::Parser->Test("Record") == elle::StatusTrue)
@@ -181,6 +206,10 @@ namespace application
     // test the option.
     if (Infinit::Parser->Test("Replay") == elle::StatusTrue)
       operation = Diary::OperationReplay;
+
+    // test the option.
+    if (Infinit::Parser->Test("Dump") == elle::StatusTrue)
+      operation = Diary::OperationDump;
 
     // trigger a command.
     switch (operation)
@@ -192,7 +221,7 @@ namespace application
 	  elle::String		string;
 	  elle::Path		path;
 
-	  // retrieve the mirror.
+	  // retrieve the string-based path.
 	  if (Infinit::Parser->Value("Record",
 				     string) == elle::StatusError)
 	    escape("unable to retrieve the path value");
@@ -233,7 +262,7 @@ namespace application
 	  }
 #elif defined(INFINIT_WIN32)
 	  {
-	    // XXX to do!
+	    // XXX todo: windows
 	  }
 #else
 # error "unsupported platform"
@@ -248,13 +277,12 @@ namespace application
 	}
       case Diary::OperationReplay:
 	{
-	  elle::String		mirror;
 	  elle::String		string;
 	  elle::Path		path;
 	  elle::Natural32	from;
 	  elle::Natural32	to;
 
-	  // retrieve the mirror.
+	  // retrieve the string-based path.
 	  if (Infinit::Parser->Value("Replay",
 				     string) == elle::StatusError)
 	    escape("unable to retrieve the path value");
@@ -262,11 +290,6 @@ namespace application
 	  // create the path.
 	  if (path.Create(string) == elle::StatusError)
 	    escape("unable to create the path");
-
-	  // retrieve the mirror.
-	  if (Infinit::Parser->Value("Mirror",
-				     mirror) == elle::StatusError)
-	    escape("unable to retrieve the mirror value");
 
 	  // initialize the indexes.
 	  from = 0;
@@ -286,6 +309,24 @@ namespace application
 		 to) == elle::StatusError))
 	    escape("unable to retrieve the to value");
 
+	  // retrieve the user name.
+	  if (Infinit::Parser->Value("User",
+				     Infinit::User) == elle::StatusError)
+	    escape("unable to retrieve the user name");
+
+	  // retrieve the network name.
+	  if (Infinit::Parser->Value("Network",
+				     Infinit::Network) == elle::StatusError)
+	    escape("unable to retrieve the network name");
+
+	  // initialize the Hole library.
+	  if (hole::Hole::Initialize() == elle::StatusError)
+	    escape("unable to initialize Hole");
+
+	  // initialize the Agent library.
+	  if (agent::Agent::Initialize() == elle::StatusError)
+	    escape("unable to initialize Agent");
+
 #if defined(INFINIT_UNIX)
 	  {
 	    unix::Memoirs	memoirs;
@@ -295,7 +336,7 @@ namespace application
 	      escape("unable to load the memoirs");
 
 	    // initialize the memoirs.
-	    if (memoirs.Initialize(mirror, from, to) == elle::StatusError)
+	    if (memoirs.Initialize(from, to) == elle::StatusError)
 	      escape("unable to initialize the memoirs");
 
 	    // launch the program.
@@ -308,16 +349,55 @@ namespace application
 	  }
 #elif defined(INFINIT_WIN32)
 	  {
-	    // XXX to do!
+	    // XXX todo: windows
 	  }
 #else
 # error "unsupported platform"
 #endif
 
-	  // display a message.
-	  std::cout << "The sequence of file system operations have been "
-		    << "successfully replayed from '" << path.string << "'!"
-		    << std::endl;
+	  // clean the Agent library.
+	  if (agent::Agent::Clean() == elle::StatusError)
+	    escape("unable to clean Agent");
+
+	  // clean Hole.
+	  if (hole::Hole::Clean() == elle::StatusError)
+	    escape("unable to clean Hole");
+
+	  break;
+	}
+      case Diary::OperationDump:
+	{
+	  elle::String		string;
+	  elle::Path		path;
+
+	  // retrieve the string-based path.
+	  if (Infinit::Parser->Value("Dump",
+				     string) == elle::StatusError)
+	    escape("unable to retrieve the path value");
+
+	  // create the path.
+	  if (path.Create(string) == elle::StatusError)
+	    escape("unable to create the path");
+
+#if defined(INFINIT_UNIX)
+	  {
+	    unix::Memoirs	memoirs;
+
+	    // load the memoirs.
+	    if (memoirs.Load(path) == elle::StatusError)
+	      escape("unable to load the memoirs");
+
+	    // dump the memoirs.
+	    if (memoirs.Dump() == elle::StatusError)
+	      escape("unable to dump the memoirs");
+	  }
+#elif defined(INFINIT_WIN32)
+	  {
+	    // XXX todo: windows
+	  }
+#else
+# error "unsupported platform"
+#endif
 
 	  break;
 	}

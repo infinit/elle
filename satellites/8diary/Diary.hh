@@ -43,7 +43,8 @@ namespace application
 	OperationUnknown = 0,
 
 	OperationRecord,
-	OperationReplay
+	OperationReplay,
+	OperationDump
       };
   };
 
@@ -53,10 +54,12 @@ namespace application
 // ---------- includes --------------------------------------------------------
 //
 
+#include <applications/8diary/Memoirs.hh>
+
 #if defined(INFINIT_UNIX)
 # include <applications/8diary/unix/UNIX.hh>
 #elif defined(INFINIT_WIN32)
-// XXX to do!
+// XXX todo: windows
 #else
 # error "unsupported platform"
 #endif
