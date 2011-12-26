@@ -183,17 +183,15 @@ namespace elle
     /// by allocating a value.
     ///
     JSON::Node::Node():
-      mode(ModeAllocated),
-      value(new ::Json::Value)
+      value(NULL)
     {
     }
 
     ///
     /// this constructor wraps the given value.
     ///
-    JSON::Node::Node(::Json::Value*				value):
-      mode(ModeWrapped),
-      value(value)
+    JSON::Node::Node(::json_object*				object):
+      value(::json_object_get(object))
     {
     }
 
@@ -203,26 +201,8 @@ namespace elle
     JSON::Node::Node(const Node&				node):
       Object(node),
 
-      mode(node.mode)
+      value(::json_object_get(node.value))
     {
-      // depending on the mode.
-      switch (node.mode)
-	{
-	case JSON::Node::ModeAllocated:
-	  {
-	    // duplicate the value.
-	    this->value = new Json::Value(*node.value);
-
-	    break;
-	  }
-	case JSON::Node::ModeWrapped:
-	  {
-	    // set the value pointer.
-	    this->value = node.value;
-
-	    break;
-	  }
-	}
     }
 
     ///
@@ -230,23 +210,8 @@ namespace elle
     ///
     JSON::Node::~Node()
     {
-      // depending on the mode.
-      switch (this->mode)
-	{
-	case JSON::Node::ModeAllocated:
-	  {
-	    // delete the value.
-	    delete this->value;
-
-	    break;
-	  }
-	case JSON::Node::ModeWrapped:
-	  {
-	    // nothing to do.
-
-	    break;
-	  }
-	}
+      // release the value.
+      ::json_object_put(this->value);
     }
 
     ///
@@ -257,23 +222,9 @@ namespace elle
       enter();
 
       // return the type.
-      type = static_cast<enum JSON::Node::Type>(this->value->type());
-
-      leave();
-    }
-
-    ///
-    /// this method wraps the given value within the node.
-    ///
-    Status		JSON::Node::Wrap(::Json::Value*		value)
-    {
-      JSON::Node	node(value);
-
-      enter();
-
-      // recycle the object.
-      if (this->Recycle(&node) == StatusError)
-	escape("unable to recycle the object");
+      type =
+	static_cast<enum JSON::Node::Type>(
+	  ::json_object_get_type(this->value));
 
       leave();
     }
@@ -285,10 +236,10 @@ namespace elle
     {
       enter();
 
-      // check the type.
-      if (this->value->type() != ::Json::nullValue)
-	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::nullValue);
+      // check the value.
+      if (this->value != NULL)
+	escape("invalid type: node's(%u) expected(NULL pointer)",
+	       ::json_object_get_type(this->value));
 
       leave();
     }
@@ -301,12 +252,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::booleanValue)
+      if (::json_object_is_type(this->value, ::json_type_boolean) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::booleanValue);
+	       ::json_object_get_type(this->value), ::json_type_boolean);
 
-      // return the value.
-      element = this->value->asBool();
+      // retrieve the value.
+      element = ::json_object_get_boolean(this->value);
 
       leave();
     }
@@ -319,12 +270,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::intValue)
+      if (::json_object_is_type(this->value, ::json_type_int) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::intValue);
+	       ::json_object_get_type(this->value), ::json_type_int);
 
-      // return the value.
-      element = this->value->asInt();
+      // retrieve the value.
+      element = ::json_object_get_int(this->value);
 
       leave();
     }
@@ -337,12 +288,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::intValue)
+      if (::json_object_is_type(this->value, ::json_type_int) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::intValue);
+	       ::json_object_get_type(this->value), ::json_type_int);
 
-      // return the value.
-      element = this->value->asInt();
+      // retrieve the value.
+      element = ::json_object_get_int(this->value);
 
       leave();
     }
@@ -355,12 +306,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::intValue)
+      if (::json_object_is_type(this->value, ::json_type_int) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::intValue);
+	       ::json_object_get_type(this->value), ::json_type_int);
 
-      // return the value.
-      element = this->value->asInt();
+      // retrieve the value.
+      element = ::json_object_get_int(this->value);
 
       leave();
     }
@@ -368,19 +319,11 @@ namespace elle
     ///
     /// this method returns a integer value.
     ///
-    Status		JSON::Node::Get(Integer64&		element) const
+    Status		JSON::Node::Get(Integer64&) const
     {
       enter();
 
-      // check the type.
-      if (this->value->type() != ::Json::intValue)
-	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::intValue);
-
-      // return the value.
-      element = this->value->asInt();
-
-      leave();
+      escape("64-bit numbers are not supported");
     }
 
     ///
@@ -391,12 +334,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::uintValue)
+      if (::json_object_is_type(this->value, ::json_type_int) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::uintValue);
+	       ::json_object_get_type(this->value), ::json_type_int);
 
-      // return the value.
-      element = this->value->asUInt();
+      // retrieve the value.
+      element = ::json_object_get_int(this->value);
 
       leave();
     }
@@ -409,12 +352,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::uintValue)
+      if (::json_object_is_type(this->value, ::json_type_int) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::uintValue);
+	       ::json_object_get_type(this->value), ::json_type_int);
 
-      // return the value.
-      element = this->value->asUInt();
+      // retrieve the value.
+      element = ::json_object_get_int(this->value);
 
       leave();
     }
@@ -427,12 +370,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::uintValue)
+      if (::json_object_is_type(this->value, ::json_type_int) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::uintValue);
+	       ::json_object_get_type(this->value), ::json_type_int);
 
-      // return the value.
-      element = this->value->asUInt();
+      // retrieve the value.
+      element = ::json_object_get_int(this->value);
 
       leave();
     }
@@ -440,19 +383,11 @@ namespace elle
     ///
     /// this method returns a natural value.
     ///
-    Status		JSON::Node::Get(Natural64&		element) const
+    Status		JSON::Node::Get(Natural64&) const
     {
       enter();
 
-      // check the type.
-      if (this->value->type() != ::Json::uintValue)
-	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::uintValue);
-
-      // return the value.
-      element = this->value->asUInt();
-
-      leave();
+      escape("64-bit numbers are not supported");
     }
 
     ///
@@ -463,12 +398,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::realValue)
+      if (::json_object_is_type(this->value, ::json_type_double) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::realValue);
+	       ::json_object_get_type(this->value), ::json_type_double);
 
-      // return the value.
-      element = this->value->asDouble();
+      // retrieve the value.
+      element = ::json_object_get_double(this->value);
 
       leave();
     }
@@ -481,12 +416,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::stringValue)
+      if (::json_object_is_type(this->value, ::json_type_string) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::stringValue);
+	       ::json_object_get_type(this->value), ::json_type_string);
 
-      // return the value.
-      element = this->value->asString();
+      // retrieve the value.
+      element = ::json_object_get_string(this->value);
 
       leave();
     }
@@ -500,20 +435,26 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::arrayValue)
+      if (::json_object_is_type(this->value, ::json_type_array) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::arrayValue);
+	       ::json_object_get_type(this->value), ::json_type_array);
 
       // check if the index is valid.
-      if (this->value->isValidIndex(index) == false)
+      if (index >=
+	  static_cast<Natural32>(::json_object_array_length(this->value)))
 	escape("the given index '%u' seems to be out-of-bound given the "
 	       "size of the array '%u'",
 	       index,
-	       this->value->size());
+	       static_cast<Natural32>(
+		 ::json_object_array_length(this->value)));
 
-      // retrieve the value and wrap it in the node.
-      if (node.Wrap(&(*this->value)[index]) == StatusError)
-	escape("unable to wrap the value");
+      // retrieve the value.
+      node.value = ::json_object_array_get_idx(this->value, index);
+
+      // check the error.
+      if (is_error(node.value))
+	escape("unable to retrieve the '%u'-index element",
+	       index);
 
       leave();
     }
@@ -527,18 +468,17 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::objectValue)
+      if (::json_object_is_type(this->value, ::json_type_object) == 0)
 	escape("invalid type: node's(%u) expected(%u)",
-	       this->value->type(), ::Json::objectValue);
+	       ::json_object_get_type(this->value), ::json_type_object);
 
-      // check if the key is valid.
-      if (this->value->isMember(key) == false)
-	escape("the given key '%s' seems to be invalid",
+      // retrieve the value.
+      node.value = ::json_object_object_get(this->value, key.c_str());
+
+      // check the error.
+      if (is_error(node.value))
+	escape("unable to retrieve the '%s'-key element",
 	       key.c_str());
-
-      // retrieve the value and wrap it in the node.
-      if (node.Wrap(&(*this->value)[key]) == StatusError)
-	escape("unable to wrap the value");
 
       leave();
     }
@@ -550,9 +490,12 @@ namespace elle
     {
       enter();
 
-      // wrap the current value.
-      if (node.Wrap(this->value) == StatusError)
-	escape("unable to wrap the value");
+      // duplicate the reference on the value.
+      node.value = ::json_object_get(this->value);
+      
+      // check the error.
+      if (is_error(node.value))
+	escape("unable to duplicate a reference on the object");
 
       leave();
     }
@@ -564,8 +507,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(::Json::nullValue);
+      this->value = NULL;
 
       leave();
     }
@@ -577,8 +524,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_boolean(element);
 
       leave();
     }
@@ -590,8 +541,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_int(element);
 
       leave();
     }
@@ -603,8 +558,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_int(element);
 
       leave();
     }
@@ -616,8 +575,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_int(element);
 
       leave();
     }
@@ -625,14 +588,11 @@ namespace elle
     ///
     /// this method records a integer value.
     ///
-    Status		JSON::Node::Set(const Integer64&	element)
+    Status		JSON::Node::Set(const Integer64&)
     {
       enter();
 
-      // set the value.
-      *this->value = ::Json::Value(static_cast< ::Json::Int >(element));
-
-      leave();
+      escape("64-bit numbers are not supported");
     }
 
     ///
@@ -642,8 +602,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_int(element);
 
       leave();
     }
@@ -655,8 +619,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_int(element);
 
       leave();
     }
@@ -668,8 +636,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_int(element);
 
       leave();
     }
@@ -677,14 +649,11 @@ namespace elle
     ///
     /// this method records a natural value.
     ///
-    Status		JSON::Node::Set(const Natural64&	element)
+    Status		JSON::Node::Set(const Natural64&)
     {
       enter();
 
-      // set the value.
-      *this->value = ::Json::Value(static_cast< ::Json::UInt >(element));
-
-      leave();
+      escape("64-bit numbers are not supported");
     }
 
     ///
@@ -694,8 +663,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_double(element);
 
       leave();
     }
@@ -707,8 +680,12 @@ namespace elle
     {
       enter();
 
+      // release the previous value, if present.
+      if (this->value != NULL)
+	::json_object_put(this->value);
+
       // set the value.
-      *this->value = ::Json::Value(element);
+      this->value = ::json_object_new_string(element.c_str());
 
       leave();
     }
@@ -722,14 +699,18 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::arrayValue)
+      if (::json_object_is_type(this->value, ::json_type_array) == 0)
 	{
-	  // reset the value.
-	  *this->value = ::Json::Value(::Json::nullValue);
+	  // release the value.
+	  ::json_object_put(this->value);
+
+	  // allocate an array value.
+	  this->value = ::json_object_new_array();
 	}
 
       // set the value.
-      (*this->value)[index] = *node.value;
+      if (::json_object_array_put_idx(this->value, index, node.value) != 0)
+	escape("unable to add the index element to the array");
 
       leave();
     }
@@ -743,14 +724,17 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::objectValue)
+      if (::json_object_is_type(this->value, ::json_type_object) == 0)
 	{
-	  // reset the value.
-	  *this->value = ::Json::Value(::Json::nullValue);
+	  // release the value.
+	  ::json_object_put(this->value);
+
+	  // allocate an object value.
+	  this->value = ::json_object_new_object();
 	}
 
       // set the value.
-      (*this->value)[key] = *node.value;
+      ::json_object_object_add(this->value, key.c_str(), node.value);
 
       leave();
     }
@@ -762,8 +746,12 @@ namespace elle
     {
       enter();
 
-      // set the value.
-      *this->value = node.value;
+      // set the value by creating a new reference.
+      this->value = ::json_object_get(node.value);
+
+      // check the error.
+      if (is_error(this->value))
+	escape("unable to duplicate a reference on the object");
 
       leave();
     }
@@ -778,8 +766,8 @@ namespace elle
       enter();
 
       // check the type.
-      if ((this->value->type() != ::Json::arrayValue) &&
-	  (this->value->type() != ::Json::nullValue))
+      if (!((this->value != NULL) &&
+	    (::json_object_is_type(this->value, ::json_type_array) != 0)))
 	escape("unable to append to a non-array or non-null node");
 
       // go through the bulk.
@@ -788,7 +776,8 @@ namespace elle
 	   scoutor++)
 	{
 	  // append the node's value.
-	  this->value->append(*(*scoutor).value);
+	  if (::json_object_array_add(this->value, scoutor->value) != 0)
+	    escape("unable to append an element to the array");
 	}
 
       leave();
@@ -802,11 +791,11 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::objectValue)
+      if (::json_object_is_type(this->value, ::json_type_object) == 0)
 	escape("unable to erase from a non-object node");
 
       // erase the member.
-      this->value->removeMember(key);
+      ::json_object_object_del(this->value, key.c_str());
 
       leave();
     }
@@ -818,13 +807,34 @@ namespace elle
     {
       enter();
 
-      // check the type.
-      if ((this->value->type() != ::Json::arrayValue) &&
-	  (this->value->type() != ::Json::objectValue))
-	escape("unable to clear from a non-array or non-object node");
+      // depending on the type.
+      switch (::json_object_get_type(this->value))
+	{
+	case ::json_type_array:
+	  {
+	    // release the value.
+	    ::json_object_put(this->value);
 
-      // clear the elements.
-      this->value->clear();
+	    // allocate a new one.
+	    this->value = ::json_object_new_array();
+
+	    break;
+	  }
+	case ::json_type_object:
+	  {
+	    // release the object.
+	    ::json_object_put(this->value);
+
+	    // allocate a new one.
+	    this->value = ::json_object_new_object();
+
+	    break;
+	  }
+	default:
+	  {
+	    escape("unable to clear from a non-array or non-object node");
+	  }
+	}
 
       leave();
     }
@@ -837,11 +847,11 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::arrayValue)
+      if (::json_object_is_type(this->value, ::json_type_array) == 0)
 	escape("unable to size from a non-array node");
 
       // return the number of elements.
-      size = this->value->size();
+      size = ::json_object_array_length(this->value);
 
       leave();
     }
@@ -855,11 +865,12 @@ namespace elle
       enter();
 
       // check the type.
-      if (this->value->type() != ::Json::arrayValue)
+      if (::json_object_is_type(this->value, ::json_type_array) == 0)
 	false();
 
       // check if the index is valid.
-      if (this->value->isValidIndex(index) == false)
+      if (index >=
+	  static_cast<Natural32>(::json_object_array_length(this->value)))
 	false();
 
       true();
@@ -871,15 +882,30 @@ namespace elle
     ///
     Status		JSON::Node::Exist(const String&		key)
     {
+      ::json_object*	object;
+
       enter();
 
+      // XXX check if value is NULL
+
       // check the type.
-      if (this->value->type() != ::Json::objectValue)
+      if (::json_object_is_type(this->value, ::json_type_object) == 0)
 	false();
 
       // check if the key is valid.
-      if (this->value->isMember(key) == false)
+      object = ::json_object_object_get(this->value, key.c_str());
+
+      // check the error.
+      if (is_error(object))
+	{
+      // XXX
+      printf("-> false\n");
+
 	false();
+	}
+
+      // XXX
+      printf("-> true\n");
 
       true();
     }
@@ -892,9 +918,11 @@ namespace elle
     {
       enter();
 
+      /* XXX todo
       // compare the values.
       if (*this->value != *element.value)
 	false();
+      */
 
       true();
     }
@@ -913,104 +941,118 @@ namespace elle
  
       enter();
 
-      // depending on the value's type.
-      switch (this->value->type())
+      // is the value null?
+      if (this->value == NULL)
 	{
-	case ::Json::nullValue:
-	  {
-	    // dump the value.
-	    std::cout << alignment << "[Node(null)] "
-		      << none << std::endl;
-
-	    break;
-	  }
-	case ::Json::intValue:
-	  {
-	    // dump the value.
-	    std::cout << alignment << "[Node(int)] "
-		      << std::dec << this->value->asInt() << std::endl;
-
-	    break;
-	  }
-	case ::Json::uintValue:
-	  {
-	    // dump the value.
-	    std::cout << alignment << "[Node(uint)] "
-		      << std::dec << this->value->asUInt() << std::endl;
-
-	    break;
-	  }
-	case ::Json::realValue:
-	  {
-	    // dump the value.
-	    std::cout << alignment << "[Node(real)] "
-		      << this->value->asDouble() << std::endl;
-
-	    break;
-	  }
-	case ::Json::stringValue:
-	  {
-	    // dump the value.
-	    std::cout << alignment << "[Node(string)] "
-		      << this->value->asString() << std::endl;
-
-	    break;
-	  }
-	case ::Json::booleanValue:
-	  {
-	    // dump the value.
-	    std::cout << alignment << "[Node(boolean)] "
-		      << this->value->asBool() << std::endl;
-
-	    break;
-	  }
-	case ::Json::arrayValue:
-	  {
-	    Natural32		i;
-
-	    // dump the value.
-	    std::cout << alignment << "[Node(array)]"
-		      << std::endl;
-
-	    // go through the elements.
-	    for (i = 0; i < this->value->size(); i++)
+	  // dump the value.
+	  std::cout << alignment << "[Node(null) "
+		    << std::hex << this->value
+		    << "] "
+		    << none << std::endl;
+	}
+      else
+	{
+	  // depending on the value's type.
+	  switch (::json_object_get_type(this->value))
+	    {
+	    case ::json_type_boolean:
 	      {
-		Node		node(&(*this->value)[i]);
+		// dump the value.
+		std::cout << alignment << "[Node(boolean) "
+			  << std::hex << this->value
+			  << "] "
+			  << ::json_object_get_boolean(this->value)
+			  << std::endl;
 
-		// dump the node.
-		if (node.Dump(margin + 2) == StatusError)
-		  escape("unable to dump the node");
+		break;
 	      }
-
-	    break;
-	  }
-	case ::Json::objectValue:
-	  {
-	    ::Json::Value::Members	members;
-	    Natural32			i;
-
-	    // dump the value.
-	    std::cout << alignment << "[Node(object)]" << std::endl;
-
-	    // retrieve the object's members.
-	    members = this->value->getMemberNames();
-
-	    // go through the members.
-	    for (i = 0; i < members.size(); i++)
+	    case ::json_type_double:
 	      {
-		Node			node(&(*this->value)[members[i]]);
+		// dump the value.
+		std::cout << alignment << "[Node(real) "
+			  << std::hex << this->value
+			  << "] "
+			  << ::json_object_get_double(this->value)
+			  << std::endl;
 
-		// dump the key.
-		std::cout << alignment << Dumpable::Shift
-			  << "[Key] " << members[i] << std::endl;
-
-		// dump the node.
-		if (node.Dump(margin + 4) == StatusError)
-		  escape("unable to dump the node");
+		break;
 	      }
+	    case ::json_type_int:
+	      {
+		// dump the value.
+		std::cout << alignment << "[Node(integer) "
+			  << std::hex << this->value
+			  << "] "
+			  << std::dec
+			  << ::json_object_get_int(this->value)
+			  << std::endl;
 
-	    break;
-	  }
+		break;
+	      }
+	    case ::json_type_object:
+	      {
+		// dump the value.
+		std::cout << alignment << "[Node(object) "
+			  << std::hex << this->value
+			  << "]" << std::endl;
+
+		// go through the members.
+		json_object_object_foreach(this->value, key, value)
+		  {
+		    Node	node(value);
+
+		    // dump the key.
+		    std::cout << alignment << Dumpable::Shift
+			      << "[Key] " << String(key) << std::endl;
+
+		    // dump the node.
+		    if (node.Dump(margin + 4) == StatusError)
+		      escape("unable to dump the node");
+		  }
+
+		break;
+	      }
+	    case ::json_type_array:
+	      {
+		Natural32	i;
+
+		// dump the value.
+		std::cout << alignment << "[Node(array) "
+			  << std::hex << this->value
+			  << "]"
+			  << std::endl;
+
+		// go through the elements.
+		for(i = 0;
+		    i < static_cast<Natural32>(
+		      ::json_object_array_length(this->value));
+		    i++)
+		  {
+		    Node	node(::json_object_array_get_idx(this->value,
+								 i));
+
+		    // dump the node.
+		    if (node.Dump(margin + 2) == StatusError)
+		      escape("unable to dump the node");
+		  }
+
+		break;
+	      }
+	    case ::json_type_string:
+	      {
+		// dump the value.
+		std::cout << alignment << "[Node(string)] "
+			  << String(::json_object_get_string(this->value))
+			  << std::endl;
+
+		break;
+	      }
+	    default:
+	      {
+		escape("unknown or unhandled type '%u'",
+		       ::json_object_get_type(this->value));
+	      }
+	    }
 	}
 
       leave();
@@ -1111,15 +1153,10 @@ namespace elle
     Status		JSON::Encode(const Document&		document,
 				     String&			string)
     {
-      std::stringstream	stream;
-
       enter();
 
-      // transform the request into a string.
-      stream << document;
-
-      // return the string-based JSON document.
-      string = stream.str();
+      // transform the JSON document into a JSON string.
+      string.assign(::json_object_to_json_string(document.root.value));
 
       leave();
     }
@@ -1131,13 +1168,14 @@ namespace elle
     Status		JSON::Decode(const String&		string,
 				     Document&			document)
     {
-      ::Json::Reader	reader;
-
       enter();
 
-      // parse the content.
-      if (reader.parse(string, *document.root.value) == false)
-	escape(reader.getFormatedErrorMessages().c_str());
+      // parse the JSON string.
+      document.root.value = json_tokener_parse(string.c_str());
+
+      // check the error.
+      if (is_error(document.root.value))
+	escape("unable to parse the JSON string");
 
       leave();
     }
@@ -1173,7 +1211,7 @@ namespace std
 			  const elle::utility::JSON::Node&	element)
   {
     // stream the node's value.
-    stream << *element.value;
+    stream << elle::core::String(::json_object_to_json_string(element.value));
 
     return (stream);
   }

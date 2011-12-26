@@ -39,6 +39,7 @@
 #  include <ucontext.h>
 # elif defined(INFINIT_WIN32)
 #  include <elle/thirdparty/ucontext-win32.hh>
+#  undef Yield
 # else
 #  error "No makecontext support on this plateform."
 # endif
