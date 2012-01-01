@@ -5,7 +5,7 @@
 import web
 import json
 
-import database
+from meta import database
 
 #
 # ---------- globals ----------------------------------------------------------

@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 #
 # ---------- imports ----------------------------------------------------------
 #
@@ -5,7 +6,7 @@
 import web
 import json
 
-import database
+from meta import database
 
 #
 # ---------- classes ----------------------------------------------------------
@@ -17,7 +18,6 @@ class Prototype:
 
     for device in database.devices.find({'name': name}):
       devices += [ device['locus'] ]
-
     return json.dumps(devices)
 
   def POST(self, name):
@@ -27,13 +27,9 @@ class Prototype:
     data = json.loads(web.data())
 
     for locus in data["loci"]:
-      if database.devices.find_one({'name': name,
-				    'locus': locus}):
-	continue
-
-      database.devices.insert({'name': name,
-			       'locus': locus})
-
+      if database.devices.find_one({'name': name, 'locus': locus}):
+          continue
+      database.devices.insert({'name': name, 'locus': locus})
     return json.dumps(None)
 
   def DELETE(self, name):

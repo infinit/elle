@@ -1,4 +1,4 @@
-#! /usr/bin/python2
+#!/usr/bin/env python2
 
 #
 # ---------- imports ----------------------------------------------------------
@@ -6,7 +6,7 @@
 
 import sys
 
-import application
+from meta.application import Application
 
 #
 # ---------- functions --------------------------------------------------------
@@ -24,4 +24,5 @@ if __name__ == '__main__':
   if len(sys.argv) != 1:
     Usage()
 
-  application.Run(12345)
+  app = Application()
+  app.run()
