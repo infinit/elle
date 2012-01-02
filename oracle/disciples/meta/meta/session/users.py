@@ -9,13 +9,13 @@ session = None
 
 def get_user():
     try:
-        u = collection.find_one({'_id':session._user_id}) 
+        u = collection.find_one({'_id':session._user_id})
         return u
     except AttributeError:
         return None
 
-def authenticate(username, password):
-    user = collection.find_one({'username':username, 'password':pswd(password)})
+def authenticate(email, password):
+    user = collection.find_one({'email': email, 'password': pswd(password)})
     return user if user else None
 
 def login(user):
@@ -28,7 +28,7 @@ def logout():
 def register(**kwargs):
     user = collection.save(kwargs)
     return user
-    
+
 def pswd(password):
     seasoned = password + SALTY_GOODNESS
     seasoned = seasoned.encode('utf-8')
