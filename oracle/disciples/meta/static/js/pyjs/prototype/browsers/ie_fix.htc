@@ -1,0 +1,37 @@
+
+<PUBLIC:COMPONENT>
+    <PUBLIC:PROPERTY NAME="__name__" INTERNALNAME="___name__" />
+    <PUBLIC:PROPERTY NAME="__class__" INTERNALNAME="___class__" />
+    <PUBLIC:METHOD NAME="isIn" INTERNALNAME="_isIn" />
+    <PUBLIC:METHOD NAME="contains" INTERNALNAME="_contains" />
+    <PUBLIC:METHOD NAME="attr" INTERNALNAME="_attr" />
+    <PUBLIC:METHOD NAME="query" INTERNALNAME="_query" />
+    <PUBLIC:METHOD NAME="fire" INTERNALNAME="_fire" />
+    <PUBLIC:METHOD NAME="connect" INTERNALNAME="_connect" />
+    <PUBLIC:METHOD NAME="disconnect" INTERNALNAME="_disconnect" />
+
+    <PUBLIC:METHOD NAME="__setitem__" INTERNALNAME="___setitem__" />
+    <PUBLIC:METHOD NAME="__getitem__" INTERNALNAME="___getitem__" />
+    <PUBLIC:METHOD NAME="setStyle" INTERNALNAME="_setStyle" />
+    <PUBLIC:METHOD NAME="setStyles" INTERNALNAME="_setStyles" />
+    <PUBLIC:METHOD NAME="getStyle" INTERNALNAME="_getStyle" />
+    <PUBLIC:METHOD NAME="getStyles" INTERNALNAME="_getStyles" />
+    <script type="text/javascript">
+        var el = new Element;
+        ___name__ = "Element";
+        ___class__ = Element;
+        _isIn = el.isIn;
+        _contains = el.contains;
+        ___setitem__ = el.__setitem__;
+        ___getitem__ = el.__getitem__;
+        _attr = el.attr;
+        _fire = el.fire;
+        _connect = el.connect;
+        _disconnect = el.disconnect;
+        _query = el.query;
+        _setStyle = el.setStyle;
+        _setStyles = el.setStyles;
+        _getStyle = el.getStyle;
+        _getStyles = el.getStyles;
+    </script>
+</PUBLIC:COMPONENT>

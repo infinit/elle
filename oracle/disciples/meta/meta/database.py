@@ -16,5 +16,4 @@ db = connection.meta
 
 # collections
 users = db['users']
-
 devices = db['devices']

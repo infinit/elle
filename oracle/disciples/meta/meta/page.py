@@ -1,12 +1,15 @@
 # -*- encoding: utf-8 -*-
 
-from meta.viewer import ViewerStore
-from meta import conf
-
 import web
+import genshi
+
+from meta.viewer import ViewerStore
+from meta.session import users
+from meta import conf
 
 class Page(object):
     __viewers__ = ViewerStore()
+    __skeleton__ = 'skeleton.html'
     __template__ = None
     __template_dir__ = conf.TEMPLATE_DIR
 
@@ -29,8 +32,19 @@ class Page(object):
         assert template is not None
         if obj is None:
             obj = {}
+        if 'user' not in obj:
+            obj['user'] = users.get_user()
 
         if 'path' not in obj:
             obj['path'] = web.ctx.path
         web.header('Content-Type', 'text/html')
-        return self.viewer.render(template, obj)
+        content = self.viewer.render(template, obj)
+        if web.ctx.env.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            return content
+        else:
+            var = {'html_body': genshi.HTML(content)}
+            var.update(obj)
+            return self.viewer.render(self.__skeleton__, var)
+
+    def GET(self):
+        return self.render()
