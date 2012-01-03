@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
 
+"""
+SessionStore implementation for mongoDB
+"""
+
 from datetime import datetime
 from pymongo.binary import Binary
 from re import _pattern_type

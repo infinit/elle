@@ -1,11 +1,18 @@
 # -*- encoding: utf-8 -*-
 
+"""
+Easier use of genshi templates
+"""
+
 from genshi import template
 import threading
 
 from meta import conf
 
 class Viewer(object):
+    """
+    Generate HTML5 content
+    """
     def __init__(self, loader):
         self.loader = loader
         self.pages = {}
@@ -16,6 +23,9 @@ class Viewer(object):
         return tmpl.render('html', doctype='html5')
 
 class ViewerStore(threading.local):
+    """
+    Cache viewers in a thread safe manner
+    """
     def __init__(self):
         self._viewers = {}
 

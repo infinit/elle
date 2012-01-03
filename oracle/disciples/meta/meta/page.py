@@ -9,6 +9,10 @@ from meta import conf
 from meta import database
 
 class Page(object):
+    """
+    Base class for all page, simplifies the use of viewers.
+    It also wrap access (and cache) to session and users in a lazy load manner
+    """
     __viewers__ = ViewerStore()
     __skeleton__ = 'skeleton.html'
     __template__ = None

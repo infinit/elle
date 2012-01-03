@@ -1,5 +1,9 @@
 # -*- encoding: utf-8 -*-
 
+"""
+pages module provides all page class
+"""
+
 from meta.pages.root import Root
 from meta.pages.login import Login
 from meta.pages.logout import Logout

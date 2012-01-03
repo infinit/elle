@@ -6,6 +6,10 @@ from datetime import datetime
 
 from api_client import ApiClient
 
+"""
+Tests for the sever API
+"""
+
 if __name__ == '__main__':
     server = 'http://127.0.0.1:12345'
     session = {}

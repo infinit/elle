@@ -9,6 +9,9 @@ import poster
 import web
 
 class ApiClient(object):
+    """
+    Wrap http client, make it easy to use with a REST server
+    """
 
     _status = {
         403: web.Forbidden,
