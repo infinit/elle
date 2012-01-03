@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 from datetime import datetime
 from pymongo.binary import Binary
 from re import _pattern_type
@@ -26,7 +28,7 @@ def needs_encode(obj):
     False
     >>> needs_encode({'1': [2]})
     False
-    
+
     Objects that don't round trip need encoding::
 
     >>> needs_encode(tuple())
@@ -63,11 +65,11 @@ _atime = 'atime'
 #: field name used for data
 _data = 'data'
 
-class MongoStore(Store):
-    def __init__(self, db, collection_name='sessions'):
-        self.collection = db[collection_name]
+class SessionStore(Store):
+    def __init__(self, collection):
+        self.collection = collection
         self.collection.ensure_index(_atime)
-    
+
     def encode(self, sessiondict):
         return dict((k, Binary(Store.encode(self, v)) if needs_encode(v) else v)
             for (k, v) in sessiondict.iteritems())

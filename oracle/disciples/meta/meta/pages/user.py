@@ -8,21 +8,6 @@ import json
 from meta import database
 
 #
-# ---------- globals ----------------------------------------------------------
-#
-
-templetor = web.template.render('templates/')
-
-#
-# ---------- indexes ----------------------------------------------------------
-#
-
-database.users.ensure_index('name', database.ASCENDING,
-                            kwags = { 'unique': True})
-database.users.ensure_index('email', database.ASCENDING,
-                            kwags = { 'unique': True})
-
-#
 # ---------- classes ----------------------------------------------------------
 #
 
