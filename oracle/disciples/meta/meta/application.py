@@ -20,11 +20,14 @@ class Application(object):
     _urls = (
         '/', 'Root',
         '/account', 'Account',
+        #'/user/(.+)', 'User',
         '/login', 'Login',
         '/logout', 'Logout',
         '/register', 'Register',
-        '/user/(.+)', 'User',
-        '/prototype/(.+)', 'Prototype',
+        '/device/(.+)', 'Device',
+        '/devices', 'Device',
+        '/network/(.+)', 'Network',
+        '/networks', 'Network',
     )
 
     _views = {
@@ -35,6 +38,7 @@ class Application(object):
         'User': pages.User,
         'Prototype': pages.Prototype,
         'Account': pages.Account,
+        'Device': pages.Device,
     }
 
     def __init__(self, ip='127.0.0.1', port=12345):
@@ -42,9 +46,11 @@ class Application(object):
         self.port = port
         self.app = web.application(self._urls, self._views)
         session = Session(self.app, SessionStore(database.sessions))
-        for _, cls in self._views.iteritems():
+        for cls in self._views.itervalues():
             cls.__session__ = session
 
     def run(self):
         sys.argv[1:] = [self.ip + ':' + str(self.port)]
         self.app.run()
+
+

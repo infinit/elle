@@ -76,6 +76,9 @@ class Page(object):
         user = database.users.save(kwargs)
         return user
 
+    def requireLoggedIn(self):
+        if not self.user:
+            raise web.Forbidden()
 
     def render(self, obj=None, template=None):
         if template is None:

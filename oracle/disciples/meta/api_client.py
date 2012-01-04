@@ -23,12 +23,17 @@ class ApiClient(object):
         self._server = server.rstrip('/') + '/'
 
     def get(self, url, params={}, token=None):
+        return self._req("GET", url, params, token)
+
+    def delete(self, url, params={}, token=None):
+        return self._req("DELETE", url, params, token)
+
+    def _req(self, method, url, params, token):
         params['token'] = token or self._session.get('token')
         params['fmt'] = 'json'
         url = self._server + url.lstrip('/') + '?' + urllib.urlencode(params)
         client = httplib2.Http()
-        return self._getContent(*client.request(url, 'GET'))
-
+        return self._getContent(*client.request(url, method))
 
     def post(self, url, params={}, token=None):
         params['token'] = token or self._session.get('token')
