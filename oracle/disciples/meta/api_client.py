@@ -23,25 +23,29 @@ class ApiClient(object):
         self._server = server.rstrip('/') + '/'
 
     def get(self, url, params={}, token=None):
-        return self._req("GET", url, params, token)
+        return self._req("GET", url, params, token or self._session.get('token'))
 
     def delete(self, url, params={}, token=None):
-        return self._req("DELETE", url, params, token)
+        return self._req("DELETE", url, params, token or self._session.get('token'))
 
     def _req(self, method, url, params, token):
-        params['token'] = token or self._session.get('token')
-        params['fmt'] = 'json'
         url = self._server + url.lstrip('/') + '?' + urllib.urlencode(params)
         client = httplib2.Http()
-        return self._getContent(*client.request(url, method))
+        headers = {}
+        if token is not None:
+            headers['Authorization'] = token
+        return self._getContent(*client.request(url, method, headers=headers))
 
     def post(self, url, params={}, token=None):
-        params['token'] = token or self._session.get('token')
-        params['fmt'] = 'json'
         url = self._server + url.lstrip('/')
-        body = urllib.urlencode(params)
+        body = urllib.quote_plus(json.dumps(params))
         client = httplib2.Http()
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        token = token or self._session.get('token')
+        if token is not None:
+            headers['Authorization'] = token
         return self._getContent(*client.request(url, 'POST', body=body, headers=headers))
 
     def _getContent(self, response, content):

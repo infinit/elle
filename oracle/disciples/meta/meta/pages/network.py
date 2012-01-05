@@ -4,13 +4,52 @@ import json
 import pymongo.objectid
 
 from meta.page import Page
+from meta import database
 
 class Network(Page):
     """
-    Ability to
-        GET network ids, or one specific network
-        POST new one
-        DELETE one
+    Return all user's network ids
+        GET /networks
+            -> [network_id1, ...]
+
+    Return one user network
+        GET /network/id1
+            -> {
+                '_id': "id",
+                'name': "pretty name",
+                'devices': [device_id1, ...],
+                'users': [user_id1, ...]
+            }
+
+    Create a new network
+        POST /network {
+            'name': 'pretty name', # required
+            'users': [user_id1, ...], # optional
+            'devices': [device_id1, ...], # optional
+        }
+            -> {
+                'success': True,
+                'created_network_id': "id",
+            }
+
+    Update an existing network
+        POST /network {
+            '_id': "id",
+            'name': 'pretty name', # optional
+            'users': [user_id1, ...], # optional
+            'devices': [device_id1, ...], # optional
+        }
+            -> {
+                'success': True,
+                'updated_network_id': "id",
+            }
+
+    Delete a network
+        DELETE /network/id
+            -> {
+                'success': True,
+                'deleted_network_id': "id",
+            }
     """
 
     def GET(self, id=None):
@@ -18,42 +57,102 @@ class Network(Page):
         if id is None:
             return json.dumps(self.user.get('networks', []))
         else:
-            return json.dumps(database.networks.find_one({
+            network = database.networks.find_one({
                 '_id': pymongo.objectid.ObjectId(id),
                 'owner': self.user['_id'],
-            }), default=str)
+            })
+            network.pop('owner')
+            return json.dumps(network, default=str)
 
     def POST(self):
         self.requireLoggedIn()
-        i = self.input
-        name = i.get('name', '').strip()
-        users = map(i.get('users', '').split(','), str.strip)
-        devices = map(i.get('devices', '').split(','), str.strip)
-        if not name:
-            return json.dumps({
-                'success': False,
-                'error': "You have to provide a valid network name",
-            })
+        network = self.data
+        if '_id' in network:
+            action = "update"
+        else:
+            action = "create"
+
+        action_func = {
+            'create': self._create,
+            'update': self._update,
+        }.get(action.lower())
+
+        if action_func is None:
+            return self.error("Unknown action '%s'" % str(action))
+        return json.dumps(action_func(network))
+
+    def _create(self, network):
+        if '_id' in network:
+            return self.error("An id cannot be specified while creating a network")
+        name = network.get('name', '').strip()
+        if not self._checkName(name):
+            return self.error("You have to provide a valid network name")
+        devices = filter(self._checkDevice, map(lambda d: d.strip(), network.get('devices', [])))
+        users = filter(self._checkUser, map(lambda d: d.strip(), network.get('users', [])))
+
         network = {
             'name': name,
-            'users': filter(users, lambda u: u != str(self.user['_id'])),
-            'devices': filter(devices, lambda d: d in self.user['devices']),
-            'owner': self.user['_id'], #usefull ?
+            'owner': self.user['_id'],
+            'users': users,
+            'devices': devices,
         }
-        if '_id' in i:
-            if i['_id'] not in self.user['networks']:
-                raise web.Forbidden("This network does not belong to you")
-            network['_id'] = pymongo.objectid.ObjectId(i['_id'])
-            id = database.networks.update(network)
-        else:
-            id = database.networks.insert(network)
+        id = database.networks.insert(network)
         assert id is not None
         self.user.setdefault('networks', []).append(str(id))
         database.users.save(self.user)
-        return json.dumps({
+        return {
             'success': True,
-            'network_id': str(id),
-        })
+            'created_network_id': str(id)
+        }
+
+    def _update(self, network):
+        id = str(network['_id']).strip()
+        if id not in self.user['networks']:
+            raise web.Forbidden("This network does not belong to you")
+        id = pymongo.objectid.ObjectId(id)
+        to_save = database.networks.find_one({'_id': id})
+        if 'name' in network:
+            name = network['name'].strip()
+            if not self._checkName(name):
+                return self.error("Given network name is not valid")
+            to_save['name'] = name
+        if 'devices' in network:
+            devices = filter(self._checkDevice, map(lambda d: d.strip(), network.get('devices', [])))
+            to_save['devices'] = devices
+
+        if 'users' in network:
+            users = filter(self._checkUser, map(lambda d: d.strip(), network.get('users', [])))
+            to_save['users'] = users
+
+        id = database.networks.save(to_save)
+        return {
+            'success': True,
+            'updated_network_id': str(id)
+        }
+
+    def _checkName(self, name):
+        return bool(name)
+    def _checkDevice(self, device_id):
+        """
+        device_id is not empty and belongs to the user
+        """
+        if not device_id:
+            return False
+        return device_id in self.user.devices
+
+    def _checkUser(self, user_id):
+        """
+        user_id is not empty and
+        is different from the owner and
+        exists
+        """
+        if not user_id:
+            return False
+        if user_id == str(self.user['_id']):
+            return False
+        return database.users.find_one({
+            '_id': pymongo.objectid.ObjectId(user_id),
+        }) is not None
 
     def DELETE(self, id):
         self.requireLoggedIn()
@@ -73,6 +172,6 @@ class Network(Page):
         }, remove=True)
         return json.dumps({
             'success': True,
-            'removed_network_id': id,
+            'deleted_network_id': id,
         })
 

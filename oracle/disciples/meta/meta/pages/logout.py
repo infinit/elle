@@ -10,8 +10,7 @@ class Logout(Page):
 
     def GET(self):
         self.logout()
-        if self.input.get('fmt') == 'json':
-            return json.dumps({
-                'success': True,
-            })
+        return json.dumps({
+            'success': True,
+        })
         raise web.seeother('/')

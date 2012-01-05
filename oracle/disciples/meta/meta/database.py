@@ -11,6 +11,7 @@ db = connection.meta
 users = db['users']
 devices = db['devices']
 sessions = db['sessions']
+networks = db['networks']
 
 # constraints
 users.ensure_index(

@@ -8,10 +8,45 @@ from meta.page import Page
 
 class Device(Page):
     """
-    Ability to
-        GET device ids, or one specific device
-        POST new one
-        DELETE one
+    Return all user's device ids
+        GET /devices
+            -> [device_id1, ...]
+
+    Return one user device
+        GET /device/id1
+            -> {
+                '_id': "id",
+                'name': "pretty name",
+                'ip_address': 'address',
+            }
+
+    Create a new device
+        POST /device {
+            'name': 'pretty name', # required
+            'ip_address': 'address', # required
+        }
+            -> {
+                'success': True,
+                'created_device_id': "id",
+            }
+
+    Update an existing device
+        POST /device {
+            '_id': "id",
+            'name': 'pretty name', # optional
+            'ip_address': 'address', # optional
+        }
+            -> {
+                'success': True,
+                'updated_device_id': "id",
+            }
+
+    Delete a device
+        DELETE /device/id
+            -> {
+                'success': True,
+                'deleted_device_id': "id",
+            }
     """
 
     def GET(self, id=None):
@@ -19,58 +54,87 @@ class Device(Page):
         if id is None:
             return json.dumps(self.user.get('devices', []))
         else:
-            return json.dumps(database.devices.find_one({
+            device = database.devices.find_one({
                 '_id': pymongo.objectid.ObjectId(id),
                 'owner': self.user['_id'],
-            }), default=str)
+            })
+            device.pop('owner')
+            return json.dumps(device, default=str)
 
     def POST(self):
-        """
-        XXX: add check for valid names, and valid ip
-        XXX: make the creation of the device and the user update only one transaction
-        """
         self.requireLoggedIn()
         i = self.input
-        name = i.get('name', '').strip()
-        ip_address = i.get('ip_address', '').strip()
+        device = self.data
+        if '_id' in device:
+            func = self._update
+        else:
+            func = self._create
+
+        return json.dumps(func(device))
+
+    def _create(self, device):
+        name = device.get('name', '').strip()
         if not name:
-            return json.dumps({
+            return {
                 'success': False,
                 'error': "You have to provide a valid device name",
-            })
+            }
+        ip_address = device.get('ip_address', '').strip()
         if not ip_address:
-            return json.dumps({
+            return {
                 'success': False,
                 'error': "You have to provide a valid device ip address",
-            })
+            }
         device = {
             'name': name,
             'ip_address': ip_address,
-            'owner': self.user['_id'], #usefull ?
+            'owner': self.user['_id'],
         }
-        if '_id' in i:
-            if i['_id'] not in self.user['devices']:
-                raise web.Forbidden("This device does not belong to you")
-            device['_id'] = pymongo.objectid.ObjectId(i['_id'])
-            id = database.devices.save(device)
-        else:
-            id = database.devices.insert(device)
-            self.user.setdefault('devices', []).append(str(id))
-            database.users.save(self.user)
-
-        return json.dumps({
+        id = database.devices.insert(device)
+        assert id is not None
+        self.user.setdefault('devices', []).append(str(id))
+        database.users.save(self.user)
+        return {
             'success': True,
-            'device_id': str(id),
+            'created_device_id': str(id),
+        }
+
+    def _update(self, device):
+        assert '_id' in device
+        id = device['_id'].strip()
+        if not id in self.user['devices']:
+            raise web.Forbidden("This network does not belong to you")
+        to_save = database.devices.find_one({
+            '_id': pymongo.objectid.ObjectId(id)
         })
+        if 'name' in device:
+            name = device['name'].strip()
+            if not name:
+                return {
+                    'success': False,
+                    'error': "You have to provide a valid device name",
+                }
+            to_save['name'] = name
+        if 'ip_address' in device:
+            ip_address = device['ip_address'].strip()
+            if not ip_address:
+                return {
+                    'success': False,
+                    'error': "You have to provide a valid device ip_address",
+                }
+            to_save['ip_address'] = ip_address
+        id = database.devices.save(to_save)
+        return {
+            'success': True,
+            'updated_device_id': str(id),
+        }
 
     def DELETE(self, id):
         self.requireLoggedIn()
         try:
             devices = self.user['devices']
             idx = devices.index(id)
-            print "devices left:", id, idx, devices
             devices.pop(idx)
-            print "devices left:", id, idx, devices
         except:
             return json.dumps({
                 'success': False,
@@ -83,6 +147,6 @@ class Device(Page):
         }, remove=True)
         return json.dumps({
             'success': True,
-            'removed_device_id': id,
+            'deleted_device_id': id,
         })
 

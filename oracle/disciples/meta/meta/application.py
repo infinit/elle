@@ -35,10 +35,9 @@ class Application(object):
         'Login': pages.Login,
         'Logout': pages.Logout,
         'Register': pages.Register,
-        'User': pages.User,
-        'Prototype': pages.Prototype,
         'Account': pages.Account,
         'Device': pages.Device,
+        'Network': pages.Network,
     }
 
     def __init__(self, ip='127.0.0.1', port=12345):
