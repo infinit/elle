@@ -6,9 +6,16 @@ import json
 from meta.page import Page
 
 class Logout(Page):
-    __template__ = 'logout.html'
+    """
+    GET /
+        -> {
+            'success': True
+        }
+    """
 
     def GET(self):
+        if not self.user:
+            return self.error("Not logged in")
         self.logout()
         return json.dumps({
             'success': True,

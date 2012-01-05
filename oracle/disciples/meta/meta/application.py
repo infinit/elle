@@ -1,6 +1,4 @@
-#
-# ---------- imports ----------------------------------------------------------
-#
+# -*- encoding: utf-8 -*-
 
 import sys
 import web
@@ -11,11 +9,10 @@ from meta import database
 from meta.session import Session
 from meta.session_store import SessionStore
 
-#
-# ---------- classes ----------------------------------------------------------
-#
-
 class Application(object):
+    """
+    Application class wrap web.application.run method
+    """
 
     _urls = (
         '/', 'Root',
@@ -49,6 +46,9 @@ class Application(object):
             cls.__session__ = session
 
     def run(self):
+        """
+        Run the web server
+        """
         sys.argv[1:] = [self.ip + ':' + str(self.port)]
         self.app.run()
 
