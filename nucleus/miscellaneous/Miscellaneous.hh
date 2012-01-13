@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [thu nov 24 22:47:47 2011]
+// author        julien quintard   [thu nov 24 22:47:47 2011]
 //
 
 #ifndef NUCLEUS_MISCELLANEOUS_MISCELLANEOUS_HH

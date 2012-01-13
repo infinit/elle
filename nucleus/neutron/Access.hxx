@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [wed nov  2 17:14:08 2011]
+// author        julien quintard   [wed nov  2 17:14:08 2011]
 //
 
 #ifndef NUCLEUS_NEUTRON_ACCESS_HXX
