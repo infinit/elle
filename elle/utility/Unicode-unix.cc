@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        Alexandre Bique   [mon oct  3 16:04:02 2011]
+// author        julien quintard   [fri jan 13 19:26:19 2012]
 //
 
 #include <elle/Elle.hh>

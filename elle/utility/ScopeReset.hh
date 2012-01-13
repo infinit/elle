@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        Alexandre Bique   [tue oct 11 13:09:13 2011]
+// author        julien quintard   [fri jan 13 19:27:42 2012]
 //
 
 #ifndef ELLE_UTILITY_SCOPERESET_HH
@@ -15,6 +15,9 @@ namespace elle
 {
   namespace utility
   {
+    ///
+    /// XXX \todo rework that stuff! could not we do without it since
+    ///        it is almost never used.
     ///
     /// RAII scope reset
     /// This class is an helper to reset a variable at the end

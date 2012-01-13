@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [tue nov  1 16:11:44 2011]
+// author        julien quintard   [tue nov  1 16:11:44 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_ENTRANCE_HH

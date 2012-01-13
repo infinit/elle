@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        Alexandre Bique [thu sep 15 10:58:52 2011]
+// author        julien quintard   [fri jan 13 19:16:29 2012]
 //
 
 #ifndef ELLE_SYSTEM_PLATFORM_HH

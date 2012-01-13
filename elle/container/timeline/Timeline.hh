@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [thu oct 20 17:52:03 2011]
+// author        julien quintard   [thu oct 20 17:52:03 2011]
 //
 
 #ifndef ELLE_CONTAINER_TIMELINE_TIMELINE_HH

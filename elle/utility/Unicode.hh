@@ -5,13 +5,16 @@
 //
 // license       infinit
 //
-// author        Alexandre Bique   [mon oct  3 15:58:14 2011]
+// author        julien quintard   [fri jan 13 19:25:56 2012]
 //
 
 namespace elle
 {
   namespace utility
   {
+
+    /// XXX \todo create a static class for that!
+
     /**
      * @brief converts an utf8 string to an utf16 string
      *
