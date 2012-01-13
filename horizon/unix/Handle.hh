@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [tue sep 27 15:59:12 2011]
+// author        julien quintard   [tue sep 27 15:59:12 2011]
 //
 
 #ifndef FACADE_UNIX_HANDLE_HH

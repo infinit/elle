@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [thu dec 22 16:09:39 2011]
+// author        julien quintard   [thu dec 22 16:09:39 2011]
 //
 
 #ifndef FACADE_FACADE_HH
