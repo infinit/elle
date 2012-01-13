@@ -181,32 +181,6 @@ namespace elle
       if (Elle::Initialize() == StatusError)
 	escape("unable to initialize the library");
 
-      // XXX
-      {
-	MC_SET_DEBUG(1);
-
-	JSON::Document doc;
-
-	//JSON::Decode("{ \"abc\": 12, \"foo\": \"bar\", \"bool0\": false, \"bool1\": true, \"arr\": [ 1, 2, 3, null, 5 ] }",
-	//doc);
-	JSON::Decode("{\"test\": null, \"suce\": null}", doc);
-
-	doc.Dump();
-	//doc.Dump();
-
-	//doc.Clear();
-	//doc.Set("test", 42);
-
-	printf("%u\n", doc.root.Exist("suce"));
-
-	//doc.Dump();
-	//doc.Dump();
-
-	show();
-
-	leave();
-      }
-
       // setup the program.
       if (Program::Setup() == StatusError)
 	escape("unable to set up the program");
