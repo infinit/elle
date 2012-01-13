@@ -30,7 +30,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <vector>
-# include <jsoncpp/json.h>
+# include <json/json.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -172,27 +172,20 @@ namespace elle
 	//
 	enum Type
 	  {
-	    TypeNull = ::Json::nullValue,
-	    TypeInteger = ::Json::intValue,
-	    TypeNatural = ::Json::uintValue,
-	    TypeReal = ::Json::realValue,
-	    TypeString = ::Json::stringValue,
-	    TypeBoolean = ::Json::booleanValue,
-	    TypeArray = ::Json::arrayValue,
-	    TypeObject = ::Json::objectValue
-	  };
-
-	enum Mode
-	  {
-	    ModeAllocated,
-	    ModeWrapped
+	    TypeNull = ::json_type_null,
+	    TypeInteger = ::json_type_int,
+	    TypeReal = ::json_type_double,
+	    TypeString = ::json_type_string,
+	    TypeBoolean = ::json_type_boolean,
+	    TypeArray = ::json_type_array,
+	    TypeObject = ::json_type_object
 	  };
 
 	//
 	// constructors & destructors
 	//
 	Node();
-	Node(::Json::Value*);
+	Node(::json_object*);
 	Node(const Node&);
 
 	template <typename T>
@@ -203,9 +196,9 @@ namespace elle
 	//
 	// methods
 	//
-	Status		Type(enum JSON::Node::Type&);
+	Status		Type(enum Type&);
 
-	Status		Wrap(::Json::Value*);
+	Status		Wrap(::json_object*);
 
 	Status		Get(Null&) const;
 	Status		Get(Boolean&) const;
@@ -272,8 +265,7 @@ namespace elle
 	//
 	// attributes
 	//
-	Mode		mode;
-	::Json::Value*	value;
+	::json_object*	value;
       };
 
       ///
