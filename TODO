@@ -4,6 +4,23 @@
 # ---------- porcupine --------------------------------------------------------
 #
 
+3 actions: creer, charger, decharger
+
+- un nodule/block est soit: nouveau ou existant.
+- un nodule vit soit: en memoire soit sur le disk
+
+- lorsque l'arbre est scelle, il faut calculer l'adresse de chaque block
+  modifie mais EGALEMENT mettre a jour les blocks qui le reference: voisins,
+  parent, fils.
+
+New Blocks
+  Nest::Register
+Existing Blocks
+  Nest::Load
+  Next::Unload
+
+---
+
 - dans le nest: discard (si plus de place) les blocs non modifies
 
 - ajouter first/next/previous/last etc.

@@ -30,6 +30,8 @@ int main(int argc, char** argv)
 
   Infinit::Parser->Parse();
 
+  // XXX
+  Infinit::Network = "kapoue";
   hole::Hole::Initialize();
 
   expose();

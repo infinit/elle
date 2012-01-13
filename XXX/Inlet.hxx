@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [sun sep 25 21:04:11 2011]
+// author        julien quintard   [sun sep 25 21:04:11 2011]
 //
 
 #ifndef NUCLEUS_PROTON_INLET_HXX
@@ -26,10 +26,7 @@ namespace nucleus
     template <typename V,
 	      typename T>
     Inlet<V, T>::Inlet():
-      value(Address::Some),
-
-      _footprint(*this),
-      _value(NULL)
+      _footprint(*this)
     {
     }
 
@@ -39,12 +36,11 @@ namespace nucleus
     template <typename V,
 	      typename T>
     Inlet<V, T>::Inlet(const typename V::K&			key,
-		       T*					value):
+		       T*					object):
       key(key),
-      value(Address::Some),
+      value(object),
 
-      _footprint(*this),
-      _value(value)
+      _footprint(*this)
     {
     }
 
@@ -54,26 +50,17 @@ namespace nucleus
     template <typename V,
 	      typename T>
     Inlet<V, T>::Inlet(const typename V::K&			key,
-		       const Address&				value):
+		       const Address&				address):
       key(key),
-      value(value),
+      value(address),
 
-      _footprint(*this),
-      _value(NULL)
+      _footprint(*this)
     {
     }
 
-    ///
-    /// destructor.
-    ///
-    template <typename V,
-	      typename T>
-    Inlet<V, T>::~Inlet()
-    {
-      // delete the value, if present.
-      if (this->_value != NULL)
-	delete this->_value;
-    }
+//
+// ---------- dumpable --------------------------------------------------------
+//
 
     ///
     /// this method dumps the inlet.
@@ -94,11 +81,9 @@ namespace nucleus
 		<< "[Key] " << std::dec << this->key << std::endl;
       // XXX remove std::dec
 
-      /* XXX
       // dump the value.
       if (this->value.Dump(margin + 2) == elle::StatusError)
 	escape("unable to dump the value");
-      */
 
       // dump the footprint.
       std::cout << alignment << elle::Dumpable::Shift
@@ -106,21 +91,6 @@ namespace nucleus
 
       if (this->_footprint.Dump(margin + 4) == elle::StatusError)
 	escape("unable to dump the footprint");
-
-      // dump the value, if present.
-      if (this->_value != NULL)
-	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[_Value]" << std::endl;
-
-	  if (this->_value->Dump(margin + 4) == elle::StatusError)
-	    escape("unable to dump the value");
-	}
-      else
-	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[_Value] " << elle::none << std::endl;
-	}
 
       leave();
     }

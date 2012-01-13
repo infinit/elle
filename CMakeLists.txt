@@ -2,7 +2,7 @@ PROJECT(Infinit C CXX)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-FIND_PACKAGE(Qt4 4.5 REQUIRED QtCore QtNetwork)
+FIND_PACKAGE(Qt4 4.8 REQUIRED QtCore QtNetwork)
 FIND_PACKAGE(OpenSSL REQUIRED)
 
 INCLUDE_DIRECTORIES(. ${QT_INCLUDES} ${OPENSSL_INCLUDE_DIR})
@@ -48,11 +48,12 @@ TARGET_LINK_LIBRARIES(Infinit ${QT_QTNETWORK_LIBRARIES}
                               ${QT_QTCORE_LIBRARIES})
 
 # XXX
-ADD_EXECUTABLE(XXX
-  XXX/Porcupine.cc
-  XXX/XXX.cc
-)
+#ADD_EXECUTABLE(XXX
+#  XXX/Porcupine.cc
+#  XXX/XXX.cc
+#  XXX/Nest.cc
+#)
 
-TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit
-                              ${QT_QTNETWORK_LIBRARIES}
-                              ${QT_QTCORE_LIBRARIES})
+#TARGET_LINK_LIBRARIES(XXX infinit elle nucleus lune infinit
+#                              ${QT_QTNETWORK_LIBRARIES}
+#                              ${QT_QTCORE_LIBRARIES})

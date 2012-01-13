@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [sun sep 25 08:27:15 2011]
+// author        julien quintard   [sun sep 25 08:27:15 2011]
 //
 
 #ifndef NUCLEUS_PROTON_INLET_HH
@@ -61,7 +61,6 @@ namespace nucleus
 	    T*);
       Inlet(const typename V::K&,
 	    const Address&);
-      ~Inlet();
 
       //
       // interfaces
@@ -78,10 +77,9 @@ namespace nucleus
       // attributes
       //
       typename V::K		key;
-      Address			value;
+      Handle<T>			value;
 
       elle::Footprint		_footprint;
-      T*			_value;
     };
 
   }

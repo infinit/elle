@@ -20,6 +20,7 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Block.hh>
 #include <XXX/Nodule.hh>
+#include <XXX/Handle.hh>
 
 namespace nucleus
 {
@@ -105,7 +106,6 @@ namespace nucleus
       // constructors & destructors
       //
       Porcupine();
-      ~Porcupine();
 
       //
       // methods
@@ -150,9 +150,8 @@ namespace nucleus
       // attributes
       //
       elle::Natural32		height;
-      Address			root;
 
-      Nodule<V>*		_root;
+      Handle< Nodule<V> >	root;
     };
 
     ///

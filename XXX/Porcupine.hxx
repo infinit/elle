@@ -15,29 +15,13 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <XXX/Nest.hh>
 #include <hole/Hole.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
-///
-/// this macro-function makes it easier to load a block.
-///
-#define PorcupineLoad(_object_, _element_)				\
-  if (_object_->_element_ != Address::Null)				\
-    {									\
-      if (_object_->_ ## _element_ == NULL)				\
-	{								\
-	  printf("PORCUPINE LOAD\n");					\
-	}								\
-    }									\
-  if (_object_->_ ## _element_ != NULL)
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -48,21 +32,8 @@ namespace nucleus
     ///
     template <typename V>
     Porcupine<V>::Porcupine():
-      height(0),
-
-      _root(NULL)
+      height(0)
     {
-    }
-
-    ///
-    /// destructor.
-    ///
-    template <typename V>
-    Porcupine<V>::~Porcupine()
-    {
-      // delete the root nodule, if present.
-      if (this->_root != NULL)
-	delete this->_root;
     }
 
 //
@@ -104,7 +75,12 @@ namespace nucleus
 
       // search for the quill responsible for the given key.
       if (this->Search(key, quill) == elle::StatusError)
-	escape("unable to locate a quill for this key");
+	{
+	  // purge the error messages.
+	  purge();
+
+	  false();
+	}
 
       // check whether a value exist for this key.
       if (quill->Exist(key) == elle::StatusFalse)
@@ -238,7 +214,7 @@ namespace nucleus
 	  //
 
 	  // load the right nodule, if possible.
-	  PorcupineLoad(_current, right)
+	  NestLoad(_current, right)
 	    {
 	      // update the old right nodule's neighbour links.
 	      _current->_right->left = Address::Some;
@@ -279,23 +255,23 @@ namespace nucleus
 	  waive(inlet);
 
 	  // load the root, just in case.
-	  PorcupineLoad(this, root);
+	  NestLoad(this->root);
 
 	  // create a parent node if necessary i.e if the current nodule
 	  // was the root.
-	  if (_current == this->_root)
+	  if (_current == this->root._object)
 	    {
 	      // make the porcupine grow.
 	      if (this->Grow() == elle::StatusError)
 		escape("unable to make the porcupine grow");
 
 	      // set the parent by casting the root into a seam.
-	      _parent = static_cast<Seam<V>*>(this->_root);
+	      _parent = static_cast<Seam<V>*>(this->root._object);
 	    }
 	  else
 	    {
 	      // load the parent nodule.
-	      PorcupineLoad(_current, parent);
+	      NestLoad(_current, parent);
 
 	      // set the parent.
 	      _parent = _current->_parent;
@@ -382,7 +358,7 @@ namespace nucleus
 		  (_current->parent != Address::Null))
 		{
 		  // load the parent nodule.
-		  PorcupineLoad(_current, parent);
+		  NestLoad(_current, parent);
 
 		  // propagate the change of mayor key throughout the
 		  // hiearchy.
@@ -466,7 +442,7 @@ namespace nucleus
 	      //
 
 	      // load the parent nodule.
-	      PorcupineLoad(_current, parent);
+	      NestLoad(_current, parent);
 
 	      //
 	      // update the neighbour nodules. note that this step is performed
@@ -481,7 +457,7 @@ namespace nucleus
 	      //
 
 	      // load the left neighbour, if possible.
-	      PorcupineLoad(_current, left)
+	      NestLoad(_current, left)
 		{
 		  // update the left nodule's right neighbour.
 		  _current->_left->right = _current->right;
@@ -489,7 +465,7 @@ namespace nucleus
 		}
 
 	      // load the right neighbour, if possible.
-	      PorcupineLoad(_current, right)
+	      NestLoad(_current, right)
 		{
 		  // update the right nodule's left neighbour.
 		  _current->_right->left = _current->left;
@@ -514,13 +490,8 @@ namespace nucleus
 	      // the tree can therefore be reset.
 	      //
 
-	      // delete the root nodule manually, if necessary.
-	      if (this->_root != NULL)
-		delete this->_root;
-
-	      // reset the root nodule address and pointer.
-	      this->root = Address::Null;
-	      this->_root = NULL;
+	      // reset the root handle to null.
+	      this->root = Handle::Null;
 
 	      // reset the tree's height.
 	      this->height = 0;
@@ -544,7 +515,7 @@ namespace nucleus
 	  N*		_right;
 
 	  // load the left nodule, if possible.
-	  PorcupineLoad(_current, left)
+	  NestLoad(_current, left)
 	    {
 	      // set the _left alias.
 	      _left = static_cast<N*>(_current->_left);
@@ -556,7 +527,7 @@ namespace nucleus
 	    }
 
 	  // load the right nodule, if possible.
-	  PorcupineLoad(_current, right)
+	  NestLoad(_current, right)
 	    {
 	      // set the _right alias.
 	      _right = static_cast<N*>(_current->_right);
@@ -568,7 +539,7 @@ namespace nucleus
 	    }
 
 	  // load the parent nodule, if possible.
-	  PorcupineLoad(_current, parent);
+	  NestLoad(_current, parent);
 
 	  // operate depending of several configurations, ranging from
 	  // the easiest or more convenient to the less optimised.
@@ -677,7 +648,7 @@ namespace nucleus
 		}
 
 	      // load the parent nodule.
-	      PorcupineLoad(_current, parent);
+	      NestLoad(_current, parent);
 		{
 		  // delete the current nodule in its parent since the
 		  // nodule is now empty.
@@ -694,7 +665,7 @@ namespace nucleus
 		  // the tree may have been shrunk, leading for instance
 		  // the _left_ nodule to become the new root; in which case
 		  // this nodule would no longer have a parent.
-		  PorcupineLoad(_left, parent)
+		  NestLoad(_left, parent)
 		    {
 		      // update the parent so that the left nodule gets
 		      // referenced with the proper key.
@@ -753,7 +724,7 @@ namespace nucleus
 		}
 
 	      // load the parent nodule.
-	      PorcupineLoad(_current, parent)
+	      NestLoad(_current, parent)
 		{
 		  // delete the current nodule in its parent since the
 		  // nodule is now empty.
@@ -802,7 +773,7 @@ namespace nucleus
 	      (_current->parent != Address::Null))
 	    {
 	      // load the parent nodule.
-	      PorcupineLoad(_current, parent);
+	      NestLoad(_current, parent);
 
 	      // propagate the change of mayor key throughout the
 	      // hiearchy.
@@ -848,12 +819,15 @@ namespace nucleus
 	  if (root->Create() == elle::StatusError)
 	    escape("unable to create the quill");
 
-	  // set the root nodule address and pointer.
-	  this->root = Address::Some;
-	  this->_root = root;
+	  // create the root handle.
+	  if (this->root.Create(Address::Some, root) == elle::StatusError)
+	    escape("unable to create the root handle");
 
 	  // waive the tracking.
 	  waive(root);
+
+	  // register the new block.
+	  NestRegister(this->root);
 	}
       else
 	{
@@ -861,12 +835,13 @@ namespace nucleus
 	  // otherwise, create a new seam and add the current root in
 	  // this new seam which will become the new root.
 	  //
+	  Handle< Seam<V> >	handle;
 
 	  // load the root nodule.
-	  PorcupineLoad(this, root);
+	  NestLoad(this->root);
 
 	  // retrieve the current root's mayor key.
-	  if (this->_root->Mayor(mayor) == elle::StatusError)
+	  if (this->root._object->Mayor(mayor) == elle::StatusError)
 	    escape("unable to retrieve the mayor key");
 
 	  // allocate a new seam.
@@ -879,19 +854,21 @@ namespace nucleus
 	    escape("unable to create the seam");
 
 	  // add the current root nodule in the new root seam.
-	  if (seam->Insert(mayor, this->_root) == elle::StatusError)
+	  if (seam->Insert(mayor, this->root._object) == elle::StatusError)
 	    escape("unable to add the current root in the new root nodule");
 
-	  // link the existing root to the new root.
-	  this->_root->parent = Address::Some;
-	  this->_root->_parent = seam;
-
-	  // set the new root.
-	  this->root = Address::Some;
-	  this->_root = seam;
+	  // create the handle.
+	  if (handle.Create(Address::Some, seam) == elle::StatusError)
+	    escape("unable to create the handle");
 
 	  // waive seam.
 	  waive(seam);
+
+	  // link the existing root to the new root.
+	  this->root._object->parent = handle;
+
+	  // set the new root.
+	  this->root = handle;
 	}
 
       // increment the height.
@@ -910,8 +887,7 @@ namespace nucleus
       typename V::K		maiden;
       Seam<V>*			seam;
       typename Seam<V>::I*	inlet;
-      Address			root;
-      Nodule<V>*		_root;
+      Handle< Nodule<V> >	root;
 
       enter();
 
@@ -920,12 +896,12 @@ namespace nucleus
 	leave();
 
       // load the root nodule.
-      PorcupineLoad(this, root);
+      NestLoad(this->root);
 
       // note that since the Shrink() method proceeds only for trees
       // with a two-level heigh and more, the root nodule cannot be anything
       // but a seam.
-      seam = static_cast<Seam<V>*>(this->_root);
+      seam = static_cast<Seam<V>*>(this->root._object);
 
       // retrieve the maiden key.
       if (seam->Maiden(maiden) == elle::StatusError)
@@ -937,25 +913,22 @@ namespace nucleus
 
       // retrieve the new root nodule.
       root = inlet->value;
-      _root = inlet->_value;
 
       // XXX unload the inlet's data though deleting it will simply unload
       //  the value
-      inlet->_value = NULL;
+      // XXX inlet->_value = NULL;
 
       // delete the seam.
       delete seam;
 
       // finally, set the new root nodule.
       this->root = root;
-      this->_root = _root;
 
       // load the new root.
-      PorcupineLoad(this, root);
+      NestLoad(this->root);
 
       // update the new root links.
-      this->_root->parent = Address::Null;
-      this->_root->_parent = NULL;
+      this->root->parent = Handle::Null;
 
       // decrease the tree's height.
       this->height--;
@@ -988,10 +961,10 @@ namespace nucleus
 	}
 
       // load the root nodule.
-      PorcupineLoad(this, root);
+      NestLoad(this->root);
 
       // trigger the search method on the root nodule.
-      if (this->_root->Search(key, quill) == elle::StatusError)
+      if (this->root._object->Search(key, quill) == elle::StatusError)
 	escape("unable to locate the quill for this key");
 
       leave();
@@ -1008,10 +981,10 @@ namespace nucleus
       enter();
 
       // load the parent nodule
-      PorcupineLoad(this, root)
+      NestLoad(this->root)
 	{
 	  // trigger the check method on the root nodule.
-	  if (this->_root->Check() == elle::StatusError)
+	  if (this->root._object->Check() == elle::StatusError)
 	    escape("unable to check the root nodule's consistency");
 	}
 
@@ -1077,24 +1050,7 @@ namespace nucleus
 		<< "[Root]" << std::endl;
 
       if (this->root.Dump(margin + 4) == elle::StatusError)
-	escape("unable to dump the address");
-
-      // dump the hiearchy.
-      if (this->_root != NULL)
-	{
-	  // dump the hierarchy, if present.
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[_Root]" << std::endl;
-
-	  if (this->_root->Dump(margin + 4) == elle::StatusError)
-	    escape("unable to dump the nodule");
-	}
-      else
-	{
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << elle::Dumpable::Shift
-		    << "[_Root] " << elle::none << std::endl;
-	}
+	escape("unable to dump the handle");
 
       leave();
     }

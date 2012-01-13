@@ -15,29 +15,14 @@
 // ---------- includes --------------------------------------------------------
 //
 
+#include <XXX/Nest.hh>
+
 #include <hole/Hole.hh>
 
 namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
-///
-/// this macro-function loads a block.
-///
-#define SeamLoad(_object_, _element_)					\
-  if (_object_->_element_ != Address::Null)				\
-    {									\
-      if (_object_->_ ## _element_ == NULL)				\
-	{								\
-	  printf("SEAM LOAD\n");					\
-	}								\
-    }									\
-  if (_object_->_ ## _element_ != NULL)
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -346,7 +331,7 @@ namespace nucleus
 	escape("unable to locate the inlet");
 
       // load the value block.
-      SeamLoad(inlet, value);
+      NestLoad(inlet, value);
 
       // return the nodule.
       nodule = inlet->_value;
@@ -409,7 +394,7 @@ namespace nucleus
 	escape("unable to locate the inlet associated with the given key");
 
       // load the value block.
-      SeamLoad(inlet, value);
+      NestLoad(inlet, value);
 
       // return the nodule.
       nodule = inlet->_value;
@@ -498,7 +483,7 @@ namespace nucleus
 	  (this->parent != Address::Null))
 	{
 	  // load the parent nodule.
-	  SeamLoad(this, parent);
+	  NestLoad(this, parent);
 
 	  // progate the update.
 	  if (this->_parent->Propagate(ancient, recent) == elle::StatusError)
@@ -642,7 +627,7 @@ namespace nucleus
       inlet = iterator->second;
 
       // load the child nodule.
-      SeamLoad(inlet, value);
+      NestLoad(inlet, value);
 
       // search in this nodule.
       if (inlet->_value->Search(key, quill) == elle::StatusError)
@@ -675,7 +660,7 @@ namespace nucleus
 	    escape("invalid key");
 
 	  // load the value block.
-	  SeamLoad(inlet, value);
+	  NestLoad(inlet, value);
 
 	  // retrieve the child's mauor key.
 	  if (inlet->_value->Mayor(mayor) == elle::StatusError)

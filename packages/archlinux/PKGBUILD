@@ -1,0 +1,18 @@
+# $Id$
+# Maintainer: Julien Quintard <julien.quintard@infinit.io>
+
+pkgname=infinit
+pkgver=alpha
+pkgrel=1
+pkgdesc="Infinit is a peer-to-peer file system"
+arch=("i686")
+url="http://www.infinit.io"
+license=('copyright 2011, 2012 infinit.io')
+depends=('qt' 'openssl' 'msgpack' 'readline' 'curl' 'jsoncpp-stable' 'fuse')
+source=("http://www.infinit.li/infinit/Infinit.bin")
+sha1sums=('6422d33fdd29d3dcf162da015173ca5c7170177e')
+
+build() {
+  cp Infinit.bin /usr/bin/Infinit
+  chmod +x /usr/bin/Infinit
+}

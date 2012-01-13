@@ -16,6 +16,7 @@
 //
 
 #include <XXX/Porcupine.hh>
+#include <XXX/Nest.hh>
 
 #include <hole/Hole.hh>
 
@@ -23,23 +24,6 @@ namespace nucleus
 {
   namespace proton
   {
-
-//
-// ---------- macro-functions -------------------------------------------------
-//
-
-///
-/// this macro-function loads a block.
-///
-#define QuillLoad(_object_, _element_)					\
-  if (_object_->_element_ != Address::Null)				\
-    {									\
-      if (_object_->_ ## _element_ == NULL)				\
-	{								\
-	  printf("QUILL LOAD\n");					\
-	}								\
-    }									\
-  if (_object_->_ ## _element_ != NULL)
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -343,7 +327,7 @@ namespace nucleus
 	escape("unable to locate the inlet");
 
       // load the value block.
-      QuillLoad(inlet, value);
+      NestLoad(inlet, value);
 
       // return the value.
       value = inlet->_value;
@@ -406,7 +390,7 @@ namespace nucleus
 	escape("unable to locate the inlet associated with the given key");
 
       // load the value block.
-      QuillLoad(inlet, value);
+      NestLoad(inlet, value);
 
       // return the value.
       value = inlet->_value;
