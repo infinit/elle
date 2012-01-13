@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [mon dec  5 14:41:58 2011]
+// author        julien quintard   [mon dec  5 14:41:58 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_BANK_HH

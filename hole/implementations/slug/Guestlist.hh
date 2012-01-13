@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [mon nov  7 12:36:26 2011]
+// author        julien quintard   [mon nov  7 12:36:26 2011]
 //
 
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_GUESTLIST_HH

@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [mon oct 31 16:20:39 2011]
+// author        julien quintard   [mon oct 31 16:20:39 2011]
 //
 
 #ifndef HOLE_MANIFEST_HH
