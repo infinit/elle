@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [fri dec 23 13:27:57 2011]
+// author        julien quintard   [fri dec 23 13:27:57 2011]
 //
 
 #ifndef DIARY_MEMOIRS_HH

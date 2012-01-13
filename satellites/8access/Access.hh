@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [tue nov  1 12:55:11 2011]
+// author        julien quintard   [tue nov  1 12:55:11 2011]
 //
 
 #ifndef ACCESS_ACCESS_HH

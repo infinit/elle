@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [thu dec 22 15:30:50 2011]
+// author        julien quintard   [thu dec 22 15:30:50 2011]
 //
 
 #ifndef DIARY_UNIX_UNIX_HH
