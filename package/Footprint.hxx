@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [sat sep 24 23:35:29 2011]
+// author        julien quintard   [sat sep 24 23:35:29 2011]
 //
 
 #ifndef ELLE_PACKAGE_FOOTPRINT_HXX

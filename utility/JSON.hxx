@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [wed nov 23 01:38:00 2011]
+// author        julien quintard   [wed nov 23 01:38:00 2011]
 //
 
 #ifndef ELLE_UTILITY_JSON_HXX

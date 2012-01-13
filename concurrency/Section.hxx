@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [fri oct 28 12:44:15 2011]
+// author        julien quintard   [fri oct 28 12:44:15 2011]
 //
 
 #ifndef ELLE_CONCURRENCY_SECTION_HXX
