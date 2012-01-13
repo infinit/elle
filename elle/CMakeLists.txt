@@ -125,8 +125,7 @@ TARGET_LINK_LIBRARIES(elle comet
   ssl
   readline
   curl
-  json
-  json-glib)
+  jsoncpp)
 
 IF(${UNIX})
   TARGET_LINK_LIBRARIES(elle dl)

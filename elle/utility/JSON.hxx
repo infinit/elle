@@ -35,7 +35,8 @@ namespace elle
     ///
     template <typename T>
     JSON::Node::Node(const T&					element):
-      value(NULL)
+      mode(ModeAllocated),
+      value(new ::Json::Value)
     {
       enter();
 
@@ -453,31 +454,14 @@ namespace elle
 
       enter();
 
-      // XXX
-      printf("---\n");
-      std::cout << id1 << std::endl;
-
-      // XXX
-      this->Dump();
-
       // dig the way to the target.
       if (this->Dig(id1,
 		    node) == StatusError)
 	escape("unable to dig the way to the target");
 
-      // XXX
-      this->Dump();
-
       // set the target value.
       if (node.Set(target) == StatusError)
 	escape("unable to set the target value");
-
-      // XXX
-      this->Dump();
-
-      // XXX
-      printf("---\n");
-      expose();
 
       leave();
     }
@@ -728,16 +712,9 @@ namespace elle
     {
       enter();
 
-      // XXX
-      this->root.Dump();
-      printf("EXIST? %s\n", id1);
-
       // if the identifier does not exist...
       if (this->root.Exist(id1) == StatusFalse)
 	{
-	  // XXX
-	  printf("CREATE\n");
-
 	  // create the identified entry.
 	  if (this->root.Set(id1, none) == StatusError)
 	    escape("unable to create the identified entry");
@@ -746,12 +723,6 @@ namespace elle
       // return the target node.
       if (this->root.Get(id1, node) == StatusError)
 	escape("unable to retrieve the target node");
-
-      // XXX
-      printf("OK\n");
-      this->Dump();
-      node.Dump();
-      expose();
 
       leave();
     }
