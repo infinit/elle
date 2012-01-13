@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [mon oct 17 10:05:01 2011]
+// author        julien quintard   [mon oct 17 10:05:01 2011]
 //
 
 #ifndef ETOILE_NEST_HANDLE_HH

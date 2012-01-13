@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [mon oct 31 16:11:03 2011]
+// author        julien quintard   [mon oct 31 16:11:03 2011]
 //
 
 #ifndef ETOILE_MANIFEST_HH

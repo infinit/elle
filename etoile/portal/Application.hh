@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [tue nov  1 08:38:35 2011]
+// author        julien quintard   [tue nov  1 08:38:35 2011]
 //
 
 #ifndef ETOILE_PORTAL_APPLICATION_HH

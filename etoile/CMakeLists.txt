@@ -53,5 +53,3 @@ ADD_LIBRARY(etoile
 )
 
 TARGET_LINK_LIBRARIES(etoile nucleus lune agent)
-
-ADD_SUBDIRECTORY(tests)

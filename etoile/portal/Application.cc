@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [tue nov  1 08:51:06 2011]
+// author        julien quintard   [tue nov  1 08:51:06 2011]
 //
 
 //

@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien.quintard   [wed nov  2 09:11:57 2011]
+// author        julien quintard   [wed nov  2 09:11:57 2011]
 //
 
 #ifndef ETOILE_PORTAL_WRAPPER_HH
