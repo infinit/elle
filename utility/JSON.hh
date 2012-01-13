@@ -8,8 +8,8 @@
 // author        julien quintard   [tue nov 22 10:32:54 2011]
 //
 
-#ifndef ELLE_UTILITY_JSON
-#define ELLE_UTILITY_JSON
+#ifndef ELLE_UTILITY_JSON_HH
+#define ELLE_UTILITY_JSON_HH
 
 //
 // ---------- includes --------------------------------------------------------
@@ -30,7 +30,7 @@
 
 #include <elle/idiom/Close.hh>
 # include <vector>
-# include <json/json.h>
+# include <jsoncpp/json.h>
 #include <elle/idiom/Open.hh>
 
 namespace elle
@@ -49,29 +49,6 @@ namespace elle
     ///
     /// this class contains everything related to the JSON - JavaScript
     /// Object Notation format.
-    ///
-    /// below is an example of how to use the JSON-related classes.
-    ///
-    ///   JSON::Document	document;
-    ///   String		string;
-    ///
-    ///   document.Set("some", "string");
-    ///   document.Set("somewhere", "array",
-    ///                JSON::Bulk(JSON::Node(42),
-    ///                           JSON::Node(21.84),
-    ///                           JSON::Node("bande")));
-    ///   document.Append("somewhere", "array",
-    ///                   JSON::Bulk(JSON::Node("test")));
-    ///
-    ///   JSON::Encode(document, string);
-    ///
-    ///   std::cout << string << std::endl;
-    ///
-    ///   JSON::Decode(string, document);
-    ///
-    ///   document.Dump();
-    ///
-    ///   std::cout << document.Get("somewhere", "array", 2) << std::endl;
     ///
     class JSON
     {
@@ -172,20 +149,27 @@ namespace elle
 	//
 	enum Type
 	  {
-	    TypeNull = ::json_type_null,
-	    TypeInteger = ::json_type_int,
-	    TypeReal = ::json_type_double,
-	    TypeString = ::json_type_string,
-	    TypeBoolean = ::json_type_boolean,
-	    TypeArray = ::json_type_array,
-	    TypeObject = ::json_type_object
+	    TypeNull = ::Json::nullValue,
+	    TypeInteger = ::Json::intValue,
+	    TypeNatural = ::Json::uintValue,
+	    TypeReal = ::Json::realValue,
+	    TypeString = ::Json::stringValue,
+	    TypeBoolean = ::Json::booleanValue,
+	    TypeArray = ::Json::arrayValue,
+	    TypeObject = ::Json::objectValue
+	  };
+
+	enum Mode
+	  {
+	    ModeAllocated,
+	    ModeWrapped
 	  };
 
 	//
 	// constructors & destructors
 	//
 	Node();
-	Node(::json_object*);
+	Node(::Json::Value*);
 	Node(const Node&);
 
 	template <typename T>
@@ -196,9 +180,9 @@ namespace elle
 	//
 	// methods
 	//
-	Status		Type(enum Type&);
+	Status		Type(enum JSON::Node::Type&);
 
-	Status		Wrap(::json_object*);
+	Status		Wrap(::Json::Value*);
 
 	Status		Get(Null&) const;
 	Status		Get(Boolean&) const;
@@ -265,7 +249,8 @@ namespace elle
 	//
 	// attributes
 	//
-	::json_object*	value;
+	Mode		mode;
+	::Json::Value*	value;
       };
 
       ///
