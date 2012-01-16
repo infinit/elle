@@ -117,7 +117,8 @@ ADD_LIBRARY(elle
   ${elle_UNIX}
 )
 
-TARGET_LINK_LIBRARIES(elle comet
+TARGET_LINK_LIBRARIES(elle
+  comet
   ${QT_QTNETWORK_LIBRARIES}
   ${QT_QTCORE_LIBRARIES}
   msgpack
