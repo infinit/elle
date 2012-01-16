@@ -72,15 +72,6 @@ elle::Status		Main(elle::Natural32			argc,
 
   // register the option.
   if (Infinit::Parser->Register(
-	"User",
-	'u',
-	"user",
-	"specifies the name of the user",
-	elle::Parser::KindRequired) == elle::StatusError)
-    escape("unable to register the option");
-
-  // register the option.
-  if (Infinit::Parser->Register(
 	"Network",
 	'n',
 	"network",
@@ -112,14 +103,32 @@ elle::Status		Main(elle::Natural32			argc,
     }
 
   // retrieve the user name.
-  if (Infinit::Parser->Value("User",
-			     Infinit::User) == elle::StatusError)
-    {
-      // display the usage.
-      Infinit::Parser->Usage();
+#if defined(INFINIT_UNIX)
+  {
+    struct ::passwd*	pw;
 
-      escape("unable to retrieve the user name");
-    }
+    // retrieve the current password
+    if ((pw = ::getpwuid(geteuid())) == NULL)
+      escape("unable to retrieve the current user's password structure");
+
+    // assign the username.
+    Infinit::User.assign(pw->pw_name);
+  }
+#elif defined(INFINIT_WIN32)
+  {
+    char		username[1024];
+    DWORD		length = sizeof (user);
+
+    // retrieve the username.
+    if (!::GetUserName(username, &length))
+      escape("unable to retrieve the username");
+
+    // assign the username.
+    Infinit::User.assign(username, length);
+  }
+#else
+# error "unsupported platform"
+#endif
 
   // retrieve the network name.
   if (Infinit::Parser->Value("Network",

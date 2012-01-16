@@ -5,7 +5,7 @@
 //
 // license       infinit
 //
-// author        julien quintard   [tue may  4 22:00:43 2010]
+// author        julien quintard   [tue may  4 22:00:42 2010]
 //
 
 #ifndef INFINIT_HH
