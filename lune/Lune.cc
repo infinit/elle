@@ -155,7 +155,7 @@ namespace lune
     elle::String	home =
       elle::System::Path::Home +
       elle::System::Path::Separator +
-      ".infinit";
+      ".config/infinit";
 
     enter();
 
