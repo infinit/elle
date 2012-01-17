@@ -157,7 +157,7 @@ namespace facade
       // file belongs to someone, with the given permissions, but cannot
       // be mapped to a local user name.
       if (UNIX::Dictionary.users.Lookup(abstract.keys.owner,
-				       name) == elle::StatusTrue)
+					name) == elle::StatusTrue)
 	{
 	  //
 	  // in this case, the object's owner is known locally.

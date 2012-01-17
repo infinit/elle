@@ -81,12 +81,10 @@ namespace facade
       //
       {
 	// if the dictionary exist.
-	if (UNIX::Dictionary.Exist(agent::Agent::Identity.name) ==
-	    elle::StatusTrue)
+	if (UNIX::Dictionary.Exist() == elle::StatusTrue)
 	  {
 	    // load the dictionary file.
-	    if (UNIX::Dictionary.Load(agent::Agent::Identity.name) ==
-		elle::StatusError)
+	    if (UNIX::Dictionary.Load() == elle::StatusError)
 	      escape("unable to load the dictionary");
 	  }
       }
