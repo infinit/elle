@@ -61,7 +61,7 @@ namespace agent
     //
     {
       // does the identity exist.
-      if (Agent::Identity.Exist(Infinit::User) == elle::StatusFalse)
+      if (Agent::Identity.Exist() == elle::StatusFalse)
 	escape("the user identity does not seem to exist");
 
       // prompt the user for the passphrase.
@@ -74,7 +74,7 @@ namespace agent
 	escape("unable to read the input");
 
       // load the identity.
-      if (Agent::Identity.Load(Infinit::User) == elle::StatusError)
+      if (Agent::Identity.Load() == elle::StatusError)
 	escape("unable to load the identity");
 
       // verify the identity.
