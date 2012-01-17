@@ -151,9 +151,6 @@ function gen_build_dir()
         -DCMAKE_INSTALL_PREFIX="$PREFIX" \
         $@ \
         "$CMAKE_GENERATOR" "$ROOTDIR"
-    if [ ${?} -ne 0 ] ; then
-	exit 1;
-    fi
 )
 
 MACHINE=$(uname -m)

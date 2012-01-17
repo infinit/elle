@@ -117,7 +117,7 @@ elle::Status		Main(elle::Natural32			argc,
 #elif defined(INFINIT_WIN32)
   {
     char		username[1024];
-    DWORD		length = sizeof (user);
+    DWORD		length = sizeof (username);
 
     // retrieve the username.
     if (!::GetUserName(username, &length))
