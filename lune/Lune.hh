@@ -55,21 +55,25 @@ namespace lune
     static elle::Pattern	Configuration;
     static elle::Pattern	Log;
 
+    static elle::Pattern	Identity;
+    static elle::Pattern	Dictionary;
+
     static elle::Pattern	Users;
-    static elle::Pattern	Networks;
 
     struct			User
     {
       static elle::Pattern	Root;
       static elle::Pattern	Identity;
       static elle::Pattern	Dictionary;
-      static elle::Pattern	Phrase;
     };
+
+    static elle::Pattern	Networks;
 
     struct			Network
     {
       static elle::Pattern	Root;
       static elle::Pattern	Descriptor;
+      static elle::Pattern	Phrase;
 
       struct			Reserve
       {

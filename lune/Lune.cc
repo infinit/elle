@@ -51,37 +51,43 @@ namespace lune
   elle::Pattern			Lune::Log;
 
   ///
-  /// this variable contains the path to the users directory.
-  ///
-  elle::Pattern			Lune::Users;
-
-  ///
-  /// this variable contains path to the networks directory.
-  ///
-  elle::Pattern			Lune::Networks;
-
-  ///
-  /// this variable contains the pattern-based path to a specific user
-  /// directory.
-  ///
-  elle::Pattern			Lune::User::Root;
-
-  ///
   /// this variable contains the pattern-based path to the user identity file.
   ///
-  elle::Pattern			Lune::User::Identity;
+  elle::Pattern			Lune::Identity;
 
   ///
   /// this variable contains the pattern-based path to the user dictionary
   /// file.
   ///
+  elle::Pattern			Lune::Dictionary;
+
+  ///
+  /// this variable contains path to the users directory.
+  ///
+  elle::Pattern			Lune::Users;
+
+  ///
+  /// this variable contains the pattern-based path to a specific user
+  /// directory
+  ///
+  elle::Pattern			Lune::User::Root;
+
+  ///
+  /// this variable holds the pattern of the path leading to a given
+  /// user identity.
+  ///
+  elle::Pattern			Lune::User::Identity;
+
+  ///
+  /// this variable holds the pattern of the path leading to a given
+  /// user dictionary.
+  ///
   elle::Pattern			Lune::User::Dictionary;
 
   ///
-  /// this variable contains the pattern-based path to the user's
-  /// network-specific phrase file.
+  /// this variable contains path to the networks directory.
   ///
-  elle::Pattern			Lune::User::Phrase;
+  elle::Pattern			Lune::Networks;
 
   ///
   /// this variable contains the pattern-based path to a specific network
@@ -94,6 +100,12 @@ namespace lune
   /// network descriptor.
   ///
   elle::Pattern			Lune::Network::Descriptor;
+
+  ///
+  /// this variable contains the pattern-based path to the network-specific
+  /// phrase file.
+  ///
+  elle::Pattern			Lune::Network::Phrase;
 
   ///
   /// this variable holds the pattern of the path leading to a given
@@ -155,7 +167,9 @@ namespace lune
     elle::String	home =
       elle::System::Path::Home +
       elle::System::Path::Separator +
-      ".config/infinit";
+      ".config" +
+      elle::System::Path::Separator +
+      "infinit";
 
     enter();
 
@@ -200,18 +214,27 @@ namespace lune
 	    Log::Extension) == elle::StatusError)
 	escape("unable to create the pattern");
 
+      // create the identity path pattern.
+      if (Lune::Identity.Create(
+	    home +
+	    elle::System::Path::Separator +
+	    "infinit" +
+	    Identity::Extension) == elle::StatusError)
+	escape("unable to create the pattern");
+
+      // create the dictionary path pattern.
+      if (Lune::Dictionary.Create(
+	    home +
+	    elle::System::Path::Separator +
+	    "infinit" +
+	    Dictionary::Extension) == elle::StatusError)
+	escape("unable to create the pattern");
+
       // create the users path pattern.
       if (Lune::Users.Create(
 	    home +
 	    elle::System::Path::Separator +
 	    "users") == elle::StatusError)
-	escape("unable to create the pattern");
-
-      // create the networks path pattern.
-      if (Lune::Networks.Create(
-	    home +
-	    elle::System::Path::Separator +
-	    "networks") == elle::StatusError)
 	escape("unable to create the pattern");
 
       // create the user path pattern.
@@ -247,18 +270,11 @@ namespace lune
 	    Dictionary::Extension) == elle::StatusError)
 	escape("unable to create the pattern");
 
-      // create the phrase path pattern.
-      if (Lune::User::Phrase.Create(
+      // create the networks path pattern.
+      if (Lune::Networks.Create(
 	    home +
 	    elle::System::Path::Separator +
-	    "users" +
-	    elle::System::Path::Separator +
-	    "%USER%" +
-	    elle::System::Path::Separator +
-	    "phrases" +
-	    elle::System::Path::Separator +
-	    "%NETWORK%" +
-	    Phrase::Extension) == elle::StatusError)
+	    "networks") == elle::StatusError)
 	escape("unable to create the pattern");
 
       // create the network path pattern.
@@ -280,6 +296,18 @@ namespace lune
 	    elle::System::Path::Separator +
 	    "%NETWORK%" +
 	    Descriptor::Extension) == elle::StatusError)
+	escape("unable to create the pattern");
+
+      // create the phrase path pattern.
+      if (Lune::Network::Phrase.Create(
+	    home +
+	    elle::System::Path::Separator +
+	    "networks" +
+	    elle::System::Path::Separator +
+	    "%NETWORK%" +
+	    elle::System::Path::Separator +
+	    "%NETWORK%" +
+	    Phrase::Extension) == elle::StatusError)
 	escape("unable to create the pattern");
 
       // create the reserve path pattern.

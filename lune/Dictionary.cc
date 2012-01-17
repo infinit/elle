@@ -99,6 +99,105 @@ namespace lune
 //
 
   ///
+  /// this method loads the current user's local dictionary.
+  ///
+  elle::Status		Dictionary::Load()
+  {
+    elle::Path		path;
+    elle::Region	region;
+
+    enter();
+
+    // create the path.
+    if (path.Create(Lune::Dictionary) == elle::StatusError)
+      escape("unable to create the path");
+
+    // read the file's content.
+    if (elle::File::Read(path, region) == elle::StatusError)
+      escape("unable to read the file's content");
+
+    // decode and extract the object.
+    if (elle::Hexadecimal::Decode(
+	  elle::String(reinterpret_cast<char*>(region.contents),
+		       region.size),
+	  *this) == elle::StatusError)
+      escape("unable to decode the object");
+
+    leave();
+  }
+
+  ///
+  /// this method stores the current user's local dictionary.
+  ///
+  elle::Status		Dictionary::Store() const
+  {
+    elle::Path		path;
+    elle::Region	region;
+    elle::String	string;
+
+    enter();
+
+    // create the path.
+    if (path.Create(Lune::Dictionary) == elle::StatusError)
+      escape("unable to create the path");
+
+    // encode in hexadecimal.
+    if (elle::Hexadecimal::Encode(*this, string) == elle::StatusError)
+      escape("unable to encode the object in hexadecimal");
+
+    // wrap the string.
+    if (region.Wrap(reinterpret_cast<const elle::Byte*>(string.c_str()),
+		    string.length()) == elle::StatusError)
+      escape("unable to wrap the string in a region");
+
+    // write the file's content.
+    if (elle::File::Write(path, region) == elle::StatusError)
+      escape("unable to write the file's content");
+
+    leave();
+  }
+
+  ///
+  /// this method erases the current user's dictionary.
+  ///
+  elle::Status		Dictionary::Erase() const
+  {
+    elle::Path		path;
+
+    enter();
+
+    // create the path.
+    if (path.Create(Lune::Dictionary) == elle::StatusError)
+      escape("unable to create the path");
+
+    // erase the file.
+    if (elle::File::Erase(path) == elle::StatusError)
+      escape("unable to erase the file");
+
+    leave();
+  }
+
+  ///
+  /// this method tests the current user's dictionary.
+  ///
+  elle::Status		Dictionary::Exist() const
+  {
+    elle::Path		path;
+
+    enter();
+
+    // create the path.
+    if (path.Create(Lune::Dictionary) == elle::StatusError)
+      escape("unable to create the path");
+
+    // test the file.
+    if (elle::File::Exist(path) == elle::StatusFalse)
+      false();
+
+    true();
+  }
+
+  ///
   /// this method loads the user's local dictionary.
   ///
   elle::Status		Dictionary::Load(const elle::String&	name)
