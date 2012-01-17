@@ -64,5 +64,35 @@ namespace etoile
       leave();
     }
 
+    ///
+    /// this method takes an system absolute path _way_ and verifies that
+    /// it belongs to the current Infinit file system. if so, the relative
+    /// path is returned.
+    ///
+    /// for example, assuming Infinit runs on the local mountpoint
+    /// /home/mycure/local/mnt/infinit/ and given the _way_
+    /// /home/mycure/local/mnt/infinit/tmp/teton.txt, this method would
+    /// return a _path_ /tmp/teton.txt.
+    ///
+    elle::Status	Path::Locate(
+                          const path::Way&			absolute,
+			  path::Way&				relative)
+    {
+      enter();
+
+      // verify that the given way lies in the mountpoint.
+      if (absolute.path.find(Infinit::Mountpoint) == elle::String::npos)
+	escape("the given way is not located in this Infinit file system");
+
+      // extract the relative path.
+      relative.path = absolute.path.substr(Infinit::Mountpoint.length());
+
+      // if the relative path is empty, just return the root directory.
+      if (relative.path.empty() == true)
+	relative.path = elle::System::Path::Root;
+
+      leave();
+    }
+
   }
 }

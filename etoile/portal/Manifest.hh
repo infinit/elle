@@ -83,6 +83,8 @@ namespace etoile
 	// path
 	TagPathResolve,
 	TagPathChemin,
+	TagPathLocate,
+	TagPathWay,
 
 	// object
 	TagObjectLoad,
@@ -168,6 +170,10 @@ message(etoile::portal::TagPathResolve,
 	parameters(etoile::path::Way&));
 message(etoile::portal::TagPathChemin,
 	parameters(etoile::path::Chemin&));
+message(etoile::portal::TagPathLocate,
+	parameters(etoile::path::Way&));
+message(etoile::portal::TagPathWay,
+	parameters(etoile::path::Way&));
 
 // object
 message(etoile::portal::TagObjectLoad,

@@ -18,8 +18,6 @@
 
 #include <etoile/Etoile.hh>
 
-#include <agent/Agent.hh>
-#include <hole/Hole.hh>
 #include <Infinit.hh>
 
 namespace etoile
@@ -55,9 +53,9 @@ namespace etoile
       // build the line depending on both the user and network names.
       Portal::Line =
 	"etoile-" +
-	agent::Agent::Identity.name +
+	Infinit::User +
 	":" +
-	hole::Hole::Descriptor.name;
+	Infinit::Network;
 
       /// XXX \todo le faire proprement en quittant, tout nettoyer, notamment
       ///     en catchant les signaux (UNIX/QT) et via unlink.
@@ -86,6 +84,16 @@ namespace etoile
 	      elle::Procedure<TagPathResolve,
 			      TagPathChemin>(
 	        elle::Callback<>::Infer(&wall::Path::Resolve),
+		elle::Callback<>::Infer(&Portal::Prolog),
+		elle::Callback<>::Infer(&Portal::Epilog))) ==
+	    elle::StatusError)
+	  escape("unable to register the callback");
+
+	// register the message.
+	if (elle::Network::Register(
+	      elle::Procedure<TagPathLocate,
+			      TagPathWay>(
+	        elle::Callback<>::Infer(&wall::Path::Locate),
 		elle::Callback<>::Infer(&Portal::Prolog),
 		elle::Callback<>::Infer(&Portal::Epilog))) ==
 	    elle::StatusError)

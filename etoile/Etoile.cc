@@ -15,6 +15,7 @@
 #include <etoile/Etoile.hh>
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
+#include <Infinit.hh>
 
 namespace etoile
 {
@@ -81,9 +82,7 @@ namespace etoile
 	escape("unable to create the phrase");
 
       // store the phrase.
-      if (Etoile::Phrase.Store(
-	    agent::Agent::Identity.name,
-	    hole::Hole::Descriptor.name) == elle::StatusError)
+      if (Etoile::Phrase.Store(Infinit::Network) == elle::StatusError)
 	escape("unable to store the phrase");
     }
 
