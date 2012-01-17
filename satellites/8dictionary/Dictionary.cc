@@ -33,8 +33,7 @@ namespace application
   ///
   /// this method adds an entry.
   ///
-  elle::Status		Dictionary::Add(const elle::String&	profile,
-					const Dictionary::Type&	type,
+  elle::Status		Dictionary::Add(const Dictionary::Type&	type,
 					const elle::String&	name,
 					const elle::Unique&	identifier)
   {
@@ -49,7 +48,7 @@ namespace application
       lune::Identity	identity;
 
       // does the user identity exist.
-      if (identity.Exist(profile) == elle::StatusFalse)
+      if (identity.Exist() == elle::StatusFalse)
 	escape("this user does not seem to exist");
     }
 
@@ -58,10 +57,10 @@ namespace application
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(profile) == elle::StatusTrue)
+      if (dictionary.Exist() == elle::StatusTrue)
 	{
 	  // load the dictionary.
-	  if (dictionary.Load(profile) == elle::StatusError)
+	  if (dictionary.Load() == elle::StatusError)
 	    escape("unable to load the dictionary");
 	}
     }
@@ -109,7 +108,7 @@ namespace application
     //
     {
       // store the dictionary file.
-      if (dictionary.Store(profile) == elle::StatusError)
+      if (dictionary.Store() == elle::StatusError)
 	escape("unable to store the dictionary");
     }
 
@@ -119,8 +118,7 @@ namespace application
   ///
   /// this method removes an entry.
   ///
-  elle::Status		Dictionary::Remove(const elle::String&	profile,
-					   const Dictionary::Type& type,
+  elle::Status		Dictionary::Remove(const Dictionary::Type& type,
 					   const elle::String&	name)
   {
     lune::Dictionary	dictionary;
@@ -134,7 +132,7 @@ namespace application
       lune::Identity	identity;
 
       // does the user identity exist.
-      if (identity.Exist(profile) == elle::StatusFalse)
+      if (identity.Exist() == elle::StatusFalse)
 	escape("this user does not seem to exist");
     }
 
@@ -143,10 +141,10 @@ namespace application
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(profile) == elle::StatusTrue)
+      if (dictionary.Exist() == elle::StatusTrue)
 	{
 	  // load the dictionary file.
-	  if (dictionary.Load(profile) == elle::StatusError)
+	  if (dictionary.Load() == elle::StatusError)
 	    escape("unable to load the dictionary");
 	}
     }
@@ -182,7 +180,7 @@ namespace application
     //
     {
       // store the dictionary file.
-      if (dictionary.Store(profile) == elle::StatusError)
+      if (dictionary.Store() == elle::StatusError)
 	escape("unable to store the dictionary");
     }
 
@@ -192,8 +190,7 @@ namespace application
   ///
   /// this method shows all the entries.
   ///
-  elle::Status		Dictionary::Show(const elle::String&	profile,
-					 const Dictionary::Type& type)
+  elle::Status		Dictionary::Show(const Dictionary::Type& type)
   {
     lune::Dictionary	dictionary;
 
@@ -206,7 +203,7 @@ namespace application
       lune::Identity	identity;
 
       // does the user identity exist.
-      if (identity.Exist(profile) == elle::StatusFalse)
+      if (identity.Exist() == elle::StatusFalse)
 	escape("this user does not seem to exist");
     }
 
@@ -215,10 +212,10 @@ namespace application
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(profile) == elle::StatusTrue)
+      if (dictionary.Exist() == elle::StatusTrue)
 	{
 	  // load the dictionary file.
-	  if (dictionary.Load(profile) == elle::StatusError)
+	  if (dictionary.Load() == elle::StatusError)
 	    escape("unable to load the dictionary");
 	}
     }
@@ -273,8 +270,7 @@ namespace application
   ///
   /// this method dump an entry.
   ///
-  elle::Status		Dictionary::Dump(const elle::String&	profile,
-					 const Dictionary::Type& type,
+  elle::Status		Dictionary::Dump(const Dictionary::Type& type,
 					 const elle::String&	name)
   {
     lune::Dictionary	dictionary;
@@ -288,7 +284,7 @@ namespace application
       lune::Identity	identity;
 
       // does the user identity exist.
-      if (identity.Exist(profile) == elle::StatusFalse)
+      if (identity.Exist() == elle::StatusFalse)
 	escape("this user does not seem to exist");
     }
 
@@ -297,10 +293,10 @@ namespace application
     //
     {
       // load the dictionary if it exists.
-      if (dictionary.Exist(profile) == elle::StatusTrue)
+      if (dictionary.Exist() == elle::StatusTrue)
 	{
 	  // load the dictionary file.
-	  if (dictionary.Load(profile) == elle::StatusError)
+	  if (dictionary.Load() == elle::StatusError)
 	    escape("unable to load the dictionary");
 	}
     }
@@ -411,15 +407,6 @@ namespace application
 	  "help",
 	  "display the help",
 	  elle::Parser::KindNone) == elle::StatusError)
-      escape("unable to register the option");
-
-    // register the options.
-    if (Infinit::Parser->Register(
-          "Profile",
-	  'p',
-	  "profile",
-	  "specify the user name of the dictionary",
-	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
     // register the options.
@@ -552,14 +539,9 @@ namespace application
       {
       case Dictionary::OperationAdd:
 	{
-	  elle::String		profile;
 	  Dictionary::Type	type;
 	  elle::String		name;
 	  elle::Unique		identifier;
-
-	  // retrieve the profile.
-	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
 
 	  // retrieve the name.
 	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
@@ -576,11 +558,10 @@ namespace application
 	  // retrieve the identifier.
 	  if (Infinit::Parser->Value("Identifier",
 				     identifier) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
+	    escape("unable to retrieve the identifier value");
 
 	  // add a record.
-	  if (Dictionary::Add(profile,
-			      type,
+	  if (Dictionary::Add(type,
 			      name,
 			      identifier) == elle::StatusError)
 	    escape("unable to add a mapping");
@@ -593,13 +574,8 @@ namespace application
 	}
       case Dictionary::OperationRemove:
 	{
-	  elle::String		profile;
 	  Dictionary::Type	type;
 	  elle::String		name;
-
-	  // retrieve the profile.
-	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
 
 	  // retrieve the name.
 	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
@@ -614,8 +590,7 @@ namespace application
 	    escape("please specify the type of the entity: user or group");
 
 	  // remove a record.
-	  if (Dictionary::Remove(profile,
-				 type,
+	  if (Dictionary::Remove(type,
 				 name) == elle::StatusError)
 	    escape("unable to remove the mapping");
 
@@ -627,13 +602,8 @@ namespace application
 	}
       case Dictionary::OperationDump:
 	{
-	  elle::String		profile;
 	  Dictionary::Type	type;
 	  elle::String		name;
-
-	  // retrieve the profile.
-	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
 
 	  // retrieve the name.
 	  if (Infinit::Parser->Value("Name", name) == elle::StatusError)
@@ -648,8 +618,7 @@ namespace application
 	    escape("please specify the type of the entity: user or group");
 
 	  // dump the record.
-	  if (Dictionary::Dump(profile,
-			       type,
+	  if (Dictionary::Dump(type,
 			       name) == elle::StatusError)
 	    escape("unable to dump the mapping");
 
@@ -657,12 +626,7 @@ namespace application
 	}
       case Dictionary::OperationShow:
 	{
-	  elle::String		profile;
 	  Dictionary::Type	type;
-
-	  // retrieve the profile.
-	  if (Infinit::Parser->Value("Profile", profile) == elle::StatusError)
-	    escape("unable to retrieve the profile value");
 
 	  // retrieve the type.
 	  if (Infinit::Parser->Test("User") == elle::StatusTrue)
@@ -673,8 +637,7 @@ namespace application
 	    escape("please specify the type of the entity: user or group");
 
 	  // show the records.
-	  if (Dictionary::Show(profile,
-			       type) == elle::StatusError)
+	  if (Dictionary::Show(type) == elle::StatusError)
 	    escape("unable to show the mappings");
 
 	  break;

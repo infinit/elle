@@ -57,18 +57,14 @@ namespace application
     //
     // static methods
     //
-    static elle::Status		Add(const elle::String&,
-				    const Type&,
+    static elle::Status		Add(const Type&,
 				    const elle::String&,
 				    const elle::Unique&);
-    static elle::Status		Remove(const elle::String&,
-				       const Type&,
+    static elle::Status		Remove(const Type&,
 				       const elle::String&);
-    static elle::Status		Dump(const elle::String&,
-				     const Type&,
+    static elle::Status		Dump(const Type&,
 				     const elle::String&);
-    static elle::Status		Show(const elle::String&,
-				     const Type&);
+    static elle::Status		Show(const Type&);
   };
 
 }

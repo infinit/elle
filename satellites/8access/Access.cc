@@ -93,17 +93,16 @@ namespace application
     // build the line.
     line =
       "etoile-" +
-      agent::Agent::Identity.name +
+      Infinit::User +
       ":" +
-      hole::Hole::Descriptor.name;
+      Infinit::Network;
 
     //
     // load the phrase.
     //
     {
       // load the phrase.
-      if (phrase.Load(agent::Agent::Identity.name,
-		      hole::Hole::Descriptor.name) == elle::StatusError)
+      if (phrase.Load(Infinit::Network) == elle::StatusError)
 	escape("unable to load the phrase");
     }
 
@@ -284,6 +283,7 @@ namespace application
   {
     etoile::path::Chemin	chemin;
     etoile::gear::Identifier	identifier;
+    etoile::path::Way		path;
 
     enter();
 
@@ -291,9 +291,21 @@ namespace application
     if (Access::Connect() == elle::StatusError)
       goto _error;
 
+    // locate the path i.e is the way located in the Infinit file system.
+    if (Access::Socket.Call(
+	  elle::Inputs<etoile::portal::TagPathLocate>(way),
+	  elle::Outputs<etoile::portal::TagPathWay>(path)) ==
+	elle::StatusError)
+      goto _error;
+
+    // XXX
+    printf("HERE\n");
+    path.Dump();
+    exit(0);
+
     // resolve the path.
     if (Access::Socket.Call(
-	  elle::Inputs<etoile::portal::TagPathResolve>(way),
+	  elle::Inputs<etoile::portal::TagPathResolve>(path),
 	  elle::Outputs<etoile::portal::TagPathChemin>(chemin)) ==
 	elle::StatusError)
       goto _error;
@@ -512,7 +524,8 @@ namespace application
           "Path",
 	  'p',
 	  "path",
-	  "indicate the path to the target object i.e file, directory or link",
+	  "indicate the local absolute path to the target object "
+	  "i.e file, directory or link",
 	  elle::Parser::KindRequired) == elle::StatusError)
       escape("unable to register the option");
 
