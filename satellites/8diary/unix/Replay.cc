@@ -252,6 +252,34 @@ namespace application
       leave();
     }
 
+    // XXX
+    int filler(void* buf, const char* name, const struct stat* stbuf, off_t off)
+    {
+      /* XXX[taken from CBFS]
+      DIR_ENUM_INFO* pinfo = (DIR_ENUM_INFO*)buf;
+      struct stat attr;
+
+      if(NULL == buf) return 1;
+
+      if (pinfo->CheckDirEmpty) {
+	if ((strcmp(name, ".") && strcmp(name, ".."))) {
+	  return 1;
+        }
+        else
+	  return 0;
+      }
+
+      ASSERT(CBFS_NTC_DIRECTORY_ENUM == NodeType(pinfo));
+
+      if (stbuf != NULL)
+        attr = *stbuf;
+
+      pinfo->dirlist.insert(DIRSTAT::value_type(name, attr));
+      */
+
+      return 0;
+    }
+
     elle::Status	Replay::Readdir(Upcall&			upcall)
     {
       struct
