@@ -45,14 +45,14 @@ namespace agent
     //
     // static methods
     //
-    static elle::Status		Initialize();
-    static elle::Status		Clean();
+    static elle::Status         Initialize();
+    static elle::Status         Clean();
 
     //
     // static attributes
     //
-    static lune::Identity	Identity;
-    static nucleus::Subject	Subject;
+    static lune::Identity       Identity;
+    static nucleus::Subject     Subject;
   };
 
 }

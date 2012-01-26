@@ -26,17 +26,17 @@ namespace agent
   ///
   /// this value defines the component's name.
   ///
-  const elle::Character		Component[] = "agent";
+  const elle::Character         Component[] = "agent";
 
   ///
   /// the user's identity.
   ///
-  lune::Identity		Agent::Identity;
+  lune::Identity                Agent::Identity;
 
   ///
   /// this variable represents the user subject.
   ///
-  nucleus::Subject		Agent::Subject;
+  nucleus::Subject              Agent::Subject;
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -45,10 +45,10 @@ namespace agent
   ///
   /// this method initializes the agent.
   ///
-  elle::Status		Agent::Initialize()
+  elle::Status          Agent::Initialize()
   {
-    elle::String	prompt;
-    elle::String	pass;
+    elle::String        prompt;
+    elle::String        pass;
 
     enter();
 
@@ -62,28 +62,28 @@ namespace agent
     {
       // does the identity exist.
       if (Agent::Identity.Exist() == elle::StatusFalse)
-	escape("the user identity does not seem to exist");
+        escape("the user identity does not seem to exist");
 
       // prompt the user for the passphrase.
       prompt = "Enter passphrase for keypair '" + Infinit::User + "': ";
 
       if (elle::Console::Input(
-	    pass,
-	    prompt,
-	    elle::Console::OptionPassword) == elle::StatusError)
-	escape("unable to read the input");
+            pass,
+            prompt,
+            elle::Console::OptionPassword) == elle::StatusError)
+        escape("unable to read the input");
 
       // load the identity.
       if (Agent::Identity.Load() == elle::StatusError)
-	escape("unable to load the identity");
+        escape("unable to load the identity");
 
       // verify the identity.
       if (Agent::Identity.Validate(Infinit::Authority) == elle::StatusError)
-	escape("the identity seems to be invalid");
+        escape("the identity seems to be invalid");
 
       // decrypt the identity.
       if (Agent::Identity.Decrypt(pass) == elle::StatusError)
-	escape("unable to decrypt the identity");
+        escape("unable to decrypt the identity");
     }
 
     //
@@ -92,7 +92,7 @@ namespace agent
     {
       // create the subject.
       if (Agent::Subject.Create(Agent::Identity.pair.K) == elle::StatusError)
-	escape("unable to create the user's subject");
+        escape("unable to create the user's subject");
     }
 
     // enable the meta logging.
@@ -108,7 +108,7 @@ namespace agent
   /// the components are recycled just to make sure the memory is
   /// released before the Meta allocator terminates.
   ///
-  elle::Status		Agent::Clean()
+  elle::Status          Agent::Clean()
   {
     enter();
 
