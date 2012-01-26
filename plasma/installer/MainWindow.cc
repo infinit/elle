@@ -8,8 +8,8 @@
 #include <QNetworkReply>
 #include <QDir>
 
-#include "mainwindow.hh"
-#include "ui_mainwindow.h"
+#include "MainWindow.hh"
+#include "ui_MainWindow.h"
 #include "resources.hh"
 
 MainWindow::MainWindow(QWidget *parent) :
