@@ -25,12 +25,12 @@ namespace nucleus
     /// hashing it.
     ///
     template <typename T,
-	      typename... TT>
-    elle::Status	Address::Create(const Family&		family,
-					const
-					  neutron::Component&	component,
-					const T&		parameter,
-					const TT&...		parameters)
+              typename... TT>
+    elle::Status        Address::Create(const Family&           family,
+                                        const
+                                          neutron::Component&   component,
+                                        const T&                parameter,
+                                        const TT&...            parameters)
     {
       enter();
 
@@ -42,7 +42,7 @@ namespace nucleus
 
       // release the previous digest.
       if (this->digest != NULL)
-	delete this->digest;
+        delete this->digest;
 
       // allocate the digest object.
       this->digest = new elle::Digest;
@@ -52,8 +52,8 @@ namespace nucleus
       // in the parameters as well. for examples, please refer to
       // ContentHashBlock, PublicKeyBlock etc.
       if (elle::OneWay::Hash(parameter, parameters...,
-			     *this->digest) == elle::StatusError)
-	escape("unable to hash the given parameter(s)");
+                             *this->digest) == elle::StatusError)
+        escape("unable to hash the given parameter(s)");
 
       leave();
     }

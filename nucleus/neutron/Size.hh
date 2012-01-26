@@ -30,7 +30,7 @@ namespace nucleus
     /// this type represents the size of the contents being a catalog,
     /// data or reference.
     ///
-    typedef elle::Natural64		Size;
+    typedef elle::Natural64             Size;
 
   }
 }

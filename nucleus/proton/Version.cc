@@ -26,25 +26,25 @@ namespace nucleus
     ///
     /// this constant represents the first version.
     ///
-    const Version		Version::First;
+    const Version               Version::First;
 
     ///
     /// this constant represents the latest version.
     ///
-    const Version		Version::Last(
-				  elle::Type<Version::Type>::Maximum);
+    const Version               Version::Last(
+                                  elle::Type<Version::Type>::Maximum);
 
     ///
     /// this constant represents any version and is useful whenever
     /// dealing with immutable blocks for which version do not make any
     /// sense.
     ///
-    const Version		Version::Any(Version::Last);
+    const Version               Version::Any(Version::Last);
 
     ///
     /// this constant is an alias of Any.
     ///
-    const Version&		Version::Some = Version::Any;
+    const Version&              Version::Some = Version::Any;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -61,7 +61,7 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    Version::Version(const Type					number):
+    Version::Version(const Type                                 number):
       number(number)
     {
     }
@@ -73,7 +73,7 @@ namespace nucleus
     ///
     /// this method creates a version.
     ///
-    elle::Status	Version::Create(const Type		number)
+    elle::Status        Version::Create(const Type              number)
     {
       enter();
 
@@ -90,17 +90,17 @@ namespace nucleus
     ///
     /// this method checks if two objects match.
     ///
-    elle::Boolean	Version::operator==(const Version&	element) const
+    elle::Boolean       Version::operator==(const Version&      element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the numbers.
       if (this->number != element.number)
-	false();
+        false();
 
       true();
     }
@@ -108,17 +108,17 @@ namespace nucleus
     ///
     /// this method compares the objects.
     ///
-    elle::Boolean	Version::operator<(const Version&	element) const
+    elle::Boolean       Version::operator<(const Version&       element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the numbers.
       if (this->number >= element.number)
-	false();
+        false();
 
       true();
     }
@@ -126,17 +126,17 @@ namespace nucleus
     ///
     /// this method compares the objects.
     ///
-    elle::Boolean	Version::operator>(const Version&	element) const
+    elle::Boolean       Version::operator>(const Version&       element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the numbers.
       if (this->number <= element.number)
-	false();
+        false();
 
       true();
     }
@@ -144,7 +144,7 @@ namespace nucleus
     ///
     /// this method increments the version number.
     ///
-    Version&		Version::operator+=(const elle::Natural32 increment)
+    Version&            Version::operator+=(const elle::Natural32 increment)
     {
       // increment the number.
       this->number += increment;
@@ -155,7 +155,7 @@ namespace nucleus
     ///
     /// this method adds the given version to the current one.
     ///
-    Version		Version::operator+(const Version&	element) const
+    Version             Version::operator+(const Version&       element) const
     {
       return (Version(this->number + element.number));
     }
@@ -172,9 +172,9 @@ namespace nucleus
     ///
     /// this method dumps the version's internals.
     ///
-    elle::Status	Version::Dump(const elle::Natural32	margin) const
+    elle::Status        Version::Dump(const elle::Natural32     margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -190,13 +190,13 @@ namespace nucleus
     ///
     /// this method serializes the version attributes.
     ///
-    elle::Status	Version::Serialize(elle::Archive&	archive) const
+    elle::Status        Version::Serialize(elle::Archive&       archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->number) == elle::StatusError)
-	escape("unable to serialize the version's attributes");
+        escape("unable to serialize the version's attributes");
 
       leave();
     }
@@ -204,13 +204,13 @@ namespace nucleus
     ///
     /// this method extracts the attributes.
     ///
-    elle::Status	Version::Extract(elle::Archive&		archive)
+    elle::Status        Version::Extract(elle::Archive&         archive)
     {
       enter();
 
       // extracts the attributes.
       if (archive.Extract(this->number) == elle::StatusError)
-	escape("unable to extract the version's attributes");
+        escape("unable to extract the version's attributes");
 
       leave();
     }

@@ -76,23 +76,23 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const Genre,
-			       const elle::PublicKey&);
+      elle::Status      Create(const Genre,
+                               const elle::PublicKey&);
 
-      elle::Status	Update(const Author&,
-			       const proton::Address&,
-			       const Size&,
-			       const proton::Address&,
-			       const Token&);
-      elle::Status	Administrate(const Attributes&,
-				     const Permissions&);
+      elle::Status      Update(const Author&,
+                               const proton::Address&,
+                               const Size&,
+                               const proton::Address&,
+                               const Token&);
+      elle::Status      Administrate(const Attributes&,
+                                     const Permissions&);
 
-      elle::Status	Seal(const elle::PrivateKey&,
-			     const Access&);
+      elle::Status      Seal(const elle::PrivateKey&,
+                             const Access&);
 
-      elle::Status	Validate(const proton::Address&) const;
-      elle::Status	Validate(const proton::Address&,
-				 const Access&) const;
+      elle::Status      Validate(const proton::Address&) const;
+      elle::Status      Validate(const proton::Address&,
+                                 const Access&) const;
 
       //
       // interfaces
@@ -102,56 +102,56 @@ namespace nucleus
       declare(Object);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Author			author;
+      Author                    author;
 
       struct
       {
-	// XXX to implement: proton::Base		base;
+        // XXX to implement: proton::Base               base;
 
-	struct
-	{
-	  Permissions		permissions;
-	  Token			token;
+        struct
+        {
+          Permissions           permissions;
+          Token                 token;
 
-	  Record		_record;
-	}			owner;
+          Record                _record;
+        }                       owner;
 
-	Genre			genre;
-	elle::Time		stamp;
+        Genre                   genre;
+        elle::Time              stamp;
 
-	Attributes		attributes;
+        Attributes              attributes;
 
-	proton::Address		access;
+        proton::Address         access;
 
-	proton::Version		version;
-	elle::Signature		signature;
+        proton::Version         version;
+        elle::Signature         signature;
 
-	proton::State		_state;
-      }				meta;
+        proton::State           _state;
+      }                         meta;
 
       struct
       {
-	// XXX to implement: proton::Base		base;
+        // XXX to implement: proton::Base               base;
 
-	proton::Address		contents;
+        proton::Address         contents;
 
-	Size			size;
-	elle::Time		stamp;
+        Size                    size;
+        elle::Time              stamp;
 
-	proton::Version		version;
-	elle::Signature		signature;
+        proton::Version         version;
+        elle::Signature         signature;
 
-	proton::State		_state;
-      }				data;
+        proton::State           _state;
+      }                         data;
     };
 
   }

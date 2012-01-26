@@ -26,19 +26,19 @@ namespace nucleus
     ///
     /// this variable can easily be used for comparing with invalid addresses.
     ///
-    const Address		Address::Null;
+    const Address               Address::Null;
 
     ///
     /// this variable is similar to Null except that it is constructed
     /// so as not to be considered "empty". this constant is particularly
     /// useful when one wants to know the footprint of such an Address type.
     ///
-    Address			Address::Any;
+    Address                     Address::Any;
 
     ///
     /// this variable is an alias of Any.
     ///
-    Address&			Address::Some = Address::Any;
+    Address&                    Address::Some = Address::Any;
 
 //
 // ---------- static methods --------------------------------------------------
@@ -47,17 +47,17 @@ namespace nucleus
     ///
     /// this method initializes the address system.
     ///
-    elle::Status	Address::Initialize()
+    elle::Status        Address::Initialize()
     {
       enter();
 
       // create the any address with default meaningless values.
       if (Address::Any.Create(
-	    Address::Any.family, Address::Any.component,
-	    static_cast<elle::Natural8>(Address::Any.family),
-	    static_cast<elle::Natural8>(Address::Any.component)) ==
-	  elle::StatusError)
-	escape("unable to create the any address");
+            Address::Any.family, Address::Any.component,
+            static_cast<elle::Natural8>(Address::Any.family),
+            static_cast<elle::Natural8>(Address::Any.component)) ==
+          elle::StatusError)
+        escape("unable to create the any address");
 
       leave();
     }
@@ -65,7 +65,7 @@ namespace nucleus
     ///
     /// this method cleans the address system.
     ///
-    elle::Status	Address::Clean()
+    elle::Status        Address::Clean()
     {
       enter();
 
@@ -91,7 +91,7 @@ namespace nucleus
     ///
     /// this is the copy constructor.
     ///
-    Address::Address(const Address&				address):
+    Address::Address(const Address&                             address):
       Object(address)
     {
       // set the family/component;
@@ -100,13 +100,13 @@ namespace nucleus
 
       // copy the digest, if present.
       if (address.digest != NULL)
-	{
-	  this->digest = new elle::Digest(*address.digest);
-	}
+        {
+          this->digest = new elle::Digest(*address.digest);
+        }
       else
-	{
-	  this->digest = NULL;
-	}
+        {
+          this->digest = NULL;
+        }
     }
 
     ///
@@ -116,7 +116,7 @@ namespace nucleus
     {
       // release the resources.
       if (this->digest != NULL)
-	delete this->digest;
+        delete this->digest;
     }
 
 //
@@ -126,25 +126,25 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Address::operator==(const Address&	element) const
+    elle::Boolean       Address::operator==(const Address&      element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // if both are NULL or equal return true, false otherwise
       if ((this->digest == NULL) || (element.digest == NULL))
-	{
-	  if (this->digest != element.digest)
-	    false();
-	}
+        {
+          if (this->digest != element.digest)
+            false();
+        }
       else
-	{
-	  if (*this->digest != *element.digest)
-	    false();
-	}
+        {
+          if (*this->digest != *element.digest)
+            false();
+        }
 
       true();
     }
@@ -152,25 +152,25 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Address::operator<(const Address&	element) const
+    elle::Boolean       Address::operator<(const Address&       element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	false();
+        false();
 
       // test for a null digest.
       if ((this->digest == NULL) && (element.digest == NULL))
-	false();
+        false();
       else if (this->digest == NULL)
-	true();
+        true();
       else if (element.digest == NULL)
-	false();
+        false();
 
       // compare the digests.
       if (*this->digest < *element.digest)
-	true();
+        true();
 
       false();
     }
@@ -187,47 +187,47 @@ namespace nucleus
     ///
     /// this function dumps an address object.
     ///
-    elle::Status	Address::Dump(elle::Natural32		margin) const
+    elle::Status        Address::Dump(elle::Natural32           margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
       // check the value.
       if (*this == Address::Null)
-	{
-	  std::cout << alignment << "[Address] " << elle::none << std::endl;
-	}
+        {
+          std::cout << alignment << "[Address] " << elle::none << std::endl;
+        }
       else if (*this == Address::Some)
-	{
-	  std::cout << alignment << "[Address] " << "(undef)" << std::endl;
-	}
+        {
+          std::cout << alignment << "[Address] " << "(undef)" << std::endl;
+        }
       else
-	{
-	  // display the name.
-	  std::cout << alignment << "[Address]" << std::endl;
+        {
+          // display the name.
+          std::cout << alignment << "[Address]" << std::endl;
 
-	  // display the family.
-	  std::cout << alignment << elle::Dumpable::Shift << "[Family] "
-		    << this->family << std::endl;
+          // display the family.
+          std::cout << alignment << elle::Dumpable::Shift << "[Family] "
+                    << this->family << std::endl;
 
-	  // display the component.
-	  std::cout << alignment << elle::Dumpable::Shift << "[Component] "
-		    << this->component << std::endl;
+          // display the component.
+          std::cout << alignment << elle::Dumpable::Shift << "[Component] "
+                    << this->component << std::endl;
 
-	  // display the address depending on its value.
-	  if (*this == Address::Null)
-	    {
-	      std::cout << alignment << elle::Dumpable::Shift
-			<< "[Digest] " << elle::none << std::endl;
-	    }
-	  else
-	    {
-	      // dump the digest.
-	      if (this->digest->Dump(margin + 2) == elle::StatusError)
-		escape("unable to dump the digest");
-	    }
-	}
+          // display the address depending on its value.
+          if (*this == Address::Null)
+            {
+              std::cout << alignment << elle::Dumpable::Shift
+                        << "[Digest] " << elle::none << std::endl;
+            }
+          else
+            {
+              // dump the digest.
+              if (this->digest->Dump(margin + 2) == elle::StatusError)
+                escape("unable to dump the digest");
+            }
+        }
 
       leave();
     }
@@ -239,24 +239,24 @@ namespace nucleus
     ///
     /// this method serializes the address object.
     ///
-    elle::Status	Address::Serialize(elle::Archive&	archive) const
+    elle::Status        Address::Serialize(elle::Archive&       archive) const
     {
       enter();
 
       if (this->digest != NULL)
-	{
-	  // serialize the internal digest.
-	  if (archive.Serialize(static_cast<elle::Natural8>(this->family),
-				static_cast<elle::Natural8>(this->component),
-				*this->digest) == elle::StatusError)
-	    escape("unable to serialize the digest");
-	}
+        {
+          // serialize the internal digest.
+          if (archive.Serialize(static_cast<elle::Natural8>(this->family),
+                                static_cast<elle::Natural8>(this->component),
+                                *this->digest) == elle::StatusError)
+            escape("unable to serialize the digest");
+        }
       else
-	{
-	  // serialize 'none'.
-	  if (archive.Serialize(elle::none) == elle::StatusError)
-	    escape("unable to serialize 'none'");
-	}
+        {
+          // serialize 'none'.
+          if (archive.Serialize(elle::none) == elle::StatusError)
+            escape("unable to serialize 'none'");
+        }
 
       leave();
     }
@@ -264,34 +264,34 @@ namespace nucleus
     ///
     /// this method extracts the address object.
     ///
-    elle::Status	Address::Extract(elle::Archive&		archive)
+    elle::Status        Address::Extract(elle::Archive&         archive)
     {
-      elle::Archive::Type	type;
+      elle::Archive::Type       type;
 
       enter();
 
       // fetch the next element's type.
       if (archive.Fetch(type) == elle::StatusError)
-	escape("unable to fetch the next element's type");
+        escape("unable to fetch the next element's type");
 
       if (type == elle::Archive::TypeNull)
-	{
-	  // nothing to do, keep the digest to NULL.
-	  if (archive.Extract(elle::none) == elle::StatusError)
-	    escape("unable to extract null");
-	}
+        {
+          // nothing to do, keep the digest to NULL.
+          if (archive.Extract(elle::none) == elle::StatusError)
+            escape("unable to extract null");
+        }
       else
-	{
-	  // allocate a digest.
-	  this->digest = new elle::Digest;
+        {
+          // allocate a digest.
+          this->digest = new elle::Digest;
 
-	  // extract the internal digest.
-	  if (archive.Extract(
-	        reinterpret_cast<elle::Natural8&>(this->family),
-		reinterpret_cast<elle::Natural8&>(this->component),
-		*this->digest) == elle::StatusError)
-	    escape("unable to extract the digest");
-	}
+          // extract the internal digest.
+          if (archive.Extract(
+                reinterpret_cast<elle::Natural8&>(this->family),
+                reinterpret_cast<elle::Natural8&>(this->component),
+                *this->digest) == elle::StatusError)
+            escape("unable to extract the digest");
+        }
 
       leave();
     }

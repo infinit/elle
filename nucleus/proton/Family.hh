@@ -25,14 +25,14 @@ namespace nucleus
     ///
     enum Family
       {
-	FamilyUnknown = 0,
+        FamilyUnknown = 0,
 
-	FamilyContentHashBlock,
-	FamilyPublicKeyBlock,
-	FamilyOwnerKeyBlock,
-	FamilyImprintBlock,
+        FamilyContentHashBlock,
+        FamilyPublicKeyBlock,
+        FamilyOwnerKeyBlock,
+        FamilyImprintBlock,
 
-	Families = FamilyImprintBlock + 1
+        Families = FamilyImprintBlock + 1
       };
 
   }

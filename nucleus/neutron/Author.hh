@@ -40,7 +40,7 @@ namespace nucleus
       //
       // constants
       //
-      static const Author		Null;
+      static const Author               Null;
 
       //
       // constructors & destructors
@@ -51,8 +51,8 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create();
-      elle::Status	Create(const Index&);
+      elle::Status      Create();
+      elle::Status      Create(const Index&);
 
       //
       // interfaces
@@ -60,31 +60,31 @@ namespace nucleus
 
       // object
       declare(Author);
-      elle::Boolean	operator==(const Author&) const;
+      elle::Boolean     operator==(const Author&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Role		role;
+      Role              role;
 
       union
       {
-	struct
-	{
-	  Index		index;
-	}		lord;
+        struct
+        {
+          Index         index;
+        }               lord;
 
-	struct
-	{
-	  // XXX
-	}		vassal;
+        struct
+        {
+          // XXX
+        }               vassal;
       };
     };
 

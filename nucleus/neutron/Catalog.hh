@@ -48,13 +48,13 @@ namespace nucleus
       //
       // types
       //
-      typedef elle::String			K;
+      typedef elle::String                      K;
 
       //
       // constants
       //
-      static const Component			S;
-      static const Component			Q;
+      static const Component                    S;
+      static const Component                    Q;
 
       //
       // constructors & destructors
@@ -64,17 +64,17 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Add(Entry*);
-      elle::Status	Exist(const elle::String&) const;
-      elle::Status	Lookup(const elle::String&,
-			       Entry*&) const;
-      elle::Status	Consult(const Index&,
-				const Size&,
-				Range<Entry>&) const;
-      elle::Status	Rename(const elle::String&,
-			       const elle::String&);
-      elle::Status	Remove(const elle::String&);
-      elle::Status	Capacity(Offset&) const;
+      elle::Status      Add(Entry*);
+      elle::Status      Exist(const elle::String&) const;
+      elle::Status      Lookup(const elle::String&,
+                               Entry*&) const;
+      elle::Status      Consult(const Index&,
+                                const Size&,
+                                Range<Entry>&) const;
+      elle::Status      Rename(const elle::String&,
+                               const elle::String&);
+      elle::Status      Remove(const elle::String&);
+      elle::Status      Capacity(Offset&) const;
 
       //
       // interfaces
@@ -84,18 +84,18 @@ namespace nucleus
       declare(Catalog);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      proton::State	_state;
+      proton::State     _state;
 
-      Range<Entry>	range;
+      Range<Entry>      range;
     };
 
   }

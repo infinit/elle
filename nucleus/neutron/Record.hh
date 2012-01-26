@@ -42,30 +42,30 @@ namespace nucleus
       //
       // constants
       //
-      static const Record		Null;
+      static const Record               Null;
 
       //
       // types
       //
-      typedef Subject			S;
+      typedef Subject                   S;
 
       //
       // constructors & destructors
       //
       Record();
       Record(const Subject&,
-	     const Permissions&,
-	     const Token&);
+             const Permissions&,
+             const Token&);
 
       //
       // methods
       //
-      elle::Status	Update(const Subject&,
-			       const Permissions&,
-			       const elle::SecretKey&);
-      elle::Status	Update(const Subject&,
-			       const Permissions&,
-			       const Token&);
+      elle::Status      Update(const Subject&,
+                               const Permissions&,
+                               const elle::SecretKey&);
+      elle::Status      Update(const Subject&,
+                               const Permissions&,
+                               const Token&);
 
       //
       // interfaces
@@ -73,24 +73,24 @@ namespace nucleus
 
       // object
       declare(Record);
-      elle::Boolean	operator==(const Record&) const;
+      elle::Boolean     operator==(const Record&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       // rangeable
-      Subject&		Symbol();
+      Subject&          Symbol();
 
       //
       // attributes
       //
-      Subject		subject;
-      Permissions	permissions;
-      Token		token;
+      Subject           subject;
+      Permissions       permissions;
+      Token             token;
     };
 
   }

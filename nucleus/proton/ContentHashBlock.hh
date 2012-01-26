@@ -53,8 +53,8 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Bind(Address&) const;
-      elle::Status	Validate(const Address&) const;
+      elle::Status      Bind(Address&) const;
+      elle::Status      Validate(const Address&) const;
 
       //
       // interfaces
@@ -64,11 +64,11 @@ namespace nucleus
       declare(ContentHashBlock);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
     };
 
   }

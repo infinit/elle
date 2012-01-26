@@ -28,7 +28,7 @@ namespace nucleus
     ///
     /// this string defines the history files extension.
     ///
-    const elle::String		History::Extension = ".hty";
+    const elle::String          History::Extension = ".hty";
 
 //
 // ---------- methods ---------------------------------------------------------
@@ -37,7 +37,7 @@ namespace nucleus
     ///
     /// this method adds a version to the history.
     ///
-    elle::Status	History::Register(const Version&	version)
+    elle::Status        History::Register(const Version&        version)
     {
       enter();
 
@@ -51,14 +51,14 @@ namespace nucleus
     /// this method returns the version object corresponding to the given
     /// index number.
     ///
-    elle::Status	History::Select(const Version::Type	index,
-					Version&		version) const
+    elle::Status        History::Select(const Version::Type     index,
+                                        Version&                version) const
     {
       enter();
 
       // check if the index is out of bound.
       if (index >= this->container.size())
-	escape("the version index is out of bound");
+        escape("the version index is out of bound");
 
       // return the version.
       version = this->container[index];
@@ -69,7 +69,7 @@ namespace nucleus
     ///
     /// this method returns the size of the history.
     ///
-    elle::Status	History::Size(Version::Type&		size) const
+    elle::Status        History::Size(Version::Type&            size) const
     {
       enter();
 
@@ -86,31 +86,31 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	History::operator==(const History&	element) const
+    elle::Boolean       History::operator==(const History&      element) const
     {
-      Version::Type	size;
-      Version::Type	i;
+      Version::Type     size;
+      Version::Type     i;
 
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // check the containers' size.
       if (this->container.size() != element.container.size())
-	false();
+        false();
 
       // retrieve the size.
       size = this->container.size();
 
       // go through the container and compare.
       for (i = 0; i < size; i++)
-	{
-	  // compare the containers.
-	  if (this->container[i] != element.container[i])
-	    false();
-	}
+        {
+          // compare the containers.
+          if (this->container[i] != element.container[i])
+            false();
+        }
 
       true();
     }
@@ -127,10 +127,10 @@ namespace nucleus
     ///
     /// this function dumps an history object.
     ///
-    elle::Status	History::Dump(elle::Natural32		margin) const
+    elle::Status        History::Dump(elle::Natural32           margin) const
     {
-      elle::String	alignment(margin, ' ');
-      Version::Type	i;
+      elle::String      alignment(margin, ' ');
+      Version::Type     i;
 
       enter();
 
@@ -139,24 +139,24 @@ namespace nucleus
 
       // go through the container.
       for (i = 0; i < this->container.size(); i++)
-	{
-	  Version	version;
+        {
+          Version       version;
 
-	  // display the entry.
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Entry]" << std::endl;
+          // display the entry.
+          std::cout << alignment << elle::Dumpable::Shift
+                    << "[Entry]" << std::endl;
 
-	  // display the index.
-	  std::cout << alignment << elle::Dumpable::Shift
-		    << "[Index] " << i << std::endl;
+          // display the index.
+          std::cout << alignment << elle::Dumpable::Shift
+                    << "[Index] " << i << std::endl;
 
-	  // retrieve the version.
-	  version = this->container[i];
+          // retrieve the version.
+          version = this->container[i];
 
-	  // dump the version.
-	  if (version.Dump(margin + 4) == elle::StatusError)
-	    escape("unable to dump the version");
-	}
+          // dump the version.
+          if (version.Dump(margin + 4) == elle::StatusError)
+            escape("unable to dump the version");
+        }
 
       leave();
     }
@@ -168,10 +168,10 @@ namespace nucleus
     ///
     /// this method serializes the history object.
     ///
-    elle::Status	History::Serialize(elle::Archive&	archive) const
+    elle::Status        History::Serialize(elle::Archive&       archive) const
     {
-      Version::Type	size;
-      Version::Type	i;
+      Version::Type     size;
+      Version::Type     i;
 
       enter();
 
@@ -180,15 +180,15 @@ namespace nucleus
 
       // serialize the size.
       if (archive.Serialize(size) == elle::StatusError)
-	escape("unable to serialize the history's size");
+        escape("unable to serialize the history's size");
 
       // go through the container.
       for (i = 0; i < this->container.size(); i++)
-	{
-	  // serialize the version;
-	  if (archive.Serialize(this->container[i]) == elle::StatusError)
-	    escape("unable to serialize the version");
-	}
+        {
+          // serialize the version;
+          if (archive.Serialize(this->container[i]) == elle::StatusError)
+            escape("unable to serialize the version");
+        }
 
       leave();
     }
@@ -196,30 +196,30 @@ namespace nucleus
     ///
     /// this method extracts the history object.
     ///
-    elle::Status	History::Extract(elle::Archive&		archive)
+    elle::Status        History::Extract(elle::Archive&         archive)
     {
-      Version::Type	size;
-      Version::Type	i;
+      Version::Type     size;
+      Version::Type     i;
 
       enter();
 
       // extract the size.
       if (archive.Extract(size) == elle::StatusError)
-	escape("unable to extract the history's size");
+        escape("unable to extract the history's size");
 
       // go through the archive.
       for (i = 0; i < size; i++)
-	{
-	  Version	version;
+        {
+          Version       version;
 
-	  // extract the version;
-	  if (archive.Extract(version) == elle::StatusError)
-	    escape("unable to extract the version");
+          // extract the version;
+          if (archive.Extract(version) == elle::StatusError)
+            escape("unable to extract the version");
 
-	  // register the version.
-	  if (this->Register(version) == elle::StatusError)
-	    escape("unable to register the version");
-	}
+          // register the version.
+          if (this->Register(version) == elle::StatusError)
+            escape("unable to register the version");
+        }
 
       leave();
     }
@@ -231,42 +231,42 @@ namespace nucleus
     ///
     /// this method loads a history.
     ///
-    elle::Status	History::Load(const Network&		network,
-				      const Address&		address)
+    elle::Status        History::Load(const Network&            network,
+                                      const Address&            address)
     {
-      elle::Path	path;
-      elle::String	unique;
-      elle::Region	region;
-      elle::Archive	archive;
+      elle::Path        path;
+      elle::String      unique;
+      elle::Region      region;
+      elle::Archive     archive;
 
       enter();
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
-				    unique) == elle::StatusError)
-	escape("unable to convert the address in its hexadecimal form");
+                                    unique) == elle::StatusError)
+        escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
-	  elle::StatusError)
-	escape("unable to create the path");
+          elle::StatusError)
+        escape("unable to create the path");
 
       // complete the path with the network name.
       if (path.Complete(elle::Piece("%NETWORK%", network.name),
-			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
-	escape("unable to complete the path");
+                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+        escape("unable to complete the path");
 
       // read the file's content.
       if (elle::File::Read(path, region) == elle::StatusError)
-	escape("unable to read the file's content");
+        escape("unable to read the file's content");
 
       // wrap the region into an archive.
       if (archive.Wrap(region) == elle::StatusError)
-	escape("unable to prepare the archive");
+        escape("unable to prepare the archive");
 
       // extract from the archive.
       if (archive.Extract(*this) == elle::StatusError)
-	escape("unable to extract the archive");
+        escape("unable to extract the archive");
 
       leave();
     }
@@ -274,47 +274,47 @@ namespace nucleus
     ///
     /// this method stores the history in its file format.
     ///
-    elle::Status	History::Store(const Network&		network,
-				       const Address&		address) const
+    elle::Status        History::Store(const Network&           network,
+                                       const Address&           address) const
     {
-      elle::Path	path;
-      elle::String	unique;
-      elle::Region	region;
-      elle::Archive	archive;
+      elle::Path        path;
+      elle::String      unique;
+      elle::Region      region;
+      elle::Archive     archive;
 
       enter();
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
-				    unique) == elle::StatusError)
-	escape("unable to convert the address in its hexadecimal form");
+                                    unique) == elle::StatusError)
+        escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
-	  elle::StatusError)
-	escape("unable to create the path");
+          elle::StatusError)
+        escape("unable to create the path");
 
       // complete the path with the network name.
       if (path.Complete(elle::Piece("%NETWORK%", network.name),
-			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
-	escape("unable to complete the path");
+                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+        escape("unable to complete the path");
 
       // create the archive.
       if (archive.Create() == elle::StatusError)
-	escape("unable to create the archive");
+        escape("unable to create the archive");
 
       // serialize the object.
       if (archive.Serialize(*this) == elle::StatusError)
-	escape("unable to serialize the object");
+        escape("unable to serialize the object");
 
       // wrap the string.
       if (region.Wrap(reinterpret_cast<const elle::Byte*>(archive.contents),
-		      archive.size) == elle::StatusError)
-	escape("unable to wrap the archive in a region");
+                      archive.size) == elle::StatusError)
+        escape("unable to wrap the archive in a region");
 
       // write the file's content.
       if (elle::File::Write(path, region) == elle::StatusError)
-	escape("unable to write the file's content");
+        escape("unable to write the file's content");
 
       leave();
     }
@@ -322,36 +322,36 @@ namespace nucleus
     ///
     /// this method erases a block.
     ///
-    elle::Status	History::Erase(const Network&		network,
-				       const Address&		address) const
+    elle::Status        History::Erase(const Network&           network,
+                                       const Address&           address) const
     {
-      elle::Path	path;
-      elle::String	unique;
+      elle::Path        path;
+      elle::String      unique;
 
       enter();
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
-				    unique) == elle::StatusError)
-	escape("unable to convert the address in its hexadecimal form");
+                                    unique) == elle::StatusError)
+        escape("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
-	  elle::StatusError)
-	escape("unable to create the path");
+          elle::StatusError)
+        escape("unable to create the path");
 
       // complete the path with the network name.
       if (path.Complete(elle::Piece("%NETWORK%", network.name),
-			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
-	escape("unable to complete the path");
+                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+        escape("unable to complete the path");
 
       // is the file present...
       if (elle::File::Exist(path) == elle::StatusTrue)
-	{
-	  // erase the file.
-	  if (elle::File::Erase(path) == elle::StatusError)
-	    escape("unable to erase the file");
-	}
+        {
+          // erase the file.
+          if (elle::File::Erase(path) == elle::StatusError)
+            escape("unable to erase the file");
+        }
 
       leave();
     }
@@ -359,32 +359,32 @@ namespace nucleus
     ///
     /// this method returns true if the block exists.
     ///
-    elle::Status	History::Exist(const Network&		network,
-				       const Address&		address) const
+    elle::Status        History::Exist(const Network&           network,
+                                       const Address&           address) const
     {
-      elle::Path	path;
-      elle::String	unique;
+      elle::Path        path;
+      elle::String      unique;
 
       enter();
 
       // first, turn the block's address into a hexadecimal string.
       if (elle::Hexadecimal::Encode(address.digest->region,
-				    unique) == elle::StatusError)
-	flee("unable to convert the address in its hexadecimal form");
+                                    unique) == elle::StatusError)
+        flee("unable to convert the address in its hexadecimal form");
 
       // create the shelter path.
       if (path.Create(lune::Lune::Network::Shelter::History) ==
-	  elle::StatusError)
-	flee("unable to create the path");
+          elle::StatusError)
+        flee("unable to create the path");
 
       // complete the path with the network name.
       if (path.Complete(elle::Piece("%NETWORK%", network.name),
-			elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
-	flee("unable to complete the path");
+                        elle::Piece("%ADDRESS%", unique)) == elle::StatusError)
+        flee("unable to complete the path");
 
       // test the file.
       if (elle::File::Exist(path) == elle::StatusTrue)
-	true();
+        true();
 
       false();
     }

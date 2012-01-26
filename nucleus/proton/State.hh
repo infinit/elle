@@ -31,9 +31,9 @@ namespace nucleus
     ///
     enum State
       {
-	StateClean = 0,
-	StateDirty,
-	StateConsistent = StateClean
+        StateClean = 0,
+        StateDirty,
+        StateConsistent = StateClean
       };
 
   }

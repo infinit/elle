@@ -27,13 +27,13 @@ namespace nucleus
     /// this constant defines the component for the porcupine's seams
     /// associated with Catalogs.
     ///
-    const Component			Catalog::S = ComponentSeamCatalog;
+    const Component                     Catalog::S = ComponentSeamCatalog;
 
     ///
     /// this constant defines the component for the porcupine's quills
     /// associated with Catalogs.
     ///
-    const Component			Catalog::Q = ComponentQuillCatalog;
+    const Component                     Catalog::Q = ComponentQuillCatalog;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -54,17 +54,17 @@ namespace nucleus
     ///
     /// this method adds the given entry to the catalog.
     ///
-    elle::Status	Catalog::Add(Entry*			entry)
+    elle::Status        Catalog::Add(Entry*                     entry)
     {
       enter();
 
       // check that the entry is non-empty.
       if (entry->name.empty() == true)
-	escape("unable to create an empty-named entry in the catalog");
+        escape("unable to create an empty-named entry in the catalog");
 
       // add the entry in the range.
       if (this->range.Add(entry) == elle::StatusError)
-	escape("unable to add the entry in the range");
+        escape("unable to add the entry in the range");
 
       // range the object as dirty.
       this->_state = proton::StateDirty;
@@ -75,13 +75,13 @@ namespace nucleus
     ///
     /// this method tests if the given name exists.
     ///
-    elle::Status	Catalog::Exist(const elle::String&	name) const
+    elle::Status        Catalog::Exist(const elle::String&      name) const
     {
       enter();
 
       // test.
       if (this->range.Exist(name) == false)
-	false();
+        false();
 
       true();
     }
@@ -89,14 +89,14 @@ namespace nucleus
     ///
     /// this method returns the entry corresponding to the given name.
     ///
-    elle::Status	Catalog::Lookup(const elle::String&	name,
-					Entry*&			entry) const
+    elle::Status        Catalog::Lookup(const elle::String&     name,
+                                        Entry*&                 entry) const
     {
       enter();
 
       // look in the range.
       if (this->range.Lookup(name, entry) == elle::StatusError)
-	escape("unable to retrieve the entry");
+        escape("unable to retrieve the entry");
 
       leave();
     }
@@ -105,45 +105,45 @@ namespace nucleus
     /// this method returns a subrange of the catalog delimited by the given
     /// index and size.
     ///
-    elle::Status	Catalog::Consult(const Index&		index,
-					 const Size&		size,
-					 Range<Entry>&		range) const
+    elle::Status        Catalog::Consult(const Index&           index,
+                                         const Size&            size,
+                                         Range<Entry>&          range) const
     {
-      Range<Entry>::Scoutor	scoutor;
-      Index			i;
+      Range<Entry>::Scoutor     scoutor;
+      Index                     i;
 
       enter();
 
       // first detach the data from the range.
       if (range.Detach() == elle::StatusError)
-	escape("unable to detach the data from the range");
+        escape("unable to detach the data from the range");
 
       // go through the catalog entries.
       for (scoutor = this->range.container.begin(), i = 0;
-	   scoutor != this->range.container.end();
-	   scoutor++)
-	{
-	  Entry*	entry = *scoutor;
+           scoutor != this->range.container.end();
+           scoutor++)
+        {
+          Entry*        entry = *scoutor;
 
-	  // if this entry lies in the selected range [index, index + size[
-	  if ((i >= index) && (i < (index + size)))
-	    {
-	      // check if the entry is empty: this should never
-	      // happen but you never know!
-	      if (entry->name.empty() == true)
-		continue;
+          // if this entry lies in the selected range [index, index + size[
+          if ((i >= index) && (i < (index + size)))
+            {
+              // check if the entry is empty: this should never
+              // happen but you never know!
+              if (entry->name.empty() == true)
+                continue;
 
-	      // add the entry to the range.
-	      if (range.Add(entry) == elle::StatusError)
-		escape("unable to add the entry to the range");
-	    }
+              // add the entry to the range.
+              if (range.Add(entry) == elle::StatusError)
+                escape("unable to add the entry to the range");
+            }
 
-	  // increment the index.
-	  //
-	  // note that this is done at the end so that empty
-	  // entries are not taken into account.
-	  i++;
-	}
+          // increment the index.
+          //
+          // note that this is done at the end so that empty
+          // entries are not taken into account.
+          i++;
+        }
 
       leave();
     }
@@ -151,13 +151,13 @@ namespace nucleus
     ///
     /// this method removes the given entry.
     ///
-    elle::Status	Catalog::Remove(const elle::String&	name)
+    elle::Status        Catalog::Remove(const elle::String&     name)
     {
       enter();
 
       // remove the entry from the range.
       if (this->range.Remove(name) == elle::StatusError)
-	escape("unable to remove the entry");
+        escape("unable to remove the entry");
 
       // range the object as dirty.
       this->_state = proton::StateDirty;
@@ -168,28 +168,28 @@ namespace nucleus
     ///
     /// this method renames an entry.
     ///
-    elle::Status	Catalog::Rename(const elle::String&	from,
-					const elle::String&	to)
+    elle::Status        Catalog::Rename(const elle::String&     from,
+                                        const elle::String&     to)
     {
-      Entry*		entry;
+      Entry*            entry;
 
       enter();
 
       // if _from_ and _to_ are identical, return.
       if (from == to)
-	leave();
+        leave();
 
       // check that the entry is non-empty.
       if (to.empty() == true)
-	escape("unable to rename to a non empty-named entry in the catalog");
+        escape("unable to rename to a non empty-named entry in the catalog");
 
       // check that an entry _to_ does not already exist.
       if (this->range.Exist(to) == elle::StatusTrue)
-	escape("an entry already exists with the to-be-renamed name");
+        escape("an entry already exists with the to-be-renamed name");
 
       // look in the range.
       if (this->range.Lookup(from, entry) == elle::StatusError)
-	escape("unable to retrieve the entry");
+        escape("unable to retrieve the entry");
 
       // modify the name.
       entry->name = to;
@@ -203,13 +203,13 @@ namespace nucleus
     ///
     /// this method returns the size of the catalog.
     ///
-    elle::Status	Catalog::Capacity(Size&			size) const
+    elle::Status        Catalog::Capacity(Size&                 size) const
     {
       enter();
 
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::StatusError)
-	escape("unable to retrieve the range size");
+        escape("unable to retrieve the range size");
 
       leave();
     }
@@ -230,9 +230,9 @@ namespace nucleus
     ///
     /// this function dumps the catalog.
     ///
-    elle::Status	Catalog::Dump(elle::Natural32		margin) const
+    elle::Status        Catalog::Dump(elle::Natural32           margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -240,11 +240,11 @@ namespace nucleus
 
       // dump the state.
       std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-		<< this->_state << std::endl;
+                << this->_state << std::endl;
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the range");
+        escape("unable to dump the range");
 
       leave();
     }
@@ -256,13 +256,13 @@ namespace nucleus
     ///
     /// this method serializes the catalog object.
     ///
-    elle::Status	Catalog::Serialize(elle::Archive&	archive) const
+    elle::Status        Catalog::Serialize(elle::Archive&       archive) const
     {
       enter();
 
       // serialize the range.
       if (archive.Serialize(this->range) == elle::StatusError)
-	escape("unable to serialize the range");
+        escape("unable to serialize the range");
 
       leave();
     }
@@ -270,13 +270,13 @@ namespace nucleus
     ///
     /// this method extracts the catalog object.
     ///
-    elle::Status	Catalog::Extract(elle::Archive&		archive)
+    elle::Status        Catalog::Extract(elle::Archive&         archive)
     {
       enter();
 
       // extract the range.
       if (archive.Extract(this->range) == elle::StatusError)
-	escape("unable to extract the range");
+        escape("unable to extract the range");
 
       leave();
     }

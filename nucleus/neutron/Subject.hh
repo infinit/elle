@@ -40,36 +40,36 @@ namespace nucleus
       // enumeration
       //
       enum Type
-	{
-	  TypeUnknown,
+        {
+          TypeUnknown,
 
-	  TypeUser,
-	  TypeGroup,
+          TypeUser,
+          TypeGroup,
 
-	  Types
-	};
+          Types
+        };
 
       //
       // structures
       //
       struct Descriptor
       {
-	Type		type;
-	elle::String	name;
+        Type            type;
+        elle::String    name;
       };
 
       //
       // static methods
       //
-      static elle::Status	Convert(const elle::String&,
-					Type&);
-      static elle::Status	Convert(const Type,
-					elle::String&);
+      static elle::Status       Convert(const elle::String&,
+                                        Type&);
+      static elle::Status       Convert(const Type,
+                                        elle::String&);
 
       //
       // static attributes
       //
-      static const Descriptor		Descriptors[Types];
+      static const Descriptor           Descriptors[Types];
 
       //
       // constructors & destructors
@@ -81,8 +81,8 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const elle::PublicKey&);
-      elle::Status	Create(const proton::Address&);
+      elle::Status      Create(const elle::PublicKey&);
+      elle::Status      Create(const proton::Address&);
 
       //
       // interfaces
@@ -90,24 +90,24 @@ namespace nucleus
 
       // object
       declare(Subject);
-      elle::Boolean	operator==(const Subject&) const;
+      elle::Boolean     operator==(const Subject&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Type			type;
+      Type                      type;
 
       union
       {
-	elle::PublicKey*	user;
-	proton::Address*	group;
+        elle::PublicKey*        user;
+        proton::Address*        group;
       };
     };
 

@@ -55,11 +55,11 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const Version&,
-			       const elle::Digest&);
-      elle::Status	Create(const MutableBlock&);
+      elle::Status      Create(const Version&,
+                               const elle::Digest&);
+      elle::Status      Create(const MutableBlock&);
 
-      elle::Status	Match(const MutableBlock&) const;
+      elle::Status      Match(const MutableBlock&) const;
 
       //
       // interfaces
@@ -67,20 +67,20 @@ namespace nucleus
 
       // object
       declare(Base);
-      elle::Boolean	operator==(const Base&) const;
+      elle::Boolean     operator==(const Base&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Version		version;
-      elle::Digest	digest;
+      Version           version;
+      elle::Digest      digest;
     };
 
   }

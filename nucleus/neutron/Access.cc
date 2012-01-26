@@ -28,7 +28,7 @@ namespace nucleus
     ///
     /// the null access.
     ///
-    const Access			Access::Null;
+    const Access                        Access::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -49,13 +49,13 @@ namespace nucleus
     ///
     /// this method adds the given record to the ACL.
     ///
-    elle::Status	Access::Add(Record*			record)
+    elle::Status        Access::Add(Record*                     record)
     {
       enter();
 
       // add the record in the range.
       if (this->range.Add(record) == elle::StatusError)
-	escape("unable to add the record in the range");
+        escape("unable to add the record in the range");
 
       // set the block as dirty.
       this->_state = proton::StateDirty;
@@ -66,13 +66,13 @@ namespace nucleus
     ///
     /// this method tests if the given subject exists.
     ///
-    elle::Status	Access::Exist(const Subject&		subject) const
+    elle::Status        Access::Exist(const Subject&            subject) const
     {
       enter();
 
       // test.
       if (this->range.Exist(subject) == false)
-	false();
+        false();
 
       true();
     }
@@ -80,14 +80,14 @@ namespace nucleus
     ///
     /// this method returns the record corresponding to the given subject.
     ///
-    elle::Status	Access::Lookup(const Subject&		subject,
-				       Record*&			record) const
+    elle::Status        Access::Lookup(const Subject&           subject,
+                                       Record*&                 record) const
     {
       enter();
 
       // look in the range.
       if (this->range.Lookup(subject, record) == elle::StatusError)
-	escape("unable to retrieve the record");
+        escape("unable to retrieve the record");
 
       leave();
     }
@@ -95,24 +95,24 @@ namespace nucleus
     ///
     /// this method returns the index location of the given subject.
     ///
-    elle::Status	Access::Lookup(const Subject&		subject,
-				       Index&			index) const
+    elle::Status        Access::Lookup(const Subject&           subject,
+                                       Index&                   index) const
     {
-      Range<Record>::Scoutor	scoutor;
+      Range<Record>::Scoutor    scoutor;
 
       enter();
 
       // go through the range.
       for (scoutor = this->range.container.begin(), index = 0;
-	   scoutor != this->range.container.end();
-	   scoutor++, index++)
-	{
-	  Record*	record = *scoutor;
+           scoutor != this->range.container.end();
+           scoutor++, index++)
+        {
+          Record*       record = *scoutor;
 
-	  // if found, stop.
-	  if (record->subject == subject)
-	    leave();
-	}
+          // if found, stop.
+          if (record->subject == subject)
+            leave();
+        }
 
       escape("unable to locate the given subject");
     }
@@ -120,11 +120,11 @@ namespace nucleus
     ///
     /// this method returns the access record located at the given index.
     ///
-    elle::Status	Access::Lookup(const Index&		index,
-				       Record*&			record) const
+    elle::Status        Access::Lookup(const Index&             index,
+                                       Record*&                 record) const
     {
-      Range<Record>::Scoutor	scoutor;
-      Index			i;
+      Range<Record>::Scoutor    scoutor;
+      Index                     i;
 
       enter();
 
@@ -133,18 +133,18 @@ namespace nucleus
 
       // go through the range.
       for (scoutor = this->range.container.begin(), i = 0;
-	   scoutor != this->range.container.end();
-	   scoutor++, i++)
-	{
-	  // if found, stop.
-	  if (i == index)
-	    {
-	      // return the record.
-	      record = *scoutor;
+           scoutor != this->range.container.end();
+           scoutor++, i++)
+        {
+          // if found, stop.
+          if (i == index)
+            {
+              // return the record.
+              record = *scoutor;
 
-	      leave();
-	    }
-	}
+              leave();
+            }
+        }
 
       escape("unable to locate the record at the given index");
     }
@@ -153,34 +153,34 @@ namespace nucleus
     /// this method returns a range representing a subset of the access
     /// control list delimited by the given index and size.
     ///
-    elle::Status	Access::Consult(const Index&		index,
-					const Size&		size,
-					Range<Record>&		range) const
+    elle::Status        Access::Consult(const Index&            index,
+                                        const Size&             size,
+                                        Range<Record>&          range) const
     {
-      Range<Record>::Scoutor	scoutor;
-      Index			i;
+      Range<Record>::Scoutor    scoutor;
+      Index                     i;
 
       enter();
 
       // first detach the data from the range.
       if (range.Detach() == elle::StatusError)
-	escape("unable to detach the data from the range");
+        escape("unable to detach the data from the range");
 
       // go through the records.
       for (scoutor = this->range.container.begin(), i = 0;
-	   scoutor != this->range.container.end();
-	   scoutor++, i++)
-	{
-	  Record*	record = *scoutor;
+           scoutor != this->range.container.end();
+           scoutor++, i++)
+        {
+          Record*       record = *scoutor;
 
-	  // if this record lies in the selected range [index, index + size[
-	  if ((i >= index) && (i < (index + size)))
-	    {
-	      // add the record to the range.
-	      if (range.Add(record) == elle::StatusError)
-		escape("unable to add the record to the given range");
-	    }
-	}
+          // if this record lies in the selected range [index, index + size[
+          if ((i >= index) && (i < (index + size)))
+            {
+              // add the record to the range.
+              if (range.Add(record) == elle::StatusError)
+                escape("unable to add the record to the given range");
+            }
+        }
 
       leave();
     }
@@ -189,64 +189,64 @@ namespace nucleus
     /// this method updates the records with the given secret key by
     /// encrypted the given key with every subject's public key.
     ///
-    elle::Status	Access::Upgrade(const elle::SecretKey&	key)
+    elle::Status        Access::Upgrade(const elle::SecretKey&  key)
     {
-      Range<Record>::Iterator	iterator;
+      Range<Record>::Iterator   iterator;
 
       enter();
 
       // go through the range.
       for (iterator = this->range.container.begin();
-	   iterator != this->range.container.end();
-	   iterator++)
-	{
-	  Record*	record = *iterator;
+           iterator != this->range.container.end();
+           iterator++)
+        {
+          Record*       record = *iterator;
 
-	  // check if the subject has the proper permissions.
-	  if ((record->permissions & PermissionRead) != PermissionRead)
-	    continue;
+          // check if the subject has the proper permissions.
+          if ((record->permissions & PermissionRead) != PermissionRead)
+            continue;
 
-	  // depending on the subject's type.
-	  switch (record->subject.type)
-	    {
-	    case Subject::TypeUser:
-	      {
-		//
-		// if the subject is a user, encrypt the key with the
-		// user's public key so that she will be the only one
-		// capable of decrypting it.
-		//
+          // depending on the subject's type.
+          switch (record->subject.type)
+            {
+            case Subject::TypeUser:
+              {
+                //
+                // if the subject is a user, encrypt the key with the
+                // user's public key so that she will be the only one
+                // capable of decrypting it.
+                //
 
-		elle::PublicKey*	K = record->subject.user;
+                elle::PublicKey*        K = record->subject.user;
 
-		// update the token.
-		if (record->token.Update(key, *K) == elle::StatusError)
-		  escape("unable to update the token");
+                // update the token.
+                if (record->token.Update(key, *K) == elle::StatusError)
+                  escape("unable to update the token");
 
-		break;
-	      }
-	    case Subject::TypeGroup:
-	      {
-		//
-		// if the subject is a group, the key is made available
-		// to the group's owner. this is especially useful in
-		// order to increase the number of delegates available to
-		// respond to vassal's requests.
-		//
+                break;
+              }
+            case Subject::TypeGroup:
+              {
+                //
+                // if the subject is a group, the key is made available
+                // to the group's owner. this is especially useful in
+                // order to increase the number of delegates available to
+                // respond to vassal's requests.
+                //
 
-		// XXX to implement.
+                // XXX to implement.
 
-		break;
-	      }
-	    default:
-	      {
-		escape("the access block contains unknown entries");
-	      }
-	    }
+                break;
+              }
+            default:
+              {
+                escape("the access block contains unknown entries");
+              }
+            }
 
-	  // set the access block as being dirty.
-	  this->_state = proton::StateDirty;
-	}
+          // set the access block as being dirty.
+          this->_state = proton::StateDirty;
+        }
 
       leave();
     }
@@ -254,29 +254,29 @@ namespace nucleus
     ///
     /// this method updates the records with a null token.
     ///
-    elle::Status	Access::Downgrade()
+    elle::Status        Access::Downgrade()
     {
-      Range<Record>::Iterator	iterator;
+      Range<Record>::Iterator   iterator;
 
       enter();
 
       // go through the range.
       for (iterator = this->range.container.begin();
-	   iterator != this->range.container.end();
-	   iterator++)
-	{
-	  Record*	record = *iterator;
+           iterator != this->range.container.end();
+           iterator++)
+        {
+          Record*       record = *iterator;
 
-	  // check if the subject has the proper permissions.
-	  if ((record->permissions & PermissionRead) != PermissionRead)
-	    continue;
+          // check if the subject has the proper permissions.
+          if ((record->permissions & PermissionRead) != PermissionRead)
+            continue;
 
-	  // reset the token.
-	  record->token = Token::Null;
+          // reset the token.
+          record->token = Token::Null;
 
-	  // set the access block as being dirty.
-	  this->_state = proton::StateDirty;
-	}
+          // set the access block as being dirty.
+          this->_state = proton::StateDirty;
+        }
 
       leave();
     }
@@ -284,13 +284,13 @@ namespace nucleus
     ///
     /// this method removes the given record.
     ///
-    elle::Status	Access::Remove(const Subject&		subject)
+    elle::Status        Access::Remove(const Subject&           subject)
     {
       enter();
 
       // remove the record from the range.
       if (this->range.Remove(subject) == elle::StatusError)
-	escape("unable to remove the record");
+        escape("unable to remove the record");
 
       // set the block as dirty.
       this->_state = proton::StateDirty;
@@ -301,13 +301,13 @@ namespace nucleus
     ///
     /// this method returns the size of the access control list.
     ///
-    elle::Status	Access::Capacity(Size&			size) const
+    elle::Status        Access::Capacity(Size&                  size) const
     {
       enter();
 
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::StatusError)
-	escape("unable to retrieve the range size");
+        escape("unable to retrieve the range size");
 
       leave();
     }
@@ -318,33 +318,33 @@ namespace nucleus
     ///
     /// this is required by the object class for access control purposes.
     ///
-    elle::Status	Access::Fingerprint(elle::Digest&	digest) const
+    elle::Status        Access::Fingerprint(elle::Digest&       digest) const
     {
-      elle::Archive		archive;
-      Range<Record>::Scoutor	scoutor;
+      elle::Archive             archive;
+      Range<Record>::Scoutor    scoutor;
 
       enter();
 
       // create the archive.
       if (archive.Create() == elle::StatusError)
-	escape("unable to create an archive");
+        escape("unable to create an archive");
 
       // go through the range and serialize every tuple (subject, permissions).
       for (scoutor = this->range.container.begin();
-	   scoutor != this->range.container.end();
-	   scoutor++)
-	{
-	  Record*	record = *scoutor;
+           scoutor != this->range.container.end();
+           scoutor++)
+        {
+          Record*       record = *scoutor;
 
-	  // serialize the subject and permissions.
-	  if (archive.Serialize(record->subject,
-				record->permissions) == elle::StatusError)
-	    escape("unable to serialize the (subject, permissions) tuple");
-	}
+          // serialize the subject and permissions.
+          if (archive.Serialize(record->subject,
+                                record->permissions) == elle::StatusError)
+            escape("unable to serialize the (subject, permissions) tuple");
+        }
 
       // hash the archive.
       if (elle::OneWay::Hash(archive, digest) == elle::StatusError)
-	escape("unable to hash the set of archived tuples");
+        escape("unable to hash the set of archived tuples");
 
       leave();
     }
@@ -356,17 +356,17 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Access::operator==(const Access&	element) const
+    elle::Boolean       Access::operator==(const Access&        element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the ranges.
       if (this->range != element.range)
-	false();
+        false();
 
       true();
     }
@@ -383,9 +383,9 @@ namespace nucleus
     ///
     /// this function dumps the access.
     ///
-    elle::Status	Access::Dump(elle::Natural32		margin) const
+    elle::Status        Access::Dump(elle::Natural32            margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -393,7 +393,7 @@ namespace nucleus
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the range");
+        escape("unable to dump the range");
 
       leave();
     }
@@ -405,17 +405,17 @@ namespace nucleus
     ///
     /// this method serializes the access object.
     ///
-    elle::Status	Access::Serialize(elle::Archive&	archive) const
+    elle::Status        Access::Serialize(elle::Archive&        archive) const
     {
       enter();
 
       // call the parent class.
       if (proton::ContentHashBlock::Serialize(archive) == elle::StatusError)
-	escape("unable to serialize the underlying CHB");
+        escape("unable to serialize the underlying CHB");
 
       // serialize the range.
       if (archive.Serialize(this->range) == elle::StatusError)
-	escape("unable to serialize the range");
+        escape("unable to serialize the range");
 
       leave();
     }
@@ -423,21 +423,21 @@ namespace nucleus
     ///
     /// this method extracts the access object.
     ///
-    elle::Status	Access::Extract(elle::Archive&		archive)
+    elle::Status        Access::Extract(elle::Archive&          archive)
     {
       enter();
 
       // call the parent class.
       if (proton::ContentHashBlock::Extract(archive) == elle::StatusError)
-	escape("unable to extract the underlying CHB");
+        escape("unable to extract the underlying CHB");
 
       // compare the component.
       if (this->component != ComponentAccess)
-	escape("the archive does not seem to contain an access");
+        escape("the archive does not seem to contain an access");
 
       // extract the range.
       if (archive.Extract(this->range) == elle::StatusError)
-	escape("unable to extract the range");
+        escape("unable to extract the range");
 
       leave();
     }

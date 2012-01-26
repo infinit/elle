@@ -30,7 +30,7 @@ namespace nucleus
     /// this type defines the offset used in data for instance, and
     /// is an alias of the size.
     ///
-    typedef Size		Offset;
+    typedef Size                Offset;
 
   }
 }

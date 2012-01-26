@@ -28,13 +28,13 @@ namespace nucleus
     ///
     /// this method initializes the proton module.
     ///
-    elle::Status	Proton::Initialize()
+    elle::Status        Proton::Initialize()
     {
       enter();
  
       // initialize the address.
       if (Address::Initialize() == elle::StatusError)
-	escape("unable to initialize the address");
+        escape("unable to initialize the address");
 
       leave();
     }
@@ -42,13 +42,13 @@ namespace nucleus
     ///
     /// this method cleans the proton module.
     ///
-    elle::Status	Proton::Clean()
+    elle::Status        Proton::Clean()
     {
       enter();
 
       // clean the address.
       if (Address::Clean() == elle::StatusError)
-	escape("unable to clean the address");
+        escape("unable to clean the address");
 
       leave();
     }

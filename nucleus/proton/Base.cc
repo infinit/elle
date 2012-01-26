@@ -27,8 +27,8 @@ namespace nucleus
     ///
     /// this method creates a base according to a version and digest.
     ///
-    elle::Status	Base::Create(const Version&		version,
-				     const elle::Digest&	digest)
+    elle::Status        Base::Create(const Version&             version,
+                                     const elle::Digest&        digest)
     {
       enter();
 
@@ -42,7 +42,7 @@ namespace nucleus
     ///
     /// this method creates a base according to the referenced mutable block.
     ///
-    elle::Status	Base::Create(const MutableBlock&	block)
+    elle::Status        Base::Create(const MutableBlock&        block)
     {
       enter();
 
@@ -51,7 +51,7 @@ namespace nucleus
 
       // compute the block's digest.
       if (elle::OneWay::Hash(block, this->digest) == elle::StatusError)
-	escape("unable to hash the mutable block");
+        escape("unable to hash the mutable block");
 
       leave();
     }
@@ -60,23 +60,23 @@ namespace nucleus
     /// this method returns true if the given mutable block matches the
     /// base.
     ///
-    elle::Status	Base::Match(const MutableBlock&		block) const
+    elle::Status        Base::Match(const MutableBlock&         block) const
     {
-      elle::Digest	digest;
+      elle::Digest      digest;
 
       enter();
 
       // check the versions.
       if (this->version != block.version)
-	false();
+        false();
 
       // compute the block's digest.
       if (elle::OneWay::Hash(block, digest) == elle::StatusError)
-	flee("unable to hash the mutable block");
+        flee("unable to hash the mutable block");
 
       // compare the digests.
       if (this->digest != digest)
-	false();
+        false();
 
       true();
     }
@@ -88,18 +88,18 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Base::operator==(const Base&		element) const
+    elle::Boolean       Base::operator==(const Base&            element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the attributes.
       if ((this->version != element.version) ||
-	  (this->digest != element.digest))
-	false();
+          (this->digest != element.digest))
+        false();
 
       true();
     }
@@ -116,9 +116,9 @@ namespace nucleus
     ///
     /// this function dumps a base.
     ///
-    elle::Status	Base::Dump(elle::Natural32		margin) const
+    elle::Status        Base::Dump(elle::Natural32              margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -126,11 +126,11 @@ namespace nucleus
 
       // dump the version.
       if (this->version.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the version");
+        escape("unable to dump the version");
 
       // dump the digest.
       if (this->digest.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the digest");
+        escape("unable to dump the digest");
 
       leave();
     }
@@ -142,14 +142,14 @@ namespace nucleus
     ///
     /// this method serializes the base.
     ///
-    elle::Status	Base::Serialize(elle::Archive&		archive) const
+    elle::Status        Base::Serialize(elle::Archive&          archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->version,
-			    this->digest) == elle::StatusError)
-	escape("unable to serialize the attributes");
+                            this->digest) == elle::StatusError)
+        escape("unable to serialize the attributes");
 
       leave();
     }
@@ -157,14 +157,14 @@ namespace nucleus
     ///
     /// this method extracts the base.
     ///
-    elle::Status	Base::Extract(elle::Archive&		archive)
+    elle::Status        Base::Extract(elle::Archive&            archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->version,
-			  this->digest) == elle::StatusError)
-	escape("unable to extract the attributes");
+                          this->digest) == elle::StatusError)
+        escape("unable to extract the attributes");
 
       leave();
     }

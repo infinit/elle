@@ -38,7 +38,7 @@ namespace nucleus
     ///
     /// this method sets the target way.
     ///
-    elle::Status	Reference::Bind(const elle::String&	target)
+    elle::Status        Reference::Bind(const elle::String&     target)
     {
       enter();
 
@@ -54,7 +54,7 @@ namespace nucleus
     ///
     /// this method retrieve the target.
     ///
-    elle::Status	Reference::Resolve(elle::String&	target) const
+    elle::Status        Reference::Resolve(elle::String&        target) const
     {
       enter();
 
@@ -67,7 +67,7 @@ namespace nucleus
     ///
     /// this method returns the length of the referenced way.
     ///
-    elle::Status	Reference::Capacity(Size&		size) const
+    elle::Status        Reference::Capacity(Size&               size) const
     {
       enter();
 
@@ -93,9 +93,9 @@ namespace nucleus
     ///
     /// this function dumps the object.
     ///
-    elle::Status	Reference::Dump(elle::Natural32		margin) const
+    elle::Status        Reference::Dump(elle::Natural32         margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -103,11 +103,11 @@ namespace nucleus
 
       // dump the state.
       std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-		<< this->_state << std::endl;
+                << this->_state << std::endl;
 
       // dump the target.
       std::cout << alignment << elle::Dumpable::Shift << "[Target] "
-		<< this->target << std::endl;
+                << this->target << std::endl;
 
       leave();
     }
@@ -119,13 +119,13 @@ namespace nucleus
     ///
     /// this method serializes the object.
     ///
-    elle::Status	Reference::Serialize(elle::Archive&	archive) const
+    elle::Status        Reference::Serialize(elle::Archive&     archive) const
     {
       enter();
 
       // serialize the target.
       if (archive.Serialize(this->target) == elle::StatusError)
-	escape("unable to serialize the target");
+        escape("unable to serialize the target");
 
       leave();
     }
@@ -133,13 +133,13 @@ namespace nucleus
     ///
     /// this method extracts the object.
     ///
-    elle::Status	Reference::Extract(elle::Archive&	archive)
+    elle::Status        Reference::Extract(elle::Archive&       archive)
     {
       enter();
 
       // extract the target.
       if (archive.Extract(this->target) == elle::StatusError)
-	escape("unable to extract the target");
+        escape("unable to extract the target");
 
       leave();
     }

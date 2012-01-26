@@ -49,14 +49,14 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Write(const Offset&,
-			      const elle::Region&);
-      elle::Status	Read(const Offset&,
-			     const Size&,
-			     elle::Region&) const;
-      elle::Status	Adjust(const Size&);
+      elle::Status      Write(const Offset&,
+                              const elle::Region&);
+      elle::Status      Read(const Offset&,
+                             const Size&,
+                             elle::Region&) const;
+      elle::Status      Adjust(const Size&);
 
-      elle::Status	Capacity(Size&) const;
+      elle::Status      Capacity(Size&) const;
 
       //
       // interfaces
@@ -66,18 +66,18 @@ namespace nucleus
       declare(Data);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      proton::State	_state;
+      proton::State     _state;
 
-      elle::Region	region;
+      elle::Region      region;
     };
 
   }

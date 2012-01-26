@@ -26,7 +26,7 @@ namespace nucleus
     ///
     /// this constant represents a null location.
     ///
-    const Location		Location::Null;
+    const Location              Location::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -46,8 +46,8 @@ namespace nucleus
     ///
     /// this method creates a location.
     ///
-    elle::Status	Location::Create(const Address&		address,
-					 const Version&		version)
+    elle::Status        Location::Create(const Address&         address,
+                                         const Version&         version)
     {
       enter();
 
@@ -65,18 +65,18 @@ namespace nucleus
     ///
     /// this method checks if two objects match.
     ///
-    elle::Boolean	Location::operator==(const Location&	element) const
+    elle::Boolean       Location::operator==(const Location&    element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the attributes.
       if ((this->address != element.address) ||
-	  (this->version != element.version))
-	false();
+          (this->version != element.version))
+        false();
 
       true();
     }
@@ -93,9 +93,9 @@ namespace nucleus
     ///
     /// this method dumps the location's internals.
     ///
-    elle::Status	Location::Dump(const elle::Natural32	margin) const
+    elle::Status        Location::Dump(const elle::Natural32    margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -103,11 +103,11 @@ namespace nucleus
 
       // dump the address.
       if (this->address.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the address");
+        escape("unable to dump the address");
 
       // dump the version.
       if (this->version.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the version");
+        escape("unable to dump the version");
 
       leave();
     }
@@ -119,14 +119,14 @@ namespace nucleus
     ///
     /// this method serializes the location attributes.
     ///
-    elle::Status	Location::Serialize(elle::Archive&	archive) const
+    elle::Status        Location::Serialize(elle::Archive&      archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->address,
-			    this->version) == elle::StatusError)
-	escape("unable to serialize the location's attributes");
+                            this->version) == elle::StatusError)
+        escape("unable to serialize the location's attributes");
 
       leave();
     }
@@ -134,14 +134,14 @@ namespace nucleus
     ///
     /// this method extracts the attributes.
     ///
-    elle::Status	Location::Extract(elle::Archive&	archive)
+    elle::Status        Location::Extract(elle::Archive&        archive)
     {
       enter();
 
       // extracts the attributes.
       if (archive.Extract(this->address,
-			  this->version) == elle::StatusError)
-	escape("unable to extract the location's attributes");
+                          this->version) == elle::StatusError)
+        escape("unable to extract the location's attributes");
 
       leave();
     }

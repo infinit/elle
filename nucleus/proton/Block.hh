@@ -54,20 +54,20 @@ namespace nucleus
       //
       // constants
       //
-      static const elle::String		Extension;
+      static const elle::String         Extension;
 
       //
       // constructors & destructors
       //
       Block();
       Block(const Family,
-	    const neutron::Component);
+            const neutron::Component);
 
       //
       // methods
       //
-      virtual elle::Status	Bind(Address&) const;
-      virtual elle::Status	Validate(const Address&) const;
+      virtual elle::Status      Bind(Address&) const;
+      virtual elle::Status      Validate(const Address&) const;
 
       //
       // interfaces
@@ -77,24 +77,24 @@ namespace nucleus
       declare(Block);
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       // fileable
-      virtual elle::Status	Erase(const Network&,
-				      const Address&) const;
+      virtual elle::Status      Erase(const Network&,
+                                      const Address&) const;
 
       //
       // attributes
       //
-      Network			network;
-      Family			family;
-      neutron::Component	component;
+      Network                   network;
+      Family                    family;
+      neutron::Component        component;
 
-      State			_state;
+      State                     _state;
     };
 
   }

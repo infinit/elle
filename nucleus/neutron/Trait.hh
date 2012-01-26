@@ -43,19 +43,19 @@ namespace nucleus
       //
       // constants
       //
-      static const Trait		Null;
+      static const Trait                Null;
 
       //
       // types
       //
-      typedef elle::String		S;
+      typedef elle::String              S;
 
       //
       // constructors & destructors
       //
       Trait();
       Trait(const elle::String&,
-	    const elle::String&);
+            const elle::String&);
 
       //
       // interfaces
@@ -63,23 +63,23 @@ namespace nucleus
 
       // object
       declare(Trait);
-      elle::Boolean	operator==(const Trait&) const;
+      elle::Boolean     operator==(const Trait&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       // rangeable
-      elle::String&	Symbol();
+      elle::String&     Symbol();
 
       //
       // attributes
       //
-      elle::String	name;
-      elle::String	value;
+      elle::String      name;
+      elle::String      value;
     };
 
   }

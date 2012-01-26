@@ -26,7 +26,7 @@ namespace nucleus
     ///
     /// this defines an unexisting trait.
     ///
-    const Trait			Trait::Null;
+    const Trait                 Trait::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -42,8 +42,8 @@ namespace nucleus
     ///
     /// default constructor.
     ///
-    Trait::Trait(const elle::String&				name,
-		 const elle::String&				value):
+    Trait::Trait(const elle::String&                            name,
+                 const elle::String&                            value):
       name(name),
       value(value)
     {
@@ -56,18 +56,18 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Trait::operator==(const Trait&		element) const
+    elle::Boolean       Trait::operator==(const Trait&          element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the name and value.
       if ((this->name != element.name) ||
-	  (this->value != element.value))
-	false();
+          (this->value != element.value))
+        false();
 
       true();
     }
@@ -84,9 +84,9 @@ namespace nucleus
     ///
     /// this function dumps a trait.
     ///
-    elle::Status	Trait::Dump(elle::Natural32		margin) const
+    elle::Status        Trait::Dump(elle::Natural32             margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -94,11 +94,11 @@ namespace nucleus
 
       // dump the name.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Name] " << this->name << std::endl;
+                << "[Name] " << this->name << std::endl;
 
       // dump the value.
       std::cout << alignment << elle::Dumpable::Shift
-		<< "[Value] " << this->value << std::endl;
+                << "[Value] " << this->value << std::endl;
 
       leave();
     }
@@ -110,14 +110,14 @@ namespace nucleus
     ///
     /// this method serializes the trait object.
     ///
-    elle::Status	Trait::Serialize(elle::Archive&		archive) const
+    elle::Status        Trait::Serialize(elle::Archive&         archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(this->name,
-			    this->value) == elle::StatusError)
-	escape("unable to serialize the trait");
+                            this->value) == elle::StatusError)
+        escape("unable to serialize the trait");
 
       leave();
     }
@@ -125,14 +125,14 @@ namespace nucleus
     ///
     /// this method extracts the trait object.
     ///
-    elle::Status	Trait::Extract(elle::Archive&		archive)
+    elle::Status        Trait::Extract(elle::Archive&           archive)
     {
       enter();
 
       // extract the attributes.
       if (archive.Extract(this->name,
-			  this->value) == elle::StatusError)
-	escape("unable to extract the trait");
+                          this->value) == elle::StatusError)
+        escape("unable to extract the trait");
 
       leave();
     }
@@ -144,7 +144,7 @@ namespace nucleus
     ///
     /// this method returns the symbol of a trait i.e the name.
     ///
-    elle::String&	Trait::Symbol()
+    elle::String&       Trait::Symbol()
     {
       return (this->name);
     }

@@ -35,7 +35,7 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    PublicKeyBlock::PublicKeyBlock(const neutron::Component	component):
+    PublicKeyBlock::PublicKeyBlock(const neutron::Component     component):
       MutableBlock(FamilyPublicKeyBlock, component)
     {
     }
@@ -47,7 +47,7 @@ namespace nucleus
     ///
     /// this method creates a PKB based on the given public key.
     ///
-    elle::Status	PublicKeyBlock::Create(const elle::PublicKey& K)
+    elle::Status        PublicKeyBlock::Create(const elle::PublicKey& K)
     {
       enter();
 
@@ -60,18 +60,18 @@ namespace nucleus
     ///
     /// this method computes the block's address.
     ///
-    elle::Status	PublicKeyBlock::Bind(Address&		address)
+    elle::Status        PublicKeyBlock::Bind(Address&           address)
       const
     {
       enter();
 
       // compute the address.
       if (address.Create(this->family, this->component,
-			 this->network,
-			 static_cast<elle::Natural8>(this->family),
-			 static_cast<elle::Natural8>(this->component),
-			 this->K) == elle::StatusError)
-	escape("unable to compute the PKB's address");
+                         this->network,
+                         static_cast<elle::Natural8>(this->family),
+                         static_cast<elle::Natural8>(this->component),
+                         this->K) == elle::StatusError)
+        escape("unable to compute the PKB's address");
 
       leave();
     }
@@ -79,10 +79,10 @@ namespace nucleus
     ///
     /// this method verifies the block's validity.
     ///
-    elle::Status	PublicKeyBlock::Validate(const Address&	address)
+    elle::Status        PublicKeyBlock::Validate(const Address& address)
       const
     {
-      Address		self;
+      Address           self;
 
       enter();
 
@@ -93,15 +93,15 @@ namespace nucleus
 
       // compute the address.
       if (self.Create(this->family, this->component,
-		      this->network,
-		      static_cast<elle::Natural8>(this->family),
-		      static_cast<elle::Natural8>(this->component),
-		      this->K) == elle::StatusError)
-	escape("unable to compute the PKB's address");
+                      this->network,
+                      static_cast<elle::Natural8>(this->family),
+                      static_cast<elle::Natural8>(this->component),
+                      this->K) == elle::StatusError)
+        escape("unable to compute the PKB's address");
 
       // verify with the recorded address.
       if (address != self)
-	escape("the address does not correspond to the block's public key");
+        escape("the address does not correspond to the block's public key");
 
       //
       // at this point the node knows that the recorded address corresponds
@@ -127,10 +127,10 @@ namespace nucleus
     ///
     /// this function dumps an block object.
     ///
-    elle::Status	PublicKeyBlock::Dump(const
-					       elle::Natural32	margin) const
+    elle::Status        PublicKeyBlock::Dump(const
+                                               elle::Natural32  margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -138,13 +138,13 @@ namespace nucleus
 
       // dump the parent class.
       if (MutableBlock::Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the underlying block");
+        escape("unable to dump the underlying block");
 
       // dump the PKB's public key.
       std::cout << alignment << elle::Dumpable::Shift << "[K]" << std::endl;
 
       if (this->K.Dump(margin + 4) == elle::StatusError)
-	escape("unable to dump the public key");
+        escape("unable to dump the public key");
 
       leave();
     }
@@ -156,17 +156,17 @@ namespace nucleus
     ///
     /// this method serializes the block object.
     ///
-    elle::Status	PublicKeyBlock::Serialize(elle::Archive& archive) const
+    elle::Status        PublicKeyBlock::Serialize(elle::Archive& archive) const
     {
       enter();
 
       // serialize the parent class.
       if (MutableBlock::Serialize(archive) == elle::StatusError)
-	escape("unable to serialize the underlying block");
+        escape("unable to serialize the underlying block");
 
       // serialize the public key.
       if (archive.Serialize(this->K) == elle::StatusError)
-	escape("unable to serialize the public key");
+        escape("unable to serialize the public key");
 
       leave();
     }
@@ -174,21 +174,21 @@ namespace nucleus
     ///
     /// this method extracts the block object.
     ///
-    elle::Status	PublicKeyBlock::Extract(elle::Archive&	archive)
+    elle::Status        PublicKeyBlock::Extract(elle::Archive&  archive)
     {
       enter();
 
       // extract the parent class.
       if (MutableBlock::Extract(archive) == elle::StatusError)
-	escape("unable to extract the underlying block");
+        escape("unable to extract the underlying block");
 
       // check the family.
       if (this->family != FamilyPublicKeyBlock)
-	escape("invalid family");
+        escape("invalid family");
 
       // extract the public key.
       if (archive.Extract(this->K) == elle::StatusError)
-	escape("unable to extract the public key");
+        escape("unable to extract the public key");
 
       leave();
     }

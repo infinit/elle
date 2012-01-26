@@ -26,7 +26,7 @@ namespace nucleus
     ///
     /// this variable can easily be used for comparing with invalid networks.
     ///
-    const Network		Network::Null;
+    const Network               Network::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -46,7 +46,7 @@ namespace nucleus
     ///
     /// create a network object based on its name.
     ///
-    elle::Status	Network::Create(const elle::String&	name)
+    elle::Status        Network::Create(const elle::String&     name)
     {
       enter();
 
@@ -63,17 +63,17 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Network::operator==(const Network&	element) const
+    elle::Boolean       Network::operator==(const Network&      element) const
     {
       enter();
 
       // check the network as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the names.
       if (this->name != element.name)
-	false();
+        false();
 
       true();
     }
@@ -81,17 +81,17 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Network::operator<(const Network&	element) const
+    elle::Boolean       Network::operator<(const Network&       element) const
     {
       enter();
 
       // check the network as this may actually be the same object.
       if (this == &element)
-	false();
+        false();
 
       // compare the names.
       if (this->name < element.name)
-	false();
+        false();
 
       false();
     }
@@ -108,15 +108,15 @@ namespace nucleus
     ///
     /// this function dumps an network object.
     ///
-    elle::Status	Network::Dump(elle::Natural32		margin) const
+    elle::Status        Network::Dump(elle::Natural32           margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
       // display the network's name.
       std::cout << alignment << "[Network] "
-		<< this->name << std::endl;
+                << this->name << std::endl;
 
       leave();
     }
@@ -128,13 +128,13 @@ namespace nucleus
     ///
     /// this method serializes the network object.
     ///
-    elle::Status	Network::Serialize(elle::Archive&	archive) const
+    elle::Status        Network::Serialize(elle::Archive&       archive) const
     {
       enter();
 
       // serialize the internal.
       if (archive.Serialize(this->name) == elle::StatusError)
-	escape("unable to serialize the name");
+        escape("unable to serialize the name");
 
       leave();
     }
@@ -142,13 +142,13 @@ namespace nucleus
     ///
     /// this method extracts the network object.
     ///
-    elle::Status	Network::Extract(elle::Archive&		archive)
+    elle::Status        Network::Extract(elle::Archive&         archive)
     {
       enter();
 
       // extract the internal.
       if (archive.Extract(this->name) == elle::StatusError)
-	escape("unable to extract the name");
+        escape("unable to extract the name");
 
       leave();
     }

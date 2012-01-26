@@ -56,10 +56,10 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create();
+      elle::Status      Create();
 
-      elle::Status	Encrypt(const elle::SecretKey&);
-      elle::Status	Decrypt(const elle::SecretKey&);
+      elle::Status      Encrypt(const elle::SecretKey&);
+      elle::Status      Decrypt(const elle::SecretKey&);
 
       //
       // interfaces
@@ -69,18 +69,18 @@ namespace nucleus
       declare(Contents<T>);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      T*		content;
+      T*                content;
 
-      elle::Cipher*	cipher;
+      elle::Cipher*     cipher;
     };
 
   }

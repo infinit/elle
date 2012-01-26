@@ -37,16 +37,16 @@ namespace nucleus
       //
       // types
       //
-      typedef elle::Natural64		Type;
+      typedef elle::Natural64           Type;
 
       //
       // constants
       //
-      static const Version		First;
-      static const Version		Last;
+      static const Version              First;
+      static const Version              Last;
 
-      static const Version		Any;
-      static const Version&		Some;
+      static const Version              Any;
+      static const Version&             Some;
 
       //
       // constructors & destructors
@@ -57,7 +57,7 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status		Create(const Type);
+      elle::Status              Create(const Type);
 
       //
       // interfaces
@@ -65,23 +65,23 @@ namespace nucleus
 
       // object
       declare(Version);
-      elle::Boolean		operator==(const Version&) const;
-      elle::Boolean		operator<(const Version&) const;
-      elle::Boolean		operator>(const Version&) const;
-      Version&			operator+=(const elle::Natural32);
-      Version			operator+(const Version&) const;
+      elle::Boolean             operator==(const Version&) const;
+      elle::Boolean             operator<(const Version&) const;
+      elle::Boolean             operator>(const Version&) const;
+      Version&                  operator+=(const elle::Natural32);
+      Version                   operator+(const Version&) const;
 
       // dumpable
-      elle::Status		Dump(const elle::Natural32 = 0) const;
+      elle::Status              Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status		Serialize(elle::Archive&) const;
-      elle::Status		Extract(elle::Archive&);
+      elle::Status              Serialize(elle::Archive&) const;
+      elle::Status              Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Type			number;
+      Type                      number;
     };
 
   }

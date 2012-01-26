@@ -41,7 +41,7 @@ namespace nucleus
       //
       Derivable();
       Derivable(const elle::Product&,
-		const T&);
+                const T&);
       Derivable(T&);
     };
 

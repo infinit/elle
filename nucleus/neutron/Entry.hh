@@ -39,19 +39,19 @@ namespace nucleus
       //
       // constants
       //
-      static const Entry		Null;
+      static const Entry                Null;
 
       //
       // types
       //
-      typedef elle::String		S;
+      typedef elle::String              S;
 
       //
       // constructors & destructors
       //
       Entry();
       Entry(const elle::String&,
-	    const proton::Address&);
+            const proton::Address&);
 
       //
       // interfaces
@@ -59,23 +59,23 @@ namespace nucleus
 
       // object
       declare(Entry);
-      elle::Boolean	operator==(const Entry&) const;
+      elle::Boolean     operator==(const Entry&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       // rangeable
-      elle::String&	Symbol();
+      elle::String&     Symbol();
 
       //
       // attributes
       //
-      elle::String	name;
-      proton::Address	address;
+      elle::String      name;
+      proton::Address   address;
     };
 
   }

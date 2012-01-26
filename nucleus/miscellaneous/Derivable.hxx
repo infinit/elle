@@ -34,8 +34,8 @@ namespace nucleus
     /// an instance is about to be serialized.
     ///
     template <typename T>
-    Derivable<T>::Derivable(const elle::Product&		product,
-			    const T&				object):
+    Derivable<T>::Derivable(const elle::Product&                product,
+                            const T&                            object):
       elle::Derivable<T>(product, object)
     {
     }
@@ -46,7 +46,7 @@ namespace nucleus
     /// without allocating a new object.
     ///
     template <typename T>
-    Derivable<T>::Derivable(T&					object):
+    Derivable<T>::Derivable(T&                                  object):
       elle::Derivable<T>(Nucleus::Factory, object)
     {
     }

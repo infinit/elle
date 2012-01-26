@@ -29,23 +29,23 @@ namespace nucleus
     /// key or a token already formed.
     ///
     template <typename T>
-    elle::Status	Access::Update(const Subject&		subject,
-				       const Permissions&	permissions,
-				       const T&			stuff)
+    elle::Status        Access::Update(const Subject&           subject,
+                                       const Permissions&       permissions,
+                                       const T&                 stuff)
     {
-      Record*		record;
+      Record*           record;
 
       enter();
 
       // retrieve the record.
       if (this->Lookup(subject, record) == elle::StatusError)
-	escape("unable to retrieve the subject's record");
+        escape("unable to retrieve the subject's record");
 
       // update the record with the new permissions and stuff.
       if (record->Update(subject,
-			 permissions,
-			 stuff) == elle::StatusError)
-	escape("unable to update the record");
+                         permissions,
+                         stuff) == elle::StatusError)
+        escape("unable to update the record");
 
       // set the block as dirty.
       this->_state = proton::StateDirty;

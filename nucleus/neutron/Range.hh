@@ -51,26 +51,26 @@ namespace nucleus
       //
       // constants
       //
-      static const T*			Trash;
+      static const T*                   Trash;
 
       //
       // enumerations
       //
       enum Options
-	{
-	  OptionNone = 0,
+        {
+          OptionNone = 0,
 
-	  OptionDetach
-	};
+          OptionDetach
+        };
 
       //
       // types
       //
-      typedef typename T::S				S;
+      typedef typename T::S                             S;
 
-      typedef std::list<T*>				Container;
-      typedef typename Container::iterator		Iterator;
-      typedef typename Container::const_iterator	Scoutor;
+      typedef std::list<T*>                             Container;
+      typedef typename Container::iterator              Iterator;
+      typedef typename Container::const_iterator        Scoutor;
 
       //
       // constructors & destructors
@@ -82,18 +82,18 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Add(T*);
-      elle::Status	Exist(const S&) const;
-      elle::Status	Lookup(const S&,
-			       T*& = Trash) const;
-      elle::Status	Remove(const S&);
-      elle::Status	Capacity(Size&) const;
-      elle::Status	Locate(const S&,
-			       Scoutor&) const;
-      elle::Status	Locate(const S&,
-			       Iterator&);
+      elle::Status      Add(T*);
+      elle::Status      Exist(const S&) const;
+      elle::Status      Lookup(const S&,
+                               T*& = Trash) const;
+      elle::Status      Remove(const S&);
+      elle::Status      Capacity(Size&) const;
+      elle::Status      Locate(const S&,
+                               Scoutor&) const;
+      elle::Status      Locate(const S&,
+                               Iterator&);
 
-      elle::Status	Detach();
+      elle::Status      Detach();
 
       //
       // interfaces
@@ -101,21 +101,21 @@ namespace nucleus
 
       // object
       declare(Range<T>);
-      elle::Boolean	operator==(const Range<T>&) const;
+      elle::Boolean     operator==(const Range<T>&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Options		options;
+      Options           options;
 
-      Container		container;
+      Container         container;
     };
 
   }

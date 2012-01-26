@@ -26,13 +26,13 @@ namespace nucleus
     ///
     /// this method adds the given entry to the attributes.
     ///
-    elle::Status	Attributes::Add(Trait*			trait)
+    elle::Status        Attributes::Add(Trait*                  trait)
     {
       enter();
 
       // add the trait in the range.
       if (this->range.Add(trait) == elle::StatusError)
-	escape("unable to add the trait in the range");
+        escape("unable to add the trait in the range");
 
       leave();
     }
@@ -40,13 +40,13 @@ namespace nucleus
     ///
     /// this method tests if the given name exists.
     ///
-    elle::Status	Attributes::Exist(const elle::String&	name) const
+    elle::Status        Attributes::Exist(const elle::String&   name) const
     {
       enter();
 
       // test.
       if (this->range.Exist(name) == false)
-	false();
+        false();
 
       true();
     }
@@ -54,14 +54,14 @@ namespace nucleus
     ///
     /// this method returns the trait corresponding to the given name.
     ///
-    elle::Status	Attributes::Lookup(const elle::String&	name,
-					   Trait*&		trait) const
+    elle::Status        Attributes::Lookup(const elle::String&  name,
+                                           Trait*&              trait) const
     {
       enter();
 
       // look in the range.
       if (this->range.Lookup(name, trait) == elle::StatusError)
-	escape("unable to retrieve the trait");
+        escape("unable to retrieve the trait");
 
       leave();
     }
@@ -70,34 +70,34 @@ namespace nucleus
     /// this method returns a subset of the attributes delimited by the given
     /// index and size.
     ///
-    elle::Status	Attributes::Consult(const Index&	index,
-					    const Size&		size,
-					    Range<Trait>&	range) const
+    elle::Status        Attributes::Consult(const Index&        index,
+                                            const Size&         size,
+                                            Range<Trait>&       range) const
     {
-      Range<Trait>::Scoutor	scoutor;
-      Index			i;
+      Range<Trait>::Scoutor     scoutor;
+      Index                     i;
 
       enter();
 
       // first detach the data from the range.
       if (range.Detach() == elle::StatusError)
-	escape("unable to detach the data from the range");
+        escape("unable to detach the data from the range");
 
       // go through the attributes entries.
       for (scoutor = this->range.container.begin(), i = 0;
-	   scoutor != this->range.container.end();
-	   scoutor++, i++)
-	{
-	  Trait*	trait = *scoutor;
+           scoutor != this->range.container.end();
+           scoutor++, i++)
+        {
+          Trait*        trait = *scoutor;
 
-	  // if this trait lies in the selected set [index, index + size[
-	  if ((i >= index) && (i < (index + size)))
-	    {
-	      // add the trait to the range.
-	      if (range.Add(trait) == elle::StatusError)
-		escape("unable to add the trait to the range");
-	    }
-	}
+          // if this trait lies in the selected set [index, index + size[
+          if ((i >= index) && (i < (index + size)))
+            {
+              // add the trait to the range.
+              if (range.Add(trait) == elle::StatusError)
+                escape("unable to add the trait to the range");
+            }
+        }
 
       leave();
     }
@@ -105,16 +105,16 @@ namespace nucleus
     ///
     /// this method updates an existing trait's value.
     ///
-    elle::Status	Attributes::Update(const elle::String&	name,
-					   const elle::String&	value)
+    elle::Status        Attributes::Update(const elle::String&  name,
+                                           const elle::String&  value)
     {
-      Range<Trait>::Iterator	iterator;
+      Range<Trait>::Iterator    iterator;
 
       enter();
 
       // locate the trait.
       if (this->range.Locate(name, iterator) == false)
-	escape("unable to locate the named trait");
+        escape("unable to locate the named trait");
 
       // update the value.
       (*iterator)->value = value;
@@ -125,13 +125,13 @@ namespace nucleus
     ///
     /// this method removes the given trait.
     ///
-    elle::Status	Attributes::Remove(const elle::String&	name)
+    elle::Status        Attributes::Remove(const elle::String&  name)
     {
       enter();
 
       // remove the trait from the range.
       if (this->range.Remove(name) == elle::StatusError)
-	escape("unable to remove the trait");
+        escape("unable to remove the trait");
 
       leave();
     }
@@ -139,13 +139,13 @@ namespace nucleus
     ///
     /// this method returns the size of the attributes.
     ///
-    elle::Status	Attributes::Capacity(Size&		size) const
+    elle::Status        Attributes::Capacity(Size&              size) const
     {
       enter();
 
       // look at the size of the range.
       if (this->range.Capacity(size) == elle::StatusError)
-	escape("unable to retrieve the range size");
+        escape("unable to retrieve the range size");
 
       leave();
     }
@@ -157,17 +157,17 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Attributes::operator==(const Attributes& element) const
+    elle::Boolean       Attributes::operator==(const Attributes& element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the ranges.
       if (this->range != element.range)
-	false();
+        false();
 
       true();
     }
@@ -184,10 +184,10 @@ namespace nucleus
     ///
     /// this function dumps a attributes.
     ///
-    elle::Status	Attributes::Dump(elle::Natural32	margin) const
+    elle::Status        Attributes::Dump(elle::Natural32        margin) const
     {
-      elle::String		alignment(margin, ' ');
-      Range<Trait>::Scoutor	scoutor;
+      elle::String              alignment(margin, ' ');
+      Range<Trait>::Scoutor     scoutor;
 
       enter();
 
@@ -195,7 +195,7 @@ namespace nucleus
 
       // dump the range.
       if (this->range.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the range");
+        escape("unable to dump the range");
 
       leave();
     }
@@ -207,13 +207,13 @@ namespace nucleus
     ///
     /// this method serializes the attributes object.
     ///
-    elle::Status	Attributes::Serialize(elle::Archive&	archive) const
+    elle::Status        Attributes::Serialize(elle::Archive&    archive) const
     {
       enter();
 
       // serialize the range.
       if (archive.Serialize(this->range) == elle::StatusError)
-	escape("unable to serialize the range");
+        escape("unable to serialize the range");
 
       leave();
     }
@@ -221,13 +221,13 @@ namespace nucleus
     ///
     /// this method extracts the attributes object.
     ///
-    elle::Status	Attributes::Extract(elle::Archive&	archive)
+    elle::Status        Attributes::Extract(elle::Archive&      archive)
     {
       enter();
 
       // extract the range.
       if (archive.Extract(this->range) == elle::StatusError)
-	escape("unable to extract the range");
+        escape("unable to extract the range");
 
       leave();
     }

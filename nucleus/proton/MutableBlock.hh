@@ -65,7 +65,7 @@ namespace nucleus
       //
       MutableBlock();
       MutableBlock(const Family,
-		   const neutron::Component);
+                   const neutron::Component);
 
       //
       // interfaces
@@ -75,30 +75,30 @@ namespace nucleus
       declare(MutableBlock);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       // fileable
-      elle::Status	Load(const Network&,
-			     const Address&,
-			     const Version&);
-      elle::Status	Store(const Network&,
-			      const Address&) const;
-      elle::Status	Erase(const Network&,
-			      const Address&) const;
-      elle::Status	Exist(const Network&,
-			      const Address&,
-			      const Version&) const;
+      elle::Status      Load(const Network&,
+                             const Address&,
+                             const Version&);
+      elle::Status      Store(const Network&,
+                              const Address&) const;
+      elle::Status      Erase(const Network&,
+                              const Address&) const;
+      elle::Status      Exist(const Network&,
+                              const Address&,
+                              const Version&) const;
 
       //
       // attributes
       //
-      Version		version;
+      Version           version;
 
-      Base		_base;
+      Base              _base;
     };
 
   }

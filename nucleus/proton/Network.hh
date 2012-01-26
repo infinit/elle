@@ -32,7 +32,7 @@ namespace nucleus
       //
       // constants
       //
-      static const Network	Null;
+      static const Network      Null;
 
       //
       // constructors & destructors
@@ -42,12 +42,12 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const elle::String&);
+      elle::Status      Create(const elle::String&);
 
       //
       // attributes
       //
-      elle::String	name;
+      elle::String      name;
 
       //
       // interfaces
@@ -55,15 +55,15 @@ namespace nucleus
 
       // object
       declare(Network);
-      elle::Boolean	operator==(const Network&) const;
-      elle::Boolean	operator<(const Network&) const;
+      elle::Boolean     operator==(const Network&) const;
+      elle::Boolean     operator<(const Network&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
     };
 
   }

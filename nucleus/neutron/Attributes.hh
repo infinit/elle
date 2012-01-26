@@ -42,17 +42,17 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Add(Trait*);
-      elle::Status	Exist(const elle::String&) const;
-      elle::Status	Lookup(const elle::String&,
-			       Trait*&) const;
-      elle::Status	Consult(const Index&,
-				const Size&,
-				Range<Trait>&) const;
-      elle::Status	Update(const elle::String&,
-			       const elle::String&);
-      elle::Status	Remove(const elle::String&);
-      elle::Status	Capacity(Size&) const;
+      elle::Status      Add(Trait*);
+      elle::Status      Exist(const elle::String&) const;
+      elle::Status      Lookup(const elle::String&,
+                               Trait*&) const;
+      elle::Status      Consult(const Index&,
+                                const Size&,
+                                Range<Trait>&) const;
+      elle::Status      Update(const elle::String&,
+                               const elle::String&);
+      elle::Status      Remove(const elle::String&);
+      elle::Status      Capacity(Size&) const;
 
       //
       // interfaces
@@ -60,19 +60,19 @@ namespace nucleus
 
       // object
       declare(Attributes);
-      elle::Boolean	operator==(const Attributes&) const;
+      elle::Boolean     operator==(const Attributes&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Range<Trait>	range;
+      Range<Trait>      range;
     };
 
   }

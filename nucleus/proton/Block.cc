@@ -26,7 +26,7 @@ namespace nucleus
   ///
   /// this string defines the block files extension.
   ///
-  const elle::String		Block::Extension = ".blk";
+  const elle::String            Block::Extension = ".blk";
 
 //
 // ---------- constructs & destructors ----------------------------------------
@@ -45,8 +45,8 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    Block::Block(const Family					family,
-		 const neutron::Component			component):
+    Block::Block(const Family                                   family,
+                 const neutron::Component                       component):
       family(family),
       component(component),
       _state(StateClean)
@@ -60,7 +60,7 @@ namespace nucleus
     ///
     /// this method computes the address of the block.
     ///
-    elle::Status	Block::Bind(Address&) const
+    elle::Status        Block::Bind(Address&) const
     {
       enter();
 
@@ -71,7 +71,7 @@ namespace nucleus
     /// this method returns StatusTrue if the block is valid, StatusFalse
     /// otherwise.
     ///
-    elle::Status	Block::Validate(const Address&) const
+    elle::Status        Block::Validate(const Address&) const
     {
       enter();
 
@@ -94,9 +94,9 @@ namespace nucleus
     ///
     /// this method dumps the block's internals.
     ///
-    elle::Status	Block::Dump(const elle::Natural32	margin) const
+    elle::Status        Block::Dump(const elle::Natural32       margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -104,19 +104,19 @@ namespace nucleus
 
       // dump the network.
       if (this->network.Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the network");
+        escape("unable to dump the network");
 
       // dump the family.
       std::cout << alignment << elle::Dumpable::Shift << "[Family] "
-		<< this->family << std::endl;
+                << this->family << std::endl;
 
       // dump the component.
       std::cout << alignment << elle::Dumpable::Shift << "[Component] "
-		<< this->component << std::endl;
+                << this->component << std::endl;
 
       // dump the state.
       std::cout << alignment << elle::Dumpable::Shift << "[_State] "
-		<< this->_state << std::endl;
+                << this->_state << std::endl;
 
       leave();
     }
@@ -128,16 +128,16 @@ namespace nucleus
     ///
     /// this method archives the block attributes.
     ///
-    elle::Status	Block::Serialize(elle::Archive&	archive) const
+    elle::Status        Block::Serialize(elle::Archive& archive) const
     {
       enter();
 
       // serialize the attributes.
       if (archive.Serialize(
-	    this->network,
-	    static_cast<elle::Natural8>(this->family),
-	    static_cast<elle::Natural8>(this->component)) == elle::StatusError)
-	escape("unable to serialize the block's attributes");
+            this->network,
+            static_cast<elle::Natural8>(this->family),
+            static_cast<elle::Natural8>(this->component)) == elle::StatusError)
+        escape("unable to serialize the block's attributes");
 
       leave();
     }
@@ -145,17 +145,17 @@ namespace nucleus
     ///
     /// this method extracts the attributes.
     ///
-    elle::Status	Block::Extract(elle::Archive&		archive)
+    elle::Status        Block::Extract(elle::Archive&           archive)
     {
       enter();
 
       // extracts the attributes.
       if (archive.Extract(
-	    this->network,
-	    reinterpret_cast<elle::Natural8&>(this->family),
-	    reinterpret_cast<elle::Natural8&>(this->component)) ==
-	  elle::StatusError)
-	escape("unable to extract the block's attributes");
+            this->network,
+            reinterpret_cast<elle::Natural8&>(this->family),
+            reinterpret_cast<elle::Natural8&>(this->component)) ==
+          elle::StatusError)
+        escape("unable to extract the block's attributes");
 
       leave();
     }
@@ -167,8 +167,8 @@ namespace nucleus
     ///
     /// this method erases the block file.
     ///
-    elle::Status	Block::Erase(const Network&,
-				     const Address&) const
+    elle::Status        Block::Erase(const Network&,
+                                     const Address&) const
     {
       enter();
 

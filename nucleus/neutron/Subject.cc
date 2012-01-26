@@ -27,10 +27,10 @@ namespace nucleus
     /// this table maintains a mapping between subject types and their
     /// respective human-readable representations.
     ///
-    const Subject::Descriptor	Subject::Descriptors[Subject::Types] =
+    const Subject::Descriptor   Subject::Descriptors[Subject::Types] =
       {
-	{ Subject::TypeUser, "user" },
-	{ Subject::TypeGroup, "group" },
+        { Subject::TypeUser, "user" },
+        { Subject::TypeGroup, "group" },
       };
 
 //
@@ -40,30 +40,30 @@ namespace nucleus
     ///
     /// this method returns the type associated with the given string.
     ///
-    elle::Status	Subject::Convert(const elle::String&	name,
-					 Type&			type)
+    elle::Status        Subject::Convert(const elle::String&    name,
+                                         Type&                  type)
     {
-      elle::String	string(name);
-      elle::Natural32	i;
+      elle::String      string(name);
+      elle::Natural32   i;
 
       enter();
 
       // transform the given name in lowercase.
       std::transform(string.begin(), string.end(),
-		     string.begin(), std::ptr_fun(::tolower));
+                     string.begin(), std::ptr_fun(::tolower));
 
       // go through the descriptors.
       for (i = 0; i < Subject::Types; i++)
-	{
-	  // is this the type we are looking for?
-	  if (Subject::Descriptors[i].name == string)
-	    {
-	      // set the type.
-	      type = Subject::Descriptors[i].type;
+        {
+          // is this the type we are looking for?
+          if (Subject::Descriptors[i].name == string)
+            {
+              // set the type.
+              type = Subject::Descriptors[i].type;
 
-	      leave();
-	    }
-	}
+              leave();
+            }
+        }
 
       escape("unable to locate the given entity name");
     }
@@ -71,25 +71,25 @@ namespace nucleus
     ///
     /// this method converts a type into its human-readable representation.
     ///
-    elle::Status	Subject::Convert(const Type		type,
-					 elle::String&		name)
+    elle::Status        Subject::Convert(const Type             type,
+                                         elle::String&          name)
     {
-      elle::Natural32	i;
+      elle::Natural32   i;
 
       enter();
 
       // go through the descriptors.
       for (i = 0; i < Subject::Types; i++)
-	{
-	  // is this the entity we are looking for?
-	  if (Subject::Descriptors[i].type == type)
-	    {
-	      // set the name.
-	      name = Subject::Descriptors[i].name;
+        {
+          // is this the entity we are looking for?
+          if (Subject::Descriptors[i].type == type)
+            {
+              // set the name.
+              name = Subject::Descriptors[i].name;
 
-	      leave();
-	    }
-	}
+              leave();
+            }
+        }
 
       escape("unable to locate the given type");
     }
@@ -110,33 +110,33 @@ namespace nucleus
     ///
     /// copy constructor.
     ///
-    Subject::Subject(const Subject&				subject):
+    Subject::Subject(const Subject&                             subject):
       Object(subject)
     {
       // set the type.
       this->type = subject.type;
 
       switch (this->type)
-	{
-	case Subject::TypeUser:
-	  {
-	    // copy the user public key.
-	    this->user = new elle::PublicKey(*subject.user);
+        {
+        case Subject::TypeUser:
+          {
+            // copy the user public key.
+            this->user = new elle::PublicKey(*subject.user);
 
-	    break;
-	  }
-	case Subject::TypeGroup:
-	  {
-	    // copy the group address.
-	    this->group = new proton::Address(*subject.group);
+            break;
+          }
+        case Subject::TypeGroup:
+          {
+            // copy the group address.
+            this->group = new proton::Address(*subject.group);
 
-	    break;
-	  }
-	default:
-	  {
-	    break;
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            break;
+          }
+        }
     }
 
     ///
@@ -145,24 +145,24 @@ namespace nucleus
     Subject::~Subject()
     {
       switch (this->type)
-	{
-	case Subject::TypeUser:
-	  {
-	    delete this->user;
+        {
+        case Subject::TypeUser:
+          {
+            delete this->user;
 
-	    break;
-	  }
-	case Subject::TypeGroup:
-	  {
-	    delete this->group;
+            break;
+          }
+        case Subject::TypeGroup:
+          {
+            delete this->group;
 
-	    break;
-	  }
-	default:
-	  {
-	    break;
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            break;
+          }
+        }
     }
 
 //
@@ -172,7 +172,7 @@ namespace nucleus
     ///
     /// this method creates a user subject.
     ///
-    elle::Status	Subject::Create(const elle::PublicKey&	K)
+    elle::Status        Subject::Create(const elle::PublicKey&  K)
     {
       enter();
 
@@ -188,7 +188,7 @@ namespace nucleus
     ///
     /// this method creates a group subject.
     ///
-    elle::Status	Subject::Create(const proton::Address&	descriptor)
+    elle::Status        Subject::Create(const proton::Address&  descriptor)
     {
       enter();
 
@@ -208,34 +208,34 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Subject::operator==(const Subject&	element) const
+    elle::Boolean       Subject::operator==(const Subject&      element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the type.
       if (this->type != element.type)
-	false();
+        false();
 
       // compare the identifier.
       switch (this->type)
-	{
-	case Subject::TypeUser:
-	  {
-	    return (*this->user == *element.user);
-	  }
-	case Subject::TypeGroup:
-	  {
-	    return (*this->group == *element.group);
-	  }
-	default:
-	  {
-	    break;
-	  }
-	}
+        {
+        case Subject::TypeUser:
+          {
+            return (*this->user == *element.user);
+          }
+        case Subject::TypeGroup:
+          {
+            return (*this->group == *element.group);
+          }
+        default:
+          {
+            break;
+          }
+        }
 
       true();
     }
@@ -252,9 +252,9 @@ namespace nucleus
     ///
     /// this function dumps an time object.
     ///
-    elle::Status	Subject::Dump(elle::Natural32		margin) const
+    elle::Status        Subject::Dump(elle::Natural32           margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -262,38 +262,38 @@ namespace nucleus
 
       // display the type.
       std::cout << alignment << elle::Dumpable::Shift << "[Type] "
-		<< this->type << std::endl;
+                << this->type << std::endl;
 
       // compare the identifier.
       switch (this->type)
-	{
-	case Subject::TypeUser:
-	  {
-	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Identifier]" << std::endl;
+        {
+        case Subject::TypeUser:
+          {
+            std::cout << alignment << elle::Dumpable::Shift
+                      << "[Identifier]" << std::endl;
 
-	    // dump the user public key.
-	    if (this->user->Dump(margin + 4) == elle::StatusError)
-	      escape("unable to dump the user's public key");
+            // dump the user public key.
+            if (this->user->Dump(margin + 4) == elle::StatusError)
+              escape("unable to dump the user's public key");
 
-	    break;
-	  }
-	case Subject::TypeGroup:
-	  {
-	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Identifier]" << std::endl;
+            break;
+          }
+        case Subject::TypeGroup:
+          {
+            std::cout << alignment << elle::Dumpable::Shift
+                      << "[Identifier]" << std::endl;
 
-	    // dump the group address.
-	    if (this->group->Dump(margin + 4) == elle::StatusError)
-	      escape("unable to dump the group address");
+            // dump the group address.
+            if (this->group->Dump(margin + 4) == elle::StatusError)
+              escape("unable to dump the group address");
 
-	    break;
-	  }
-	default:
-	  {
-	    break;
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            break;
+          }
+        }
 
       leave();
     }
@@ -305,39 +305,39 @@ namespace nucleus
     ///
     /// this method serializes the subject.
     ///
-    elle::Status	Subject::Serialize(elle::Archive&	archive) const
+    elle::Status        Subject::Serialize(elle::Archive&       archive) const
     {
       enter();
 
       // serialize the type.
       if (archive.Serialize(static_cast<elle::Natural8>(this->type)) ==
-	  elle::StatusError)
-	escape("unable to serialize the type");
+          elle::StatusError)
+        escape("unable to serialize the type");
 
       // serialize the identifier.
       switch (this->type)
-	{
-	case Subject::TypeUser:
-	  {
-	    // serialize the user public key.
-	    if (archive.Serialize(*this->user) == elle::StatusError)
-	      escape("unable to serialize the user public key");
+        {
+        case Subject::TypeUser:
+          {
+            // serialize the user public key.
+            if (archive.Serialize(*this->user) == elle::StatusError)
+              escape("unable to serialize the user public key");
 
-	    break;
-	  }
-	case Subject::TypeGroup:
-	  {
-	    // serialize the group address.
-	    if (archive.Serialize(*this->group) == elle::StatusError)
-	      escape("unable to serialize the group address");
+            break;
+          }
+        case Subject::TypeGroup:
+          {
+            // serialize the group address.
+            if (archive.Serialize(*this->group) == elle::StatusError)
+              escape("unable to serialize the group address");
 
-	    break;
-	  }
-	default:
-	  {
-	    break;
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            break;
+          }
+        }
 
       leave();
     }
@@ -345,45 +345,45 @@ namespace nucleus
     ///
     /// this method extracts the subject.
     ///
-    elle::Status	Subject::Extract(elle::Archive&		archive)
+    elle::Status        Subject::Extract(elle::Archive&         archive)
     {
       enter();
 
       // extract the type.
       if (archive.Extract(reinterpret_cast<elle::Natural8&>(this->type)) ==
-	  elle::StatusError)
-	escape("unable to extract the type");
+          elle::StatusError)
+        escape("unable to extract the type");
 
       // extract the identifier.
       switch (this->type)
-	{
-	case Subject::TypeUser:
-	  {
-	    // allocate a new public key.
-	    this->user = new elle::PublicKey;
+        {
+        case Subject::TypeUser:
+          {
+            // allocate a new public key.
+            this->user = new elle::PublicKey;
 
-	    // extract the user public key.
-	    if (archive.Extract(*this->user) == elle::StatusError)
-	      escape("unable to extract the user public key");
+            // extract the user public key.
+            if (archive.Extract(*this->user) == elle::StatusError)
+              escape("unable to extract the user public key");
 
-	    break;
-	  }
-	case Subject::TypeGroup:
-	  {
-	    // allocate a new address.
-	    this->group = new proton::Address;
+            break;
+          }
+        case Subject::TypeGroup:
+          {
+            // allocate a new address.
+            this->group = new proton::Address;
 
-	    // extract the group address.
-	    if (archive.Extract(*this->group) == elle::StatusError)
-	      escape("unable to extract the group address");
+            // extract the group address.
+            if (archive.Extract(*this->group) == elle::StatusError)
+              escape("unable to extract the group address");
 
-	    break;
-	  }
-	default:
-	  {
-	    break;
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            break;
+          }
+        }
 
       leave();
     }

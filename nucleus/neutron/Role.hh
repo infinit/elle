@@ -30,7 +30,7 @@ namespace nucleus
     /// this defines the type that is used to represent which role
     /// a user can play on an object.
     ///
-    typedef elle::Natural8		Role;
+    typedef elle::Natural8              Role;
 
 //
 // ---------- constants -------------------------------------------------------
@@ -39,10 +39,10 @@ namespace nucleus
     ///
     /// these are the role constants.
     ///
-    const Role				RoleUnknown = 0x0;
-    const Role				RoleOwner = 0x1;
-    const Role				RoleLord = 0x2;
-    const Role				RoleVassal = 0x3;
+    const Role                          RoleUnknown = 0x0;
+    const Role                          RoleOwner = 0x1;
+    const Role                          RoleLord = 0x2;
+    const Role                          RoleVassal = 0x3;
 
   }
 }

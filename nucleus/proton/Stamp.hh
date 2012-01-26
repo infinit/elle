@@ -51,11 +51,11 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const Location&,
-			       const Location&);
+      elle::Status      Create(const Location&,
+                               const Location&);
 
-      elle::Status	Seal(const elle::PrivateKey&);
-      elle::Status	Validate();
+      elle::Status      Seal(const elle::PrivateKey&);
+      elle::Status      Validate();
 
       //
       // interfaces
@@ -63,23 +63,23 @@ namespace nucleus
 
       // object
       declare(Stamp);
-      elle::Boolean	operator==(const Stamp&) const;
+      elle::Boolean     operator==(const Stamp&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
 
-      Location		master;
-      Location		slave;
+      Location          master;
+      Location          slave;
 
-      elle::Signature	signature;
+      elle::Signature   signature;
     };
 
   }

@@ -64,10 +64,10 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const elle::PublicKey&);
+      elle::Status      Create(const elle::PublicKey&);
 
-      elle::Status	Bind(Address&) const;
-      elle::Status	Validate(const Address&) const;
+      elle::Status      Bind(Address&) const;
+      elle::Status      Validate(const Address&) const;
 
       //
       // interfaces
@@ -77,24 +77,24 @@ namespace nucleus
       declare(ImprintBlock);
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      elle::Time		stamp;
-      elle::Natural64		salt;
+      elle::Time                stamp;
+      elle::Natural64           salt;
 
       struct
       {
-	elle::PublicKey		K;
+        elle::PublicKey         K;
 
-	neutron::Subject	_subject;
-      }				owner;
+        neutron::Subject        _subject;
+      }                         owner;
     };
 
   }

@@ -40,13 +40,13 @@ namespace nucleus
     //
     // static methods
     //
-    static elle::Status		Initialize();
-    static elle::Status		Clean();
+    static elle::Status         Initialize();
+    static elle::Status         Clean();
 
     //
     // static attributes
     //
-    static elle::Factory	Factory;
+    static elle::Factory        Factory;
   };
 
 }

@@ -26,7 +26,7 @@ namespace nucleus
     ///
     /// this constants defines a null author.
     ///
-    const Author			Author::Null;
+    const Author                        Author::Null;
 
 //
 // ---------- constructors & destructors --------------------------------------
@@ -54,7 +54,7 @@ namespace nucleus
     ///
     /// this method creates a owner-specific author object.
     ///
-    elle::Status	Author::Create()
+    elle::Status        Author::Create()
     {
       enter();
 
@@ -69,7 +69,7 @@ namespace nucleus
     /// a user has been directly granted access to an object i.e is
     /// explicitely listed in the Access block.
     ///
-    elle::Status	Author::Create(const Index&		index)
+    elle::Status        Author::Create(const Index&             index)
     {
       enter();
 
@@ -89,56 +89,56 @@ namespace nucleus
     ///
     /// this operator compares two objects.
     ///
-    elle::Boolean	Author::operator==(const Author&	element) const
+    elle::Boolean       Author::operator==(const Author&        element) const
     {
       enter();
 
       // check the address as this may actually be the same object.
       if (this == &element)
-	true();
+        true();
 
       // compare the role.
       if (this->role != element.role)
-	false();
+        false();
 
       // depending on the role.
       switch (this->role)
-	{
-	case RoleOwner:
-	  {
-	    //
-	    // nothing more to compare.
-	    //
+        {
+        case RoleOwner:
+          {
+            //
+            // nothing more to compare.
+            //
 
-	    break;
-	  }
-	case RoleLord:
-	  {
-	    //
-	    // compare the index to the entry in the Access block.
-	    //
+            break;
+          }
+        case RoleLord:
+          {
+            //
+            // compare the index to the entry in the Access block.
+            //
 
-	    // compare the indexes.
-	    if (this->lord.index != element.lord.index)
-	      false();
+            // compare the indexes.
+            if (this->lord.index != element.lord.index)
+              false();
 
-	    break;
-	  }
-	case RoleVassal:
-	  {
-	    // XXX to implement.
+            break;
+          }
+        case RoleVassal:
+          {
+            // XXX to implement.
 
-	    break;
-	  }
-	default:
-	  {
-	    //
-	    // nothing more to compare.
-	    //
+            break;
+          }
+        default:
+          {
+            //
+            // nothing more to compare.
+            //
 
-	    break;
-	  }
-	}
+            break;
+          }
+        }
 
       true();
     }
@@ -155,9 +155,9 @@ namespace nucleus
     ///
     /// this function dumps an address object.
     ///
-    elle::Status	Author::Dump(elle::Natural32		margin) const
+    elle::Status        Author::Dump(elle::Natural32            margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -165,44 +165,44 @@ namespace nucleus
 
       // dump the role.
       std::cout << alignment << elle::Dumpable::Shift << "[Role] "
-		<< this->role << std::endl;
+                << this->role << std::endl;
 
       // depending on the role.
       switch (this->role)
-	{
-	case RoleOwner:
-	  {
-	    //
-	    // nothing more to dump.
-	    //
+        {
+        case RoleOwner:
+          {
+            //
+            // nothing more to dump.
+            //
 
-	    break;
-	  }
-	case RoleLord:
-	  {
-	    //
-	    // dump the index to the entry in the Access block.
-	    //
+            break;
+          }
+        case RoleLord:
+          {
+            //
+            // dump the index to the entry in the Access block.
+            //
 
-	    // dump the index.
-	    std::cout << alignment << elle::Dumpable::Shift
-		      << "[Index] " << std::dec << this->lord.index
-		      << std::endl;
+            // dump the index.
+            std::cout << alignment << elle::Dumpable::Shift
+                      << "[Index] " << std::dec << this->lord.index
+                      << std::endl;
 
-	    break;
-	  }
-	case RoleVassal:
-	  {
-	    // XXX to implement.
+            break;
+          }
+        case RoleVassal:
+          {
+            // XXX to implement.
 
-	    break;
-	  }
-	default:
-	  {
-	    escape("unknown role '%u'",
-		   this->role);
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            escape("unknown role '%u'",
+                   this->role);
+          }
+        }
 
       leave();
     }
@@ -214,49 +214,49 @@ namespace nucleus
     ///
     /// this method serializes the address object.
     ///
-    elle::Status	Author::Serialize(elle::Archive&	archive) const
+    elle::Status        Author::Serialize(elle::Archive&        archive) const
     {
       enter();
 
       // serialize the role.
       if (archive.Serialize(this->role) == elle::StatusError)
-	escape("unable to serialize the role");
+        escape("unable to serialize the role");
 
       // depending on the role.
       switch (this->role)
-	{
-	case RoleOwner:
-	  {
-	    //
-	    // nothing more to serialize.
-	    //
+        {
+        case RoleOwner:
+          {
+            //
+            // nothing more to serialize.
+            //
 
-	    break;
-	  }
-	case RoleLord:
-	  {
-	    //
-	    // serialize the index to the entry in the Access block.
-	    //
+            break;
+          }
+        case RoleLord:
+          {
+            //
+            // serialize the index to the entry in the Access block.
+            //
 
-	    // serialize the index.
-	    if (archive.Serialize(this->lord.index) == elle::StatusError)
-	      escape("unable to serialize the index");
+            // serialize the index.
+            if (archive.Serialize(this->lord.index) == elle::StatusError)
+              escape("unable to serialize the index");
 
-	    break;
-	  }
-	case RoleVassal:
-	  {
-	    // XXX to implement.
+            break;
+          }
+        case RoleVassal:
+          {
+            // XXX to implement.
 
-	    break;
-	  }
-	default:
-	  {
-	    escape("unknown role '%u'",
-		   this->role);
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            escape("unknown role '%u'",
+                   this->role);
+          }
+        }
 
       leave();
     }
@@ -264,49 +264,49 @@ namespace nucleus
     ///
     /// this method extracts the address object.
     ///
-    elle::Status	Author::Extract(elle::Archive&		archive)
+    elle::Status        Author::Extract(elle::Archive&          archive)
     {
       enter();
 
       // extract the role.
       if (archive.Extract(this->role) == elle::StatusError)
-	escape("unable to extract the role");
+        escape("unable to extract the role");
 
       // depending on the role.
       switch (this->role)
-	{
-	case RoleOwner:
-	  {
-	    //
-	    // nothing more to extract.
-	    //
+        {
+        case RoleOwner:
+          {
+            //
+            // nothing more to extract.
+            //
 
-	    break;
-	  }
-	case RoleLord:
-	  {
-	    //
-	    // extract the index to the entry in the Access block.
-	    //
+            break;
+          }
+        case RoleLord:
+          {
+            //
+            // extract the index to the entry in the Access block.
+            //
 
-	    // extract the index.
-	    if (archive.Extract(this->lord.index) == elle::StatusError)
-	      escape("unable to extract the index");
+            // extract the index.
+            if (archive.Extract(this->lord.index) == elle::StatusError)
+              escape("unable to extract the index");
 
-	    break;
-	  }
-	case RoleVassal:
-	  {
-	    // XXX to implement.
+            break;
+          }
+        case RoleVassal:
+          {
+            // XXX to implement.
 
-	    break;
-	  }
-	default:
-	  {
-	    escape("unknown role '%u'",
-		   this->role);
-	  }
-	}
+            break;
+          }
+        default:
+          {
+            escape("unknown role '%u'",
+                   this->role);
+          }
+        }
 
       leave();
     }

@@ -25,21 +25,21 @@ namespace nucleus
     ///
     enum Component
       {
-	ComponentUnknown = 0,
+        ComponentUnknown = 0,
 
-	ComponentObject,
-	ComponentContents,
-	ComponentData,
-	ComponentCatalog,
-	ComponentReference,
-	ComponentAccess,
-	ComponentUser,
-	ComponentGroup,
+        ComponentObject,
+        ComponentContents,
+        ComponentData,
+        ComponentCatalog,
+        ComponentReference,
+        ComponentAccess,
+        ComponentUser,
+        ComponentGroup,
 
-	ComponentSeamCatalog,
-	ComponentQuillCatalog,
+        ComponentSeamCatalog,
+        ComponentQuillCatalog,
 
-	Components = ComponentAccess + 1
+        Components = ComponentAccess + 1
       };
 
   }

@@ -37,7 +37,7 @@ namespace nucleus
     ///
     /// specific constructor.
     ///
-    ContentHashBlock::ContentHashBlock(const neutron::Component	component):
+    ContentHashBlock::ContentHashBlock(const neutron::Component component):
       ImmutableBlock(FamilyContentHashBlock, component)
     {
     }
@@ -49,15 +49,15 @@ namespace nucleus
     ///
     /// this method computes the address of the block.
     ///
-    elle::Status	ContentHashBlock::Bind(Address&		address)
+    elle::Status        ContentHashBlock::Bind(Address&         address)
       const
     {
       enter();
 
       // compute the address.
       if (address.Create(this->family, this->component,
-			 *this) == elle::StatusError)
-	escape("unable to compute the CHB's address");
+                         *this) == elle::StatusError)
+        escape("unable to compute the CHB's address");
 
       leave();
     }
@@ -66,10 +66,10 @@ namespace nucleus
     /// this method verifies that the block is valid according to the
     /// given requested address.
     ///
-    elle::Status	ContentHashBlock::Validate(const Address& address)
+    elle::Status        ContentHashBlock::Validate(const Address& address)
       const
     {
-      Address		self;
+      Address           self;
 
       enter();
 
@@ -88,12 +88,12 @@ namespace nucleus
       // component, K). therefore, all the blocks embed the network,
       // family and component in the address which helps prevent conflits.
       if (self.Create(this->family, this->component,
-		      *this) == elle::StatusError)
-	escape("unable to compute the CHB's address");
+                      *this) == elle::StatusError)
+        escape("unable to compute the CHB's address");
 
       // compare the address with the given one.
       if (address != self)
-	escape("the recorded address does not correspond to this block");
+        escape("the recorded address does not correspond to this block");
 
       true();
     }
@@ -114,10 +114,10 @@ namespace nucleus
     ///
     /// this function dumps an block object.
     ///
-    elle::Status	ContentHashBlock::Dump(const
-					         elle::Natural32 margin) const
+    elle::Status        ContentHashBlock::Dump(const
+                                                 elle::Natural32 margin) const
     {
-      elle::String	alignment(margin, ' ');
+      elle::String      alignment(margin, ' ');
 
       enter();
 
@@ -125,7 +125,7 @@ namespace nucleus
 
       // dump the parent class.
       if (ImmutableBlock::Dump(margin + 2) == elle::StatusError)
-	escape("unable to dump the underlying block");
+        escape("unable to dump the underlying block");
 
       leave();
     }
@@ -137,14 +137,14 @@ namespace nucleus
     ///
     /// this method serializes the block object.
     ///
-    elle::Status	ContentHashBlock::Serialize(elle::Archive& archive)
+    elle::Status        ContentHashBlock::Serialize(elle::Archive& archive)
       const
     {
       enter();
 
       // serialize the parent class.
       if (ImmutableBlock::Serialize(archive) == elle::StatusError)
-	escape("unable to serialize the underlying block");
+        escape("unable to serialize the underlying block");
 
       leave();
     }
@@ -152,17 +152,17 @@ namespace nucleus
     ///
     /// this method extracts the block object.
     ///
-    elle::Status	ContentHashBlock::Extract(elle::Archive& archive)
+    elle::Status        ContentHashBlock::Extract(elle::Archive& archive)
     {
       enter();
 
       // extract the parent class.
       if (ImmutableBlock::Extract(archive) == elle::StatusError)
-	escape("unable to extract the underlying block");
+        escape("unable to extract the underlying block");
 
       // check the family.
       if (this->family != FamilyContentHashBlock)
-	escape("invalid family");
+        escape("invalid family");
 
       leave();
     }

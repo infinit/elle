@@ -42,7 +42,7 @@ namespace nucleus
       //
       // constants
       //
-      static const Location		Null;
+      static const Location             Null;
 
       //
       // constructors & destructors
@@ -52,8 +52,8 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Create(const Address&,
-			       const Version& = Version::First);
+      elle::Status      Create(const Address&,
+                               const Version& = Version::First);
 
       //
       // interfaces
@@ -61,20 +61,20 @@ namespace nucleus
 
       // object
       declare(Location);
-      elle::Boolean	operator==(const Location&) const;
+      elle::Boolean     operator==(const Location&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      Address		address;
-      Version		version;
+      Address           address;
+      Version           version;
     };
 
   }

@@ -38,7 +38,7 @@ namespace nucleus
       //
       // constants
       //
-      static const Token		Null;
+      static const Token                Null;
 
       //
       // constructors & destructors
@@ -50,10 +50,10 @@ namespace nucleus
       //
       // methods
       //
-      elle::Status	Update(const elle::SecretKey&,
-			       const elle::PublicKey&);
-      elle::Status	Extract(const elle::PrivateKey&,
-				elle::SecretKey&) const;
+      elle::Status      Update(const elle::SecretKey&,
+                               const elle::PublicKey&);
+      elle::Status      Extract(const elle::PrivateKey&,
+                                elle::SecretKey&) const;
 
       //
       // interfaces
@@ -61,19 +61,19 @@ namespace nucleus
 
       // object
       declare(Token);
-      elle::Boolean	operator==(const Token&) const;
+      elle::Boolean     operator==(const Token&) const;
 
       // dumpable
-      elle::Status	Dump(const elle::Natural32 = 0) const;
+      elle::Status      Dump(const elle::Natural32 = 0) const;
 
       // archivable
-      elle::Status	Serialize(elle::Archive&) const;
-      elle::Status	Extract(elle::Archive&);
+      elle::Status      Serialize(elle::Archive&) const;
+      elle::Status      Extract(elle::Archive&);
 
       //
       // attributes
       //
-      elle::Code*	code;
+      elle::Code*       code;
     };
 
   }

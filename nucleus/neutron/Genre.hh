@@ -29,7 +29,7 @@ namespace nucleus
     ///
     /// the genre defines the type of object: file, directory or link.
     ///
-    typedef elle::Natural8		Genre;
+    typedef elle::Natural8              Genre;
 
 //
 // ---------- constants -------------------------------------------------------
@@ -38,10 +38,10 @@ namespace nucleus
     ///
     /// default genre values.
     ///
-    const Genre			GenreUnknown = 0;
-    const Genre			GenreDirectory = 1;
-    const Genre			GenreFile = 2;
-    const Genre			GenreLink = 3;
+    const Genre                 GenreUnknown = 0;
+    const Genre                 GenreDirectory = 1;
+    const Genre                 GenreFile = 2;
+    const Genre                 GenreLink = 3;
 
   }
 }

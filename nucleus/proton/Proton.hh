@@ -35,8 +35,8 @@ namespace nucleus
       //
       // static methods
       //
-      static elle::Status	Initialize();
-      static elle::Status	Clean();
+      static elle::Status       Initialize();
+      static elle::Status       Clean();
     };
 
   }
@@ -62,8 +62,8 @@ namespace nucleus
 #include <nucleus/proton/OwnerKeyBlock.hh>
       // XXX #include <nucleus/proton/Porcupine.hh>
 #include <nucleus/proton/PublicKeyBlock.hh>
-	 // XXX #include <nucleus/proton/Quill.hh>
-	 // XXX #include <nucleus/proton/Seam.hh>
+         // XXX #include <nucleus/proton/Quill.hh>
+         // XXX #include <nucleus/proton/Seam.hh>
 #include <nucleus/proton/Stamp.hh>
 #include <nucleus/proton/State.hh>
 #include <nucleus/proton/Version.hh>

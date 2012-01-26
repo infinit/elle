@@ -30,7 +30,7 @@ namespace nucleus
     /// this type is an alias of the size and has been introduced
     /// for clarity when representing indexes.
     ///
-    typedef Size		Index;
+    typedef Size                Index;
 
   }
 }

@@ -46,7 +46,7 @@ namespace nucleus
       //
       ImmutableBlock();
       ImmutableBlock(const Family,
-		     const neutron::Component);
+                     const neutron::Component);
 
       //
       // interfaces
@@ -56,14 +56,14 @@ namespace nucleus
       declare(ImmutableBlock);
 
       // fileable
-      elle::Status	Load(const Network&,
-			     const Address&);
-      elle::Status	Store(const Network&,
-			      const Address&) const;
-      elle::Status	Erase(const Network&,
-			      const Address&) const;
-      elle::Status	Exist(const Network&,
-			      const Address&) const;
+      elle::Status      Load(const Network&,
+                             const Address&);
+      elle::Status      Store(const Network&,
+                              const Address&) const;
+      elle::Status      Erase(const Network&,
+                              const Address&) const;
+      elle::Status      Exist(const Network&,
+                              const Address&) const;
     };
 
   }
